@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner with Vegans Explore</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #3A9B3E; --green-h: #4CAF50; --green-dim: rgba(58,155,62,0.07); --green-line: rgba(58,155,62,0.16);
+  --orange: #E8891A; --gold: #9A7420; --gold-dim: rgba(154,116,32,0.08); --gold-border: rgba(154,116,32,0.2);
+  --bg: #FAFAF8; --bg-alt: #F3F3EF; --bg-dark: #111111; --card: #FFFFFF;
+  --text: #0C0C0C; --text-2: #2A2A2A; --text-mid: #4A4A4A; --text-muted: #777777; --text-faint: #AAAAAA;
+  --border: rgba(0,0,0,0.08); --border-md: rgba(0,0,0,0.13);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+.container { max-width:1160px; margin:0 auto; padding:0 32px; }
+.eyebrow { font-size:10px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--green); display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.eyebrow::before { content:''; width:20px; height:1px; background:var(--green); flex-shrink:0; }
+.eyebrow.gold { color:var(--gold); }
+.eyebrow.gold::before { background:var(--gold); }
+
+nav { background:var(--bg); border-bottom:1px solid var(--border); padding:0; position:sticky; top:0; z-index:100; }
+.nav-inner { display:flex; align-items:center; justify-content:space-between; max-width:1160px; margin:0 auto; padding:20px 32px; }
+.nav-logo { text-decoration:none; font-size:15px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; color:var(--text); }
+.nav-logo em { font-style:normal; color:var(--green); }
+.nav-back { font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; display:flex; align-items:center; gap:8px; transition:color 0.2s; }
+.nav-back:hover { color:var(--text); }
+
+/* HERO */
+.hero { padding:100px 0 80px; background:var(--bg-dark); position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 30% 50%, rgba(58,155,62,0.07) 0%, transparent 70%); pointer-events:none; }
+.hero-inner { position:relative; z-index:1; max-width:740px; }
+.hero-tag { display:inline-flex; align-items:center; gap:8px; font-size:10px; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--green-h); margin-bottom:28px; }
+.hero h1 { font-size:clamp(44px,5vw,72px); font-weight:900; letter-spacing:-0.03em; line-height:0.93; color:#fff; margin-bottom:28px; text-transform:uppercase; }
+.hero h1 em { font-style:normal; color:var(--green-h); }
+.hero-sub { font-size:17px; color:rgba(255,255,255,0.5); line-height:1.8; max-width:520px; margin-bottom:40px; }
+.hero-sub strong { color:rgba(255,255,255,0.8); font-weight:500; }
+.hero-cta { display:inline-flex; align-items:center; gap:12px; background:var(--green); color:#fff; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:16px 32px; text-decoration:none; transition:background 0.2s; }
+.hero-cta:hover { background:var(--green-h); }
+
+/* POSITIONING */
+.positioning { padding:80px 0; background:var(--bg-alt); border-bottom:1px solid var(--border); }
+.positioning-inner { max-width:760px; margin:0 auto; text-align:center; }
+.positioning-inner h2 { font-size:clamp(20px,2.5vw,30px); font-weight:700; color:var(--text-2); line-height:1.5; }
+.positioning-inner h2 em { font-style:normal; color:var(--green); font-weight:900; }
+.positioning-inner p { font-size:15px; color:var(--text-muted); line-height:1.8; margin-top:16px; }
+
+/* OFFER STACK */
+.offers { padding:120px 0; background:var(--bg); }
+.offers-header { margin-bottom:64px; }
+.offers-header h2 { font-size:clamp(28px,3.5vw,48px); font-weight:900; text-transform:uppercase; letter-spacing:-0.03em; color:var(--text); margin-bottom:0; line-height:1; }
+.offers-header h2 em { font-style:normal; color:var(--green); }
+
+/* Entry */
+.offer-entry { background:var(--green); padding:56px; display:grid; grid-template-columns:1fr auto; gap:48px; align-items:center; margin-bottom:2px; }
+.offer-entry h3 { font-size:clamp(22px,2.5vw,36px); font-weight:900; text-transform:uppercase; letter-spacing:-0.02em; color:#fff; margin-bottom:12px; }
+.offer-entry p { font-size:15px; color:rgba(255,255,255,0.72); line-height:1.75; max-width:480px; }
+.offer-entry-right { text-align:center; flex-shrink:0; }
+.offer-price-big { font-size:72px; font-weight:900; color:#fff; letter-spacing:-0.05em; line-height:1; }
+.offer-price-sub { font-size:11px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.55); margin-top:4px; margin-bottom:20px; }
+.offer-cta-white { display:block; background:#fff; color:var(--green); font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; padding:14px 32px; text-decoration:none; transition:all 0.2s; text-align:center; }
+.offer-cta-white:hover { background:rgba(255,255,255,0.9); }
+
+/* Tier grid */
+.tier-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:2px; }
+.tier { background:var(--card); border:1px solid var(--border); padding:40px 32px; transition:border-color 0.25s; position:relative; }
+.tier:hover { border-color:var(--border-md); }
+.tier.featured { background:var(--bg-alt); border-color:rgba(154,116,32,0.22); }
+.tier-tag { font-size:9px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:16px; color:var(--text-faint); }
+.tier.featured .tier-tag { color:var(--gold); }
+.tier-badge { position:absolute; top:-1px; right:28px; background:var(--gold); color:#fff; font-size:9px; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; padding:6px 14px; }
+.tier h3 { font-size:20px; font-weight:900; text-transform:uppercase; letter-spacing:-0.01em; color:var(--text); margin-bottom:6px; }
+.tier-price-row { display:flex; align-items:baseline; gap:5px; margin-bottom:4px; }
+.tier-price-big { font-size:34px; font-weight:900; color:var(--text); letter-spacing:-0.03em; line-height:1; }
+.tier-price-period { font-size:13px; color:var(--text-faint); }
+.tier-price-note { font-size:11px; color:var(--text-faint); margin-bottom:20px; }
+.tier p { font-size:13px; color:var(--text-muted); line-height:1.7; margin-bottom:20px; }
+.tier-list { display:flex; flex-direction:column; gap:9px; margin-bottom:32px; }
+.tier-item { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-mid); line-height:1.5; }
+.tier-item::before { content:''; width:12px; height:12px; border:1px solid var(--green); flex-shrink:0; margin-top:1px; }
+.tier.featured .tier-item::before { border-color:var(--gold); }
+.tier-btn { display:block; text-align:center; font-size:11px; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; padding:13px; text-decoration:none; border:1px solid var(--border-md); color:var(--text); transition:all 0.2s; }
+.tier-btn:hover { background:var(--text); color:#fff; border-color:var(--text); }
+.tier.featured .tier-btn { background:var(--gold); color:#fff; border-color:var(--gold); }
+.tier.featured .tier-btn:hover { background:#B8922A; }
+
+/* Premium builds */
+.premium-row { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-bottom:2px; }
+.premium-card { background:var(--bg-alt); border:1px solid var(--border); padding:44px; }
+.premium-tag { font-size:9px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--text-faint); margin-bottom:14px; }
+.premium-card h3 { font-size:22px; font-weight:900; text-transform:uppercase; letter-spacing:-0.01em; color:var(--text); margin-bottom:8px; }
+.premium-price { font-size:34px; font-weight:900; color:var(--text); letter-spacing:-0.03em; margin-bottom:16px; line-height:1; }
+.premium-price span { font-size:14px; font-weight:400; color:var(--text-faint); }
+.premium-card p { font-size:13px; color:var(--text-muted); line-height:1.7; margin-bottom:10px; }
+.premium-note { font-size:11px; color:var(--text-faint); font-style:italic; margin-bottom:24px; }
+
+/* Content packages */
+.content-section { padding:120px 0; background:var(--bg-alt); }
+.content-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-top:64px; }
+.content-card { background:var(--card); border:1px solid var(--border); padding:48px; transition:border-color 0.25s; position:relative; overflow:hidden; }
+.content-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--gold); transform:scaleX(0); transform-origin:left; transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+.content-card:hover::before { transform:scaleX(1); }
+.content-card:hover { border-color:var(--gold-border); }
+.content-tag { display:inline-block; font-size:9px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; padding:5px 12px; border:1px solid var(--gold-border); color:var(--gold); background:var(--gold-dim); margin-bottom:24px; }
+.content-card h3 { font-size:22px; font-weight:900; text-transform:uppercase; letter-spacing:-0.01em; color:var(--text); margin-bottom:8px; }
+.content-price { font-size:36px; font-weight:900; color:var(--text); letter-spacing:-0.03em; margin-bottom:16px; line-height:1; }
+.content-card p { font-size:14px; color:var(--text-muted); line-height:1.75; margin-bottom:24px; }
+.content-list { display:flex; flex-direction:column; gap:9px; margin-bottom:32px; }
+.content-item { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-mid); line-height:1.5; }
+.content-item::before { content:''; width:12px; height:12px; border:1px solid var(--gold); flex-shrink:0; margin-top:1px; }
+
+/* Revenue note */
+.revenue-note { padding:40px 48px; background:var(--bg-dark); margin-top:2px; }
+.revenue-note-inner { max-width:700px; }
+.revenue-note-label { font-size:10px; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--green-h); margin-bottom:12px; }
+.revenue-note p { font-size:14px; color:rgba(255,255,255,0.5); line-height:1.7; }
+.revenue-note p strong { color:rgba(255,255,255,0.8); font-weight:500; }
+
+/* CTA section */
+.cta-section { padding:100px 0; background:var(--bg); text-align:center; }
+.cta-section h2 { font-size:clamp(28px,3.5vw,48px); font-weight:900; text-transform:uppercase; letter-spacing:-0.03em; color:var(--text); margin-top:16px; margin-bottom:20px; }
+.cta-section h2 em { font-style:normal; color:var(--green); }
+.cta-section p { font-size:16px; color:var(--text-muted); max-width:440px; margin:0 auto 40px; line-height:1.75; }
+.cta-section a { display:inline-flex; align-items:center; gap:12px; background:var(--green); color:#fff; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:16px 36px; text-decoration:none; transition:background 0.2s; }
+.cta-section a:hover { background:var(--green-h); }
+
+footer { background:var(--bg-alt); border-top:1px solid var(--border); padding:40px 0; }
+.footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+.footer-logo { font-size:13px; font-weight:900; letter-spacing:0.15em; text-transform:uppercase; color:var(--text); }
+.footer-copy { font-size:11px; color:var(--text-faint); }
+.footer-back { font-size:11px; color:var(--text-faint); text-decoration:none; letter-spacing:0.1em; text-transform:uppercase; transition:color 0.2s; }
+.footer-back:hover { color:var(--green); }
+
+@media (max-width:1024px) {
+  .offer-entry { grid-template-columns:1fr; }
+  .tier-grid { grid-template-columns:1fr; }
+  .premium-row { grid-template-columns:1fr; }
+  .content-grid { grid-template-columns:1fr; }
+}
+@media (max-width:640px) {
+  nav .nav-links { display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="vegansexplore-platform-v3.html" class="nav-logo">Vegans<em> Explore</em></a>
+    <a href="vegansexplore-platform-v3.html" class="nav-back">&#8592; Back to Main Site</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-tag">&#9679; For Vegan Businesses, Nonprofits &amp; Communities</div>
+      <h1>Partner with<br><em>Vegans Explore.</em></h1>
+      <p class="hero-sub">
+        We help <strong>Vegan businesses, nonprofits, and communities grow together</strong> through a shared platform that also generates revenue. Start with $11. Build from there.
+      </p>
+      <a href="#entry" class="hero-cta">See Partnership Options &#8594;</a>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIONING STATEMENT -->
+<section class="positioning">
+  <div class="container">
+    <div class="positioning-inner">
+      <h2>"We help Vegan businesses, nonprofits, and communities <em>grow together</em> through a shared platform that also generates revenue."</h2>
+      <p>You already have an audience. We give you the platform, the tools, and the network to take them further. Every business that joins brings their community, and every community grows the network for everyone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- OFFER STACK -->
+<section class="offers" id="entry">
+  <div class="container">
+    <div class="offers-header">
+      <div class="eyebrow">The Offer Stack</div>
+      <h2 class="">Start at <em>$11.</em><br>Grow from there.</h2>
+    </div>
+
+    <!-- Entry -->
+    <div class="offer-entry">
+      <div>
+        <h3>Claim Your Passport</h3>
+        <p>The required entry point for all businesses. Claim your place in the Vegans Explore network and start participating in your local Vegan community ecosystem. Simple, low-friction buy-in. Acts as both validation and onboarding.</p>
+        <div style="margin-top:20px;display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Business Passport on Vegans Explore</div>
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Eligibility for features, events, and community activations</div>
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Ability to earn through referral-based membership signups</div>
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Access to platform ecosystem</div>
+        </div>
+      </div>
+      <div class="offer-entry-right">
+        <div class="offer-price-big">$11</div>
+        <div class="offer-price-sub">One-time fee</div>
+        <a href="#" class="offer-cta-white">Get Started</a>
+      </div>
+    </div>
+
+    <!-- Tiers -->
+    <div class="tier-grid">
+      <div class="tier">
+        <div class="tier-tag">Step Two</div>
+        <h3>Visibility + Audit</h3>
+        <div class="tier-price-row">
+          <div class="tier-price-big">$111</div>
+        </div>
+        <div class="tier-price-note">One-time</div>
+        <p>Profile optimization, marketing and visibility audit, and actionable recommendations. Warms your business up for higher-tier offers and drives immediate value.</p>
+        <div class="tier-list">
+          <div class="tier-item">Profile optimization</div>
+          <div class="tier-item">Marketing and visibility audit</div>
+          <div class="tier-item">Actionable recommendations report</div>
+          <div class="tier-item">Priority consideration for features and content</div>
+        </div>
+        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
+      </div>
+      <div class="tier featured">
+        <div class="tier-badge">Key Offer</div>
+        <div class="tier-tag">Platform + Revenue</div>
+        <h3>Platform Build</h3>
+        <div class="tier-price-row">
+          <div class="tier-price-big">$111</div>
+          <div class="tier-price-period">/month</div>
+        </div>
+        <div class="tier-price-note">+ 50% revenue share on platform-driven sales</div>
+        <p>A full community and digital sales platform. Bring your existing audience, sell memberships and digital products, and earn recurring revenue. Built-in monetization from day one.</p>
+        <div class="tier-list">
+          <div class="tier-item">Custom Vegans Explore-powered website</div>
+          <div class="tier-item">Community page for your audience</div>
+          <div class="tier-item">Sell digital products and memberships</div>
+          <div class="tier-item">Unique referral link for tracking</div>
+          <div class="tier-item">50% split on platform-driven revenue only</div>
+          <div class="tier-item">Does NOT apply to physical products or in-store revenue</div>
+        </div>
+        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
+      </div>
+      <div class="tier">
+        <div class="tier-tag">Spotlight</div>
+        <h3>Content Feature</h3>
+        <div class="tier-price-row">
+          <div class="tier-price-big">$250</div>
+        </div>
+        <div class="tier-price-note">Entry &mdash; or $1,250 for premium</div>
+        <p>Get your story told across the Vegans Explore platform and social channels. From a quick on-location capture to a full interview and pilot episode inclusion.</p>
+        <div class="tier-list">
+          <div class="tier-item">Short-form feature + social inclusion (Entry: $250)</div>
+          <div class="tier-item">Full interview + multi-content package (Premium: $1,250&ndash;$1,500)</div>
+          <div class="tier-item">Inclusion in pilot episode (Premium)</div>
+          <div class="tier-item">Priority promotion across the network</div>
+        </div>
+        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
+      </div>
+    </div>
+
+    <!-- Premium builds -->
+    <div class="premium-row">
+      <div class="premium-card">
+        <div class="premium-tag">Premium Build &mdash; Option A</div>
+        <h3>Full Custom Build</h3>
+        <div class="premium-price">$10,000 <span>flat</span></div>
+        <p>A fully built website powered by the Vegans Explore platform. You keep 100% of your revenue, minus standard processing fees.</p>
+        <div class="premium-note">No revenue share. No ongoing percentage. You own the outcome.</div>
+        <div class="tier-list">
+          <div class="tier-item">Full website build on the platform</div>
+          <div class="tier-item">100% revenue retention</div>
+          <div class="tier-item">No revenue share</div>
+        </div>
+        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
+      </div>
+      <div class="premium-card">
+        <div class="premium-tag">Premium Build &mdash; Option B</div>
+        <h3>Reduced Upfront Build</h3>
+        <div class="premium-price">$2,500 <span>+ 5% revenue share</span></div>
+        <p>A full website build at a reduced upfront cost. In exchange, 5% on all platform-driven sales. A long-term partnership model for businesses building alongside us.</p>
+        <div class="premium-note">Best for growing businesses that want to minimize upfront cost.</div>
+        <div class="tier-list">
+          <div class="tier-item">Full website build on the platform</div>
+          <div class="tier-item">5% on all platform sales</div>
+          <div class="tier-item">Long-term partnership structure</div>
+        </div>
+        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
+      </div>
+    </div>
+
+    <div class="revenue-note">
+      <div class="revenue-note-inner">
+        <div class="revenue-note-label">Revenue Share Clarification</div>
+        <p>The 50% and 5% revenue share <strong>applies only to platform-driven revenue</strong> — membership signups and digital product sales processed through Vegans Explore. It does <strong>NOT apply to physical product sales, in-store revenue, or any business conducted outside the platform.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT PACKAGES -->
+<section class="content-section" id="content">
+  <div class="container">
+    <div class="eyebrow gold">Content Monetization</div>
+    <h2 style="font-size:clamp(28px,3.5vw,46px);font-weight:900;text-transform:uppercase;letter-spacing:-0.03em;color:var(--text);margin-bottom:0;line-height:1;">Spotlight<br>Feature Packages.</h2>
+    <p style="font-size:16px;color:var(--text-muted);line-height:1.75;margin-top:16px;max-width:520px;">Our content team will come to you. We capture your story and push it across the platform and social channels — putting your brand in front of the whole network.</p>
+    <div class="content-grid">
+      <div class="content-card">
+        <div class="content-tag">Entry Feature</div>
+        <h3>Quick Capture</h3>
+        <div class="content-price">$250</div>
+        <p>A fast, focused on-location feature for businesses ready to get in front of the network quickly. Short-form content optimized for social media reach and platform visibility.</p>
+        <div class="content-list">
+          <div class="content-item">Short-form feature content</div>
+          <div class="content-item">Quick on-location capture</div>
+          <div class="content-item">Social media inclusion across Vegans Explore channels</div>
+          <div class="content-item">Platform spotlight listing</div>
+        </div>
+        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
+      </div>
+      <div class="content-card">
+        <div class="content-tag">Premium Feature</div>
+        <h3>Full Production</h3>
+        <div class="content-price">$1,250&ndash;$1,500</div>
+        <p>A comprehensive content package for businesses ready for a full story. Long-form interview, multi-content rollout, and inclusion in the pilot episode of the Vegans Explore series.</p>
+        <div class="content-list">
+          <div class="content-item">Full on-location interview</div>
+          <div class="content-item">Multi-content package (video, written, social)</div>
+          <div class="content-item">Inclusion in pilot episode</div>
+          <div class="content-item">Priority promotion across all network channels</div>
+          <div class="content-item">Platform featured placement</div>
+        </div>
+        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="eyebrow" style="justify-content:center;margin-bottom:16px;">&#8212; Ready to Partner</div>
+    <h2>Let's Build<br>the <em>Network.</em></h2>
+    <p>Reach out to our partnerships team and we will walk you through the right option for your business.</p>
+    <a href="mailto:partners@vegansexplore.com">Contact Partnerships &#8594;</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Vegans Explore</div>
+      <a href="vegansexplore-platform-v3.html" class="footer-back">&#8592; Back to Main Site</a>
+      <div class="footer-copy">&copy; 2026 Vegans Explore</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
