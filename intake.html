@@ -354,8 +354,8 @@ footer {
 .footer-copy { font-size:10px; color:rgba(255,255,255,0.2); }
 
 /* ---- STEPS VISIBILITY ---- */
-#step-1, #step-2, #step-thanks { display:none; }
-#step-1.active, #step-2.active, #step-thanks.active { display:block; }
+#step-1, #step-2, #step-3, #step-thanks { display:none; }
+#step-1.active, #step-2.active, #step-3.active, #step-thanks.active { display:block; }
 
 /* ---- REDUCED MOTION ---- */
 @media (prefers-reduced-motion: reduce) {
@@ -371,6 +371,72 @@ footer {
   nav { padding:14px 16px; }
   .progress-wrap { margin-bottom:36px; }
 }
+
+/* ---- STEP 3 TIER COMPARISON ---- */
+.tier-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:40px;
+}
+@media (max-width:640px) { .tier-grid { grid-template-columns:1fr; } }
+.tier-card {
+  border:2px solid var(--border-md); background:var(--card);
+  padding:36px 32px 32px; display:flex; flex-direction:column; gap:0;
+  position:relative;
+}
+.tier-card.tier-passport {
+  border-color:var(--green-text); background:#fff;
+}
+.tier-badge {
+  position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+  background:var(--green-text); color:#fff;
+  font-size:9px; font-weight:800; letter-spacing:0.2em; text-transform:uppercase;
+  padding:4px 14px;
+}
+.tier-label {
+  font-size:11px; font-weight:800; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--text-faint); margin-bottom:16px;
+}
+.tier-price {
+  font-size:56px; font-weight:900; color:var(--text); letter-spacing:-0.05em;
+  line-height:1; margin-bottom:4px;
+}
+.tier-price sup { font-size:24px; vertical-align:top; margin-top:10px; display:inline-block; font-weight:700; }
+.tier-card.tier-passport .tier-price { color:var(--green-text); }
+.tier-price-note {
+  font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--text-faint); margin-bottom:28px;
+}
+.tier-features {
+  list-style:none; display:flex; flex-direction:column; gap:8px;
+  margin-bottom:32px; flex:1;
+}
+.tier-features li {
+  font-size:12px; font-weight:500; color:var(--text-mid);
+  padding-left:22px; position:relative; line-height:1.5;
+}
+.tier-features li::before {
+  content:''; position:absolute; left:0; top:5px;
+  width:10px; height:10px; border-radius:50%;
+}
+.tier-features li.included::before { background:var(--green-text); }
+.tier-features li.excluded::before { background:var(--border-md); }
+.tier-features li.excluded { color:var(--text-faint); }
+.tier-btn {
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Montserrat',sans-serif;
+  font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;
+  padding:16px 24px; border:none; cursor:pointer; transition:background 0.2s;
+  width:100%;
+}
+.tier-btn-free {
+  background:var(--bg-alt); color:var(--text-mid);
+  border:1.5px solid var(--border-md);
+}
+.tier-btn-free:hover { background:var(--border-md); }
+.tier-btn-passport {
+  background:var(--green-text); color:#fff;
+}
+.tier-btn-passport:hover { background:var(--green); }
+
 </style>
 </head>
 <body>
@@ -394,7 +460,7 @@ footer {
 <div class="form-shell">
 
   <!-- PROGRESS -->
-  <div class="progress-wrap" id="progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" aria-label="Form progress">
+  <div class="progress-wrap" id="progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" aria-label="Form progress">
     <div class="progress-step active" id="prog-1">
       <span class="progress-num" aria-hidden="true">1</span>
       <span>Your Path</span>
@@ -404,11 +470,16 @@ footer {
       <span class="progress-num" aria-hidden="true">2</span>
       <span>Your Details</span>
     </div>
+    <div class="progress-divider" aria-hidden="true"></div>
+    <div class="progress-step inactive" id="prog-3">
+      <span class="progress-num" aria-hidden="true">3</span>
+      <span>Choose Plan</span>
+    </div>
   </div>
 
   <!-- STEP 1: BUILDER TYPE -->
   <div id="step-1" class="active" role="group" aria-labelledby="step1-heading">
-    <p class="step-eyebrow">Step 1 of 2</p>
+    <p class="step-eyebrow">Step 1 of 3</p>
     <h1 class="step-heading" id="step1-heading">Who Are You<br>in the <em>Vegan World?</em></h1>
     <p class="step-sub">Pick the path that describes you best. This helps us connect you to the right community and resources from day one.</p>
 
@@ -484,7 +555,7 @@ footer {
       </button>
     </div>
 
-    <p class="step-eyebrow">Step 2 of 2</p>
+    <p class="step-eyebrow">Step 2 of 3</p>
     <h2 class="step-heading" id="step2-heading">Tell Us a Little<br>About <em>You.</em></h2>
     <p class="step-sub">We'll use this to activate your account and connect you to the right community.</p>
 
@@ -516,14 +587,81 @@ footer {
 
       <div class="btn-row">
         <button class="btn-primary" type="submit" id="submit-btn">
-          Join Vegans Explore <span aria-hidden="true">&#8594;</span>
+          See Your Options <span aria-hidden="true">&#8594;</span>
         </button>
         <span class="btn-note">Free to join. $11 Passport optional.</span>
       </div>
     </form>
   </div>
 
-  <!-- STEP 3: THANK YOU -->
+
+  <!-- STEP 3: CHOOSE YOUR PLAN -->
+  <div id="step-3" role="group" aria-labelledby="step3-heading">
+
+    <!-- Selected path summary -->
+    <div class="path-summary" aria-label="Selected path">
+      <span class="path-summary-icon" id="summary-icon-3" aria-hidden="true"></span>
+      <div>
+        <div class="path-summary-label">Your Path</div>
+        <div class="path-summary-name" id="summary-name-3"></div>
+      </div>
+      <button class="path-summary-change" type="button" onclick="goToStep2()" aria-label="Go back to your details">
+        Back
+      </button>
+    </div>
+
+    <p class="step-eyebrow">Step 3 of 3</p>
+    <h2 class="step-heading" id="step3-heading">Choose How<br>You Want to <em>Join.</em></h2>
+    <p class="step-sub">Both options get you into the community. The Passport unlocks everything - one payment, no subscription.</p>
+
+    <div class="tier-grid" role="group" aria-label="Choose your membership tier">
+
+      <!-- FREE -->
+      <div class="tier-card tier-free">
+        <div class="tier-label">Free</div>
+        <div class="tier-price">$0</div>
+        <div class="tier-price-note">Always free</div>
+        <ul class="tier-features" role="list">
+          <li class="included" role="listitem">Vegan directory access</li>
+          <li class="included" role="listitem">Builder type profile</li>
+          <li class="included" role="listitem">Community feed</li>
+          <li class="included" role="listitem">Events near you</li>
+          <li class="included" role="listitem">Your referral link</li>
+          <li class="included" role="listitem">Resource library</li>
+          <li class="excluded" role="listitem">Private builder community</li>
+          <li class="excluded" role="listitem">Vault access</li>
+          <li class="excluded" role="listitem">Claim your listing</li>
+          <li class="excluded" role="listitem">Full web + app access</li>
+        </ul>
+        <button class="tier-btn tier-btn-free" type="button" onclick="choosePlan('free')" aria-label="Join for free">
+          Join Free
+        </button>
+      </div>
+
+      <!-- PASSPORT -->
+      <div class="tier-card tier-passport">
+        <div class="tier-badge" aria-label="Recommended">Recommended</div>
+        <div class="tier-label">Passport</div>
+        <div class="tier-price"><sup>$</sup>11</div>
+        <div class="tier-price-note">One-time. No subscription. Ever.</div>
+        <ul class="tier-features" role="list">
+          <li class="included" role="listitem">Everything in Free</li>
+          <li class="included" role="listitem">Private builder community</li>
+          <li class="included" role="listitem">Vault access</li>
+          <li class="included" role="listitem">Claim your listing</li>
+          <li class="included" role="listitem">Full web + app access</li>
+          <li class="included" role="listitem">Revenue eligibility path</li>
+        </ul>
+        <button class="tier-btn tier-btn-passport" type="button" onclick="choosePlan('passport')" aria-label="Get your Passport for $11">
+          Get My Passport - $11 &#8594;
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- STEP 4: THANK YOU -->
   <div id="step-thanks" role="region" aria-labelledby="ty-heading">
 
     <!-- Two-column: features left / video + next steps right -->
@@ -755,5 +893,173 @@ footer {
 
 
 
+<script>
+/* ---- State ---- */
+let selectedType  = null;
+let selectedIcon  = '';
+let selectedLabel = '';
+let selectedPlan  = 'free';
+
+/* ---- Step 1: Select builder type ---- */
+function selectType(card) {
+  document.querySelectorAll('.type-card').forEach(c => c.setAttribute('aria-pressed', 'false'));
+  card.setAttribute('aria-pressed', 'true');
+  selectedType  = card.dataset.type;
+  selectedIcon  = card.dataset.icon;
+  selectedLabel = card.dataset.label;
+
+  const nextBtn = document.getElementById('step1-next');
+  nextBtn.disabled = false;
+  nextBtn.setAttribute('aria-disabled', 'false');
+  document.getElementById('step1-hint').textContent = selectedLabel + ' selected';
+}
+
+/* ---- Step navigation ---- */
+function goToStep2() {
+  if (!selectedType) return;
+
+  // Populate both path-summary bars (step 2 + step 3)
+  ['', '-3'].forEach(function(suffix) {
+    var iconEl = document.getElementById('summary-icon' + suffix);
+    var nameEl = document.getElementById('summary-name' + suffix);
+    if (iconEl) iconEl.textContent = selectedIcon;
+    if (nameEl) nameEl.textContent = selectedLabel;
+  });
+
+  document.getElementById('prog-1').className = 'progress-step done';
+  document.getElementById('prog-2').className = 'progress-step active';
+  document.getElementById('prog-3').className = 'progress-step inactive';
+  document.getElementById('progress-bar').setAttribute('aria-valuenow', '2');
+
+  document.getElementById('step-1').classList.remove('active');
+  document.getElementById('step-3').classList.remove('active');
+  document.getElementById('step-2').classList.add('active');
+  scrollToTop();
+  document.getElementById('first-name').focus();
+}
+
+function goToStep1() {
+  document.getElementById('prog-1').className = 'progress-step active';
+  document.getElementById('prog-2').className = 'progress-step inactive';
+  document.getElementById('prog-3').className = 'progress-step inactive';
+  document.getElementById('progress-bar').setAttribute('aria-valuenow', '1');
+  document.getElementById('step-2').classList.remove('active');
+  document.getElementById('step-3').classList.remove('active');
+  document.getElementById('step-1').classList.add('active');
+  scrollToTop();
+}
+
+function goToStep3() {
+  document.getElementById('prog-2').className = 'progress-step done';
+  document.getElementById('prog-3').className = 'progress-step active';
+  document.getElementById('progress-bar').setAttribute('aria-valuenow', '3');
+
+  document.getElementById('step-2').classList.remove('active');
+  document.getElementById('step-3').classList.add('active');
+  scrollToTop();
+  document.getElementById('step3-heading').focus();
+}
+
+/* ---- Form validation + submit (goes to step 3) ---- */
+function validateField(input, errorId, message) {
+  const error = document.getElementById(errorId);
+  if (!input.value.trim() || (input.type === 'email' && !isValidEmail(input.value))) {
+    error.textContent = message;
+    error.classList.add('visible');
+    input.setAttribute('aria-invalid', 'true');
+    return false;
+  }
+  error.classList.remove('visible');
+  input.removeAttribute('aria-invalid');
+  return true;
+}
+
+function isValidEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  const nameInput  = document.getElementById('first-name');
+  const emailInput = document.getElementById('email');
+  const cityInput  = document.getElementById('city');
+
+  const v1 = validateField(nameInput,  'first-name-error', 'Please enter your first name.');
+  const v2 = validateField(emailInput, 'email-error',      'Please enter a valid email address.');
+  const v3 = validateField(cityInput,  'city-error',       'Please enter your city.');
+
+  if (!v1 || !v2 || !v3) {
+    if (!v1) nameInput.focus();
+    else if (!v2) emailInput.focus();
+    else cityInput.focus();
+    return;
+  }
+
+  // Valid - go to plan selection
+  goToStep3();
+}
+
+/* ---- Plan choice ---- */
+async function choosePlan(plan) {
+  selectedPlan = plan;
+
+  const nameInput  = document.getElementById('first-name');
+  const emailInput = document.getElementById('email');
+  const cityInput  = document.getElementById('city');
+
+  // Disable both tier buttons while submitting
+  document.querySelectorAll('.tier-btn').forEach(function(b) {
+    b.disabled = true;
+    b.style.opacity = '0.5';
+  });
+
+  const PUBLICATION_ID = 'VE_BEEHIIV_PUBLICATION_ID';
+  const API_KEY        = 'VE_BEEHIIV_API_KEY';
+
+  const payload = {
+    email:      emailInput.value.trim(),
+    first_name: nameInput.value.trim(),
+    utm_source:  'vegansexplore.com',
+    utm_medium:  'intake',
+    custom_fields: [
+      { name: 'builder_type', value: selectedType },
+      { name: 'city',         value: cityInput.value.trim() },
+      { name: 'plan',         value: plan }
+    ]
+  };
+
+  try {
+    // Simulated submit - replace with real Beehiiv fetch when API key is set
+    await new Promise(function(r) { setTimeout(r, 700); });
+    showThanks(nameInput.value.trim(), plan);
+  } catch (err) {
+    document.querySelectorAll('.tier-btn').forEach(function(b) {
+      b.disabled = false;
+      b.style.opacity = '';
+    });
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+function showThanks(firstName, plan) {
+  const sub = document.getElementById('ty-sub-text');
+  if (firstName) {
+    const planNote = plan === 'passport'
+      ? firstName + ", you're officially a Passport member. Watch the video to see what's waiting, then download the app to get started."
+      : firstName + ", you're officially part of the community. Watch the video to see what's waiting, then download the app to get started.";
+    sub.textContent = planNote;
+  }
+
+  document.getElementById('progress-bar').style.display = 'none';
+  document.getElementById('step-3').classList.remove('active');
+  document.getElementById('step-thanks').classList.add('active');
+  scrollToTop();
+  document.getElementById('ty-heading').focus();
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
 </body>
 </html>
