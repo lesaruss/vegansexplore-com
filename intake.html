@@ -354,8 +354,8 @@ footer {
 .footer-copy { font-size:10px; color:rgba(255,255,255,0.2); }
 
 /* ---- STEPS VISIBILITY ---- */
-#step-1, #step-2, #step-3, #step-thanks { display:none; }
-#step-1.active, #step-2.active, #step-3.active, #step-thanks.active { display:block; }
+#step-1, #step-2, #step-3, #step-thanks-free, #step-thanks-passport { display:none; }
+#step-1.active, #step-2.active, #step-3.active, #step-thanks-free.active, #step-thanks-passport.active { display:block; }
 
 /* ---- REDUCED MOTION ---- */
 @media (prefers-reduced-motion: reduce) {
@@ -642,7 +642,6 @@ footer {
           <li class="included" role="listitem">Interact with other members</li>
           <li class="included" role="listitem">Earn points and level up</li>
           <li class="included" role="listitem">Claim or build your own listing</li>
-          <li class="included" role="listitem">Your referral link</li>
           <li class="included" role="listitem">Direct input on future features</li>
           <li class="included" role="listitem">Giveaways and contests</li>
           <li class="included" role="listitem">Special member discounts</li>
@@ -658,24 +657,18 @@ footer {
   </div>
 
   <!-- STEP 4: THANK YOU -->
-  <div id="step-thanks" role="region" aria-labelledby="ty-heading">
+  <div id="step-thanks-free" role="region" aria-labelledby="ty-heading-free">
 
-    <!-- Two-column: features left / video + next steps right -->
     <div class="thankyou-grid">
-
-      <!-- LEFT: welcome heading -->
       <div class="ty-left">
         <div class="ty-eyebrow" aria-hidden="true">
           <span class="ty-eyebrow-line"></span> You're in
         </div>
-        <h2 class="ty-heading" id="ty-heading">Welcome to<br>Vegans <em>Explore.</em></h2>
-        <p class="ty-sub" id="ty-sub-text">
+        <h2 class="ty-heading" id="ty-heading-free">Welcome to<br>Vegans <em>Explore.</em></h2>
+        <p class="ty-sub" id="ty-sub-text-free">
           You're officially part of the community. Here's what's available to you right now.
         </p>
-
       </div>
-
-      <!-- RIGHT: video only -->
       <div class="ty-right">
         <div class="ty-video-wrap">
           <div class="video-placeholder" role="img" aria-label="Vegans Explore welcome video - coming soon">
@@ -693,10 +686,8 @@ footer {
           </p>
         </div>
       </div>
-
     </div>
 
-    <!-- UNLOCKED FEATURES — full width -->
     <div class="ty-bottom-section" style="margin-bottom:48px;">
       <p class="ty-features-label">Unlocked with your free account</p>
       <div class="ty-features" role="list">
@@ -712,22 +703,6 @@ footer {
         <div class="ty-feature" role="listitem">
           <span class="ty-feature-dot" aria-hidden="true"></span>
           <div class="ty-feature-body">
-            <div class="ty-feature-name">Builder Type Profile</div>
-            <div class="ty-feature-desc">Your path is set. Access your assessment results and the resources matched to your type.</div>
-          </div>
-        </div>
-
-        <div class="ty-feature" role="listitem">
-          <span class="ty-feature-dot" aria-hidden="true"></span>
-          <div class="ty-feature-body">
-            <div class="ty-feature-name">Community Feed</div>
-            <div class="ty-feature-desc">Connect and browse with Vegans who share your goals, interests, and community.</div>
-          </div>
-        </div>
-
-        <div class="ty-feature" role="listitem">
-          <span class="ty-feature-dot" aria-hidden="true"></span>
-          <div class="ty-feature-body">
             <div class="ty-feature-name">Events Near You</div>
             <div class="ty-feature-desc">Markets, meetups, festivals, and city chapter events in your area.</div>
           </div>
@@ -736,23 +711,14 @@ footer {
         <div class="ty-feature" role="listitem">
           <span class="ty-feature-dot" aria-hidden="true"></span>
           <div class="ty-feature-body">
-            <div class="ty-feature-name">Your Referral Link</div>
-            <div class="ty-feature-desc">Share your unique link. Every person who joins through you earns you points toward the levels system.</div>
-          </div>
-        </div>
-
-        <div class="ty-feature" role="listitem">
-          <span class="ty-feature-dot" aria-hidden="true"></span>
-          <div class="ty-feature-body">
-            <div class="ty-feature-name">Resource Library</div>
-            <div class="ty-feature-desc">Curated tools, guides, and resources matched to your builder type and where you are in your journey.</div>
+            <div class="ty-feature-name">Community Preview</div>
+            <div class="ty-feature-desc">Get a look inside the Vegans Explore community before deciding to go deeper.</div>
           </div>
         </div>
 
       </div>
     </div>
 
-    <!-- NEXT STEPS + APP DOWNLOAD -->
     <div class="ty-bottom-section">
       <p class="ty-features-label">Your next steps</p>
       <div class="ty-features" role="list">
@@ -769,7 +735,7 @@ footer {
           <span class="ty-feature-num" aria-hidden="true">2</span>
           <div class="ty-feature-body">
             <div class="ty-feature-name">Get Your Passport - $11</div>
-            <div class="ty-feature-desc">One-time fee. Unlocks your builder type community, vault access, and your listing. No subscription required.</div>
+            <div class="ty-feature-desc">One-time fee. Unlocks member interactions, your listing, points, and more. No subscription required.</div>
           </div>
         </div>
 
@@ -778,14 +744,6 @@ footer {
           <div class="ty-feature-body">
             <div class="ty-feature-name">Explore Your City</div>
             <div class="ty-feature-desc">Find Vegan restaurants, businesses, events, and community members near you. Your local chapter is ready.</div>
-          </div>
-        </div>
-
-        <div class="ty-feature" role="listitem">
-          <span class="ty-feature-num" aria-hidden="true">4</span>
-          <div class="ty-feature-body">
-            <div class="ty-feature-name">Share Your Link and Earn</div>
-            <div class="ty-feature-desc">Every person who joins through your referral link earns you points. Points advance you through the levels toward revenue eligibility.</div>
           </div>
         </div>
 
@@ -809,70 +767,225 @@ footer {
       </div>
     </div>
 
-    <!-- PASSPORT UPGRADE -->
     <div class="passport-upgrade" role="complementary" aria-label="Upgrade to Passport">
       <div class="upgrade-grid">
+        <div>
+          <p class="upgrade-eyebrow">Ready to go further?</p>
+          <h3 class="upgrade-heading">Unlock the Full<br><em>Vegans Explore</em><br>Experience.</h3>
+          <p class="upgrade-sub">Your free account gets you in the door. Your Passport opens everything. One payment, no subscription, yours for life.</p>
+          <div class="upgrade-price-row">
+            <div class="upgrade-price"><sup>$</sup>11</div>
+          </div>
+          <p class="upgrade-price-note">One-time. No subscription. Ever.</p>
+          <a href="#" class="upgrade-cta" aria-label="Get your Passport for $11 one-time">
+            Get Your Passport <span aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+        <div class="upgrade-features" role="list" aria-label="Passport member benefits">
 
-          <!-- Left: pitch -->
-          <div>
-            <p class="upgrade-eyebrow">Ready to go further?</p>
-            <h3 class="upgrade-heading">Unlock the Full<br><em>Vegans Explore</em><br>Experience.</h3>
-            <p class="upgrade-sub">Your free account gets you in the door. Your Passport opens everything. One payment, no subscription, yours for life.</p>
-            <div class="upgrade-price-row">
-              <div class="upgrade-price"><sup>$</sup>11</div>
+          <div class="upgrade-feature" role="listitem">
+            <span class="upgrade-feature-check" aria-hidden="true"></span>
+            <div class="upgrade-feature-body">
+              <div class="upgrade-feature-name">Everything in the Free Account</div>
+              <div class="upgrade-feature-desc">All directory, event, and community preview access included.</div>
             </div>
-            <p class="upgrade-price-note">One-time. No subscription. Ever.</p>
-            <a href="#" class="upgrade-cta" aria-label="Get your Passport for $11 one-time">
-              Get Your Passport <span aria-hidden="true">&#8594;</span>
-            </a>
           </div>
 
-          <!-- Right: feature list -->
-          <div class="upgrade-features" role="list" aria-label="Passport member benefits">
-
-            <div class="upgrade-feature" role="listitem">
-              <span class="upgrade-feature-check" aria-hidden="true"></span>
-              <div class="upgrade-feature-body">
-                <div class="upgrade-feature-name">Join Your Builder Type Community</div>
-                <div class="upgrade-feature-desc">Access the private community for your path - Pre-Vegans, Seasoned Vegans, Entrepreneurs, Nonprofits, or Creators.</div>
-              </div>
+          <div class="upgrade-feature" role="listitem">
+            <span class="upgrade-feature-check" aria-hidden="true"></span>
+            <div class="upgrade-feature-body">
+              <div class="upgrade-feature-name">Interact with Other Members</div>
+              <div class="upgrade-feature-desc">Post, comment, connect, and collaborate inside the community.</div>
             </div>
-
-            <div class="upgrade-feature" role="listitem">
-              <span class="upgrade-feature-check" aria-hidden="true"></span>
-              <div class="upgrade-feature-body">
-                <div class="upgrade-feature-name">Claim Your Listing</div>
-                <div class="upgrade-feature-desc">Businesses and creators: claim your profile in the directory and get visible to the entire Vegan network.</div>
-              </div>
-            </div>
-
-            <div class="upgrade-feature" role="listitem">
-              <span class="upgrade-feature-check" aria-hidden="true"></span>
-              <div class="upgrade-feature-body">
-                <div class="upgrade-feature-name">Community Discussions and Vault</div>
-                <div class="upgrade-feature-desc">Full access to discussions, events, and the resource vault curated for your builder type.</div>
-              </div>
-            </div>
-
-            <div class="upgrade-feature" role="listitem">
-              <span class="upgrade-feature-check" aria-hidden="true"></span>
-              <div class="upgrade-feature-body">
-                <div class="upgrade-feature-name">Earn on Every Referral</div>
-                <div class="upgrade-feature-desc">Your referral link earns points with every signup. Points move you through the levels system toward revenue eligibility.</div>
-              </div>
-            </div>
-
-            <div class="upgrade-feature" role="listitem">
-              <span class="upgrade-feature-check" aria-hidden="true"></span>
-              <div class="upgrade-feature-body">
-                <div class="upgrade-feature-name">Full Web and App Access</div>
-                <div class="upgrade-feature-desc">Your Passport works on both the mobile app and the web platform. One fee, both platforms.</div>
-              </div>
-            </div>
-
           </div>
+
+          <div class="upgrade-feature" role="listitem">
+            <span class="upgrade-feature-check" aria-hidden="true"></span>
+            <div class="upgrade-feature-body">
+              <div class="upgrade-feature-name">Earn Points and Level Up</div>
+              <div class="upgrade-feature-desc">Points track your activity and contribution. Levels unlock revenue eligibility over time.</div>
+            </div>
+          </div>
+
+          <div class="upgrade-feature" role="listitem">
+            <span class="upgrade-feature-check" aria-hidden="true"></span>
+            <div class="upgrade-feature-body">
+              <div class="upgrade-feature-name">Claim or Build Your Listing</div>
+              <div class="upgrade-feature-desc">Businesses and creators: claim your directory profile or build a new one from scratch.</div>
+            </div>
+          </div>
+
+          <div class="upgrade-feature" role="listitem">
+            <span class="upgrade-feature-check" aria-hidden="true"></span>
+            <div class="upgrade-feature-body">
+              <div class="upgrade-feature-name">Direct Input on Future Features</div>
+              <div class="upgrade-feature-desc">Passport members vote on what gets built next. Your voice shapes the platform.</div>
+            </div>
+          </div>
+
+          <div class="upgrade-feature" role="listitem">
+            <span class="upgrade-feature-check" aria-hidden="true"></span>
+            <div class="upgrade-feature-body">
+              <div class="upgrade-feature-name">Giveaways, Contests, and Member Discounts</div>
+              <div class="upgrade-feature-desc">Exclusive entry to member contests and special discounts from Vegan brands and partners.</div>
+            </div>
+          </div>
+
+          <div class="upgrade-feature" role="listitem">
+            <span class="upgrade-feature-check" aria-hidden="true"></span>
+            <div class="upgrade-feature-body">
+              <div class="upgrade-feature-name">Support Your Local Vegan Community</div>
+              <div class="upgrade-feature-desc">Your $11 directly funds local chapter activity and keeps the directory free for everyone.</div>
+            </div>
+          </div>
+
         </div>
       </div>
+    </div>
+
+  </div>
+
+  <div id="step-thanks-passport" role="region" aria-labelledby="ty-heading-passport">
+
+    <div class="thankyou-grid">
+      <div class="ty-left">
+        <div class="ty-eyebrow" aria-hidden="true">
+          <span class="ty-eyebrow-line"></span> Passport Activated
+        </div>
+        <h2 class="ty-heading" id="ty-heading-passport">You're a Passport<br><em>Member.</em></h2>
+        <p class="ty-sub" id="ty-sub-text-passport">
+          Everything is unlocked. Here's what you now have access to.
+        </p>
+      </div>
+      <div class="ty-right">
+        <div class="ty-video-wrap">
+          <div class="video-placeholder" role="img" aria-label="Vegans Explore Passport welcome video - coming soon">
+            <div class="video-bg-pattern" aria-hidden="true"></div>
+            <div class="video-placeholder-inner">
+              <span class="video-eyebrow">Welcome Video</span>
+              <button class="video-play-btn" type="button" aria-label="Play Passport welcome video (coming soon)" disabled aria-disabled="true">
+                <span class="video-play-icon" aria-hidden="true">&#9654;</span>
+              </button>
+              <span class="video-label">Coming Soon</span>
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--text-faint);margin-top:8px;text-align:center;font-weight:500;">
+            A message from the Vegans Explore team
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ty-bottom-section" style="margin-bottom:48px;">
+      <p class="ty-features-label">Your Passport includes</p>
+      <div class="ty-features" role="list">
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Everything in the Free Account</div>
+            <div class="ty-feature-desc">Full Vegan directory, events near you, and community preview.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Interact with Other Members</div>
+            <div class="ty-feature-desc">Post, comment, connect, and collaborate inside the community.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Earn Points and Level Up</div>
+            <div class="ty-feature-desc">Points track your activity and contribution. Levels unlock revenue eligibility over time.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Claim or Build Your Listing</div>
+            <div class="ty-feature-desc">Businesses and creators: claim your directory profile or build a new one from scratch.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Direct Input on Future Features</div>
+            <div class="ty-feature-desc">Passport members vote on what gets built next. Your voice shapes the platform.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Giveaways, Contests, and Member Discounts</div>
+            <div class="ty-feature-desc">Exclusive entry to member contests and special discounts from Vegan brands and partners.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Support Your Local Vegan Community</div>
+            <div class="ty-feature-desc">Your $11 directly funds local chapter activity and keeps the directory free for everyone.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ty-bottom-section">
+      <p class="ty-features-label">Your next steps</p>
+      <div class="ty-features" role="list">
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-num" aria-hidden="true">1</span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Download the App</div>
+            <div class="ty-feature-desc">Free on iOS and Android. Your Passport works on both the app and the web platform.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-num" aria-hidden="true">2</span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Explore Your City</div>
+            <div class="ty-feature-desc">Find Vegan restaurants, businesses, events, and community members near you.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-num" aria-hidden="true">3</span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Join Your Builder Type Community</div>
+            <div class="ty-feature-desc">Access the private community for your path and start connecting with members who share your goals.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="app-buttons-centered">
+        <a href="#" class="app-btn" aria-label="Download on the App Store for iPhone and iPad">
+          <span class="app-btn-icon" aria-hidden="true">&#63743;</span>
+          <span class="app-btn-text">
+            <span class="app-btn-sub">Download on the</span>
+            <span class="app-btn-label">App Store</span>
+          </span>
+        </a>
+        <a href="#" class="app-btn" aria-label="Get it on Google Play for Android">
+          <span class="app-btn-icon" aria-hidden="true">&#9654;</span>
+          <span class="app-btn-text">
+            <span class="app-btn-sub">Get it on</span>
+            <span class="app-btn-label">Google Play</span>
+          </span>
+        </a>
+      </div>
+    </div>
 
   </div>
 
@@ -1038,19 +1151,27 @@ async function choosePlan(plan) {
 }
 
 function showThanks(firstName, plan) {
-  const sub = document.getElementById('ty-sub-text');
+  const isPassport = plan === 'passport';
+  const thanksId   = isPassport ? 'step-thanks-passport' : 'step-thanks-free';
+  const headingId  = isPassport ? 'ty-heading-passport'  : 'ty-heading-free';
+  const subId      = isPassport ? 'ty-sub-text-passport' : 'ty-sub-text-free';
+
   if (firstName) {
-    const planNote = plan === 'passport'
-      ? firstName + ", you're officially a Passport member. Watch the video to see what's waiting, then download the app to get started."
-      : firstName + ", you're officially part of the community. Watch the video to see what's waiting, then download the app to get started.";
-    sub.textContent = planNote;
+    const sub = document.getElementById(subId);
+    if (sub) {
+      if (isPassport) {
+        sub.textContent = firstName + ", your Passport is activated. Watch the video, then download the app to get started.";
+      } else {
+        sub.textContent = firstName + ", you're officially part of the community. Watch the video to see what's waiting, then download the app to get started.";
+      }
+    }
   }
 
   document.getElementById('progress-bar').style.display = 'none';
   document.getElementById('step-3').classList.remove('active');
-  document.getElementById('step-thanks').classList.add('active');
+  document.getElementById(thanksId).classList.add('active');
   scrollToTop();
-  document.getElementById('ty-heading').focus();
+  document.getElementById(headingId).focus();
 }
 
 function scrollToTop() {
