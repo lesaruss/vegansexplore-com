@@ -380,10 +380,10 @@ footer {
 
 <!-- NAV -->
 <nav aria-label="Vegans Explore intake navigation">
-  <a href="ve-homepage-v2.html" class="nav-logo" aria-label="Vegans Explore — back to home">
+  <a href="/" class="nav-logo" aria-label="Vegans Explore — back to home">
     <div class="nav-logo-main">Vegans<em> Explore</em></div>
   </a>
-  <a href="ve-homepage-v2.html" class="nav-back" aria-label="Back to homepage">
+  <a href="/" onclick="if(document.referrer){history.back();return false;}" class="nav-back" aria-label="Back to homepage">
     &#8592; Back to Home
   </a>
 </nav>
