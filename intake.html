@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Vegans Explore</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #3A9B3E;
+  --green-h: #4CAF50;
+  --green-text: #2E7B32;
+  --green-dim: rgba(58,155,62,0.07);
+  --green-line: rgba(58,155,62,0.16);
+  --orange: #E8891A;
+  --bg: #FAFAF8;
+  --bg-alt: #F3F3EF;
+  --bg-dark: #111111;
+  --card: #FFFFFF;
+  --text: #0C0C0C;
+  --text-2: #2A2A2A;
+  --text-mid: #4A4A4A;
+  --text-muted: #555555;
+  --text-faint: #777777;
+  --border: rgba(0,0,0,0.09);
+  --border-md: rgba(0,0,0,0.14);
+  --error: #C62828;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Montserrat',-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---- FOCUS RING ---- */
+:focus-visible {
+  outline:3px solid var(--orange);
+  outline-offset:3px;
+}
+
+
+/* ---- NAV ---- */
+nav {
+  background:rgba(250,250,248,0.97);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:18px 32px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.mobile nav, .tablet nav { padding:16px 20px; }
+.nav-logo { text-decoration:none; display:flex; align-items:center; gap:10px; }
+.nav-logo-main { font-size:15px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; color:var(--text); }
+.nav-logo-main em { font-style:normal; color:var(--green-text); }
+.nav-back { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); text-decoration:none; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+.nav-back:hover { color:var(--text); }
+
+/* ---- LAYOUT ---- */
+.page-body {
+  min-height:calc(100vh - 64px);
+  display:flex; flex-direction:column; align-items:center;
+  padding:56px 24px 80px;
+}
+.form-shell {
+  width:100%; max-width:860px;
+}
+.mobile .form-shell, .tablet .form-shell { max-width:100%; }
+
+/* ---- PROGRESS ---- */
+.progress-wrap { display:flex; align-items:center; gap:16px; margin-bottom:48px; }
+.progress-step {
+  display:flex; align-items:center; gap:8px;
+  font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+}
+.progress-step.active { color:var(--green-text); }
+.progress-step.inactive { color:var(--text-faint); }
+.progress-step.done { color:var(--text-faint); }
+.progress-num {
+  width:24px; height:24px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:800;
+  flex-shrink:0;
+}
+.progress-step.active .progress-num { background:var(--green-text); color:#fff; }
+.progress-step.inactive .progress-num { background:var(--bg-alt); color:var(--text-faint); border:1px solid var(--border-md); }
+.progress-step.done .progress-num { background:var(--green-dim); color:var(--green-text); border:1px solid var(--green-line); }
+.progress-divider { flex:1; height:1px; background:var(--border-md); }
+
+/* ---- STEP HEADINGS ---- */
+.step-eyebrow { font-size:10px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--text-faint); margin-bottom:12px; }
+.step-heading { font-size:clamp(26px,3.5vw,40px); font-weight:900; text-transform:uppercase; letter-spacing:-0.03em; line-height:1.0; color:var(--text); margin-bottom:10px; }
+.step-heading em { font-style:normal; color:var(--green-text); }
+.step-sub { font-size:14px; color:var(--text-muted); line-height:1.7; margin-bottom:40px; max-width:520px; }
+
+/* ---- BUILDER TYPE CARDS (Step 1) ---- */
+.type-grid {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:2px; margin-bottom:40px;
+}
+.tablet .type-grid { grid-template-columns:repeat(3,1fr); }
+.mobile .type-grid { grid-template-columns:1fr 1fr; }
+
+.type-card {
+  background:var(--card); border:2px solid var(--border);
+  padding:28px 20px 24px; cursor:pointer;
+  display:flex; flex-direction:column; gap:10px;
+  transition:border-color 0.2s, background 0.2s;
+  text-align:left; width:100%; /* button reset */
+  font-family:'Montserrat',sans-serif;
+  position:relative; overflow:hidden;
+}
+.type-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:var(--green-text); transform:scaleX(0);
+  transform-origin:left; transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.type-card:hover::before,
+.type-card[aria-pressed="true"]::before { transform:scaleX(1); }
+.type-card:hover { border-color:var(--green-line); }
+.type-card[aria-pressed="true"] {
+  border-color:var(--green-text);
+  background:var(--green-dim);
+}
+.type-card-icon { font-size:22px; }
+.type-card-label {
+  font-size:12px; font-weight:800; text-transform:uppercase;
+  letter-spacing:0.04em; color:var(--text); line-height:1.25;
+}
+.type-card-desc { font-size:11px; color:var(--text-muted); line-height:1.55; }
+.type-card-check {
+  width:18px; height:18px; border-radius:50%;
+  border:2px solid var(--border-md);
+  margin-top:auto; flex-shrink:0; transition:all 0.2s;
+  background:#fff; display:flex; align-items:center; justify-content:center;
+}
+.type-card[aria-pressed="true"] .type-card-check {
+  background:var(--green-text); border-color:var(--green-text);
+}
+.type-card[aria-pressed="true"] .type-card-check::after {
+  content:''; width:5px; height:5px; border-radius:50%; background:#fff;
+}
+
+/* ---- FORM FIELDS (Step 2) ---- */
+.field-group { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+.mobile .field-group { grid-template-columns:1fr; }
+.field { display:flex; flex-direction:column; gap:7px; }
+.field-full { grid-column:1/-1; }
+label {
+  font-size:11px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--text-2);
+}
+label .required { color:var(--error); margin-left:2px; }
+input[type="text"],
+input[type="email"] {
+  font-size:16px; font-weight:500; font-family:'Montserrat',sans-serif;
+  color:var(--text); background:var(--card);
+  border:1.5px solid var(--border-md);
+  padding:14px 18px;
+  transition:border-color 0.2s;
+  width:100%;
+}
+input[type="text"]:focus,
+input[type="email"]:focus {
+  outline:none;
+  border-color:var(--green-text);
+  box-shadow:0 0 0 3px rgba(46,123,50,0.12);
+}
+input[type="text"]::placeholder,
+input[type="email"]::placeholder { color:var(--text-faint); font-weight:400; }
+.field-error {
+  font-size:11px; color:var(--error); font-weight:600;
+  display:none; margin-top:2px;
+}
+.field-error.visible { display:block; }
+
+/* Summary card shown at top of Step 2 */
+.path-summary {
+  display:flex; align-items:center; gap:14px;
+  background:var(--green-dim); border:1px solid var(--green-line);
+  padding:14px 20px; margin-bottom:36px;
+}
+.path-summary-icon { font-size:20px; }
+.path-summary-label { font-size:10px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--green-text); }
+.path-summary-name { font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin-top:2px; }
+.path-summary-change {
+  margin-left:auto; font-size:10px; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--text-faint); background:none;
+  border:none; cursor:pointer; font-family:'Montserrat',sans-serif;
+  text-decoration:underline; padding:0; transition:color 0.2s;
+}
+.path-summary-change:hover { color:var(--text); }
+
+/* ---- BUTTONS ---- */
+.btn-primary {
+  display:inline-flex; align-items:center; justify-content:center; gap:12px;
+  background:var(--green-text); color:#fff;
+  font-family:'Montserrat',sans-serif;
+  font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
+  padding:16px 40px; border:none; cursor:pointer;
+  transition:background 0.2s; min-width:220px;
+}
+.btn-primary:hover { background:var(--green); }
+.btn-primary:disabled { opacity:0.45; cursor:not-allowed; }
+.btn-row { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:36px; }
+.btn-note { font-size:11px; color:var(--text-faint); }
+
+/* ---- THANK YOU STATE ---- */
+.thankyou-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start;
+  margin-bottom:48px;
+}
+.tablet .thankyou-grid,
+.mobile .thankyou-grid { grid-template-columns:1fr; gap:36px; }
+
+.ty-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:10px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase;
+  color:var(--green-text); margin-bottom:16px;
+}
+.ty-eyebrow-line { width:20px; height:1px; background:var(--green-text); }
+.ty-heading { font-size:clamp(28px,3.5vw,44px); font-weight:900; text-transform:uppercase; letter-spacing:-0.03em; line-height:1.0; color:var(--text); margin-bottom:14px; }
+.ty-heading em { font-style:normal; color:var(--green-text); }
+.ty-sub { font-size:14px; color:var(--text-muted); line-height:1.75; margin-bottom:28px; max-width:440px; }
+
+/* Free features list + Next steps (shared card style) */
+.ty-features-label { font-size:10px; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px; }
+.ty-features { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.mobile .ty-features { grid-template-columns:1fr; }
+.ty-feature {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:14px 16px; background:var(--card); border:1px solid var(--border);
+}
+.ty-feature-dot { width:7px; height:7px; border-radius:50%; background:var(--green-text); flex-shrink:0; margin-top:5px; }
+.ty-feature-num {
+  width:20px; height:20px; border-radius:50%;
+  background:var(--green-text); color:#fff;
+  font-size:9px; font-weight:800; letter-spacing:0;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; margin-top:2px;
+}
+.ty-feature-body { flex:1; }
+.ty-feature-name { font-size:13px; font-weight:700; color:var(--text-2); margin-bottom:2px; }
+.ty-feature-desc { font-size:11px; color:var(--text-muted); line-height:1.55; }
+
+/* Right column: video only */
+.ty-video-wrap { margin-bottom:0; }
+
+/* Video placeholder */
+.video-placeholder {
+  width:100%; aspect-ratio:16/9;
+  background:#111; position:relative;
+  overflow:hidden; border:1px solid rgba(255,255,255,0.06);
+}
+.video-placeholder-inner {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px;
+}
+.video-bg-pattern {
+  position:absolute; inset:0; opacity:0.04;
+  background:repeating-linear-gradient(
+    45deg, #fff 0px, #fff 1px, transparent 1px, transparent 12px
+  );
+}
+.video-play-btn {
+  width:64px; height:64px; border-radius:50%;
+  background:rgba(255,255,255,0.08); border:2px solid rgba(255,255,255,0.18);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.2s; position:relative; z-index:1;
+  font-family:'Montserrat',sans-serif;
+}
+.video-play-btn:hover { background:rgba(255,255,255,0.14); border-color:rgba(255,255,255,0.35); }
+.video-play-icon { font-size:24px; margin-left:4px; color:#fff; }
+.video-label { font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.35); position:relative; z-index:1; }
+.video-eyebrow { font-size:9px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--green-h); position:relative; z-index:1; }
+
+/* Next steps — full-width section below the grid */
+.ty-bottom-section { margin-bottom:48px; }
+.ty-bottom-section .ty-features-label { margin-top:0; }
+
+/* App download buttons — centered */
+.app-buttons-centered {
+  display:flex; justify-content:center; gap:12px;
+  margin-top:40px; flex-wrap:wrap;
+}
+.app-btn {
+  display:flex; align-items:center; gap:12px;
+  background:var(--text); color:#fff;
+  font-family:'Montserrat',sans-serif;
+  padding:14px 24px; text-decoration:none;
+  transition:background 0.2s; border:none; cursor:pointer;
+  min-width:190px;
+}
+.app-btn:hover { background:var(--text-2); }
+.app-btn-icon { font-size:18px; line-height:1; flex-shrink:0; }
+.app-btn-text { display:flex; flex-direction:column; }
+.app-btn-sub { font-size:8px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
+.app-btn-label { font-size:12px; font-weight:800; color:#fff; margin-top:1px; }
+
+/* ---- PASSPORT UPGRADE SECTION ---- */
+.passport-upgrade {
+  background:var(--bg-dark); padding:56px 48px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.mobile .passport-upgrade, .tablet .passport-upgrade { padding:36px 24px; }
+.upgrade-inner { width:100%; }
+.upgrade-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;
+}
+.tablet .upgrade-grid,
+.mobile .upgrade-grid { grid-template-columns:1fr; gap:32px; }
+
+.upgrade-eyebrow { font-size:10px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:14px; }
+.upgrade-heading { font-size:clamp(22px,2.8vw,36px); font-weight:900; text-transform:uppercase; letter-spacing:-0.03em; line-height:1.05; color:#fff; margin-bottom:12px; }
+.upgrade-heading em { font-style:normal; color:var(--green-h); }
+.upgrade-sub { font-size:14px; color:rgba(255,255,255,0.5); line-height:1.75; margin-bottom:28px; }
+.upgrade-price-row { display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+.upgrade-price { font-size:52px; font-weight:900; color:#fff; letter-spacing:-0.05em; line-height:1; }
+.upgrade-price sup { font-size:24px; font-weight:700; vertical-align:top; margin-top:8px; display:inline-block; }
+.upgrade-price-note { font-size:11px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.35); }
+.upgrade-cta {
+  display:inline-flex; align-items:center; gap:12px;
+  background:var(--green-text); color:#fff;
+  font-family:'Montserrat',sans-serif;
+  font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
+  padding:16px 36px; border:none; cursor:pointer; text-decoration:none;
+  transition:background 0.2s; margin-top:28px;
+}
+.upgrade-cta:hover { background:var(--green); }
+
+.upgrade-features { display:flex; flex-direction:column; gap:2px; }
+.upgrade-feature {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:16px 20px; background:#1A1A1A; border:1px solid rgba(255,255,255,0.06);
+}
+.upgrade-feature-check {
+  width:18px; height:18px; border:1px solid rgba(58,155,62,0.4);
+  background:rgba(58,155,62,0.08); flex-shrink:0; margin-top:1px;
+  display:flex; align-items:center; justify-content:center;
+}
+.upgrade-feature-check::after { content:''; width:5px; height:5px; background:var(--green-h); border-radius:1px; }
+.upgrade-feature-body { flex:1; }
+.upgrade-feature-name { font-size:13px; font-weight:700; color:#fff; margin-bottom:2px; }
+.upgrade-feature-desc { font-size:11px; color:rgba(255,255,255,0.4); line-height:1.5; }
+
+/* ---- FOOTER ---- */
+footer {
+  background:var(--bg-dark); border-top:1px solid rgba(255,255,255,0.06);
+  padding:28px 32px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+}
+.footer-logo { font-size:11px; font-weight:900; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.45); }
+.footer-logo em { font-style:normal; color:var(--green-h); }
+.footer-copy { font-size:10px; color:rgba(255,255,255,0.2); }
+
+/* ---- STEPS VISIBILITY ---- */
+#step-1, #step-2, #step-thanks { display:none; }
+#step-1.active, #step-2.active, #step-thanks.active { display:block; }
+
+/* ---- REDUCED MOTION ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+  }
+}
+
+@media (max-width:640px) {
+  .page-body { padding:36px 16px 60px; }
+  nav { padding:14px 16px; }
+  .progress-wrap { margin-bottom:36px; }
+}
+</style>
+</head>
+<body>
+
+<!-- VIEWPORT SWITCHER -->
+
+
+<!-- NAV -->
+<nav aria-label="Vegans Explore intake navigation">
+  <a href="ve-homepage-v2.html" class="nav-logo" aria-label="Vegans Explore — back to home">
+    <div class="nav-logo-main">Vegans<em> Explore</em></div>
+  </a>
+  <a href="ve-homepage-v2.html" class="nav-back" aria-label="Back to homepage">
+    &#8592; Back to Home
+  </a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+<div class="page-body">
+<div class="form-shell">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" aria-label="Form progress">
+    <div class="progress-step active" id="prog-1">
+      <span class="progress-num" aria-hidden="true">1</span>
+      <span>Your Path</span>
+    </div>
+    <div class="progress-divider" aria-hidden="true"></div>
+    <div class="progress-step inactive" id="prog-2">
+      <span class="progress-num" aria-hidden="true">2</span>
+      <span>Your Details</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: BUILDER TYPE -->
+  <div id="step-1" class="active" role="group" aria-labelledby="step1-heading">
+    <p class="step-eyebrow">Step 1 of 2</p>
+    <h1 class="step-heading" id="step1-heading">Who Are You<br>in the <em>Vegan World?</em></h1>
+    <p class="step-sub">Pick the path that describes you best. This helps us connect you to the right community and resources from day one.</p>
+
+    <div class="type-grid" role="group" aria-label="Select your builder type">
+
+      <button class="type-card" type="button" aria-pressed="false"
+        data-type="pre_vegan" data-icon="&#127807;" data-label="The Curious Explorer"
+        onclick="selectType(this)">
+        <span class="type-card-icon" aria-hidden="true">&#127807;</span>
+        <span class="type-card-label">The Curious Explorer</span>
+        <span class="type-card-desc">You're Vegan-curious and ready to start your journey with real support.</span>
+        <span class="type-card-check" aria-hidden="true"></span>
+      </button>
+
+      <button class="type-card" type="button" aria-pressed="false"
+        data-type="seasoned_vegan" data-icon="&#9835;" data-label="The Seasoned Vegan"
+        onclick="selectType(this)">
+        <span class="type-card-icon" aria-hidden="true">&#9835;</span>
+        <span class="type-card-label">The Seasoned Vegan</span>
+        <span class="type-card-desc">You're living the Vegan lifestyle and want to go deeper into the movement.</span>
+        <span class="type-card-check" aria-hidden="true"></span>
+      </button>
+
+      <button class="type-card" type="button" aria-pressed="false"
+        data-type="entrepreneur" data-icon="&#128200;" data-label="The Vegan Entrepreneur"
+        onclick="selectType(this)">
+        <span class="type-card-icon" aria-hidden="true">&#128200;</span>
+        <span class="type-card-label">The Vegan Entrepreneur</span>
+        <span class="type-card-desc">You're building a Vegan business and want to grow your audience.</span>
+        <span class="type-card-check" aria-hidden="true"></span>
+      </button>
+
+      <button class="type-card" type="button" aria-pressed="false"
+        data-type="nonprofit" data-icon="&#10084;" data-label="The Nonprofit Builder"
+        onclick="selectType(this)">
+        <span class="type-card-icon" aria-hidden="true">&#10084;</span>
+        <span class="type-card-label">The Nonprofit Builder</span>
+        <span class="type-card-desc">You're supporting a Vegan cause or advocacy org and want to amplify your impact.</span>
+        <span class="type-card-check" aria-hidden="true"></span>
+      </button>
+
+      <button class="type-card" type="button" aria-pressed="false"
+        data-type="content_creator" data-icon="&#127909;" data-label="The Content Creator"
+        onclick="selectType(this)">
+        <span class="type-card-icon" aria-hidden="true">&#127909;</span>
+        <span class="type-card-label">The Content Creator</span>
+        <span class="type-card-desc">You create content in the Vegan space and want to grow your reach.</span>
+        <span class="type-card-check" aria-hidden="true"></span>
+      </button>
+
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" type="button" id="step1-next" onclick="goToStep2()" disabled aria-disabled="true">
+        Continue <span aria-hidden="true">&#8594;</span>
+      </button>
+      <span class="btn-note" id="step1-hint" aria-live="polite">Select your path to continue</span>
+    </div>
+  </div>
+
+  <!-- STEP 2: DETAILS -->
+  <div id="step-2" role="group" aria-labelledby="step2-heading">
+
+    <!-- Selected path summary -->
+    <div class="path-summary" id="path-summary" aria-label="Selected path">
+      <span class="path-summary-icon" id="summary-icon" aria-hidden="true"></span>
+      <div>
+        <div class="path-summary-label">Your Path</div>
+        <div class="path-summary-name" id="summary-name"></div>
+      </div>
+      <button class="path-summary-change" type="button" onclick="goToStep1()" aria-label="Change builder type selection">
+        Change
+      </button>
+    </div>
+
+    <p class="step-eyebrow">Step 2 of 2</p>
+    <h2 class="step-heading" id="step2-heading">Tell Us a Little<br>About <em>You.</em></h2>
+    <p class="step-sub">We'll use this to activate your account and connect you to the right community.</p>
+
+    <form id="intake-form" novalidate onsubmit="submitForm(event)">
+      <div class="field-group">
+
+        <div class="field">
+          <label for="first-name">First Name <span class="required" aria-label="required">*</span></label>
+          <input type="text" id="first-name" name="first_name" placeholder="Alex" required
+            autocomplete="given-name" aria-required="true" aria-describedby="first-name-error">
+          <span class="field-error" id="first-name-error" role="alert">Please enter your first name.</span>
+        </div>
+
+        <div class="field">
+          <label for="email">Email <span class="required" aria-label="required">*</span></label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required
+            autocomplete="email" aria-required="true" aria-describedby="email-error">
+          <span class="field-error" id="email-error" role="alert">Please enter a valid email address.</span>
+        </div>
+
+        <div class="field field-full">
+          <label for="city">City / Location <span class="required" aria-label="required">*</span></label>
+          <input type="text" id="city" name="city" placeholder="Miami, FL" required
+            autocomplete="address-level2" aria-required="true" aria-describedby="city-error">
+          <span class="field-error" id="city-error" role="alert">Please enter your city.</span>
+        </div>
+
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" type="submit" id="submit-btn">
+          Join Vegans Explore <span aria-hidden="true">&#8594;</span>
+        </button>
+        <span class="btn-note">Free to join. $11 Passport optional.</span>
+      </div>
+    </form>
+  </div>
+
+  <!-- STEP 3: THANK YOU -->
+  <div id="step-thanks" role="region" aria-labelledby="ty-heading">
+
+    <!-- Two-column: features left / video + next steps right -->
+    <div class="thankyou-grid">
+
+      <!-- LEFT: welcome heading -->
+      <div class="ty-left">
+        <div class="ty-eyebrow" aria-hidden="true">
+          <span class="ty-eyebrow-line"></span> You're in
+        </div>
+        <h2 class="ty-heading" id="ty-heading">Welcome to<br>Vegans <em>Explore.</em></h2>
+        <p class="ty-sub" id="ty-sub-text">
+          You're officially part of the community. Here's what's available to you right now.
+        </p>
+
+      </div>
+
+      <!-- RIGHT: video only -->
+      <div class="ty-right">
+        <div class="ty-video-wrap">
+          <div class="video-placeholder" role="img" aria-label="Vegans Explore welcome video - coming soon">
+            <div class="video-bg-pattern" aria-hidden="true"></div>
+            <div class="video-placeholder-inner">
+              <span class="video-eyebrow">Welcome Video</span>
+              <button class="video-play-btn" type="button" aria-label="Play welcome video (coming soon)" disabled aria-disabled="true">
+                <span class="video-play-icon" aria-hidden="true">&#9654;</span>
+              </button>
+              <span class="video-label">Coming Soon</span>
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--text-faint);margin-top:8px;text-align:center;font-weight:500;">
+            A message from the Vegans Explore team
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- UNLOCKED FEATURES — full width -->
+    <div class="ty-bottom-section" style="margin-bottom:48px;">
+      <p class="ty-features-label">Unlocked with your free account</p>
+      <div class="ty-features" role="list">
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Vegan Directory</div>
+            <div class="ty-feature-desc">Browse restaurants, brands, nonprofits, and services in your city and beyond.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Builder Type Profile</div>
+            <div class="ty-feature-desc">Your path is set. Access your assessment results and the resources matched to your type.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Community Feed</div>
+            <div class="ty-feature-desc">Connect and browse with Vegans who share your goals, interests, and community.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Events Near You</div>
+            <div class="ty-feature-desc">Markets, meetups, festivals, and city chapter events in your area.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Your Referral Link</div>
+            <div class="ty-feature-desc">Share your unique link. Every person who joins through you earns you points toward the levels system.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-dot" aria-hidden="true"></span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Resource Library</div>
+            <div class="ty-feature-desc">Curated tools, guides, and resources matched to your builder type and where you are in your journey.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- NEXT STEPS + APP DOWNLOAD -->
+    <div class="ty-bottom-section">
+      <p class="ty-features-label">Your next steps</p>
+      <div class="ty-features" role="list">
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-num" aria-hidden="true">1</span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Download the App</div>
+            <div class="ty-feature-desc">Free on iOS and Android. The full Vegan directory, your profile, and community feed are all inside.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-num" aria-hidden="true">2</span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Get Your Passport - $11</div>
+            <div class="ty-feature-desc">One-time fee. Unlocks your builder type community, vault access, and your listing. No subscription required.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-num" aria-hidden="true">3</span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Explore Your City</div>
+            <div class="ty-feature-desc">Find Vegan restaurants, businesses, events, and community members near you. Your local chapter is ready.</div>
+          </div>
+        </div>
+
+        <div class="ty-feature" role="listitem">
+          <span class="ty-feature-num" aria-hidden="true">4</span>
+          <div class="ty-feature-body">
+            <div class="ty-feature-name">Share Your Link and Earn</div>
+            <div class="ty-feature-desc">Every person who joins through your referral link earns you points. Points advance you through the levels toward revenue eligibility.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="app-buttons-centered">
+        <a href="#" class="app-btn" aria-label="Download on the App Store for iPhone and iPad">
+          <span class="app-btn-icon" aria-hidden="true">&#63743;</span>
+          <span class="app-btn-text">
+            <span class="app-btn-sub">Download on the</span>
+            <span class="app-btn-label">App Store</span>
+          </span>
+        </a>
+        <a href="#" class="app-btn" aria-label="Get it on Google Play for Android">
+          <span class="app-btn-icon" aria-hidden="true">&#9654;</span>
+          <span class="app-btn-text">
+            <span class="app-btn-sub">Get it on</span>
+            <span class="app-btn-label">Google Play</span>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- PASSPORT UPGRADE -->
+    <div class="passport-upgrade" role="complementary" aria-label="Upgrade to Passport">
+      <div class="upgrade-grid">
+
+          <!-- Left: pitch -->
+          <div>
+            <p class="upgrade-eyebrow">Ready to go further?</p>
+            <h3 class="upgrade-heading">Unlock the Full<br><em>Vegans Explore</em><br>Experience.</h3>
+            <p class="upgrade-sub">Your free account gets you in the door. Your Passport opens everything. One payment, no subscription, yours for life.</p>
+            <div class="upgrade-price-row">
+              <div class="upgrade-price"><sup>$</sup>11</div>
+            </div>
+            <p class="upgrade-price-note">One-time. No subscription. Ever.</p>
+            <a href="#" class="upgrade-cta" aria-label="Get your Passport for $11 one-time">
+              Get Your Passport <span aria-hidden="true">&#8594;</span>
+            </a>
+          </div>
+
+          <!-- Right: feature list -->
+          <div class="upgrade-features" role="list" aria-label="Passport member benefits">
+
+            <div class="upgrade-feature" role="listitem">
+              <span class="upgrade-feature-check" aria-hidden="true"></span>
+              <div class="upgrade-feature-body">
+                <div class="upgrade-feature-name">Join Your Builder Type Community</div>
+                <div class="upgrade-feature-desc">Access the private community for your path - Pre-Vegans, Seasoned Vegans, Entrepreneurs, Nonprofits, or Creators.</div>
+              </div>
+            </div>
+
+            <div class="upgrade-feature" role="listitem">
+              <span class="upgrade-feature-check" aria-hidden="true"></span>
+              <div class="upgrade-feature-body">
+                <div class="upgrade-feature-name">Claim Your Listing</div>
+                <div class="upgrade-feature-desc">Businesses and creators: claim your profile in the directory and get visible to the entire Vegan network.</div>
+              </div>
+            </div>
+
+            <div class="upgrade-feature" role="listitem">
+              <span class="upgrade-feature-check" aria-hidden="true"></span>
+              <div class="upgrade-feature-body">
+                <div class="upgrade-feature-name">Community Discussions and Vault</div>
+                <div class="upgrade-feature-desc">Full access to discussions, events, and the resource vault curated for your builder type.</div>
+              </div>
+            </div>
+
+            <div class="upgrade-feature" role="listitem">
+              <span class="upgrade-feature-check" aria-hidden="true"></span>
+              <div class="upgrade-feature-body">
+                <div class="upgrade-feature-name">Earn on Every Referral</div>
+                <div class="upgrade-feature-desc">Your referral link earns points with every signup. Points move you through the levels system toward revenue eligibility.</div>
+              </div>
+            </div>
+
+            <div class="upgrade-feature" role="listitem">
+              <span class="upgrade-feature-check" aria-hidden="true"></span>
+              <div class="upgrade-feature-body">
+                <div class="upgrade-feature-name">Full Web and App Access</div>
+                <div class="upgrade-feature-desc">Your Passport works on both the mobile app and the web platform. One fee, both platforms.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+</div>
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Vegans<em> Explore</em></div>
+  <div class="footer-copy">&copy; 2026 Vegans Explore</div>
+</footer>
+
+
+
+
+</body>
+</html>
