@@ -275,11 +275,11 @@ input[type="email"]::placeholder { color:var(--text-faint); font-weight:400; }
 .video-label { font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.35); position:relative; z-index:1; }
 .video-eyebrow { font-size:9px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--green-h); position:relative; z-index:1; }
 
-/* Next steps — full-width section below the grid */
+/* Next steps â full-width section below the grid */
 .ty-bottom-section { margin-bottom:48px; }
 .ty-bottom-section .ty-features-label { margin-top:0; }
 
-/* App download buttons — centered */
+/* App download buttons â centered */
 .app-buttons-centered {
   display:flex; justify-content:center; gap:12px;
   margin-top:40px; flex-wrap:wrap;
@@ -442,11 +442,12 @@ footer {
 <body>
 
 <!-- VIEWPORT SWITCHER -->
+<script>(function(){function setVC(){var w=window.innerWidth;document.body.classList.remove("mobile","tablet");if(w<=640)document.body.classList.add("mobile");else if(w<=1024)document.body.classList.add("tablet");}setVC();window.addEventListener("resize",setVC);})();</script>
 
 
 <!-- NAV -->
 <nav aria-label="Vegans Explore intake navigation">
-  <a href="/" class="nav-logo" aria-label="Vegans Explore — back to home">
+  <a href="/" class="nav-logo" aria-label="Vegans Explore â back to home">
     <div class="nav-logo-main">Vegans<em> Explore</em></div>
   </a>
   <a href="/" onclick="if(document.referrer){history.back();return false;}" class="nav-back" aria-label="Back to homepage">
