@@ -58,8 +58,8 @@ nav { position:sticky; top: 0; left:0; right:0; z-index:200; transition:all 0.3s
 .hero-right { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; padding:40px 32px; }
 .tablet .hero, .mobile .hero { grid-template-columns:1fr; padding:80px 0 56px; }
 .tablet .hero::after, .mobile .hero::after { display:none; }
-.tablet .hero-left { max-width:100%; padding:0 24px; }
-.mobile .hero-left { max-width:100%; padding:0 16px; }
+.tablet .hero-left { max-width:100%; padding:0 24px; margin-left:0; }
+.mobile .hero-left { max-width:100%; padding:0 16px; margin-left:0; }
 .tablet .hero-right, .mobile .hero-right { display:none; }
 .hero-tag { display:inline-flex; align-items:center; gap:8px; font-size:10px; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--green-text); margin-bottom:24px; }
 .hero-tag-line { width:20px; height:1px; background:var(--green); }
@@ -1009,7 +1009,7 @@ footer { background:var(--bg-dark); border-top:1px solid rgba(255,255,255,0.06);
 <div class="nav-mobile-menu" id="navMenu">
   <div class="nav-mobile-header">
     <div class="nav-logo-main">Vegans<em> Explore</em></div>
-    <button class="nav-mobile-close" id="navClose" aria-label="Close">×</button>
+    <button class="nav-mobile-close" id="navClose" aria-label="Close">Ã</button>
   </div>
   <ul class="nav-mobile-links">
     <li><a href="#paths">Start Here</a></li>
@@ -1017,7 +1017,7 @@ footer { background:var(--bg-dark); border-top:1px solid rgba(255,255,255,0.06);
     <li><a href="#app">App</a></li>
     <li><a href="#cities">Communities</a></li>
   </ul>
-  <div class="nav-mobile-cta-wrap"><a href="/intake" class="nav-cta">Get Your Passport → $11</a></div>
+  <div class="nav-mobile-cta-wrap"><a href="/intake" class="nav-cta">Get Your Passport â $11</a></div>
 </div>
 <script>(function(){function setVC(){var w=window.innerWidth;document.body.classList.remove("mobile","tablet");if(w<=640)document.body.classList.add("mobile");else if(w<=1024)document.body.classList.add("tablet");}setVC();window.addEventListener("resize",setVC);window.setPath=function(id,el){document.querySelectorAll(".ladder-content").forEach(function(c){c.classList.remove("active");});document.querySelectorAll(".ladder-tab").forEach(function(t){t.classList.remove("active");});var tg=document.getElementById("path-"+id);if(tg)tg.classList.add("active");if(el)el.classList.add("active");};var tog=document.getElementById("navToggle"),cls=document.getElementById("navClose"),menu=document.getElementById("navMenu"),ovl=document.getElementById("navOverlay");function openM(){if(menu)menu.classList.add("open");if(ovl)ovl.classList.add("open");document.body.style.overflow="hidden";}function closeM(){if(menu)menu.classList.remove("open");if(ovl)ovl.classList.remove("open");document.body.style.overflow="";}if(tog)tog.addEventListener("click",openM);if(cls)cls.addEventListener("click",closeM);if(ovl)ovl.addEventListener("click",closeM);if(menu)menu.querySelectorAll("a").forEach(function(a){a.addEventListener("click",closeM);});})();</script>
 </body>
