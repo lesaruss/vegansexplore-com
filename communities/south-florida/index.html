@@ -24,15 +24,6 @@
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
     .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
 
-    /* VIEWPORT SWITCHER */
-    .viewport-switcher { position: fixed; top: 16px; right: 16px; z-index: 9999; display: flex; align-items: center; gap: 0; background: #1a1a1a; border-radius: 6px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
-    .vp-btn { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 8px 12px; border: none; cursor: pointer; background: transparent; color: rgba(255,255,255,0.4); transition: all 0.15s; white-space: nowrap; }
-    .vp-btn:hover { color: rgba(255,255,255,0.8); }
-    .vp-btn.active { background: var(--ve-green); color: #fff; }
-    .vp-divider { width: 1px; background: rgba(255,255,255,0.1); height: 30px; }
-    /* PULL HANDLE */
-    .pull-handle { position: fixed; right: 0; top: 50%; transform: translateY(-50%); width: 20px; background: var(--ve-orange); border-radius: 4px 0 0 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9998; padding: 12px 0; }
-    .pull-handle svg { width: 10px; height: 10px; fill: #fff; }
 
     /* HERO */
     .hero { position: relative; min-height: 420px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
@@ -325,15 +316,6 @@
 <body>
 
 <!-- VIEWPORT SWITCHER -->
-<div class="viewport-switcher" role="toolbar" aria-label="Viewport size switcher">
-  <button class="vp-btn active" data-width="1200" onclick="setVP(1200,this)" aria-pressed="true">Desktop</button>
-  <div class="vp-divider" aria-hidden="true"></div>
-  <button class="vp-btn" data-width="768" onclick="setVP(768,this)" aria-pressed="false">Tablet</button>
-  <div class="vp-divider" aria-hidden="true"></div>
-  <button class="vp-btn" data-width="390" onclick="setVP(390,this)" aria-pressed="false">Mobile</button>
-</div>
-<div class="pull-handle" onclick="togglePull()" aria-label="Toggle viewport panel" title="Viewport panel" role="button" tabindex="0">
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
 </div>
 
 <div class="page-frame" id="page-frame">
@@ -706,25 +688,6 @@
 
 <script>
   /* ---- VIEWPORT SWITCHER ---- */
-  function setVP(w, btn) {
-    var frame = document.getElementById('page-frame');
-    frame.style.maxWidth = w >= 1200 ? '1200px' : w + 'px';
-    frame.classList.remove('vp-mobile', 'vp-tablet', 'vp-desktop');
-    if (w <= 390) frame.classList.add('vp-mobile');
-    else if (w <= 768) frame.classList.add('vp-tablet');
-    else frame.classList.add('vp-desktop');
-    document.querySelectorAll('.vp-btn').forEach(function(b) {
-      b.classList.remove('active');
-      b.setAttribute('aria-pressed', 'false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed', 'true');
-  }
-  function togglePull() {
-    var panel = document.querySelector('.viewport-switcher');
-    var visible = panel.style.display !== 'none';
-    panel.style.display = visible ? 'none' : '';
-  }
 
   /* ---- TAB SWITCHER ---- */
   function switchTab(id) {
