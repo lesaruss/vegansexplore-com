@@ -4,60 +4,93 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vegans Explore — Discuss</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #c8e6c9;
       --ve-orange: #F69820; --ve-orange-dark: #d4800f;
       --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
-      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
     }
     html { scroll-behavior: smooth; }
-    body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-    .page-wrap { max-width: 800px; margin: 0 auto; padding: 0 24px 80px; }
+    body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100vh; }
 
-    /* Hero */
-    .discuss-hero { padding: 64px 0 48px; text-align: center; }
-    .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 16px; }
-    .discuss-hero h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 20px; }
-    .discuss-hero h1 em { font-style: normal; color: var(--ve-green-dark); }
-    .discuss-hero p { font-size: 15px; font-weight: 400; line-height: 1.7; color: var(--ve-text-75); max-width: 540px; margin: 0 auto 36px; }
-    .btn-enter { display: inline-flex; align-items: center; gap: 8px; background: var(--ve-green-dark); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 32px; border-radius: 4px; text-decoration: none; transition: background 0.15s; }
-    .btn-enter:hover { background: #1e5c21; }
-    .btn-enter svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2.5; }
+    /* Discuss board */
+    .discuss-outer { flex: 1; display: flex; flex-direction: column; }
+    .discuss-sticky-bar {
+      position: sticky; top: 60px; z-index: 300;
+      background: rgba(255,255,255,0.98);
+      border-bottom: 1px solid var(--ve-border);
+      padding: 16px 40px 14px;
+    }
+    .discuss-top-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .discuss-board-title { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ve-text); }
+    .discuss-board-count { font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-top: 2px; }
+    .discuss-search {
+      flex: 1; max-width: 340px;
+      border: 1px solid var(--ve-border); border-radius: 6px;
+      padding: 8px 14px; font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 500; color: var(--ve-text);
+      background: #fff; outline: none; transition: border-color 0.15s;
+    }
+    .discuss-search:focus { border-color: var(--ve-green-dark); }
+    .discuss-search::placeholder { color: var(--ve-text-30); }
+    .discuss-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .discuss-filter-btn {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: #fff; border: 1px solid var(--ve-border);
+      border-radius: 20px; padding: 5px 14px; cursor: pointer;
+      color: var(--ve-text-50); transition: all 0.15s;
+    }
+    .discuss-filter-btn:hover { border-color: var(--ve-green-dark); color: var(--ve-green-dark); }
+    .discuss-filter-btn.active { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
+    .discuss-filter-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
 
-    /* Divider */
-    .divider { border: none; border-top: 1px solid var(--ve-border); margin: 0 0 48px; }
+    .discuss-list-wrap { flex: 1; padding: 24px 40px 64px; max-width: 840px; margin: 0 auto; width: 100%; }
+    .discuss-list { display: flex; flex-direction: column; gap: 10px; }
+    .discuss-empty { text-align: center; padding: 60px 24px; font-size: 13px; font-weight: 600; color: var(--ve-text-50); }
 
-    /* Features */
-    .section-label { font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 24px; }
-    .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-bottom: 56px; }
-    .feature-card { background: var(--ve-green-light); border-radius: 8px; padding: 24px 20px; }
-    .feature-icon { width: 36px; height: 36px; background: var(--ve-green-dark); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
-    .feature-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
-    .feature-card h3 { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 8px; }
-    .feature-card p { font-size: 12px; font-weight: 400; line-height: 1.6; color: var(--ve-text-75); }
+    /* Topic card */
+    .topic-card {
+      background: #fff; border: 1px solid var(--ve-border);
+      border-radius: 10px; padding: 18px 20px;
+      cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex; align-items: flex-start; gap: 16px;
+      text-decoration: none; color: inherit;
+    }
+    .topic-card:hover:not(.tc-locked) { border-color: var(--ve-green-dark); box-shadow: 0 2px 12px rgba(45,125,49,0.1); }
+    .topic-card:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 2px; }
+    .topic-card.tc-locked { opacity: 0.55; cursor: default; pointer-events: none; }
+    .tc-guide-av {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .tc-guide-av img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+    .tc-lock-av {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: #eee; display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .tc-body { flex: 1; min-width: 0; }
+    .tc-cats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .tc-cat {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--ve-green-light); color: var(--ve-green-dark);
+      border-radius: 3px; padding: 2px 8px;
+    }
+    .tc-headline { font-size: 14px; font-weight: 800; color: var(--ve-text); line-height: 1.35; margin-bottom: 10px; }
+    .tc-stats { display: flex; align-items: center; gap: 18px; }
+    .tc-stat { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--ve-text-50); }
+    .tc-stat svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .tc-time { font-size: 10px; font-weight: 600; color: var(--ve-text-30); margin-left: auto; white-space: nowrap; }
+    .tc-upcoming { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-left: auto; white-space: nowrap; }
 
-    /* Activity strip */
-    .activity-strip { background: var(--ve-green-light); border: 1px solid var(--ve-green-mid); border-radius: 8px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
-    .pulse-dot { width: 10px; height: 10px; background: var(--ve-green-dark); border-radius: 50%; flex-shrink: 0; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
-    .activity-strip p { font-size: 12px; font-weight: 600; color: var(--ve-green-dark); flex: 1; }
-    .activity-strip a { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); text-decoration: none; white-space: nowrap; }
-    .activity-strip a:hover { text-decoration: underline; }
-
-    /* Bottom CTA */
-    .bottom-cta { text-align: center; padding: 48px 24px; background: var(--ve-green-dark); border-radius: 10px; }
-    .bottom-cta h2 { font-size: clamp(18px, 3vw, 24px); font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; margin-bottom: 12px; }
-    .bottom-cta p { font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 28px; line-height: 1.6; }
-    .btn-passport { display: inline-block; background: var(--ve-orange); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; transition: background 0.15s; }
-    .btn-passport:hover { background: var(--ve-orange-dark); }
-
-    @media (max-width: 600px) {
-      .discuss-hero { padding: 40px 0 36px; }
-      .feature-grid { grid-template-columns: 1fr; }
-      .activity-strip { flex-direction: column; align-items: flex-start; gap: 10px; }
+    @media (max-width: 640px) {
+      .discuss-sticky-bar { padding: 14px 16px 12px; top: 60px; }
+      .discuss-list-wrap { padding: 16px 16px 48px; }
+      .discuss-search { max-width: 160px; }
     }
   </style>
 </head>
@@ -65,58 +98,156 @@
 
   <script src="/public/nav.js"></script>
 
-  <div class="page-wrap">
-
-    <section class="discuss-hero">
-      <p class="eyebrow">Community</p>
-      <h1>This is where the<br><em>conversation lives.</em></h1>
-      <p>Ask questions, share wins, get feedback, and connect with Vegans Explore members at every stage of the journey. The community feed is open and active.</p>
-      <a href="/guides/ve-guide-chat-v1" class="btn-enter">
-        Enter the Discussion
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-    </section>
-
-    <hr class="divider">
-
-    <p class="section-label">What you will find inside</p>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <div class="discuss-outer">
+    <div class="discuss-sticky-bar">
+      <div class="discuss-top-row">
+        <div class="discuss-title-group">
+          <div class="discuss-board-title">Discuss</div>
+          <div class="discuss-board-count" id="discussCount">7 topics</div>
         </div>
-        <h3>Real conversations</h3>
-        <p>Members asking real questions and getting real answers from people on the same path.</p>
+        <input class="discuss-search" id="discussSearch" type="search" placeholder="Search topics..." aria-label="Search discussions" oninput="filterBoard()">
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <h3>Every path welcome</h3>
-        <p>Whether you are just curious or building a Vegan business, there is a place for your voice here.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <h3>Guide support</h3>
-        <p>Stuck on a Guide? Post your question and get support from members who have been there.</p>
+      <div class="discuss-filters" role="group" aria-label="Filter by category">
+        <button class="discuss-filter-btn active" onclick="setFilter('all', this)" type="button">All</button>
+        <button class="discuss-filter-btn" onclick="setFilter('Nutrition', this)" type="button">Nutrition</button>
+        <button class="discuss-filter-btn" onclick="setFilter('Lifestyle', this)" type="button">Lifestyle</button>
+        <button class="discuss-filter-btn" onclick="setFilter('Relationships', this)" type="button">Relationships</button>
+        <button class="discuss-filter-btn" onclick="setFilter('Business', this)" type="button">Business</button>
+        <button class="discuss-filter-btn" onclick="setFilter('Activism', this)" type="button">Activism</button>
+        <button class="discuss-filter-btn" onclick="setFilter('Community', this)" type="button">Community</button>
+        <button class="discuss-filter-btn" onclick="setFilter('Food Science', this)" type="button">Food Science</button>
       </div>
     </div>
 
-    <div class="activity-strip" role="status" aria-live="polite">
-      <span class="pulse-dot" aria-hidden="true"></span>
-      <p>The community is active now. Members are posting across all 5 paths.</p>
-      <a href="/guides/ve-guide-chat-v1">Join the conversation</a>
+    <div class="discuss-list-wrap">
+      <div class="discuss-list" id="discussList" role="list" aria-label="Discussion topics"></div>
+      <div class="discuss-empty" id="discussEmpty" style="display:none;">No topics match your search.</div>
     </div>
-
-    <div class="bottom-cta">
-      <h2>Ready to go deeper?</h2>
-      <p>Get your Passport for full community access, exclusive threads, and every Guide on every path.</p>
-      <a href="/passport" class="btn-passport">Get Your Passport</a>
-    </div>
-
   </div>
+
+<script>
+  var topics = [
+    {
+      headline: "Vegan dating - does it matter if your partner isn't vegan?",
+      categories: ["Relationships", "Community", "Lifestyle"],
+      participants: 11, comments: 63, lastPost: "14m ago",
+      guide: { name: "Maya", color: "#3A9B3E", img: "../public/guides/maya.png" },
+      locked: false
+    },
+    {
+      headline: '"But where do you get your protein?" - the question that never stops.',
+      categories: ["Nutrition", "Fitness", "Lifestyle"],
+      participants: 8, comments: 52, lastPost: "1h ago",
+      guide: { name: "Theo", color: "#8B6914", img: "../public/guides/theo.png" },
+      locked: false
+    },
+    {
+      headline: "Are ultra-processed vegan foods actually good for you?",
+      categories: ["Nutrition", "Food Science"],
+      participants: 9, comments: 47, lastPost: "2h ago",
+      guide: { name: "Maya", color: "#3A9B3E", img: "../public/guides/maya.png" },
+      locked: false
+    },
+    {
+      headline: "Going vegan when your family isn't. How do you handle the table?",
+      categories: ["Relationships", "Lifestyle"],
+      participants: 7, comments: 38, lastPost: "6h ago",
+      guide: { name: "June", color: "#2A6B5A", img: "../public/guides/june.png" },
+      locked: false
+    },
+    {
+      headline: "Is the vegan movement becoming too exclusive?",
+      categories: ["Activism", "Community"],
+      participants: 0, comments: 0, lastPost: "Drops tomorrow",
+      guide: null, locked: true
+    },
+    {
+      headline: "How do you stay vegan when you're broke?",
+      categories: ["Lifestyle", "Community"],
+      participants: 0, comments: 0, lastPost: "Drops Mon, May 18",
+      guide: null, locked: true
+    },
+    {
+      headline: "Should vegan businesses hire non-vegans?",
+      categories: ["Business", "Activism"],
+      participants: 0, comments: 0, lastPost: "Drops Tue, May 19",
+      guide: null, locked: true
+    }
+  ];
+
+  var activeFilter = 'all';
+
+  function setFilter(cat, btn) {
+    activeFilter = cat;
+    document.querySelectorAll('.discuss-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    filterBoard();
+  }
+
+  function filterBoard() {
+    var query = (document.getElementById('discussSearch').value || '').toLowerCase().trim();
+    var list = document.getElementById('discussList');
+    var empty = document.getElementById('discussEmpty');
+    var count = document.getElementById('discussCount');
+
+    var filtered = topics.filter(function(t) {
+      var matchCat = activeFilter === 'all' || t.categories.indexOf(activeFilter) !== -1;
+      var matchQ = !query || t.headline.toLowerCase().indexOf(query) !== -1
+        || t.categories.some(function(c) { return c.toLowerCase().indexOf(query) !== -1; });
+      return matchCat && matchQ;
+    });
+
+    list.innerHTML = '';
+    if (filtered.length === 0) {
+      empty.style.display = 'block';
+      list.style.display = 'none';
+      count.textContent = '0 topics';
+      return;
+    }
+    empty.style.display = 'none';
+    list.style.display = 'flex';
+    count.textContent = filtered.length + ' topic' + (filtered.length !== 1 ? 's' : '');
+
+    filtered.forEach(function(t) {
+      var card = document.createElement(t.locked ? 'div' : 'a');
+      card.className = 'topic-card' + (t.locked ? ' tc-locked' : '');
+      card.setAttribute('role', 'listitem');
+      if (!t.locked) {
+        card.setAttribute('href', '/guides/ve-guide-chat-v1');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', t.headline);
+      } else {
+        card.setAttribute('tabindex', '-1');
+        card.setAttribute('aria-label', t.headline + ' - upcoming');
+      }
+
+      var avHtml = t.locked
+        ? '<div class="tc-lock-av" aria-hidden="true">&#128274;</div>'
+        : '<div class="tc-guide-av" style="background:' + t.guide.color + ';" aria-hidden="true"><img src="' + t.guide.img + '" alt="' + t.guide.name + '"></div>';
+
+      var catsHtml = t.categories.map(function(c) {
+        return '<span class="tc-cat">' + c + '</span>';
+      }).join('');
+
+      var statsHtml = t.locked
+        ? '<div class="tc-upcoming">' + t.lastPost + '</div>'
+        : '<div class="tc-stat"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="5" cy="4" r="2.5"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="10" cy="4" r="2"/><path d="M10 8c1.7 0 3 1.3 3 3"/></svg>' + t.participants + ' joined</div>'
+          + '<div class="tc-stat"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2h10v8H7l-3 2V10H2z"/></svg>' + t.comments + ' replies</div>'
+          + '<div class="tc-time">' + t.lastPost + '</div>';
+
+      card.innerHTML = avHtml
+        + '<div class="tc-body">'
+        + '<div class="tc-cats">' + catsHtml + '</div>'
+        + '<div class="tc-headline">' + t.headline + '</div>'
+        + '<div class="tc-stats">' + statsHtml + '</div>'
+        + '</div>';
+
+      list.appendChild(card);
+    });
+  }
+
+  filterBoard();
+</script>
 
 </body>
 </html>
