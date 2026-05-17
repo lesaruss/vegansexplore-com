@@ -18,7 +18,42 @@
     .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
 
     /* HERO */
-    .hero { background: #1A1A1A; padding: 72px 56px 64px; }
+    .hero {
+      position: relative;
+      min-height: 540px;
+      display: flex;
+      align-items: center;
+      background-image: url('/communities/find/hero.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.96) 0%,
+        rgba(0,0,0,0.90) 18%,
+        rgba(0,0,0,0.35) 45%,
+        rgba(0,0,0,0.08) 65%,
+        transparent 82%
+      );
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      padding: 80px 56px 64px;
+      max-width: 600px;
+    }
     .hero-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
     .hero-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.15s; }
     .hero-breadcrumb a:hover { color: rgba(255,255,255,0.7); }
@@ -160,7 +195,10 @@
       .community-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 700px) {
-      .hero { padding: 48px 24px 44px; }
+      .hero { background-position: 65% center; align-items: flex-end; min-height: 480px; }
+      .hero::before { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .hero::after { display: none; }
+      .hero-inner { padding: 0 24px 44px; max-width: 100%; }
       .grid-section { padding: 36px 24px 56px; }
       .community-grid { grid-template-columns: 1fr; }
       .card-wrapper { height: 400px; }
@@ -175,6 +213,7 @@
 
   <!-- HERO -->
   <section class="hero" aria-labelledby="find-heading">
+    <div class="hero-inner">
     <div class="hero-breadcrumb">
       <a href="/communities">Communities</a>
       <span aria-hidden="true">/</span>
@@ -183,6 +222,7 @@
     <p class="hero-eyebrow" aria-hidden="true">Browse All</p>
     <h1 id="find-heading">Find Your<br><em>Community</em></h1>
     <p class="hero-sub">8 regions. 3 partner orgs. All built around real vegan connection.</p>
+    </div>
   </section>
 
   <!-- FILTER + GRID -->
