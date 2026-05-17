@@ -80,7 +80,7 @@
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/passport"' + cur('/passport') + '>Passport</a>' +
       '</div>' +
-      '<a href="/passport/join?plan=monthly" class="ve-nav-cta">Get Passport - $11</a>' +
+      '<a href="/passport" class="ve-nav-cta">Get Passport - $11</a>' +
     '</nav>';
 
   /* ── Inject before this script tag ── */
