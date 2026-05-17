@@ -24,7 +24,42 @@
     .nav-links a:hover, .nav-links a.current { color: var(--ve-green); }
     .nav-cta { background: var(--ve-orange); color: #fff !important; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 4px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
     .nav-cta:hover { background: var(--ve-orange-dark) !important; }
-    .passport-hero { background: #1A1A1A; padding: 72px 56px 64px; }
+    .passport-hero {
+    position: relative;
+    min-height: 580px;
+    display: flex;
+    align-items: center;
+    background-image: url('/public/events/vegan-foodie-fest-2025.jpg');
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    }
+    .passport-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0.96) 0%,
+      rgba(0,0,0,0.90) 18%,
+      rgba(0,0,0,0.35) 45%,
+      rgba(0,0,0,0.08) 65%,
+      transparent 82%
+    );
+    }
+    .passport-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+    }
+    .hero-inner {
+    position: relative;
+    z-index: 2;
+    padding: 88px 56px 72px;
+    max-width: 580px;
+    }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .passport-hero h1 { font-size: clamp(32px, 5vw, 60px); font-weight: 900; line-height: 1.04; letter-spacing: -0.02em; text-transform: uppercase; color: #fff; margin-bottom: 18px; }
@@ -123,7 +158,8 @@
     .footer-links a:hover { color: var(--ve-green); }
     .footer-copy { font-size: 11px; color: var(--ve-text-30); }
     @media (max-width: 768px) {
-      .passport-hero { padding: 52px 32px 48px; }
+      .passport-hero { background-position: 65% center; min-height: 480px; }
+      .hero-inner { padding: 64px 36px 64px 40px; max-width: 440px; }
       .pricing-section { padding: 52px 32px; }
       .pricing-grid { grid-template-columns: 1fr; gap: 16px; }
       .benefits-section { padding: 52px 32px; }
@@ -136,7 +172,10 @@
       .nav-links { display: none; }
     }
     @media (max-width: 480px) {
-      .passport-hero { padding: 40px 20px 44px; }
+      .passport-hero { min-height: 480px; align-items: flex-end; background-position: 70% center; }
+      .passport-hero::before { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .passport-hero::after { display: none; }
+      .hero-inner { padding: 0 20px 44px; max-width: 100%; }
       .pricing-section { padding: 44px 20px; }
       .pricing-grid { grid-template-columns: 1fr; gap: 14px; }
       .benefits-section { padding: 44px 20px; }
@@ -182,9 +221,11 @@
 
 
   <section class="passport-hero" aria-labelledby="hero-heading">
+    <div class="hero-inner">
     <div class="hero-eyebrow" aria-hidden="true">Vegans Explore Passport</div>
     <h1 id="hero-heading">Your Passport<br>to the <em>Vegan</em> World.</h1>
     <p class="hero-sub">One payment unlocks your path, your community, and your permanent seat in the most connected Vegan network on the planet. Start with one path or go all in.</p>
+    </div>
   </section>
 
   <section class="pricing-section" aria-labelledby="pricing-heading">
