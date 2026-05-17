@@ -581,16 +581,7 @@
         </div>
         <a href="/guides/ve-discuss" class="discuss-search" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ve-text-50);font-size:11px;font-weight:600;max-width:fit-content;padding:6px 0;border:none;background:none;">&#8592; All Topics</a>
       </div>
-      <div class="discuss-filters" role="group" aria-label="Filter by category">
-        <a href="/guides/ve-guide-chat-v1" class="btn-today">Today's Topic <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-        <a href="/guides/ve-discuss?filter=Nutrition" class="discuss-filter-btn">Nutrition</a>
-        <a href="/guides/ve-discuss?filter=Lifestyle" class="discuss-filter-btn">Lifestyle</a>
-        <a href="/guides/ve-discuss?filter=Relationships" class="discuss-filter-btn">Relationships</a>
-        <a href="/guides/ve-discuss?filter=Business" class="discuss-filter-btn">Business</a>
-        <a href="/guides/ve-discuss?filter=Activism" class="discuss-filter-btn">Activism</a>
-        <a href="/guides/ve-discuss?filter=Community" class="discuss-filter-btn">Community</a>
-        <a href="/guides/ve-discuss?filter=Food+Science" class="discuss-filter-btn">Food Science</a>
-      </div>
+      <script src="/public/discuss-bar.js" data-mode="nav"></script>
     </div>
 
         <!-- TOPIC NAV -->
@@ -1034,16 +1025,7 @@
             oninput="filterBoard()"
           >
         </div>
-        <div class="discuss-filters" role="group" aria-label="Filter by category">
-          <button class="discuss-filter-btn active" onclick="setFilter('all', this)" type="button">All</button>
-          <button class="discuss-filter-btn" onclick="setFilter('Nutrition', this)" type="button">Nutrition</button>
-          <button class="discuss-filter-btn" onclick="setFilter('Lifestyle', this)" type="button">Lifestyle</button>
-          <button class="discuss-filter-btn" onclick="setFilter('Relationships', this)" type="button">Relationships</button>
-          <button class="discuss-filter-btn" onclick="setFilter('Business', this)" type="button">Business</button>
-          <button class="discuss-filter-btn" onclick="setFilter('Activism', this)" type="button">Activism</button>
-          <button class="discuss-filter-btn" onclick="setFilter('Community', this)" type="button">Community</button>
-          <button class="discuss-filter-btn" onclick="setFilter('Food Science', this)" type="button">Food Science</button>
-        </div>
+        <script src="/public/discuss-bar.js"></script>
       </div>
 
       <!-- Topic list -->
