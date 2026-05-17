@@ -52,6 +52,9 @@
 
   var onGuidesPath = paths.some(function (path) { return isCurrent(path.href); });
 
+  var communityPaths = ['/communities/find', '/communities'];
+  var onCommunityPath = communityPaths.some(function (h) { return isCurrent(h); });
+
   var dropItems = paths.map(function (pt) {
     return '<a href="' + pt.href + '" class="ve-nav-drop-item" role="menuitem"' + cur(pt.href) + '>' +
       '<span class="ve-nav-drop-dot" style="background:' + pt.color + ';" aria-hidden="true"></span>' +
@@ -76,7 +79,19 @@
           '</div>' +
         '</div>' +
         '<a href="/guides/ve-discuss"' + (isCurrent('/guides/ve-discuss') || isCurrent('/guides/ve-guide-chat-v1') ? ' aria-current="page"' : '') + '>Discuss</a>' +
-        '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
+        '<div class="ve-nav-drop">' +
+          '<button class="ve-nav-drop-btn' + (onCommunityPath ? ' open' : '') + '" id="ve-community-btn" aria-haspopup="true" aria-expanded="' + onCommunityPath + '">' +
+            'Communities <span class="ve-nav-drop-arrow" aria-hidden="true">&#9660;</span>' +
+          '</button>' +
+          '<div class="ve-nav-drop-menu" id="ve-community-menu" role="menu" aria-labelledby="ve-community-btn">' +
+            '<a href="/communities/find" class="ve-nav-drop-item" role="menuitem"' + cur('/communities/find') + '>' +
+              '<span class="ve-nav-drop-dot" style="background:#3A9B3E;" aria-hidden="true"></span>' +
+              'Find a Community</a>' +
+            '<a href="/communities" class="ve-nav-drop-item" role="menuitem"' + cur('/communities') + '>' +
+              '<span class="ve-nav-drop-dot" style="background:#F69820;" aria-hidden="true"></span>' +
+              'Run a Community</a>' +
+          '</div>' +
+        '</div>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/passport"' + cur('/passport') + '>Passport</a>' +
       '</div>' +
@@ -109,6 +124,30 @@
       btn.classList.remove('open');
       btn.setAttribute('aria-expanded', 'false');
       btn.focus();
+    }
+  });
+  /* ── Community dropdown behaviour ── */
+  var communityBtn  = document.getElementById('ve-community-btn');
+  var communityMenu = document.getElementById('ve-community-menu');
+
+  communityBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = communityMenu.classList.toggle('open');
+    communityBtn.classList.toggle('open', open);
+    communityBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  document.addEventListener('click', function () {
+    communityMenu.classList.remove('open');
+    communityBtn.classList.remove('open');
+    communityBtn.setAttribute('aria-expanded', 'false');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      communityMenu.classList.remove('open');
+      communityBtn.classList.remove('open');
+      communityBtn.setAttribute('aria-expanded', 'false');
     }
   });
 })();
