@@ -25,7 +25,42 @@
     .nav-links a:hover { color: var(--ve-green); }
     .nav-cta { background: var(--ve-orange); color: #fff !important; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 4px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
     .nav-cta:hover { background: var(--ve-orange-dark) !important; }
-    .hero { background: #1A1A1A; padding: 88px 56px 72px; }
+    .hero {
+      position: relative;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      background-image: url('/public/events/vegan-foodie-fest-2025.jpg');
+      background-size: cover;
+      background-position: center 40%;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.96) 0%,
+        rgba(0,0,0,0.90) 18%,
+        rgba(0,0,0,0.35) 45%,
+        rgba(0,0,0,0.08) 65%,
+        transparent 82%
+      );
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      padding: 88px 56px 72px;
+      max-width: 600px;
+    }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
@@ -36,7 +71,7 @@
     .btn-hero-primary:hover { background: var(--ve-orange-dark); }
     .btn-hero-ghost { background: transparent; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 28px; border-radius: 4px; text-decoration: none; transition: all 0.15s; display: inline-block; border: 1.5px solid rgba(255,255,255,0.2); }
     .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
-    .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 16px; }
+    .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.50); margin-top: 16px; }
     .stats-bar { background: var(--ve-green); padding: 22px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
     .stat-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .stat-num { font-size: 26px; font-weight: 900; letter-spacing: -0.03em; color: #fff; line-height: 1; }
@@ -132,10 +167,17 @@
     .footer-links a:hover { color: rgba(255,255,255,0.7); }
     .footer-copy { font-size: 11px; color: rgba(255,255,255,0.2); }
 
+    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .flip-card-inner { transition: none !important; }
+    }
     @media (max-width: 768px) {
       .ve-nav { padding: 0 20px; }
       .nav-links { display: none; }
-      .hero, .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 60px 32px; }
+      .hero-inner { padding: 60px 32px; max-width: 100%; }
+      .hero { background-position: 65% center; }
+      .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 60px 32px; }
       .stats-bar { padding: 18px 32px; }
       .how-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
       .how-grid::before { display: none; }
@@ -151,7 +193,10 @@
     @media (max-width: 480px) {
       .ve-nav { padding: 0 16px; }
       .nav-links { display: none; }
-      .hero { padding: 44px 20px 48px; }
+      .hero { background-position: 65% center; align-items: flex-end; }
+      .hero::before { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .hero::after { display: none; }
+      .hero-inner { padding: 0 20px 44px; max-width: 100%; }
       .stats-bar { padding: 16px 20px; gap: 10px; flex-wrap: wrap; justify-content: center; }
       .stat-divider { display: none; }
       .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 52px 20px; }
@@ -172,14 +217,16 @@
   <div class="page-frame">
   <script src="/public/nav.js"></script>
   <section class="hero" aria-labelledby="hero-heading">
-    <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
-    <h1 id="hero-heading">The Vegan<br><em>World is Open.</em></h1>
-    <p class="hero-sub">Find your path, connect with your community, and build something that lasts. Your Passport is the key to the most connected Vegan network on the planet.</p>
-    <div class="hero-ctas">
-      <a href="/passport" class="btn-hero-primary">Get Your Passport</a>
-      <a href="/guides/ve-guides-roster-v1" class="btn-hero-ghost">Explore the Guides</a>
+    <div class="hero-inner">
+      <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
+      <h1 id="hero-heading">The Vegan<br><em>World is Open.</em></h1>
+      <p class="hero-sub">Find your path, connect with your community, and build something that lasts. Your Passport is the key to the most connected Vegan network on the planet.</p>
+      <div class="hero-ctas">
+        <a href="/passport" class="btn-hero-primary">Get Your Passport</a>
+        <a href="/guides/ve-guides-roster-v1" class="btn-hero-ghost">Explore the Guides</a>
+      </div>
+      <p class="hero-fine">$11 one-time. No subscription required to start.</p>
     </div>
-    <p class="hero-fine">$11 one-time. No subscription required to start.</p>
   </section>
 
   <div class="stats-bar" role="list" aria-label="Platform statistics">
