@@ -77,7 +77,7 @@
         '</div>' +
         '<a href="/guides/ve-guide-chat-v1"' + cur('/guides/ve-guide-chat-v1') + '>Discuss</a>' +
         '<a href="#" >Communities</a>' +
-        '<a href="#">Directory</a>' +
+        '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/passport"' + cur('/passport') + '>Passport</a>' +
       '</div>' +
       '<a href="/passport/join?plan=monthly" class="ve-nav-cta">Get Passport - $11</a>' +
