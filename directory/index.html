@@ -44,89 +44,11 @@ body {
   flex-direction: column;
 }
 
-/* ---- Header ---- */
-.ve-header {
-  position: sticky;
-  top: 0;
-  z-index: 400;
-  width: 100%;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--ve-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  height: 56px;
-  gap: 12px;
-}
-.ve-wordmark {
-  font-size: 15px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ve-text);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-decoration: none;
-}
-.ve-leaf {
-  width: 22px; height: 22px;
-  background: var(--ve-green-dark);
-  border-radius: 50% 2px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.ve-leaf svg { width: 12px; height: 12px; fill: white; }
-.header-nav {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.header-nav a {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ve-text-75);
-  text-decoration: none;
-  transition: color 0.15s;
-  cursor: pointer;
-}
-.header-nav a:hover { color: var(--ve-green-dark); }
-.header-nav a.active {
-  color: var(--ve-green-dark);
-  border-bottom: 2px solid var(--ve-green-dark);
-  padding-bottom: 2px;
-}
-.header-cta {
-  background: var(--ve-green-dark);
-  color: #fff;
-  font-family: Montserrat, sans-serif;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 8px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-.header-cta:hover { background: #1e5c21; }
-@media (max-width: 640px) {
-  .header-nav { gap: 12px; }
-  .header-nav a { font-size: 10px; }
-  .header-cta { display: none; }
-}
 
 /* ---- Filter bar ---- */
 .filter-bar {
   position: sticky;
-  top: 56px;
+  top: 60px;
   z-index: 300;
   width: 100%;
   background: rgba(255,255,255,0.99);
@@ -393,7 +315,6 @@ body {
 .hidden { display: none !important; }
 
 @media (max-width: 640px) {
-  .ve-header { padding: 0 16px; }
   .filter-bar { padding: 10px 16px; }
   .dir-main { padding: 16px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; }
@@ -406,23 +327,7 @@ body {
 <body>
 <div id="frame">
 
-  <!-- Header -->
-  <header class="ve-header">
-    <a class="ve-wordmark" href="/">
-      <span class="ve-leaf">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 19.5c1.61-1.5 3.89-2.5 6.18-2.5 3 0 5-2 5-5 0 0 1.5 1 3 1 2 0 4-2 4-4 0 0-1 2-4 2-1.5 0-3-1-3-1s1.5-2 3.5-2c1 0 2 .5 2 .5C16.5 5 13 4 10 6c0 0 0-2 2-3 0 0-3 1-4 4C7 9 8 11 8 11s0-3 2-4c0 0-1 3 0 5 1 1.5 3 2 3 2s-2 0-3-1c0 0 1 4 5 3 1.5-.4 2.5-1 3-2z"/></svg>
-      </span>
-      Vegans Explore
-    </a>
-    <nav class="header-nav" aria-label="Main navigation">
-      <a href="/guides/ve-guides-roster-v1">Guides</a>
-      <a href="#" class="active" aria-current="page">Directory</a>
-      <a href="https://vegansexplore.com/events/">Events</a>
-      <a href="/guides/ve-guide-chat-v1">Discuss</a>
-      <a href="https://vegansexplore.com/community/">Community</a>
-    </nav>
-    <a class="header-cta" href="/passport">Get Your Passport</a>
-  </header>
+  <script src="/public/nav.js"></script>
 
   <!-- Filter bar -->
   <nav class="filter-bar" aria-label="Directory filters">
