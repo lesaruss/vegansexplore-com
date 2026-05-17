@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New York — NYCVegans | Vegans Explore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-green-mid: #b8ddb9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09);
+      --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75);
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-30: rgba(26,26,26,0.30);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
+
+
+    /* HERO */
+    .hero { position: relative; min-height: 420px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+    .hero-photo { position: absolute; inset: 0; }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.2) 100%); }
+    .hero-content { position: relative; z-index: 2; padding: 0 56px 52px; }
+    .hero-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+    .hero-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
+    .hero-breadcrumb a:hover { color: rgba(255,255,255,0.7); }
+    .hero-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.2); }
+    .hero-breadcrumb .current { color: rgba(255,255,255,0.6); }
+    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    .hero h1 { font-size: clamp(36px, 5.5vw, 72px); font-weight: 900; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 16px; }
+    .hero h1 em { color: var(--ve-green); font-style: normal; }
+    .hero-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+    .hero-region { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.55); }
+    .hero-divider-v { width: 1px; height: 14px; background: rgba(255,255,255,0.2); }
+    .hero-access { display: flex; align-items: center; gap: 10px; }
+    .access-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 5px 10px; border-radius: 100px; }
+    .access-badge.passport { background: var(--ve-green); color: #1a1a1a; }
+    .access-badge.standard { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
+    .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .btn-join { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-green); color: #fff; transition: background 0.15s; border: none; cursor: pointer; }
+    .btn-join:hover { background: var(--ve-green-dark); }
+    .btn-outline-light { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; text-decoration: none; background: transparent; color: rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.25); transition: all 0.15s; }
+    .btn-outline-light:hover { border-color: rgba(255,255,255,0.55); color: #fff; }
+
+    /* HUB TABS */
+    .hub-tabs { border-bottom: 1px solid var(--ve-border); padding: 0 56px; display: flex; align-items: flex-end; gap: 0; overflow-x: auto; scrollbar-width: none; }
+    .hub-tabs::-webkit-scrollbar { display: none; }
+    .hub-tab { flex-shrink: 0; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 18px 20px 16px; border: none; border-bottom: 3px solid transparent; background: transparent; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 7px; white-space: nowrap; margin-bottom: -1px; }
+    .hub-tab svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+    .hub-tab:hover { color: var(--ve-text); }
+    .hub-tab.active { color: var(--ve-green); border-bottom-color: var(--ve-green); }
+
+    /* MOBILE TAB DROPDOWN */
+    .hub-tab-dropdown { display: none; padding: 14px 24px; border-bottom: 1px solid var(--ve-border); }
+    .hub-tab-dropdown select { width: 100%; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 16px; border: 1.5px solid var(--ve-green); border-radius: 6px; background: #fff; color: var(--ve-green); cursor: pointer; outline: none; appearance: auto; }
+    .hub-tab-dropdown select:focus { border-color: var(--ve-green-dark); }
+
+    /* SECTION BODY */
+    .hub-section { display: none; padding: 48px 56px 72px; }
+    .hub-section.active { display: block; }
+
+    /* SECTION HEADERS */
+    .section-hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 36px; flex-wrap: wrap; }
+    .section-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; }
+    .section-sub { font-size: 13px; font-weight: 400; color: var(--ve-text-75); margin-top: 4px; line-height: 1.5; }
+    .section-action { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green); text-decoration: none; display: flex; align-items: center; gap: 6px; white-space: nowrap; flex-shrink: 0; padding-top: 4px; transition: color 0.15s; }
+    .section-action:hover { color: var(--ve-green-dark); }
+    .section-action::after { content: '\2192'; }
+
+    /* NEWS GRID — 3 columns × 3 rows */
+    .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .news-card { border: 1.5px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+    .news-card:hover { border-color: var(--ve-green-mid); box-shadow: 0 4px 20px rgba(58,155,62,0.08); }
+    .news-img { aspect-ratio: 16/9; background: var(--ve-green-light); position: relative; overflow: hidden; }
+    .news-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green); background: linear-gradient(135deg, var(--ve-green-light) 0%, #d4edda 100%); }
+    .news-tag { position: absolute; top: 10px; left: 10px; font-size: 8px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 8px; border-radius: 100px; background: var(--ve-green); color: #1a1a1a; }
+    .news-tag.update { background: var(--ve-orange); color: #1a1a1a; }
+    .news-body { padding: 18px 20px 20px; }
+    .news-date { font-size: 10px; font-weight: 600; color: #767676; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .news-headline { font-size: 14px; font-weight: 800; line-height: 1.35; letter-spacing: -0.01em; margin-bottom: 8px; color: var(--ve-text); }
+    .news-excerpt { font-size: 12px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; margin-bottom: 14px; }
+    .news-read { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-green); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: color 0.15s; }
+    .news-read:hover { color: var(--ve-green-dark); }
+    .news-read::after { content: '\2192'; }
+
+    /* NEWS FEATURED — uniform card, no wide override */
+    .news-featured { display: flex; flex-direction: column; }
+
+    /* EVENTS SECTION */
+    .events-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+    .month-nav { display: flex; align-items: center; gap: 8px; }
+    .month-btn { width: 32px; height: 32px; border-radius: 4px; border: 1.5px solid var(--ve-border); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .month-btn:hover { border-color: var(--ve-green); }
+    .month-btn svg { width: 12px; height: 12px; fill: var(--ve-text-50); }
+    .month-label { font-size: 13px; font-weight: 800; letter-spacing: -0.01em; min-width: 130px; text-align: center; }
+    .event-filter { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+    .ev-chip { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; }
+    .ev-chip:hover { border-color: var(--ve-green); color: var(--ve-green); }
+    .ev-chip.active { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
+
+    .events-list { display: flex; flex-direction: column; gap: 12px; }
+    .event-row { display: flex; align-items: stretch; gap: 0; border: 1.5px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+    .event-row:hover { border-color: var(--ve-green-mid); box-shadow: 0 3px 14px rgba(58,155,62,0.07); }
+    .event-date-col { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 20px; background: var(--ve-green-light); min-width: 72px; text-align: center; flex-shrink: 0; }
+    .event-date-col.orange { background: #fff8ee; }
+    .event-day { font-size: 26px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--ve-green-dark); }
+    .event-date-col.orange .event-day { color: var(--ve-orange-dark); }
+    .event-mon { font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ve-green); margin-top: 2px; }
+    .event-date-col.orange .event-mon { color: var(--ve-orange); }
+    .event-body { flex: 1; padding: 16px 22px; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+    .event-type-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 8px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 5px; }
+    .event-type-badge.orange { color: #7a4800; }
+    .event-type-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .event-name { font-size: 14px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.3; color: var(--ve-text); }
+    .event-details { font-size: 11px; font-weight: 500; color: var(--ve-text-75); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 2px; }
+    .event-details span { display: flex; align-items: center; gap: 4px; }
+    .event-details svg { width: 11px; height: 11px; fill: var(--ve-text-30); flex-shrink: 0; }
+    .event-cta-col { display: flex; align-items: center; padding: 16px 20px; flex-shrink: 0; }
+    .btn-rsvp { font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px; background: var(--ve-green); color: #fff; border: none; cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap; display: inline-block; }
+    .btn-rsvp:hover { background: var(--ve-green-dark); }
+    .btn-rsvp.orange { background: var(--ve-orange); }
+    .btn-rsvp.orange:hover { background: var(--ve-orange-dark); }
+
+    /* DIRECTORY SECTION */
+    .directory-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+    .dir-search { flex: 1; min-width: 200px; position: relative; }
+    .dir-search input { width: 100%; padding: 11px 16px 11px 40px; border: 1.5px solid var(--ve-border); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 500; color: var(--ve-text); background: #fafafa; transition: border-color 0.15s; outline: none; }
+    .dir-search input:focus { border-color: var(--ve-green); background: #fff; }
+    .dir-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; fill: var(--ve-text-30); pointer-events: none; }
+    .dir-cats { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .dir-cat { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 14px; border-radius: 100px; border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; }
+    .dir-cat:hover { border-color: var(--ve-green); color: var(--ve-green); }
+    .dir-cat.active { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
+
+    .dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .dir-card { border: 1.5px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; }
+    .dir-card:hover { border-color: var(--ve-green-mid); box-shadow: 0 3px 14px rgba(58,155,62,0.07); }
+    .dir-card a, .dir-card span { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
+    .dir-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+    .dir-icon { width: 40px; height: 40px; border-radius: 8px; background: var(--ve-green-light); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .dir-cat-tag { font-size: 8px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 8px; border-radius: 100px; background: var(--ve-green-light); color: var(--ve-green-dark); }
+    .dir-name { font-size: 14px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 4px; }
+    .dir-address { font-size: 11px; font-weight: 500; color: var(--ve-text-50); display: flex; align-items: flex-start; gap: 4px; line-height: 1.45; }
+    .dir-address svg { width: 11px; height: 11px; fill: var(--ve-text-30); flex-shrink: 0; margin-top: 1px; }
+    .dir-card-img { width: 100%; height: 120px; object-fit: cover; display: block; border-bottom: 1px solid var(--ve-border); background: var(--ve-green-light); }
+    .dir-card-placeholder { width: 100%; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 2rem; background: linear-gradient(135deg, var(--ve-green-light) 0%, var(--ve-green-mid) 100%); border-bottom: 1px solid var(--ve-border); }
+    .dir-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--ve-border); }
+    .dir-rating { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--ve-text-75); }
+    .dir-rating span { color: var(--ve-orange); font-size: 12px; letter-spacing: -1px; }
+    .dir-link { font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green); text-decoration: none; display: flex; align-items: center; gap: 4px; transition: color 0.15s; }
+    .dir-link:hover { color: var(--ve-green-dark); }
+    .dir-link::after { content: '\2192'; }
+    /* VE Directory card — matches /directory/index.html exactly */
+    .card { background: #fff; border: 1px solid var(--ve-border); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .18s, transform .15s; position: relative; }
+    .card:hover { box-shadow: 0 4px 20px rgba(45,125,49,.12); transform: translateY(-2px); }
+    .card a { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
+    .card a:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 3px; border-radius: 6px; }
+    .card-img { width: 100%; height: 140px; object-fit: cover; background: var(--ve-green-light); display: block; border-bottom: 1px solid var(--ve-border); }
+    .card-placeholder { width: 100%; height: 140px; background: linear-gradient(135deg, var(--ve-green-light) 0%, var(--ve-green-mid) 100%); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border-bottom: 1px solid var(--ve-border); }
+    .card-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .card-name { font-size: 12px; font-weight: 800; letter-spacing: 0.01em; color: var(--ve-text); line-height: 1.4; }
+    .card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: auto; }
+    .tag { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+    .t-rest  { background: var(--ve-green-light); color: #1e5c22; }
+    .t-brand { background: #fff3e0; color: #7d3800; }
+    .t-npo   { background: #ede7f6; color: #311b92; }
+    .t-media { background: #fce4ec; color: #880e4f; }
+    .t-reg   { background: #f0f4f0; color: #2c4a2e; border: 1px solid var(--ve-border); }
+
+    /* VE DIRECTORY COMPONENT — chip filters + pagination (matches /directory/ exactly) */
+    .chip { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: #f7faf7; border: 1px solid var(--ve-border); border-radius: 4px; padding: 6px 12px; cursor: pointer; color: var(--ve-text-75); transition: .15s; white-space: nowrap; }
+    .chip:hover { background: var(--ve-green-light); color: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+    .chip.active { background: var(--ve-green-dark); color: #fff; border-color: var(--ve-green-dark); }
+    .chip:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .hub-dir-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .hub-dir-search { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+    .hub-dir-search input { width: 100%; padding: 8px 12px 8px 34px; border: 1px solid var(--ve-border); border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; background: #f7faf7; color: var(--ve-text); outline: none; transition: border-color .15s; }
+    .hub-dir-search input:focus { border-color: var(--ve-green-dark); background: #fff; }
+    .hub-dir-search input:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .hub-dir-search input::placeholder { color: var(--ve-text-50); }
+    .hub-dir-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .hub-dir-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
+    .hub-result-bar { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-75); }
+    .hub-dir-pagesize { display: flex; align-items: center; gap: 6px; }
+    .hub-dir-pagesize span { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-text-75); }
+    .hub-dir-pagesize select { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; background: #f7faf7; border: 1px solid var(--ve-border); border-radius: 4px; padding: 5px 8px; color: var(--ve-text); cursor: pointer; outline: none; }
+    .ve-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 24px 0 8px; flex-wrap: wrap; }
+    .pg-btn { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #f7faf7; border: 1px solid var(--ve-border); border-radius: 4px; padding: 6px 12px; cursor: pointer; color: var(--ve-text-75); transition: .15s; }
+    .pg-btn:hover:not(:disabled) { background: var(--ve-green-light); color: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+    .pg-btn.current { background: var(--ve-green-dark); color: #fff; border-color: var(--ve-green-dark); }
+    .pg-btn:disabled { opacity: 0.35; cursor: default; }
+    .pg-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .pg-ellipsis { background: none; border-color: transparent; cursor: default; pointer-events: none; }
+    .hub-dir-empty { grid-column: 1/-1; padding: 64px 24px; text-align: center; color: var(--ve-text-50); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+    .page-frame.vp-mobile .ve-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; }
+    .page-frame.vp-mobile .card-img, .page-frame.vp-mobile .card-placeholder { height: 115px; }
+
+    /* NEWSLETTER SECTION */
+    .newsletter-wrap { max-width: 680px; margin: 0 auto; text-align: center; }
+    .newsletter-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ve-green); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 18px; }
+    .newsletter-eyebrow::before, .newsletter-eyebrow::after { content: ''; width: 24px; height: 2px; background: var(--ve-green); }
+    .newsletter-title { font-size: 34px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1.0; margin-bottom: 16px; }
+    .newsletter-title em { color: var(--ve-green); font-style: normal; }
+    .newsletter-body { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .newsletter-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto 20px; }
+    .newsletter-form input { flex: 1; padding: 13px 18px; border: 1.5px solid var(--ve-border); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 500; color: var(--ve-text); background: #fafafa; outline: none; transition: border-color 0.15s; }
+    .newsletter-form input:focus { border-color: var(--ve-green); background: #fff; }
+    .newsletter-form input::placeholder { color: var(--ve-text-30); }
+    .newsletter-form button { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 24px; border-radius: 6px; border: none; background: var(--ve-green); color: #fff; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+    .newsletter-form button:hover { background: var(--ve-green-dark); }
+    .newsletter-note { font-size: 11px; color: var(--ve-text-75); font-weight: 400; }
+    .newsletter-perks { display: flex; align-items: flex-start; justify-content: center; gap: 32px; margin-top: 44px; flex-wrap: wrap; }
+    .perk { display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 140px; text-align: center; }
+    .perk-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--ve-green-light); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .perk-label { font-size: 11px; font-weight: 700; line-height: 1.4; color: var(--ve-text-75); }
+
+    /* PARTNERS SECTION */
+    .partners-intro { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 560px; margin-bottom: 36px; }
+    .partners-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 44px; }
+    .partner-card { border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 24px; transition: border-color 0.15s, box-shadow 0.15s; }
+    .partner-card:hover { border-color: rgba(246,152,32,0.4); box-shadow: 0 3px 16px rgba(246,152,32,0.07); }
+    .partner-logo-area { width: 56px; height: 56px; border-radius: 12px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+    .partner-type { font-size: 8px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #7a4800; display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+    .partner-type::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-orange); flex-shrink: 0; }
+    .partner-name { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .partner-desc { font-size: 12px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; margin-bottom: 16px; }
+    .partner-url { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--ve-text-75); text-decoration: none; transition: color 0.15s; }
+    .partner-url:hover { color: var(--ve-green); }
+    .partner-cta-row { border-top: 1.5px dashed rgba(0,0,0,0.08); padding-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .partner-cta-text { font-size: 12px; font-weight: 600; color: var(--ve-text-75); max-width: 340px; }
+    .btn-partner { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 22px; border-radius: 4px; text-decoration: none; background: transparent; color: var(--ve-orange-dark); border: 2px solid var(--ve-orange); transition: all 0.15s; white-space: nowrap; }
+    .btn-partner:hover { background: var(--ve-orange); color: #fff; }
+
+    /* STICKY MEMBER BAR */
+    .member-bar { background: #1a1a1a; padding: 14px 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .member-bar-left { display: flex; align-items: center; gap: 14px; }
+    .member-bar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .member-bar-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); }
+    .member-bar-text strong { color: #fff; font-weight: 800; }
+    .member-bar-actions { display: flex; align-items: center; gap: 10px; }
+
+    /* FOOTER */
+    .footer { background: #1a1a1a; padding: 36px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; }
+    .footer-wordmark { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; text-decoration: none; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.55); }
+    .footer-links { display: flex; align-items: center; gap: 20px; }
+    .footer-links a { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.7); }
+
+    /* VIEWPORT SWITCHER CLASSES — mirrors @media mobile rules for in-mock preview */
+    .page-frame.vp-mobile .hero-content { padding: 25px 24px 40px; text-align: center; }
+    .page-frame.vp-mobile .hero-breadcrumb { justify-content: center; }
+    .page-frame.vp-mobile .hero-eyebrow { justify-content: center; }
+    .page-frame.vp-mobile .hero-meta { justify-content: center; }
+    .page-frame.vp-mobile .hero-actions { justify-content: center; }
+    .page-frame.vp-mobile .hub-tabs { display: none; }
+    .page-frame.vp-mobile .hub-tab-dropdown { display: block; }
+    .page-frame.vp-mobile .hub-section { padding: 36px 24px 56px; }
+    .page-frame.vp-mobile .news-grid { grid-template-columns: 1fr; }
+    .page-frame.vp-mobile .dir-grid { grid-template-columns: 1fr; }
+    .page-frame.vp-mobile .card-img, .page-frame.vp-mobile .card-placeholder { height: 115px; }
+    .page-frame.vp-mobile .partners-grid { grid-template-columns: 1fr; }
+    .page-frame.vp-mobile .member-bar { padding: 14px 24px; flex-direction: column; align-items: flex-start; }
+    .page-frame.vp-mobile .newsletter-form { flex-direction: column; }
+    .page-frame.vp-mobile .footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    .page-frame.vp-tablet .dir-grid { grid-template-columns: repeat(2, 1fr); }
+    .page-frame.vp-tablet .partners-grid { grid-template-columns: repeat(2, 1fr); }
+    .page-frame.vp-tablet .news-grid { grid-template-columns: repeat(2, 1fr); }
+
+    /* FOCUS */
+    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+
+    /* MOTION */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 960px) {
+      .news-grid { grid-template-columns: repeat(2, 1fr); }
+      .dir-grid { grid-template-columns: repeat(2, 1fr); }
+      .partners-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .hero-content { padding: 25px 24px 40px; text-align: center; }
+      .hero-breadcrumb { justify-content: center; }
+      .hero-eyebrow { justify-content: center; }
+      .hero-meta { justify-content: center; }
+      .hero-actions { justify-content: center; }
+      .hub-tabs { display: none; }
+      .hub-tab-dropdown { display: block; }
+      .hub-section { padding: 36px 24px 56px; }
+      .news-grid { grid-template-columns: 1fr; }
+      .dir-grid { grid-template-columns: 1fr; }
+      .partners-grid { grid-template-columns: 1fr; }
+      .member-bar { padding: 14px 24px; }
+      .newsletter-form { flex-direction: column; }
+      .footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- VIEWPORT SWITCHER -->
+</div>
+
+<div class="page-frame" id="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hub-heading">
+    <div class="hero-photo" aria-hidden="true">
+      <img src="/communities/new-york/banner.jpg" alt="New York City skyline at sunset anime illustration">
+    </div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-content">
+      <nav class="hero-breadcrumb" aria-label="Breadcrumb">
+        <a href="/communities">Communities</a>
+        <span aria-hidden="true">/</span>
+        <span class="current" aria-current="page">New York</span>
+      </nav>
+      <p class="hero-eyebrow" aria-hidden="true">Community Hub</p>
+      <h1 id="hub-heading">NYC<br><em>Vegans</em></h1>
+      <div class="hero-meta" aria-label="Community details">
+        <span class="hero-region">Manhattan &middot; Brooklyn &middot; Queens</span>
+        <div class="hero-divider-v" aria-hidden="true"></div>
+        <div class="hero-access" aria-label="Membership access">
+          <span class="access-badge passport">Free Passport</span>
+          <span class="access-badge standard">$11 Standard</span>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a href="#join" class="btn-join">Join This Community</a>
+        <a href="#events" class="btn-outline-light" onclick="switchTab('events');return false;">Browse Events</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBER STATUS BAR -->
+  <div class="member-bar" role="complementary" aria-label="Community status">
+    <div class="member-bar-left">
+      <div class="member-bar-dot" aria-hidden="true"></div>
+      <p class="member-bar-text"><strong>Region.</strong> Free for Passport members. Full access with Standard membership.</p>
+    </div>
+    <div class="member-bar-actions">
+      <a href="/passport" class="btn-join" style="font-size:10px;padding:9px 18px;">Get Passport</a>
+    </div>
+  </div>
+
+  <!-- MOBILE TAB DROPDOWN (hidden on desktop) -->
+  <div class="hub-tab-dropdown">
+    <label for="hub-tab-select" class="visually-hidden">Navigate hub sections</label>
+    <select id="hub-tab-select" aria-label="Navigate hub sections" onchange="switchTab(this.value)">
+      <option value="news">News</option>
+      <option value="events">Events</option>
+      <option value="directory">Directory</option>
+      <option value="newsletter">Newsletter</option>
+      <option value="partners">Partners</option>
+    </select>
+  </div>
+
+  <!-- HUB TABS (desktop) -->
+  <nav class="hub-tabs" role="tablist" aria-label="Community hub sections">
+    <button class="hub-tab active" role="tab" aria-selected="true" aria-controls="tab-news" id="tab-btn-news" onclick="switchTab('news')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
+      News
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-events" id="tab-btn-events" onclick="switchTab('events')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+      Events
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-directory" id="tab-btn-directory" onclick="switchTab('directory')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      Directory
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-newsletter" id="tab-btn-newsletter" onclick="switchTab('newsletter')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8zm-2 0-8 5-8-5 8-4.76L19.99 8zM4 18V9.87l8 5 8-5V18H4z"/></svg>
+      Newsletter
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-partners" id="tab-btn-partners" onclick="switchTab('partners')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Partners
+    </button>
+  </nav>
+
+  <!-- ========================= NEWS SECTION ========================= -->
+  <section class="hub-section active" id="tab-news" role="tabpanel" aria-labelledby="tab-btn-news">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Local News &amp; Updates</h2>
+        <p class="section-sub">What's happening in the New York vegan community.</p>
+      </div>
+      <a href="#" class="section-action">All stories</a>
+    </div>
+
+    <div class="news-grid">
+
+      <article class="news-card">
+        <div class="news-img">
+          <div class="news-img-placeholder">Photo</div>
+          <span class="news-tag">Featured</span>
+        </div>
+        <div class="news-body">
+          <p class="news-date">May 12, 2026</p>
+          <h3 class="news-headline">New Vegan Food Hall Opening in Wynwood This Summer</h3>
+          <p class="news-excerpt">A sprawling plant-based food hall is set to open in Miami's Wynwood Arts District, featuring 20+ vendors from the NYC vegan community.</p>
+          <a href="#" class="news-read">Read story</a>
+        </div>
+      </article>
+
+      <article class="news-card">
+        <div class="news-img">
+          <div class="news-img-placeholder">Photo</div>
+          <span class="news-tag update">Update</span>
+        </div>
+        <div class="news-body">
+          <p class="news-date">May 9, 2026</p>
+          <h3 class="news-headline">NYCVegans Community Hits 1,000 Members</h3>
+          <p class="news-excerpt">The NYCVegans community crossed 1,000 members this week, making it the fastest-growing regional hub in the Vegans Explore network.</p>
+          <a href="#" class="news-read">Read story</a>
+        </div>
+      </article>
+
+      <article class="news-card">
+        <div class="news-img">
+          <div class="news-img-placeholder">Photo</div>
+          <span class="news-tag">News</span>
+        </div>
+        <div class="news-body">
+          <p class="news-date">May 5, 2026</p>
+          <h3 class="news-headline">Fort Lauderdale Farmers Market Adds Dedicated Vegan Section</h3>
+          <p class="news-excerpt">Las Olas Farmers Market launches a dedicated plant-based vendor section starting June 1, with eight local NYC sellers confirmed for opening day.</p>
+          <a href="#" class="news-read">Read story</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ========================= EVENTS SECTION ========================= -->
+  <section class="hub-section" id="tab-events" role="tabpanel" aria-labelledby="tab-btn-events">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Events Calendar</h2>
+        <p class="section-sub">Meetups, pop-ups, and community gatherings across Miami, Fort Lauderdale, and Palm Beach.</p>
+      </div>
+      <a href="#" class="section-action">Submit an event</a>
+    </div>
+
+    <div class="events-toolbar" role="toolbar" aria-label="Event filters">
+      <div class="month-nav" aria-label="Navigate months">
+        <button class="month-btn" aria-label="Previous month">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+        </button>
+        <span class="month-label" aria-live="polite">May &ndash; June 2026</span>
+        <button class="month-btn" aria-label="Next month">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </button>
+      </div>
+      <div class="event-filter" role="group" aria-label="Filter by event type">
+        <button class="ev-chip active" aria-pressed="true">All</button>
+        <button class="ev-chip" aria-pressed="false">Meetup</button>
+        <button class="ev-chip" aria-pressed="false">Pop-up</button>
+        <button class="ev-chip" aria-pressed="false">Workshop</button>
+      </div>
+    </div>
+
+    <div class="events-list" aria-label="Upcoming events">
+      <article class="event-row" aria-label="Miami Vegan Sunset Cruise - May 24">
+        <div class="event-date-col" aria-hidden="true"><span class="event-day">24</span><span class="event-mon">May</span></div>
+        <div class="event-body">
+          <p class="event-type-badge">Meetup</p>
+          <h3 class="event-name">Miami Vegan Sunset Cruise</h3>
+          <div class="event-details" aria-label="Event details">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Bayside Marketplace Marina, Miami</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>7:00 PM EDT</span>
+            <span>42 attending</span>
+          </div>
+        </div>
+        <div class="event-cta-col">
+          <a href="#" class="btn-rsvp" aria-label="RSVP for Miami Vegan Sunset Cruise">RSVP</a>
+        </div>
+      </article>
+
+      <article class="event-row" aria-label="Fort Lauderdale Plant-Based Popup Market - May 31">
+        <div class="event-date-col orange" aria-hidden="true"><span class="event-day">31</span><span class="event-mon">May</span></div>
+        <div class="event-body">
+          <p class="event-type-badge orange">Pop-up</p>
+          <h3 class="event-name">Fort Lauderdale Plant-Based Popup Market</h3>
+          <div class="event-details" aria-label="Event details">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Las Olas Riverfront, Fort Lauderdale</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>10:00 AM &ndash; 4:00 PM EDT</span>
+            <span>18 vendors</span>
+          </div>
+        </div>
+        <div class="event-cta-col">
+          <a href="#" class="btn-rsvp orange" aria-label="RSVP for Fort Lauderdale Plant-Based Popup Market">RSVP</a>
+        </div>
+      </article>
+
+      <article class="event-row" aria-label="Palm Beach Vegan Cooking Workshop - June 7">
+        <div class="event-date-col" aria-hidden="true"><span class="event-day">7</span><span class="event-mon">Jun</span></div>
+        <div class="event-body">
+          <p class="event-type-badge">Workshop</p>
+          <h3 class="event-name">Palm Beach Vegan Cooking Workshop</h3>
+          <div class="event-details" aria-label="Event details">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Palm Beach Food Co-op, West Palm Beach</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>2:00 PM &ndash; 5:00 PM EDT</span>
+            <span>12 spots left</span>
+          </div>
+        </div>
+        <div class="event-cta-col">
+          <a href="#" class="btn-rsvp" aria-label="RSVP for Palm Beach Vegan Cooking Workshop">RSVP</a>
+        </div>
+      </article>
+
+      <article class="event-row" aria-label="NYCVegans Monthly Meetup - June 14">
+        <div class="event-date-col" aria-hidden="true"><span class="event-day">14</span><span class="event-mon">Jun</span></div>
+        <div class="event-body">
+          <p class="event-type-badge">Meetup</p>
+          <h3 class="event-name">NYCVegans Monthly Meetup</h3>
+          <div class="event-details" aria-label="Event details">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Rotating venue &mdash; announced 3 days prior</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>6:30 PM EDT</span>
+            <span>Community staple</span>
+          </div>
+        </div>
+        <div class="event-cta-col">
+          <a href="#" class="btn-rsvp" aria-label="RSVP for NYCVegans Monthly Meetup">RSVP</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========================= DIRECTORY SECTION ========================= -->
+  <section class="hub-section" id="tab-directory" role="tabpanel" aria-labelledby="tab-btn-directory">
+    <div class="section-hdr" style="margin-bottom:20px;">
+      <div>
+        <h2 class="section-title">Local Directory</h2>
+        <p class="section-sub">Vegan-friendly restaurants, shops, and services across the New York region.</p>
+      </div>
+      <a href="/directory?region=new-york" class="section-action">Full directory</a>
+    </div>
+
+    <!-- Filter bar — identical to VE /directory/, locked to New York -->
+    <div class="hub-dir-bar">
+      <div class="hub-dir-search" role="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="hub-dir-search" placeholder="Search by name..." aria-label="Search New York directory">
+      </div>
+      <div role="tablist" aria-label="Filter by type" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="chip active" data-hubtype="All"        role="tab" aria-selected="true" >All</button>
+        <button class="chip"        data-hubtype="Restaurant" role="tab" aria-selected="false">Restaurants</button>
+        <button class="chip"        data-hubtype="Brand"      role="tab" aria-selected="false">Brands</button>
+        <button class="chip"        data-hubtype="Nonprofit"  role="tab" aria-selected="false">Nonprofits</button>
+        <button class="chip"        data-hubtype="Media"      role="tab" aria-selected="false">Media</button>
+      </div>
+    </div>
+
+    <div class="hub-dir-toolbar">
+      <p class="hub-result-bar" id="hub-result-bar" role="status" aria-live="polite"></p>
+      <div class="hub-dir-pagesize">
+        <span>Show</span>
+        <select id="hub-page-size" aria-label="Listings per page">
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ve-grid" id="hub-grid" aria-label="New York directory listings"></div>
+    <div class="pagination" id="hub-pagination" role="navigation" aria-label="Page navigation"></div>
+  </section>
+
+  <!-- ========================= NEWSLETTER SECTION ========================= -->
+  <section class="hub-section" id="tab-newsletter" role="tabpanel" aria-labelledby="tab-btn-newsletter">
+    <div class="newsletter-wrap">
+      <p class="newsletter-eyebrow" aria-hidden="true">NYCVegans Newsletter</p>
+      <h2 class="newsletter-title">Stay in the<br><em>Loop</em></h2>
+      <p class="newsletter-body">Weekly updates from the New York vegan community. New spots, upcoming events, local news, and exclusive member deals. No noise. Just what matters to NYCVegans.</p>
+
+      <form class="newsletter-form" aria-label="Newsletter signup form" onsubmit="handleSignup(event)">
+        <label for="nl-email" class="visually-hidden">Email address</label>
+        <input type="email" id="nl-email" name="email" placeholder="your@email.com" required autocomplete="email" aria-required="true">
+        <button type="submit">Subscribe</button>
+      </form>
+      <p class="newsletter-note" id="nl-note">No spam. Unsubscribe anytime. Free for all Passport members.</p>
+
+      <div class="newsletter-perks" aria-label="What you'll receive">
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#128240;</div>
+          <p class="perk-label">Weekly local recap, every Sunday</p>
+        </div>
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#127775;</div>
+          <p class="perk-label">New spot spotlights before they go public</p>
+        </div>
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#127881;</div>
+          <p class="perk-label">Exclusive member event early access</p>
+        </div>
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#127860;</div>
+          <p class="perk-label">Seasonal deals from local partners</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= PARTNERS SECTION ========================= -->
+  <section class="hub-section" id="tab-partners" role="tabpanel" aria-labelledby="tab-btn-partners">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Community Partners</h2>
+      </div>
+      <a href="#" class="section-action">Become a partner</a>
+    </div>
+    <p class="partners-intro">Organizations and businesses that support the NYCVegans community. Partners get visibility across the hub, newsletter placement, and event co-hosting opportunities.</p>
+
+    <div class="partners-grid" aria-label="Community partners">
+      <article class="partner-card" aria-label="BEan Animal Hero - Partner">
+        <div class="partner-logo-area" aria-hidden="true">&#128054;</div>
+        <p class="partner-type">Community Partner</p>
+        <h3 class="partner-name">BEan Animal Hero</h3>
+        <p class="partner-desc">Animal advocacy platform connecting compassionate consumers with organizations fighting for animal rights across New York.</p>
+        <a href="https://beananimalhero.org" class="partner-url" target="_blank" rel="noopener noreferrer">beananimalhero.org</a>
+      </article>
+
+      <article class="partner-card" aria-label="FL Animal Rescue Alliance - Partner">
+        <div class="partner-logo-area" aria-hidden="true">&#128062;</div>
+        <p class="partner-type">Community Partner</p>
+        <h3 class="partner-name">FL Animal Rescue Alliance</h3>
+        <p class="partner-desc">Florida-wide rescue network coordinating adoptions, fosters, and community outreach events throughout Miami-Dade and Broward counties.</p>
+        <a href="#" class="partner-url">Florida, USA</a>
+      </article>
+
+      <article class="partner-card" aria-label="Vegan Social Club - Partner">
+        <div class="partner-logo-area" aria-hidden="true">&#127807;</div>
+        <p class="partner-type">Community Partner</p>
+        <h3 class="partner-name">Vegan Social Club</h3>
+        <p class="partner-desc">Social meetups and curated dining experiences for the vegan community. Monthly events in Miami and Fort Lauderdale for members at every level.</p>
+        <a href="#" class="partner-url">Partner Community</a>
+      </article>
+    </div>
+
+    <!-- PARTNER CTA -->
+    <div class="partner-cta-row" role="complementary" aria-label="Partner with the community">
+      <p class="partner-cta-text">Is your organization aligned with the NYCVegans community? Partner visibility starts at $0 for qualifying nonprofits.</p>
+      <a href="#" class="btn-partner">Apply to Partner</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-brand">
+      <a href="/" class="footer-wordmark">Vegans Explore</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Vegans Explore. All rights reserved.</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="/communities">Communities</a>
+      <a href="/communities/find">Find a Community</a>
+      <a href="/directory">Directory</a>
+      <a href="/passport">Passport</a>
+    </nav>
+  </footer>
+
+</div><!-- /page-frame -->
+
+<!-- VISUALLY HIDDEN UTILITY -->
+<style>
+  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
+
+<script>
+  /* ---- VIEWPORT SWITCHER ---- */
+
+  /* ---- TAB SWITCHER ---- */
+  function switchTab(id) {
+    document.querySelectorAll('.hub-tab').forEach(function(t) {
+      var active = t.id === 'tab-btn-' + id;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    document.querySelectorAll('.hub-section').forEach(function(s) {
+      s.classList.toggle('active', s.id === 'tab-' + id);
+    });
+    /* Keep mobile select in sync */
+    var sel = document.getElementById('hub-tab-select');
+    if (sel) sel.value = id;
+  }
+
+  /* ---- NEWSLETTER SUBMIT ---- */
+  function handleSignup(e) {
+    e.preventDefault();
+    var note = document.getElementById('nl-note');
+    note.textContent = "You're in. Welcome to NYCVegans.";
+    note.style.color = 'var(--ve-green)';
+    note.style.fontWeight = '700';
+  }
+
+  /* ---- FILTER CHIPS (events) ---- */
+  document.querySelectorAll('.ev-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.ev-chip').forEach(function(c) {
+        c.classList.remove('active');
+        c.setAttribute('aria-pressed', 'false');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-pressed', 'true');
+    });
+  });
+
+  /* ---- DIRECTORY — full VE DATA array, locked to New York (identical to /directory/) ---- */
+  var VE_DATA = [{"t":"Anixi","l":"https://vegansexplore.com/project/anixi/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-anixi-300x188.jpg","type":"Restaurant","region":"Manhattan, New York"},{"t":"Al-Andalus","l":"https://vegansexplore.com/project/al-andalus/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-al-andalus-300x188.jpg","type":"Restaurant","region":"Manhattan, New York"},{"t":"Sen Saigon","l":"https://vegansexplore.com/project/sen-saigon/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-sen-saigon-300x188.jpg","type":"Restaurant","region":"Manhattan, New York"},{"t":"Next Stop Vegan","l":"https://vegansexplore.com/project/next-stop-vegan/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-next-stop-vegan-02-300x188.jpg","type":"Restaurant","region":"New York"}];
+
+  var VE_ICONS = {Restaurant:'🍽',Brand:'🌿',Nonprofit:'❤',Media:'🎙'};
+  var VE_TC    = {Restaurant:'t-rest',Brand:'t-brand',Nonprofit:'t-npo',Media:'t-media'};
+
+  var hubType   = 'All';
+  var hubSearch = '';
+  var hubPage   = 1;
+  var hubPgSize = 25;
+
+  function veEsc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderVECards(list) {
+    var grid = document.getElementById('hub-grid');
+    if (!list.length) {
+      grid.innerHTML = '<div class="hub-dir-empty">No listings match your filters.</div>';
+      return;
+    }
+    grid.innerHTML = list.map(function(l) {
+      var img = l.i
+        ? '<img class="card-img" src="' + veEsc(l.i) + '" alt="' + veEsc(l.t) + '" loading="lazy">'
+        : '<div class="card-placeholder" aria-hidden="true">' + (VE_ICONS[l.type] || '🌱') + '</div>';
+      var tb  = '<span class="tag ' + (VE_TC[l.type] || '') + '">' + veEsc(l.type) + '</span>';
+      var body = img + '<div class="card-body"><div class="card-name">' + veEsc(l.t) + '</div><div class="card-tags">' + tb + '</div></div>';
+      var al   = veEsc(l.t) + ', ' + veEsc(l.type) + ', New York';
+      var inner = l.l
+        ? '<a href="' + veEsc(l.l) + '" target="_blank" rel="noopener noreferrer" aria-label="' + al + '">' + body + '</a>'
+        : '<div style="display:flex;flex-direction:column;flex:1">' + body + '</div>';
+      return '<article class="card">' + inner + '</article>';
+    }).join('');
+  }
+
+  function renderVEPagination(total) {
+    var pg = document.getElementById('hub-pagination');
+    var totalPages = Math.max(1, Math.ceil(total / hubPgSize));
+    if (totalPages <= 1) { pg.innerHTML = ''; return; }
+    var pages = [];
+    if (totalPages <= 7) {
+      for (var i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (hubPage > 3) pages.push('...');
+      for (var i = Math.max(2, hubPage - 1); i <= Math.min(totalPages - 1, hubPage + 1); i++) pages.push(i);
+      if (hubPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    var btns = pages.map(function(p) {
+      if (p === '...') return '<span class="pg-btn pg-ellipsis" aria-hidden="true">…</span>';
+      var cur  = p === hubPage ? ' current' : '';
+      var aria = p === hubPage ? ' aria-current="page"' : '';
+      return '<button class="pg-btn' + cur + '" data-hubpg="' + p + '" aria-label="Page ' + p + '"' + aria + '>' + p + '</button>';
+    }).join('');
+    var prevD = hubPage === 1          ? ' disabled' : '';
+    var nextD = hubPage === totalPages ? ' disabled' : '';
+    pg.innerHTML =
+      '<button class="pg-btn"' + prevD + ' data-hubpg="' + (hubPage - 1) + '" aria-label="Previous page">← Prev</button>' +
+      btns +
+      '<button class="pg-btn"' + nextD + ' data-hubpg="' + (hubPage + 1) + '" aria-label="Next page">Next →</button>';
+    pg.querySelectorAll('[data-hubpg]').forEach(function(btn) {
+      if (btn.disabled) return;
+      btn.addEventListener('click', function() {
+        hubPage = parseInt(btn.getAttribute('data-hubpg'));
+        renderVEDir(true);
+      });
+    });
+  }
+
+  function renderVEDir(keepPage) {
+    if (!keepPage) hubPage = 1;
+    var q = hubSearch.toLowerCase().trim();
+    var filtered = VE_DATA.filter(function(l) {
+      if (hubType !== 'All' && l.type !== hubType) return false;
+      if (q && l.t.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    var total = filtered.length;
+    document.getElementById('hub-result-bar').textContent = total + ' listing' + (total === 1 ? '' : 's');
+    var start = (hubPage - 1) * hubPgSize;
+    renderVECards(filtered.slice(start, start + hubPgSize));
+    renderVEPagination(total);
+  }
+
+  /* Wire up type chips */
+  document.querySelectorAll('[data-hubtype]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('[data-hubtype]').forEach(function(b) {
+        b.classList.remove('active'); b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+      hubType = btn.getAttribute('data-hubtype');
+      renderVEDir();
+    });
+  });
+
+  /* Wire up search */
+  document.getElementById('hub-dir-search').addEventListener('input', function(e) {
+    hubSearch = e.target.value;
+    renderVEDir();
+  });
+
+  /* Wire up page size */
+  document.getElementById('hub-page-size').addEventListener('change', function(e) {
+    hubPgSize = parseInt(e.target.value);
+    renderVEDir();
+  });
+
+  renderVEDir();
+
+</script>
+
+</body>
+</html>
