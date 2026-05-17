@@ -331,6 +331,26 @@
     .locked-perks { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 28px; }
     .locked-perk { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); display: flex; align-items: center; gap: 5px; }
     .locked-perk::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
+    /* ── Locked preview layout ── */
+    .locked-preview-wrap { position: relative; overflow: hidden; border-radius: 10px; border: 1px solid #f0ece8; margin: 0 0 32px; }
+    .preview-content { filter: blur(5px); pointer-events: none; user-select: none; padding: 24px 28px; background: #fff; }
+    .preview-gate { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.90); padding: 40px 24px; text-align: center; }
+    /* Member preview grid */
+    .mp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .mp-card { display: flex; align-items: center; gap: 10px; padding: 11px 13px; background: #fafaf8; border-radius: 8px; border: 1px solid #eee; }
+    .mp-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+    .mp-name { font-size: 12px; font-weight: 700; color: #1a1a1a; line-height: 1.2; }
+    .mp-city { font-size: 10px; color: #999; margin-top: 2px; }
+    .mp-since { font-size: 9px; color: #ccc; margin-top: 2px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+    /* Chat preview list */
+    .ct-list { display: flex; flex-direction: column; gap: 10px; }
+    .ct-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: #fafaf8; border-radius: 8px; border: 1px solid #eee; }
+    .ct-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0; margin-top: 1px; }
+    .ct-topic { font-size: 13px; font-weight: 700; color: #1a1a1a; line-height: 1.35; }
+    .ct-excerpt { font-size: 11px; color: #aaa; margin-top: 3px; line-height: 1.5; }
+    .ct-meta { display: flex; gap: 14px; margin-top: 5px; }
+    .ct-meta span { font-size: 10px; color: #ccc; }
+    @media (max-width: 640px) { .mp-grid { grid-template-columns: repeat(2,1fr); } }
   </style>
 </head>
 <body>
@@ -566,7 +586,7 @@
           <p class="event-type-badge">Meetup</p>
           <h3 class="event-name">NYCVegans Monthly Meetup</h3>
           <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Rotating venue &mdash; announced 3 days prior</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Rotating venue - announced 3 days prior</span>
             <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>6:30 PM EDT</span>
             <span>Community staple</span>
           </div>
@@ -698,39 +718,69 @@
   </section>
 
 
-  <!-- ========================= MEMBERS SECTION (LOCKED) ========================= -->
-  <section id="tab-members" class="hub-section" hidden aria-labelledby="tab-btn-members">
-    <div class="locked-panel">
-      <div class="locked-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    <!-- ========================= MEMBERS SECTION (LOCKED) ========================= -->
+  <section id="tab-members" class="hub-section" aria-labelledby="tab-btn-members">
+    <div class="section-hdr" style="margin-bottom:20px;">
+      <div>
+        <h2 class="section-title">Community Members</h2>
+        <p class="section-sub">New York Passport holders. Join to see who else is in your community.</p>
       </div>
-      <span class="locked-badge">Passport Required</span>
-      <h2 class="locked-title">Community Members</h2>
-      <p class="locked-desc">See who else is part of this community. Connect with local vegans, discover members running businesses, and grow your network.</p>
-      <a href="/passport" class="locked-cta">Get Passport &mdash; $11</a>
-      <div class="locked-perks">
-        <span class="locked-perk">Member directory</span>
-        <span class="locked-perk">Local connections</span>
-        <span class="locked-perk">Business profiles</span>
+    </div>
+    <div class="locked-preview-wrap">
+      <div class="preview-content" aria-hidden="true">
+        <div class="mp-grid">
+          <div class="mp-card"><div class="mp-avatar" style="background:#4caf50">NC</div><div><div class="mp-name">Nadia C.</div><div class="mp-city">Harlem, NY</div><div class="mp-since">Member since 2024</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#f69820">JS</div><div><div class="mp-name">Julian S.</div><div class="mp-city">Brooklyn, NY</div><div class="mp-since">Member since 2025</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#2196f3">FD</div><div><div class="mp-name">Fatou D.</div><div class="mp-city">Queens, NY</div><div class="mp-since">Member since 2025</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#9c27b0">ML</div><div><div class="mp-name">Marcus L.</div><div class="mp-city">Lower East Side, NY</div><div class="mp-since">Member since 2024</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#e91e63">AT</div><div><div class="mp-name">Aiko T.</div><div class="mp-city">Astoria, NY</div><div class="mp-since">Member since 2026</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#009688">RB</div><div><div class="mp-name">Remi B.</div><div class="mp-city">The Bronx, NY</div><div class="mp-since">Member since 2023</div></div></div>
+        </div>
+      </div>
+      <div class="preview-gate">
+        <div class="locked-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+        <span class="locked-badge">Passport Required</span>
+        <h2 class="locked-title">Community Members</h2>
+        <p class="locked-desc">See who else is part of this community. Connect with local vegans, discover members running businesses, and grow your network.</p>
+        <a href="/passport" class="locked-cta">Get Passport - $11</a>
+        <div class="locked-perks">
+          <span class="locked-perk">Member directory</span>
+          <span class="locked-perk">Local connections</span>
+          <span class="locked-perk">Business profiles</span>
+        </div>
       </div>
     </div>
   </section>
 
 
-  <!-- ========================= CHAT SECTION (LOCKED) ========================= -->
-  <section id="tab-chat" class="hub-section" hidden aria-labelledby="tab-btn-chat">
-    <div class="locked-panel">
-      <div class="locked-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    <!-- ========================= CHAT SECTION (LOCKED) ========================= -->
+  <section id="tab-chat" class="hub-section" aria-labelledby="tab-btn-chat">
+    <div class="section-hdr" style="margin-bottom:20px;">
+      <div>
+        <h2 class="section-title">Community Chat</h2>
+        <p class="section-sub">Active discussions in the New York vegan community.</p>
       </div>
-      <span class="locked-badge">Passport Required</span>
-      <h2 class="locked-title">Community Chat</h2>
-      <p class="locked-desc">A space for Passport holders to discuss local spots, share finds, plan meetups, and talk all things vegan in this region.</p>
-      <a href="/passport" class="locked-cta">Get Passport &mdash; $11</a>
-      <div class="locked-perks">
-        <span class="locked-perk">Regional discussions</span>
-        <span class="locked-perk">Event planning</span>
-        <span class="locked-perk">Local recommendations</span>
+    </div>
+    <div class="locked-preview-wrap">
+      <div class="preview-content" aria-hidden="true">
+        <div class="ct-list">
+          <div class="ct-row"><div class="ct-avatar" style="background:#4caf50">NC</div><div style="min-width:0;"><div class="ct-topic">Best Ethiopian spot in Harlem right now?</div><div class="ct-excerpt">Been craving a good injera spread. Looking for fully vegan or mostly vegan...</div><div class="ct-meta"><span>28 replies</span><span>2h ago</span></div></div></div>
+          <div class="ct-row"><div class="ct-avatar" style="background:#f69820">JS</div><div style="min-width:0;"><div class="ct-topic">Brooklyn vegan scene - where are you eating?</div><div class="ct-excerpt">Just moved to Bed-Stuy. Need the full breakdown from people who actually live here...</div><div class="ct-meta"><span>15 replies</span><span>5h ago</span></div></div></div>
+          <div class="ct-row"><div class="ct-avatar" style="background:#2196f3">FD</div><div style="min-width:0;"><div class="ct-topic">Where to get the best vegan bagels in Manhattan?</div><div class="ct-excerpt">This is a public health question and I need answers immediately...</div><div class="ct-meta"><span>22 replies</span><span>1d ago</span></div></div></div>
+          <div class="ct-row"><div class="ct-avatar" style="background:#e91e63">AT</div><div style="min-width:0;"><div class="ct-topic">Anyone organizing a trip to Cinnamon Snail this weekend?</div><div class="ct-excerpt">I have been dreaming about those donuts. Who is in?</div><div class="ct-meta"><span>9 replies</span><span>2d ago</span></div></div></div>
+        </div>
+      </div>
+      <div class="preview-gate">
+        <div class="locked-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></div>
+        <span class="locked-badge">Passport Required</span>
+        <h2 class="locked-title">Community Chat</h2>
+        <p class="locked-desc">A space for Passport holders to discuss local spots, share finds, plan meetups, and talk all things vegan in this region.</p>
+        <a href="/passport" class="locked-cta">Get Passport - $11</a>
+        <div class="locked-perks">
+          <span class="locked-perk">Regional discussions</span>
+          <span class="locked-perk">Event planning</span>
+          <span class="locked-perk">Local recommendations</span>
+        </div>
       </div>
     </div>
   </section>
