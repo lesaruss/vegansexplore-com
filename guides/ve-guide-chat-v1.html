@@ -140,7 +140,7 @@
 
     /* ======== TOPIC NAV (chat view) ======== */
     .topic-nav {
-      position: sticky; top: 56px; z-index: 300; width: 100%;
+      position: sticky; top: 60px; z-index: 300; width: 100%;
       background: rgba(255,255,255,0.99);
       border-bottom: 2px solid var(--ve-green-mid);
       display: flex; align-items: center; justify-content: space-between;
@@ -349,7 +349,7 @@
     /* ======== DISCUSS BOARD VIEW ======== */
     .discuss-outer { flex: 1; display: flex; flex-direction: column; }
     .discuss-sticky-bar {
-      position: sticky; top: 56px; z-index: 300;
+      position: sticky; top: 60px; z-index: 300;
       background: rgba(255,255,255,0.98);
       border-bottom: 1px solid var(--ve-border);
       padding: 16px 40px 14px;
@@ -367,7 +367,7 @@
     }
     .discuss-search:focus { border-color: var(--ve-green-dark); }
     .discuss-search::placeholder { color: var(--ve-text-30); }
-    .discuss-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .discuss-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .discuss-filter-btn {
       font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
       letter-spacing: 0.1em; text-transform: uppercase;
@@ -378,6 +378,18 @@
     .discuss-filter-btn:hover { border-color: var(--ve-green-dark); color: var(--ve-green-dark); }
     .discuss-filter-btn.active { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
     .discuss-filter-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .btn-today {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--ve-orange); color: #fff;
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 20px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.15s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-today:hover { background: var(--ve-orange-dark); }
+    .btn-today:focus-visible { outline: 2px solid var(--ve-orange); outline-offset: 2px; }
+    .btn-today svg { width: 9px; height: 9px; fill: none; stroke: #fff; stroke-width: 2.5; }
 
     .discuss-list-wrap { flex: 1; padding: 24px 40px 48px; max-width: 840px; margin: 0 auto; width: 100%; }
     .discuss-list { display: flex; flex-direction: column; gap: 10px; }
@@ -561,7 +573,27 @@
   <!-- ==================== VIEW: CHAT ==================== -->
   <div id="view-chat" class="view-pane active">
 
-    <!-- TOPIC NAV -->
+    <!-- DISCUSS STICKY BAR -->
+    <div class="discuss-sticky-bar">
+      <div class="discuss-top-row">
+        <div class="discuss-title-group">
+          <div class="discuss-board-title">Discuss</div>
+        </div>
+        <a href="/guides/ve-discuss" class="discuss-search" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ve-text-50);font-size:11px;font-weight:600;max-width:fit-content;padding:6px 0;border:none;background:none;">&#8592; All Topics</a>
+      </div>
+      <div class="discuss-filters" role="group" aria-label="Filter by category">
+        <a href="/guides/ve-guide-chat-v1" class="btn-today">Today's Topic <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <a href="/guides/ve-discuss?filter=Nutrition" class="discuss-filter-btn">Nutrition</a>
+        <a href="/guides/ve-discuss?filter=Lifestyle" class="discuss-filter-btn">Lifestyle</a>
+        <a href="/guides/ve-discuss?filter=Relationships" class="discuss-filter-btn">Relationships</a>
+        <a href="/guides/ve-discuss?filter=Business" class="discuss-filter-btn">Business</a>
+        <a href="/guides/ve-discuss?filter=Activism" class="discuss-filter-btn">Activism</a>
+        <a href="/guides/ve-discuss?filter=Community" class="discuss-filter-btn">Community</a>
+        <a href="/guides/ve-discuss?filter=Food+Science" class="discuss-filter-btn">Food Science</a>
+      </div>
+    </div>
+
+        <!-- TOPIC NAV -->
     <div class="topic-nav" role="navigation" aria-label="Daily topic navigation">
       <button class="topic-arrow" id="prevBtn" onclick="changeDay(-1)" aria-label="Previous topic" type="button">&#8249;</button>
       <div class="topic-center" onclick="changeDay(0)">
