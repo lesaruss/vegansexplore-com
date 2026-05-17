@@ -26,11 +26,11 @@
 
 
     /* HERO */
-    .hero { position: relative; min-height: 420px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+    .hero { position: relative; min-height: 520px; display: flex; align-items: center; overflow: hidden; }
     .hero-photo { position: absolute; inset: 0; }
     .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.2) 100%); }
-    .hero-content { position: relative; z-index: 2; padding: 0 56px 52px; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.08) 65%, transparent 82%); }
+    .hero-content { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 600px; }
     .hero-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
     .hero-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
     .hero-breadcrumb a:hover { color: rgba(255,255,255,0.7); }
@@ -262,7 +262,9 @@
     .footer-links a:hover { color: rgba(255,255,255,0.7); }
 
     /* VIEWPORT SWITCHER CLASSES — mirrors @media mobile rules for in-mock preview */
-    .page-frame.vp-mobile .hero-content { padding: 25px 24px 40px; text-align: center; }
+    .page-frame.vp-mobile .hero { min-height: 480px; align-items: flex-end; }
+    .page-frame.vp-mobile .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+    .page-frame.vp-mobile .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
     .page-frame.vp-mobile .hero-breadcrumb { justify-content: center; }
     .page-frame.vp-mobile .hero-eyebrow { justify-content: center; }
     .page-frame.vp-mobile .hero-meta { justify-content: center; }
@@ -296,7 +298,9 @@
       .partners-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 700px) {
-      .hero-content { padding: 25px 24px 40px; text-align: center; }
+      .hero { min-height: 480px; align-items: flex-end; }
+      .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
       .hero-breadcrumb { justify-content: center; }
       .hero-eyebrow { justify-content: center; }
       .hero-meta { justify-content: center; }
