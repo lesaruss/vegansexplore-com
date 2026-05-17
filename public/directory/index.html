@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vegans Explore — Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ve-green:       #3A9B3E;
+  --ve-green-dark:  #2d7d31;
+  --ve-green-light: #e8f5e9;
+  --ve-green-mid:   #c8e6c9;
+  --ve-orange:      #F69820;
+  --ve-orange-text: #7d4a00;
+  --ve-border:      rgba(0,0,0,0.09);
+  --ve-surface2:    #f7faf7;
+  --ve-text:        #1a1a1a;
+  --ve-text-75:     rgba(26,26,26,0.75);
+  --ve-text-50:     rgba(26,26,26,0.50);
+}
+
+html { min-height: 100%; }
+body {
+  min-height: 100%;
+  background: #f5f5f5;
+  color: var(--ve-text);
+  font-family: Montserrat, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- Frame ---- */
+#frame {
+  width: 100%;
+  max-width: 1200px;
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Header ---- */
+.ve-header {
+  position: sticky;
+  top: 0;
+  z-index: 400;
+  width: 100%;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ve-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  gap: 12px;
+}
+.ve-wordmark {
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ve-text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.ve-leaf {
+  width: 22px; height: 22px;
+  background: var(--ve-green-dark);
+  border-radius: 50% 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ve-leaf svg { width: 12px; height: 12px; fill: white; }
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header-nav a {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ve-text-75);
+  text-decoration: none;
+  transition: color 0.15s;
+  cursor: pointer;
+}
+.header-nav a:hover { color: var(--ve-green-dark); }
+.header-nav a.active {
+  color: var(--ve-green-dark);
+  border-bottom: 2px solid var(--ve-green-dark);
+  padding-bottom: 2px;
+}
+.header-cta {
+  background: var(--ve-green-dark);
+  color: #fff;
+  font-family: Montserrat, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.header-cta:hover { background: #1e5c21; }
+@media (max-width: 640px) {
+  .header-nav { gap: 12px; }
+  .header-nav a { font-size: 10px; }
+  .header-cta { display: none; }
+}
+
+/* ---- Filter bar ---- */
+.filter-bar {
+  position: sticky;
+  top: 56px;
+  z-index: 300;
+  width: 100%;
+  background: rgba(255,255,255,0.99);
+  border-bottom: 2px solid var(--ve-green-mid);
+  padding: 10px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filter-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+/* Search */
+.search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+.search-wrap input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  border: 1px solid var(--ve-border);
+  border-radius: 4px;
+  font-family: Montserrat, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--ve-surface2);
+  color: var(--ve-text);
+  outline: none;
+  transition: border-color .15s;
+}
+.search-wrap input::placeholder { color: var(--ve-text-50); }
+.search-wrap input:focus { border-color: var(--ve-green-dark); background: #fff; }
+.search-wrap input:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+.search-icon {
+  position: absolute; left: 10px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--ve-text-50);
+}
+
+/* Filter chips */
+.chip {
+  font-family: Montserrat, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--ve-surface2);
+  border: 1px solid var(--ve-border);
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--ve-text-75);
+  transition: .15s;
+  white-space: nowrap;
+}
+.chip:hover { background: var(--ve-green-light); color: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+.chip.active { background: var(--ve-green-dark); color: #fff; border-color: var(--ve-green-dark); }
+.chip:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+.chip.chip-featured { border-color: var(--ve-orange); color: var(--ve-orange-text); }
+.chip.chip-featured:hover { background: #fff3e0; border-color: var(--ve-orange); color: var(--ve-orange-text); }
+.chip.chip-featured.active { background: var(--ve-orange); color: #fff; border-color: var(--ve-orange); }
+
+.region-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.region-row.hidden { display: none; }
+
+/* Divider label */
+.filter-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ve-text-75);
+  white-space: nowrap;
+}
+
+/* ---- Grid ---- */
+.dir-main { padding: 24px; flex: 1; }
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.result-bar {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ve-text-75);
+}
+.page-size-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.page-size-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ve-text-75);
+}
+.page-size-wrap select {
+  font-family: Montserrat, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: var(--ve-surface2);
+  border: 1px solid var(--ve-border);
+  border-radius: 4px;
+  padding: 5px 8px;
+  color: var(--ve-text);
+  cursor: pointer;
+  outline: none;
+}
+.page-size-wrap select:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+/* ---- Pagination ---- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 0 8px;
+  flex-wrap: wrap;
+}
+.pg-btn {
+  font-family: Montserrat, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--ve-surface2);
+  border: 1px solid var(--ve-border);
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--ve-text-75);
+  transition: .15s;
+}
+.pg-btn:hover:not(:disabled) { background: var(--ve-green-light); color: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+.pg-btn.current { background: var(--ve-green-dark); color: #fff; border-color: var(--ve-green-dark); }
+.pg-btn:disabled { opacity: 0.35; cursor: default; }
+.pg-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+.pg-ellipsis { background: none; border-color: transparent; cursor: default; pointer-events: none; }
+.pg-info {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ve-text-75);
+  padding: 0 4px;
+}
+
+/* ---- Cards ---- */
+.card {
+  background: #fff;
+  border: 1px solid var(--ve-border);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .18s, transform .15s;
+  position: relative;
+}
+.card:hover { box-shadow: 0 4px 20px rgba(45,125,49,.12); transform: translateY(-2px); }
+.card a { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
+.card a:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 3px; border-radius: 6px; }
+.card-img {
+  width: 100%; height: 140px;
+  object-fit: cover;
+  background: var(--ve-green-light);
+  display: block;
+  border-bottom: 1px solid var(--ve-border);
+}
+.card-placeholder {
+  width: 100%; height: 140px;
+  background: linear-gradient(135deg, var(--ve-green-light) 0%, var(--ve-green-mid) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem;
+  border-bottom: 1px solid var(--ve-border);
+}
+
+/* Featured star toggle (admin) */
+.star-btn {
+  position: absolute;
+  top: 7px; left: 7px;
+  z-index: 10;
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,0.92);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: background .15s, transform .12s;
+  padding: 0;
+}
+.star-btn:hover { background: #fff; transform: scale(1.1); }
+.star-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+.star-btn svg { width: 14px; height: 14px; transition: fill .15s, stroke .15s; }
+.star-btn.off svg { fill: none; stroke: #999; stroke-width: 2; }
+.star-btn.on  svg { fill: #F69820; stroke: #F69820; stroke-width: 1.5; }
+
+/* Featured corner ribbon */
+.featured-ribbon {
+  display: none;
+  position: absolute;
+  top: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 36px 36px 0;
+  border-color: transparent var(--ve-green-dark) transparent transparent;
+  z-index: 9;
+}
+.card.featured .featured-ribbon { display: block; }
+.card.featured { border-color: rgba(45,125,49,0.35); }
+.card-body {
+  padding: 12px 14px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card-name {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--ve-text);
+  line-height: 1.4;
+}
+.card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: auto; }
+.tag {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+/* Tag colors - all WCAG AA verified */
+.t-rest  { background: var(--ve-green-light); color: #1e5c22; }
+.t-brand { background: #fff3e0; color: #7d3800; }
+.t-npo   { background: #ede7f6; color: #311b92; }
+.t-media { background: #fce4ec; color: #880e4f; }
+.t-reg   { background: var(--ve-surface2); color: #2c4a2e; border: 1px solid var(--ve-border); }
+
+.card.no-link:hover { transform: none; box-shadow: none; }
+
+/* ---- Empty ---- */
+.empty {
+  grid-column: 1/-1;
+  padding: 64px 24px;
+  text-align: center;
+  color: var(--ve-text-50);
+}
+.empty p { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+
+.hidden { display: none !important; }
+
+@media (max-width: 640px) {
+  .ve-header { padding: 0 16px; }
+  .filter-bar { padding: 10px 16px; }
+  .dir-main { padding: 16px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; }
+  .card-img, .card-placeholder { height: 115px; }
+  .search-wrap { max-width: 100%; }
+  .chip { padding: 5px 10px; }
+}
+</style>
+</head>
+<body>
+<div id="frame">
+
+  <!-- Header -->
+  <header class="ve-header">
+    <a class="ve-wordmark" href="https://vegansexplore-com.vercel.app" target="_blank" rel="noopener">
+      <span class="ve-leaf">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8C8 10 5.9 16.17 3.82 19.5c1.61-1.5 3.89-2.5 6.18-2.5 3 0 5-2 5-5 0 0 1.5 1 3 1 2 0 4-2 4-4 0 0-1 2-4 2-1.5 0-3-1-3-1s1.5-2 3.5-2c1 0 2 .5 2 .5C16.5 5 13 4 10 6c0 0 0-2 2-3 0 0-3 1-4 4C7 9 8 11 8 11s0-3 2-4c0 0-1 3 0 5 1 1.5 3 2 3 2s-2 0-3-1c0 0 1 4 5 3 1.5-.4 2.5-1 3-2z"/></svg>
+      </span>
+      Vegans Explore
+    </a>
+    <nav class="header-nav" aria-label="Main navigation">
+      <a href="https://vegansexplore-com.vercel.app/guides/ve-guides-roster-v1.html" target="_blank" rel="noopener">Guides</a>
+      <a href="#" class="active" aria-current="page">Directory</a>
+      <a href="https://vegansexplore.com/events/" target="_blank" rel="noopener">Events</a>
+      <a href="https://vegansexplore-com.vercel.app/guides/ve-guide-chat-v1" target="_blank" rel="noopener">Discuss</a>
+      <a href="https://vegansexplore.com/community/" target="_blank" rel="noopener">Community</a>
+    </nav>
+    <a class="header-cta" href="https://vegansexplore.com/passport" target="_blank" rel="noopener">Get Your Passport</a>
+  </header>
+
+  <!-- Filter bar -->
+  <nav class="filter-bar" aria-label="Directory filters">
+    <div class="filter-row">
+      <div class="search-wrap" role="search">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="search" placeholder="Search by name or city..." aria-label="Search directory">
+      </div>
+      <div role="tablist" aria-label="Filter by type" style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="chip chip-featured active" data-type="Featured"   role="tab" aria-selected="true" >&#9733; Featured</button>
+        <button class="chip"                      data-type="All"        role="tab" aria-selected="false">All</button>
+        <button class="chip"                      data-type="Restaurant" role="tab" aria-selected="false">Restaurants</button>
+        <button class="chip"        data-type="Brand"      role="tab" aria-selected="false">Brands</button>
+        <button class="chip"        data-type="Nonprofit"  role="tab" aria-selected="false">Nonprofits</button>
+        <button class="chip"        data-type="Media"      role="tab" aria-selected="false">Media</button>
+      </div>
+    </div>
+    <div class="region-row hidden" id="region-row" role="group" aria-label="Filter by region">
+      <span class="filter-label">Region:</span>
+      <button class="chip active" data-region="All"            >All</button>
+      <button class="chip"        data-region="South Florida"  >South Florida</button>
+      <button class="chip"        data-region="Central Florida">Central Florida</button>
+      <button class="chip"        data-region="New York"       >New York</button>
+      <button class="chip"        data-region="Atlanta"        >Atlanta</button>
+    </div>
+  </nav>
+
+  <!-- Grid -->
+  <main class="dir-main">
+    <div class="toolbar">
+      <p class="result-bar" id="result-bar" role="status" aria-live="polite"></p>
+      <div class="page-size-wrap">
+        <span class="page-size-label">Show</span>
+        <select id="page-size" aria-label="Listings per page">
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="250">250</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid" id="grid" aria-label="Directory listings"></div>
+    <div class="pagination" id="pagination" role="navigation" aria-label="Page navigation"></div>
+  </main>
+
+</div><!-- /frame -->
+
+<script>
+var DATA = [{"t": "Noshy", "l": "https://vegansexplore.com/project/noshy/", "i": "https://vegansexplore.com/wp-content/uploads/2026/02/noshy-01-300x188.jpg", "type": "Brand", "region": "South Florida"}, {"t": "Aisha's Plant‑Based Eatery", "l": "https://vegansexplore.com/project/aishas-plant-based-eatery/", "i": "https://vegansexplore.com/wp-content/uploads/2026/01/jajaja-mexicana-03-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Jajaja Mexicana", "l": "https://vegansexplore.com/project/jajaja-mexicana/", "i": "https://vegansexplore.com/wp-content/uploads/2026/01/jajaja-mexicana-02-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Be An Animal Hero", "l": "https://vegansexplore.com/project/be-an-animal-hero/", "i": "https://vegansexplore.com/wp-content/uploads/2026/01/logo-beananimalhero-300x188.jpg", "type": "Nonprofit", "region": "South Florida"}, {"t": "Anixi", "l": "https://vegansexplore.com/project/anixi/", "i": "https://vegansexplore.com/wp-content/uploads/2025/12/logo-anixi-300x188.jpg", "type": "Restaurant", "region": "Manhattan, New York"}, {"t": "Al-Andalus", "l": "https://vegansexplore.com/project/al-andalus/", "i": "https://vegansexplore.com/wp-content/uploads/2025/12/logo-al-andalus-300x188.jpg", "type": "Restaurant", "region": "Manhattan, New York"}, {"t": "Sen Saigon", "l": "https://vegansexplore.com/project/sen-saigon/", "i": "https://vegansexplore.com/wp-content/uploads/2025/12/logo-sen-saigon-300x188.jpg", "type": "Restaurant", "region": "Manhattan, New York"}, {"t": "Next Stop Vegan", "l": "https://vegansexplore.com/project/next-stop-vegan/", "i": "https://vegansexplore.com/wp-content/uploads/2025/12/logo-next-stop-vegan-02-300x188.jpg", "type": "Restaurant", "region": "New York"}, {"t": "Maizly", "l": "https://vegansexplore.com/project/maizly/", "i": "https://vegansexplore.com/wp-content/uploads/2025/12/logo-maizly-300x188.jpg", "type": "Brand", "region": "South Florida"}, {"t": "Bunnie Cakes", "l": "https://vegansexplore.com/project/bunnie-cakes/", "i": "https://vegansexplore.com/wp-content/uploads/2025/12/logo-bunnie-cakes-v2-300x188.jpg", "type": "Brand", "region": "South Florida"}, {"t": "Little Bear Sanctuary", "l": "https://vegansexplore.com/project/little-bear-sanctuary/", "i": "https://vegansexplore.com/wp-content/uploads/2025/11/logo-little-bear-sanctuary-300x188.jpg", "type": "Nonprofit", "region": "South Florida"}, {"t": "V Collective", "l": "https://vegansexplore.com/project/v-collective/", "i": "https://vegansexplore.com/wp-content/uploads/2025/11/v-collective-300x188.jpg", "type": "Brand", "region": "South Florida"}, {"t": "Greens and Grains Boca Raton", "l": "https://vegansexplore.com/project/greens-and-grains-boca-raton/", "i": "https://vegansexplore.com/wp-content/uploads/2025/11/logo-greens-and-grains-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "El Nopalito Vegan Taqueria", "l": "https://vegansexplore.com/project/el-nopalito-vegan-taqueria/", "i": "https://vegansexplore.com/wp-content/uploads/2025/11/logo-el-nopalito-vegan-taqueria-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Christopher's Kitchen", "l": "https://vegansexplore.com/project/christophers-kitchen/", "i": "https://vegansexplore.com/wp-content/uploads/2025/11/christophers-kitchen-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "The Vgan Corner", "l": "https://vegansexplore.com/project/the-vgan-corner/", "i": "https://vegansexplore.com/wp-content/uploads/2025/06/logo-the-vgan-corner-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Good ol Cookie", "l": "https://vegansexplore.com/project/good-ol-cookie/", "i": "https://vegansexplore.com/wp-content/uploads/2025/10/logo-good-ol-cookies-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Love Life Cafe", "l": "https://vegansexplore.com/project/love-life-cafe/", "i": "https://vegansexplore.com/wp-content/uploads/2025/05/logo-love-life-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Mama Chea Cafe", "l": "https://vegansexplore.com/project/mama-chea-cafe/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-mama-chea-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Florida Animal Rescue Alliance", "l": "https://vegansexplore.com/project/florida-animal-rescue-alliance/", "i": "https://vegansexplore.com/wp-content/uploads/2024/04/logo-fara-01-1-300x188.jpg", "type": "Nonprofit", "region": "South Florida"}, {"t": "Vegan Cuban Cuisine", "l": "https://vegansexplore.com/project/vegan-cuban-cuisine/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-cuban-cuisine-02-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "The Plantisserie", "l": "https://vegansexplore.com/project/the-plantisserie/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-theplantisserie-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Zen Mystery", "l": "https://vegansexplore.com/project/zen-mystery/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-zen-mystery-02-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "On the Run Vegan", "l": "https://vegansexplore.com/project/on-the-run-vegan/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-on-the-run-vegan-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Dina's Vegan Deli & Desserts", "l": "https://vegansexplore.com/project/dinas-vegan-deli-desserts/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-dina-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Dope Vegan", "l": "https://vegansexplore.com/project/dope-vegan/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-dope-vegan-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "C4Eats", "l": "https://vegansexplore.com/project/c4eats/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-c4eats-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "UNALTRD", "l": "https://vegansexplore.com/project/unaltrd/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-unaltrd-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "The Cocinita Miami", "l": "https://vegansexplore.com/project/the-cocinita-miami/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-cocinita-miami-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Blue Tree Vegan Cafe", "l": "https://vegansexplore.com/project/blue-tree-vegan-cafe/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-blue-tree-cafe-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Darbster", "l": "https://vegansexplore.com/project/darbster/", "i": "https://vegansexplore.com/wp-content/uploads/2024/04/logo-darbster-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Utopia Juice Bar", "l": "https://vegansexplore.com/project/utopia-juice-bar/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-utopia-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "The Rabbit Hole", "l": "https://vegansexplore.com/project/the-rabbit-hole/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-rabbit-hole-02-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "MOOD", "l": "https://vegansexplore.com/project/mood/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-mood-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Stephanie's Vegan Bakery", "l": "https://vegansexplore.com/project/stephanies-vegan-bakery/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-stephanie-vegan-bakery-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Vegan Junkie", "l": "https://vegansexplore.com/project/vegan-junkie/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-junkie-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Vegan Tierra", "l": "https://vegansexplore.com/project/vegan-tierra/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-tierra-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Plant Based Mafia", "l": "https://vegansexplore.com/project/plant-based-mafia/", "i": "https://vegansexplore.com/wp-content/uploads/2024/04/logo-plant-based-mafia-03-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "La Chia Vegana", "l": "https://vegansexplore.com/project/la-chia-vegana/", "i": "https://vegansexplore.com/wp-content/uploads/2024/04/logo-la-chia-vegana-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Natuurlik", "l": "https://vegansexplore.com/project/natuurlik/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-naturrlik-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Earth's Goddess Holistics and Juicebar", "l": "https://vegansexplore.com/project/earths-goddess-holistics-and-juicebar/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-EarthsGoddess-02-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Vegan International Co", "l": "https://vegansexplore.com/project/vegan-international-co/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-Vegan-International-Co-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Vegan Delights", "l": "https://vegansexplore.com/project/vegan-delights/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-delights-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "The Twisted Vegan", "l": "https://vegansexplore.com/project/the-twisted-vegan/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-twisted-vegan-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "La Setima Club", "l": "https://vegansexplore.com/project/la-setima-club/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-La-Setima-Club-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Florish", "l": "https://vegansexplore.com/project/florish/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-florish-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "BARE Blends", "l": "https://vegansexplore.com/project/bare-blends/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-bare-blends-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Love Food Central", "l": "https://vegansexplore.com/project/love-food-central/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-love-food-central-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Lotus Vegan Restaurant", "l": "https://vegansexplore.com/project/lotus-vegan-restaurant/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-lotus-vegan-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "House of Vegano", "l": "https://vegansexplore.com/project/house-of-vegano/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/house-of-vegano-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Good Intentions", "l": "https://vegansexplore.com/project/good-intentions/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-good-creations-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Winter Park Biscuit Company", "l": "https://vegansexplore.com/project/winter-park-biscuit-company/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-winter-park-biscuit-co-02-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "The Earthy Kitchen", "l": "https://vegansexplore.com/project/the-earthy-kitchen/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-earthy-kitchen-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Soulicious Vegan Kitchen", "l": "https://vegansexplore.com/project/soulicious-vegan-kitchen/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-soulicious-vegan-kitchen-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Purple Ocean Superfood Bar", "l": "https://vegansexplore.com/project/purple-ocean-superfood-bar/", "i": "https://vegansexplore.com/wp-content/uploads/2024/04/logo-Purple-Ocean-Superfood-Bar-02-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Plantees", "l": "https://vegansexplore.com/project/plantees/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-plantees-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Norma's Plant Based Cuisine", "l": "https://vegansexplore.com/project/normas-plant-based-cuisine/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-Normas-Plant-Based-Cuisine-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Market on South", "l": "https://vegansexplore.com/project/market-on-south/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-market-on-south-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Earthy Picks Vegan Café", "l": "https://vegansexplore.com/project/earthy-picks-vegan-cafe/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-earthy-picks-02-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "A Lo Vegano", "l": "https://vegansexplore.com/project/a-lo-vegano/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-a-lo-vegano-01-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Vegan Scoops", "l": "https://vegansexplore.com/project/vegan-scoops/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-scoops-03-300x188.jpg", "type": "Restaurant", "region": "Central Florida"}, {"t": "Sobe Vegan", "l": "https://vegansexplore.com/project/sobe-vegan/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logos-sobe-vegan-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Origamy Gelato", "l": "https://vegansexplore.com/project/origamy-gelato/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-origamy-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Rootz Soul Cafe", "l": "https://vegansexplore.com/project/rootz-soul-cafe/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-rootz-soul-cafe-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Under the Mango Tree", "l": "https://vegansexplore.com/project/under-the-mango-tree/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-under-the-mango-tree-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Vegan Planet", "l": "https://vegansexplore.com/project/vegan-planet/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-planet-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "The Vegan Marie", "l": "https://vegansexplore.com/project/the-vegan-marie/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-vegan-marie-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Joseph's Organic Bakery", "l": "https://vegansexplore.com/project/josephs-organic-bakery/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-josephs-organic-1-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Ittle Litaly", "l": "https://vegansexplore.com/project/ittle-litaly/", "i": "https://vegansexplore.com/wp-content/uploads/2025/04/logo-ittle-litaly-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Kava Garden", "l": "https://vegansexplore.com/project/kava-garden/", "i": "https://vegansexplore.com/wp-content/uploads/2025/05/logo-kava-garden-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "True Vegan", "l": "https://vegansexplore.com/project/true-vegan/", "i": "https://vegansexplore.com/wp-content/uploads/2025/11/logo-the-true-vegan-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Vegetarian Delight Juice Bar", "l": "https://vegansexplore.com/project/vegetarian-delight-juice-bar/", "i": "https://vegansexplore.com/wp-content/uploads/2025/11/logo-vegetarian-delight-juice-bar-01-300x188.jpg", "type": "Restaurant", "region": "South Florida"}, {"t": "Green Haus Foods", "l": "https://vegansexplore.com/project/green-haus-foods/", "i": "https://vegansexplore.com/wp-content/uploads/2023/11/logo-green-haus-foods-01-300x188.jpg", "type": "Brand", "region": "South Florida"}, {"t": "Calypso Bites", "l": "https://vegansexplore.com/project/calypso-bites/", "i": "https://vegansexplore.com/wp-content/uploads/2023/11/logo-calypso-01-300x188.jpg", "type": "Brand", "region": "South Florida"}, {"t": "Healthful Essence", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Jimmy Jam's", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "La Semilla", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "LaRayia's Bodega", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Life Bistro", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Melinated Cafe", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Mission Burger Co.", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Pizza Verdura Sincera", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Plant Based Pizzeria", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Plant Based Zo", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Plant Life Living Cuisine", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Plantbaed Cafe", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "PurelyPlant", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Roots PBC", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Royal Health World Retail & Cafe", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Shroom Stop", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Slutty Vegan", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Stir House", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Tassili's Raw Reality", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Vegan Wangs", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Voagies", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "WAFFL Taco", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Winner Winner Vegan", "l": "", "i": "", "type": "Restaurant", "region": "Atlanta"}, {"t": "Vegans Explore Podcast", "l": "https://vegansexplore.com/content/", "i": "", "type": "Media", "region": "", "subtype": "Podcast"}, {"t": "SoFlo Vegans Podcast", "l": "https://vegansexplore.com/content/", "i": "", "type": "Media", "region": "", "subtype": "Podcast"}, {"t": "Vegans Who Lift Podcast", "l": "https://vegansexplore.com/content/", "i": "", "type": "Media", "region": "", "subtype": "Podcast"}];
+var ICONS = {Restaurant:'🍽',Brand:'🌿',Nonprofit:'❤',Media:'🎙'};
+var TC    = {Restaurant:'t-rest',Brand:'t-brand',Nonprofit:'t-npo',Media:'t-media'};
+</script>
+
+<!-- Logic — edit this block freely; DATA above is frozen -->
+<script>
+// --- State ---
+let activeType   = 'Featured';
+let activeRegion = 'All';
+let searchQ      = '';
+let currentPage  = 1;
+let pageSize     = 25;
+
+// Featured set: persisted in localStorage as a JSON array of listing titles
+function loadFeatured() {
+  try { return new Set(JSON.parse(localStorage.getItem('ve-featured') || '[]')); }
+  catch(e) { return new Set(); }
+}
+function saveFeatured(set) {
+  localStorage.setItem('ve-featured', JSON.stringify([...set]));
+}
+let featured = loadFeatured();
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Star SVG path (filled vs outline toggled via CSS classes)
+const STAR_SVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+</svg>`;
+
+function renderCards(list) {
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty"><p>No listings match your filters.</p></div>';
+    return;
+  }
+  grid.innerHTML = list.map(l => {
+    const isFeat = featured.has(l.t);
+    const featClass = isFeat ? ' featured' : '';
+    const starClass = isFeat ? 'on' : 'off';
+    const starLabel = isFeat ? 'Remove featured' : 'Mark as featured';
+    const img = l.i
+      ? `<img class="card-img" src="${esc(l.i)}" alt="${esc(l.t)}" loading="lazy">`
+      : `<div class="card-placeholder" aria-hidden="true">${ICONS[l.type]||'🌱'}</div>`;
+    const tb = `<span class="tag ${TC[l.type]||''}">${esc(l.type)}</span>`;
+    const rb = l.region ? `<span class="tag t-reg">${esc(l.region.split(',')[0].trim())}</span>` : '';
+    const body = `${img}<div class="card-body"><div class="card-name">${esc(l.t)}</div><div class="card-tags">${tb}${rb}</div></div>`;
+    const al = `${esc(l.t)}, ${esc(l.type)}${l.region?', '+esc(l.region.split(',')[0].trim()):''}`;
+    const inner = l.l
+      ? `<a href="${esc(l.l)}" target="_blank" rel="noopener noreferrer" aria-label="${al}">${body}</a>`
+      : `<div style="display:flex;flex-direction:column;flex:1">${body}</div>`;
+    return `<article class="card${featClass}" data-title="${esc(l.t)}">
+      <button class="star-btn ${starClass}" aria-label="${starLabel}" title="${starLabel}" data-title="${esc(l.t)}">${STAR_SVG}</button>
+      <div class="featured-ribbon" aria-hidden="true"></div>
+      ${inner}
+    </article>`;
+  }).join('');
+
+  // Star click handlers
+  grid.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const title = btn.dataset.title;
+      if (featured.has(title)) {
+        featured.delete(title);
+      } else {
+        featured.add(title);
+      }
+      saveFeatured(featured);
+      render(true); // re-render keeping current page
+    });
+  });
+}
+
+function renderPagination(total) {
+  const pg = document.getElementById('pagination');
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  if (totalPages <= 1) { pg.innerHTML = ''; return; }
+
+  const MAX_BTNS = 7;
+  let pages = [];
+  if (totalPages <= MAX_BTNS) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    if (currentPage > 3) pages.push('...');
+    for (let i = Math.max(2, currentPage-1); i <= Math.min(totalPages-1, currentPage+1); i++) pages.push(i);
+    if (currentPage < totalPages - 2) pages.push('...');
+    pages.push(totalPages);
+  }
+
+  const btns = pages.map(p => {
+    if (p === '...') return `<span class="pg-btn pg-ellipsis" aria-hidden="true">…</span>`;
+    const cur = p === currentPage ? ' current' : '';
+    return `<button class="pg-btn${cur}" data-page="${p}" aria-label="Page ${p}"${p===currentPage?' aria-current="page"':''}>${p}</button>`;
+  }).join('');
+
+  const prevDis = currentPage === 1 ? ' disabled' : '';
+  const nextDis = currentPage === totalPages ? ' disabled' : '';
+  pg.innerHTML =
+    `<button class="pg-btn pg-prev"${prevDis} data-page="${currentPage-1}" aria-label="Previous page">&#8592; Prev</button>` +
+    btns +
+    `<button class="pg-btn pg-next"${nextDis} data-page="${currentPage+1}" aria-label="Next page">Next &#8594;</button>`;
+
+  pg.querySelectorAll('[data-page]').forEach(btn => {
+    if (btn.disabled) return;
+    btn.addEventListener('click', () => {
+      currentPage = parseInt(btn.dataset.page);
+      render(true);
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  });
+}
+
+function render(keepPage) {
+  if (!keepPage) currentPage = 1;
+
+  const q = searchQ.toLowerCase().trim();
+  const filtered = DATA.filter(l => {
+    if (activeType === 'Featured' && !featured.has(l.t)) return false;
+    if (activeType !== 'All' && activeType !== 'Featured' && l.type !== activeType) return false;
+    if (activeRegion !== 'All' && !(l.region||'').includes(activeRegion)) return false;
+    if (q && !l.t.toLowerCase().includes(q) && !(l.region||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  // Sort: featured first (preserving original order within each group)
+  const sorted = [
+    ...filtered.filter(l => featured.has(l.t)),
+    ...filtered.filter(l => !featured.has(l.t))
+  ];
+
+  const total = sorted.length;
+  const label = total + ' listing' + (total === 1 ? '' : 's');
+  const hc = document.getElementById('header-count');
+  if (hc) hc.textContent = label;
+  document.getElementById('result-bar').textContent = label;
+
+  // Paginate
+  const start = (currentPage - 1) * pageSize;
+  const page  = sorted.slice(start, start + pageSize);
+
+  renderCards(page);
+  renderPagination(total);
+}
+
+// --- Filter wire-ups ---
+document.querySelectorAll('[data-type]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-type]').forEach(b => {
+      b.classList.remove('active'); b.setAttribute('aria-selected','false');
+    });
+    btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+    activeType = btn.dataset.type; activeRegion = 'All';
+    document.querySelectorAll('[data-region]').forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-region="All"]').classList.add('active');
+    const rr = document.getElementById('region-row');
+    rr.classList.toggle('hidden', activeType==='Featured'||activeType==='Brand'||activeType==='Nonprofit'||activeType==='Media');
+    render();
+  });
+});
+
+document.querySelectorAll('[data-region]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-region]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeRegion = btn.dataset.region;
+    render();
+  });
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  searchQ = e.target.value;
+  render();
+});
+
+document.getElementById('page-size').addEventListener('change', e => {
+  pageSize = parseInt(e.target.value);
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
