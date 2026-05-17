@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegans Explore — Your Guides (Mock v1)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-green-mid: #c8e6c9;
+      --ve-orange: #F69820;
+      --ve-orange-text: #7d4a00;
+      --ve-black: #1A1A1A;
+      --ve-gray: #555555;
+      --ve-border: rgba(0,0,0,0.09);
+      --ve-surface: #ffffff;
+      --ve-surface2: #f7faf7;
+      --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75);
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-30: rgba(26,26,26,0.35);
+    }
+
+    body {
+      background: #f5f5f5;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ======== VIEWPORT SWITCHER ======== */
+    .vp-switcher {
+      position: fixed; bottom: 24px; right: 0; z-index: 999;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 0;
+    }
+    .vp-handle {
+      background: var(--ve-orange); color: #fff;
+      font-size: 9px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; writing-mode: vertical-rl;
+      padding: 12px 7px; border-radius: 6px 0 0 6px;
+      cursor: pointer; border: none; user-select: none;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.12);
+    }
+    .vp-panel {
+      display: none; background: #fff; border: 1px solid var(--ve-border);
+      border-right: none; border-radius: 8px 0 0 8px;
+      padding: 10px 12px; gap: 8px; flex-direction: column;
+      box-shadow: -2px 0 12px rgba(0,0,0,0.10);
+    }
+    .vp-panel.open { display: flex; }
+    .vp-btn {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--ve-surface2); border: 1px solid var(--ve-border);
+      border-radius: 4px; padding: 6px 10px; cursor: pointer;
+      color: var(--ve-text-75); white-space: nowrap;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .vp-btn:hover, .vp-btn.active { background: var(--ve-green-light); color: var(--ve-green); border-color: var(--ve-green); }
+
+    /* ======== MOCK FRAME ======== */
+    #mockFrame {
+      width: 100%; max-width: 1200px; min-height: 100vh;
+      background: #fff; margin: 0 auto;
+      display: flex; flex-direction: column;
+      transition: max-width 0.25s ease;
+    }
+    #mockFrame.tablet { max-width: 768px; }
+    #mockFrame.mobile { max-width: 390px; }
+
+    /* ======== HEADER ======== */
+    .ve-header {
+      position: sticky; top: 0; z-index: 400; width: 100%;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--ve-border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 56px; gap: 12px;
+    }
+    .ve-wordmark {
+      font-size: 15px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--ve-text);
+      display: flex; align-items: center; gap: 7px; text-decoration: none;
+    }
+    .ve-leaf {
+      width: 22px; height: 22px; background: var(--ve-green);
+      border-radius: 50% 2px 50% 2px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ve-leaf svg { width: 12px; height: 12px; fill: #fff; }
+    .header-nav { display: flex; align-items: center; gap: 24px; }
+    .header-nav a {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ve-text-50);
+      text-decoration: none; transition: color 0.15s;
+    }
+    .header-nav a:hover { color: var(--ve-green); }
+    .header-nav a.nav-current { color: var(--ve-green-dark); border-bottom: 2px solid var(--ve-green-dark); padding-bottom: 2px; }
+    .header-cta {
+      background: var(--ve-green); color: #fff;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 8px 18px; border-radius: 4px;
+      text-decoration: none; transition: background 0.15s; white-space: nowrap;
+    }
+    .header-cta:hover { background: var(--ve-green-dark); }
+
+    /* ======== PAGE HERO ======== */
+    main { padding: 48px 32px 80px; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .breadcrumb {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ve-text-50);
+      margin-bottom: 20px; display: flex; gap: 8px; align-items: center;
+    }
+    .breadcrumb a { color: var(--ve-text-50); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--ve-green); }
+    .page-eyebrow {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--ve-green);
+      margin-bottom: 10px;
+    }
+    .page-title {
+      font-size: clamp(36px, 5vw, 58px); font-weight: 900;
+      text-transform: uppercase; letter-spacing: -0.02em;
+      line-height: 1.0; color: var(--ve-text); margin-bottom: 14px;
+    }
+    .page-sub {
+      font-size: 15px; font-weight: 400; color: var(--ve-text-75);
+      line-height: 1.65; max-width: 560px; margin-bottom: 36px;
+    }
+
+    /* ======== FILTER BAR ======== */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 32px; flex-wrap: wrap;
+    }
+    .filter-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ve-text-50);
+      margin-right: 4px;
+    }
+    .filter-btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 7px 14px;
+      border: 1px solid var(--ve-border); border-radius: 40px;
+      background: var(--ve-surface2); color: var(--ve-text-75);
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: var(--ve-green); color: var(--ve-green); background: var(--ve-green-light); }
+    .filter-btn.active { background: var(--ve-green); color: #fff; border-color: var(--ve-green); }
+    .roster-count {
+      margin-left: auto;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--ve-text-50);
+    }
+
+    /* ======== CARD GRID ======== */
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    /* ======== FLIP CARD ======== */
+    .card-wrap {
+      height: 420px;
+      perspective: 1200px;
+      cursor: pointer;
+      outline: none;
+    }
+    .card-wrap:focus-visible .card-inner {
+      box-shadow: 0 0 0 3px var(--ve-green), 0 8px 32px rgba(0,0,0,0.10);
+    }
+    .card-inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+
+    .card-front, .card-back {
+      position: absolute; inset: 0;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      border-radius: 12px; overflow: hidden;
+      background: #fff; border: 1px solid var(--ve-border);
+    }
+    .card-back { transform: rotateY(180deg); }
+
+    /* FRONT */
+    .card-front { display: flex; flex-direction: column; }
+    .card-avatar-area {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      background: var(--ve-surface2);
+      border-bottom: 1px solid var(--ve-border);
+      position: relative; min-height: 240px;
+    }
+    .guide-avatar {
+      width: 140px; height: 140px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px; font-weight: 900; color: #fff;
+      letter-spacing: -0.02em;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      overflow: hidden; flex-shrink: 0;
+    }
+    .guide-avatar img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
+    }
+    .card-badge {
+      position: absolute; top: 14px; left: 14px;
+      font-size: 9px; font-weight: 800; letter-spacing: 0.16em;
+      text-transform: uppercase; padding: 4px 10px;
+      border-radius: 40px; background: var(--ve-green); color: #fff;
+    }
+    .card-badge.supporting {
+      background: var(--ve-orange); color: #fff;
+    }
+    .flip-hint {
+      position: absolute; bottom: 12px; right: 14px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ve-text-30);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .flip-hint svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .card-info {
+      padding: 18px 20px 20px;
+    }
+    .card-name {
+      font-size: 20px; font-weight: 900; letter-spacing: -0.01em;
+      color: var(--ve-text); margin-bottom: 2px;
+    }
+    .card-path {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--ve-green);
+      margin-bottom: 8px;
+    }
+    .card-quote {
+      font-size: 13px; font-weight: 400; font-style: italic;
+      color: var(--ve-text-75); line-height: 1.5;
+      border-left: 3px solid var(--ve-green-mid);
+      padding-left: 10px;
+    }
+
+    /* BACK */
+    .card-back { display: flex; flex-direction: column; }
+    .card-back-header {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--ve-border);
+    }
+    .back-guide-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .back-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 900; color: #fff; flex-shrink: 0;
+    }
+    .back-name { font-size: 16px; font-weight: 900; color: var(--ve-text); }
+    .back-path {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--ve-green);
+    }
+    .back-fit-label {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ve-text-50);
+    }
+    .card-back-body { flex: 1; padding: 14px 20px; overflow: hidden; }
+    .fit-list {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+    }
+    .fit-list li {
+      font-size: 12px; font-weight: 500; color: var(--ve-text-75);
+      line-height: 1.45; display: flex; align-items: flex-start; gap: 8px;
+    }
+    .fit-check {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--ve-green-light); border: 1px solid var(--ve-green-mid);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .fit-check svg { width: 9px; height: 9px; stroke: var(--ve-green); fill: none; stroke-width: 2.5; }
+    .card-back-footer { padding: 0 20px 20px; }
+    .free-cta {
+      display: block; width: 100%;
+      background: var(--ve-green); color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 12px 16px; border-radius: 6px;
+      text-align: center; text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.15s; margin-bottom: 8px;
+    }
+    .free-cta:hover { background: var(--ve-green-dark); }
+    .upgrade-link {
+      display: block; text-align: center;
+      font-size: 11px; font-weight: 600; color: var(--ve-text-50);
+      text-decoration: none; transition: color 0.15s;
+    }
+    .upgrade-link strong { color: var(--ve-orange-text); font-weight: 800; }
+    .upgrade-link:hover { color: var(--ve-text); }
+    .flip-back-hint {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ve-text-30);
+      text-align: center; margin-top: 6px;
+    }
+
+    /* ======== FOOTER ======== */
+    footer {
+      border-top: 1px solid var(--ve-border); padding: 28px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px; margin-top: 40px;
+    }
+    .footer-mark {
+      font-size: 13px; font-weight: 900; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--ve-text-50);
+    }
+    .footer-nav { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-nav a {
+      font-size: 11px; font-weight: 600; color: var(--ve-text-50);
+      text-decoration: none; transition: color 0.15s;
+    }
+    .footer-nav a:hover { color: var(--ve-green); }
+    .footer-copy { font-size: 11px; color: var(--ve-text-30); }
+
+    @media (max-width: 600px) {
+      .header-nav { display: none; }
+      main { padding: 32px 16px 60px; }
+      .roster-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- VIEWPORT SWITCHER -->
+<div class="vp-switcher" role="complementary" aria-label="Viewport preview switcher">
+  <div class="vp-panel" id="vpPanel">
+    <button class="vp-btn active" onclick="setVP('desktop',this)" type="button">Desktop</button>
+    <button class="vp-btn" onclick="setVP('tablet',this)" type="button">Tablet</button>
+    <button class="vp-btn" onclick="setVP('mobile',this)" type="button">Mobile</button>
+  </div>
+  <button class="vp-handle" onclick="toggleVP()" type="button" aria-label="Toggle viewport switcher" aria-expanded="false" id="vpHandle">Preview</button>
+</div>
+
+<div id="mockFrame">
+
+  <!-- HEADER -->
+  <header class="ve-header" role="banner">
+    <a href="#" class="ve-wordmark" aria-label="Vegans Explore home">
+      <span class="ve-leaf" aria-hidden="true">
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M8 2C5 2 2 5 2 9c0 2.5 1.5 4.5 3.5 5.5C6 13 6.5 11 8 10c1.5 1 2 3 2.5 4.5C12.5 13.5 14 11.5 14 9c0-4-3-7-6-7z"/>
+        </svg>
+      </span>
+      Vegans Explore
+    </a>
+    <nav class="header-nav" aria-label="Primary navigation">
+      <a href="ve-guides-roster-v1.html" class="nav-current" aria-current="page">Guides</a>
+      <a href="#">Directory</a>
+      <a href="#">Events</a>
+      <a href="ve-guide-chat-v1.html">Discuss</a>
+      <a href="#">Community</a>
+    </nav>
+    <a href="#" class="header-cta">Get Your Passport</a>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="#">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Guides</span>
+    </nav>
+
+    <div class="page-eyebrow">Vegans Explore</div>
+    <h1 class="page-title">Your Guides.</h1>
+    <p class="page-sub">Five paths. Seven voices. One of them is going to feel like they're talking directly to you. Flip a card to find out if they're the right fit — then get your free getting started guide.</p>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar" role="group" aria-label="Filter guides">
+      <span class="filter-label" aria-hidden="true">Show:</span>
+      <button class="filter-btn active" onclick="filterCards('all', this)" type="button">All Guides</button>
+      <button class="filter-btn" onclick="filterCards('lead', this)" type="button">Path Leads</button>
+      <button class="filter-btn" onclick="filterCards('supporting', this)" type="button">Supporting</button>
+      <span class="roster-count" id="rosterCount" aria-live="polite">7 Guides</span>
+    </div>
+
+    <!-- ROSTER GRID -->
+    <ul class="roster-grid" role="list" aria-label="Guide roster" id="rosterGrid">
+
+      <!-- MAYA -->
+      <li role="listitem" data-type="lead">
+        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
+             aria-label="Maya. Pre-Vegan Path lead. Press to flip card."
+             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-avatar-area">
+                <span class="card-badge" aria-hidden="true">Pre-Vegan Path</span>
+                <div class="guide-avatar" style="background:#3A9B3E;" aria-hidden="true"><img src="../public/guides/maya.png" alt="Maya"></div>
+                <span class="flip-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  Flip
+                </span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">Maya</div>
+                <div class="card-path">Pre-Vegan Path</div>
+                <blockquote class="card-quote">"What if you just tried one thing this week."</blockquote>
+              </div>
+            </div>
+            <div class="card-back" aria-hidden="true">
+              <div class="card-back-header">
+                <div class="back-guide-row">
+                  <div class="back-avatar" style="background:#3A9B3E;">M</div>
+                  <div>
+                    <div class="back-name">Maya</div>
+                    <div class="back-path">Pre-Vegan Path</div>
+                  </div>
+                </div>
+                <div class="back-fit-label">Maya is a good fit if...</div>
+              </div>
+              <div class="card-back-body">
+                <ul class="fit-list">
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You're curious about veganism but don't know where to start
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    Food and family tradition feel like obstacles, not just habits
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You want small steps, not a complete overnight overhaul
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You're tired of content that makes you feel behind before you've started
+                  </li>
+                </ul>
+              </div>
+              <div class="card-back-footer">
+                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
+                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
+                <div class="flip-back-hint">Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- THEO -->
+      <li role="listitem" data-type="lead">
+        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
+             aria-label="Theo. Seasoned Vegan Path lead. Press to flip card."
+             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-avatar-area">
+                <span class="card-badge" aria-hidden="true">Seasoned Vegan Path</span>
+                <div class="guide-avatar" style="background:#8B6914;" aria-hidden="true"><img src="../public/guides/theo.png" alt="Theo"></div>
+                <span class="flip-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  Flip
+                </span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">Theo</div>
+                <div class="card-path">Seasoned Vegan Path</div>
+                <blockquote class="card-quote">"Here's what actually lasts."</blockquote>
+              </div>
+            </div>
+            <div class="card-back" aria-hidden="true">
+              <div class="card-back-header">
+                <div class="back-guide-row">
+                  <div class="back-avatar" style="background:#8B6914;">T</div>
+                  <div>
+                    <div class="back-name">Theo</div>
+                    <div class="back-path">Seasoned Vegan Path</div>
+                  </div>
+                </div>
+                <div class="back-fit-label">Theo is a good fit if...</div>
+              </div>
+              <div class="card-back-body">
+                <ul class="fit-list">
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You've been vegan for a while but feel disconnected from the bigger picture
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You want depth, not another beginner guide
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    Community and long-term impact matter more to you than personal milestones
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You want to mentor others but aren't sure where to start
+                  </li>
+                </ul>
+              </div>
+              <div class="card-back-footer">
+                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
+                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
+                <div class="flip-back-hint">Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- NORI -->
+      <li role="listitem" data-type="lead">
+        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
+             aria-label="Nori. Vegan Entrepreneur Path lead. Press to flip card."
+             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-avatar-area">
+                <span class="card-badge" aria-hidden="true">Entrepreneur Path</span>
+                <div class="guide-avatar" style="background:#2D5F8A;" aria-hidden="true"><img src="../public/guides/nori.png" alt="Nori"></div>
+                <span class="flip-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  Flip
+                </span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">Nori</div>
+                <div class="card-path">Entrepreneur Path</div>
+                <blockquote class="card-quote">"You can't help the movement if you're broke."</blockquote>
+              </div>
+            </div>
+            <div class="card-back" aria-hidden="true">
+              <div class="card-back-header">
+                <div class="back-guide-row">
+                  <div class="back-avatar" style="background:#2D5F8A;">N</div>
+                  <div>
+                    <div class="back-name">Nori</div>
+                    <div class="back-path">Entrepreneur Path</div>
+                  </div>
+                </div>
+                <div class="back-fit-label">Nori is a good fit if...</div>
+              </div>
+              <div class="card-back-body">
+                <ul class="fit-list">
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You're building or want to build a vegan business or product
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You want to claim your business listing and grow through the directory
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You think in systems and need structure, not inspiration
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    The mission matters, but so does making it financially sustainable
+                  </li>
+                </ul>
+              </div>
+              <div class="card-back-footer">
+                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
+                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
+                <div class="flip-back-hint">Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- DANI -->
+      <li role="listitem" data-type="lead">
+        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
+             aria-label="Dani. Nonprofit Builder Path lead. Press to flip card."
+             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-avatar-area">
+                <span class="card-badge" aria-hidden="true">Nonprofit Path</span>
+                <div class="guide-avatar" style="background:#C4522A;" aria-hidden="true"><img src="../public/guides/dani.png" alt="Dani"></div>
+                <span class="flip-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  Flip
+                </span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">Dani</div>
+                <div class="card-path">Nonprofit Path</div>
+                <blockquote class="card-quote">"This isn't just food — it's justice."</blockquote>
+              </div>
+            </div>
+            <div class="card-back" aria-hidden="true">
+              <div class="card-back-header">
+                <div class="back-guide-row">
+                  <div class="back-avatar" style="background:#C4522A;">D</div>
+                  <div>
+                    <div class="back-name">Dani</div>
+                    <div class="back-path">Nonprofit Path</div>
+                  </div>
+                </div>
+                <div class="back-fit-label">Dani is a good fit if...</div>
+              </div>
+              <div class="card-back-body">
+                <ul class="fit-list">
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You're running or building a nonprofit in the food justice or vegan space
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You want to grow your donor base and earn affiliate revenue through referrals
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    Community impact drives your decisions, not personal lifestyle goals
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You need a platform that amplifies your mission, not just adds to your feed
+                  </li>
+                </ul>
+              </div>
+              <div class="card-back-footer">
+                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
+                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
+                <div class="flip-back-hint">Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- RIVER -->
+      <li role="listitem" data-type="lead">
+        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
+             aria-label="River. Content Creator Path lead. Press to flip card."
+             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-avatar-area">
+                <span class="card-badge" aria-hidden="true">Content Creator Path</span>
+                <div class="guide-avatar" style="background:#6B35A8;" aria-hidden="true"><img src="../public/guides/river.jpg" alt="River"></div>
+                <span class="flip-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  Flip
+                </span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">River</div>
+                <div class="card-path">Content Creator Path</div>
+                <blockquote class="card-quote">"Nobody wants boring content about beans."</blockquote>
+              </div>
+            </div>
+            <div class="card-back" aria-hidden="true">
+              <div class="card-back-header">
+                <div class="back-guide-row">
+                  <div class="back-avatar" style="background:#6B35A8;">R</div>
+                  <div>
+                    <div class="back-name">River</div>
+                    <div class="back-path">Content Creator Path</div>
+                  </div>
+                </div>
+                <div class="back-fit-label">River is a good fit if...</div>
+              </div>
+              <div class="card-back-body">
+                <ul class="fit-list">
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You're creating vegan content or want to start building your audience
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You want to turn your personal vegan story into reach and community
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You care about authenticity more than polish and trends more than theory
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You want opportunities through the VE platform as your audience grows
+                  </li>
+                </ul>
+              </div>
+              <div class="card-back-footer">
+                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
+                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
+                <div class="flip-back-hint">Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- PASCAL -->
+      <li role="listitem" data-type="supporting">
+        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
+             aria-label="Pascal. Supporting Guide. Press to flip card."
+             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-avatar-area">
+                <span class="card-badge supporting" aria-hidden="true">Supporting Guide</span>
+                <div class="guide-avatar" style="background:#8B2635;" aria-hidden="true"><img src="../public/guides/pascal.png" alt="Pascal"></div>
+                <span class="flip-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  Flip
+                </span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">Pascal</div>
+                <div class="card-path">Cultural Bridge</div>
+                <blockquote class="card-quote">"There is always enough at my table."</blockquote>
+              </div>
+            </div>
+            <div class="card-back" aria-hidden="true">
+              <div class="card-back-header">
+                <div class="back-guide-row">
+                  <div class="back-avatar" style="background:#8B2635;">P</div>
+                  <div>
+                    <div class="back-name">Pascal</div>
+                    <div class="back-path">Cultural Bridge</div>
+                  </div>
+                </div>
+                <div class="back-fit-label">Pascal shows up for you if...</div>
+              </div>
+              <div class="card-back-body">
+                <ul class="fit-list">
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    Your cultural food traditions feel incompatible with veganism
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    Food is how you connect to family and you're afraid of losing that
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You need health-driven reasons alongside the ethics
+                  </li>
+                </ul>
+                <p style="font-size:11px;color:var(--ve-text-50);margin-top:12px;line-height:1.5;">Pascal is a supporting voice across all five paths. You'll meet him in the community, the daily chat, and inside your Guide's content.</p>
+              </div>
+              <div class="card-back-footer">
+                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
+                <div class="flip-back-hint">Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- JUNE -->
+      <li role="listitem" data-type="supporting">
+        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
+             aria-label="June. Supporting Guide. Press to flip card."
+             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="card-avatar-area">
+                <span class="card-badge supporting" aria-hidden="true">Supporting Guide</span>
+                <div class="guide-avatar" style="background:#2A6B5A;" aria-hidden="true"><img src="../public/guides/june.png" alt="June"></div>
+                <span class="flip-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+                  Flip
+                </span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">June</div>
+                <div class="card-path">Real-Talk Guide</div>
+                <blockquote class="card-quote">"Y'all it gets easier, I promise."</blockquote>
+              </div>
+            </div>
+            <div class="card-back" aria-hidden="true">
+              <div class="card-back-header">
+                <div class="back-guide-row">
+                  <div class="back-avatar" style="background:#2A6B5A;">J</div>
+                  <div>
+                    <div class="back-name">June</div>
+                    <div class="back-path">Real-Talk Guide</div>
+                  </div>
+                </div>
+                <div class="back-fit-label">June shows up for you if...</div>
+              </div>
+              <div class="card-back-body">
+                <ul class="fit-list">
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    Your family and social circle are resistant and you feel isolated
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You're in a rural or smaller community with limited vegan options
+                  </li>
+                  <li>
+                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    You need someone who acknowledges how hard it actually is before giving advice
+                  </li>
+                </ul>
+                <p style="font-size:11px;color:var(--ve-text-50);margin-top:12px;line-height:1.5;">June is a supporting voice across all five paths. You'll find her wherever the conversation gets real.</p>
+              </div>
+              <div class="card-back-footer">
+                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
+                <div class="flip-back-hint">Tap to flip back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+    </ul><!-- /roster-grid -->
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer-mark">Vegans Explore</div>
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="#">About</a>
+      <a href="#">Directory</a>
+      <a href="#">Events</a>
+      <a href="#">Community</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 Vegans Explore</p>
+  </footer>
+
+</div><!-- /mockFrame -->
+
+<script>
+  // ======== FLIP ========
+  function flipCard(el) {
+    var isFlipped = el.classList.toggle('flipped');
+    el.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+    var back = el.querySelector('.card-back');
+    if (back) back.setAttribute('aria-hidden', isFlipped ? 'false' : 'true');
+  }
+
+  // ======== FILTER ========
+  function filterCards(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var items = document.querySelectorAll('#rosterGrid > li');
+    var count = 0;
+    items.forEach(function(item) {
+      var show = type === 'all' || item.dataset.type === type;
+      item.style.display = show ? '' : 'none';
+      if (show) count++;
+    });
+    document.getElementById('rosterCount').textContent = count + ' Guide' + (count !== 1 ? 's' : '');
+  }
+
+  // ======== WIRE PATH LINKS ========
+  // Map each guide's aria-label prefix to their path page
+  var pathMap = {
+    'Maya':  've-path-prevegan.html',
+    'Theo':  've-path-seasonedvegan.html',
+    'Nori':  've-path-entrepreneur.html',
+    'Dani':  've-path-nonprofit.html',
+    'River': 've-path-creator.html'
+  };
+  document.querySelectorAll('#rosterGrid [data-type="lead"]').forEach(function(li) {
+    var label = li.querySelector('[aria-label]') && li.querySelector('[aria-label]').getAttribute('aria-label') || '';
+    var name = label.split('.')[0].trim();
+    var href = pathMap[name];
+    if (!href) return;
+    li.querySelectorAll('.free-cta, .upgrade-link').forEach(function(a) {
+      a.href = href;
+    });
+  });
+
+  // ======== VIEWPORT SWITCHER ========
+  function toggleVP() {
+    var panel = document.getElementById('vpPanel');
+    var handle = document.getElementById('vpHandle');
+    var open = panel.classList.toggle('open');
+    handle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  function setVP(size, btn) {
+    var frame = document.getElementById('mockFrame');
+    frame.classList.remove('tablet', 'mobile');
+    if (size === 'tablet') frame.classList.add('tablet');
+    if (size === 'mobile') frame.classList.add('mobile');
+    document.querySelectorAll('.vp-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

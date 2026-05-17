@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegans Explore - Content Creator Path (Mock)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #6B35A8; --ve-green-dark: #522888;
+      --path-color: #6B35A8; --path-light: #f3edf9;
+      --path-mid: #d4bbee; --path-dark: #522888;
+      --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09); --ve-surface: #f6f0fb;
+      --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75);
+      --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+
+    .vp-switcher { position: fixed; bottom: 220px; right: 0; z-index: 9000; display: flex; flex-direction: column; align-items: flex-end; }
+    .vp-handle { background: var(--ve-orange); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; writing-mode: vertical-rl; padding: 12px 7px; border-radius: 6px 0 0 6px; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; box-shadow: -2px 0 8px rgba(0,0,0,0.12); }
+    .vp-panel { display: none; background: #fff; border: 1px solid var(--ve-border); border-right: none; border-radius: 8px 0 0 8px; padding: 10px 12px; gap: 8px; flex-direction: column; }
+    .vp-panel.open { display: flex; }
+    .vp-btn { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 4px; padding: 6px 10px; cursor: pointer; color: var(--ve-text-75); transition: all 0.15s; }
+    .vp-btn:hover, .vp-btn.active { background: var(--path-light); color: var(--path-color); border-color: var(--path-color); }
+
+    #mockFrame { width: 100%; max-width: 1200px; margin: 0 auto; min-height: 100vh; background: #fff; transition: max-width 0.25s ease; }
+    #mockFrame.tablet { max-width: 768px; }
+    #mockFrame.mobile { max-width: 390px; }
+
+    .ve-nav { position: sticky; top: 0; z-index: 400; width: 100%; background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--ve-border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 60px; gap: 16px; }
+    .ve-wordmark { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .ve-leaf { width: 26px; height: 26px; background: var(--ve-green); border-radius: 50% 3px 50% 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .ve-leaf svg { width: 13px; height: 13px; fill: #fff; }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-text-50); text-decoration: none; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--path-color); }
+    .nav-dropdown-wrap { position: relative; }
+    .nav-dropdown-trigger { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-text-50); cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0; transition: color 0.15s; }
+    .nav-dropdown-trigger:hover, .nav-dropdown-trigger.open { color: var(--path-color); }
+    .nav-dropdown-arrow { font-size: 9px; transition: transform 0.15s; display: inline-block; }
+    .nav-dropdown-trigger.open .nav-dropdown-arrow { transform: rotate(180deg); }
+    .nav-dropdown-menu { position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid var(--ve-border); border-radius: 10px; padding: 8px 0; min-width: 230px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 500; display: none; }
+    .nav-dropdown-menu.open { display: block; }
+    .nav-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text); text-decoration: none; transition: background 0.1s; }
+    .nav-dropdown-item:hover { background: #f5f5f5; }
+    .nav-dropdown-item.current { background: var(--path-light); color: var(--path-color); }
+    .nav-dropdown-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .nav-cta { background: var(--path-color); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 4px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
+    .nav-cta:hover { background: var(--path-dark); }
+
+    /* HERO */
+    .path-hero { background: linear-gradient(160deg, var(--path-light) 0%, #fff 100%); border-bottom: 1px solid var(--ve-border); padding: 64px 48px 60px; display: flex; align-items: center; gap: 56px; }
+    .path-hero-copy { flex: 1; min-width: 0; }
+    .path-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--path-color); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .path-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--path-color); }
+    .path-hero h1 { font-size: clamp(26px, 4vw, 48px); font-weight: 900; line-height: 1.07; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ve-text); margin-bottom: 14px; }
+    .path-hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: var(--ve-text-75); max-width: 480px; margin-bottom: 32px; }
+    .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .btn-path { background: var(--path-color); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 26px; border-radius: 4px; text-decoration: none; transition: background 0.15s; border: none; cursor: pointer; }
+    .btn-path:hover { background: var(--path-dark); }
+    .btn-secondary { background: transparent; color: var(--ve-text-75); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 13px 22px; border-radius: 4px; text-decoration: none; border: 1.5px solid var(--ve-border); transition: all 0.15s; }
+    .btn-secondary:hover { border-color: var(--path-color); color: var(--path-color); }
+    .path-hero-visual { flex: 0 0 320px; display: flex; justify-content: center; }
+    .guide-portrait-hero { width: 260px; height: 300px; border-radius: 16px; overflow: hidden; border: 4px solid var(--path-color); box-shadow: 0 12px 40px color-mix(in srgb, var(--path-color) 25%, transparent); }
+
+    /* PATH STEPS */
+    .section { padding: 64px 48px; }
+    .section-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--path-color); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+    .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--path-color); }
+    .section h2 { font-size: clamp(24px, 3vw, 38px); font-weight: 900; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 10px; }
+    .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; margin-bottom: 36px; max-width: 540px; }
+    
+    .steps-preview { border: 1px solid var(--ve-border); border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
+    .step-row { display: flex; align-items: flex-start; gap: 20px; padding: 16px 20px; border-bottom: 1px solid var(--ve-border); }
+    .step-row:last-child { border-bottom: none; }
+    .step-label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--path-color); min-width: 52px; padding-top: 2px; }
+    .step-desc { font-size: 13px; font-weight: 500; color: var(--ve-text-75); line-height: 1.5; }
+    .steps-lock-banner { background: var(--path-light); border: 1px solid var(--path-mid); border-radius: 8px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+    .steps-lock-banner span { font-size: 12px; font-weight: 600; color: var(--path-color); }
+    .steps-lock-banner a { font-size: 12px; font-weight: 800; color: var(--path-color); text-decoration: underline; }
+
+    /* FREE GUIDE CTA */
+    .free-guide-section { background: var(--path-light); border-top: 1px solid var(--path-mid); border-bottom: 1px solid var(--path-mid); padding: 52px 48px; display: flex; align-items: center; gap: 48px; }
+    .free-guide-copy { flex: 1; }
+    .free-guide-copy h2 { font-size: 30px; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .free-guide-copy p { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; margin-bottom: 24px; max-width: 400px; }
+    .free-guide-visual { flex: 0 0 280px; }
+    .free-guide-card { background: #fff; border: 1px solid var(--path-mid); border-radius: 10px; padding: 22px; box-shadow: 0 4px 16px color-mix(in srgb, var(--path-color) 12%, transparent); }
+    .free-guide-card-icon { width: 40px; height: 40px; border-radius: 8px; background: var(--path-color); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 18px; }
+    .free-guide-card-title { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    .free-guide-card-sub { font-size: 11px; font-weight: 500; color: var(--ve-text-50); margin-bottom: 16px; }
+    .free-guide-card-cta { display: block; background: var(--path-color); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px; text-decoration: none; text-align: center; transition: background 0.15s; }
+    .free-guide-card-cta:hover { background: var(--path-dark); }
+
+    /* GUIDE SECTION */
+    .guide-section { padding: 64px 48px; display: flex; gap: 56px; align-items: flex-start; }
+    .guide-section-copy { flex: 1; }
+    .guide-section-copy h2 { font-size: 28px; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .guide-section-copy p { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; margin-bottom: 28px; max-width: 400px; font-style: italic; }
+    .guide-section-visual { flex: 0 0 260px; display: flex; flex-direction: column; gap: 16px; }
+    .guide-profile-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .guide-profile-img { width: 100%; height: 180px; overflow: hidden; }
+    .guide-profile-body { padding: 16px; }
+    .guide-profile-name { font-size: 16px; font-weight: 900; margin-bottom: 2px; }
+    .guide-profile-role { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--path-color); }
+
+    /* PASSPORT SECTION */
+    .passport-section { background: #1a1a1a; color: #fff; padding: 64px 48px; display: flex; gap: 56px; align-items: center; }
+    .passport-copy { flex: 1; }
+    .passport-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--path-color); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .passport-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--path-color); }
+    .passport-copy h2 { font-size: clamp(24px, 3.5vw, 40px); font-weight: 900; letter-spacing: -0.02em; line-height: 1.1; color: #fff; margin-bottom: 12px; }
+    .passport-copy p { font-size: 15px; font-weight: 400; color: rgba(255,255,255,0.75); line-height: 1.65; max-width: 400px; }
+    .passport-card-wrap { flex: 0 0 320px; }
+    .passport-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 28px; }
+    .passport-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 6px; }
+    .passport-price .amount { font-size: 46px; font-weight: 900; color: #fff; }
+    .passport-price .period { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.5); }
+    .passport-card-sub { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+    .passport-features { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 24px; }
+    .passport-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.82); line-height: 1.45; }
+    .passport-features li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--path-color); flex-shrink: 0; margin-top: 5px; }
+    .passport-btn { display: block; width: 100%; text-align: center; background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 20px; border-radius: 4px; text-decoration: none; transition: background 0.15s; }
+    .passport-btn:hover { background: var(--ve-orange-dark); }
+    .passport-next { margin-top: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 16px; }
+    .passport-next-label { font-size: 9px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 6px; }
+    .passport-next-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+    .passport-next-desc { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.4); line-height: 1.5; }
+
+    /* FOOTER */
+    .ve-footer { background: #f5f5f5; border-top: 1px solid var(--ve-border); padding: 32px 48px; display: flex; align-items: center; justify-content: space-between; }
+    .footer-brand { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 11px; font-weight: 600; color: var(--ve-text-50); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: var(--path-color); }
+    .footer-copy { font-size: 11px; color: var(--ve-text-30); }
+
+    /* RESPONSIVE */
+    #mockFrame.tablet .path-hero { flex-direction: column; padding: 44px 32px 48px; gap: 32px; }
+    #mockFrame.tablet .path-hero-visual { flex: none; width: 100%; display: flex; justify-content: center; }
+    #mockFrame.tablet .section { padding: 48px 32px; }
+    #mockFrame.tablet .free-guide-section { flex-direction: column; padding: 44px 32px; gap: 28px; }
+    #mockFrame.tablet .free-guide-visual { flex: none; width: 100%; }
+    #mockFrame.tablet .guide-section { flex-direction: column; padding: 48px 32px; gap: 28px; }
+    #mockFrame.tablet .guide-section-visual { flex: none; width: 100%; max-width: 300px; }
+    #mockFrame.tablet .passport-section { flex-direction: column; padding: 48px 32px; gap: 28px; }
+    #mockFrame.tablet .passport-card-wrap { flex: none; width: 100%; }
+    #mockFrame.tablet .ve-footer { flex-direction: column; gap: 16px; padding: 28px 32px; text-align: center; }
+    #mockFrame.tablet .footer-links { justify-content: center; flex-wrap: wrap; }
+    #mockFrame.tablet .nav-links { display: none; }
+    #mockFrame.mobile .path-hero { flex-direction: column; padding: 32px 20px 40px; gap: 24px; }
+    #mockFrame.mobile .path-hero-visual { flex: none; width: 100%; display: flex; justify-content: center; }
+    #mockFrame.mobile .guide-portrait-hero { width: 200px; height: 240px; }
+    #mockFrame.mobile .section { padding: 36px 20px; }
+    #mockFrame.mobile .free-guide-section { flex-direction: column; padding: 36px 20px; gap: 20px; }
+    #mockFrame.mobile .free-guide-visual { flex: none; width: 100%; }
+    #mockFrame.mobile .guide-section { flex-direction: column; padding: 36px 20px; gap: 20px; }
+    #mockFrame.mobile .guide-section-visual { flex: none; width: 100%; }
+    #mockFrame.mobile .passport-section { flex-direction: column; padding: 36px 20px; gap: 24px; }
+    #mockFrame.mobile .passport-card-wrap { flex: none; width: 100%; }
+    #mockFrame.mobile .ve-footer { flex-direction: column; gap: 14px; padding: 24px 20px; text-align: center; }
+    #mockFrame.mobile .footer-links { justify-content: center; flex-wrap: wrap; gap: 14px; }
+    #mockFrame.mobile .ve-nav { padding: 0 16px; }
+    #mockFrame.mobile .nav-links { display: none; }
+
+    /* TABLET — new sections */
+    #mockFrame.tablet .channel-grid { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+    #mockFrame.tablet .get-started-section { grid-template-columns: 1fr !important; gap: 28px !important; padding: 44px 32px !important; }
+    #mockFrame.tablet .passport-benefits-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+    #mockFrame.tablet .impact-section { padding: 52px 32px !important; }
+    #mockFrame.tablet .impact-grid { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+    #mockFrame.tablet .hero-portrait-card { width: 220px !important; }
+    #mockFrame.tablet .hero-portrait-img { width: 220px !important; height: 270px !important; }
+
+    /* MOBILE — new sections */
+    #mockFrame.mobile .channel-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    #mockFrame.mobile .get-started-section { grid-template-columns: 1fr !important; gap: 24px !important; padding: 36px 20px !important; }
+    #mockFrame.mobile .passport-benefits-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+    #mockFrame.mobile .impact-section { padding: 40px 20px !important; }
+    #mockFrame.mobile .impact-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    #mockFrame.mobile .hero-portrait-card { width: 200px !important; }
+    #mockFrame.mobile .hero-portrait-img { width: 200px !important; height: 240px !important; }
+  </style>
+</head>
+<body>
+
+<div class="vp-switcher">
+  <div class="vp-panel" id="vpPanel">
+    <button class="vp-btn active" onclick="setVP('desktop', this)">Desktop</button>
+    <button class="vp-btn" onclick="setVP('tablet', this)">Tablet</button>
+    <button class="vp-btn" onclick="setVP('mobile', this)">Mobile</button>
+  </div>
+  <button class="vp-handle" onclick="document.getElementById('vpPanel').classList.toggle('open')">View</button>
+</div>
+
+<div id="mockFrame">
+
+  <nav class="ve-nav">
+    <a href="#" class="ve-wordmark">
+      <div class="ve-leaf"><svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 19.34L5.71 21l1-1C8 18 10 17 12 17c3 0 5-2 5-5 0-1-.4-2-1-3z"/></svg></div>
+      Vegans Explore
+    </a>
+    <div class="nav-links">
+      <div class="nav-dropdown-wrap">
+        <button class="nav-dropdown-trigger" id="guidesBtn" aria-haspopup="true" aria-expanded="false">
+          Guides <span class="nav-dropdown-arrow" aria-hidden="true">&#9660;</span>
+        </button>
+        <div class="nav-dropdown-menu" role="menu" aria-labelledby="guidesBtn">
+          <a href="ve-path-prevegan.html" class="nav-dropdown-item" role="menuitem">
+            <span class="nav-dropdown-dot" style="background:#2d7d31;" aria-hidden="true"></span>Pre-Vegan Path
+          </a>
+          <a href="ve-path-seasonedvegan.html" class="nav-dropdown-item" role="menuitem">
+            <span class="nav-dropdown-dot" style="background:#8B6914;" aria-hidden="true"></span>Seasoned Vegan Path
+          </a>
+          <a href="ve-path-entrepreneur.html" class="nav-dropdown-item" role="menuitem">
+            <span class="nav-dropdown-dot" style="background:#2D5F8A;" aria-hidden="true"></span>Entrepreneur Path
+          </a>
+          <a href="ve-path-nonprofit.html" class="nav-dropdown-item" role="menuitem">
+            <span class="nav-dropdown-dot" style="background:#C4522A;" aria-hidden="true"></span>Nonprofit Path
+          </a>
+          <a href="ve-path-creator.html" class="nav-dropdown-item current" role="menuitem">
+            <span class="nav-dropdown-dot" style="background:#6B35A8;" aria-hidden="true"></span>Creator Path
+          </a>
+        </div>
+      </div>
+      <a href="#">Communities</a>
+      <a href="#">Directory</a>
+      <a href="#">Passport</a>
+    </div>
+    <a href="#" class="nav-cta">Get Started</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="path-hero">
+    <div class="path-hero-copy">
+      <div class="path-eyebrow">Content Creator Path</div>
+      <h1>Your Clear Path to Creating Vegan Content</h1>
+      <p class="path-hero-sub">We built this for creators who want their platform to reflect their values and grow their audience with real purpose behind every post.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn-path">Get Started for $1</a>
+        <a href="#" class="btn-secondary">Join Passport - $11</a>
+      </div>
+    </div>
+    <div class="path-hero-visual">
+      <div class="hero-portrait-card" style="background:#fff;border:1px solid var(--ve-border);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:260px;flex-shrink:0;">
+        <div class="hero-portrait-img" style="width:260px;height:320px;overflow:hidden;border-bottom:3px solid var(--path-color);"><img src="../public/guides/river.jpg" alt="River, Content Creator Guide" style="width:100%;height:100%;object-fit:cover;object-position:top center;"></div>
+        <div style="padding:14px 18px;">
+          <div style="font-size:16px;font-weight:900;color:#1A1A1A;margin-bottom:3px;">River</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--path-color);">Content Creator Guide</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHOOSE YOUR CHANNEL -->
+  <section class="section" style="background:#f7faf7;border-top:1px solid var(--ve-border);border-bottom:1px solid var(--ve-border);">
+    <div class="section-eyebrow">Choose Your Channel</div>
+    <h2 style="margin-bottom:10px;text-transform:uppercase;letter-spacing:0.02em;">Three Ways In. You Choose.</h2>
+    <p class="section-sub" style="margin-bottom:44px;">Every option puts River in your corner. Pick what fits where you are right now.</p>
+    <div class="channel-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1080px;">
+
+      <!-- Card 1: $1 / 11 Days -->
+      <div style="background:#fff;border:2px solid var(--ve-border);border-radius:12px;padding:28px 24px;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--path-color);">Starter</div>
+          <div style="font-size:22px;font-weight:900;color:#1A1A1A;letter-spacing:-0.02em;">$1</div>
+        </div>
+        <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:0.04em;color:#1A1A1A;line-height:1.15;margin-bottom:12px;">The 11 Day<br>Challenge</div>
+        <div style="font-size:13px;font-weight:400;color:#555555;line-height:1.6;margin-bottom:20px;">An 11-day guided journey with River covering the foundations of Vegan content creation. Each day delivers one clear step to build your voice and your presence.</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:24px;flex:1;">
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Content Creator's Starter Guide, Day 1 access</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Daily module + email from Maya</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Each lesson shows you what the platform can do</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Goal: Passport holder before Day 11</div></div>
+        </div>
+        <a href="#" class="btn-path" style="text-align:center;">Start the 11 Day Challenge - $1</a>
+      </div>
+
+      <!-- Card 2: $11 one-time / 111 Days -->
+      <div style="background:#1A1A1A;border:2px solid #1A1A1A;border-radius:12px;padding:28px 24px;display:flex;flex-direction:column;position:relative;">
+        <div style="position:absolute;top:-12px;left:24px;background:var(--path-color);color:#fff;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:3px 13px;border-radius:20px;">Best Value</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--path-color);">Full Challenge</div>
+          <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.02em;">$11 <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);">one-time</span></div>
+        </div>
+        <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:0.04em;color:#fff;line-height:1.15;margin-bottom:12px;">The 111 Day<br>Challenge</div>
+        <div style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.75);line-height:1.6;margin-bottom:20px;">The full journey, extended to 111 days. From niche definition to audience growth, everything is available at your own pace.</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:24px;flex:1;">
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);">Content Creator's 111-Day Guide, yours permanently</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);">Daily prompts, go at your own pace</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);">Content stays in your account forever</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);">Passport Access: community, discussions, and connections</div></div>
+        </div>
+        <a href="#" class="passport-btn" style="background:var(--path-color);">Start the 111 Day Challenge - $11</a>
+      </div>
+
+      <!-- Card 3: $11/month / All Guides -->
+      <div style="background:#fff;border:2px solid var(--ve-border);border-radius:12px;padding:28px 24px;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--path-color);">All Access</div>
+          <div style="font-size:22px;font-weight:900;color:#1A1A1A;letter-spacing:-0.02em;">$11 <span style="font-size:12px;font-weight:400;color:#555555;">/month</span></div>
+        </div>
+        <div style="font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:0.04em;color:#1A1A1A;line-height:1.15;margin-bottom:12px;">Every Guide.<br>Every Path.</div>
+        <div style="font-size:13px;font-weight:400;color:#555555;line-height:1.6;margin-bottom:20px;">One subscription unlocks every Guide on the platform, current and future. Every path, every community, every challenge. All included.</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:24px;flex:1;">
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Pre-Vegans Guide (11 + 111 Day Challenges)</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Seasoned Vegans Guide</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Entrepreneur's Guide</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Advocates Guide + Content Creators Guide</div></div>
+          <div style="display:flex;align-items:flex-start;gap:9px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--path-color);flex-shrink:0;margin-top:6px;" aria-hidden="true"></div><div style="font-size:12px;font-weight:500;color:#1A1A1A;">Passport Access: community, discussions, and connections</div></div>
+        </div>
+        <a href="#" class="btn-path" style="text-align:center;">Unlock All Guides - $11/month</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GET STARTED FOR $1 -->
+  <section class="get-started-section" style="background:var(--path-light);border-top:1px solid var(--path-mid);border-bottom:1px solid var(--path-mid);padding:64px 48px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;">
+    <div>
+      <div class="section-eyebrow">Get Started</div>
+      <h2 style="font-size:clamp(24px,3vw,38px);font-weight:900;text-transform:uppercase;letter-spacing:0.01em;line-height:1.1;margin-bottom:14px;">Your First Step<br>Costs $1.</h2>
+      <p style="font-size:15px;font-weight:400;color:var(--ve-text-75);line-height:1.65;margin-bottom:16px;">We don't believe in free. We believe in an energetic exchange. That $1 investment sets the tone for the entire journey. It separates the curious from the committed, and it's how you signal to yourself that you're actually doing this.</p>
+      <p style="font-size:15px;font-weight:400;color:var(--ve-text-75);line-height:1.65;margin-bottom:28px;">We are fully committed to delivering more than your money's worth, every step of the way. Your support also helps us keep building the platform, improve every guide we ship, and continue providing real services to this community.</p>
+      <a href="#" class="btn-path">Get Started for $1</a>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;aspect-ratio:16/10;background:#d4edda;border:2px solid var(--path-mid);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+      <div style="font-size:40px;" aria-hidden="true">🥗</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--path-color);">Placeholder</div>
+      <div style="font-size:12px;font-weight:500;color:var(--ve-text-50);text-align:center;max-width:200px;line-height:1.5;">Maya in the kitchen<br>cooking a Vegan meal</div>
+    </div>
+  </section>
+
+  <!-- PASSPORT BENEFITS -->
+  <section class="section" style="background:#fff;">
+    <div class="passport-benefits-grid" style="display:grid;grid-template-columns:320px 1fr;gap:64px;align-items:start;max-width:1080px;">
+      <div>
+        <div class="section-eyebrow">Passport</div>
+        <h2 style="text-transform:uppercase;letter-spacing:0.02em;margin-bottom:14px;">Your Membership<br>Has Perks.</h2>
+        <p style="font-size:15px;font-weight:400;color:var(--ve-text-75);line-height:1.65;margin-bottom:28px;">Included with the Full 111-Day Challenge and the Monthly Subscription. A one-time $11 unlocks the community layer that makes this platform worth staying in.</p>
+        <a href="#" class="btn-path">Start the Full Challenge - $11</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;align-items:flex-start;gap:16px;background:#f7faf7;border:1px solid var(--ve-border);border-radius:10px;padding:18px 20px;">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--path-color);display:flex;align-items:center;justify-content:center;flex-shrink:0;" aria-hidden="true"><svg viewBox="0 0 20 20" style="width:16px;height:16px;fill:#fff;"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm1 11H9V9h2v4zm0-6H9V5h2v2z"/></svg></div>
+          <div><div style="font-size:13px;font-weight:800;color:#1A1A1A;margin-bottom:3px;">Posts + Discussions</div><div style="font-size:12px;font-weight:400;color:#555555;line-height:1.5;">Join conversations, share your progress, and engage with members on your path.</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px;background:#f7faf7;border:1px solid var(--ve-border);border-radius:10px;padding:18px 20px;">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--path-color);display:flex;align-items:center;justify-content:center;flex-shrink:0;" aria-hidden="true"><svg viewBox="0 0 20 20" style="width:16px;height:16px;fill:#fff;"><path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 3a3 3 0 110 6 3 3 0 010-6zm0 9c-2.67 0-5-1.33-5-2v-.5C5 9.67 7.33 8.5 10 8.5s5 1.17 5 3v.5c0 .67-2.33 2-5 2z"/></svg></div>
+          <div><div style="font-size:13px;font-weight:800;color:#1A1A1A;margin-bottom:3px;">Connect Worldwide</div><div style="font-size:12px;font-weight:400;color:#555555;line-height:1.5;">Find and connect with Vegan members in cities around the world.</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px;background:#f7faf7;border:1px solid var(--ve-border);border-radius:10px;padding:18px 20px;">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--path-color);display:flex;align-items:center;justify-content:center;flex-shrink:0;" aria-hidden="true"><svg viewBox="0 0 20 20" style="width:16px;height:16px;fill:#fff;"><path d="M17 12h-5v5h-4v-5H3l7-7 7 7z"/></svg></div>
+          <div><div style="font-size:13px;font-weight:800;color:#1A1A1A;margin-bottom:3px;">Multiple Communities</div><div style="font-size:12px;font-weight:400;color:#555555;line-height:1.5;">Join communities across every Guide, not just the one you started with.</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px;background:#f7faf7;border:1px solid var(--ve-border);border-radius:10px;padding:18px 20px;">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--ve-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;" aria-hidden="true"><svg viewBox="0 0 20 20" style="width:16px;height:16px;fill:#999;"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 2c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6zm-1 9h2v2H9v-2zm0-8h2v6H9V5z"/></svg></div>
+          <div><div style="font-size:13px;font-weight:800;color:#1A1A1A;margin-bottom:3px;">More Perks on the Way</div><div style="font-size:12px;font-weight:400;color:#555555;line-height:1.5;">We're building more, and Passport holders get everything first.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOUR $11 DOES -->
+  <section class="impact-section" style="background:#1A1A1A;padding:72px 48px;">
+    <div style="max-width:1080px;">
+      <div style="font-size:10px;font-weight:800;letter-spacing:0.28em;text-transform:uppercase;color:var(--path-color);margin-bottom:14px;display:flex;align-items:center;gap:10px;"><span style="display:inline-block;width:20px;height:2px;background:var(--path-color);" aria-hidden="true"></span>Your Impact</div>
+      <h2 style="font-size:clamp(24px,3.5vw,42px);font-weight:900;text-transform:uppercase;letter-spacing:0.02em;line-height:1.1;color:#fff;margin-bottom:16px;">Your $11 Goes<br>Further Than You Think.</h2>
+      <p style="font-size:16px;font-weight:400;color:rgba(255,255,255,0.65);line-height:1.65;max-width:540px;margin-bottom:52px;">Every dollar we collect goes directly back into the platform and the people behind it. Here's exactly what that means.</p>
+      <div class="impact-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:28px 24px;">
+          <div style="font-size:32px;font-weight:900;color:var(--path-color);letter-spacing:-0.02em;margin-bottom:10px;">01</div>
+          <div style="font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#fff;margin-bottom:10px;">Platform</div>
+          <div style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.7);line-height:1.65;">We keep building. Every feature you use, every guide we ship, every improvement you feel, your support is what makes it possible.</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:28px 24px;">
+          <div style="font-size:32px;font-weight:900;color:var(--path-color);letter-spacing:-0.02em;margin-bottom:10px;">02</div>
+          <div style="font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#fff;margin-bottom:10px;">People</div>
+          <div style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.7);line-height:1.65;">We're hiring team members in cities worldwide. Real people on the ground who strengthen the community where you actually live.</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:28px 24px;">
+          <div style="font-size:32px;font-weight:900;color:var(--path-color);letter-spacing:-0.02em;margin-bottom:10px;">03</div>
+          <div style="font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#fff;margin-bottom:10px;">Amplification</div>
+          <div style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.7);line-height:1.65;">Our marketing directly benefits every organization and business on our platform. When we grow the audience, it flows to everyone here.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="ve-footer">
+    <div class="footer-brand">
+      <div class="ve-leaf" style="width:20px;height:20px;">
+        <svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:#fff;"><path d="M17 8C8 10 5.9 16.17 3.82 19.34L5.71 21l1-1C8 18 10 17 12 17c3 0 5-2 5-5 0-1-.4-2-1-3z"/></svg>
+      </div>
+      Vegans Explore
+    </div>
+    <div class="footer-links">
+      <a href="#">Guides</a><a href="#">Paths</a><a href="#">Directory</a><a href="#">Passport</a><a href="#">Privacy</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 Vegans Explore</div>
+  </footer>
+
+</div>
+
+<script>
+  function setVP(size, btn) {
+    document.getElementById('mockFrame').className = size === 'desktop' ? '' : size;
+    document.querySelectorAll('.vp-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  (function() {
+    var trigger = document.getElementById('guidesBtn');
+    var menu = trigger ? trigger.nextElementSibling : null;
+    if (!trigger || !menu) return;
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var open = trigger.classList.toggle('open');
+      menu.classList.toggle('open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', function() {
+      trigger.classList.remove('open');
+      menu.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    });
+    menu.addEventListener('click', function(e) { e.stopPropagation(); });
+  })();
+</script>
+</body>
+</html>

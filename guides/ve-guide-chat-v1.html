@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegans Explore — Discuss (Mock)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-green-mid: #c8e6c9;
+      --ve-orange: #F69820;
+      --ve-orange-text: #7d4a00;
+      --ve-border: rgba(0,0,0,0.09);
+      --ve-surface2: #f7faf7;
+      --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75);
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-30: rgba(26,26,26,0.35);
+    }
+
+    html { min-height: 100%; }
+    body {
+      min-height: 100%;
+      background: #f5f5f5;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* ======== VIEWPORT SWITCHER ======== */
+    .vp-switcher {
+      position: fixed; bottom: 340px; right: 0; z-index: 999;
+      display: flex; flex-direction: column; align-items: flex-end;
+    }
+    .vp-handle {
+      background: var(--ve-orange); color: #fff;
+      font-size: 9px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; writing-mode: vertical-rl;
+      padding: 12px 7px; border-radius: 6px 0 0 6px;
+      cursor: pointer; border: none;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.12);
+    }
+    .vp-panel {
+      display: none; background: #fff; border: 1px solid var(--ve-border);
+      border-right: none; border-radius: 8px 0 0 8px;
+      padding: 10px 12px; gap: 8px; flex-direction: column;
+    }
+    .vp-panel.open { display: flex; }
+    .vp-btn {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--ve-surface2); border: 1px solid var(--ve-border);
+      border-radius: 4px; padding: 6px 10px; cursor: pointer; color: var(--ve-text-75);
+      transition: all 0.15s;
+    }
+    .vp-btn:hover, .vp-btn.active { background: var(--ve-green-light); color: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+
+    /* ======== MOCK STATE TOGGLE (review only) ======== */
+    .mock-state-toggle {
+      position: fixed; top: 70px; right: 12px; z-index: 9999;
+      background: #fff; border: 1px solid var(--ve-border);
+      border-radius: 8px; padding: 8px 12px;
+      display: flex; flex-direction: column; gap: 6px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    .mock-state-label { font-size: 8px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ve-text-30); }
+    .mock-state-btns { display: flex; gap: 4px; }
+    .mst-btn {
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 4px 10px; border-radius: 4px; border: 1px solid var(--ve-border);
+      background: #fff; color: var(--ve-text-50); cursor: pointer;
+      font-family: 'Montserrat', sans-serif; transition: all 0.15s;
+    }
+    .mst-btn.active { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
+
+    /* ======== MOCK FRAME ======== */
+    #mockFrame {
+      width: 100%; max-width: 1200px; min-height: 100vh;
+      background: #fff; display: flex; flex-direction: column;
+      transition: max-width 0.25s ease;
+    }
+    #mockFrame.tablet { max-width: 768px; }
+    #mockFrame.mobile { max-width: 390px; }
+
+    /* ======== VIEW PANES ======== */
+    .view-pane { display: none; flex-direction: column; flex: 1; }
+    .view-pane.active { display: flex; }
+
+    /* ======== STICKY HEADER ======== */
+    .ve-header {
+      position: sticky; top: 0; z-index: 400; width: 100%;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--ve-border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 56px; gap: 12px;
+    }
+    .ve-wordmark {
+      font-size: 15px; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--ve-text);
+      display: flex; align-items: center; gap: 6px; text-decoration: none;
+    }
+    .ve-leaf {
+      width: 22px; height: 22px; background: var(--ve-green-dark);
+      border-radius: 50% 2px 50% 2px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ve-leaf svg { width: 12px; height: 12px; fill: #fff; }
+    .header-nav { display: flex; align-items: center; gap: 20px; }
+    .header-nav a {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ve-text-50);
+      text-decoration: none; transition: color 0.15s; cursor: pointer;
+    }
+    .header-nav a:hover { color: var(--ve-green-dark); }
+    .header-nav a.view-active { color: var(--ve-green-dark); border-bottom: 2px solid var(--ve-green-dark); padding-bottom: 2px; }
+    .header-cta {
+      background: var(--ve-green-dark); color: #fff;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 8px 16px; border-radius: 4px;
+      text-decoration: none; transition: background 0.15s; white-space: nowrap;
+    }
+    .header-cta:hover { background: #1e5c21; }
+
+    /* ======== BACK BUTTON ======== */
+    .discuss-back {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ve-text-50); background: none; border: none; cursor: pointer;
+      padding: 10px 24px; font-family: 'Montserrat', sans-serif; transition: color 0.15s;
+      border-bottom: 1px solid var(--ve-border); width: 100%;
+    }
+    .discuss-back:hover { color: var(--ve-green-dark); }
+    .discuss-back svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ======== TOPIC NAV (chat view) ======== */
+    .topic-nav {
+      position: sticky; top: 56px; z-index: 300; width: 100%;
+      background: rgba(255,255,255,0.99);
+      border-bottom: 2px solid var(--ve-green-mid);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 24px; gap: 12px;
+    }
+    .topic-arrow {
+      width: 36px; height: 36px; background: var(--ve-surface2);
+      border: 1px solid var(--ve-border); border-radius: 8px;
+      color: var(--ve-text-75); font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.15s; font-family: serif;
+    }
+    .topic-arrow:hover:not(:disabled) { color: var(--ve-green-dark); border-color: var(--ve-green-dark); background: var(--ve-green-light); }
+    .topic-arrow:disabled { opacity: 0.2; cursor: not-allowed; }
+    .topic-arrow:focus { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .topic-center { flex: 1; text-align: center; cursor: pointer; }
+    .topic-day-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 2px; }
+    .topic-headline { font-size: 13px; font-weight: 800; color: var(--ve-text); line-height: 1.3; }
+    .topic-source { font-size: 10px; font-weight: 500; color: var(--ve-green-dark); margin-top: 2px; }
+    .topic-dots { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .topic-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--ve-green-mid); cursor: pointer; border: none;
+      transition: all 0.15s;
+    }
+    .topic-dot.active { background: var(--ve-green-dark); transform: scale(1.3); }
+    .topic-dot.locked { background: #ddd; cursor: not-allowed; }
+    .topic-dot:hover:not(.locked) { background: var(--ve-green-dark); }
+
+    /* ======== CHAT SECTION ======== */
+    .chat-section {
+      flex: 1; padding: 24px 40px 32px;
+      max-width: 760px; margin: 0 auto; width: 100%;
+      position: relative;
+    }
+
+    .day-feed { display: none; flex-direction: column; gap: 0; }
+    .day-feed.active { display: flex; }
+
+    /* Guest mode: truncate messages */
+    .chat-section.guest-mode .day-feed.active {
+      overflow: hidden; position: relative;
+    }
+    /* Today: show more of the conversation before fading */
+    .chat-section.guest-mode .day-feed.active.feed-today {
+      max-height: 500px;
+    }
+    /* Previous days: topic banner + 2 messages then fade */
+    .chat-section.guest-mode .day-feed.active.feed-prev {
+      max-height: 320px;
+    }
+    .chat-section.guest-mode .day-feed.active::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 150px; pointer-events: none;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    }
+
+    /* Topic banner */
+    .topic-banner {
+      background: var(--ve-green-light); border: 1px solid var(--ve-green-mid);
+      border-radius: 8px; padding: 14px 18px; margin-bottom: 28px;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .topic-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
+    .topic-banner-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 4px; }
+    .topic-banner-title { font-size: 14px; font-weight: 800; color: var(--ve-text); line-height: 1.35; }
+    .topic-banner-sub { font-size: 11px; font-weight: 500; color: var(--ve-text-50); margin-top: 3px; }
+
+    /* Message rows */
+    .msg-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+    .msg-row.gap { margin-bottom: 20px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 900; color: #fff; overflow: hidden; margin-top: 2px;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .avatar-spacer { width: 36px; flex-shrink: 0; }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-meta { display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px; }
+    .msg-name { font-size: 12px; font-weight: 800; color: var(--ve-text); }
+    .msg-role { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-text-50); }
+    .msg-time { font-size: 9px; font-weight: 500; color: var(--ve-text-50); margin-left: auto; }
+    .bubble {
+      display: inline-block; background: var(--ve-surface2);
+      border: 1px solid var(--ve-border);
+      border-radius: 2px 12px 12px 12px;
+      padding: 9px 13px; font-size: 13px; font-weight: 400;
+      line-height: 1.55; color: var(--ve-text); max-width: 100%;
+    }
+    .bubble .tag { color: var(--ve-green-dark); font-weight: 700; text-decoration: none; }
+    .bubble .tag:hover { text-decoration: underline; }
+    .bubble.pinned {
+      background: #fff8ed; border-color: rgba(246,152,32,0.3);
+      border-left: 3px solid var(--ve-orange); border-radius: 2px 8px 8px 8px;
+    }
+    .bubble.pinned .pin-label {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ve-orange-text); margin-bottom: 5px;
+    }
+    .day-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 8px 0 22px; color: var(--ve-text-50);
+    }
+    .day-divider::before, .day-divider::after { content: ''; flex: 1; height: 1px; background: var(--ve-border); }
+    .day-divider span { font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; }
+
+    /* Locked day state */
+    .locked-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px 24px; text-align: center; gap: 16px;
+    }
+    .locked-icon { font-size: 40px; opacity: 0.3; }
+    .locked-title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ve-text-50); }
+    .locked-time { font-size: 13px; font-weight: 600; color: var(--ve-text-50); }
+    .locked-time strong { color: var(--ve-green-dark); font-weight: 800; }
+
+    /* ======== PAYWALL (below chat section) ======== */
+    .chat-paywall { display: none; }
+    .chat-paywall.visible { display: block; }
+    .paywall-wrap { padding: 0 40px 48px; max-width: 760px; margin: 0 auto; width: 100%; }
+    .paywall-wall {
+      background: #fff; border: 1px solid var(--ve-border);
+      border-radius: 12px; padding: 36px 28px; text-align: center;
+    }
+    .paywall-icon { font-size: 34px; margin-bottom: 14px; }
+    .paywall-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; color: var(--ve-text); margin-bottom: 8px; }
+    .paywall-sub { font-size: 13px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 380px; margin: 0 auto 24px; }
+    .paywall-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+    .paywall-opt-primary {
+      background: var(--ve-green-dark); color: #fff;
+      font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 13px 24px; border-radius: 4px; border: none; cursor: pointer;
+      text-decoration: none; transition: background 0.15s; display: inline-block;
+    }
+    .paywall-opt-primary:hover { background: #1e5c21; }
+    .paywall-opt-primary:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 3px; }
+    .paywall-opt-secondary {
+      background: #fff; color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 12px 24px; border-radius: 4px; border: 1.5px solid var(--ve-border);
+      cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+    }
+    .paywall-opt-secondary:hover { border-color: var(--ve-green-dark); color: var(--ve-green-dark); }
+    .paywall-note { font-size: 11px; font-weight: 600; color: var(--ve-text-30); }
+    .paywall-login-link { display: block; margin-top: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--ve-green-dark); text-decoration: none; }
+    .paywall-login-link:hover { text-decoration: underline; }
+    .paywall-login-link:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; border-radius: 2px; }
+
+    /* ======== GUIDE TILES STRIP ======== */
+    .guides-strip-section { border-top: 1px solid var(--ve-border); padding: 0; background: #fff; }
+    .guides-strip-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px 12px; }
+    .guides-strip-label { font-size: 10px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ve-text-50); }
+    .guides-strip-cta { font-size: 11px; font-weight: 700; color: var(--ve-green-dark); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; }
+    .guides-strip-cta:hover { text-decoration: underline; }
+    .guides-strip-scroll { display: flex; gap: 16px; padding: 0 32px 28px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    .guides-strip-scroll::-webkit-scrollbar { display: none; }
+
+    /* ======== GUIDE TILES ======== */
+    .guide-tile {
+      flex-shrink: 0; width: 180px; height: 270px;
+      position: relative; border-radius: 10px; overflow: hidden;
+      cursor: pointer; background: #0d0d0d;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .guide-tile:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.22); }
+    .guide-tile:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 2px; }
+    .guide-tile-img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .guide-tile-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 52px; font-weight: 900; color: #fff; opacity: 0.85; }
+    .guide-tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 45%, rgba(0,0,0,0.82) 100%); pointer-events: none; }
+    .guide-tile-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 0 14px 14px; z-index: 2; }
+    .guide-tile-name { font-size: 15px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 5px; letter-spacing: -0.01em; }
+    .guide-tile-pill { display: inline-block; font-size: 8px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green); background: rgba(58,155,62,0.18); border-radius: 2px; padding: 3px 7px; margin-bottom: 10px; }
+    .guide-tile-pill.supporting { color: var(--ve-orange); background: rgba(246,152,32,0.15); }
+    .guide-tile-btn { display: block; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; background: var(--ve-green-dark); color: #fff; border: none; border-radius: 4px; padding: 7px 0; cursor: pointer; transition: background 0.15s; text-decoration: none; }
+    .guide-tile-btn:hover { background: #1e5c21; }
+
+    /* ======== JOIN CTA ======== */
+    .join-cta-section { border-top: 1px solid var(--ve-border); background: #fff; padding: 48px 40px 52px; display: flex; align-items: center; gap: 50px; }
+    .join-cta-left { flex: 1; min-width: 0; }
+    .join-cta-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
+    .join-cta-eyebrow::before { content: ''; display: inline-block; width: 18px; height: 2px; background: var(--ve-green-dark); flex-shrink: 0; }
+    .join-cta-headline { font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; color: var(--ve-text); line-height: 1.15; margin-bottom: 14px; }
+    .join-cta-headline em { font-style: normal; color: var(--ve-green-dark); }
+    .join-cta-body { font-size: 13px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 440px; margin-bottom: 20px; }
+    .join-cta-perks { display: flex; flex-direction: column; gap: 7px; margin-bottom: 28px; }
+    .join-cta-perk { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; font-weight: 600; color: var(--ve-text-75); }
+    .join-cta-perk-icon { width: 18px; height: 18px; background: var(--ve-green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .join-cta-perk-icon svg { width: 9px; height: 9px; fill: var(--ve-green-dark); }
+    .join-cta-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .join-cta-primary { background: var(--ve-green-dark); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 28px; border-radius: 4px; text-decoration: none; border: none; cursor: pointer; transition: background 0.15s; white-space: nowrap; display: inline-block; }
+    .join-cta-primary:hover { background: #1e5c21; }
+    .join-cta-primary:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 3px; }
+    .join-cta-price-note { font-size: 11px; font-weight: 600; color: var(--ve-text-50); }
+    .join-cta-price-note strong { color: var(--ve-text); }
+    .join-cta-right { flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .join-cta-avatars { display: flex; align-items: center; }
+    .join-cta-avatars .cta-av { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #fff; overflow: hidden; margin-left: -10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; color: #fff; }
+    .join-cta-avatars .cta-av:first-child { margin-left: 0; }
+    .join-cta-avatars .cta-av img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .join-cta-tag-note { font-size: 11px; font-weight: 700; color: var(--ve-text-50); text-align: center; line-height: 1.45; }
+    .join-cta-tag-note strong { color: var(--ve-green-dark); }
+
+    /* ======== DISCUSS BOARD VIEW ======== */
+    .discuss-outer { flex: 1; display: flex; flex-direction: column; }
+    .discuss-sticky-bar {
+      position: sticky; top: 56px; z-index: 300;
+      background: rgba(255,255,255,0.98);
+      border-bottom: 1px solid var(--ve-border);
+      padding: 16px 40px 14px;
+    }
+    .discuss-top-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .discuss-title-group { }
+    .discuss-board-title { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ve-text); }
+    .discuss-board-count { font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-top: 2px; }
+    .discuss-search {
+      flex: 1; max-width: 340px;
+      border: 1px solid var(--ve-border); border-radius: 6px;
+      padding: 8px 14px; font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 500; color: var(--ve-text);
+      background: #fff; outline: none; transition: border-color 0.15s;
+    }
+    .discuss-search:focus { border-color: var(--ve-green-dark); }
+    .discuss-search::placeholder { color: var(--ve-text-30); }
+    .discuss-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .discuss-filter-btn {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: #fff; border: 1px solid var(--ve-border);
+      border-radius: 20px; padding: 5px 14px; cursor: pointer;
+      color: var(--ve-text-50); transition: all 0.15s;
+    }
+    .discuss-filter-btn:hover { border-color: var(--ve-green-dark); color: var(--ve-green-dark); }
+    .discuss-filter-btn.active { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
+    .discuss-filter-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+
+    .discuss-list-wrap { flex: 1; padding: 24px 40px 48px; max-width: 840px; margin: 0 auto; width: 100%; }
+    .discuss-list { display: flex; flex-direction: column; gap: 10px; }
+    .discuss-empty { text-align: center; padding: 60px 24px; font-size: 13px; font-weight: 600; color: var(--ve-text-50); }
+
+    /* ======== TOPIC CARD ======== */
+    .topic-card {
+      background: #fff; border: 1px solid var(--ve-border);
+      border-radius: 10px; padding: 18px 20px;
+      cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .topic-card:hover:not(.tc-locked) { border-color: var(--ve-green-dark); box-shadow: 0 2px 12px rgba(45,125,49,0.1); }
+    .topic-card:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 2px; }
+    .topic-card.tc-locked { opacity: 0.55; cursor: default; }
+    .tc-guide-av {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900; color: #fff; overflow: hidden;
+    }
+    .tc-guide-av img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+    .tc-lock-av {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: #eee; display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .tc-body { flex: 1; min-width: 0; }
+    .tc-cats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .tc-cat {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--ve-green-light); color: var(--ve-green-dark);
+      border-radius: 3px; padding: 2px 8px;
+    }
+    .tc-headline { font-size: 14px; font-weight: 800; color: var(--ve-text); line-height: 1.35; margin-bottom: 10px; }
+    .tc-stats { display: flex; align-items: center; gap: 18px; }
+    .tc-stat { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--ve-text-50); }
+    .tc-stat svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .tc-time { font-size: 10px; font-weight: 600; color: var(--ve-text-30); margin-left: auto; white-space: nowrap; }
+    .tc-upcoming { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-left: auto; white-space: nowrap; }
+
+    /* ======== JOIN GUIDES GRID ======== */
+    .join-guides-grid {
+      display: grid; grid-template-columns: repeat(3, 168px);
+      grid-template-rows: repeat(2, 238px); gap: 10px; flex-shrink: 0;
+    }
+    .join-guide-card {
+      position: relative; border-radius: 8px; overflow: hidden;
+      background: #111; cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .join-guide-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .join-guide-card-img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .join-guide-card-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 900; color: #fff; }
+    .join-guide-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.78) 100%); pointer-events: none; }
+    .join-guide-card-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 0 10px 10px; z-index: 2; }
+    .join-guide-card-name { font-size: 14px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 4px; letter-spacing: -0.01em; }
+    .join-guide-card-path { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+
+    /* ======== REPLY + COMMENT INTERACTIONS ======== */
+    .msg-actions { display: flex; align-items: center; gap: 12px; margin-top: 5px; }
+    .reply-btn {
+      display: none; background: none; border: none; cursor: pointer;
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50);
+      padding: 2px 0; transition: color 0.15s; align-items: center; gap: 5px;
+    }
+    .reply-btn svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    body.passport-mode .reply-btn { display: inline-flex; }
+    body.passport-mode .reply-btn:hover { color: var(--ve-green-dark); }
+    .reply-hq-hint { display: none; font-size: 9px; font-weight: 600; color: var(--ve-text-30); }
+    body.passport-mode .reply-hq-hint { display: inline; }
+
+    /* Inline reply input */
+    .reply-input-wrap { margin-top: 8px; }
+    .reply-textarea {
+      width: 100%; border: 1px solid var(--ve-green-dark); border-radius: 8px;
+      padding: 9px 13px; font-family: 'Montserrat', sans-serif;
+      font-size: 12px; font-weight: 400; color: var(--ve-text);
+      outline: none; resize: none; transition: border-color 0.15s;
+    }
+    .reply-input-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+    .reply-hq-badge {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ve-orange-text); background: #fff8ed;
+      border: 1px solid rgba(246,152,32,0.3); border-radius: 3px; padding: 2px 8px;
+    }
+    .reply-post-btn {
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--ve-green-dark); color: #fff; border: none;
+      border-radius: 4px; padding: 6px 16px; cursor: pointer; transition: background 0.15s;
+    }
+    .reply-post-btn:hover { background: #1e5c21; }
+
+    /* Comment composer at bottom of feed */
+    .comment-composer { display: none; margin-top: 28px; border-top: 1px solid var(--ve-border); padding-top: 20px; }
+    body.passport-mode .comment-composer { display: block; }
+    .composer-inner { display: flex; gap: 10px; align-items: flex-start; }
+    .composer-av {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: var(--ve-green-mid); display: flex; align-items: center;
+      justify-content: center; font-size: 11px; font-weight: 900; color: var(--ve-green-dark);
+    }
+    .composer-field { flex: 1; min-width: 0; }
+    .composer-textarea {
+      width: 100%; border: 1px solid var(--ve-border); border-radius: 8px;
+      padding: 10px 14px; font-family: 'Montserrat', sans-serif;
+      font-size: 13px; font-weight: 400; color: var(--ve-text);
+      outline: none; resize: none; transition: border-color 0.15s; min-height: 48px;
+    }
+    .composer-textarea:focus { border-color: var(--ve-green-dark); }
+    .composer-textarea::placeholder { color: var(--ve-text-30); }
+    .composer-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; flex-wrap: wrap; gap: 8px; }
+    .composer-note { font-size: 10px; font-weight: 600; color: var(--ve-text-30); }
+    .composer-note strong { color: var(--ve-orange-text); font-weight: 800; }
+    .composer-submit {
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--ve-green-dark); color: #fff; border: none;
+      border-radius: 4px; padding: 8px 20px; cursor: pointer; transition: background 0.15s;
+    }
+    .composer-submit:hover { background: #1e5c21; }
+
+    /* ======== RESPONSIVE ======== */
+    @media (max-width: 600px) {
+      .header-nav { display: none; }
+      .chat-section { padding: 16px 16px 24px; }
+      .topic-nav { padding: 10px 12px; }
+      .topic-headline { font-size: 11px; }
+      .guides-strip-header { padding: 14px 16px 10px; }
+      .guides-strip-scroll { padding: 0 16px 20px; }
+      .join-cta-section { flex-direction: column; padding: 36px 20px 40px; gap: 28px; }
+      .join-cta-headline { font-size: 22px; }
+      .join-guides-grid { grid-template-columns: repeat(3, 1fr); width: 100%; grid-template-rows: repeat(2, 140px); }
+      .discuss-sticky-bar { padding: 14px 16px 12px; }
+      .discuss-list-wrap { padding: 16px 16px 32px; }
+      .discuss-top-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .discuss-search { max-width: 100%; width: 100%; }
+      .tc-time { display: none; }
+      .discuss-back { padding: 10px 16px; }
+    }
+    #mockFrame.tablet .discuss-sticky-bar { padding: 14px 24px 12px; }
+    #mockFrame.tablet .discuss-list-wrap { padding: 20px 24px 40px; }
+    #mockFrame.tablet .discuss-top-row { flex-wrap: wrap; }
+    #mockFrame.tablet .discuss-search { max-width: 260px; }
+    #mockFrame.mobile .discuss-sticky-bar { padding: 12px 16px; }
+    #mockFrame.mobile .discuss-list-wrap { padding: 14px 16px 28px; }
+    #mockFrame.mobile .discuss-top-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+    #mockFrame.mobile .discuss-search { max-width: 100%; width: 100%; }
+    #mockFrame.mobile .tc-time { display: none; }
+    #mockFrame.mobile .discuss-back { padding: 10px 16px; }
+  </style>
+</head>
+<body>
+
+<!-- VIEWPORT SWITCHER -->
+<div class="vp-switcher" role="complementary" aria-label="Viewport preview switcher">
+  <div class="vp-panel" id="vpPanel">
+    <button class="vp-btn active" onclick="setVP('desktop',this)" type="button">Desktop</button>
+    <button class="vp-btn" onclick="setVP('tablet',this)" type="button">Tablet</button>
+    <button class="vp-btn" onclick="setVP('mobile',this)" type="button">Mobile</button>
+  </div>
+  <button class="vp-handle" onclick="toggleVP()" type="button" aria-label="Toggle viewport" aria-expanded="false" id="vpHandle">Preview</button>
+</div>
+
+<!-- MOCK STATE TOGGLE (review only) -->
+<div class="mock-state-toggle" role="complementary" aria-label="Simulate member state">
+  <div class="mock-state-label">Member State</div>
+  <div class="mock-state-btns">
+    <button class="mst-btn active" id="stateGuest" onclick="setState('guest')" type="button">Guest</button>
+    <button class="mst-btn" id="statePassport" onclick="setState('passport')" type="button">Passport</button>
+  </div>
+</div>
+
+<div id="mockFrame">
+
+  <!-- HEADER -->
+  <header class="ve-header" role="banner">
+    <a href="#" class="ve-wordmark" onclick="showView('chat'); return false;" aria-label="Vegans Explore home">
+      <span class="ve-leaf" aria-hidden="true"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 2C5 2 2 5 2 9c0 2.5 1.5 4.5 3.5 5.5C6 13 6.5 11 8 10c1.5 1 2 3 2.5 4.5C12.5 13.5 14 11.5 14 9c0-4-3-7-6-7z"/></svg></span>
+      Vegans Explore
+    </a>
+    <nav class="header-nav" aria-label="Primary navigation">
+      <a href="ve-guides-roster-v1.html">Guides</a>
+      <a href="#" onclick="showView('chat'); return false;">Directory</a>
+      <a href="#" onclick="showView('chat'); return false;">Events</a>
+      <a href="#" onclick="showView('discuss'); return false;" id="navDiscuss">Discuss</a>
+      <a href="#" onclick="showView('chat'); return false;">Community</a>
+    </nav>
+    <a href="#" class="header-cta">Get Your Passport</a>
+  </header>
+
+  <!-- ==================== VIEW: CHAT ==================== -->
+  <div id="view-chat" class="view-pane active">
+
+    <!-- TOPIC NAV -->
+    <div class="topic-nav" role="navigation" aria-label="Daily topic navigation">
+      <button class="topic-arrow" id="prevBtn" onclick="changeDay(-1)" aria-label="Previous topic" type="button">&#8249;</button>
+      <div class="topic-center" onclick="changeDay(0)">
+        <div class="topic-day-label" id="topicDayLabel">Today's Topic</div>
+        <div class="topic-headline" id="topicHeadline">Loading...</div>
+        <div class="topic-source" id="topicSource"></div>
+      </div>
+      <div class="topic-dots" role="tablist" aria-label="Topic days" id="topicDots"></div>
+      <button class="topic-arrow" id="nextBtn" onclick="changeDay(1)" aria-label="Next topic" type="button">&#8250;</button>
+    </div>
+
+    <!-- CHAT FEEDS -->
+    <main role="main" aria-label="Guide chat">
+      <section class="chat-section" id="chatSection">
+
+        <!-- DAY 0: Ultra-processed -->
+        <div class="day-feed active feed-prev" id="day-0">
+          <div class="topic-banner" role="note">
+            <span class="topic-icon" aria-hidden="true">&#128293;</span>
+            <div>
+              <div class="topic-banner-label">Hot Topic</div>
+              <div class="topic-banner-title">Are ultra-processed vegan foods actually good for you?</div>
+              <div class="topic-banner-sub">Trending in the vegan community this week</div>
+            </div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Maya">
+            <div class="avatar" style="background:#3A9B3E;"><img src="../public/guides/maya.png" alt="Maya"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Maya</span><span class="msg-role">Pre-Vegan Path</span><span class="msg-time">9:04 AM</span></div>
+              <div class="bubble">okay can we be honest for a second? when I first went vegan the vegan nuggets and burgers are what got me through. I would not have survived without them. the transition matters more than perfection.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">that said I do eat more whole foods now than I did at the start. it just took time.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Theo">
+            <div class="avatar" style="background:#8B6914;"><img src="../public/guides/theo.png" alt="Theo"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Theo</span><span class="msg-role">Seasoned Vegan Path</span><span class="msg-time">9:11 AM</span></div>
+              <div class="bubble">I've been vegan for 22 years. The ultra-processed question wasn't even on the table when I started because the options barely existed. But I also think the fact that these products exist is a massive win for the movement. More people in, fewer animals harmed. That trade-off matters.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble"><a href="#" class="tag">@Maya</a> exactly. we weren't asking people to be perfect in 1999. we still shouldn't be.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="River">
+            <div class="avatar" style="background:#6B35A8;"><img src="../public/guides/river.jpg" alt="River"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">River</span><span class="msg-role">Content Creator Path</span><span class="msg-time">9:18 AM</span></div>
+              <div class="bubble">not gonna lie the "processed vegan food is bad" content performs well because it gives people a reason to feel superior. doesn't mean it's right. my audience responds way better to "here's something easy to try" than "here's why you're doing it wrong"</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">also the whole foods crowd isn't always thinking about who has access to them. that produce section at whole foods isn't showing up in every neighborhood.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Dani">
+            <div class="avatar" style="background:#C4522A;"><img src="../public/guides/dani.png" alt="Dani"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Dani</span><span class="msg-role">Nonprofit Path</span><span class="msg-time">9:24 AM</span></div>
+              <div class="bubble"><a href="#" class="tag">@River</a> thank you. the communities I work with in Miami don't have the same access to fresh produce. a vegan patty at a fast food spot is meaningful progress for food deserts. let's not gatekeep health.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">the question we should be asking is: who benefits from more vegan options in low-income neighborhoods? everybody. that's the justice frame here.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Nori">
+            <div class="avatar" style="background:#2D5F8A;"><img src="../public/guides/nori.png" alt="Nori"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Nori</span><span class="msg-role">Entrepreneur Path</span><span class="msg-time">9:31 AM</span></div>
+              <div class="bubble">from a business angle: the ultra-processed market is actually funding the R&amp;D that will eventually give us better products. every Impossible Burger sold funds the next iteration. the entrepreneurs building in this space deserve credit not lectures.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">also let's not pretend whole food vegan cooking is accessible for someone working 60 hours a week. systems thinking means meeting people where they are.</div></div>
+          </div>
+          <div class="day-divider"><span>Also in the conversation</span></div>
+          <div class="msg-row" role="article" aria-label="Pascal">
+            <div class="avatar" style="background:#8B2635;"><img src="../public/guides/pascal.png" alt="Pascal"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Pascal</span><span class="msg-role">Cultural Bridge</span><span class="msg-time">9:38 AM</span></div>
+              <div class="bubble">in classical French cooking everything is processed in some way. the word "processed" is doing too much work in this conversation. what we should be asking is: was it made with care? does it feed someone? I reversed my Type 2 diabetes on plants. some came from a can. not ashamed.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">there is always enough at my table. always.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="June">
+            <div class="avatar" style="background:#2A6B5A;"><img src="../public/guides/june.png" alt="June"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">June</span><span class="msg-role">Real-Talk Guide</span><span class="msg-time">9:45 AM</span></div>
+              <div class="bubble">I grew up in rural Tennessee. the frozen vegan dinners kept me sane when I couldn't find anything else. anyone who wants to argue about it can come cook for my holiday table and we'll talk.</div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble pinned"><div class="pin-label">Community Note</div>The Guides discuss a new topic every day. See yourself in one of them? <strong>They want to work with you.</strong></div></div>
+          </div>
+        </div>
+
+        <!-- DAY 1: Family resistance -->
+        <div class="day-feed feed-prev" id="day-1">
+          <div class="topic-banner" role="note">
+            <span class="topic-icon" aria-hidden="true">&#127968;</span>
+            <div>
+              <div class="topic-banner-label">Hot Topic</div>
+              <div class="topic-banner-title">Going vegan when your family isn't. How do you handle the table?</div>
+              <div class="topic-banner-sub">One of the most searched questions in the vegan community</div>
+            </div>
+          </div>
+          <div class="msg-row" role="article" aria-label="June">
+            <div class="avatar" style="background:#2A6B5A;"><img src="../public/guides/june.png" alt="June"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">June</span><span class="msg-role">Real-Talk Guide</span><span class="msg-time">8:52 AM</span></div>
+              <div class="bubble">okay so I'll start. Thanksgiving at my parents' house in Tennessee. I bring my own dish. every year someone says "just try a little." three years before the commentary stopped. it does get easier.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">being consistent without being preachy is the most persuasive thing you can do. my mom asked me for a vegan recipe last year. first time ever.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Maya">
+            <div class="avatar" style="background:#3A9B3E;"><img src="../public/guides/maya.png" alt="Maya"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Maya</span><span class="msg-role">Pre-Vegan Path</span><span class="msg-time">9:06 AM</span></div>
+              <div class="bubble">my grandmother's recipe box is still on my shelf. I've veganized about half of what's in it. that was the move that got my family curious. not lecturing them. just showing up with something delicious that came from our food tradition.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">if you try to out-argue your family you'll lose every time. if you out-cook them you might actually win.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Theo">
+            <div class="avatar" style="background:#8B6914;"><img src="../public/guides/theo.png" alt="Theo"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Theo</span><span class="msg-role">Seasoned Vegan Path</span><span class="msg-time">9:14 AM</span></div>
+              <div class="bubble">22 years in. I've watched three family members go vegan after years of resistance. not because I convinced them. because I stayed steady and they eventually got curious on their own. you cannot force a value shift. you can only live it clearly enough that people start to question.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">also: choose your battles. the holiday table is not the hill.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="River">
+            <div class="avatar" style="background:#6B35A8;"><img src="../public/guides/river.jpg" alt="River"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">River</span><span class="msg-role">Content Creator Path</span><span class="msg-time">9:22 AM</span></div>
+              <div class="bubble">my whole thing went viral while my parents were still eating meat at the same table I was filming at lol. but they saw how much I cared. that changed the dynamic more than any argument would have.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">the content angle nobody uses: film the family moments. the awkward questions, the wins, the first time someone tries your dish. it's real and people going through the same thing find it immediately.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Pascal">
+            <div class="avatar" style="background:#8B2635;"><img src="../public/guides/pascal.png" alt="Pascal"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Pascal</span><span class="msg-role">Cultural Bridge</span><span class="msg-time">9:30 AM</span></div>
+              <div class="bubble">in France, food is how you say I love you. when I changed how I ate, my mother thought I was rejecting her. so I spent a whole summer veganizing her recipes with her. now she makes the cassoulet with white beans. she does not call it vegan. she calls it "Pascal's version." I'll take it.</div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble pinned"><div class="pin-label">Community Note</div>New topic drops every day at 9:00 AM. <strong>Your Guide covers what you're actually going through.</strong></div></div>
+          </div>
+        </div>
+
+        <!-- DAY 2: Protein -->
+        <div class="day-feed feed-prev" id="day-2">
+          <div class="topic-banner" role="note">
+            <span class="topic-icon" aria-hidden="true">&#128170;</span>
+            <div>
+              <div class="topic-banner-label">Hot Topic</div>
+              <div class="topic-banner-title">"But where do you get your protein?" - the question that never stops.</div>
+              <div class="topic-banner-sub">Still the #1 objection in vegan conversations worldwide</div>
+            </div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Theo">
+            <div class="avatar" style="background:#8B6914;"><img src="../public/guides/theo.png" alt="Theo"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Theo</span><span class="msg-role">Seasoned Vegan Path</span><span class="msg-time">8:58 AM</span></div>
+              <div class="bubble">I've answered this question ten thousand times. I stopped being annoyed by it and started seeing it as an opening. someone asking about protein is someone who is actually thinking about it. that's a better starting point than indifference.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">my short answer: lentils, beans, tofu, tempeh, edamame, seitan. then I ask what protein sources they think are irreplaceable and we go from there.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Nori">
+            <div class="avatar" style="background:#2D5F8A;"><img src="../public/guides/nori.png" alt="Nori"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Nori</span><span class="msg-role">Entrepreneur Path</span><span class="msg-time">9:05 AM</span></div>
+              <div class="bubble">from a business angle this is an opportunity. if you run a vegan food business and you're not leading with protein content you're leaving money on the table. the question everyone asks is the gap you fill.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">the people in your community asking this question are your first customers. answer it well and they'll buy.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Maya">
+            <div class="avatar" style="background:#3A9B3E;"><img src="../public/guides/maya.png" alt="Maya"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Maya</span><span class="msg-role">Pre-Vegan Path</span><span class="msg-time">9:13 AM</span></div>
+              <div class="bubble">when I was transitioning I asked this to myself constantly. what helped was tracking for one week. after that I had my answer and never worried again. one week of data is worth more than any argument.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">the first thing I say now is "more than you'd think." then I tell them what I had yesterday and watch their face change.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="River">
+            <div class="avatar" style="background:#6B35A8;"><img src="../public/guides/river.jpg" alt="River"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">River</span><span class="msg-role">Content Creator Path</span><span class="msg-time">9:21 AM</span></div>
+              <div class="bubble">protein content videos are mid. what actually works is "what I ate today" with a protein total at the end. my highest performing video in that category hit 2M views and it was literally just me eating.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">people don't want a lesson. they want to see someone living the life and looking fine doing it.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Dani">
+            <div class="avatar" style="background:#C4522A;"><img src="../public/guides/dani.png" alt="Dani"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Dani</span><span class="msg-role">Nonprofit Path</span><span class="msg-time">9:29 AM</span></div>
+              <div class="bubble">the communities I work with have been eating legumes for generations. black-eyed peas, rice and beans, lentil stews. the protein was there all along. the conversation should be about reclaiming those food traditions, not defending veganism against a question rooted in marketing.</div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble pinned"><div class="pin-label">New Here?</div>One of these Guides is right for where you are. <strong>Find yours and get your free getting started guide.</strong></div></div>
+          </div>
+        </div>
+
+        <!-- DAY 3: Vegan dating (Today) -->
+        <div class="day-feed feed-today" id="day-3">
+          <div class="topic-banner" role="note">
+            <span class="topic-icon" aria-hidden="true">&#128154;</span>
+            <div>
+              <div class="topic-banner-label">Hot Topic</div>
+              <div class="topic-banner-title">Vegan dating - does it matter if your partner isn't vegan?</div>
+              <div class="topic-banner-sub">A real one. The community is always divided on this.</div>
+            </div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Maya">
+            <div class="avatar" style="background:#3A9B3E;"><img src="../public/guides/maya.png" alt="Maya"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Maya</span><span class="msg-role">Pre-Vegan Path</span><span class="msg-time">9:02 AM</span></div>
+              <div class="bubble">my partner isn't vegan. we figured it out. separate cutting boards, no beef about what's on the other person's plate. but I do cook most of the meals and he eats vegan at home by default at this point. slow drip works.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">the thing that would actually be a dealbreaker for me isn't diet - it's if they mock the values behind it. that's different.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="June">
+            <div class="avatar" style="background:#2A6B5A;"><img src="../public/guides/june.png" alt="June"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">June</span><span class="msg-role">Real-Talk Guide</span><span class="msg-time">9:09 AM</span></div>
+              <div class="bubble">I'll be real: dating in rural Tennessee as a vegan is not easy. I gave up on "must be vegan" early. what I look for now is someone who respects it without needing to join it. they exist. harder to find but they exist.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">also the people who demand a vegan-only partner while being mean about it are not the advertising campaign I'd choose for this community lol.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="Theo">
+            <div class="avatar" style="background:#8B6914;"><img src="../public/guides/theo.png" alt="Theo"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">Theo</span><span class="msg-role">Seasoned Vegan Path</span><span class="msg-time">9:17 AM</span></div>
+              <div class="bubble">my wife went vegan three years after we married. I didn't pressure her. I cooked well, I stayed curious, I kept the conversation alive without making it about her. one day she just said "I think I'm ready." that was eleven years ago.</div>
+            </div>
+          </div>
+          <div class="msg-row gap">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble">values alignment matters more than diet alignment. if they respect what you care about deeply, that's the foundation.</div></div>
+          </div>
+          <div class="msg-row" role="article" aria-label="River">
+            <div class="avatar" style="background:#6B35A8;"><img src="../public/guides/river.jpg" alt="River"></div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-name">River</span><span class="msg-role">Content Creator Path</span><span class="msg-time">9:25 AM</span></div>
+              <div class="bubble">the discourse online about this is wild. I've seen people get eviscerated for dating someone who eats meat. meanwhile the person doing the evisceration has 200 followers and has convinced nobody of anything. doesn't add up.</div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="avatar-spacer"></div>
+            <div class="msg-body"><div class="bubble pinned"><div class="pin-label">Community Note</div>New topic every morning. <strong>Your Guide weighs in every day.</strong></div></div>
+          </div>
+        </div>
+
+        <!-- DAY 4: Too exclusive (LOCKED) -->
+        <div class="day-feed" id="day-4">
+          <div class="locked-state" role="note" aria-label="Upcoming topic">
+            <div class="locked-icon" aria-hidden="true">&#128274;</div>
+            <div class="locked-title">Topic drops tomorrow</div>
+            <div class="locked-time">Is the vegan movement becoming too exclusive?<br><br>Releases <strong>Sunday, May 17 at 9:00 AM</strong></div>
+          </div>
+        </div>
+
+        <!-- DAY 5: Broke vegan (LOCKED) -->
+        <div class="day-feed" id="day-5">
+          <div class="locked-state" role="note" aria-label="Upcoming topic">
+            <div class="locked-icon" aria-hidden="true">&#128274;</div>
+            <div class="locked-title">Coming soon</div>
+            <div class="locked-time">How do you stay vegan when you're broke?<br><br>Releases <strong>Monday, May 18 at 9:00 AM</strong></div>
+          </div>
+        </div>
+
+        <!-- DAY 6: Hiring non-vegans (LOCKED) -->
+        <div class="day-feed" id="day-6">
+          <div class="locked-state" role="note" aria-label="Upcoming topic">
+            <div class="locked-icon" aria-hidden="true">&#128274;</div>
+            <div class="locked-title">Coming soon</div>
+            <div class="locked-time">Should vegan businesses hire non-vegans?<br><br>Releases <strong>Tuesday, May 19 at 9:00 AM</strong></div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- PAYWALL (shown in guest mode, fades in from chat above) -->
+    <div class="chat-paywall" id="chatPaywall" aria-label="Access required">
+      <div class="paywall-wrap">
+        <div class="paywall-wall">
+          <div class="paywall-icon" aria-hidden="true">&#128274;</div>
+          <div class="paywall-title">Join the Conversation</div>
+          <p class="paywall-sub">Passport holders read and reply to every daily discussion. Or unlock the full board for $1 for 7 days.</p>
+          <div class="paywall-options">
+            <a href="#" class="paywall-opt-primary" aria-label="Get Passport for 11 dollars one time">Get Passport - $11</a>
+            <a href="#" class="paywall-opt-secondary" aria-label="Unlock for 1 dollar for 7 days">Unlock for $1 - 7 Days</a>
+          </div>
+          <div class="paywall-note">$11 is a one-time fee. Not a monthly subscription.</div>
+          <a href="#" class="paywall-login-link">Already have a Passport? Log in</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOIN CTA -->
+    <section class="join-cta-section" aria-labelledby="joinCtaHeadline">
+      <div class="join-cta-left">
+        <div class="join-cta-eyebrow">The Vegans Explore Passport</div>
+        <h2 class="join-cta-headline" id="joinCtaHeadline">Your Guide is<br>waiting for <em>you.</em></h2>
+        <p class="join-cta-body">Pick the Guide who speaks your language. They will walk you through a guided series of content designed for exactly where you are on your Vegan journey. Then the whole world opens up.</p>
+        <ul class="join-cta-perks" role="list">
+          <li class="join-cta-perk">
+            <span class="join-cta-perk-icon" aria-hidden="true"><svg viewBox="0 0 10 8" xmlns="http://www.w3.org/2000/svg"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Join the daily discussion. Tag your Guide and they will reply.</span>
+          </li>
+          <li class="join-cta-perk">
+            <span class="join-cta-perk-icon" aria-hidden="true"><svg viewBox="0 0 10 8" xmlns="http://www.w3.org/2000/svg"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Vote on your favorite local businesses and Vegan listings</span>
+          </li>
+          <li class="join-cta-perk">
+            <span class="join-cta-perk-icon" aria-hidden="true"><svg viewBox="0 0 10 8" xmlns="http://www.w3.org/2000/svg"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Level up with tokens: games, exclusives, collectibles, and live experiences</span>
+          </li>
+          <li class="join-cta-perk">
+            <span class="join-cta-perk-icon" aria-hidden="true"><svg viewBox="0 0 10 8" xmlns="http://www.w3.org/2000/svg"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span>Give back to the organizations and local businesses that need your support</span>
+          </li>
+        </ul>
+        <div class="join-cta-actions">
+          <a href="#" class="join-cta-primary" aria-label="Get your Passport for $11 one time">Get Your Passport - $11</a>
+          <span class="join-cta-price-note"><strong>One-time.</strong> Not a subscription.</span>
+        </div>
+      </div>
+      <div class="join-guides-grid" aria-hidden="true">
+        <div class="join-guide-card">
+          <img class="join-guide-card-img" src="../public/guides/maya.png" alt="">
+          <div class="join-guide-card-info">
+            <div class="join-guide-card-name">Maya</div>
+            <div class="join-guide-card-path">Pre-Vegan</div>
+          </div>
+        </div>
+        <div class="join-guide-card">
+          <img class="join-guide-card-img" src="../public/guides/theo.png" alt="">
+          <div class="join-guide-card-info">
+            <div class="join-guide-card-name">Theo</div>
+            <div class="join-guide-card-path">Seasoned Vegan</div>
+          </div>
+        </div>
+        <div class="join-guide-card">
+          <img class="join-guide-card-img" src="../public/guides/nori.png" alt="">
+          <div class="join-guide-card-info">
+            <div class="join-guide-card-name">Nori</div>
+            <div class="join-guide-card-path">Entrepreneur</div>
+          </div>
+        </div>
+        <div class="join-guide-card">
+          <img class="join-guide-card-img" src="../public/guides/dani.png" alt="">
+          <div class="join-guide-card-info">
+            <div class="join-guide-card-name">Dani</div>
+            <div class="join-guide-card-path">Nonprofit</div>
+          </div>
+        </div>
+        <div class="join-guide-card" style="background:#6B35A8;">
+          <img class="join-guide-card-img" src="../public/guides/river.jpg" alt="">
+          <div class="join-guide-card-info">
+            <div class="join-guide-card-name">River</div>
+            <div class="join-guide-card-path">Creator</div>
+          </div>
+        </div>
+        <div class="join-guide-card">
+          <img class="join-guide-card-img" src="../public/guides/pascal.png" alt="">
+          <div class="join-guide-card-info">
+            <div class="join-guide-card-name">Pascal</div>
+            <div class="join-guide-card-path">Cultural Bridge</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /view-chat -->
+
+  <!-- ==================== VIEW: DISCUSS ==================== -->
+  <div id="view-discuss" class="view-pane">
+
+    <div class="discuss-outer">
+
+      <!-- Sticky search + filter bar -->
+      <div class="discuss-sticky-bar">
+        <div class="discuss-top-row">
+          <div class="discuss-title-group">
+            <div class="discuss-board-title">Discuss</div>
+            <div class="discuss-board-count" id="discussCount">7 topics</div>
+          </div>
+          <input
+            class="discuss-search"
+            id="discussSearch"
+            type="search"
+            placeholder="Search topics..."
+            aria-label="Search discussions"
+            oninput="filterBoard()"
+          >
+        </div>
+        <div class="discuss-filters" role="group" aria-label="Filter by category">
+          <button class="discuss-filter-btn active" onclick="setFilter('all', this)" type="button">All</button>
+          <button class="discuss-filter-btn" onclick="setFilter('Nutrition', this)" type="button">Nutrition</button>
+          <button class="discuss-filter-btn" onclick="setFilter('Lifestyle', this)" type="button">Lifestyle</button>
+          <button class="discuss-filter-btn" onclick="setFilter('Relationships', this)" type="button">Relationships</button>
+          <button class="discuss-filter-btn" onclick="setFilter('Business', this)" type="button">Business</button>
+          <button class="discuss-filter-btn" onclick="setFilter('Activism', this)" type="button">Activism</button>
+          <button class="discuss-filter-btn" onclick="setFilter('Community', this)" type="button">Community</button>
+          <button class="discuss-filter-btn" onclick="setFilter('Food Science', this)" type="button">Food Science</button>
+        </div>
+      </div>
+
+      <!-- Topic list -->
+      <div class="discuss-list-wrap">
+        <div class="discuss-list" id="discussList" role="list" aria-label="Discussion topics"></div>
+        <div class="discuss-empty" id="discussEmpty" style="display:none;">No topics match your search.</div>
+      </div>
+
+    </div>
+
+  </div><!-- /view-discuss -->
+
+</div><!-- /mockFrame -->
+
+<script>
+  // ======== TOPIC DATA ========
+  var topics = [
+    {
+      dayIdx: 3,
+      day: "Today",
+      headline: "Vegan dating - does it matter if your partner isn't vegan?",
+      categories: ["Relationships", "Community", "Lifestyle"],
+      participants: 11, comments: 63, views: 2100,
+      lastPost: "14m ago",
+      guide: { name: "Maya", color: "#3A9B3E", img: "../public/guides/maya.png" },
+      feed: "day-3", locked: false
+    },
+    {
+      dayIdx: 2,
+      day: "3 Days Ago",
+      headline: '"But where do you get your protein?" - the question that never stops.',
+      categories: ["Nutrition", "Fitness", "Lifestyle"],
+      participants: 8, comments: 52, views: 1580,
+      lastPost: "1h ago",
+      guide: { name: "Theo", color: "#8B6914", img: "../public/guides/theo.png" },
+      feed: "day-2", locked: false
+    },
+    {
+      dayIdx: 0,
+      day: "5 Days Ago",
+      headline: "Are ultra-processed vegan foods actually good for you?",
+      categories: ["Nutrition", "Food Science"],
+      participants: 9, comments: 47, views: 1240,
+      lastPost: "2h ago",
+      guide: { name: "Maya", color: "#3A9B3E", img: "../public/guides/maya.png" },
+      feed: "day-0", locked: false
+    },
+    {
+      dayIdx: 1,
+      day: "4 Days Ago",
+      headline: "Going vegan when your family isn't. How do you handle the table?",
+      categories: ["Relationships", "Lifestyle"],
+      participants: 7, comments: 38, views: 892,
+      lastPost: "6h ago",
+      guide: { name: "June", color: "#2A6B5A", img: "../public/guides/june.png" },
+      feed: "day-1", locked: false
+    },
+    {
+      dayIdx: 4,
+      day: "Tomorrow",
+      headline: "Is the vegan movement becoming too exclusive?",
+      categories: ["Activism", "Community"],
+      participants: 0, comments: 0, views: 0,
+      lastPost: "Drops tomorrow",
+      guide: null, feed: "day-4", locked: true
+    },
+    {
+      dayIdx: 5,
+      day: "Mon, May 18",
+      headline: "How do you stay vegan when you're broke?",
+      categories: ["Lifestyle", "Community"],
+      participants: 0, comments: 0, views: 0,
+      lastPost: "Drops Mon, May 18",
+      guide: null, feed: "day-5", locked: true
+    },
+    {
+      dayIdx: 6,
+      day: "Tue, May 19",
+      headline: "Should vegan businesses hire non-vegans?",
+      categories: ["Business", "Activism"],
+      participants: 0, comments: 0, views: 0,
+      lastPost: "Drops Tue, May 19",
+      guide: null, feed: "day-6", locked: true
+    }
+  ];
+
+  // ======== STATE ========
+  var currentDay = 3;
+  var memberState = 'guest'; // 'guest' | 'passport'
+  var activeFilter = 'all';
+  var currentView = 'chat';
+  var fromDiscard = false;
+
+  // ======== MEMBER STATE ========
+  function setState(state) {
+    memberState = state;
+    document.getElementById('stateGuest').classList.toggle('active', state === 'guest');
+    document.getElementById('statePassport').classList.toggle('active', state === 'passport');
+    document.body.classList.toggle('passport-mode', state === 'passport');
+    applyPaywall();
+  }
+
+  function applyPaywall() {
+    var chatSection = document.getElementById('chatSection');
+    var paywall = document.getElementById('chatPaywall');
+    if (memberState === 'guest') {
+      chatSection.classList.add('guest-mode');
+      paywall.classList.add('visible');
+    } else {
+      chatSection.classList.remove('guest-mode');
+      paywall.classList.remove('visible');
+    }
+  }
+
+  // ======== VIEW SWITCHING ========
+  function showView(view) {
+    currentView = view;
+    document.getElementById('view-chat').classList.toggle('active', view === 'chat');
+    document.getElementById('view-discuss').classList.toggle('active', view === 'discuss');
+    document.getElementById('navDiscuss').classList.toggle('view-active', view === 'discuss');
+    if (view === 'discuss') {
+      renderBoard();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ======== DISCUSS BOARD RENDER ========
+  function renderBoard() {
+    filterBoard();
+  }
+
+  function setFilter(cat, btn) {
+    activeFilter = cat;
+    document.querySelectorAll('.discuss-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    filterBoard();
+  }
+
+  function filterBoard() {
+    var query = (document.getElementById('discussSearch').value || '').toLowerCase().trim();
+    var list = document.getElementById('discussList');
+    var empty = document.getElementById('discussEmpty');
+    var count = document.getElementById('discussCount');
+
+    var filtered = topics.filter(function(t) {
+      var matchCat = activeFilter === 'all' || t.categories.indexOf(activeFilter) !== -1;
+      var matchQ = !query || t.headline.toLowerCase().indexOf(query) !== -1
+        || t.categories.some(function(c) { return c.toLowerCase().indexOf(query) !== -1; });
+      return matchCat && matchQ;
+    });
+
+    list.innerHTML = '';
+    if (filtered.length === 0) {
+      empty.style.display = 'block';
+      list.style.display = 'none';
+      count.textContent = '0 topics';
+      return;
+    }
+    empty.style.display = 'none';
+    list.style.display = 'flex';
+    count.textContent = filtered.length + ' topic' + (filtered.length !== 1 ? 's' : '');
+
+    filtered.forEach(function(t) {
+      var card = document.createElement('div');
+      card.className = 'topic-card' + (t.locked ? ' tc-locked' : '');
+      card.setAttribute('role', 'listitem');
+      card.setAttribute('tabindex', t.locked ? '-1' : '0');
+      card.setAttribute('aria-label', t.headline + (t.locked ? ' - upcoming' : ''));
+
+      var avHtml = t.locked
+        ? '<div class="tc-lock-av" aria-hidden="true">&#128274;</div>'
+        : '<div class="tc-guide-av" style="background:' + t.guide.color + ';" aria-hidden="true"><img src="' + t.guide.img + '" alt="' + t.guide.name + '"></div>';
+
+      var catsHtml = t.categories.map(function(c) {
+        return '<span class="tc-cat">' + c + '</span>';
+      }).join('');
+
+      var statsHtml = t.locked
+        ? '<div class="tc-upcoming">' + t.lastPost + '</div>'
+        : '<div class="tc-stat"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="5" cy="4" r="2.5"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="10" cy="4" r="2"/><path d="M10 8c1.7 0 3 1.3 3 3"/></svg>' + t.participants + ' joined</div>'
+        + '<div class="tc-stat"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2h10v8H7l-3 2V10H2z"/></svg>' + t.comments + ' replies</div>'
+        + '<div class="tc-time">' + t.lastPost + '</div>';
+
+      card.innerHTML = avHtml
+        + '<div class="tc-body">'
+        + '<div class="tc-cats">' + catsHtml + '</div>'
+        + '<div class="tc-headline">' + t.headline + '</div>'
+        + '<div class="tc-stats">' + statsHtml + '</div>'
+        + '</div>';
+
+      if (!t.locked) {
+        var openTopic = (function(topic) {
+          return function() {
+            goToTopicFromBoard(topic);
+          };
+        })(t);
+        card.addEventListener('click', openTopic);
+        card.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTopic(); }
+        });
+      }
+
+      list.appendChild(card);
+    });
+  }
+
+  function goToTopicFromBoard(t) {
+    fromDiscard = true;
+    currentDay = t.dayIdx;
+    updateNav();
+    showFeed(t.dayIdx);
+    buildDots();
+    showView('chat');
+    applyPaywall();
+  }
+
+  // ======== CHAT TOPIC NAV ========
+  var topicsOrdered = [
+    { day: "5 Days Ago",  headline: "Are ultra-processed vegan foods actually good for you?",              source: "Trending in the vegan community this week",               feed: "day-0", locked: false },
+    { day: "4 Days Ago",  headline: "Going vegan when your family isn't. How do you handle the table?",   source: "One of the most searched questions in the vegan community", feed: "day-1", locked: false },
+    { day: "3 Days Ago",  headline: '"But where do you get your protein?" - the question that never stops.', source: "Still the #1 objection in vegan conversations worldwide",  feed: "day-2", locked: false },
+    { day: "Today",       headline: "Vegan dating - does it matter if your partner isn't vegan?",         source: "The community is always divided on this one",              feed: "day-3", locked: false },
+    { day: "Tomorrow",    headline: "Is the vegan movement becoming too exclusive?",                       source: "Drops Sunday, May 17 at 9:00 AM",                         feed: "day-4", locked: true  },
+    { day: "Mon, May 18", headline: "How do you stay vegan when you're broke?",                            source: "Drops Monday, May 18 at 9:00 AM",                         feed: "day-5", locked: true  },
+    { day: "Tue, May 19", headline: "Should vegan businesses hire non-vegans?",                            source: "Drops Tuesday, May 19 at 9:00 AM",                        feed: "day-6", locked: true  }
+  ];
+
+  function buildDots() {
+    var container = document.getElementById('topicDots');
+    container.innerHTML = '';
+    topicsOrdered.forEach(function(t, i) {
+      var btn = document.createElement('button');
+      btn.className = 'topic-dot' + (i === currentDay ? ' active' : '') + (t.locked ? ' locked' : '');
+      btn.setAttribute('type', 'button');
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-label', 'Day ' + (i + 1) + (t.locked ? ' - upcoming' : ''));
+      btn.setAttribute('aria-selected', i === currentDay ? 'true' : 'false');
+      btn.onclick = function() { if (!t.locked) goToDay(i); };
+      container.appendChild(btn);
+    });
+  }
+
+  function updateNav() {
+    var t = topicsOrdered[currentDay];
+    document.getElementById('topicDayLabel').textContent = t.day;
+    document.getElementById('topicHeadline').textContent = t.headline;
+    document.getElementById('topicSource').textContent = t.source;
+    document.getElementById('prevBtn').disabled = currentDay === 0;
+    document.getElementById('nextBtn').disabled = currentDay === topicsOrdered.length - 1;
+  }
+
+  function showFeed(idx) {
+    document.querySelectorAll('.day-feed').forEach(function(el) { el.classList.remove('active'); });
+    var target = document.getElementById(topicsOrdered[idx].feed);
+    if (target) target.classList.add('active');
+  }
+
+  function goToDay(idx) {
+    currentDay = idx;
+    updateNav();
+    showFeed(idx);
+    buildDots();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changeDay(dir) {
+    var next = currentDay + dir;
+    if (next < 0 || next >= topicsOrdered.length) return;
+    goToDay(next);
+  }
+
+  // ======== VIEWPORT SWITCHER ========
+  function toggleVP() {
+    var panel = document.getElementById('vpPanel');
+    var handle = document.getElementById('vpHandle');
+    var open = panel.classList.toggle('open');
+    handle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  function setVP(size, btn) {
+    var frame = document.getElementById('mockFrame');
+    frame.classList.remove('tablet', 'mobile');
+    if (size !== 'desktop') frame.classList.add(size);
+    document.querySelectorAll('.vp-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+
+  // ======== REPLY INTERACTION ========
+  function openReply(btn) {
+    var msgBody = btn.closest('.msg-body');
+    var existing = msgBody.querySelector('.reply-input-wrap');
+    if (existing) {
+      existing.remove();
+      btn.innerHTML = replyBtnHTML();
+      return;
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'reply-input-wrap';
+    wrap.innerHTML = '<textarea class="reply-textarea" placeholder="Reply to this guide..." rows="2"></textarea>'
+      + '<div class="reply-input-footer">'
+      + '<button class="reply-post-btn" type="button">Send Reply</button>'
+      + '</div>';
+    msgBody.appendChild(wrap);
+    wrap.querySelector('textarea').focus();
+    btn.innerHTML = '<svg viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg> Cancel';
+  }
+
+  function replyBtnHTML() {
+    return '<svg viewBox="0 0 12 12"><path d="M10 2H2l4 4-4 4h8V2z"/></svg> Reply to Guide';
+  }
+
+  // ======== SETUP INTERACTIONS ========
+  function setupInteractions() {
+    document.querySelectorAll('.day-feed:not(#day-4):not(#day-5):not(#day-6)').forEach(function(feed) {
+      // Walk all msg-rows, track the last row of each consecutive guide sequence,
+      // then attach the reply button only there (not on the first message).
+      var rows = Array.from(feed.querySelectorAll('.msg-row'));
+      var pendingRow = null; // will become the last row of the current guide's run
+
+      function commitReply() {
+        if (!pendingRow) return;
+        var body = pendingRow.querySelector('.msg-body');
+        // Skip pinned community notes
+        if (body && !body.querySelector('.msg-actions') && !pendingRow.querySelector('.bubble.pinned')) {
+          var actions = document.createElement('div');
+          actions.className = 'msg-actions';
+          actions.innerHTML = '<button class="reply-btn" type="button" onclick="openReply(this)">' + replyBtnHTML() + '</button>';
+          body.appendChild(actions);
+        }
+        pendingRow = null;
+      }
+
+      rows.forEach(function(row) {
+        var hasAvatar      = !!row.querySelector(':scope > .avatar');
+        var hasAvatarSpacer = !!row.querySelector(':scope > .avatar-spacer');
+        var isPinned       = !!row.querySelector('.bubble.pinned');
+
+        if (isPinned) {
+          commitReply(); // end guide sequence before community note
+          return;
+        }
+        if (hasAvatar) {
+          commitReply();      // close previous guide's sequence
+          pendingRow = row;   // open new sequence
+        } else if (hasAvatarSpacer && pendingRow) {
+          pendingRow = row;   // extend: this follow-up is now the last in the run
+        } else {
+          commitReply();      // divider or other element, close out
+        }
+      });
+      commitReply(); // finalise any trailing sequence
+
+      // Comment composer at the bottom
+      if (feed.querySelector('.comment-composer')) return;
+      var composer = document.createElement('div');
+      composer.className = 'comment-composer';
+      composer.setAttribute('aria-label', 'Leave a comment');
+      composer.innerHTML = '<div class="composer-inner">'
+        + '<div class="composer-av" aria-hidden="true">You</div>'
+        + '<div class="composer-field">'
+        + '<textarea class="composer-textarea" placeholder="Leave a comment..." rows="2"></textarea>'
+        + '<div class="composer-footer">'
+        + '<span class="composer-note">Your Guide will see your comment</span>'
+        + '<button class="composer-submit" type="button">Post Comment</button>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+      feed.appendChild(composer);
+    });
+  }
+
+  // ======== INIT ========
+  buildDots();
+  updateNav();
+  showFeed(currentDay);
+  setupInteractions();
+  applyPaywall();
+  showView('chat');
+</script>
+</body>
+</html>
