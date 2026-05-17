@@ -75,7 +75,7 @@
             dropItems +
           '</div>' +
         '</div>' +
-        '<a href="/guides/ve-guide-chat-v1"' + cur('/guides/ve-guide-chat-v1') + '>Discuss</a>' +
+        '<a href="/guides/ve-discuss"' + cur('/guides/ve-discuss') + '>Discuss</a>' +
         '<a href="#" >Communities</a>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/passport"' + cur('/passport') + '>Passport</a>' +
