@@ -14,6 +14,7 @@
       --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
     }
     html { scroll-behavior: smooth; }
+    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
     body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
 
     /* Discuss board */
@@ -98,6 +99,7 @@
 
   <script src="/public/nav.js"></script>
 
+  <div class="page-frame">
   <div class="discuss-outer">
     <div class="discuss-sticky-bar">
       <div class="discuss-top-row">
@@ -124,6 +126,7 @@
       <div class="discuss-empty" id="discussEmpty" style="display:none;">No topics match your search.</div>
     </div>
   </div>
+  </div><!-- /.page-frame -->
 
 <script>
   var topics = [

@@ -14,6 +14,7 @@
       --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
     }
     html { scroll-behavior: smooth; }
+    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
     body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
     .ve-nav { position: sticky; top: 0; z-index: 400; background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--ve-border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 60px; gap: 16px; }
     .ve-wordmark { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); display: flex; align-items: center; gap: 8px; text-decoration: none; }
@@ -171,6 +172,7 @@
   <script src="/public/nav.js"></script>
 
 
+  <div class="page-frame">
   <section class="hero" aria-labelledby="hero-heading">
     <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
     <h1 id="hero-heading">The Vegan<br><em>World is Open.</em></h1>
@@ -388,7 +390,7 @@
     </div>
     <nav class="footer-links" aria-label="Footer navigation">
       <a href="/guides/ve-guides-roster-v1">Guides</a>
-      <a href="/guides/ve-guide-chat-v1">Discuss</a>
+      <a href="/guides/ve-discuss">Discuss</a>
       <a href="#">Communities</a>
       <a href="/directory">Directory</a>
       <a href="/passport">Passport</a>
@@ -396,6 +398,7 @@
     </nav>
     <div class="footer-copy">2026 Vegans Explore</div>
   </footer>
+  </div><!-- /.page-frame -->
 
 </body>
 </html>
