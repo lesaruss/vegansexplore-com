@@ -314,14 +314,21 @@
   let currentPlan = 'single';
 
   function setPlan(plan) {
+    const guideKey = new URLSearchParams(window.location.search).get('guide') || 'maya';
+    const g = guideData[guideKey] || guideData.maya;
     if (plan === 'starter') {
-      const guideKey = new URLSearchParams(window.location.search).get('guide') || 'maya';
-      const g = guideData[guideKey] || guideData.maya;
       plans.starter.guideName   = g.name;
       plans.starter.guideTag    = g.tag;
       plans.starter.guideTagBg  = g.bg;
       plans.starter.guideAvatar = g.avatar;
       plans.starter.guideQuote  = g.quote;
+    }
+    if (plan === 'single' || plan === 'monthly') {
+      plans[plan].guideName   = g.name;
+      plans[plan].guideTag    = g.tag;
+      plans[plan].guideTagBg  = g.bg;
+      plans[plan].guideAvatar = g.avatar;
+      plans[plan].guideQuote  = g.quote;
     }
     currentPlan = plan;
     const p = plans[plan];
