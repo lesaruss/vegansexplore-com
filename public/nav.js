@@ -76,7 +76,7 @@
           '</div>' +
         '</div>' +
         '<a href="/guides/ve-discuss"' + (isCurrent('/guides/ve-discuss') || isCurrent('/guides/ve-guide-chat-v1') ? ' aria-current="page"' : '') + '>Discuss</a>' +
-        '<a href="#" >Communities</a>' +
+        '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/passport"' + cur('/passport') + '>Passport</a>' +
       '</div>' +
