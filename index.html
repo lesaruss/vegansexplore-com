@@ -206,7 +206,8 @@
       .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 52px 20px; }
       .how-grid { grid-template-columns: 1fr; gap: 28px; }
       .how-grid::before { display: none; }
-      .guides-grid { grid-template-columns: 1fr; gap: 14px; }
+      .guides-grid { display: none; }
+      .mobile-guide-picker { display: block; }
       .flip-card { height: 290px; }
       .passport-tiers { grid-template-columns: 1fr; gap: 12px; }
       .vision-timeline { grid-template-columns: 1fr 1fr; }
@@ -220,7 +221,24 @@
     .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
     .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
     .footer-social .social-icon svg { display: block; }
-  </style>
+
+    /* ── Mobile Guide Picker ── */
+    .mobile-guide-picker { display: none; }
+    .mgp-select-wrap { position: relative; margin-bottom: 14px; user-select: none; }
+    .mgp-select-face { display: flex; align-items: center; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; padding: 11px 36px 11px 14px; cursor: pointer; background: #fff; }
+    .mgp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-right: 10px; }
+    .mgp-label { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; flex: 1; }
+    .mgp-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: rgba(26,26,26,0.4); font-size: 12px; pointer-events: none; }
+    .mgp-dropdown { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; z-index: 10; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .mgp-dropdown.open { display: block; }
+    .mgp-option { display: flex; align-items: center; padding: 10px 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; }
+    .mgp-option:hover { background: #f5f5f5; }
+    .mgp-option.active { background: #f0f0f0; }
+    .mgp-flip-card { height: 300px; margin-bottom: 10px; }
+    .mgp-thumb-strip { display: flex; gap: 2px; width: 100%; }
+    .mgp-thumb-tile { flex: 1; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s; }
+    .mgp-thumb-tile img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    </style>
 </head>
 <body>
   <div class="page-frame">
@@ -347,6 +365,123 @@
       </div>
 
     </div>
+
+    <!-- Mobile Guide Picker -->
+    <div class="mobile-guide-picker">
+      <div class="mgp-select-wrap" id="mgpSelectWrap">
+        <div class="mgp-select-face" id="mgpFace" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select a guide path">
+          <div class="mgp-dot" id="mgpDot" style="background:#2d7d31;"></div>
+          <span class="mgp-label" id="mgpLabel">Maya &mdash; Pre-Vegan</span>
+          <span class="mgp-arrow" aria-hidden="true">&#9660;</span>
+        </div>
+        <div class="mgp-dropdown" id="mgpDropdown" role="listbox"></div>
+      </div>
+      <div class="flip-card mgp-flip-card" id="mgpFlipCard" tabindex="0" onclick="document.getElementById('mgpFlipInner').classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('mgpFlipInner').classList.toggle('flipped')" aria-label="Guide card, tap to flip">
+        <div class="flip-card-inner" id="mgpFlipInner">
+          <div class="flip-card-front">
+            <div class="flip-front-img" id="mgpFrontImgWrap" style="border-bottom:3px solid #2d7d31;">
+              <img id="mgpFrontImg" src="/public/guides/maya.png" alt="Maya" loading="lazy">
+            </div>
+            <div class="flip-front-body">
+              <div class="flip-front-name" id="mgpFrontName">Maya</div>
+              <div class="flip-front-role" id="mgpFrontRole" style="color:#2d7d31;">Pre-Vegan Guide</div>
+            </div>
+          </div>
+          <div class="flip-card-back" id="mgpBack" style="background:#2d7d31;">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label" id="mgpBackPathLabel">Path 01</div>
+              <div class="flip-back-path-name" id="mgpBackPathName">Pre-Vegan</div>
+              <p class="flip-back-desc" id="mgpBackDesc">Vegan-curious. Real answers, real support, and a clear path to make the shift.</p>
+              <a href="/guides/ve-path-prevegan" class="flip-back-btn" id="mgpBackBtn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mgp-thumb-strip" id="mgpThumbStrip" role="list" aria-label="Guide thumbnails"></div>
+    </div>
+    <script>
+    (function() {
+      var guides = [
+        { name:'Maya', role:'Pre-Vegan Guide', path:'Path 01', pathName:'Pre-Vegan', desc:'Vegan-curious. Real answers, real support, and a clear path to make the shift.', color:'#2d7d31', img:'/public/guides/maya.png', href:'/guides/ve-path-prevegan', label:'Maya — Pre-Vegan' },
+        { name:'Theo', role:'Seasoned Vegan Guide', path:'Path 02', pathName:'Seasoned Vegan', desc:'Already living it. Deepen your impact, mentor others, and connect with the global movement.', color:'#8B6914', img:'/public/guides/theo.png', href:'/guides/ve-path-seasonedvegan', label:'Theo — Seasoned Vegan' },
+        { name:'Nori', role:'Entrepreneur Guide', path:'Path 03', pathName:'Entrepreneur', desc:'Building a Vegan business. Get listed, grow your audience, and connect with Vegan customers.', color:'#2D5F8A', img:'/public/guides/nori.png', href:'/guides/ve-path-entrepreneur', label:'Nori — Entrepreneur' },
+        { name:'Dani', role:'Nonprofit Guide', path:'Path 04', pathName:'Nonprofit', desc:'Running a Vegan org. Build your community on the platform and grow your base.', color:'#C4522A', img:'/public/guides/dani.png', href:'/guides/ve-path-nonprofit', label:'Dani — Nonprofit' },
+        { name:'River', role:'Creator Guide', path:'Path 05', pathName:'Creator', desc:'Creating content in the Vegan space. Grow your audience and earn through the ecosystem.', color:'#6B35A8', img:'/public/guides/river.jpg', href:'/guides/ve-path-creator', label:'River — Creator' }
+      ];
+      var activeIdx = 0;
+      function setGuide(idx, closeDD) {
+        activeIdx = idx;
+        var g = guides[idx];
+        document.getElementById('mgpDot').style.background = g.color;
+        document.getElementById('mgpLabel').textContent = g.label;
+        var img = document.getElementById('mgpFrontImg');
+        img.src = g.img; img.alt = g.name;
+        document.getElementById('mgpFrontImgWrap').style.borderBottomColor = g.color;
+        document.getElementById('mgpFrontName').textContent = g.name;
+        document.getElementById('mgpFrontRole').style.color = g.color;
+        document.getElementById('mgpFrontRole').textContent = g.role;
+        document.getElementById('mgpBack').style.background = g.color;
+        document.getElementById('mgpBackPathLabel').textContent = g.path;
+        document.getElementById('mgpBackPathName').textContent = g.pathName;
+        document.getElementById('mgpBackDesc').textContent = g.desc;
+        document.getElementById('mgpBackBtn').href = g.href;
+        document.getElementById('mgpFlipCard').setAttribute('aria-label', g.name + ' guide, tap to flip');
+        document.getElementById('mgpFlipInner').classList.remove('flipped');
+        document.querySelectorAll('.mgp-thumb-tile').forEach(function(t, i) {
+          t.style.outlineColor = i === idx ? guides[i].color : 'transparent';
+        });
+        document.querySelectorAll('.mgp-option').forEach(function(o, i) {
+          o.classList.toggle('active', i === idx);
+          o.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+        });
+        if (closeDD) toggleDD(false);
+      }
+      function toggleDD(forceClose) {
+        var dd = document.getElementById('mgpDropdown');
+        var face = document.getElementById('mgpFace');
+        var open = forceClose === false ? false : !dd.classList.contains('open');
+        dd.classList.toggle('open', open);
+        face.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      document.getElementById('mgpFace').addEventListener('click', function() { toggleDD(); });
+      document.getElementById('mgpFace').addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleDD(); }});
+      document.addEventListener('click', function(e) { var w=document.getElementById('mgpSelectWrap'); if(w&&!w.contains(e.target)) toggleDD(false); });
+      var dd2 = document.getElementById('mgpDropdown');
+      guides.forEach(function(g, i) {
+        var opt = document.createElement('div');
+        opt.className = 'mgp-option' + (i===0?' active':'');
+        opt.setAttribute('role','option');
+        opt.setAttribute('aria-selected', i===0?'true':'false');
+        opt.setAttribute('tabindex','0');
+        var dot = document.createElement('div');
+        dot.className = 'mgp-dot';
+        dot.style.background = g.color;
+        var lbl = document.createElement('span');
+        lbl.textContent = g.label;
+        opt.appendChild(dot); opt.appendChild(lbl);
+        opt.addEventListener('click', function() { setGuide(i, true); });
+        opt.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); setGuide(i, true); }});
+        dd2.appendChild(opt);
+      });
+      var strip = document.getElementById('mgpThumbStrip');
+      guides.forEach(function(g, i) {
+        var tile = document.createElement('div');
+        tile.className = 'mgp-thumb-tile';
+        tile.setAttribute('role','listitem');
+        tile.setAttribute('tabindex','0');
+        tile.setAttribute('aria-label', g.name + ' guide');
+        tile.style.outlineColor = i===0 ? g.color : 'transparent';
+        var img = document.createElement('img');
+        img.src = g.img; img.alt = g.name; img.loading = 'lazy';
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:top center;display:block;';
+        tile.appendChild(img);
+        tile.addEventListener('click', function() { setGuide(i, false); });
+        tile.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') setGuide(i, false); });
+        strip.appendChild(tile);
+      });
+    })();
+    </script>
     <p class="flip-hint" aria-hidden="true">Tap a card to meet your Guide</p>
   </section>
 
