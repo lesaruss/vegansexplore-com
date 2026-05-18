@@ -3,8 +3,8 @@
   var css = [
     '.ve-nav{position:sticky;top:0;z-index:400;width:100%;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.09);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;gap:16px;font-family:"Montserrat",sans-serif;}',
     '.ve-wordmark{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#1a1a1a;display:flex;align-items:center;gap:8px;text-decoration:none;}',
-    '.ve-leaf{width:26px;height:26px;background:#3A9B3E;border-radius:50% 3px 50% 3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}',
-    '.ve-leaf svg{width:13px;height:13px;fill:#fff;}',
+    '.ve-mark{width:26px;height:26px;object-fit:contain;flex-shrink:0;}',
+    '.ve-wordmark-explore{color:#3A9B3E;}',
     '.ve-nav-links{display:flex;align-items:center;gap:24px;}',
     '.ve-nav-links>a{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B6B6B;text-decoration:none;transition:color 0.15s;}',
     '.ve-nav-links>a:hover,.ve-nav-links>a[aria-current="page"]{color:#3A9B3E;}',
@@ -65,9 +65,8 @@
   var html =
     '<nav class="ve-nav" role="navigation" aria-label="Main navigation">' +
       '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '>' +
-        '<div class="ve-leaf" aria-hidden="true">' +
-          '<svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 19.34L5.71 21l1-1C8 18 10 17 12 17c3 0 5-2 5-5 0-1-.4-2-1-3z"/></svg>' +
-        '</div>Vegans Explore' +
+        '<img class="ve-mark" src="/public/ve-mark.png" alt="" aria-hidden="true">' +
+        'Vegans <span class="ve-wordmark-explore">Explore</span>' +
       '</a>' +
       '<div class="ve-nav-links">' +
         '<div class="ve-nav-drop">' +
