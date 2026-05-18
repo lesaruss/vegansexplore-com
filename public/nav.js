@@ -41,25 +41,8 @@
     return isCurrent(href) ? ' aria-current="page"' : '';
   }
 
-  /* ── Paths config ── */
-  var paths = [
-    { href: '/guides/ve-path-prevegan',     label: 'Pre-Vegan Path',     color: '#2d7d31' },
-    { href: '/guides/ve-path-seasonedvegan', label: 'Seasoned Vegan Path', color: '#8B6914' },
-    { href: '/guides/ve-path-entrepreneur',  label: 'Entrepreneur Path',   color: '#2D5F8A' },
-    { href: '/guides/ve-path-nonprofit',     label: 'Nonprofit Path',      color: '#C4522A' },
-    { href: '/guides/ve-path-creator',       label: 'Creator Path',        color: '#6B35A8' }
-  ];
-
-  var onGuidesPath = paths.some(function (path) { return isCurrent(path.href); });
-
   var communityPaths = ['/communities/find', '/communities'];
   var onCommunityPath = communityPaths.some(function (h) { return isCurrent(h); });
-
-  var dropItems = paths.map(function (pt) {
-    return '<a href="' + pt.href + '" class="ve-nav-drop-item" role="menuitem"' + cur(pt.href) + '>' +
-      '<span class="ve-nav-drop-dot" style="background:' + pt.color + ';" aria-hidden="true"></span>' +
-      pt.label + '</a>';
-  }).join('');
 
   /* ── Nav HTML ── */
   var html =
@@ -69,14 +52,7 @@
         'Vegans <span class="ve-wordmark-explore">Explore</span>' +
       '</a>' +
       '<div class="ve-nav-links">' +
-        '<div class="ve-nav-drop">' +
-          '<button class="ve-nav-drop-btn' + (onGuidesPath ? ' open' : '') + '" id="ve-guides-btn" aria-haspopup="true" aria-expanded="' + onGuidesPath + '">' +
-            'Guides <span class="ve-nav-drop-arrow" aria-hidden="true">&#9660;</span>' +
-          '</button>' +
-          '<div class="ve-nav-drop-menu" id="ve-guides-menu" role="menu" aria-labelledby="ve-guides-btn">' +
-            dropItems +
-          '</div>' +
-        '</div>' +
+        '<a href="/guides/ve-guides-roster-v1"' + cur('/guides/ve-guides-roster-v1') + '>Guides</a>' +
         '<a href="/guides/ve-discuss"' + (isCurrent('/guides/ve-discuss') || isCurrent('/guides/ve-guide-chat-v1') ? ' aria-current="page"' : '') + '>Discuss</a>' +
         '<div class="ve-nav-drop">' +
           '<button class="ve-nav-drop-btn' + (onCommunityPath ? ' open' : '') + '" id="ve-community-btn" aria-haspopup="true" aria-expanded="' + onCommunityPath + '">' +
@@ -100,31 +76,6 @@
   /* ── Inject before this script tag ── */
   document.currentScript.insertAdjacentHTML('beforebegin', html);
 
-  /* ── Dropdown behaviour ── */
-  var btn  = document.getElementById('ve-guides-btn');
-  var menu = document.getElementById('ve-guides-menu');
-
-  btn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    var open = menu.classList.toggle('open');
-    btn.classList.toggle('open', open);
-    btn.setAttribute('aria-expanded', String(open));
-  });
-
-  document.addEventListener('click', function () {
-    menu.classList.remove('open');
-    btn.classList.remove('open');
-    btn.setAttribute('aria-expanded', 'false');
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      menu.classList.remove('open');
-      btn.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-      btn.focus();
-    }
-  });
   /* ── Community dropdown behaviour ── */
   var communityBtn  = document.getElementById('ve-community-btn');
   var communityMenu = document.getElementById('ve-community-menu');
