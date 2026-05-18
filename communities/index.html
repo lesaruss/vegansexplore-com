@@ -18,7 +18,35 @@
     .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
 
     /* HERO */
-    .hero { background: #1A1A1A; padding: 88px 56px 72px; }
+    .hero {
+      position: relative;
+      min-height: 560px;
+      background-image: url('/communities/banner.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, transparent 82%);
+      z-index: 1;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+      z-index: 1;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      padding: 88px 56px 72px;
+      max-width: 600px;
+    }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(38px, 5.5vw, 72px); font-weight: 900; line-height: 0.97; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
@@ -205,6 +233,10 @@
     .footer-links a:hover { color: var(--ve-green); }
 
     /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .hero { min-height: 420px; }
+      .hero-inner { padding: 64px 28px 48px; }
+    }
     @media (max-width: 900px) {
       .hero, .paths-section, .modules-section, .grant-section, .how-section, .directory-section, .bottom-cta { padding: 56px 28px; }
       .stats-bar { padding: 20px 28px; }
@@ -233,6 +265,7 @@
 
   <!-- HERO -->
   <section class="hero" aria-labelledby="hero-h1">
+    <div class="hero-inner">
     <p class="hero-eyebrow">Vegans Explore Communities</p>
     <h1 id="hero-h1">
       A thousand<br>
@@ -244,6 +277,7 @@
       <a href="/communities/find" class="btn-primary">Find a community</a>
       <a href="#run" class="btn-ghost">Run a community</a>
     </div>
+    </div><!-- /.hero-inner -->
   </section>
 
   <!-- STATS BAR -->

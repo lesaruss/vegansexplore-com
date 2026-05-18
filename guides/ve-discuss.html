@@ -105,12 +105,127 @@
       .discuss-list-wrap { padding: 16px 16px 48px; }
       .discuss-search { max-width: 160px; }
     }
-  </style>
+  
+/* ---- Discuss hero ---- */
+.discuss-hero {
+  position: relative;
+  min-height: 520px;
+  background-image: url('/guides/discuss-banner.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+}
+.discuss-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, transparent 82%);
+  z-index: 1;
+}
+.discuss-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+  z-index: 1;
+}
+.discuss-hero .hero-inner {
+  position: relative;
+  z-index: 2;
+  padding: 88px 56px 72px;
+  max-width: 600px;
+}
+.discuss-hero .hero-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ve-green);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.discuss-hero .hero-eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--ve-green);
+  flex-shrink: 0;
+}
+.discuss-hero h1 {
+  font-size: clamp(40px, 6.5vw, 80px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 22px;
+}
+.discuss-hero h1 em { color: var(--ve-green); font-style: normal; }
+.discuss-hero .hero-sub {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.62);
+  max-width: 520px;
+  margin-bottom: 36px;
+}
+.discuss-hero .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.discuss-hero .btn-hero-primary {
+  background: var(--ve-orange);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 30px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.15s;
+  display: inline-block;
+}
+.discuss-hero .btn-hero-primary:hover { background: var(--ve-orange-dark); }
+.discuss-hero .btn-hero-ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 26px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s;
+  display: inline-block;
+  border: 1.5px solid rgba(255,255,255,0.22);
+}
+.discuss-hero .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+@media (max-width: 640px) {
+  .discuss-hero { min-height: 400px; }
+  .discuss-hero .hero-inner { padding: 64px 24px 48px; }
+}
+</style>
 </head>
 <body>
 
   <div class="page-frame">
   <script src="/public/nav.js"></script>
+
+  <!-- Discuss hero -->
+  <section class="discuss-hero" aria-labelledby="discuss-hero-h1">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Vegans Explore</p>
+      <h1 id="discuss-hero-h1">The Daily<br><em>Discuss.</em></h1>
+      <p class="hero-sub">A new conversation every day. Real topics, real guides, real community. Jump in and add your voice to the vegan conversation.</p>
+      <div class="hero-ctas">
+        <a href="#discussList" class="btn-hero-primary">Join the Discuss</a>
+        <a href="/guides" class="btn-hero-ghost">Find Your Guide</a>
+      </div>
+    </div>
+  </section>
+
   <div class="discuss-outer">
     <div class="discuss-sticky-bar">
       <div class="discuss-top-row">

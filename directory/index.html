@@ -322,12 +322,126 @@ body {
   .search-wrap { max-width: 100%; }
   .chip { padding: 5px 10px; }
 }
+
+/* ---- Directory hero ---- */
+.dir-hero {
+  position: relative;
+  min-height: 540px;
+  background-image: url('/directory/banner.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+}
+.dir-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, transparent 82%);
+  z-index: 1;
+}
+.dir-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+  z-index: 1;
+}
+.dir-hero .hero-inner {
+  position: relative;
+  z-index: 2;
+  padding: 88px 56px 72px;
+  max-width: 600px;
+}
+.dir-hero .hero-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ve-green);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dir-hero .hero-eyebrow::before {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--ve-green);
+  flex-shrink: 0;
+}
+.dir-hero h1 {
+  font-size: clamp(40px, 6.5vw, 80px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 22px;
+}
+.dir-hero h1 em { color: var(--ve-green); font-style: normal; }
+.dir-hero .hero-sub {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.62);
+  max-width: 520px;
+  margin-bottom: 36px;
+}
+.dir-hero .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.dir-hero .btn-hero-primary {
+  background: var(--ve-orange);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 30px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.15s;
+  display: inline-block;
+}
+.dir-hero .btn-hero-primary:hover { background: #d4800f; }
+.dir-hero .btn-hero-ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 26px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s;
+  display: inline-block;
+  border: 1.5px solid rgba(255,255,255,0.22);
+}
+.dir-hero .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+@media (max-width: 640px) {
+  .dir-hero { min-height: 420px; }
+  .dir-hero .hero-inner { padding: 64px 24px 48px; }
+}
 </style>
 </head>
 <body>
 <div id="frame">
 
   <script src="/public/nav.js"></script>
+
+  <!-- Directory hero -->
+  <section class="dir-hero" aria-labelledby="dir-hero-h1">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Vegans Explore</p>
+      <h1 id="dir-hero-h1">The Vegan<br><em>Directory.</em></h1>
+      <p class="hero-sub">215+ restaurants, brands, nonprofits, and media outlets across South Florida, New York, Central Florida, Atlanta, and beyond.</p>
+      <div class="hero-ctas">
+        <a href="/passport.html" class="btn-hero-primary">Get Your Passport</a>
+        <a href="#grid" class="btn-hero-ghost">Browse Listings</a>
+      </div>
+    </div>
+  </section>
 
   <!-- Filter bar -->
   <nav class="filter-bar" aria-label="Directory filters">
