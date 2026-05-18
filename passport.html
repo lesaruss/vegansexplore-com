@@ -41,18 +41,18 @@
     inset: 0;
     background: linear-gradient(
       to right,
-      rgba(0,0,0,0.96) 0%,
-      rgba(0,0,0,0.90) 18%,
-      rgba(0,0,0,0.35) 45%,
-      rgba(0,0,0,0.08) 65%,
-      transparent 82%
+      rgba(0,0,0,0.99) 0%,
+      rgba(0,0,0,0.95) 28%,
+      rgba(0,0,0,0.72) 52%,
+      rgba(0,0,0,0.28) 68%,
+      transparent 84%
     );
     }
     .passport-hero::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%);
     }
     .hero-inner {
     position: relative;
@@ -158,8 +158,10 @@
     .footer-links a:hover { color: var(--ve-green); }
     .footer-copy { font-size: 11px; color: var(--ve-text-30); }
     @media (max-width: 768px) {
-      .passport-hero { background-position: 65% center; min-height: 480px; }
-      .hero-inner { padding: 64px 36px 64px 40px; max-width: 440px; }
+      .passport-hero { background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; min-height: 480px; align-items: flex-end; }
+      .passport-hero::before { background: rgba(0,0,0,0.32); }
+      .passport-hero::after { display: none; }
+      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; max-width: calc(100% - 48px); border: 1px solid rgba(255,255,255,0.09); }
       .pricing-section { padding: 52px 32px; }
       .pricing-grid { grid-template-columns: 1fr; gap: 16px; }
       .benefits-section { padding: 52px 32px; }
@@ -172,10 +174,10 @@
       .nav-links { display: none; }
     }
     @media (max-width: 480px) {
-      .passport-hero { min-height: 480px; align-items: flex-end; background-position: 70% center; }
-      .passport-hero::before { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .passport-hero { min-height: 480px; align-items: flex-end; background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; }
+      .passport-hero::before { background: rgba(0,0,0,0.32); }
       .passport-hero::after { display: none; }
-      .hero-inner { padding: 0 20px 44px; max-width: 100%; }
+      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px; max-width: calc(100% - 32px); border: 1px solid rgba(255,255,255,0.10); }
       .pricing-section { padding: 44px 20px; }
       .pricing-grid { grid-template-columns: 1fr; gap: 14px; }
       .benefits-section { padding: 44px 20px; }
