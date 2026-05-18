@@ -234,6 +234,9 @@
     .mgp-option { display: flex; align-items: center; padding: 10px 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; }
     .mgp-option:hover { background: #f5f5f5; }
     .mgp-option.active { background: #f0f0f0; }
+
+    .mgp-flip-card .flip-front-body { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .mgp-flip-icon { flex-shrink: 0; color: rgba(26,26,26,0.3); line-height: 0; }
     .mgp-flip-card { height: calc((100vw - 40px) * 1.334 + 70px); margin-bottom: 10px; }
     .mgp-thumb-strip { display: flex; gap: 2px; width: 100%; }
     .mgp-thumb-tile { flex: 1; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s; }
@@ -383,8 +386,11 @@
               <img id="mgpFrontImg" src="/public/guides/maya.png" alt="Maya" loading="lazy">
             </div>
             <div class="flip-front-body">
-              <div class="flip-front-name" id="mgpFrontName">Maya</div>
-              <div class="flip-front-role" id="mgpFrontRole" style="color:#2d7d31;">Pre-Vegan Guide</div>
+              <div>
+                <div class="flip-front-name" id="mgpFrontName">Maya</div>
+                <div class="flip-front-role" id="mgpFrontRole" style="color:#2d7d31;">Pre-Vegan Guide</div>
+              </div>
+              <div class="mgp-flip-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></div>
             </div>
           </div>
           <div class="flip-card-back" id="mgpBack" style="background:#2d7d31;">
