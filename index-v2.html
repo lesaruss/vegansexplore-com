@@ -26,10 +26,10 @@
     .nav-cta { background: var(--ve-orange); color: #fff !important; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 4px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
     .nav-cta:hover { background: var(--ve-orange-dark) !important; }
 
-    /* ── Hero ── */
+    /* ── Hero (restored original) ── */
     .hero {
       position: relative;
-      min-height: 620px;
+      min-height: 600px;
       display: flex;
       align-items: center;
       background-image: url('/public/events/vegan-foodie-fest-2025.jpg');
@@ -44,10 +44,10 @@
       inset: 0;
       background: linear-gradient(
         to right,
-        rgba(0,0,0,0.97) 0%,
-        rgba(0,0,0,0.92) 28%,
-        rgba(0,0,0,0.68) 52%,
-        rgba(0,0,0,0.24) 68%,
+        rgba(0,0,0,0.99) 0%,
+        rgba(0,0,0,0.95) 28%,
+        rgba(0,0,0,0.72) 52%,
+        rgba(0,0,0,0.28) 68%,
         transparent 84%
       );
     }
@@ -55,21 +55,19 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 32%);
+      background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%);
     }
     .hero-inner {
       position: relative;
       z-index: 2;
       padding: 88px 56px 72px;
-      max-width: 620px;
+      max-width: 600px;
     }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
-    .hero h1 { font-size: clamp(38px, 6vw, 74px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
+    .hero h1 { font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
     .hero h1 em { color: var(--ve-green); font-style: normal; display: block; }
-    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.82); max-width: 440px; margin-bottom: 36px; }
-    .hero-platform-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
-    .hero-pill { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.7); padding: 5px 12px; border: 1px solid rgba(255,255,255,0.22); border-radius: 20px; white-space: nowrap; }
+    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.82); max-width: 420px; margin-bottom: 40px; }
     .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
     .btn-hero-primary { background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
     .btn-hero-primary:hover { background: var(--ve-orange-dark); }
@@ -90,25 +88,8 @@
     .section-h2 { font-size: clamp(26px, 3.5vw, 44px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.06; margin-bottom: 12px; }
     .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 560px; }
 
-    /* ── Platform Features Section (NEW) ── */
-    .features-section { padding: 80px 56px; background: #fff; border-bottom: 1px solid var(--ve-border); }
-    .features-section .section-sub { margin-bottom: 52px; }
-    .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-    .feature-card { padding: 28px 22px 24px; border: 1.5px solid var(--ve-border); border-radius: 12px; display: flex; flex-direction: column; gap: 12px; transition: border-color 0.15s, box-shadow 0.15s; }
-    .feature-card:hover { border-color: var(--ve-green-mid); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-    .feature-icon { width: 48px; height: 48px; background: var(--ve-green-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .feature-icon svg { width: 22px; height: 22px; fill: var(--ve-green-dark); }
-    .feature-stat { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-green-dark); }
-    .feature-title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); line-height: 1.2; }
-    .feature-desc { font-size: 12px; font-weight: 400; color: #555555; line-height: 1.65; flex: 1; }
-    .feature-link { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green); text-decoration: none; display: flex; align-items: center; gap: 4px; transition: color 0.15s; }
-    .feature-link:hover { color: var(--ve-green-dark); }
-    .feature-link::after { content: '\2192'; }
-
-    /* ── Guides / Paths Section ── */
-    .paths-section { padding: 80px 56px; background: #f9f9f9; border-top: 1px solid var(--ve-border); border-bottom: 1px solid var(--ve-border); }
-    .paths-section .section-sub { margin-bottom: 52px; }
-    .guides-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+    /* ── Shared Flip Card System ── */
+    .flip-cards-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
     .flip-card { perspective: 1000px; height: 340px; cursor: pointer; }
     .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; }
     .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
@@ -129,8 +110,47 @@
     .flip-back-btn:hover { background: rgba(255,255,255,0.3); }
     .flip-hint { text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-top: 20px; }
 
+    /* ── Platform Card Art (GeekFon Placeholder) ── */
+    .pf-front-art { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .pf-art-dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.16) 1.5px, transparent 1.5px); background-size: 22px 22px; pointer-events: none; }
+    .pf-art-corner { position: absolute; top: 14px; right: 14px; font-size: 7px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); z-index: 1; }
+    .pf-art-icon { position: relative; z-index: 1; }
+    .pf-art-icon svg { width: 72px; height: 72px; fill: rgba(255,255,255,0.88); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.25)); }
+
+    /* ── Platform Section ── */
+    .platform-section { padding: 80px 56px; background: #f9f9f9; border-top: 1px solid var(--ve-border); border-bottom: 1px solid var(--ve-border); }
+    .platform-section .section-sub { margin-bottom: 52px; }
+
+    /* ── Platform Mobile Picker ── */
+    .platform-mobile-picker { display: none; }
+
+    /* ── Guides Section ── */
+    .paths-section { padding: 80px 56px; background: #fff; border-bottom: 1px solid var(--ve-border); }
+    .paths-section .section-sub { margin-bottom: 52px; }
+
+    /* ── Shared Mobile Picker ── */
+    .mgp-select-wrap { position: relative; margin-bottom: 14px; user-select: none; }
+    .mgp-select-face { display: flex; align-items: center; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; padding: 11px 36px 11px 14px; cursor: pointer; background: #fff; }
+    .mgp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-right: 10px; }
+    .mgp-label { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; flex: 1; }
+    .mgp-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: rgba(26,26,26,0.4); font-size: 12px; pointer-events: none; }
+    .mgp-dropdown { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; z-index: 10; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .mgp-dropdown.open { display: block; }
+    .mgp-option { display: flex; align-items: center; padding: 10px 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; }
+    .mgp-option:hover { background: #f5f5f5; }
+    .mgp-option.active { background: #f0f0f0; }
+    .mgp-flip-card .flip-front-body { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .mgp-flip-icon { flex-shrink: 0; color: rgba(26,26,26,0.3); line-height: 0; }
+    .mgp-flip-card { height: calc((100vw - 40px) * 1.334 + 70px); margin-bottom: 10px; }
+    .mgp-thumb-strip { display: flex; gap: 2px; width: 100%; }
+    .mgp-thumb-tile { flex: 1; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s; }
+    .mgp-thumb-tile img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    /* Platform thumb tiles are colored divs, not images */
+    .pf-thumb-tile { flex: 1; aspect-ratio: 1/1; border-radius: 6px; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .pf-thumb-tile svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.8); }
+
     /* ── How It Works ── */
-    .how-section { padding: 80px 56px; background: #fff; border-top: 1px solid var(--ve-border); border-bottom: 1px solid var(--ve-border); }
+    .how-section { padding: 80px 56px; background: #f9f9f9; border-top: 1px solid var(--ve-border); border-bottom: 1px solid var(--ve-border); }
     .how-section .section-sub { margin-bottom: 56px; }
     .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
     .how-grid::before { content: ''; position: absolute; top: 28px; left: calc(12.5% + 16px); right: calc(12.5% + 16px); height: 1px; background: var(--ve-green-mid); z-index: 0; }
@@ -143,7 +163,7 @@
     .how-step-title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ve-text); margin-bottom: 8px; }
     .how-step-desc { font-size: 12px; font-weight: 400; color: #6B6B6B; line-height: 1.6; }
 
-    /* ── Passport Section ── */
+    /* ── Passport ── */
     .passport-section { padding: 80px 56px; background: #1A1A1A; }
     .passport-section .section-eyebrow::before { background: var(--ve-green); }
     .passport-section .section-h2 { color: #fff; }
@@ -176,13 +196,13 @@
     .vision-year:last-child { border-right: none; }
     .vision-year.now { background: var(--ve-green-dark); }
     .vision-yr { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6B6B; }
-    .vision-year.now .vision-yr { color: #ffffff; }
+    .vision-year.now .vision-yr { color: #fff; }
     .vision-count { font-size: 32px; font-weight: 900; letter-spacing: -0.04em; color: var(--ve-text); line-height: 1; }
     .vision-year.now .vision-count { color: #fff; }
     .vision-unit { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6B6B; }
-    .vision-year.now .vision-unit { color: #ffffff; }
+    .vision-year.now .vision-unit { color: #fff; }
 
-    /* ── CTA Section ── */
+    /* ── CTA ── */
     .cta-section { background: #fff; padding: 88px 56px; text-align: center; border-top: 1px solid var(--ve-border); }
     .cta-section .section-eyebrow { justify-content: center; }
     .cta-section .section-eyebrow::before { display: none; }
@@ -206,32 +226,13 @@
     .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
     .footer-social .social-icon svg { display: block; }
 
-    /* ── Mobile Guide Picker ── */
-    .mobile-guide-picker { display: none; }
-    .mgp-select-wrap { position: relative; margin-bottom: 14px; user-select: none; }
-    .mgp-select-face { display: flex; align-items: center; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; padding: 11px 36px 11px 14px; cursor: pointer; background: #fff; }
-    .mgp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-right: 10px; }
-    .mgp-label { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; flex: 1; }
-    .mgp-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: rgba(26,26,26,0.4); font-size: 12px; pointer-events: none; }
-    .mgp-dropdown { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; z-index: 10; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-    .mgp-dropdown.open { display: block; }
-    .mgp-option { display: flex; align-items: center; padding: 10px 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; }
-    .mgp-option:hover { background: #f5f5f5; }
-    .mgp-option.active { background: #f0f0f0; }
-    .mgp-flip-card .flip-front-body { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .mgp-flip-icon { flex-shrink: 0; color: rgba(26,26,26,0.3); line-height: 0; }
-    .mgp-flip-card { height: calc((100vw - 40px) * 1.334 + 70px); margin-bottom: 10px; }
-    .mgp-thumb-strip { display: flex; gap: 2px; width: 100%; }
-    .mgp-thumb-tile { flex: 1; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s; }
-    .mgp-thumb-tile img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
-
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
-
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
       .flip-card-inner { transition: none !important; }
     }
 
+    /* ── 768px ── */
     @media (max-width: 768px) {
       .ve-nav { padding: 0 20px; }
       .nav-links { display: none; }
@@ -239,12 +240,11 @@
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
       .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; max-width: calc(100% - 48px); border: 1px solid rgba(255,255,255,0.09); }
-      .features-section, .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 60px 32px; }
+      .platform-section, .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 60px 32px; }
       .stats-bar { padding: 18px 32px; }
-      .features-grid { grid-template-columns: 1fr 1fr; }
+      .flip-cards-grid { grid-template-columns: repeat(3, 1fr); }
       .how-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
       .how-grid::before { display: none; }
-      .guides-grid { grid-template-columns: repeat(3, 1fr); }
       .passport-tiers { grid-template-columns: 1fr; gap: 12px; }
       .vision-timeline { grid-template-columns: 1fr 1fr; }
       .vision-year:nth-child(2) { border-right: none; }
@@ -253,6 +253,7 @@
       .footer-links { justify-content: center; flex-wrap: wrap; }
     }
 
+    /* ── 480px ── */
     @media (max-width: 480px) {
       .ve-nav { padding: 0 16px; }
       .nav-links { display: none; }
@@ -263,13 +264,13 @@
       .stats-bar { padding: 16px 20px; gap: 10px; flex-wrap: wrap; justify-content: center; }
       .stat-divider { display: none; }
       .stat-passport { display: none; }
-      .features-section, .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 52px 20px; }
-      .features-grid { grid-template-columns: 1fr; }
+      .platform-section, .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 52px 20px; }
+      .flip-cards-grid { display: none; }
+      .platform-mobile-picker { display: block !important; }
+      .mobile-guide-picker { display: block !important; }
+      .mgp-flip-card { height: calc((100vw - 40px) * 1.334 + 70px); }
       .how-grid { grid-template-columns: 1fr; gap: 28px; }
       .how-grid::before { display: none; }
-      .guides-grid { display: none; }
-      .mobile-guide-picker { display: block !important; }
-      .flip-card { height: 290px; }
       .passport-tiers { grid-template-columns: 1fr; gap: 12px; }
       .vision-timeline { grid-template-columns: 1fr 1fr; }
       .vision-year:nth-child(2) { border-right: none; }
@@ -277,28 +278,23 @@
       .ve-footer { flex-direction: column; gap: 14px; padding: 28px 20px; text-align: center; }
       .footer-links { justify-content: center; flex-wrap: wrap; gap: 14px; }
     }
+
+    .mobile-guide-picker { display: none; }
   </style>
 </head>
 <body>
   <div class="page-frame">
   <script src="/public/nav.js"></script>
 
-  <!-- HERO: Platform-focused framing -->
+  <!-- HERO: Restored original -->
   <section class="hero" aria-labelledby="hero-heading">
     <div class="hero-inner">
       <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
-      <h1 id="hero-heading">Find Every Part<br><em>of Your Vegan World.</em></h1>
-      <p class="hero-sub">A directory of vegan businesses, local events, original content, and communities - all in one place. Your Passport is the key to the most connected Vegan network on the planet.</p>
-      <div class="hero-platform-pills" aria-label="Platform features">
-        <span class="hero-pill">Directory</span>
-        <span class="hero-pill">Events</span>
-        <span class="hero-pill">Content</span>
-        <span class="hero-pill">Community</span>
-        <span class="hero-pill">Guided Paths</span>
-      </div>
+      <h1 id="hero-heading">The Vegan<br><em>World is Open.</em></h1>
+      <p class="hero-sub">Find your path, connect with your community, and build something that lasts. Your Passport is the key to the most connected Vegan network on the planet.</p>
       <div class="hero-ctas">
         <a href="/passport" class="btn-hero-primary">Get Your Passport</a>
-        <a href="/directory" class="btn-hero-ghost">Browse the Directory</a>
+        <a href="/guides/ve-guides-roster-v1" class="btn-hero-ghost">Explore the Guides</a>
       </div>
       <p class="hero-fine">$11 one-time. No subscription required to start.</p>
     </div>
@@ -317,62 +313,294 @@
     <div class="stat-item stat-passport" role="listitem"><span class="stat-num">$11</span><span class="stat-label">One-Time Passport</span></div>
   </div>
 
-  <!-- PLATFORM FEATURES (NEW SECTION) -->
-  <section class="features-section" aria-labelledby="features-heading">
+  <!-- PLATFORM SECTION: 5 flip cards with GeekFon placeholders -->
+  <section class="platform-section" aria-labelledby="platform-heading">
     <div class="section-eyebrow" aria-hidden="true">The Platform</div>
-    <h2 class="section-h2" id="features-heading">Built for Every Part<br>of Your Vegan Life.</h2>
-    <p class="section-sub">From finding your next favorite restaurant to growing your vegan audience - Vegans Explore covers the whole ecosystem.</p>
-    <div class="features-grid" role="list">
+    <h2 class="section-h2" id="platform-heading">Built for Every Part<br>of Your Vegan Life.</h2>
+    <p class="section-sub">From the directory to daily discussions, from local events to original content - everything you need in one place. Tap any card to explore.</p>
 
-      <article class="feature-card" role="listitem">
-        <div class="feature-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        </div>
-        <div class="feature-stat">215+ Businesses</div>
-        <div class="feature-title">Directory</div>
-        <p class="feature-desc">The most complete vegan business directory online. Find restaurants, shops, services, and products near you - or anywhere in the world.</p>
-        <a href="/directory" class="feature-link">Browse the Directory</a>
-      </article>
+    <!-- Desktop 5-tile grid -->
+    <div class="flip-cards-grid" role="list" aria-label="Platform features">
 
-      <article class="feature-card" role="listitem">
-        <div class="feature-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+      <!-- DIRECTORY -->
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Directory" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="pf-front-art" style="background:#1a6b3a;">
+              <div class="pf-art-dots"></div>
+              <span class="pf-art-corner">GeekFon Art</span>
+              <div class="pf-art-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              </div>
+            </div>
+            <div class="flip-front-body">
+              <div class="flip-front-name">Directory</div>
+              <div class="flip-front-role" style="color:#1a6b3a;">Tap to explore</div>
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#1a6b3a;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">The Platform</div>
+              <div class="flip-back-path-name">Directory</div>
+              <p class="flip-back-desc">215+ vegan businesses listed. Find restaurants, shops, and services anywhere in the world - or add your own.</p>
+              <a href="/directory" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Browse Directory</a>
+            </div>
+          </div>
         </div>
-        <div class="feature-stat">Local + Global</div>
-        <div class="feature-title">Events</div>
-        <p class="feature-desc">Find vegan festivals, pop-ups, meetups, and gatherings in your city. Connect with your community in person - not just online.</p>
-        <a href="/events" class="feature-link">Find Events</a>
-      </article>
+      </div>
 
-      <article class="feature-card" role="listitem">
-        <div class="feature-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+      <!-- EVENTS -->
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Events" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="pf-front-art" style="background:#b85c1a;">
+              <div class="pf-art-dots"></div>
+              <span class="pf-art-corner">GeekFon Art</span>
+              <div class="pf-art-icon">
+                <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+              </div>
+            </div>
+            <div class="flip-front-body">
+              <div class="flip-front-name">Events</div>
+              <div class="flip-front-role" style="color:#b85c1a;">Tap to explore</div>
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#b85c1a;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">The Platform</div>
+              <div class="flip-back-path-name">Events</div>
+              <p class="flip-back-desc">Festivals, pop-ups, meetups, and gatherings in your city. Connect with your community in person - not just online.</p>
+              <a href="/events" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Find Events</a>
+            </div>
+          </div>
         </div>
-        <div class="feature-stat">Recipes, Guides + More</div>
-        <div class="feature-title">Content</div>
-        <p class="feature-desc">Articles, recipes, how-to guides, and resources from across the vegan community. Curated for every path - from curious to committed.</p>
-        <a href="/content" class="feature-link">Read More</a>
-      </article>
+      </div>
 
-      <article class="feature-card" role="listitem">
-        <div class="feature-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <!-- COMMUNITIES -->
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Communities" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="pf-front-art" style="background:#1455a0;">
+              <div class="pf-art-dots"></div>
+              <span class="pf-art-corner">GeekFon Art</span>
+              <div class="pf-art-icon">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              </div>
+            </div>
+            <div class="flip-front-body">
+              <div class="flip-front-name">Communities</div>
+              <div class="flip-front-role" style="color:#1455a0;">Tap to explore</div>
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#1455a0;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">The Platform</div>
+              <div class="flip-back-path-name">Communities</div>
+              <p class="flip-back-desc">4 active communities now. 1,000 by 2030. Find your city, find your people, and build something lasting.</p>
+              <a href="/communities" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Find Your Community</a>
+            </div>
+          </div>
         </div>
-        <div class="feature-stat">4 Active - 1,000 by 2030</div>
-        <div class="feature-title">Community</div>
-        <p class="feature-desc">Local vegan communities growing city by city. Find your people, attend events together, and build something that lasts beyond the feed.</p>
-        <a href="/community" class="feature-link">Find Your Community</a>
-      </article>
+      </div>
+
+      <!-- DISCUSS -->
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Discuss" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="pf-front-art" style="background:#5428a8;">
+              <div class="pf-art-dots"></div>
+              <span class="pf-art-corner">GeekFon Art</span>
+              <div class="pf-art-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+              </div>
+            </div>
+            <div class="flip-front-body">
+              <div class="flip-front-name">Discuss</div>
+              <div class="flip-front-role" style="color:#5428a8;">Tap to explore</div>
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#5428a8;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">The Platform</div>
+              <div class="flip-back-path-name">Discuss</div>
+              <p class="flip-back-desc">Daily path discussions with your Guide. Ask questions, share your journey, and connect with members on the same road.</p>
+              <a href="/discuss" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Join Discuss</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NETWORK -->
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Network" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="pf-front-art" style="background:#1a1a1a;">
+              <div class="pf-art-dots"></div>
+              <span class="pf-art-corner">GeekFon Art</span>
+              <div class="pf-art-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+              </div>
+            </div>
+            <div class="flip-front-body">
+              <div class="flip-front-name">Network</div>
+              <div class="flip-front-role" style="color:#555;">Tap to explore</div>
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#1a1a1a;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">The Platform</div>
+              <div class="flip-back-path-name">Network</div>
+              <p class="flip-back-desc">Podcasts, original series, and creator content. The media arm of the vegan movement - built by the community, for the community.</p>
+              <a href="/network" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Explore Network</a>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
+
+    <!-- Platform Mobile Picker -->
+    <div class="platform-mobile-picker">
+      <div class="mgp-select-wrap" id="pfpSelectWrap">
+        <div class="mgp-select-face" id="pfpFace" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select a platform feature">
+          <div class="mgp-dot" id="pfpDot" style="background:#1a6b3a;"></div>
+          <span class="mgp-label" id="pfpLabel">Directory</span>
+          <span class="mgp-arrow" aria-hidden="true">&#9660;</span>
+        </div>
+        <div class="mgp-dropdown" id="pfpDropdown" role="listbox"></div>
+      </div>
+      <div class="flip-card mgp-flip-card" id="pfpFlipCard" tabindex="0" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')" aria-label="Platform card, tap to flip">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <div class="pf-front-art" id="pfpFrontArt" style="background:#1a6b3a;">
+              <div class="pf-art-dots"></div>
+              <div class="pf-art-icon" id="pfpArtIcon"></div>
+            </div>
+            <div class="flip-front-body">
+              <div>
+                <div class="flip-front-name" id="pfpFrontName">Directory</div>
+                <div class="flip-front-role" id="pfpFrontRole" style="color:#1a6b3a;">Tap to explore</div>
+              </div>
+              <div class="mgp-flip-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></div>
+            </div>
+          </div>
+          <div class="flip-card-back" id="pfpBack" style="background:#1a6b3a;">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label" id="pfpBackLabel">The Platform</div>
+              <div class="flip-back-path-name" id="pfpBackName">Directory</div>
+              <p class="flip-back-desc" id="pfpBackDesc">215+ vegan businesses listed. Find restaurants, shops, and services anywhere in the world - or add your own.</p>
+              <a href="/directory" class="flip-back-btn" id="pfpBackBtn" onclick="event.stopPropagation()" tabindex="0">Browse Directory</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mgp-thumb-strip" id="pfpThumbStrip" role="list" aria-label="Platform feature thumbnails"></div>
+    </div>
+    <script>
+    (function() {
+      var iconPaths = {
+        directory: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
+        events: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z',
+        communities: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z',
+        discuss: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z',
+        network: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z'
+      };
+      function makeSvg(pathKey, color) {
+        return '<svg viewBox="0 0 24 24" style="width:72px;height:72px;fill:rgba(255,255,255,0.88);filter:drop-shadow(0 2px 8px rgba(0,0,0,0.25));"><path d="' + iconPaths[pathKey] + '"/></svg>';
+      }
+      var platforms = [
+        { name:'Directory', color:'#1a6b3a', iconKey:'directory', desc:'215+ vegan businesses listed. Find restaurants, shops, and services anywhere in the world - or add your own.', href:'/directory', btnLabel:'Browse Directory', label:'Directory' },
+        { name:'Events', color:'#b85c1a', iconKey:'events', desc:'Festivals, pop-ups, meetups, and gatherings in your city. Connect with your community in person - not just online.', href:'/events', btnLabel:'Find Events', label:'Events' },
+        { name:'Communities', color:'#1455a0', iconKey:'communities', desc:'4 active communities now. 1,000 by 2030. Find your city, find your people, and build something lasting.', href:'/communities', btnLabel:'Find Your Community', label:'Communities' },
+        { name:'Discuss', color:'#5428a8', iconKey:'discuss', desc:'Daily path discussions with your Guide. Ask questions, share your journey, and connect with members on the same road.', href:'/discuss', btnLabel:'Join Discuss', label:'Discuss' },
+        { name:'Network', color:'#1a1a1a', iconKey:'network', desc:'Podcasts, original series, and creator content. The media arm of the vegan movement - built by the community, for the community.', href:'/network', btnLabel:'Explore Network', label:'Network' }
+      ];
+      var activeIdx = 0;
+      function setPlatform(idx, closeDD) {
+        activeIdx = idx;
+        var p = platforms[idx];
+        document.getElementById('pfpDot').style.background = p.color;
+        document.getElementById('pfpLabel').textContent = p.label;
+        document.getElementById('pfpFrontArt').style.background = p.color;
+        document.getElementById('pfpArtIcon').innerHTML = makeSvg(p.iconKey);
+        document.getElementById('pfpFrontName').textContent = p.name;
+        document.getElementById('pfpFrontRole').style.color = p.color === '#1a1a1a' ? '#555' : p.color;
+        document.getElementById('pfpBack').style.background = p.color;
+        document.getElementById('pfpBackName').textContent = p.name;
+        document.getElementById('pfpBackDesc').textContent = p.desc;
+        document.getElementById('pfpBackBtn').textContent = p.btnLabel;
+        document.getElementById('pfpBackBtn').href = p.href;
+        document.getElementById('pfpFlipCard').setAttribute('aria-label', p.name + ' feature, tap to flip');
+        document.getElementById('pfpFlipCard').classList.remove('flipped');
+        document.querySelectorAll('.pf-thumb-tile').forEach(function(t, i) {
+          t.style.outlineColor = i === idx ? platforms[i].color : 'transparent';
+        });
+        document.querySelectorAll('#pfpDropdown .mgp-option').forEach(function(o, i) {
+          o.classList.toggle('active', i === idx);
+          o.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+        });
+        if (closeDD) togglePfpDD(false);
+      }
+      function togglePfpDD(forceClose) {
+        var dd = document.getElementById('pfpDropdown');
+        var face = document.getElementById('pfpFace');
+        var open = forceClose === false ? false : !dd.classList.contains('open');
+        dd.classList.toggle('open', open);
+        face.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      document.getElementById('pfpFace').addEventListener('click', function() { togglePfpDD(); });
+      document.getElementById('pfpFace').addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); togglePfpDD(); }});
+      document.addEventListener('click', function(e) { var w=document.getElementById('pfpSelectWrap'); if(w&&!w.contains(e.target)) togglePfpDD(false); });
+      var dd2 = document.getElementById('pfpDropdown');
+      platforms.forEach(function(p, i) {
+        var opt = document.createElement('div');
+        opt.className = 'mgp-option' + (i===0?' active':'');
+        opt.setAttribute('role','option');
+        opt.setAttribute('aria-selected', i===0?'true':'false');
+        opt.setAttribute('tabindex','0');
+        var dot = document.createElement('div');
+        dot.className = 'mgp-dot';
+        dot.style.background = p.color;
+        var lbl = document.createElement('span');
+        lbl.textContent = p.label;
+        opt.appendChild(dot); opt.appendChild(lbl);
+        opt.addEventListener('click', function() { setPlatform(i, true); });
+        opt.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); setPlatform(i, true); }});
+        dd2.appendChild(opt);
+      });
+      var strip = document.getElementById('pfpThumbStrip');
+      platforms.forEach(function(p, i) {
+        var tile = document.createElement('div');
+        tile.className = 'pf-thumb-tile';
+        tile.setAttribute('role','listitem');
+        tile.setAttribute('tabindex','0');
+        tile.setAttribute('aria-label', p.name);
+        tile.style.background = p.color;
+        tile.style.outlineColor = i===0 ? p.color : 'transparent';
+        tile.innerHTML = '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:rgba(255,255,255,0.8);"><path d="' + iconPaths[p.iconKey] + '"/></svg>';
+        tile.addEventListener('click', function() { setPlatform(i, false); });
+        tile.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') setPlatform(i, false); });
+        strip.appendChild(tile);
+      });
+      // Initialize icon on first load
+      document.getElementById('pfpArtIcon').innerHTML = makeSvg(platforms[0].iconKey);
+    })();
+    </script>
+    <p class="flip-hint" aria-hidden="true">Tap a card to learn more</p>
   </section>
 
-  <!-- GUIDES SECTION: Repositioned as "Your Path In" -->
+  <!-- GUIDES SECTION -->
   <section class="paths-section" aria-labelledby="paths-heading">
     <div class="section-eyebrow" aria-hidden="true">Your Path In</div>
     <h2 class="section-h2" id="paths-heading">The Platform Meets You<br>Where You Are.</h2>
-    <p class="section-sub">Every member has a Guide - a dedicated path that connects you to the right directory listings, content, and community for your specific journey. Tap a card to find yours.</p>
-    <div class="guides-grid" role="list" aria-label="Guide paths">
+    <p class="section-sub">Every member has a Guide - a dedicated path that connects you to the right content, community, and resources for your journey. Tap a card to find yours.</p>
+    <div class="flip-cards-grid" role="list" aria-label="Guide paths">
 
       <div class="flip-card" role="listitem" tabindex="0" aria-label="Maya, Pre-Vegan Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
         <div class="flip-card-inner">
@@ -534,7 +762,7 @@
         document.querySelectorAll('.mgp-thumb-tile').forEach(function(t, i) {
           t.style.outlineColor = i === idx ? guides[i].color : 'transparent';
         });
-        document.querySelectorAll('.mgp-option').forEach(function(o, i) {
+        document.querySelectorAll('#mgpDropdown .mgp-option').forEach(function(o, i) {
           o.classList.toggle('active', i === idx);
           o.setAttribute('aria-selected', i === idx ? 'true' : 'false');
         });
@@ -610,7 +838,7 @@
         <div class="how-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
         <div class="how-step-num">Step 03</div>
         <div class="how-step-title">Explore the Platform</div>
-        <p class="how-step-desc">Browse the directory, find events in your city, read content built for your path, and join your local community - all unlocked with your Passport.</p>
+        <p class="how-step-desc">Browse the directory, find events in your city, join your community, and tune into the Network - all unlocked with your Passport.</p>
       </div>
       <div class="how-step" role="listitem">
         <div class="how-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg></div>
@@ -673,8 +901,8 @@
   <!-- BOTTOM CTA -->
   <section class="cta-section" aria-labelledby="cta-heading">
     <div class="section-eyebrow">Ready</div>
-    <h2 class="section-h2" id="cta-heading">Your Place in the<br>Vegan World is <em>Waiting.</em></h2>
-    <p>Find your path, explore the directory, discover events in your city, and connect with a community that is building something real. One payment. No subscription required to start.</p>
+    <h2 class="section-h2" id="cta-heading">The Vegan World<br>is <em>Waiting for You.</em></h2>
+    <p>Find your path, get your Passport, and connect with a community that is building something real. One payment. No subscription required to start.</p>
     <a href="/passport" class="btn-cta-lg">Get Your Passport</a>
     <span class="cta-fine">$11 one-time per path. $11/month for all paths. $111 lifetime.</span>
   </section>
