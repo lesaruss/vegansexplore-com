@@ -1,361 +1,578 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Partner with Vegans Explore</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root {
-  --green: #3A9B3E; --green-h: #4CAF50; --green-dim: rgba(58,155,62,0.07); --green-line: rgba(58,155,62,0.16);
-  --orange: #E8891A; --gold: #9A7420; --gold-dim: rgba(154,116,32,0.08); --gold-border: rgba(154,116,32,0.2);
-  --bg: #FAFAF8; --bg-alt: #F3F3EF; --bg-dark: #111111; --card: #FFFFFF;
-  --text: #0C0C0C; --text-2: #2A2A2A; --text-mid: #4A4A4A; --text-muted: #777777; --text-faint: #AAAAAA;
-  --border: rgba(0,0,0,0.08); --border-md: rgba(0,0,0,0.13);
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
-.container { max-width:1160px; margin:0 auto; padding:0 32px; }
-.eyebrow { font-size:10px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--green); display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-.eyebrow::before { content:''; width:20px; height:1px; background:var(--green); flex-shrink:0; }
-.eyebrow.gold { color:var(--gold); }
-.eyebrow.gold::before { background:var(--gold); }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner with Vegans Explore</title>
+  <meta name="description" content="Grow your brand with the Vegans Explore network. Get your Passport, become a Community Partner, or sponsor a campaign.">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: rgba(58,155,62,0.4);
+      --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
 
-nav { background:var(--bg); border-bottom:1px solid var(--border); padding:0; position:sticky; top:0; z-index:100; }
-.nav-inner { display:flex; align-items:center; justify-content:space-between; max-width:1160px; margin:0 auto; padding:20px 32px; }
-.nav-logo { text-decoration:none; font-size:15px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; color:var(--text); }
-.nav-logo em { font-style:normal; color:var(--green); }
-.nav-back { font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; display:flex; align-items:center; gap:8px; transition:color 0.2s; }
-.nav-back:hover { color:var(--text); }
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 540px;
+      display: flex; align-items: center;
+      background-image: url('/public/events/vegan-foodie-fest-2025.jpg');
+      background-size: cover; background-position: center 30%; background-repeat: no-repeat; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.08) 65%, transparent 82%);
+    }
+    .hero::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+    }
+    .hero-inner { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 620px; }
+    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    .hero h1 { font-size: clamp(34px, 5vw, 64px); font-weight: 900; line-height: 0.97; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 20px; }
+    .hero h1 em { color: var(--ve-green); font-style: normal; }
+    .hero-sub { font-size: 16px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.55); max-width: 480px; margin-bottom: 32px; }
+    .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .hero-stat { }
+    .hero-stat .num { font-size: 22px; font-weight: 900; color: #fff; line-height: 1; }
+    .hero-stat .lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 3px; }
 
-/* HERO */
-.hero { padding:100px 0 80px; background:var(--bg-dark); position:relative; overflow:hidden; }
-.hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 30% 50%, rgba(58,155,62,0.07) 0%, transparent 70%); pointer-events:none; }
-.hero-inner { position:relative; z-index:1; max-width:740px; }
-.hero-tag { display:inline-flex; align-items:center; gap:8px; font-size:10px; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--green-h); margin-bottom:28px; }
-.hero h1 { font-size:clamp(44px,5vw,72px); font-weight:900; letter-spacing:-0.03em; line-height:0.93; color:#fff; margin-bottom:28px; text-transform:uppercase; }
-.hero h1 em { font-style:normal; color:var(--green-h); }
-.hero-sub { font-size:17px; color:rgba(255,255,255,0.5); line-height:1.8; max-width:520px; margin-bottom:40px; }
-.hero-sub strong { color:rgba(255,255,255,0.8); font-weight:500; }
-.hero-cta { display:inline-flex; align-items:center; gap:12px; background:var(--green); color:#fff; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:16px 32px; text-decoration:none; transition:background 0.2s; }
-.hero-cta:hover { background:var(--green-h); }
+    /* ── SECTION CHROME ── */
+    .section { padding: 64px 56px 72px; }
+    .section-alt { background: #fafaf8; }
+    .section-step { border-top: 3px solid var(--ve-green); }
+    .step-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 9px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 10px; }
+    .step-badge::before { content: ''; width: 16px; height: 2px; background: var(--ve-green); }
+    .section-title { font-size: clamp(24px, 3.5vw, 40px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.025em; line-height: 1; margin-bottom: 10px; }
+    .section-sub { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.7; max-width: 540px; margin-bottom: 40px; }
 
-/* POSITIONING */
-.positioning { padding:80px 0; background:var(--bg-alt); border-bottom:1px solid var(--border); }
-.positioning-inner { max-width:760px; margin:0 auto; text-align:center; }
-.positioning-inner h2 { font-size:clamp(20px,2.5vw,30px); font-weight:700; color:var(--text-2); line-height:1.5; }
-.positioning-inner h2 em { font-style:normal; color:var(--green); font-weight:900; }
-.positioning-inner p { font-size:15px; color:var(--text-muted); line-height:1.8; margin-top:16px; }
+    /* ── FLIP CARD GRID ── */
+    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card-grid-2 { grid-template-columns: repeat(2, 1fr); max-width: 720px; }
+    .card-grid-1 { grid-template-columns: 1fr; max-width: 420px; }
+    .card-wrapper { height: 340px; perspective: 1200px; }
+    .card-wrapper-tall { height: 420px; }
+    .flip-card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); }
+    .flip-card.is-flipped { transform: rotateY(180deg); }
+    .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 10px; overflow: hidden; }
 
-/* OFFER STACK */
-.offers { padding:120px 0; background:var(--bg); }
-.offers-header { margin-bottom:64px; }
-.offers-header h2 { font-size:clamp(28px,3.5vw,48px); font-weight:900; text-transform:uppercase; letter-spacing:-0.03em; color:var(--text); margin-bottom:0; line-height:1; }
-.offers-header h2 em { font-style:normal; color:var(--green); }
+    /* FRONT */
+    .flip-front { background: #1a1a1a; cursor: pointer; }
+    .flip-front img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+    .card-wrapper:hover .flip-front img { transform: scale(1.03); }
+    .front-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%); }
+    .front-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 22px; }
+    .front-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+    .front-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
+    .front-tag.orange::before { background: var(--ve-orange); }
+    .front-title { font-size: clamp(18px, 2vw, 24px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 4px; }
+    .front-sub { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+    .flip-btn { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 9px 16px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; font-family: 'Montserrat', sans-serif; }
+    .flip-btn.to-back { background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(4px); }
+    .flip-btn.to-back:hover { background: rgba(255,255,255,0.28); }
+    .flip-btn.to-front { background: transparent; color: var(--ve-text-50); border: 1.5px solid var(--ve-border); font-size: 10px; padding: 8px 14px; }
+    .flip-btn.to-front:hover { color: var(--ve-text); border-color: var(--ve-text-50); }
 
-/* Entry */
-.offer-entry { background:var(--green); padding:56px; display:grid; grid-template-columns:1fr auto; gap:48px; align-items:center; margin-bottom:2px; }
-.offer-entry h3 { font-size:clamp(22px,2.5vw,36px); font-weight:900; text-transform:uppercase; letter-spacing:-0.02em; color:#fff; margin-bottom:12px; }
-.offer-entry p { font-size:15px; color:rgba(255,255,255,0.72); line-height:1.75; max-width:480px; }
-.offer-entry-right { text-align:center; flex-shrink:0; }
-.offer-price-big { font-size:72px; font-weight:900; color:#fff; letter-spacing:-0.05em; line-height:1; }
-.offer-price-sub { font-size:11px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.55); margin-top:4px; margin-bottom:20px; }
-.offer-cta-white { display:block; background:#fff; color:var(--green); font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; padding:14px 32px; text-decoration:none; transition:all 0.2s; text-align:center; }
-.offer-cta-white:hover { background:rgba(255,255,255,0.9); }
+    /* Solid color front (no photo) */
+    .front-solid { position: absolute; inset: 0; }
+    .front-solid.green { background: linear-gradient(140deg, #2d7d31 0%, #3A9B3E 100%); }
+    .front-solid.dark { background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%); }
+    .front-solid.orange { background: linear-gradient(135deg, #c97010 0%, #F69820 100%); }
+    .front-accent { position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; opacity: 0.1; background: #fff; }
+    .front-price-badge { display: inline-block; font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -0.03em; line-height: 1; margin-bottom: 4px; }
+    .front-price-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.65); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
 
-/* Tier grid */
-.tier-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:2px; }
-.tier { background:var(--card); border:1px solid var(--border); padding:40px 32px; transition:border-color 0.25s; position:relative; }
-.tier:hover { border-color:var(--border-md); }
-.tier.featured { background:var(--bg-alt); border-color:rgba(154,116,32,0.22); }
-.tier-tag { font-size:9px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:16px; color:var(--text-faint); }
-.tier.featured .tier-tag { color:var(--gold); }
-.tier-badge { position:absolute; top:-1px; right:28px; background:var(--gold); color:#fff; font-size:9px; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; padding:6px 14px; }
-.tier h3 { font-size:20px; font-weight:900; text-transform:uppercase; letter-spacing:-0.01em; color:var(--text); margin-bottom:6px; }
-.tier-price-row { display:flex; align-items:baseline; gap:5px; margin-bottom:4px; }
-.tier-price-big { font-size:34px; font-weight:900; color:var(--text); letter-spacing:-0.03em; line-height:1; }
-.tier-price-period { font-size:13px; color:var(--text-faint); }
-.tier-price-note { font-size:11px; color:var(--text-faint); margin-bottom:20px; }
-.tier p { font-size:13px; color:var(--text-muted); line-height:1.7; margin-bottom:20px; }
-.tier-list { display:flex; flex-direction:column; gap:9px; margin-bottom:32px; }
-.tier-item { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-mid); line-height:1.5; }
-.tier-item::before { content:''; width:12px; height:12px; border:1px solid var(--green); flex-shrink:0; margin-top:1px; }
-.tier.featured .tier-item::before { border-color:var(--gold); }
-.tier-btn { display:block; text-align:center; font-size:11px; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; padding:13px; text-decoration:none; border:1px solid var(--border-md); color:var(--text); transition:all 0.2s; }
-.tier-btn:hover { background:var(--text); color:#fff; border-color:var(--text); }
-.tier.featured .tier-btn { background:var(--gold); color:#fff; border-color:var(--gold); }
-.tier.featured .tier-btn:hover { background:#B8922A; }
+    /* BACK */
+    .flip-back { transform: rotateY(180deg); background: #fff; border: 1.5px solid var(--ve-border); padding: 20px 20px 16px; display: flex; flex-direction: column; }
+    .back-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 5px; color: var(--ve-green-dark); }
+    .back-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
+    .back-tag.orange { color: var(--ve-orange-dark); }
+    .back-tag.orange::before { background: var(--ve-orange); }
+    .back-title { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 2px; }
+    .back-sub { font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-bottom: 10px; }
+    .card-divider { height: 1px; background: var(--ve-border); margin-bottom: 10px; }
+    .card-features { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; flex: 1; }
+    .card-feature { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; font-weight: 600; color: var(--ve-text-75); line-height: 1.4; }
+    .card-feature::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green-mid); flex-shrink: 0; margin-top: 4px; }
+    .card-feature.orange-dot::before { background: rgba(246,152,32,0.5); }
 
-/* Premium builds */
-.premium-row { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-bottom:2px; }
-.premium-card { background:var(--bg-alt); border:1px solid var(--border); padding:44px; }
-.premium-tag { font-size:9px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--text-faint); margin-bottom:14px; }
-.premium-card h3 { font-size:22px; font-weight:900; text-transform:uppercase; letter-spacing:-0.01em; color:var(--text); margin-bottom:8px; }
-.premium-price { font-size:34px; font-weight:900; color:var(--text); letter-spacing:-0.03em; margin-bottom:16px; line-height:1; }
-.premium-price span { font-size:14px; font-weight:400; color:var(--text-faint); }
-.premium-card p { font-size:13px; color:var(--text-muted); line-height:1.7; margin-bottom:10px; }
-.premium-note { font-size:11px; color:var(--text-faint); font-style:italic; margin-bottom:24px; }
+    /* PRICE GATE */
+    .price-gate { display: flex; align-items: center; gap: 10px; background: var(--ve-green-light); border: 1px solid rgba(58,155,62,0.2); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+    .gate-lock { font-size: 14px; flex-shrink: 0; }
+    .gate-text .gate-title { font-size: 10px; font-weight: 800; color: var(--ve-green-dark); letter-spacing: 0.06em; }
+    .gate-text .gate-sub { font-size: 9px; font-weight: 600; color: var(--ve-green-dark); opacity: 0.65; }
 
-/* Content packages */
-.content-section { padding:120px 0; background:var(--bg-alt); }
-.content-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin-top:64px; }
-.content-card { background:var(--card); border:1px solid var(--border); padding:48px; transition:border-color 0.25s; position:relative; overflow:hidden; }
-.content-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--gold); transform:scaleX(0); transform-origin:left; transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); }
-.content-card:hover::before { transform:scaleX(1); }
-.content-card:hover { border-color:var(--gold-border); }
-.content-tag { display:inline-block; font-size:9px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; padding:5px 12px; border:1px solid var(--gold-border); color:var(--gold); background:var(--gold-dim); margin-bottom:24px; }
-.content-card h3 { font-size:22px; font-weight:900; text-transform:uppercase; letter-spacing:-0.01em; color:var(--text); margin-bottom:8px; }
-.content-price { font-size:36px; font-weight:900; color:var(--text); letter-spacing:-0.03em; margin-bottom:16px; line-height:1; }
-.content-card p { font-size:14px; color:var(--text-muted); line-height:1.75; margin-bottom:24px; }
-.content-list { display:flex; flex-direction:column; gap:9px; margin-bottom:32px; }
-.content-item { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-mid); line-height:1.5; }
-.content-item::before { content:''; width:12px; height:12px; border:1px solid var(--gold); flex-shrink:0; margin-top:1px; }
+    /* PRICE ROW (Passport cards) */
+    .price-row { display: flex; border: 1.5px solid var(--ve-border); border-radius: 7px; overflow: hidden; margin-bottom: 12px; }
+    .price-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; gap: 1px; }
+    .price-item.green-bg { background: var(--ve-green-light); }
+    .price-divider-v { width: 1px; background: var(--ve-border); flex-shrink: 0; }
+    .price-val { font-size: 20px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--ve-green-dark); }
+    .price-label { font-size: 8px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); opacity: 0.65; }
 
-/* Revenue note */
-.revenue-note { padding:40px 48px; background:var(--bg-dark); margin-top:2px; }
-.revenue-note-inner { max-width:700px; }
-.revenue-note-label { font-size:10px; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--green-h); margin-bottom:12px; }
-.revenue-note p { font-size:14px; color:rgba(255,255,255,0.5); line-height:1.7; }
-.revenue-note p strong { color:rgba(255,255,255,0.8); font-weight:500; }
+    /* BACK FOOTER */
+    .back-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+    .btn-cta { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; text-decoration: none; background: var(--ve-green); color: #fff; transition: background 0.15s; border: none; cursor: pointer; white-space: nowrap; font-family: 'Montserrat', sans-serif; }
+    .btn-cta:hover { background: var(--ve-green-dark); }
+    .btn-cta.orange { background: var(--ve-orange); }
+    .btn-cta.orange:hover { background: var(--ve-orange-dark); }
 
-/* CTA section */
-.cta-section { padding:100px 0; background:var(--bg); text-align:center; }
-.cta-section h2 { font-size:clamp(28px,3.5vw,48px); font-weight:900; text-transform:uppercase; letter-spacing:-0.03em; color:var(--text); margin-top:16px; margin-bottom:20px; }
-.cta-section h2 em { font-style:normal; color:var(--green); }
-.cta-section p { font-size:16px; color:var(--text-muted); max-width:440px; margin:0 auto 40px; line-height:1.75; }
-.cta-section a { display:inline-flex; align-items:center; gap:12px; background:var(--green); color:#fff; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:16px 36px; text-decoration:none; transition:background 0.2s; }
-.cta-section a:hover { background:var(--green-h); }
+    /* ── BOTTOM CTA ── */
+    .bottom-cta { border-top: 1px solid var(--ve-border); padding: 56px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; background: #fafafa; }
+    .bottom-cta-text h2 { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .bottom-cta-text p { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; max-width: 440px; }
+    .bottom-cta-actions { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+    .btn-primary { background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 28px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
+    .btn-primary:hover { background: var(--ve-orange-dark); }
+    .btn-outline { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 22px; border-radius: 4px; text-decoration: none; background: transparent; color: var(--ve-text); border: 2px solid var(--ve-border); transition: all 0.15s; display: inline-block; }
+    .btn-outline:hover { border-color: var(--ve-text); }
 
-footer { background:var(--bg-alt); border-top:1px solid var(--border); padding:40px 0; }
-.footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-.footer-logo { font-size:13px; font-weight:900; letter-spacing:0.15em; text-transform:uppercase; color:var(--text); }
-.footer-copy { font-size:11px; color:var(--text-faint); }
-.footer-back { font-size:11px; color:var(--text-faint); text-decoration:none; letter-spacing:0.1em; text-transform:uppercase; transition:color 0.2s; }
-.footer-back:hover { color:var(--green); }
+    /* ── FOOTER ── */
+    .footer { background: #1A1A1A; padding: 36px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; }
+    .footer-leaf { width: 26px; height: 26px; background: var(--ve-green); border-radius: 50% 3px 50% 3px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .footer-leaf svg { width: 13px; height: 13px; fill: #fff; }
+    .footer-wordmark { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.3); }
+    .footer-links { display: flex; align-items: center; gap: 20px; }
+    .footer-links a { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.7); }
 
-@media (max-width:1024px) {
-  .offer-entry { grid-template-columns:1fr; }
-  .tier-grid { grid-template-columns:1fr; }
-  .premium-row { grid-template-columns:1fr; }
-  .content-grid { grid-template-columns:1fr; }
-}
-@media (max-width:640px) {
-  nav .nav-links { display:none; }
-}
-</style>
+    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+      .flip-card { transition: none !important; }
+    }
+
+    @media (max-width: 960px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 700px) {
+      .hero { background-position: 65% center; align-items: flex-end; min-height: 480px; }
+      .hero::before { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .hero::after { display: none; }
+      .hero-inner { padding: 0 24px 44px; max-width: 100%; }
+      .section { padding: 40px 24px 52px; }
+      .card-grid, .card-grid-2 { grid-template-columns: 1fr; }
+      .card-wrapper { height: 320px; }
+      .card-wrapper-tall { height: 400px; }
+      .bottom-cta { padding: 40px 24px; }
+      .footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
 
-<nav>
-  <div class="nav-inner">
-    <a href="vegansexplore-platform-v3.html" class="nav-logo">Vegans<em> Explore</em></a>
-    <a href="vegansexplore-platform-v3.html" class="nav-back">&#8592; Back to Main Site</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="container">
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="partner-heading">
     <div class="hero-inner">
-      <div class="hero-tag">&#9679; For Vegan Businesses, Nonprofits &amp; Communities</div>
-      <h1>Partner with<br><em>Vegans Explore.</em></h1>
-      <p class="hero-sub">
-        We help <strong>Vegan businesses, nonprofits, and communities grow together</strong> through a shared platform that also generates revenue. Start with $11. Build from there.
-      </p>
-      <a href="#entry" class="hero-cta">See Partnership Options &#8594;</a>
+      <p class="hero-eyebrow">Partner With Us</p>
+      <h1>Grow With<br><em>Vegans Explore.</em></h1>
+      <p class="hero-sub">Real community. Real events. Real reach. Choose the level that fits where you are and where you want to go.</p>
+      <div class="hero-stats" aria-label="Key stats">
+        <div class="hero-stat"><div class="num">~24K</div><div class="lbl">Social Followers</div></div>
+        <div class="hero-stat"><div class="num">77K+</div><div class="lbl">Podcast Downloads</div></div>
+        <div class="hero-stat"><div class="num">8</div><div class="lbl">Active Cities</div></div>
+        <div class="hero-stat"><div class="num">200</div><div class="lbl">Influencer Partners</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 1: PASSPORT -->
+  <section class="section section-step" aria-labelledby="step1-heading">
+    <p class="step-badge">Step 1</p>
+    <h2 class="section-title" id="step1-heading">Claim Your <em style="font-style:italic;">Passport.</em></h2>
+    <p class="section-sub">Your Passport is the key to the Vegans Explore network. It unlocks communities, partner pricing, and everything built for members. Choose one-time or monthly.</p>
+
+    <div class="card-grid card-grid-2" role="list">
+
+      <!-- PASSPORT ONE-TIME -->
+      <div class="card-wrapper" role="listitem" aria-label="Passport one-time option">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see Passport one-time details">
+            <div class="front-solid green"></div>
+            <div class="front-accent"></div>
+            <div class="front-content">
+              <p class="front-tag">Passport</p>
+              <div class="front-price-badge">$11</div>
+              <div class="front-price-label">One-time</div>
+              <button class="flip-btn to-back" aria-label="See what is included">See What's Included</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Passport one-time details">
+            <span class="back-tag">Passport</span>
+            <div class="back-title">One-Time Passport</div>
+            <div class="back-sub">Pay once. Access for life.</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features" aria-label="Included features">
+              <li class="card-feature">Access to all 8 active community hubs</li>
+              <li class="card-feature">Member pricing on all partner opportunities</li>
+              <li class="card-feature">Community forums and member directory</li>
+              <li class="card-feature">Early access to events and campaigns</li>
+            </ul>
+            <div class="price-row" aria-label="One-time pricing">
+              <div class="price-item green-bg"><span class="price-val">$11</span><span class="price-label">One-Time</span></div>
+            </div>
+            <div class="back-footer">
+              <button class="flip-btn to-front" aria-label="Back to front">&#8592; Back</button>
+              <a href="/passport" class="btn-cta" aria-label="Get your one-time Passport">Get Passport</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSPORT MONTHLY -->
+      <div class="card-wrapper" role="listitem" aria-label="Passport monthly option">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see Passport monthly details">
+            <div class="front-solid green"></div>
+            <div class="front-accent"></div>
+            <div class="front-content">
+              <p class="front-tag">Passport</p>
+              <div class="front-price-badge">$11</div>
+              <div class="front-price-label">per month</div>
+              <button class="flip-btn to-back" aria-label="See what is included">See What's Included</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Passport monthly details">
+            <span class="back-tag">Passport</span>
+            <div class="back-title">Monthly Passport</div>
+            <div class="back-sub">Ongoing access + monthly benefits.</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features" aria-label="Included features">
+              <li class="card-feature">Everything in the one-time Passport</li>
+              <li class="card-feature">Monthly community newsletter delivered to you</li>
+              <li class="card-feature">Priority notification on new events and campaigns</li>
+              <li class="card-feature">Cancel any time, no commitment</li>
+            </ul>
+            <div class="price-row" aria-label="Monthly pricing">
+              <div class="price-item green-bg"><span class="price-val">$11</span><span class="price-label">Per Month</span></div>
+            </div>
+            <div class="back-footer">
+              <button class="flip-btn to-front" aria-label="Back to front">&#8592; Back</button>
+              <a href="/passport" class="btn-cta" aria-label="Get your monthly Passport">Get Passport</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- STEP 2: COMMUNITY PARTNER -->
+  <section class="section section-alt section-step" style="border-top-color: var(--ve-orange);" aria-labelledby="step2-heading">
+    <p class="step-badge" style="color: var(--ve-orange);">Step 2</p>
+    <h2 class="section-title" id="step2-heading">Level Up Your <em style="font-style:italic;">Presence.</em></h2>
+    <p class="section-sub">Already have your Passport? Upgrade to Community Partner and get your brand actively working inside the VE network every month.</p>
+
+    <div class="card-grid card-grid-1" role="list">
+
+      <!-- COMMUNITY PARTNER CARD -->
+      <div class="card-wrapper card-wrapper-tall" role="listitem" aria-label="Community Partner tier">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see Community Partner details">
+            <div class="front-solid orange"></div>
+            <div class="front-accent"></div>
+            <div class="front-content">
+              <p class="front-tag orange">Community Partner</p>
+              <div class="front-title">Community Partner</div>
+              <div class="front-sub">Monthly brand presence inside VE</div>
+              <button class="flip-btn to-back" aria-label="See what is included">See What's Included</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Community Partner details">
+            <span class="back-tag orange">Community Partner</span>
+            <div class="back-title">Community Partner</div>
+            <div class="back-sub">Month to month. No contract.</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features" aria-label="Included features">
+              <li class="card-feature orange-dot">Monthly Marketing Audit with a baseline of your brand and an action guide for what to do next</li>
+              <li class="card-feature orange-dot">Access to 11 Do-It-Yourself modules designed to take your business further</li>
+              <li class="card-feature orange-dot">Listed in one region as a Community Partner, visible to local vegan audiences</li>
+              <li class="card-feature orange-dot">Up to two scheduled social collaborations per month across VE channels</li>
+            </ul>
+            <div class="price-gate" role="note" aria-label="Pricing requires account">
+              <span class="gate-lock" aria-hidden="true">&#128274;</span>
+              <div class="gate-text">
+                <div class="gate-title">Passport members see pricing immediately</div>
+                <div class="gate-sub">Sign in or create a free account to unlock</div>
+              </div>
+            </div>
+            <div class="back-footer">
+              <button class="flip-btn to-front" aria-label="Back to front">&#8592; Back</button>
+              <a href="/passport" class="btn-cta orange" aria-label="Get your Passport to see pricing">Get Passport to Unlock</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- OPPORTUNITIES GRID -->
+  <section class="section" aria-labelledby="opp-heading">
+    <p class="step-badge" style="color: var(--ve-text-50); border-left: none;">More Ways to Get Involved</p>
+    <h2 class="section-title" id="opp-heading">Partner <em style="font-style:italic;">Opportunities.</em></h2>
+    <p class="section-sub">From live events to video series sponsorships, there are multiple ways to show up inside the Vegans Explore network. Flip any card to learn more.</p>
+
+    <div class="card-grid" role="list">
+
+      <!-- DOLPHIN TAILGATE -->
+      <div class="card-wrapper" role="listitem" aria-label="Dolphin Tailgate sponsorship">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see Dolphin Tailgate details">
+            <img src="/communities/south-florida/banner.jpg" alt="South Florida community" loading="lazy">
+            <div class="front-overlay" aria-hidden="true"></div>
+            <div class="front-content">
+              <p class="front-tag">Live Event</p>
+              <div class="front-title">Dolphin Tailgate</div>
+              <div class="front-sub">September 13, 2026</div>
+              <button class="flip-btn to-back">Learn More</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Dolphin Tailgate details">
+            <span class="back-tag">Live Event</span>
+            <div class="back-title">Dolphin Tailgate</div>
+            <div class="back-sub">Hard Rock Stadium &middot; Miami, FL</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features">
+              <li class="card-feature">Miami Dolphins pre-game experience</li>
+              <li class="card-feature">Access to an exclusive F1 garage space</li>
+              <li class="card-feature">One of the highest-visibility VE events of the year</li>
+              <li class="card-feature">Logo placement + on-site sampling opportunity</li>
+            </ul>
+            <div class="back-footer">
+              <button class="flip-btn to-front">&#8592; Back</button>
+              <a href="mailto:contact@vegansexplore.com?subject=Dolphin Tailgate Sponsorship" class="btn-cta">Inquire</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORLD VEGAN EXPO -->
+      <div class="card-wrapper" role="listitem" aria-label="World Vegan EXPO sponsorship">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see World Vegan EXPO details">
+            <img src="/public/events/vegan-foodie-fest-2025.jpg" alt="Vegan event" loading="lazy">
+            <div class="front-overlay" aria-hidden="true"></div>
+            <div class="front-content">
+              <p class="front-tag">Flagship Event</p>
+              <div class="front-title">World Vegan EXPO</div>
+              <div class="front-sub">November 1, 2026</div>
+              <button class="flip-btn to-back">Learn More</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="World Vegan EXPO details">
+            <span class="back-tag">Flagship Event</span>
+            <div class="back-title">World Vegan EXPO</div>
+            <div class="back-sub">Annual flagship &middot; Biggest day of the year</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features">
+              <li class="card-feature">Top sponsors recognized on stage</li>
+              <li class="card-feature">High-foot-traffic sampling and product visibility</li>
+              <li class="card-feature">Direct consumer engagement with the VE audience</li>
+              <li class="card-feature">Social and email promotion leading up to event</li>
+            </ul>
+            <div class="back-footer">
+              <button class="flip-btn to-front">&#8592; Back</button>
+              <a href="mailto:contact@vegansexplore.com?subject=World Vegan EXPO Sponsorship" class="btn-cta">Inquire</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VE NIGHT -->
+      <div class="card-wrapper" role="listitem" aria-label="Vegans Explore Night sponsorship">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see VE Night details">
+            <img src="/communities/atlanta/banner.jpg" alt="Community night event" loading="lazy">
+            <div class="front-overlay" aria-hidden="true"></div>
+            <div class="front-content">
+              <p class="front-tag">Rolling &middot; All Cities</p>
+              <div class="front-title">Vegans Explore Night</div>
+              <div class="front-sub">8 active cities</div>
+              <button class="flip-btn to-back">Learn More</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Vegans Explore Night details">
+            <span class="back-tag">Rolling Event</span>
+            <div class="back-title">Vegans Explore Night</div>
+            <div class="back-sub">City-by-city community meetups</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features">
+              <li class="card-feature">Direct face time with local vegan audiences</li>
+              <li class="card-feature">Perfect for tastings, giveaways, and introductions</li>
+              <li class="card-feature">Intimate setting - high connection, high recall</li>
+              <li class="card-feature">Available across all 8 active VE cities</li>
+            </ul>
+            <div class="back-footer">
+              <button class="flip-btn to-front">&#8592; Back</button>
+              <a href="mailto:contact@vegansexplore.com?subject=VE Night Sponsorship" class="btn-cta">Inquire</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VE TOUR -->
+      <div class="card-wrapper" role="listitem" aria-label="Vegans Explore Tour sponsorship">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see VE Tour details">
+            <div class="front-solid dark"></div>
+            <div class="front-accent"></div>
+            <div class="front-content">
+              <p class="front-tag orange">In Development</p>
+              <div class="front-title">Vegans Explore Tour</div>
+              <div class="front-sub">Multi-city</div>
+              <button class="flip-btn to-back">Learn More</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Vegans Explore Tour details">
+            <span class="back-tag orange">In Development</span>
+            <div class="back-title">Vegans Explore Tour</div>
+            <div class="back-sub">Multi-city &middot; Get in early</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features">
+              <li class="card-feature">Tour bringing the VE community on the road</li>
+              <li class="card-feature">Contributing, Co-Presenting, and Title tiers available</li>
+              <li class="card-feature">Best positioning for sponsors who come in now</li>
+              <li class="card-feature">Passport required to see sponsorship pricing</li>
+            </ul>
+            <div class="back-footer">
+              <button class="flip-btn to-front">&#8592; Back</button>
+              <a href="mailto:contact@vegansexplore.com?subject=VE Tour Sponsorship" class="btn-cta">Inquire</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEO SERIES -->
+      <div class="card-wrapper" role="listitem" aria-label="Vegans Explore the Globe video series">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see video series details">
+            <img src="/communities/london/banner.jpg" alt="Travel video series" loading="lazy">
+            <div class="front-overlay" aria-hidden="true"></div>
+            <div class="front-content">
+              <p class="front-tag">Video Series</p>
+              <div class="front-title">Vegans Explore the Globe</div>
+              <div class="front-sub">Travel content sponsorship</div>
+              <button class="flip-btn to-back">Learn More</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Video series details">
+            <span class="back-tag">Content Sponsorship</span>
+            <div class="back-title">Vegans Explore the Globe</div>
+            <div class="back-sub">Episode, product placement, or title</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features">
+              <li class="card-feature">Brand woven into the travel story, not an ad break</li>
+              <li class="card-feature">Episode Sponsorship, Product Placement, or Presented By</li>
+              <li class="card-feature">Pathway to broadcast and streaming distribution</li>
+              <li class="card-feature">Pilot-stage entry gets most favorable terms</li>
+            </ul>
+            <div class="back-footer">
+              <button class="flip-btn to-front">&#8592; Back</button>
+              <a href="mailto:contact@vegansexplore.com?subject=Video Series Sponsorship" class="btn-cta">Inquire</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARKETING SERVICES -->
+      <div class="card-wrapper" role="listitem" aria-label="Marketing services">
+        <div class="flip-card">
+          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see marketing services details">
+            <div class="front-solid dark"></div>
+            <div class="front-accent"></div>
+            <div class="front-content">
+              <p class="front-tag">Done For You</p>
+              <div class="front-title">Marketing Services</div>
+              <div class="front-sub">Via LESARUSS AI</div>
+              <button class="flip-btn to-back">Learn More</button>
+            </div>
+          </div>
+          <div class="flip-back" aria-label="Marketing services details">
+            <span class="back-tag">Done For You</span>
+            <div class="back-title">Marketing Services</div>
+            <div class="back-sub">Full production via LESARUSS AI</div>
+            <div class="card-divider" aria-hidden="true"></div>
+            <ul class="card-features">
+              <li class="card-feature">Web and mobile design, video production</li>
+              <li class="card-feature">Food photography and event coverage</li>
+              <li class="card-feature">Podcast production, social media management</li>
+              <li class="card-feature">Co-branded press release to 1M+ media contacts</li>
+            </ul>
+            <div class="back-footer">
+              <button class="flip-btn to-front">&#8592; Back</button>
+              <a href="mailto:contact@vegansexplore.com?subject=Marketing Services" class="btn-cta">Inquire</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <div class="bottom-cta-text">
+      <h2>Ready to Get Started?</h2>
+      <p>Start with your Passport. Once you are in, the conversation about next steps is easy.</p>
+    </div>
+    <div class="bottom-cta-actions">
+      <a href="/passport" class="btn-primary" aria-label="Get your Passport">Get Your Passport: $11</a>
+      <a href="mailto:contact@vegansexplore.com?subject=Partnership Inquiry" class="btn-outline" aria-label="Contact us">Talk to Us</a>
     </div>
   </div>
-</section>
 
-<!-- POSITIONING STATEMENT -->
-<section class="positioning">
-  <div class="container">
-    <div class="positioning-inner">
-      <h2>"We help Vegan businesses, nonprofits, and communities <em>grow together</em> through a shared platform that also generates revenue."</h2>
-      <p>You already have an audience. We give you the platform, the tools, and the network to take them further. Every business that joins brings their community, and every community grows the network for everyone.</p>
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-brand">
+      <div class="footer-leaf" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 19.34L5.71 21l1-1C8 18 10 17 12 17c3 0 5-2 5-5 0-1-.4-2-1-3z"/></svg>
+      </div>
+      <span class="footer-wordmark">Vegans Explore</span>
     </div>
-  </div>
-</section>
+    <p class="footer-copy">&copy; 2026 Vegans Explore. All rights reserved.</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="/guides/ve-guides-roster-v1">Guides</a>
+      <a href="/communities/find">Communities</a>
+      <a href="/directory">Directory</a>
+      <a href="/passport">Passport</a>
+    </nav>
+  </footer>
 
-<!-- OFFER STACK -->
-<section class="offers" id="entry">
-  <div class="container">
-    <div class="offers-header">
-      <div class="eyebrow">The Offer Stack</div>
-      <h2 class="">Start at <em>$11.</em><br>Grow from there.</h2>
-    </div>
+</div>
 
-    <!-- Entry -->
-    <div class="offer-entry">
-      <div>
-        <h3>Claim Your Passport</h3>
-        <p>The required entry point for all businesses. Claim your place in the Vegans Explore network and start participating in your local Vegan community ecosystem. Simple, low-friction buy-in. Acts as both validation and onboarding.</p>
-        <div style="margin-top:20px;display:flex;flex-direction:column;gap:9px;">
-          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Business Passport on Vegans Explore</div>
-          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Eligibility for features, events, and community activations</div>
-          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Ability to earn through referral-based membership signups</div>
-          <div style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(255,255,255,0.75);"><span style="width:12px;height:12px;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;margin-top:1px;display:block;"></span>Access to platform ecosystem</div>
-        </div>
-      </div>
-      <div class="offer-entry-right">
-        <div class="offer-price-big">$11</div>
-        <div class="offer-price-sub">One-time fee</div>
-        <a href="#" class="offer-cta-white">Get Started</a>
-      </div>
-    </div>
+<script>
+  (function () {
+    /* Flip on click (front face) */
+    document.querySelectorAll('.flip-front').forEach(function (front) {
+      front.addEventListener('click', function () {
+        this.closest('.card-wrapper').querySelector('.flip-card').classList.add('is-flipped');
+      });
+      front.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.closest('.card-wrapper').querySelector('.flip-card').classList.add('is-flipped');
+        }
+      });
+    });
+    /* Flip back */
+    document.querySelectorAll('.flip-btn.to-front').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        this.closest('.card-wrapper').querySelector('.flip-card').classList.remove('is-flipped');
+      });
+    });
+  })();
+</script>
 
-    <!-- Tiers -->
-    <div class="tier-grid">
-      <div class="tier">
-        <div class="tier-tag">Step Two</div>
-        <h3>Visibility + Audit</h3>
-        <div class="tier-price-row">
-          <div class="tier-price-big">$111</div>
-        </div>
-        <div class="tier-price-note">One-time</div>
-        <p>Profile optimization, marketing and visibility audit, and actionable recommendations. Warms your business up for higher-tier offers and drives immediate value.</p>
-        <div class="tier-list">
-          <div class="tier-item">Profile optimization</div>
-          <div class="tier-item">Marketing and visibility audit</div>
-          <div class="tier-item">Actionable recommendations report</div>
-          <div class="tier-item">Priority consideration for features and content</div>
-        </div>
-        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
-      </div>
-      <div class="tier featured">
-        <div class="tier-badge">Key Offer</div>
-        <div class="tier-tag">Platform + Revenue</div>
-        <h3>Platform Build</h3>
-        <div class="tier-price-row">
-          <div class="tier-price-big">$111</div>
-          <div class="tier-price-period">/month</div>
-        </div>
-        <div class="tier-price-note">+ 50% revenue share on platform-driven sales</div>
-        <p>A full community and digital sales platform. Bring your existing audience, sell memberships and digital products, and earn recurring revenue. Built-in monetization from day one.</p>
-        <div class="tier-list">
-          <div class="tier-item">Custom Vegans Explore-powered website</div>
-          <div class="tier-item">Community page for your audience</div>
-          <div class="tier-item">Sell digital products and memberships</div>
-          <div class="tier-item">Unique referral link for tracking</div>
-          <div class="tier-item">50% split on platform-driven revenue only</div>
-          <div class="tier-item">Does NOT apply to physical products or in-store revenue</div>
-        </div>
-        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
-      </div>
-      <div class="tier">
-        <div class="tier-tag">Spotlight</div>
-        <h3>Content Feature</h3>
-        <div class="tier-price-row">
-          <div class="tier-price-big">$250</div>
-        </div>
-        <div class="tier-price-note">Entry &mdash; or $1,250 for premium</div>
-        <p>Get your story told across the Vegans Explore platform and social channels. From a quick on-location capture to a full interview and pilot episode inclusion.</p>
-        <div class="tier-list">
-          <div class="tier-item">Short-form feature + social inclusion (Entry: $250)</div>
-          <div class="tier-item">Full interview + multi-content package (Premium: $1,250&ndash;$1,500)</div>
-          <div class="tier-item">Inclusion in pilot episode (Premium)</div>
-          <div class="tier-item">Priority promotion across the network</div>
-        </div>
-        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
-      </div>
-    </div>
-
-    <!-- Premium builds -->
-    <div class="premium-row">
-      <div class="premium-card">
-        <div class="premium-tag">Premium Build &mdash; Option A</div>
-        <h3>Full Custom Build</h3>
-        <div class="premium-price">$10,000 <span>flat</span></div>
-        <p>A fully built website powered by the Vegans Explore platform. You keep 100% of your revenue, minus standard processing fees.</p>
-        <div class="premium-note">No revenue share. No ongoing percentage. You own the outcome.</div>
-        <div class="tier-list">
-          <div class="tier-item">Full website build on the platform</div>
-          <div class="tier-item">100% revenue retention</div>
-          <div class="tier-item">No revenue share</div>
-        </div>
-        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
-      </div>
-      <div class="premium-card">
-        <div class="premium-tag">Premium Build &mdash; Option B</div>
-        <h3>Reduced Upfront Build</h3>
-        <div class="premium-price">$2,500 <span>+ 5% revenue share</span></div>
-        <p>A full website build at a reduced upfront cost. In exchange, 5% on all platform-driven sales. A long-term partnership model for businesses building alongside us.</p>
-        <div class="premium-note">Best for growing businesses that want to minimize upfront cost.</div>
-        <div class="tier-list">
-          <div class="tier-item">Full website build on the platform</div>
-          <div class="tier-item">5% on all platform sales</div>
-          <div class="tier-item">Long-term partnership structure</div>
-        </div>
-        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
-      </div>
-    </div>
-
-    <div class="revenue-note">
-      <div class="revenue-note-inner">
-        <div class="revenue-note-label">Revenue Share Clarification</div>
-        <p>The 50% and 5% revenue share <strong>applies only to platform-driven revenue</strong> — membership signups and digital product sales processed through Vegans Explore. It does <strong>NOT apply to physical product sales, in-store revenue, or any business conducted outside the platform.</strong></p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTENT PACKAGES -->
-<section class="content-section" id="content">
-  <div class="container">
-    <div class="eyebrow gold">Content Monetization</div>
-    <h2 style="font-size:clamp(28px,3.5vw,46px);font-weight:900;text-transform:uppercase;letter-spacing:-0.03em;color:var(--text);margin-bottom:0;line-height:1;">Spotlight<br>Feature Packages.</h2>
-    <p style="font-size:16px;color:var(--text-muted);line-height:1.75;margin-top:16px;max-width:520px;">Our content team will come to you. We capture your story and push it across the platform and social channels — putting your brand in front of the whole network.</p>
-    <div class="content-grid">
-      <div class="content-card">
-        <div class="content-tag">Entry Feature</div>
-        <h3>Quick Capture</h3>
-        <div class="content-price">$250</div>
-        <p>A fast, focused on-location feature for businesses ready to get in front of the network quickly. Short-form content optimized for social media reach and platform visibility.</p>
-        <div class="content-list">
-          <div class="content-item">Short-form feature content</div>
-          <div class="content-item">Quick on-location capture</div>
-          <div class="content-item">Social media inclusion across Vegans Explore channels</div>
-          <div class="content-item">Platform spotlight listing</div>
-        </div>
-        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
-      </div>
-      <div class="content-card">
-        <div class="content-tag">Premium Feature</div>
-        <h3>Full Production</h3>
-        <div class="content-price">$1,250&ndash;$1,500</div>
-        <p>A comprehensive content package for businesses ready for a full story. Long-form interview, multi-content rollout, and inclusion in the pilot episode of the Vegans Explore series.</p>
-        <div class="content-list">
-          <div class="content-item">Full on-location interview</div>
-          <div class="content-item">Multi-content package (video, written, social)</div>
-          <div class="content-item">Inclusion in pilot episode</div>
-          <div class="content-item">Priority promotion across all network channels</div>
-          <div class="content-item">Platform featured placement</div>
-        </div>
-        <a href="mailto:partners@vegansexplore.com" class="tier-btn">Inquire</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="container">
-    <div class="eyebrow" style="justify-content:center;margin-bottom:16px;">&#8212; Ready to Partner</div>
-    <h2>Let's Build<br>the <em>Network.</em></h2>
-    <p>Reach out to our partnerships team and we will walk you through the right option for your business.</p>
-    <a href="mailto:partners@vegansexplore.com">Contact Partnerships &#8594;</a>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-logo">Vegans Explore</div>
-      <a href="vegansexplore-platform-v3.html" class="footer-back">&#8592; Back to Main Site</a>
-      <div class="footer-copy">&copy; 2026 Vegans Explore</div>
-    </div>
-  </div>
-</footer>
 </body>
 </html>
