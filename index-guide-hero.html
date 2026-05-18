@@ -31,7 +31,7 @@
       position: relative;
       min-height: 600px;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       background-image: url('/public/events/vegan-foodie-fest-2025.jpg');
       background-size: cover;
       background-position: center 40%;
@@ -60,12 +60,9 @@
     .hero-inner {
       position: relative;
       z-index: 2;
-      padding: 88px 56px 52px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
+      padding: 88px 56px 72px;
+      max-width: 600px;
     }
-    .hero-top { max-width: 560px; }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
@@ -78,17 +75,6 @@
     .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
     .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.50); margin-bottom: 40px; }
 
-    /* Guide thumbnail strip inside hero */
-    .hero-guide-strip { display: flex; gap: 12px; align-items: flex-end; padding-bottom: 36px; }
-    .hero-guide-strip-label { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.45); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin-right: 4px; flex-shrink: 0; }
-    .hero-guide-thumb { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; transition: transform 0.15s; }
-    .hero-guide-thumb:hover { transform: translateY(-4px); }
-    .hero-guide-thumb:focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; border-radius: 12px; }
-    .hero-guide-img { width: 72px; height: 96px; border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); flex-shrink: 0; }
-    .hero-guide-img img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
-    .hero-guide-name { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
-    .hero-guide-path { font-size: 8px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.45); text-align: center; }
-    .hero-guide-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
 
     /* ── Stats Bar ── */
     .stats-bar { background: var(--ve-green-dark); padding: 22px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
@@ -234,14 +220,10 @@
     @media (max-width: 768px) {
       .ve-nav { padding: 0 20px; }
       .nav-links { display: none; }
-      .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; }
+      .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
-      .hero-inner { padding: 0 24px 24px; }
-      .hero-top { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 32px 28px; max-width: 100%; border: 1px solid rgba(255,255,255,0.09); margin-top: 32px; margin-bottom: 20px; }
-      .hero-guide-strip { padding-bottom: 16px; gap: 8px; overflow-x: auto; }
-      .hero-guide-img { width: 56px; height: 74px; }
-      .hero-guide-strip-label { display: none; }
+      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 32px 28px; max-width: calc(100% - 48px); margin: 0 24px 32px; border: 1px solid rgba(255,255,255,0.09); }
       .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 60px 32px; }
       .stats-bar { padding: 18px 32px; }
       .how-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -258,14 +240,10 @@
     @media (max-width: 480px) {
       .ve-nav { padding: 0 16px; }
       .nav-links { display: none; }
-      .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; }
+      .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
-      .hero-inner { padding: 0 16px 20px; }
-      .hero-top { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 28px 24px; max-width: 100%; border: 1px solid rgba(255,255,255,0.10); margin-top: 24px; margin-bottom: 16px; }
-      .hero-guide-strip { gap: 6px; padding-bottom: 12px; overflow-x: auto; }
-      .hero-guide-img { width: 48px; height: 64px; }
-      .hero-guide-name, .hero-guide-path, .hero-guide-dot { display: none; }
+      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 28px 24px; max-width: calc(100% - 32px); margin: 0 16px 24px; border: 1px solid rgba(255,255,255,0.10); }
       .stats-bar { padding: 16px 20px; gap: 10px; flex-wrap: wrap; justify-content: center; }
       .stat-divider { display: none; }
       .stat-passport { display: none; }
@@ -291,50 +269,11 @@
   <!-- HERO: Guide-focused. Same background, new framing, guide portrait strip at bottom -->
   <section class="hero" aria-labelledby="hero-heading">
     <div class="hero-inner">
-      <div class="hero-top">
-        <div class="hero-eyebrow" aria-hidden="true">Meet Your Guide</div>
-        <h1 id="hero-heading">Five Paths.<br><em>Your Guide is Waiting.</em></h1>
-        <p class="hero-sub">Tell us where you are in your vegan journey. Your Guide takes you from there - connecting you to the right community, content, and resources for your path.</p>
-        <div class="hero-ctas">
-          <a href="/guides/ve-guides-roster-v1" class="btn-hero-primary">Find My Guide</a>
-          <a href="/passport" class="btn-hero-ghost">Get Your Passport</a>
-        </div>
-        <p class="hero-fine">$11 one-time. No subscription required to start.</p>
-      </div>
-
-      <!-- Guide portrait strip - sits at the bottom of the hero, anchored to the image -->
-      <div class="hero-guide-strip" role="list" aria-label="Available guide paths">
-        <span class="hero-guide-strip-label">5 Paths</span>
-        <a href="/guides/ve-path-prevegan" class="hero-guide-thumb" role="listitem" aria-label="Maya - Pre-Vegan Guide">
-          <div class="hero-guide-img"><img src="/public/guides/maya.png" alt="Maya, Pre-Vegan Guide" loading="lazy"></div>
-          <div class="hero-guide-dot" style="background:#2d7d31;" aria-hidden="true"></div>
-          <div class="hero-guide-name">Maya</div>
-          <div class="hero-guide-path">Pre-Vegan</div>
-        </a>
-        <a href="/guides/ve-path-seasonedvegan" class="hero-guide-thumb" role="listitem" aria-label="Theo - Seasoned Vegan Guide">
-          <div class="hero-guide-img"><img src="/public/guides/theo.png" alt="Theo, Seasoned Vegan Guide" loading="lazy"></div>
-          <div class="hero-guide-dot" style="background:#8B6914;" aria-hidden="true"></div>
-          <div class="hero-guide-name">Theo</div>
-          <div class="hero-guide-path">Seasoned</div>
-        </a>
-        <a href="/guides/ve-path-entrepreneur" class="hero-guide-thumb" role="listitem" aria-label="Nori - Entrepreneur Guide">
-          <div class="hero-guide-img"><img src="/public/guides/nori.png" alt="Nori, Entrepreneur Guide" loading="lazy"></div>
-          <div class="hero-guide-dot" style="background:#2D5F8A;" aria-hidden="true"></div>
-          <div class="hero-guide-name">Nori</div>
-          <div class="hero-guide-path">Entrepreneur</div>
-        </a>
-        <a href="/guides/ve-path-nonprofit" class="hero-guide-thumb" role="listitem" aria-label="Dani - Nonprofit Guide">
-          <div class="hero-guide-img"><img src="/public/guides/dani.png" alt="Dani, Nonprofit Guide" loading="lazy"></div>
-          <div class="hero-guide-dot" style="background:#C4522A;" aria-hidden="true"></div>
-          <div class="hero-guide-name">Dani</div>
-          <div class="hero-guide-path">Nonprofit</div>
-        </a>
-        <a href="/guides/ve-path-creator" class="hero-guide-thumb" role="listitem" aria-label="River - Creator Guide">
-          <div class="hero-guide-img"><img src="/public/guides/river.jpg" alt="River, Creator Guide" loading="lazy"></div>
-          <div class="hero-guide-dot" style="background:#6B35A8;" aria-hidden="true"></div>
-          <div class="hero-guide-name">River</div>
-          <div class="hero-guide-path">Creator</div>
-        </a>
+      <div class="hero-eyebrow" aria-hidden="true">Meet Your Guide</div>
+      <h1 id="hero-heading">Five Paths.<br><em>Your Guide is Waiting.</em></h1>
+      <p class="hero-sub">Tell us where you are in your vegan journey. Your Guide connects you to the right community, content, and resources for your path.</p>
+      <div class="hero-ctas">
+        <a href="/guides/ve-guides-roster-v1" class="btn-hero-primary">Find My Guide</a>
       </div>
     </div>
   </section>
