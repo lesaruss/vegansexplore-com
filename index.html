@@ -376,7 +376,7 @@
         </div>
         <div class="mgp-dropdown" id="mgpDropdown" role="listbox"></div>
       </div>
-      <div class="flip-card mgp-flip-card" id="mgpFlipCard" tabindex="0" onclick="document.getElementById('mgpFlipInner').classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('mgpFlipInner').classList.toggle('flipped')" aria-label="Guide card, tap to flip">
+      <div class="flip-card mgp-flip-card" id="mgpFlipCard" tabindex="0" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')" aria-label="Guide card, tap to flip">
         <div class="flip-card-inner" id="mgpFlipInner">
           <div class="flip-card-front">
             <div class="flip-front-img" id="mgpFrontImgWrap" style="border-bottom:3px solid #2d7d31;">
@@ -427,7 +427,7 @@
         document.getElementById('mgpBackDesc').textContent = g.desc;
         document.getElementById('mgpBackBtn').href = g.href;
         document.getElementById('mgpFlipCard').setAttribute('aria-label', g.name + ' guide, tap to flip');
-        document.getElementById('mgpFlipInner').classList.remove('flipped');
+        document.getElementById('mgpFlipCard').classList.remove('flipped');
         document.querySelectorAll('.mgp-thumb-tile').forEach(function(t, i) {
           t.style.outlineColor = i === idx ? guides[i].color : 'transparent';
         });
