@@ -27,11 +27,11 @@
     }
     .hero::before {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.08) 65%, transparent 82%);
+      background: linear-gradient(to right, rgba(0,0,0,0.99) 0%, rgba(0,0,0,0.95) 28%, rgba(0,0,0,0.72) 52%, rgba(0,0,0,0.28) 68%, transparent 84%);
     }
     .hero::after {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+      background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%);
     }
     .hero-inner { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 620px; }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
@@ -153,16 +153,22 @@
 
     @media (max-width: 960px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 700px) {
-      .hero { background-position: 65% center; align-items: flex-end; min-height: 480px; }
-      .hero::before { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .hero { background-image: url('/public/partner/ve-partner-mobile.png'); background-position: center center; align-items: flex-end; min-height: 480px; }
+      .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
-      .hero-inner { padding: 0 24px 44px; max-width: 100%; }
+      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; max-width: calc(100% - 48px); border: 1px solid rgba(255,255,255,0.09); }
       .section { padding: 40px 24px 52px; }
       .card-grid, .card-grid-2 { grid-template-columns: 1fr; }
       .card-wrapper { height: 320px; }
       .card-wrapper-tall { height: 400px; }
       .bottom-cta { padding: 40px 24px; }
       .footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .hero { background-image: url('/public/partner/ve-partner-mobile.png'); background-position: center center; align-items: flex-end; }
+      .hero::before { background: rgba(0,0,0,0.32); }
+      .hero::after { display: none; }
+      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px; max-width: calc(100% - 32px); border: 1px solid rgba(255,255,255,0.10); }
     }
   
     .footer-social { display: flex; align-items: center; gap: 16px; }
