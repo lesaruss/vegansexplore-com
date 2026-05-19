@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegans Explore — Discuss (Mock)</title>
+  <title>Vegans Explore — Pulse</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -368,16 +368,16 @@
     .discuss-search:focus { border-color: var(--ve-green-dark); }
     .discuss-search::placeholder { color: var(--ve-text-30); }
     .discuss-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .discuss-filter-btn {
-      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      background: #fff; border: 1px solid var(--ve-border);
-      border-radius: 20px; padding: 5px 14px; cursor: pointer;
-      color: var(--ve-text-50); transition: all 0.15s;
+    .discuss-select {
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
+      border: 1px solid var(--ve-border); border-radius: 6px;
+      padding: 8px 28px 8px 14px; background: #fff; color: var(--ve-text);
+      outline: none; cursor: pointer; transition: border-color 0.15s;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%231a1a1a' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
     }
-    .discuss-filter-btn:hover { border-color: var(--ve-green-dark); color: var(--ve-green-dark); }
-    .discuss-filter-btn.active { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
-    .discuss-filter-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .discuss-select:focus { border-color: var(--ve-green-dark); }
     .btn-today {
       display: inline-flex; align-items: center; gap: 7px;
       background: var(--ve-orange); color: #fff;
@@ -577,11 +577,11 @@
     <div class="discuss-sticky-bar">
       <div class="discuss-top-row">
         <div class="discuss-title-group">
-          <div class="discuss-board-title">Discuss</div>
+          <div class="discuss-board-title">Pulse</div>
         </div>
-        <a href="/guides/ve-discuss" class="discuss-search" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ve-text-50);font-size:11px;font-weight:600;max-width:fit-content;padding:6px 0;border:none;background:none;">&#8592; All Topics</a>
+        <a href="/pulse" class="discuss-search" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ve-text-50);font-size:11px;font-weight:600;max-width:fit-content;padding:6px 0;border:none;background:none;">&#8592; All Topics</a>
       </div>
-      <script src="/public/discuss-bar.js" data-mode="nav"></script>
+      <div class="discuss-filters" role="group" aria-label="Browse Pulse topics"><select class="discuss-select" aria-label="Filter by category" onchange="if(this.value) window.location='/pulse?filter='+encodeURIComponent(this.value)"><option value="">All Categories</option><option>Relationships</option><option>Community</option><option>Lifestyle</option><option>Nutrition</option><option>Fitness</option><option>Food Science</option><option>Activism</option><option>Business</option></select></div>
     </div>
 
         <!-- TOPIC NAV -->
@@ -1013,7 +1013,7 @@
       <div class="discuss-sticky-bar">
         <div class="discuss-top-row">
           <div class="discuss-title-group">
-            <div class="discuss-board-title">Discuss</div>
+            <div class="discuss-board-title">Pulse</div>
             <div class="discuss-board-count" id="discussCount">7 topics</div>
           </div>
           <input
@@ -1021,11 +1021,27 @@
             id="discussSearch"
             type="search"
             placeholder="Search topics..."
-            aria-label="Search discussions"
+            aria-label="Search topics"
             oninput="filterBoard()"
           >
         </div>
-        <script src="/public/discuss-bar.js"></script>
+        <div class="discuss-filters" role="group" aria-label="Filter and sort topics">
+          <select class="discuss-select" id="categorySelect" aria-label="Filter by category" onchange="filterBoard()">
+            <option value="all">All Categories</option>
+            <option value="Relationships">Relationships</option>
+            <option value="Community">Community</option>
+            <option value="Lifestyle">Lifestyle</option>
+            <option value="Nutrition">Nutrition</option>
+            <option value="Fitness">Fitness</option>
+            <option value="Food Science">Food Science</option>
+            <option value="Activism">Activism</option>
+            <option value="Business">Business</option>
+          </select>
+          <select class="discuss-select" id="sortSelect" aria-label="Sort topics" onchange="filterBoard()">
+            <option value="latest">Latest</option>
+            <option value="replies">Most Replies</option>
+          </select>
+        </div>
       </div>
 
       <!-- Topic list -->
@@ -1166,16 +1182,28 @@
 
   function filterBoard() {
     var query = (document.getElementById('discussSearch').value || '').toLowerCase().trim();
+    var catEl = document.getElementById('categorySelect');
+    var sortEl = document.getElementById('sortSelect');
+    var cat = catEl ? catEl.value : 'all';
+    var sort = sortEl ? sortEl.value : 'latest';
     var list = document.getElementById('discussList');
     var empty = document.getElementById('discussEmpty');
     var count = document.getElementById('discussCount');
 
     var filtered = topics.filter(function(t) {
-      var matchCat = activeFilter === 'all' || t.categories.indexOf(activeFilter) !== -1;
+      var matchCat = cat === 'all' || t.categories.indexOf(cat) !== -1;
       var matchQ = !query || t.headline.toLowerCase().indexOf(query) !== -1
         || t.categories.some(function(c) { return c.toLowerCase().indexOf(query) !== -1; });
       return matchCat && matchQ;
     });
+
+    if (sort === 'replies') {
+      filtered = filtered.slice().sort(function(a, b) {
+        if (a.locked && !b.locked) return 1;
+        if (!a.locked && b.locked) return -1;
+        return b.comments - a.comments;
+      });
+    }
 
     list.innerHTML = '';
     if (filtered.length === 0) {
