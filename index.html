@@ -261,9 +261,10 @@
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
       .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px; max-width: calc(100% - 32px); border: 1px solid rgba(255,255,255,0.10); }
-      .stats-bar { padding: 16px 20px; gap: 10px; flex-wrap: wrap; justify-content: center; }
+      .stats-bar { padding: 16px 20px; gap: 20px 24px; flex-wrap: wrap; justify-content: center; }
+      .stat-item { flex: 0 0 auto; min-width: 90px; text-align: center; }
       .stat-divider { display: none; }
-      .stat-passport { display: none; }
+      .stat-passport { display: flex; }
       .platform-section, .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 52px 20px; }
       .flip-cards-grid { display: none; }
       .platform-mobile-picker { display: block !important; }
