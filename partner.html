@@ -11,7 +11,7 @@
     :root {
       --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: rgba(58,155,62,0.4);
       --ve-orange: #F69820; --ve-orange-dark: #d4800f; --ve-orange-light: rgba(246,152,32,0.10);
-      --ve-purple: #6d28d9; --ve-purple-dark: #4c1d95; --ve-purple-light: rgba(109,40,217,0.09);
+      --ve-purple: #6B35A8; --ve-purple-dark: #52297f; --ve-purple-light: rgba(107,53,168,0.09);
       --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
       --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
     }
@@ -95,17 +95,30 @@
     .price-toggles { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
     .price-toggle {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; border-radius: 7px;
+      padding: 12px 16px; border-radius: 7px;
       border: 2px solid var(--ve-green);
-      font-size: 13px; font-weight: 800;
       cursor: pointer; user-select: none;
       color: var(--ve-green); background: #fff;
-      transition: background 0.14s, color 0.14s;
+      transition: background 0.14s, color 0.14s, border-color 0.14s;
       font-family: 'Montserrat', sans-serif;
+      text-align: left;
     }
     .price-toggle:hover { background: var(--ve-green-light); }
-    .price-toggle.active { background: var(--ve-green); color: #fff; }
-    .price-toggle-sub { font-size: 9px; font-weight: 600; opacity: 0.72; }
+    .price-toggle.active { background: var(--ve-green); color: #fff; border-color: var(--ve-green); }
+    .toggle-left { display: flex; align-items: baseline; gap: 6px; }
+    .toggle-amount { font-size: 32px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+    .toggle-per { font-size: 11px; font-weight: 600; }
+    .toggle-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .toggle-hint { font-size: 9px; font-weight: 600; opacity: 0.65; }
+    .toggle-indicator {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid currentColor; opacity: 0.5;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; line-height: 1;
+      transition: opacity 0.14s;
+    }
+    .price-toggle.active .toggle-indicator { opacity: 1; background: rgba(255,255,255,0.25); border-color: #fff; }
+    .price-toggle.active .toggle-indicator::after { content: '✓'; }
 
     /* Tile CTA buttons */
     .btn-tile {
@@ -264,12 +277,24 @@
 
           <div class="price-toggles" role="radiogroup" aria-label="Select Passport type">
             <button class="price-toggle active" role="radio" aria-checked="true" data-feat="onetime">
-              <span>$11 One-Time</span>
-              <span class="price-toggle-sub">Pay once, keep forever</span>
+              <div class="toggle-left">
+                <span class="toggle-amount">$11</span>
+                <span class="toggle-per">One-Time</span>
+              </div>
+              <div class="toggle-right">
+                <span class="toggle-hint">Pay once, keep forever</span>
+                <span class="toggle-indicator" aria-hidden="true"></span>
+              </div>
             </button>
             <button class="price-toggle" role="radio" aria-checked="false" data-feat="monthly">
-              <span>$11 Per Month</span>
-              <span class="price-toggle-sub">Cancel anytime</span>
+              <div class="toggle-left">
+                <span class="toggle-amount">$11</span>
+                <span class="toggle-per">Per Month</span>
+              </div>
+              <div class="toggle-right">
+                <span class="toggle-hint">Cancel anytime</span>
+                <span class="toggle-indicator" aria-hidden="true"></span>
+              </div>
             </button>
           </div>
 
