@@ -103,3 +103,115 @@
   });
 
 })();
+
+/* ── Superadmin Preview Bar ── */
+(function () {
+  if (location.search.includes('sa=1')) localStorage.setItem('ve-sa', '1');
+  if (localStorage.getItem('ve-sa') !== '1') return;
+
+  /* CSS */
+  var css = [
+    /* Viewport switcher — right edge, vertical tab */
+    '.vesa-vp{position:fixed;bottom:200px;right:0;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;}',
+    '.vesa-vp-handle{background:#3A9B3E;color:#fff;font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;writing-mode:vertical-rl;padding:12px 7px;border-radius:6px 0 0 6px;cursor:pointer;border:none;font-family:"Montserrat",sans-serif;box-shadow:-2px 0 8px rgba(0,0,0,0.15);}',
+    '.vesa-vp-panel{display:none;background:#fff;border:1px solid #e0e0e0;border-right:none;border-radius:8px 0 0 8px;padding:10px 12px;gap:8px;flex-direction:column;box-shadow:-2px 0 12px rgba(0,0,0,0.1);}',
+    '.vesa-vp-panel.open{display:flex;}',
+    '.vesa-vp-btn{font-family:"Montserrat",sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:4px;padding:6px 12px;cursor:pointer;color:#555;transition:all 0.15s;white-space:nowrap;}',
+    '.vesa-vp-btn:hover{background:#e8f5e9;color:#3A9B3E;border-color:#3A9B3E;}',
+    '.vesa-vp-btn.active{background:#3A9B3E;color:#fff;border-color:#3A9B3E;}',
+    /* Member state card — top right */
+    '.vesa-ms{position:fixed;top:70px;right:12px;z-index:9999;background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 12px rgba(0,0,0,0.1);font-family:"Montserrat",sans-serif;}',
+    '.vesa-ms-label{font-size:8px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;}',
+    '.vesa-ms-btns{display:flex;gap:4px;flex-wrap:wrap;max-width:220px;}',
+    '.vesa-ms-btn{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;padding:4px 8px;border-radius:4px;border:1px solid #e0e0e0;background:#fff;color:#777;cursor:pointer;font-family:"Montserrat",sans-serif;transition:all 0.15s;white-space:nowrap;}',
+    '.vesa-ms-btn:hover{border-color:#3A9B3E;color:#3A9B3E;}',
+    '.vesa-ms-btn.active{background:#3A9B3E;border-color:#3A9B3E;color:#fff;}',
+    /* Body viewport constraints */
+    'body.vesa-tablet{max-width:768px!important;margin-left:auto!important;margin-right:auto!important;box-shadow:0 0 0 1px #e0e0e0;}',
+    'body.vesa-mobile{max-width:390px!important;margin-left:auto!important;margin-right:auto!important;box-shadow:0 0 0 1px #e0e0e0;}'
+  ].join('');
+
+  var st = document.createElement('style');
+  st.textContent = css;
+  document.head.appendChild(st);
+
+  /* Viewport switcher HTML */
+  var vpEl = document.createElement('div');
+  vpEl.className = 'vesa-vp';
+  vpEl.setAttribute('role', 'complementary');
+  vpEl.setAttribute('aria-label', 'Viewport preview switcher');
+  vpEl.innerHTML =
+    '<div class="vesa-vp-panel" id="vesa-vp-panel">' +
+      '<button class="vesa-vp-btn active" data-vp="desktop" type="button">Desktop</button>' +
+      '<button class="vesa-vp-btn" data-vp="tablet" type="button">Tablet</button>' +
+      '<button class="vesa-vp-btn" data-vp="mobile" type="button">Mobile</button>' +
+    '</div>' +
+    '<button class="vesa-vp-handle" id="vesa-vp-handle" type="button" aria-label="Toggle viewport" aria-expanded="false">Preview</button>';
+
+  /* Member state HTML */
+  var msEl = document.createElement('div');
+  msEl.className = 'vesa-ms';
+  msEl.setAttribute('role', 'complementary');
+  msEl.setAttribute('aria-label', 'Simulate member state');
+  msEl.innerHTML =
+    '<div class="vesa-ms-label">Member State</div>' +
+    '<div class="vesa-ms-btns">' +
+      '<button class="vesa-ms-btn active" data-ms="guest" type="button">Guest</button>' +
+      '<button class="vesa-ms-btn" data-ms="passport-ot" type="button">Passport $11</button>' +
+      '<button class="vesa-ms-btn" data-ms="passport-mo" type="button">Passport/mo</button>' +
+      '<button class="vesa-ms-btn" data-ms="partner" type="button">Partner</button>' +
+    '</div>';
+
+  document.body.appendChild(vpEl);
+  document.body.appendChild(msEl);
+
+  /* Viewport logic */
+  var vpPanel = document.getElementById('vesa-vp-panel');
+  var vpHandle = document.getElementById('vesa-vp-handle');
+  var vpOpen = false;
+
+  vpHandle.addEventListener('click', function () {
+    vpOpen = !vpOpen;
+    vpPanel.classList.toggle('open', vpOpen);
+    vpHandle.setAttribute('aria-expanded', String(vpOpen));
+  });
+
+  vpEl.querySelectorAll('.vesa-vp-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      vpEl.querySelectorAll('.vesa-vp-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.body.classList.remove('vesa-tablet', 'vesa-mobile');
+      var vp = btn.dataset.vp;
+      if (vp === 'tablet') document.body.classList.add('vesa-tablet');
+      if (vp === 'mobile') document.body.classList.add('vesa-mobile');
+      localStorage.setItem('ve-sa-vp', vp);
+    });
+  });
+
+  /* Member state logic */
+  msEl.querySelectorAll('.vesa-ms-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      msEl.querySelectorAll('.vesa-ms-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var ms = btn.dataset.ms;
+      document.body.setAttribute('data-ve-member', ms);
+      localStorage.setItem('ve-sa-ms', ms);
+    });
+  });
+
+  /* Restore saved state */
+  var savedVP = localStorage.getItem('ve-sa-vp') || 'desktop';
+  var savedMS = localStorage.getItem('ve-sa-ms') || 'guest';
+
+  vpEl.querySelectorAll('.vesa-vp-btn').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.vp === savedVP);
+  });
+  if (savedVP === 'tablet') document.body.classList.add('vesa-tablet');
+  if (savedVP === 'mobile') document.body.classList.add('vesa-mobile');
+
+  msEl.querySelectorAll('.vesa-ms-btn').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.ms === savedMS);
+  });
+  document.body.setAttribute('data-ve-member', savedMS);
+
+})();
