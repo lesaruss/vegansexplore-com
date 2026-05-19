@@ -197,6 +197,60 @@
     .btn-cta.green { background: var(--ve-green); color: #fff; }
     .btn-cta.green:hover { background: var(--ve-green-dark); }
 
+    /* ── AFFILIATE SECTION ── */
+    .aff-intro { max-width: 680px; margin-bottom: 48px; }
+    .aff-scale {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border: 1.5px solid var(--ve-border); border-radius: 12px; overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .aff-tier {
+      padding: 28px 24px; border-right: 1.5px solid var(--ve-border);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .aff-tier:last-child { border-right: none; }
+    .aff-tier.top { background: #1a1a1a; }
+    .aff-pct {
+      font-size: 40px; font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+      color: var(--ve-text);
+    }
+    .aff-tier.top .aff-pct { color: var(--ve-green); }
+    .aff-range {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ve-text-50);
+    }
+    .aff-tier.top .aff-range { color: rgba(255,255,255,0.45); }
+    .aff-desc {
+      font-size: 11px; font-weight: 400; color: var(--ve-text-50); line-height: 1.5;
+      margin-top: 6px;
+    }
+    .aff-tier.top .aff-desc { color: rgba(255,255,255,0.4); }
+    .aff-unlock {
+      background: var(--ve-green-light); border: 1.5px solid rgba(58,155,62,0.2);
+      border-radius: 10px; padding: 20px 24px; margin-bottom: 40px;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .aff-unlock-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--ve-green);
+      flex-shrink: 0; margin-top: 5px;
+    }
+    .aff-unlock p { font-size: 13px; font-weight: 500; color: var(--ve-green-dark); line-height: 1.65; }
+    .aff-unlock strong { font-weight: 800; }
+    .aff-cta-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .aff-apply-btn {
+      display: inline-block; font-family: 'Montserrat', sans-serif; font-size: 11px;
+      font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 13px 28px; border-radius: 5px; background: var(--ve-green); color: #fff;
+      border: none; cursor: pointer; transition: background 0.15s; text-decoration: none;
+    }
+    .aff-apply-btn:hover { background: var(--ve-green-dark); }
+    .aff-note { font-size: 11px; color: var(--ve-text-30); font-weight: 500; }
+    @media (max-width: 700px) {
+      .aff-scale { grid-template-columns: repeat(2, 1fr); }
+      .aff-tier:nth-child(2) { border-right: none; }
+      .aff-tier:nth-child(1), .aff-tier:nth-child(2) { border-bottom: 1.5px solid var(--ve-border); }
+    }
+
     /* ── FOOTER ── */
     .page-footer {
       padding: 28px 56px; background: #fff; border-top: 1px solid var(--ve-border);
@@ -785,6 +839,48 @@
 
     </div><!-- /pricing-section -->
 
+  </section>
+
+  <!-- AFFILIATE PROGRAM -->
+  <section class="section section-alt" aria-labelledby="aff-h2">
+    <p class="eyebrow">Affiliate Program</p>
+    <h2 class="section-title" id="aff-h2">Make Back Your<br>Investment</h2>
+    <div class="aff-intro">
+      <p class="section-sub" style="margin-bottom:0;">Local Passport Business holders in good standing can apply to become an affiliate for VE Night. You get a unique link. Every ticket sold through it earns you a commission that scales with your performance. The more your community shows up, the more you earn.</p>
+    </div>
+
+    <div class="aff-scale" role="list" aria-label="Commission scale">
+      <div class="aff-tier" role="listitem">
+        <p class="aff-pct" aria-label="Ten percent">10%</p>
+        <p class="aff-range">First 20 tickets</p>
+        <p class="aff-desc">You earn 10 percent on every ticket sold through your link up to the first 20.</p>
+      </div>
+      <div class="aff-tier" role="listitem">
+        <p class="aff-pct" aria-label="Fifteen percent">15%</p>
+        <p class="aff-range">21 to 50 tickets</p>
+        <p class="aff-desc">Cross 20 and your rate upgrades to 15 percent on every ticket sold.</p>
+      </div>
+      <div class="aff-tier" role="listitem">
+        <p class="aff-pct" aria-label="Twenty percent">20%</p>
+        <p class="aff-range">51 to 100 tickets</p>
+        <p class="aff-desc">Cross 50 and you earn 20 percent on every ticket sold through your link.</p>
+      </div>
+      <div class="aff-tier top" role="listitem">
+        <p class="aff-pct" aria-label="Twenty-five percent">25%</p>
+        <p class="aff-range">101 and beyond</p>
+        <p class="aff-desc">Top tier. 25 percent on every ticket once you cross 100. No cap.</p>
+      </div>
+    </div>
+
+    <div class="aff-unlock" role="note">
+      <div class="aff-unlock-dot" aria-hidden="true"></div>
+      <p><strong>How the scale works:</strong> Once you cross a threshold, the new rate applies to all tickets sold through your link, not just the ones above the line. Sell 21 tickets and your rate upgrades to 15 percent across all 21. Every threshold crossed is a permanent upgrade for that event cycle.</p>
+    </div>
+
+    <div class="aff-cta-row">
+      <a href="mailto:contact@vegansexplore.com?subject=VE Night - Affiliate Application" class="aff-apply-btn" aria-label="Apply to become a VE Night affiliate">Apply to Become an Affiliate</a>
+      <p class="aff-note">Available to select Passport Business holders in good standing. We review every application.</p>
+    </div>
   </section>
 
   <!-- BOTTOM CTA -->
