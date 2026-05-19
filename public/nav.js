@@ -3,8 +3,7 @@
   var css = [
     '.ve-nav{position:sticky;top:0;z-index:400;width:100%;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.09);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;gap:16px;font-family:"Montserrat",sans-serif;}',
     '.ve-wordmark{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#1a1a1a;display:flex;align-items:center;gap:8px;text-decoration:none;}',
-    '.ve-mark{width:26px;height:26px;object-fit:contain;flex-shrink:0;}',
-    '.ve-wordmark-explore{color:#3A9B3E;}',
+    '.ve-wordmark-logo{height:34px;width:auto;flex-shrink:0;}',
     '.ve-nav-links{display:flex;align-items:center;gap:24px;}',
     '.ve-nav-links>a{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B6B6B;text-decoration:none;transition:color 0.15s;}',
     '.ve-nav-links>a:hover,.ve-nav-links>a[aria-current="page"]{color:#3A9B3E;}',
@@ -86,8 +85,7 @@
   var html =
     '<nav class="ve-nav" role="navigation" aria-label="Main navigation">' +
       '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '>' +
-        '<img class="ve-mark" src="/public/ve-mark.png" alt="" aria-hidden="true">' +
-        'Vegans <span class="ve-wordmark-explore">Explore</span>' +
+        '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">' +
       '</a>' +
       '<div class="ve-nav-links">' +
         '<div class="ve-nav-drop">' +
