@@ -208,13 +208,30 @@
     .footer-links a:hover { color: var(--ve-green); }
 
 
-    /* ── PRICE FORM ── */
-    .pf-wrap {
-      background: #f8f8f6; border: 1.5px solid var(--ve-border);
-      border-radius: 12px; padding: 32px; margin-bottom: 36px; max-width: 560px;
+    /* ── PRICING GATE OVERLAY ── */
+    #pricing-section { position: relative; }
+    #pricing-gate {
+      position: absolute; inset: -28px -4px; z-index: 20;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 56px 24px 80px;
+      background: rgba(248,248,246,0.92);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-radius: 8px;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
     }
-    .pf-heading { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
-    .pf-sub { font-size: 12px; color: var(--ve-text-50); line-height: 1.65; margin-bottom: 22px; }
+    #pricing-gate.unlocked { opacity: 0; visibility: hidden; pointer-events: none; }
+    .gate-card {
+      background: #fff; border: 1.5px solid var(--ve-border);
+      border-radius: 16px; padding: 40px 40px 32px; max-width: 500px; width: 100%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.11), 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .gate-eyebrow {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--ve-green); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .gate-eyebrow::before { content: ''; width: 16px; height: 2px; background: var(--ve-green); }
+    .gate-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 8px; }
+    .gate-sub { font-size: 12px; color: var(--ve-text-50); line-height: 1.65; margin-bottom: 26px; }
     .pf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .pf-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
     .pf-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); }
@@ -226,16 +243,84 @@
     .pf-input:focus { outline: none; border-color: var(--ve-green); }
     .pf-error { display: none; font-size: 11px; font-weight: 700; color: #c0392b; margin-bottom: 10px; }
     .pf-submit {
-      width: 100%; padding: 13px; background: var(--ve-green); color: #fff; border: none;
+      width: 100%; padding: 14px; background: var(--ve-green); color: #fff; border: none;
       border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800;
       letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s;
     }
     .pf-submit:hover { background: var(--ve-green-dark); }
+    .gate-trust { font-size: 10px; color: var(--ve-text-30); text-align: center; margin-top: 14px; line-height: 1.5; }
 
-    /* ── PRICE LOCK ── */
-    .price-locked .tier-price,
-    .price-locked .compare-price-head { filter: blur(7px); user-select: none; transition: filter 0.35s; }
-    .price-locked .tier-price-note { filter: blur(4px); }
+    /* ── APPLY MODAL ── */
+    #apply-modal {
+      position: fixed; inset: 0; z-index: 9999; overflow-y: auto;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 40px 20px 60px;
+      opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s;
+    }
+    #apply-modal.open { opacity: 1; visibility: visible; }
+    #apply-panel {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 600px;
+      padding: 44px 44px 40px; position: relative; margin: auto;
+    }
+    .apply-close-btn {
+      position: absolute; top: 18px; right: 18px; background: none; border: none;
+      cursor: pointer; font-size: 22px; color: var(--ve-text-30); line-height: 1; padding: 6px;
+      transition: color 0.15s;
+    }
+    .apply-close-btn:hover { color: var(--ve-text); }
+    .apply-eyebrow {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--ve-green); display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    }
+    .apply-eyebrow::before { content: ''; width: 14px; height: 2px; background: var(--ve-green); }
+    .apply-step-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .apply-step-sub { font-size: 12px; color: var(--ve-text-50); line-height: 1.65; margin-bottom: 28px; }
+    .apply-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .apply-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); }
+    .apply-input, .apply-select, .apply-textarea {
+      font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 11px 14px; border: 1.5px solid var(--ve-border); border-radius: 6px;
+      color: var(--ve-text); background: #fff; transition: border-color 0.15s; width: 100%;
+      -webkit-appearance: none; appearance: none;
+    }
+    .apply-input:focus, .apply-select:focus, .apply-textarea:focus { outline: none; border-color: var(--ve-green); }
+    .apply-textarea { resize: vertical; min-height: 80px; }
+    .apply-cities { display: flex; flex-wrap: wrap; gap: 8px; }
+    .apply-city-check { position: absolute; opacity: 0; width: 0; height: 0; }
+    .apply-city-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 7px 14px; border: 1.5px solid var(--ve-border); border-radius: 20px;
+      cursor: pointer; transition: all 0.15s; color: var(--ve-text-75);
+    }
+    .apply-city-check:checked + .apply-city-label { background: var(--ve-green); color: #fff; border-color: var(--ve-green); }
+    .apply-city-check:focus-visible + .apply-city-label { outline: 3px solid var(--ve-orange); outline-offset: 2px; }
+    .apply-error { display: none; font-size: 11px; font-weight: 700; color: #c0392b; margin-bottom: 12px; }
+    .apply-submit-btn {
+      width: 100%; padding: 14px; background: var(--ve-green); color: #fff; border: none;
+      border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s;
+      margin-top: 8px;
+    }
+    .apply-submit-btn:hover { background: var(--ve-green-dark); }
+    #apply-step-2 { display: none; }
+    #apply-step-2.active { display: block; }
+    .apply-confirm { text-align: center; padding: 24px 0 8px; }
+    .apply-confirm-icon { font-size: 44px; margin-bottom: 16px; }
+    .apply-confirm-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 10px; }
+    .apply-confirm-sub { font-size: 13px; color: var(--ve-text-50); line-height: 1.7; }
+    .tier-cta-btn {
+      display: block; width: 100%; text-align: center; font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 13px 20px; border-radius: 5px; cursor: pointer; transition: all 0.15s;
+      border: none;
+    }
+    .tier-cta-btn.outline { border: 1.5px solid var(--ve-border); color: var(--ve-text); background: transparent; }
+    .tier-cta-btn.outline:hover { border-color: var(--ve-text-50); background: #f5f5f5; }
+    .tier-cta-btn.dark { background: #fff; color: #1a1a1a; }
+    .tier-cta-btn.dark:hover { background: rgba(255,255,255,0.88); }
+    .tier-cta-btn.green { background: rgba(255,255,255,0.2); color: #fff; border: 1.5px solid rgba(255,255,255,0.35); }
+    .tier-cta-btn.green:hover { background: rgba(255,255,255,0.35); }
 
     /* ── TITLE SPONSOR CARD ── */
     .tier-card.title {
@@ -447,35 +532,41 @@
     <h2 class="section-title" id="tiers-h2">Find Your Place in the Room</h2>
     <p class="section-sub">Four ways to partner with Vegans Explore Night. Every package is confirmed directly with our team so you know exactly what you are getting before a dollar moves.</p>
 
-    <!-- Pricing unlock form -->
-    <div class="pf-wrap" id="pf-wrap">
-      <p class="pf-heading">See Pricing</p>
-      <p class="pf-sub">Enter your details and pricing unlocks immediately. We will only follow up if there is a genuine fit.</p>
-      <form id="pf-form" novalidate>
-        <div class="pf-row">
-          <div class="pf-field">
-            <label class="pf-label" for="pf-first">First Name</label>
-            <input class="pf-input" id="pf-first" type="text" autocomplete="given-name" placeholder="First" required>
-          </div>
-          <div class="pf-field">
-            <label class="pf-label" for="pf-last">Last Name</label>
-            <input class="pf-input" id="pf-last" type="text" autocomplete="family-name" placeholder="Last" required>
-          </div>
-        </div>
-        <div class="pf-field">
-          <label class="pf-label" for="pf-email">Work Email</label>
-          <input class="pf-input" id="pf-email" type="email" autocomplete="email" placeholder="you@brand.com" required>
-        </div>
-        <div class="pf-field">
-          <label class="pf-label" for="pf-brand">Brand / Company</label>
-          <input class="pf-input" id="pf-brand" type="text" autocomplete="organization" placeholder="Your brand name" required>
-        </div>
-        <div class="pf-error" id="pf-error" role="alert">Please fill in all fields.</div>
-        <button class="pf-submit" type="submit">Unlock Pricing</button>
-      </form>
-    </div>
+    <div id="pricing-section">
 
-    <div class="tiers-grid price-locked" id="tiers-grid" role="list">
+      <!-- GATE OVERLAY -->
+      <div id="pricing-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+        <div class="gate-card">
+          <p class="gate-eyebrow">Pricing</p>
+          <h2 class="gate-title" id="gate-title">See What a<br>Spot Costs</h2>
+          <p class="gate-sub">Enter your details and pricing unlocks immediately. We only follow up with brands that are a genuine fit.</p>
+          <form id="pf-form" novalidate>
+            <div class="pf-row">
+              <div class="pf-field">
+                <label class="pf-label" for="pf-first">First Name</label>
+                <input class="pf-input" id="pf-first" type="text" autocomplete="given-name" placeholder="First" required>
+              </div>
+              <div class="pf-field">
+                <label class="pf-label" for="pf-last">Last Name</label>
+                <input class="pf-input" id="pf-last" type="text" autocomplete="family-name" placeholder="Last" required>
+              </div>
+            </div>
+            <div class="pf-field">
+              <label class="pf-label" for="pf-email">Work Email</label>
+              <input class="pf-input" id="pf-email" type="email" autocomplete="email" placeholder="you@brand.com" required>
+            </div>
+            <div class="pf-field">
+              <label class="pf-label" for="pf-brand">Brand / Company</label>
+              <input class="pf-input" id="pf-brand" type="text" autocomplete="organization" placeholder="Your brand name" required>
+            </div>
+            <div class="pf-error" id="pf-error" role="alert">Please fill in all fields.</div>
+            <button class="pf-submit" type="submit">Unlock Pricing</button>
+          </form>
+          <p class="gate-trust">No spam. No auto-emails. Just a real conversation if there is a fit.</p>
+        </div>
+      </div>
+
+      <div class="tiers-grid" id="tiers-grid" role="list">
 
       <!-- TITLE SPONSOR -->
       <div class="tier-card title" role="listitem">
@@ -487,7 +578,7 @@
           <p class="tier-price-note">All participating cities + online stream</p>
           <div class="tier-divider" aria-hidden="true"></div>
           <p style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:28px;">Your brand doesn't just show up. It leads. The Title Sponsor is the official presenting brand of every VE Night event, the live digital stream, and the full media campaign surrounding the launch.</p>
-          <a href="mailto:contact@vegansexplore.com?subject=VE Night - Title Sponsor Inquiry" class="tier-cta dark" style="margin-top:auto;">Apply as Title Sponsor</a>
+          <button class="tier-cta-btn dark" style="margin-top:auto;" onclick="openApply('Title Sponsor','$15,000',true)" aria-label="Apply as Title Sponsor">Apply as Title Sponsor</button>
         </div>
         <ul class="title-right" aria-label="Title Sponsor benefits">
           <li class="tier-feature">Your brand presents: "Vegans Explore Night, Presented by [Your Brand]" at all events and the online stream</li>
@@ -520,7 +611,7 @@
           <li class="tier-feature">Prize giveaway inclusion at all events</li>
           <li class="tier-feature">Permanent multi-city listing on the event program page</li>
         </ul>
-        <a href="mailto:contact@vegansexplore.com?subject=VE Night - Multi-City Sponsor Inquiry" class="tier-cta green">Apply Now</a>
+        <button class="tier-cta-btn green" onclick="openApply('Multi-City Sponsor','$7,500',true)" aria-label="Apply for Multi-City Sponsor">Apply Now</button>
       </div>
 
       <!-- CITY SPONSOR -->
@@ -537,7 +628,7 @@
           <li class="tier-feature">Dedicated social mention to the local city audience before the event</li>
           <li class="tier-feature">Logo on all in-city event communications and the event program</li>
         </ul>
-        <a href="mailto:contact@vegansexplore.com?subject=VE Night - City Sponsor Inquiry" class="tier-cta dark">Apply Now</a>
+        <button class="tier-cta-btn dark" onclick="openApply('City Sponsor','$3,000 / city',false)" aria-label="Apply for City Sponsor">Apply Now</button>
       </div>
 
       <!-- VENDOR -->
@@ -553,13 +644,13 @@
           <li class="tier-feature">Listed on the event program page</li>
           <li class="tier-feature">Linked from your city's permanent community page on the VE platform</li>
         </ul>
-        <a href="mailto:contact@vegansexplore.com?subject=VE Night - Vendor Inquiry" class="tier-cta outline">Apply Now</a>
+        <button class="tier-cta-btn outline" onclick="openApply('Vendor','$1,000 / city',false)" aria-label="Apply as Vendor">Apply Now</button>
       </div>
 
     </div>
 
     <!-- COMPARISON TABLE -->
-    <div class="compare-wrap price-locked" id="compare-wrap" role="region" aria-label="Feature comparison by sponsorship tier">
+    <div class="compare-wrap" id="compare-wrap" role="region" aria-label="Feature comparison by sponsorship tier">
       <div class="compare-head" role="row">
         <div class="compare-feat-label" role="columnheader">What&rsquo;s Included</div>
         <div class="compare-col-head" role="columnheader">Vendor<br><span class="compare-price-head">$1,000</span></div>
@@ -681,6 +772,8 @@
 
     </div>
 
+    </div><!-- /pricing-section -->
+
   </section>
 
   <!-- BOTTOM CTA -->
@@ -706,25 +799,98 @@
   </footer>
 </div>
 
+<!-- APPLY MODAL -->
+<div id="apply-modal" role="dialog" aria-modal="true" aria-labelledby="apply-modal-title">
+  <div id="apply-panel">
+    <button class="apply-close-btn" id="apply-close" aria-label="Close">&times;</button>
+
+    <!-- Step 1: Qualifying info -->
+    <div id="apply-step-1">
+      <p class="apply-eyebrow" id="apply-tier-label">Sponsor Package</p>
+      <h2 class="apply-step-title" id="apply-modal-title">Tell Us About<br>Your Brand</h2>
+      <p class="apply-step-sub">We review every application before confirming a spot. This takes us about 60 seconds. You will hear back within one business day.</p>
+      <form id="apply-form" novalidate>
+        <div class="apply-field">
+          <label class="apply-label" for="ap-website">Brand Website</label>
+          <input class="apply-input" id="ap-website" type="url" placeholder="https://yourbrand.com" autocomplete="url" required>
+        </div>
+        <div class="apply-field">
+          <label class="apply-label" for="ap-goal">Primary Goal for This Partnership</label>
+          <select class="apply-select" id="ap-goal" required>
+            <option value="">Select one</option>
+            <option value="brand-awareness">Brand Awareness in the Vegan Community</option>
+            <option value="product-sampling">Product Sampling and Direct Trial</option>
+            <option value="lead-generation">Lead Generation and List Building</option>
+            <option value="event-presence">Event Presence and Experiential</option>
+            <option value="media-content">Media and Content Creation</option>
+            <option value="other">Other - I will explain below</option>
+          </select>
+        </div>
+        <div class="apply-field" id="ap-cities-field">
+          <p class="apply-label">Which Cities Are You Interested In?</p>
+          <div class="apply-cities" role="group" aria-label="City selection">
+            <input class="apply-city-check" type="checkbox" id="ap-city-sf" name="cities" value="South Florida">
+            <label class="apply-city-label" for="ap-city-sf">South Florida</label>
+            <input class="apply-city-check" type="checkbox" id="ap-city-atl" name="cities" value="Atlanta">
+            <label class="apply-city-label" for="ap-city-atl">Atlanta</label>
+            <input class="apply-city-check" type="checkbox" id="ap-city-la" name="cities" value="Los Angeles">
+            <label class="apply-city-label" for="ap-city-la">Los Angeles</label>
+            <input class="apply-city-check" type="checkbox" id="ap-city-lon" name="cities" value="London">
+            <label class="apply-city-label" for="ap-city-lon">London</label>
+            <input class="apply-city-check" type="checkbox" id="ap-city-online" name="cities" value="Online">
+            <label class="apply-city-label" for="ap-city-online">Online</label>
+          </div>
+        </div>
+        <div class="apply-field">
+          <label class="apply-label" for="ap-message">Anything Specific You Want Us to Know</label>
+          <textarea class="apply-textarea" id="ap-message" placeholder="Budget notes, campaign timing, questions for the call..." rows="3"></textarea>
+        </div>
+        <div class="apply-error" id="apply-error" role="alert">Please fill in all required fields.</div>
+        <button class="apply-submit-btn" type="submit">Submit &amp; Schedule Strategy Call</button>
+      </form>
+    </div>
+
+    <!-- Step 2: Schedule -->
+    <div id="apply-step-2">
+      <p class="apply-eyebrow">Almost There</p>
+      <h2 class="apply-step-title">Schedule Your<br>Strategy Call</h2>
+      <p class="apply-step-sub">Pick a time that works and we will come prepared with your full package details and a custom proposal. Call is 20 minutes max.</p>
+      <!-- Calendly inline embed. Replace the data-url value with your Calendly link. -->
+      <div
+        class="calendly-inline-widget"
+        data-url="CALENDLY_URL_HERE?hide_gdpr_banner=1&primary_color=3A9B3E"
+        style="min-width:300px;height:630px;">
+      </div>
+      <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+      <div class="apply-confirm" id="apply-confirm" style="display:none;">
+        <div class="apply-confirm-icon" aria-hidden="true">&#10003;</div>
+        <h3 class="apply-confirm-title">Application Received</h3>
+        <p class="apply-confirm-sub">Your application is in. Check your email for confirmation and a calendar invite. We look forward to the call.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script>
 (function () {
   var PRICE_KEY = 've-night-pricing-v1';
+  var CALENDLY_URL = 'CALENDLY_URL_HERE'; // Replace with your Calendly scheduling link
+  var _lead = {};
+  var _tier = {};
 
+  // ── GATE UNLOCK ──
   function unlockPricing() {
-    var grid = document.getElementById('tiers-grid');
-    if (grid) grid.classList.remove('price-locked');
-    var compare = document.getElementById('compare-wrap');
-    if (compare) compare.classList.remove('price-locked');
-    var wrap = document.getElementById('pf-wrap');
-    if (wrap) wrap.style.display = 'none';
+    var gate = document.getElementById('pricing-gate');
+    if (gate) gate.classList.add('unlocked');
   }
 
-  // Already submitted? Show prices immediately.
+  // Already unlocked? Skip the gate.
   try {
     if (localStorage.getItem(PRICE_KEY)) { unlockPricing(); }
   } catch(e) {}
 
-  // Form submit
+  // Gate form submit
   var form = document.getElementById('pf-form');
   if (form) {
     form.addEventListener('submit', function (e) {
@@ -737,23 +903,142 @@
 
       if (!first || !last || !email || !brand) {
         err.style.display = 'block';
+        document.getElementById('pf-first').focus();
         return;
       }
       err.style.display = 'none';
 
-      // Send to pipeline
+      _lead = { first_name: first, last_name: last, email: email, company: brand };
+
+      // Fire lead to pipeline
       try {
         fetch('/api/intake', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ first_name: first, last_name: last, email: email, company: brand, source: 've-night-pricing' })
+          body: JSON.stringify(Object.assign({}, _lead, { source: 've-night-pricing' }))
         }).catch(function(){});
-      } catch(e) {}
+      } catch(e2) {}
 
-      try { localStorage.setItem(PRICE_KEY, '1'); } catch(e) {}
+      try { localStorage.setItem(PRICE_KEY, '1'); } catch(e3) {}
       unlockPricing();
     });
   }
+
+  // ── APPLY MODAL ──
+  var modal = document.getElementById('apply-modal');
+  var closeBtn = document.getElementById('apply-close');
+
+  function openApply(tierName, tierPrice, allCities) {
+    _tier = { name: tierName, price: tierPrice };
+
+    // Update labels
+    var badge = document.getElementById('apply-tier-label');
+    if (badge) badge.textContent = tierName + ' - ' + tierPrice;
+
+    // Show or hide city selector based on tier
+    var citiesField = document.getElementById('ap-cities-field');
+    if (citiesField) {
+      citiesField.style.display = allCities ? 'none' : 'flex';
+      citiesField.style.flexDirection = 'column';
+    }
+
+    // Reset to step 1
+    document.getElementById('apply-step-1').style.display = 'block';
+    document.getElementById('apply-step-2').classList.remove('active');
+    document.getElementById('apply-error').style.display = 'none';
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('ap-website').focus();
+  }
+
+  function closeApply() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Expose openApply globally for inline onclick
+  window.openApply = openApply;
+
+  if (closeBtn) closeBtn.addEventListener('click', closeApply);
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeApply();
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) closeApply();
+  });
+
+  // Apply form step 1 submit
+  var applyForm = document.getElementById('apply-form');
+  if (applyForm) {
+    applyForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var website = document.getElementById('ap-website').value.trim();
+      var goal    = document.getElementById('ap-goal').value;
+      var message = document.getElementById('ap-message').value.trim();
+      var err     = document.getElementById('apply-error');
+
+      if (!website || !goal) {
+        err.style.display = 'block';
+        err.textContent = 'Please fill in your website and primary goal.';
+        return;
+      }
+      err.style.display = 'none';
+
+      // Gather cities if visible
+      var cities = [];
+      var checks = document.querySelectorAll('.apply-city-check:checked');
+      checks.forEach(function(c) { cities.push(c.value); });
+
+      // POST full application to pipeline
+      try {
+        fetch('/api/intake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({}, _lead, {
+            source: 've-night-apply',
+            tier: _tier.name,
+            tier_price: _tier.price,
+            website: website,
+            goal: goal,
+            cities: cities.join(', '),
+            message: message
+          }))
+        }).catch(function(){});
+      } catch(e4) {}
+
+      // Advance to step 2 (Calendly)
+      document.getElementById('apply-step-1').style.display = 'none';
+      var step2 = document.getElementById('apply-step-2');
+      step2.classList.add('active');
+
+      // Wire Calendly URL with prefill if possible
+      var widget = step2.querySelector('.calendly-inline-widget');
+      if (widget && CALENDLY_URL !== 'CALENDLY_URL_HERE') {
+        var params = '?hide_gdpr_banner=1&primary_color=3A9B3E';
+        if (_lead.email) params += '&email=' + encodeURIComponent(_lead.email);
+        if (_lead.first_name) params += '&name=' + encodeURIComponent(_lead.first_name + ' ' + (_lead.last_name || ''));
+        widget.setAttribute('data-url', CALENDLY_URL + params);
+        if (window.Calendly && window.Calendly.initInlineWidgets) {
+          window.Calendly.initInlineWidgets();
+        }
+      }
+
+      step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  // Listen for Calendly event booked
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.event === 'calendly.event_scheduled') {
+      var confirm = document.getElementById('apply-confirm');
+      var widget = document.querySelector('#apply-step-2 .calendly-inline-widget');
+      if (widget) widget.style.display = 'none';
+      if (confirm) confirm.style.display = 'block';
+    }
+  });
 })();
 </script>
 
