@@ -207,6 +207,103 @@
     .footer-links a { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-30); text-decoration: none; transition: color 0.15s; }
     .footer-links a:hover { color: var(--ve-green); }
 
+
+    /* ── PRICE FORM ── */
+    .pf-wrap {
+      background: #f8f8f6; border: 1.5px solid var(--ve-border);
+      border-radius: 12px; padding: 32px; margin-bottom: 36px; max-width: 560px;
+    }
+    .pf-heading { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+    .pf-sub { font-size: 12px; color: var(--ve-text-50); line-height: 1.65; margin-bottom: 22px; }
+    .pf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pf-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .pf-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); }
+    .pf-input {
+      font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 11px 14px; border: 1.5px solid var(--ve-border); border-radius: 6px;
+      color: var(--ve-text); background: #fff; transition: border-color 0.15s;
+    }
+    .pf-input:focus { outline: none; border-color: var(--ve-green); }
+    .pf-error { display: none; font-size: 11px; font-weight: 700; color: #c0392b; margin-bottom: 10px; }
+    .pf-submit {
+      width: 100%; padding: 13px; background: var(--ve-green); color: #fff; border: none;
+      border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s;
+    }
+    .pf-submit:hover { background: var(--ve-green-dark); }
+
+    /* ── PRICE LOCK ── */
+    .price-locked .tier-price,
+    .price-locked .compare-price-head { filter: blur(7px); user-select: none; transition: filter 0.35s; }
+    .price-locked .tier-price-note { filter: blur(4px); }
+
+    /* ── TITLE SPONSOR CARD ── */
+    .tier-card.title {
+      grid-column: 1 / -1;
+      display: grid; grid-template-columns: 240px 1fr;
+      gap: 40px; align-items: start;
+      background: #1a1a1a; border-color: #1a1a1a;
+    }
+    .tier-card.title .tier-badge.white { color: rgba(255,255,255,0.6); }
+    .tier-card.title .tier-name { color: #fff; }
+    .tier-card.title .tier-price { color: #fff; }
+    .tier-card.title .tier-price-note { color: rgba(255,255,255,0.35); }
+    .tier-card.title .tier-divider { background: rgba(255,255,255,0.12); }
+    .title-left { display: flex; flex-direction: column; }
+    .title-right {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0 20px; align-content: start; list-style: none;
+    }
+    .title-right .tier-feature { color: rgba(255,255,255,0.6); }
+    .title-right .tier-feature::before { background: var(--ve-green); }
+    .tier-features { list-style: none; }
+
+    /* ── COMPARE TABLE ── */
+    .compare-wrap {
+      margin-top: 44px; border: 1.5px solid var(--ve-border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .compare-head {
+      display: grid; grid-template-columns: 1fr repeat(4, 128px);
+      background: #1a1a1a; padding: 18px 24px; gap: 0; align-items: center;
+    }
+    .compare-feat-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+    .compare-col-head {
+      text-align: center; font-size: 10px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.75); line-height: 1.4;
+    }
+    .compare-col-head.title-col { color: var(--ve-orange); }
+    .compare-price-head { display: block; font-size: 13px; font-weight: 900; margin-top: 4px; color: rgba(255,255,255,0.9); }
+    .compare-col-head.title-col .compare-price-head { color: var(--ve-orange); }
+    .compare-group {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--ve-text-50); padding: 11px 24px 7px;
+      background: #f4f4f2; border-bottom: 1px solid var(--ve-border);
+    }
+    .compare-row {
+      display: grid; grid-template-columns: 1fr repeat(4, 128px);
+      border-bottom: 1px solid var(--ve-border); padding: 0 24px; align-items: center;
+    }
+    .compare-row:last-child { border-bottom: none; }
+    .compare-row:nth-child(even) { background: #fafaf8; }
+    .compare-feat { font-size: 12px; font-weight: 500; color: var(--ve-text-75); padding: 12px 12px 12px 0; line-height: 1.4; }
+    .compare-cell { text-align: center; padding: 12px 4px; font-size: 14px; font-weight: 900; }
+    .compare-cell.yes { color: var(--ve-green-dark); }
+    .compare-cell.yes::after { content: "\2713"; }
+    .compare-cell.no::after { content: "\2014"; font-size: 11px; color: #ccc; font-weight: 400; }
+    .compare-cell.note { font-size: 10px; font-weight: 700; color: var(--ve-green-dark); line-height: 1.3; }
+
+    /* ── RESPONSIVE ADDITIONS ── */
+    @media (max-width: 900px) {
+      .compare-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .compare-head, .compare-row { min-width: 580px; }
+      .tier-card.title { grid-template-columns: 1fr; gap: 28px; }
+      .title-right { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .pf-row { grid-template-columns: 1fr; }
+    }
+
     /* ── FOCUS + A11Y ── */
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
     @media (prefers-reduced-motion: reduce) {
@@ -347,13 +444,13 @@
   <!-- SPONSORSHIP TIERS -->
   <section class="section" aria-labelledby="tiers-h2">
     <p class="eyebrow">Packages</p>
-    <h2 class="section-title" id="tiers-h2">Pick Your Level</h2>
-    <p class="section-sub">Local packages put your brand in a single city. Multi-city packages scale your presence across every participating location.</p>
+    <h2 class="section-title" id="tiers-h2">Find Your Place in the Room</h2>
+    <p class="section-sub">Four ways to partner with Vegans Explore Night. Every package is confirmed directly with our team so you know exactly what you are getting before a dollar moves.</p>
 
     <!-- Pricing unlock form -->
     <div class="pf-wrap" id="pf-wrap">
-      <p class="pf-heading">Unlock Pricing</p>
-      <p class="pf-sub">Enter your details and we will follow up if it is a fit. All packages confirmed directly with our team.</p>
+      <p class="pf-heading">See Pricing</p>
+      <p class="pf-sub">Enter your details and pricing unlocks immediately. We will only follow up if there is a genuine fit.</p>
       <form id="pf-form" novalidate>
         <div class="pf-row">
           <div class="pf-field">
@@ -366,7 +463,7 @@
           </div>
         </div>
         <div class="pf-field">
-          <label class="pf-label" for="pf-email">Email</label>
+          <label class="pf-label" for="pf-email">Work Email</label>
           <input class="pf-input" id="pf-email" type="email" autocomplete="email" placeholder="you@brand.com" required>
         </div>
         <div class="pf-field">
@@ -374,64 +471,216 @@
           <input class="pf-input" id="pf-brand" type="text" autocomplete="organization" placeholder="Your brand name" required>
         </div>
         <div class="pf-error" id="pf-error" role="alert">Please fill in all fields.</div>
-        <button class="pf-submit" type="submit">See Pricing</button>
+        <button class="pf-submit" type="submit">Unlock Pricing</button>
       </form>
     </div>
 
     <div class="tiers-grid price-locked" id="tiers-grid" role="list">
 
-      <!-- LOCAL VENDOR -->
+      <!-- TITLE SPONSOR -->
+      <div class="tier-card title" role="listitem">
+        <div class="title-left">
+          <p class="tier-badge white">Only 1 Available</p>
+          <p class="tier-name">Title Sponsor</p>
+          <p style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.45);letter-spacing:0;text-transform:none;margin-bottom:16px;line-height:1.5;">Vegans Explore Night,<br>Presented by You</p>
+          <p class="tier-price" aria-label="Fifteen thousand dollars">$15,000</p>
+          <p class="tier-price-note">All participating cities + online stream</p>
+          <div class="tier-divider" aria-hidden="true"></div>
+          <p style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:28px;">Your brand doesn't just show up. It leads. The Title Sponsor is the official presenting brand of every VE Night event, the live digital stream, and the full media campaign surrounding the launch.</p>
+          <a href="mailto:contact@vegansexplore.com?subject=VE Night - Title Sponsor Inquiry" class="tier-cta dark" style="margin-top:auto;">Apply as Title Sponsor</a>
+        </div>
+        <ul class="title-right" aria-label="Title Sponsor benefits">
+          <li class="tier-feature">Your brand presents: "Vegans Explore Night, Presented by [Your Brand]" at all events and the online stream</li>
+          <li class="tier-feature">30-second commercial played at every in-person event and the live digital stream</li>
+          <li class="tier-feature">Up to 1,000 product samples or coupons per event in attendee tote bags, 5,000 touches total</li>
+          <li class="tier-feature">Prize giveaways to in-person attendees and online viewers at every location</li>
+          <li class="tier-feature">Featured in all preview and recap content across social, email, and on-site</li>
+          <li class="tier-feature">Sponsor section on every page of the VE website and mobile app for 30 days before and after the event</li>
+          <li class="tier-feature">30-day ad rotation across the full Vegans Explore podcast network: Pre-Vegans, SoFlo Vegans, and Vegans Explore</li>
+          <li class="tier-feature">Product placement in animated banner ads on high-traffic VE pages</li>
+          <li class="tier-feature">Full media corner integration: your brand in 360 photos, video testimonials, and GeekFon Music station content used across social and commercial placements</li>
+          <li class="tier-feature">Featured founder or CEO interview on the Vegans Explore video podcast, recorded in person at a partnered studio location</li>
+        </ul>
+      </div>
+
+      <!-- MULTI-CITY SPONSOR -->
+      <div class="tier-card multi" role="listitem">
+        <p class="tier-badge white">All Cities</p>
+        <p class="tier-name">Multi-City<br>Sponsor</p>
+        <p class="tier-price" aria-label="Seven thousand five hundred dollars">$7,500</p>
+        <p class="tier-price-note">All participating cities</p>
+        <div class="tier-divider" aria-hidden="true"></div>
+        <ul class="tier-features" aria-label="Multi-City Sponsor benefits">
+          <li class="tier-feature">Presence at all in-person events and the online stream</li>
+          <li class="tier-feature">Stage recognition at every city location</li>
+          <li class="tier-feature">Product in attendee tote bags at every event</li>
+          <li class="tier-feature">Featured on the main VE Night landing page</li>
+          <li class="tier-feature">Included in the all-cities email blast to 17,800+ subscribers</li>
+          <li class="tier-feature">Social campaign mentions across all VE channels</li>
+          <li class="tier-feature">Prize giveaway inclusion at all events</li>
+          <li class="tier-feature">Permanent multi-city listing on the event program page</li>
+        </ul>
+        <a href="mailto:contact@vegansexplore.com?subject=VE Night - Multi-City Sponsor Inquiry" class="tier-cta green">Apply Now</a>
+      </div>
+
+      <!-- CITY SPONSOR -->
+      <div class="tier-card featured" role="listitem">
+        <p class="tier-badge white">Local</p>
+        <p class="tier-name">City<br>Sponsor</p>
+        <p class="tier-price" aria-label="Three thousand dollars">$3,000</p>
+        <p class="tier-price-note">Per city</p>
+        <div class="tier-divider" aria-hidden="true"></div>
+        <ul class="tier-features" aria-label="City Sponsor benefits">
+          <li class="tier-feature">Everything in Vendor</li>
+          <li class="tier-feature">Named recognition from the stage</li>
+          <li class="tier-feature">Prize giveaway branding for in-room and online attendees</li>
+          <li class="tier-feature">Dedicated social mention to the local city audience before the event</li>
+          <li class="tier-feature">Logo on all in-city event communications and the event program</li>
+        </ul>
+        <a href="mailto:contact@vegansexplore.com?subject=VE Night - City Sponsor Inquiry" class="tier-cta dark">Apply Now</a>
+      </div>
+
+      <!-- VENDOR -->
       <div class="tier-card" role="listitem">
         <p class="tier-badge green">Local</p>
         <p class="tier-name">Vendor</p>
-        <p class="tier-price">[Pricing]</p>
+        <p class="tier-price" aria-label="One thousand dollars">$1,000</p>
         <p class="tier-price-note">Per city</p>
         <div class="tier-divider" aria-hidden="true"></div>
-        <ul class="tier-features" aria-label="Vendor features">
+        <ul class="tier-features" aria-label="Vendor benefits">
           <li class="tier-feature">Table or sampling station at your city's event</li>
-          <li class="tier-feature">Product included in guest tote bags</li>
+          <li class="tier-feature">Product included in all attendee tote bags</li>
           <li class="tier-feature">Listed on the event program page</li>
-          <li class="tier-feature">Linked from your city's community page</li>
+          <li class="tier-feature">Linked from your city's permanent community page on the VE platform</li>
         </ul>
-        <a href="mailto:contact@vegansexplore.com?subject=VE Night - Vendor Inquiry" class="tier-cta outline">Apply as Vendor</a>
-      </div>
-
-      <!-- LOCAL SPONSOR -->
-      <div class="tier-card featured" role="listitem">
-        <p class="tier-badge white">Local</p>
-        <p class="tier-name">City Sponsor</p>
-        <p class="tier-price">[Pricing]</p>
-        <p class="tier-price-note">Per city</p>
-        <div class="tier-divider" aria-hidden="true"></div>
-        <ul class="tier-features" aria-label="City Sponsor features">
-          <li class="tier-feature">Everything in Vendor</li>
-          <li class="tier-feature">Named recognition from the stage</li>
-          <li class="tier-feature">Prize giveaway inclusion with branding</li>
-          <li class="tier-feature">Dedicated social mention before the event</li>
-          <li class="tier-feature">Logo on all in-city event communications</li>
-        </ul>
-        <a href="mailto:contact@vegansexplore.com?subject=VE Night - City Sponsor Inquiry" class="tier-cta dark">Apply as City Sponsor</a>
-      </div>
-
-      <!-- MULTI-CITY -->
-      <div class="tier-card multi" role="listitem">
-        <p class="tier-badge white">All Cities</p>
-        <p class="tier-name">Multi-City Sponsor</p>
-        <p class="tier-price">[Pricing]</p>
-        <p class="tier-price-note">All participating cities</p>
-        <div class="tier-divider" aria-hidden="true"></div>
-        <ul class="tier-features" aria-label="Multi-City Sponsor features">
-          <li class="tier-feature">Presence across every participating city</li>
-          <li class="tier-feature">Featured on the main VE Night landing page</li>
-          <li class="tier-feature">Included in all-cities email blast and social campaign</li>
-          <li class="tier-feature">Stage recognition at every location</li>
-          <li class="tier-feature">Product in tote bags in every city</li>
-          <li class="tier-feature">Permanent multi-city listing on the event program</li>
-        </ul>
-        <a href="mailto:contact@vegansexplore.com?subject=VE Night - Multi-City Sponsor Inquiry" class="tier-cta green">Apply as Multi-City Sponsor</a>
+        <a href="mailto:contact@vegansexplore.com?subject=VE Night - Vendor Inquiry" class="tier-cta outline">Apply Now</a>
       </div>
 
     </div>
+
+    <!-- COMPARISON TABLE -->
+    <div class="compare-wrap price-locked" id="compare-wrap" role="region" aria-label="Feature comparison by sponsorship tier">
+      <div class="compare-head" role="row">
+        <div class="compare-feat-label" role="columnheader">What&rsquo;s Included</div>
+        <div class="compare-col-head" role="columnheader">Vendor<br><span class="compare-price-head">$1,000</span></div>
+        <div class="compare-col-head" role="columnheader">City<br><span class="compare-price-head">$3,000</span></div>
+        <div class="compare-col-head" role="columnheader">Multi-City<br><span class="compare-price-head">$7,500</span></div>
+        <div class="compare-col-head title-col" role="columnheader">Title<br><span class="compare-price-head">$15,000</span></div>
+      </div>
+
+      <div class="compare-group">At the Event</div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Sampling station or table at the event</div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Product in attendee tote bags</div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell note" role="cell">Up to 1,000 per event</div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Stage recognition at the event</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Prize giveaway branding</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">30-second commercial played at the event</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+
+      <div class="compare-group">Visibility</div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Event program listing and city community page link</div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Pre-event social mention (local city audience)</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">All-cities email blast to 17,800+ subscribers</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Featured on the main VE Night landing page</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+
+      <div class="compare-group">Campaign and Media</div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Official presenting title ("Presented by [Brand]")</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">30-day ad rotation across the VE podcast network</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Sponsor section on every page of VE website and app for 30 days</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Animated banner placement on high-traffic VE pages</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Media corner integration: 360 photos, video testimonials, GeekFon station content</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+      <div class="compare-row" role="row">
+        <div class="compare-feat" role="cell">Founder or CEO featured interview on the VE video podcast</div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell no" role="cell"></div>
+        <div class="compare-cell yes" role="cell"></div>
+      </div>
+
+    </div>
+
   </section>
 
   <!-- BOTTOM CTA -->
@@ -464,6 +713,8 @@
   function unlockPricing() {
     var grid = document.getElementById('tiers-grid');
     if (grid) grid.classList.remove('price-locked');
+    var compare = document.getElementById('compare-wrap');
+    if (compare) compare.classList.remove('price-locked');
     var wrap = document.getElementById('pf-wrap');
     if (wrap) wrap.style.display = 'none';
   }
