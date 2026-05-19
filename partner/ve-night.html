@@ -19,62 +19,9 @@
     .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
 
     /* ── GATE OVERLAY ── */
-    #gate {
-      position: fixed; inset: 0; z-index: 900;
-      background: rgba(10,10,10,0.72);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 24px;
-    }
-    #gate.hidden { display: none; }
-    .gate-card {
-      background: #fff; border-radius: 14px; width: 100%; max-width: 480px;
-      padding: 44px 40px 36px; box-shadow: 0 32px 80px rgba(0,0,0,0.28);
-      position: relative;
-    }
-    .gate-eyebrow {
-      font-size: 9px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--ve-green); margin-bottom: 10px;
-      display: flex; align-items: center; gap: 8px;
-    }
     .gate-eyebrow::before { content: ''; width: 16px; height: 2px; background: var(--ve-green); }
-    .gate-title {
-      font-size: clamp(22px, 4vw, 30px); font-weight: 900; text-transform: uppercase;
-      letter-spacing: -0.025em; line-height: 1.05; color: var(--ve-text); margin-bottom: 8px;
-    }
     .gate-title em { color: var(--ve-green); font-style: normal; }
-    .gate-sub {
-      font-size: 13px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; margin-bottom: 28px;
-    }
-    .gate-divider { height: 1px; background: var(--ve-border); margin-bottom: 24px; }
     .gate-form { display: flex; flex-direction: column; gap: 12px; }
-    .gate-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .gate-field { display: flex; flex-direction: column; gap: 5px; }
-    .gate-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); }
-    .gate-input {
-      font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600;
-      border: 1.5px solid var(--ve-border); border-radius: 6px; padding: 11px 14px;
-      color: var(--ve-text); outline: none; transition: border-color 0.15s; background: #fff;
-      font-size: 16px;
-    }
-    .gate-input:focus { border-color: var(--ve-green); }
-    .gate-submit {
-      font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800;
-      letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 24px;
-      background: var(--ve-green); color: #fff; border: none; border-radius: 6px;
-      cursor: pointer; transition: background 0.15s; margin-top: 4px;
-    }
-    .gate-submit:hover { background: var(--ve-green-dark); }
-    .gate-login {
-      text-align: center; font-size: 11px; font-weight: 600; color: var(--ve-text-50);
-      margin-top: 12px;
-    }
-    .gate-login a { color: var(--ve-green-dark); font-weight: 700; text-decoration: none; }
-    .gate-login a:hover { text-decoration: underline; }
-    .gate-error {
-      font-size: 11px; font-weight: 700; color: #c0392b; display: none;
-      padding: 8px 12px; background: #fdf2f2; border-radius: 5px; border: 1px solid #f5c6cb;
-    }
 
     /* ── HERO ── */
     .hero {
@@ -279,69 +226,12 @@
       .hero-inner { padding: 48px 20px 40px; }
       .section { padding: 48px 20px; }
       .bottom-cta { padding: 56px 20px; flex-direction: column; gap: 28px; }
-      .gate-card { padding: 32px 24px 28px; }
-      .gate-row { grid-template-columns: 1fr; }
-      .page-footer { flex-direction: column; gap: 14px; padding: 24px 20px; }
+          .page-footer { flex-direction: column; gap: 14px; padding: 24px 20px; }
+      .pf-row { grid-template-columns: 1fr; }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-
-<!-- ── GATE OVERLAY ── -->
-<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
-  <div class="gate-card">
-    <p class="gate-eyebrow">Sponsorship Opportunities</p>
-    <h1 class="gate-title" id="gate-title">Vegans Explore<br><em>Night.</em></h1>
-    <p class="gate-sub">Enter your details to access full sponsorship packages, pricing, and how to get your brand in the room on July 1.</p>
-    <div class="gate-divider" aria-hidden="true"></div>
-    <form class="gate-form" id="gate-form" novalidate>
-      <div class="gate-row">
-        <div class="gate-field">
-          <label class="gate-label" for="g-first">First Name</label>
-          <input class="gate-input" id="g-first" type="text" autocomplete="given-name" placeholder="First" required>
-        </div>
-        <div class="gate-field">
-          <label class="gate-label" for="g-last">Last Name</label>
-          <input class="gate-input" id="g-last" type="text" autocomplete="family-name" placeholder="Last" required>
-        </div>
-      </div>
-      <div class="gate-field">
-        <label class="gate-label" for="g-email">Email</label>
-        <input class="gate-input" id="g-email" type="email" autocomplete="email" placeholder="you@brand.com" required>
-      </div>
-      <div class="gate-field">
-        <label class="gate-label" for="g-brand">Brand / Company</label>
-        <input class="gate-input" id="g-brand" type="text" autocomplete="organization" placeholder="Your brand name" required>
-      </div>
-      <div class="gate-error" id="gate-error" role="alert">Please fill in all fields.</div>
-      <button class="gate-submit" type="submit">Get Access to Pricing</button>
-    </form>
-    <p class="gate-login">Already a Passport holder? <button id="passport-btn" class="gate-passport-btn" type="button">Sign in</button></p>
-
-    <!-- Inline Passport login panel (shown after clicking Sign in) -->
-    <div id="gate-login-panel" class="gate-login-panel" role="region" aria-label="Passport sign in">
-      <div class="gate-divider" aria-hidden="true" style="margin-bottom:16px;"></div>
-      <div class="gate-field" style="margin-bottom:10px;">
-        <label class="gate-label" for="pl-email">Passport Email</label>
-        <input class="gate-input" id="pl-email" type="email" autocomplete="email" placeholder="your@email.com">
-      </div>
-      <div class="gate-field">
-        <label class="gate-label" for="pl-password">Password</label>
-        <input class="gate-input" id="pl-password" type="password" autocomplete="current-password" placeholder="Password">
-      </div>
-      <div class="gate-error" id="pl-error">Incorrect email or password.</div>
-      <button class="gate-submit" id="pl-submit" type="button">Sign In to Passport</button>
-      <div class="gate-login-success" id="pl-success">
-        <p>Signed in. Loading your access...</p>
-      </div>
-      <button class="gate-login-back" id="pl-back" type="button">&#8592; Back</button>
-    </div>
-    <p style="text-align:center;margin-top:12px;">
-      <a href="/partner" style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-30);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--ve-text-50)'" onmouseout="this.style.color='var(--ve-text-30)'">&#8592; Go back</a>
-    </p>
-  </div>
-</div>
 
 <div class="page-frame">
   <script src="/public/nav.js"></script>
@@ -458,8 +348,37 @@
   <section class="section" aria-labelledby="tiers-h2">
     <p class="eyebrow">Packages</p>
     <h2 class="section-title" id="tiers-h2">Pick Your Level</h2>
-    <p class="section-sub">Local packages put your brand in a single city. Multi-city packages scale your presence across every participating location. Pricing unlocked after your details are submitted above.</p>
-    <div class="tiers-grid" role="list">
+    <p class="section-sub">Local packages put your brand in a single city. Multi-city packages scale your presence across every participating location.</p>
+
+    <!-- Pricing unlock form -->
+    <div class="pf-wrap" id="pf-wrap">
+      <p class="pf-heading">Unlock Pricing</p>
+      <p class="pf-sub">Enter your details and we will follow up if it is a fit. All packages confirmed directly with our team.</p>
+      <form id="pf-form" novalidate>
+        <div class="pf-row">
+          <div class="pf-field">
+            <label class="pf-label" for="pf-first">First Name</label>
+            <input class="pf-input" id="pf-first" type="text" autocomplete="given-name" placeholder="First" required>
+          </div>
+          <div class="pf-field">
+            <label class="pf-label" for="pf-last">Last Name</label>
+            <input class="pf-input" id="pf-last" type="text" autocomplete="family-name" placeholder="Last" required>
+          </div>
+        </div>
+        <div class="pf-field">
+          <label class="pf-label" for="pf-email">Email</label>
+          <input class="pf-input" id="pf-email" type="email" autocomplete="email" placeholder="you@brand.com" required>
+        </div>
+        <div class="pf-field">
+          <label class="pf-label" for="pf-brand">Brand / Company</label>
+          <input class="pf-input" id="pf-brand" type="text" autocomplete="organization" placeholder="Your brand name" required>
+        </div>
+        <div class="pf-error" id="pf-error" role="alert">Please fill in all fields.</div>
+        <button class="pf-submit" type="submit">See Pricing</button>
+      </form>
+    </div>
+
+    <div class="tiers-grid price-locked" id="tiers-grid" role="list">
 
       <!-- LOCAL VENDOR -->
       <div class="tier-card" role="listitem">
@@ -540,174 +459,50 @@
 
 <script>
 (function () {
-  var SUPABASE_URL  = 'https://fwbhwfxpncrsfhttimna.supabase.co';
-  var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var GATE_KEY      = 've-night-gate-v1';
-  var _sb           = null;
+  var PRICE_KEY = 've-night-pricing-v1';
 
-  function getClient() {
-    if (!_sb && window.supabase) {
-      _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-    }
-    return _sb;
+  function unlockPricing() {
+    var grid = document.getElementById('tiers-grid');
+    if (grid) grid.classList.remove('price-locked');
+    var wrap = document.getElementById('pf-wrap');
+    if (wrap) wrap.style.display = 'none';
   }
 
-  function unlockGate() {
-    var g = document.getElementById('gate');
-    if (g) g.classList.add('hidden');
-    // Restore focus to page
-    var h1 = document.getElementById('hero-h1');
-    if (h1) h1.focus();
-  }
-
-  // Already submitted?
+  // Already submitted? Show prices immediately.
   try {
-    if (localStorage.getItem(GATE_KEY)) { unlockGate(); return; }
+    if (localStorage.getItem(PRICE_KEY)) { unlockPricing(); }
   } catch(e) {}
 
-  // Already logged in as Passport holder? Skip gate immediately.
-  (function () {
-    var sb = getClient();
-    if (!sb) return;
-    sb.auth.getSession().then(function (res) {
-      if (res.data && res.data.session) { unlockGate(); }
-    }).catch(function () {});
-  })();
+  // Form submit
+  var form = document.getElementById('pf-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var first = document.getElementById('pf-first').value.trim();
+      var last  = document.getElementById('pf-last').value.trim();
+      var email = document.getElementById('pf-email').value.trim();
+      var brand = document.getElementById('pf-brand').value.trim();
+      var err   = document.getElementById('pf-error');
 
-  // Form submission
-  document.getElementById('gate-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var first  = document.getElementById('g-first').value.trim();
-    var last   = document.getElementById('g-last').value.trim();
-    var email  = document.getElementById('g-email').value.trim();
-    var brand  = document.getElementById('g-brand').value.trim();
-    var err    = document.getElementById('gate-error');
-
-    if (!first || !last || !email || !brand) {
-      err.style.display = 'block';
-      return;
-    }
-    err.style.display = 'none';
-
-    // Optional: send to GHL or intake endpoint
-    try {
-      fetch('/api/intake', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ first_name: first, last_name: last, email: email, company: brand, source: 've-night-gate' })
-      }).catch(function(){});
-    } catch(e) {}
-
-    try { localStorage.setItem(GATE_KEY, '1'); } catch(e) {}
-    unlockGate();
-  });
-
-  // ── Passport "Sign in" click: check session first ─────────────────────────
-  document.getElementById('passport-btn').addEventListener('click', function () {
-    var sb = getClient();
-    if (!sb) { showLoginPanel(); return; }
-    sb.auth.getSession().then(function (res) {
-      if (res.data && res.data.session) {
-        unlockGate();
-      } else {
-        showLoginPanel();
+      if (!first || !last || !email || !brand) {
+        err.style.display = 'block';
+        return;
       }
-    }).catch(function () { showLoginPanel(); });
-  });
+      err.style.display = 'none';
 
-  function showLoginPanel() {
-    // Hide form section, show login panel in its place
-    var els = ['gate-form', 'gate-divider-main', 'gate-sub-text', 'gate-login-line'];
-    document.getElementById('gate-form').style.display = 'none';
-    var divider = document.querySelector('#gate .gate-divider');
-    if (divider) divider.style.display = 'none';
-    var sub = document.querySelector('#gate .gate-sub');
-    if (sub) sub.style.display = 'none';
-    var loginLine = document.querySelector('#gate .gate-login');
-    if (loginLine) loginLine.style.display = 'none';
+      // Send to pipeline
+      try {
+        fetch('/api/intake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ first_name: first, last_name: last, email: email, company: brand, source: 've-night-pricing' })
+        }).catch(function(){});
+      } catch(e) {}
 
-    var panel = document.getElementById('gate-login-panel');
-    panel.classList.add('active');
-    setTimeout(function () {
-      var em = document.getElementById('pl-email');
-      if (em) em.focus();
-    }, 50);
+      try { localStorage.setItem(PRICE_KEY, '1'); } catch(e) {}
+      unlockPricing();
+    });
   }
-
-  // Back button: restore form, hide login panel
-  document.getElementById('pl-back').addEventListener('click', function () {
-    document.getElementById('gate-login-panel').classList.remove('active');
-    document.getElementById('pl-error').style.display = 'none';
-    document.getElementById('pl-success').style.display = 'none';
-    document.getElementById('pl-email').value = '';
-    document.getElementById('pl-password').value = '';
-    // Restore form elements
-    document.getElementById('gate-form').style.display = '';
-    var divider = document.querySelector('#gate .gate-divider');
-    if (divider) divider.style.display = '';
-    var sub = document.querySelector('#gate .gate-sub');
-    if (sub) sub.style.display = '';
-    var loginLine = document.querySelector('#gate .gate-login');
-    if (loginLine) loginLine.style.display = '';
-    document.getElementById('passport-btn').focus();
-  });
-
-  // Inline sign-in submit
-  document.getElementById('pl-submit').addEventListener('click', function () {
-    var sb = getClient();
-    var email = document.getElementById('pl-email').value.trim();
-    var password = document.getElementById('pl-password').value;
-    var errEl = document.getElementById('pl-error');
-    var succEl = document.getElementById('pl-success');
-    var btn = document.getElementById('pl-submit');
-    errEl.style.display = 'none';
-
-    if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
-    if (!sb) { errEl.textContent = 'Unable to connect. Please try again.'; errEl.style.display = 'block'; return; }
-
-    btn.disabled = true;
-    btn.textContent = 'Signing in...';
-    sb.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
-      if (res.error) {
-        errEl.textContent = 'Incorrect email or password.';
-        errEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Sign In to Passport';
-      } else {
-        succEl.style.display = 'block';
-        btn.style.display = 'none';
-        setTimeout(function () { unlockGate(); }, 800);
-      }
-    }).catch(function () {
-      errEl.textContent = 'Something went wrong. Please try again.';
-      errEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Sign In to Passport';
-    });
-  });
-
-  // Allow Enter key in login panel fields
-  ['pl-email', 'pl-password'].forEach(function (id) {
-    document.getElementById(id).addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') document.getElementById('pl-submit').click();
-    });
-  });
-
-  // ── Trap focus inside gate while it's open ─────────────────────────────
-  var gate = document.getElementById('gate');
-  gate.addEventListener('keydown', function(e) {
-    if (e.key !== 'Tab') return;
-    var focusable = gate.querySelectorAll('input, button, a, [tabindex]:not([tabindex="-1"])');
-    var first = focusable[0], last = focusable[focusable.length - 1];
-    if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
-    else            { if (document.activeElement === last)  { e.preventDefault(); first.focus(); } }
-  });
-
-  // Auto-focus first field
-  setTimeout(function() {
-    var f = document.getElementById('g-first');
-    if (f) f.focus();
-  }, 100);
 })();
 </script>
 
