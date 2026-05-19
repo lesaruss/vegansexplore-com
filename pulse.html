@@ -117,8 +117,23 @@
       .discuss-sticky-bar { padding: 14px 16px 12px; top: 60px; }
       .discuss-list-wrap { padding: 16px 16px 48px; }
       .discuss-search { max-width: 160px; }
-      .discuss-hero { min-height: 400px; }
-      .discuss-hero .hero-inner { padding: 64px 24px 48px; }
+      .discuss-hero {
+        min-height: 480px;
+        background-image: url('/public/pulse-ve-banner-mobile.png');
+        background-position: center center;
+        align-items: flex-end;
+      }
+      .discuss-hero::before { background: rgba(0,0,0,0.32); }
+      .discuss-hero::after { display: none; }
+      .discuss-hero .hero-inner {
+        background: rgba(0,0,0,0.58);
+        backdrop-filter: blur(8px);
+        border-radius: 8px;
+        margin: 0 24px 32px;
+        padding: 32px 28px;
+        max-width: calc(100% - 48px);
+        border: 1px solid rgba(255,255,255,0.09);
+      }
     }
   </style>
 </head>
