@@ -565,6 +565,15 @@
     if (localStorage.getItem(GATE_KEY)) { unlockGate(); return; }
   } catch(e) {}
 
+  // Already logged in as Passport holder? Skip gate immediately.
+  (function () {
+    var sb = getClient();
+    if (!sb) return;
+    sb.auth.getSession().then(function (res) {
+      if (res.data && res.data.session) { unlockGate(); }
+    }).catch(function () {});
+  })();
+
   // Form submission
   document.getElementById('gate-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -607,6 +616,16 @@
   });
 
   function showLoginPanel() {
+    // Hide form section, show login panel in its place
+    var els = ['gate-form', 'gate-divider-main', 'gate-sub-text', 'gate-login-line'];
+    document.getElementById('gate-form').style.display = 'none';
+    var divider = document.querySelector('#gate .gate-divider');
+    if (divider) divider.style.display = 'none';
+    var sub = document.querySelector('#gate .gate-sub');
+    if (sub) sub.style.display = 'none';
+    var loginLine = document.querySelector('#gate .gate-login');
+    if (loginLine) loginLine.style.display = 'none';
+
     var panel = document.getElementById('gate-login-panel');
     panel.classList.add('active');
     setTimeout(function () {
@@ -615,13 +634,21 @@
     }, 50);
   }
 
-  // Back button: hide login panel
+  // Back button: restore form, hide login panel
   document.getElementById('pl-back').addEventListener('click', function () {
     document.getElementById('gate-login-panel').classList.remove('active');
     document.getElementById('pl-error').style.display = 'none';
     document.getElementById('pl-success').style.display = 'none';
     document.getElementById('pl-email').value = '';
     document.getElementById('pl-password').value = '';
+    // Restore form elements
+    document.getElementById('gate-form').style.display = '';
+    var divider = document.querySelector('#gate .gate-divider');
+    if (divider) divider.style.display = '';
+    var sub = document.querySelector('#gate .gate-sub');
+    if (sub) sub.style.display = '';
+    var loginLine = document.querySelector('#gate .gate-login');
+    if (loginLine) loginLine.style.display = '';
     document.getElementById('passport-btn').focus();
   });
 
