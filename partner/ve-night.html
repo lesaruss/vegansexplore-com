@@ -339,6 +339,11 @@
     .tier-card.title .tier-price-note { color: rgba(255,255,255,0.35); }
     .tier-card.title .tier-divider { background: rgba(255,255,255,0.12); }
     .title-left { display: flex; flex-direction: column; }
+    .title-right-wrap { display: flex; flex-direction: column; gap: 16px; }
+    .title-summary {
+      font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.5);
+      line-height: 1.7; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;
+    }
     .title-right {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 0 20px; align-content: start; list-style: none;
@@ -581,21 +586,23 @@
           <p class="tier-price" aria-label="Fifteen thousand dollars">$15,000</p>
           <p class="tier-price-note">All participating cities + online stream</p>
           <div class="tier-divider" aria-hidden="true"></div>
-          <p style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:28px;">Your brand doesn't just show up. It leads. The Title Sponsor is the official presenting brand of every VE Night event, the live digital stream, and the full media campaign surrounding the launch.</p>
-          <button class="tier-cta-btn dark" style="margin-top:auto;" onclick="openApply('Title Sponsor','$15,000',true)" aria-label="Apply as Title Sponsor">Apply as Title Sponsor</button>
+          <button class="tier-cta-btn dark" onclick="openApply('Title Sponsor','$15,000',true)" aria-label="Apply as Title Sponsor">Apply as Title Sponsor</button>
         </div>
-        <ul class="title-right" aria-label="Title Sponsor benefits">
-          <li class="tier-feature">Your brand presents: "Vegans Explore Night, Presented by [Your Brand]" at all events and the online stream</li>
-          <li class="tier-feature">30-second commercial played at every in-person event and the live digital stream</li>
-          <li class="tier-feature">Up to 1,000 product samples or coupons per event in attendee tote bags, 5,000 touches total</li>
-          <li class="tier-feature">Prize giveaways to in-person attendees and online viewers at every location</li>
-          <li class="tier-feature">Featured in all preview and recap content across social, email, and on-site</li>
-          <li class="tier-feature">Sponsor section on every page of the VE website and mobile app for 30 days before and after the event</li>
-          <li class="tier-feature">30-day ad rotation across the full Vegans Explore podcast network: Pre-Vegans, SoFlo Vegans, and Vegans Explore</li>
-          <li class="tier-feature">Product placement in animated banner ads on high-traffic VE pages</li>
-          <li class="tier-feature">Full media corner integration: your brand in 360 photos, video testimonials, and GeekFon Music station content used across social and commercial placements</li>
-          <li class="tier-feature">Featured founder or CEO interview on the Vegans Explore video podcast, recorded in person at a partnered studio location</li>
-        </ul>
+        <div class="title-right-wrap">
+          <p class="title-summary">Your brand doesn't just show up. It leads. The Title Sponsor is the official presenting brand of every VE Night event, the live digital stream, and the full media campaign surrounding the launch.</p>
+          <ul class="title-right" aria-label="Title Sponsor benefits">
+            <li class="tier-feature">Your brand presents: "Vegans Explore Night, Presented by [Your Brand]" at all events and the online stream</li>
+            <li class="tier-feature">30-second commercial played at every in-person event and the live digital stream</li>
+            <li class="tier-feature">Up to 1,000 product samples or coupons per event in attendee tote bags, 5,000 touches total</li>
+            <li class="tier-feature">Prize giveaways to in-person attendees and online viewers at every location</li>
+            <li class="tier-feature">Featured in all preview and recap content across social, email, and on-site</li>
+            <li class="tier-feature">Sponsor section on every page of the VE website and mobile app for 30 days before and after the event</li>
+            <li class="tier-feature">30-day ad rotation across the full Vegans Explore podcast network: Pre-Vegans, SoFlo Vegans, and Vegans Explore</li>
+            <li class="tier-feature">Product placement in animated banner ads on high-traffic VE pages</li>
+            <li class="tier-feature">Full media corner integration: your brand in 360 photos, video testimonials, and GeekFon Music station content used across social and commercial placements</li>
+            <li class="tier-feature">Featured founder or CEO interview on the Vegans Explore video podcast, recorded in person at a partnered studio location</li>
+          </ul>
+        </div>
       </div>
 
       <!-- MULTI-CITY SPONSOR -->
