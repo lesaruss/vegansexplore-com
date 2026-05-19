@@ -90,34 +90,34 @@
       background-repeat: no-repeat; background-position: center;
     }
 
-    /* Passport price toggles */
+    /* Passport price toggles — live in the pcard-head (green bg) */
     .tile-divider { height: 1px; background: var(--ve-border); margin-bottom: 14px; }
-    .price-toggles { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .price-toggles { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
     .price-toggle {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 16px; border-radius: 7px;
-      border: 2px solid var(--ve-green);
+      padding: 10px 14px; border-radius: 7px;
+      border: 2px solid rgba(255,255,255,0.45);
       cursor: pointer; user-select: none;
-      color: var(--ve-green); background: #fff;
-      transition: background 0.14s, color 0.14s, border-color 0.14s;
+      color: #fff; background: rgba(255,255,255,0.12);
+      transition: background 0.14s, border-color 0.14s;
       font-family: 'Montserrat', sans-serif;
       text-align: left;
     }
-    .price-toggle:hover { background: var(--ve-green-light); }
-    .price-toggle.active { background: var(--ve-green); color: #fff; border-color: var(--ve-green); }
+    .price-toggle:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.7); }
+    .price-toggle.active { background: rgba(255,255,255,0.28); border-color: #fff; }
     .toggle-left { display: flex; align-items: baseline; gap: 6px; }
     .toggle-amount { font-size: 32px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
-    .toggle-per { font-size: 11px; font-weight: 600; }
+    .toggle-per { font-size: 11px; font-weight: 600; opacity: 0.85; }
     .toggle-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
-    .toggle-hint { font-size: 9px; font-weight: 600; opacity: 0.65; }
+    .toggle-hint { font-size: 9px; font-weight: 600; opacity: 0.6; }
     .toggle-indicator {
-      width: 18px; height: 18px; border-radius: 50%;
-      border: 2px solid currentColor; opacity: 0.5;
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5);
       display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 900; line-height: 1;
-      transition: opacity 0.14s;
+      font-size: 9px; font-weight: 900; line-height: 1;
+      transition: all 0.14s; color: #fff;
     }
-    .price-toggle.active .toggle-indicator { opacity: 1; background: rgba(255,255,255,0.25); border-color: #fff; }
+    .price-toggle.active .toggle-indicator { background: rgba(255,255,255,0.9); border-color: #fff; color: var(--ve-green); }
     .price-toggle.active .toggle-indicator::after { content: '✓'; }
 
     /* Tile CTA buttons */
@@ -255,26 +255,7 @@
           <div class="pcard-eyebrow">Join the Community</div>
           <div class="pcard-name">VE Passport</div>
           <div class="pcard-tagline">Your key to the Vegans Explore network.</div>
-        </div>
-        <div class="pcard-body">
-          <div class="pcard-feat-label" id="passport-feat-lbl">What you get</div>
-
-          <!-- Features: One-Time (shown by default) -->
-          <ul class="pcard-features green" id="passport-feat-onetime" aria-labelledby="passport-feat-lbl">
-            <li>Access to all 8 active community hubs</li>
-            <li>Member pricing on all partner opportunities</li>
-            <li>VE digital membership badge for your profiles</li>
-          </ul>
-
-          <!-- Features: Monthly (hidden by default) -->
-          <ul class="pcard-features green" id="passport-feat-monthly" aria-labelledby="passport-feat-lbl" hidden>
-            <li>Everything in the one-time Passport</li>
-            <li>Monthly VE member digest with curated content and event previews</li>
-            <li>Early access to events, campaigns, and new opportunities</li>
-          </ul>
-
-          <div class="tile-divider" aria-hidden="true"></div>
-
+          <!-- Price selectors sit in the header, matching where $111 lives on the other tiles -->
           <div class="price-toggles" role="radiogroup" aria-label="Select Passport type">
             <button class="price-toggle active" role="radio" aria-checked="true" data-feat="onetime">
               <div class="toggle-left">
@@ -297,7 +278,25 @@
               </div>
             </button>
           </div>
+        </div>
+        <div class="pcard-body">
+          <div class="pcard-feat-label" id="passport-feat-lbl">What you get</div>
 
+          <!-- Features: One-Time (shown by default) -->
+          <ul class="pcard-features green" id="passport-feat-onetime" aria-labelledby="passport-feat-lbl">
+            <li>Access to all 8 active community hubs</li>
+            <li>Member pricing on all partner opportunities</li>
+            <li>VE digital membership badge for your profiles</li>
+          </ul>
+
+          <!-- Features: Monthly (hidden by default) -->
+          <ul class="pcard-features green" id="passport-feat-monthly" aria-labelledby="passport-feat-lbl" hidden>
+            <li>Everything in the one-time Passport</li>
+            <li>Monthly VE member digest with curated content and event previews</li>
+            <li>Early access to events, campaigns, and new opportunities</li>
+          </ul>
+
+          <div class="tile-divider" aria-hidden="true"></div>
           <a href="/passport" class="btn-tile green">Get Passport</a>
         </div>
       </div>
