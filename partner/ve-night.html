@@ -209,7 +209,11 @@
 
 
     /* ── PRICING GATE OVERLAY ── */
-    #pricing-section { position: relative; }
+    #pricing-section {
+      position: relative;
+      transition: height 0.65s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+    }
     #pricing-gate {
       position: absolute; inset: -28px -4px; z-index: 20;
       display: flex; align-items: flex-start; justify-content: center;
@@ -880,15 +884,46 @@
   var _tier = {};
 
   // ── GATE UNLOCK ──
+  var _pricingSection = document.getElementById('pricing-section');
+
+  function clampSection() {
+    if (!_pricingSection) return;
+    // Measure natural height, then clamp to gate card height
+    _pricingSection.style.height = 'auto';
+    _pricingSection.style.overflow = 'hidden';
+    var gate = document.getElementById('pricing-gate');
+    var gateCard = gate ? gate.querySelector('.gate-card') : null;
+    var clampH = gateCard ? (gateCard.offsetHeight + 112) : 600;
+    _pricingSection.style.height = clampH + 'px';
+  }
+
   function unlockPricing() {
     var gate = document.getElementById('pricing-gate');
     if (gate) gate.classList.add('unlocked');
+    if (_pricingSection) {
+      // Animate to full content height
+      var fullH = _pricingSection.scrollHeight;
+      _pricingSection.style.height = fullH + 'px';
+      setTimeout(function() {
+        _pricingSection.style.height = 'auto';
+        _pricingSection.style.overflow = 'visible';
+      }, 700);
+    }
   }
 
-  // Already unlocked? Skip the gate.
+  // Already unlocked? Skip the gate entirely.
   try {
-    if (localStorage.getItem(PRICE_KEY)) { unlockPricing(); }
-  } catch(e) {}
+    if (localStorage.getItem(PRICE_KEY)) {
+      unlockPricing();
+    } else {
+      // Wait for fonts/layout to settle before clamping
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', clampSection);
+      } else {
+        clampSection();
+      }
+    }
+  } catch(e) { clampSection(); }
 
   // Gate form submit
   var form = document.getElementById('pf-form');
