@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform — Vegans Explore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #b8ddb9;
+      --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 560px;
+      background-image: url('/communities/banner.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, transparent 82%);
+      z-index: 1;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%);
+      z-index: 1;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      padding: 88px 56px 72px;
+      max-width: 600px;
+    }
+    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    .hero h1 { font-size: clamp(38px, 5.5vw, 72px); font-weight: 900; line-height: 0.97; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
+    .hero h1 em { color: var(--ve-green); font-style: normal; }
+    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.6); max-width: 580px; margin-bottom: 40px; }
+    .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .btn-primary { background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
+    .btn-primary:hover { background: var(--ve-orange-dark); }
+    .btn-ghost { background: transparent; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 28px; border-radius: 4px; text-decoration: none; transition: all 0.15s; display: inline-block; border: 1.5px solid rgba(255,255,255,0.2); }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+    /* STATS BAR */
+    .stats-bar { background: var(--ve-green); padding: 22px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .stat-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .stat-num { font-size: 26px; font-weight: 900; letter-spacing: -0.03em; color: #fff; line-height: 1; }
+    .stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+    .stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); }
+
+    /* SHARED */
+    .section-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    .section-h2 { font-size: clamp(26px, 3.5vw, 44px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.06; margin-bottom: 12px; }
+    .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 560px; }
+    .btn-green { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-green); color: #fff; transition: background 0.15s; border: none; cursor: pointer; }
+    .btn-green:hover { background: var(--ve-green-dark); }
+    .btn-outline-dark { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: transparent; color: var(--ve-text); border: 2px solid var(--ve-text); transition: all 0.15s; }
+    .btn-outline-dark:hover { background: var(--ve-text); color: #fff; }
+
+    /* THREE PATHS */
+    .paths-section { padding: 80px 56px; background: #fff; }
+    .paths-section .section-sub { margin-bottom: 52px; }
+    .paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .path-card { border-radius: 12px; border: 2px solid var(--ve-border); padding: 36px 28px; display: flex; flex-direction: column; position: relative; }
+    .path-card.featured { border-color: #1A1A1A; background: #1A1A1A; }
+    .path-card.grant { border-color: var(--ve-green); background: var(--ve-green-light); }
+    .path-num { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-30); margin-bottom: 20px; }
+    .path-card.featured .path-num { color: rgba(255,255,255,0.25); }
+    .path-card.grant .path-num { color: var(--ve-green-dark); opacity: 0.6; }
+    .path-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; background: var(--ve-green-light); }
+    .path-card.featured .path-icon { background: rgba(255,255,255,0.08); }
+    .path-card.grant .path-icon { background: #fff; }
+    .path-icon svg { width: 22px; height: 22px; fill: var(--ve-green-dark); }
+    .path-card.featured .path-icon svg { fill: rgba(255,255,255,0.8); }
+    .path-card.grant .path-icon svg { fill: var(--ve-green-dark); }
+    .path-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 6px; color: var(--ve-text); }
+    .path-card.featured .path-title { color: #fff; }
+    .path-price { font-size: 36px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; color: var(--ve-text); margin-bottom: 4px; }
+    .path-card.featured .path-price { color: #fff; }
+    .path-card.grant .path-price { color: var(--ve-green-dark); }
+    .path-price-note { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-bottom: 20px; }
+    .path-card.featured .path-price-note { color: rgba(255,255,255,0.3); }
+    .path-card.grant .path-price-note { color: var(--ve-green-dark); opacity: 0.6; }
+    .path-divider { height: 1px; background: var(--ve-border); margin-bottom: 20px; }
+    .path-card.featured .path-divider { background: rgba(255,255,255,0.1); }
+    .path-card.grant .path-divider { background: var(--ve-green-mid); }
+    .path-desc { font-size: 13px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; margin-bottom: 24px; flex: 1; }
+    .path-card.featured .path-desc { color: rgba(255,255,255,0.6); }
+    .path-details { display: flex; flex-direction: column; gap: 9px; margin-bottom: 28px; }
+    .path-detail { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; font-weight: 600; color: var(--ve-text-75); line-height: 1.4; }
+    .path-detail::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; margin-top: 5px; }
+    .path-card.featured .path-detail { color: rgba(255,255,255,0.65); }
+    .path-card.featured .path-detail::before { background: var(--ve-green); }
+    .path-cta { display: block; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 20px; border-radius: 4px; text-decoration: none; transition: all 0.15s; }
+    .path-cta.green { background: var(--ve-green); color: #fff; border: 2px solid var(--ve-green); }
+    .path-cta.green:hover { background: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+    .path-cta.white { background: #fff; color: #1A1A1A; border: 2px solid #fff; }
+    .path-cta.white:hover { background: rgba(255,255,255,0.85); }
+    .path-cta.outline-green { background: transparent; color: var(--ve-green-dark); border: 2px solid var(--ve-green); }
+    .path-cta.outline-green:hover { background: var(--ve-green); color: #fff; }
+
+    /* MODULES */
+    .modules-section { padding: 80px 56px; background: #f9f9f9; border-top: 1px solid var(--ve-border); border-bottom: 1px solid var(--ve-border); }
+    .modules-section .section-sub { margin-bottom: 16px; }
+    .modules-note { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 48px; display: flex; align-items: center; gap: 8px; }
+    .modules-note::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ve-green); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .module-card { background: #fff; border-radius: 10px; border: 1.5px solid var(--ve-border); padding: 32px 28px; display: flex; flex-direction: column; gap: 14px; }
+    .module-card.core { border-color: var(--ve-green); }
+    .module-badge { font-size: 8px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; align-self: flex-start; }
+    .module-badge.included { background: var(--ve-green); color: #fff; }
+    .module-badge.addon { background: #f0f0f0; color: var(--ve-text-50); }
+    .module-badge.coming { background: #fff3e0; color: #b35f00; }
+    .module-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--ve-green-light); display: flex; align-items: center; justify-content: center; }
+    .module-card:not(.core) .module-icon { background: #f0f0f0; }
+    .module-icon svg { width: 20px; height: 20px; fill: var(--ve-green-dark); }
+    .module-card:not(.core) .module-icon svg { fill: var(--ve-text-50); }
+    .module-title { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; color: var(--ve-text); }
+    .module-desc { font-size: 12px; font-weight: 400; color: var(--ve-text-50); line-height: 1.6; }
+    .modules-footer { margin-top: 28px; text-align: center; }
+    .modules-footer p { font-size: 13px; font-weight: 500; color: var(--ve-text-50); }
+    .modules-footer strong { color: var(--ve-text); font-weight: 700; }
+
+    /* GRANT PROGRAM */
+    .grant-section { padding: 80px 56px; background: #fff; }
+    .grant-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+    .grant-section .section-sub { margin-bottom: 36px; }
+    .grant-steps { display: flex; flex-direction: column; gap: 0; }
+    .grant-step { display: flex; gap: 20px; padding-bottom: 28px; position: relative; }
+    .grant-step:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 36px; bottom: 0; width: 1px; background: var(--ve-green-mid); }
+    .grant-step-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--ve-green-light); border: 2px solid var(--ve-green-mid); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .grant-step-dot svg { width: 14px; height: 14px; fill: var(--ve-green-dark); }
+    .grant-step-body { padding-top: 4px; }
+    .grant-step-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ve-text); margin-bottom: 4px; }
+    .grant-step-desc { font-size: 12px; font-weight: 400; color: var(--ve-text-50); line-height: 1.6; }
+    .grant-callout { background: var(--ve-green-light); border: 1.5px solid var(--ve-green-mid); border-radius: 12px; padding: 32px 28px; }
+    .grant-callout-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 10px; }
+    .grant-callout h3 { font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; color: var(--ve-text); margin-bottom: 12px; line-height: 1.2; }
+    .grant-callout p { font-size: 13px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; margin-bottom: 24px; }
+    .grant-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .grant-option { display: flex; align-items: flex-start; gap: 12px; background: #fff; border-radius: 8px; padding: 14px 16px; border: 1px solid var(--ve-border); }
+    .grant-option-icon { width: 32px; height: 32px; border-radius: 6px; background: var(--ve-green-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .grant-option-icon svg { width: 15px; height: 15px; fill: var(--ve-green-dark); }
+    .grant-option-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); margin-bottom: 2px; }
+    .grant-option-desc { font-size: 11px; font-weight: 400; color: var(--ve-text-50); line-height: 1.5; }
+    .grant-disclaimer { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--ve-text-30); line-height: 1.5; margin-top: 16px; }
+
+    /* HOW IT WORKS */
+    .how-section { padding: 80px 56px; background: #f9f9f9; border-top: 1px solid var(--ve-border); border-bottom: 1px solid var(--ve-border); }
+    .how-section .section-sub { margin-bottom: 56px; }
+    .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+    .how-grid::before { content: ''; position: absolute; top: 27px; left: calc(12.5% + 16px); right: calc(12.5% + 16px); height: 1px; background: var(--ve-green-mid); z-index: 0; }
+    .how-step { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 16px; position: relative; z-index: 1; }
+    .how-dot { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid var(--ve-green-mid); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; flex-shrink: 0; }
+    .how-dot.active { background: var(--ve-green); border-color: var(--ve-green); }
+    .how-dot svg { width: 22px; height: 22px; fill: var(--ve-green); }
+    .how-dot.active svg { fill: #fff; }
+    .how-step-num { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-30); margin-bottom: 8px; }
+    .how-step-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ve-text); margin-bottom: 8px; }
+    .how-step-desc { font-size: 11px; font-weight: 400; color: var(--ve-text-50); line-height: 1.6; }
+
+    /* DIRECTORY */
+    .directory-section { padding: 80px 56px; background: var(--ve-green-light); border-top: 1px solid var(--ve-green-mid); }
+    .directory-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 36px; flex-wrap: wrap; }
+    .directory-header .section-sub { margin-bottom: 0; }
+    .filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; }
+    .filter-btn:hover, .filter-btn.active { background: var(--ve-green); color: #fff; border-color: var(--ve-green); }
+    .dir-subhead { font-size: 10px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 14px; }
+    .city-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+    .city-card { background: #fff; border-radius: 10px; border: 1.5px solid var(--ve-border); padding: 24px 20px; display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.15s; }
+    .city-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .city-card.coming { opacity: 0.72; }
+    .city-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .city-flag { font-size: 22px; line-height: 1; }
+    .city-type-badge { font-size: 8px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .city-type-badge.ve { background: var(--ve-green); color: #fff; }
+    .city-type-badge.partner { background: #1A1A1A; color: #fff; }
+    .city-type-badge.soon { background: rgba(0,0,0,0.07); color: var(--ve-text-50); }
+    .city-name { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; color: var(--ve-text); }
+    .city-region { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--ve-text-30); }
+    .city-join-btn { display: block; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px 16px; border-radius: 4px; text-decoration: none; transition: all 0.15s; }
+    .city-join-btn.active { border: 1.5px solid var(--ve-green); color: var(--ve-green-dark); background: transparent; }
+    .city-join-btn.active:hover { background: var(--ve-green); color: #fff; }
+    .city-join-btn.soon { border: 1.5px solid var(--ve-border); color: var(--ve-text-30); pointer-events: none; }
+    .partner-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .directory-footer { text-align: center; margin-top: 36px; }
+    .directory-footer p { font-size: 13px; font-weight: 500; color: var(--ve-text-50); margin-bottom: 16px; }
+
+    /* BOTTOM CTA */
+    .bottom-cta { padding: 96px 56px; background: #1A1A1A; }
+    .bottom-cta-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .cta-block { border-radius: 12px; padding: 40px 36px; border: 1.5px solid rgba(255,255,255,0.1); }
+    .cta-block.light { background: rgba(255,255,255,0.04); }
+    .cta-block.accent { background: var(--ve-green); border-color: var(--ve-green); }
+    .cta-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 8px; }
+    .cta-block.accent .cta-eyebrow { color: rgba(255,255,255,0.6); }
+    .cta-price { font-size: 52px; font-weight: 900; letter-spacing: -0.05em; color: #fff; line-height: 1; margin-bottom: 4px; }
+    .cta-price-note { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+    .cta-block.accent .cta-price-note { color: rgba(255,255,255,0.6); }
+    .cta-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; color: #fff; margin-bottom: 10px; }
+    .cta-desc { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 28px; }
+    .cta-block.accent .cta-desc { color: rgba(255,255,255,0.75); }
+    .btn-white { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 28px; border-radius: 4px; text-decoration: none; background: #fff; color: #1A1A1A; transition: background 0.15s; }
+    .btn-white:hover { background: rgba(255,255,255,0.88); }
+    .btn-orange { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-orange); color: #fff; transition: background 0.15s; }
+    .btn-orange:hover { background: var(--ve-orange-dark); }
+
+    /* FOOTER */
+    .page-footer { padding: 32px 56px; background: #fff; border-top: 1px solid var(--ve-border); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .footer-brand { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: var(--ve-green); }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .hero { min-height: 420px; }
+      .hero-inner { padding: 64px 28px 48px; }
+    }
+    @media (max-width: 900px) {
+      .hero, .paths-section, .modules-section, .grant-section, .how-section, .directory-section, .bottom-cta { padding: 56px 28px; }
+      .stats-bar { padding: 20px 28px; }
+      .paths-grid { grid-template-columns: 1fr; }
+      .modules-grid { grid-template-columns: 1fr 1fr; }
+      .how-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .how-grid::before { display: none; }
+      .grant-inner { grid-template-columns: 1fr; }
+      .city-grid { grid-template-columns: 1fr 1fr; }
+      .partner-grid { grid-template-columns: 1fr 1fr; }
+      .bottom-cta-inner { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 560px) {
+      .city-grid, .partner-grid { grid-template-columns: 1fr; }
+      .modules-grid { grid-template-columns: 1fr; }
+      .how-grid { grid-template-columns: 1fr; }
+      .stats-bar { flex-wrap: wrap; justify-content: center; }
+      .stat-divider { display: none; }
+    }
+  
+    .footer-social { display: flex; align-items: center; gap: 16px; }
+    .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
+    .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
+    .footer-social .social-icon svg { display: block; }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-h1">
+    <div class="hero-inner">
+    <p class="hero-eyebrow">Vegans Explore Communities</p>
+    <h1 id="hero-h1">
+      A thousand<br>
+      <em>communities.</em><br>
+      One platform.
+    </h1>
+    <p class="hero-sub">Every city. Every neighborhood. One place to find your people, grow your community, and build something real for the plant-based world.</p>
+    <div class="hero-ctas">
+      <a href="/communities" class="btn-primary">Find a community</a>
+      <a href="#run" class="btn-ghost">Run a community</a>
+    </div>
+    </div><!-- /.hero-inner -->
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar" role="region" aria-label="Network goals">
+    <div class="stat-item"><span class="stat-num">1,000</span><span class="stat-label">Community goal</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item"><span class="stat-num">500+</span><span class="stat-label">Cities targeted</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item"><span class="stat-num">1M+</span><span class="stat-label">Members we're building toward</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item"><span class="stat-num">24/7</span><span class="stat-label">Audience pipeline</span></div>
+  </div>
+
+  <!-- THREE PATHS -->
+  <section class="paths-section" id="run" aria-labelledby="paths-h2">
+    <p class="section-eyebrow">Three ways in</p>
+    <h2 class="section-h2" id="paths-h2">Find your role in the network</h2>
+    <p class="section-sub">Whether you want to join a community, build one, or bring an existing mission-driven organization into the ecosystem.</p>
+    <div class="paths-grid">
+
+      <!-- Join -->
+      <div class="path-card">
+        <p class="path-num">01</p>
+        <div class="path-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <h3 class="path-title">Join a community</h3>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:4px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:22px;font-weight:900;letter-spacing:-0.03em;color:var(--ve-green-dark);">Free</span>
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);">VE-run communities</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:22px;font-weight:900;letter-spacing:-0.03em;color:var(--ve-text);">$11</span>
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);">Per partner community</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:22px;font-weight:900;letter-spacing:-0.03em;color:var(--ve-text);">$11<span style="font-size:13px;font-weight:600;">/mo</span></span>
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);">Passport - all communities</span>
+          </div>
+        </div>
+        <div class="path-divider" style="margin-top:16px;"></div>
+        <p class="path-desc">VE-run city communities are free for every member - even at $1/month. Partner communities are $11 each, or become a monthly Passport Holder and access all of them.</p>
+        <div class="path-details">
+          <div class="path-detail">VE-run communities: free for all members</div>
+          <div class="path-detail">Partner communities: $11 each or $11/mo Passport for unlimited</div>
+          <div class="path-detail">Passport includes Discuss, Directory, Guides, and your affiliate link</div>
+          <div class="path-detail">Community Managers can cover the entry cost for their members</div>
+        </div>
+        <a href="/passport.html" class="path-cta green">Get your Passport</a>
+      </div>
+
+      <!-- Run -->
+      <div class="path-card featured">
+        <p class="path-num">02</p>
+        <div class="path-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+        <h3 class="path-title">Run a community</h3>
+        <p class="path-price">$111</p>
+        <p class="path-price-note">Per month</p>
+        <div class="path-divider"></div>
+        <p class="path-desc">Bring your existing community onto our platform, or build a new one. We provide the tools, the audience pipeline, and a network that compounds with every community that joins.</p>
+        <div class="path-details">
+          <div class="path-detail">Event module + Content Manager module included</div>
+          <div class="path-detail">New modules added to the marketplace regularly</div>
+          <div class="path-detail">Affiliate commissions on every platform signup through your link</div>
+          <div class="path-detail">Ticketing, content tools, and a managed audience pipeline</div>
+        </div>
+        <a href="#apply" class="path-cta white">Apply to run a community</a>
+      </div>
+
+      <!-- Grant -->
+      <div class="path-card grant">
+        <p class="path-num">03</p>
+        <div class="path-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        </div>
+        <h3 class="path-title">Apply for a grant</h3>
+        <p class="path-price" style="font-size:28px;line-height:1.1;">Discounted<br>or free</p>
+        <p class="path-price-note">Based on review</p>
+        <div class="path-divider"></div>
+        <p class="path-desc">Running a mission-aligned nonprofit or organization? Apply for a grant. Every application is reviewed by our team before a payment link is issued.</p>
+        <div class="path-details">
+          <div class="path-detail">Upload your 501(c)3 certificate if applicable</div>
+          <div class="path-detail">Share a short video explaining your mission and why VE should sponsor your community</div>
+          <div class="path-detail">All applicants reviewed by our team - alignment matters as much as status</div>
+          <div class="path-detail">Discounted rate or donated access granted after approval</div>
+        </div>
+        <a href="#apply" class="path-cta outline-green">Apply for a grant</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MODULES -->
+  <section class="modules-section" aria-labelledby="modules-h2">
+    <p class="section-eyebrow">The platform</p>
+    <h2 class="section-h2" id="modules-h2">Tools that grow with your community</h2>
+    <p class="section-sub">Your $111/month includes two core modules. Add more as your community scales. New modules hit the marketplace on a regular basis.</p>
+    <p class="modules-note">New modules added regularly</p>
+    <div class="modules-grid">
+
+      <div class="module-card core">
+        <span class="module-badge included">Included</span>
+        <div class="module-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        </div>
+        <h3 class="module-title">Event module</h3>
+        <p class="module-desc">Create, promote, and sell tickets to events directly through your community. No third-party tools. Attendees stay inside the VE ecosystem.</p>
+      </div>
+
+      <div class="module-card core">
+        <span class="module-badge included">Included</span>
+        <div class="module-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M21 6.5c0-.83-.67-1.5-1.5-1.5h-15C3.67 5 3 5.67 3 6.5v11c0 .83.67 1.5 1.5 1.5h15c.83 0 1.5-.67 1.5-1.5v-11zM19 17H5v-9h14v9zm-7-7H7v5h5v-5zm5 3h-3v2h3v-2zm0-3h-3v2h3V10z"/></svg>
+        </div>
+        <h3 class="module-title">Content manager</h3>
+        <p class="module-desc">Generate social media content ideas and connect with producers inside the VE network who can bring them to life. Your community stays active, consistently.</p>
+      </div>
+
+      <div class="module-card">
+        <span class="module-badge coming">Coming soon</span>
+        <div class="module-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+        </div>
+        <h3 class="module-title">Commerce module</h3>
+        <p class="module-desc">Sell products, merchandise, and digital goods directly to your community members. Built-in storefront, no separate platform needed.</p>
+      </div>
+
+    </div>
+    <div class="modules-footer">
+      <p>More modules available as add-ons. <strong>New modules ship as the platform grows.</strong> The more communities we have, the faster it moves.</p>
+    </div>
+  </section>
+
+  <!-- GRANT PROGRAM -->
+  <section class="grant-section" id="apply" aria-labelledby="grant-h2">
+    <div class="grant-inner">
+      <div>
+        <p class="section-eyebrow">Grant program</p>
+        <h2 class="section-h2" id="grant-h2">Mission-driven orgs run free</h2>
+        <p class="section-sub">If your organization exists to serve animals, communities, or the plant-based world, we want to support you. Every application is reviewed by our team - we look at alignment, not just paperwork.</p>
+        <div class="grant-steps">
+          <div class="grant-step">
+            <div class="grant-step-dot" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+            </div>
+            <div class="grant-step-body">
+              <p class="grant-step-title">Submit your application</p>
+              <p class="grant-step-desc">Tell us about your organization. If you have a 501(c)3 certificate, upload it. Every application starts here regardless of status.</p>
+            </div>
+          </div>
+          <div class="grant-step">
+            <div class="grant-step-dot" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            </div>
+            <div class="grant-step-body">
+              <p class="grant-step-title">Share your story</p>
+              <p class="grant-step-desc">Optionally, share a link to a short video explaining your mission and why VE should sponsor your community. This helps our team understand your work.</p>
+            </div>
+          </div>
+          <div class="grant-step">
+            <div class="grant-step-dot" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </div>
+            <div class="grant-step-body">
+              <p class="grant-step-title">Our team reviews</p>
+              <p class="grant-step-desc">We look at mission alignment, community fit, and long-term partnership potential. Holding a 501(c)3 does not guarantee approval - we review every applicant the same way.</p>
+            </div>
+          </div>
+          <div class="grant-step">
+            <div class="grant-step-dot" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+            </div>
+            <div class="grant-step-body">
+              <p class="grant-step-title">Payment link issued (if approved)</p>
+              <p class="grant-step-desc">Approved organizations receive a payment link for either a discounted rate or, where granted, donated service. We reach out directly with next steps.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="grant-callout">
+          <p class="grant-callout-eyebrow">Who can apply</p>
+          <h3>Nonprofits, advocacy orgs, and mission-aligned communities</h3>
+          <p>We believe the most impactful communities in the vegan world shouldn't be priced out of the tools they need to grow. The grant program exists to change that.</p>
+          <div class="grant-options">
+            <div class="grant-option">
+              <div class="grant-option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+              </div>
+              <div>
+                <p class="grant-option-title">501(c)3 nonprofit</p>
+                <p class="grant-option-desc">Upload your certificate as part of your application. Still reviewed for mission alignment.</p>
+              </div>
+            </div>
+            <div class="grant-option">
+              <div class="grant-option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              </div>
+              <div>
+                <p class="grant-option-title">Community organization</p>
+                <p class="grant-option-desc">Grassroots groups, advocacy orgs, and informal communities working toward a mission we believe in.</p>
+              </div>
+            </div>
+            <div class="grant-option">
+              <div class="grant-option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+              </div>
+              <div>
+                <p class="grant-option-title">Share your story</p>
+                <p class="grant-option-desc">A short video helps our team understand the work you're doing and why this partnership makes sense.</p>
+              </div>
+            </div>
+          </div>
+          <a href="/intake.html" class="btn-green" style="display:block;text-align:center;">Apply for a grant</a>
+          <p class="grant-disclaimer">All applications reviewed by our team. Holding a 501(c)3 does not guarantee approval. We look for mission alignment above all else.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" aria-labelledby="how-h2">
+    <p class="section-eyebrow">How it works</p>
+    <h2 class="section-h2" id="how-h2">From curious to community builder</h2>
+    <p class="section-sub">The path from joining the platform to running a community that earns, grows, and compounds.</p>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-dot active" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        </div>
+        <p class="how-step-num">Step 01</p>
+        <p class="how-step-title">Get your Passport</p>
+        <p class="how-step-desc">$11 one-time. Unlocks communities, the directory, discussions, and your affiliate link.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+        </div>
+        <p class="how-step-num">Step 02</p>
+        <p class="how-step-title">Find your community</p>
+        <p class="how-step-desc">Join your city's VE community. Meet people, attend events, and get plugged into the network.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+        <p class="how-step-num">Step 03</p>
+        <p class="how-step-title">Apply to run one</p>
+        <p class="how-step-desc">Ready to build? Apply to run a community at $111/month. Or apply for a grant if your org qualifies.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+        </div>
+        <p class="how-step-num">Step 04</p>
+        <p class="how-step-title">Grow and earn</p>
+        <p class="how-step-desc">Earn affiliate commissions on every member who joins the platform through your link. The bigger your community, the bigger the return.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIND A COMMUNITY -->
+  <section style="padding:88px 56px;background:var(--ve-green-light);border-top:1px solid var(--ve-green-mid);" id="directory" aria-labelledby="find-h2">
+    <div style="display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;">
+      <div>
+        <p class="section-eyebrow">The network</p>
+        <h2 class="section-h2" id="find-h2">Find your community</h2>
+        <p class="section-sub" style="margin-bottom:32px;">Browse communities by city and region. Each one is a full hub for vegan life in that area: news, events, local listings, newsletters, and more. VE-run communities are free to join for all members.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="/communities" class="btn-green">Browse all communities</a>
+          <a href="/intake.html" style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;border-radius:4px;text-decoration:none;background:transparent;color:var(--ve-green-dark);border:2px solid var(--ve-green);transition:all 0.15s;">Suggest your city</a>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:300px;">
+        <div style="background:#fff;border-radius:10px;border:1.5px solid var(--ve-green-mid);padding:20px 18px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:-0.03em;color:var(--ve-text);line-height:1;">8</p>
+          <p style="font-size:9px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-text-30);margin-top:4px;">Launch cities</p>
+        </div>
+        <div style="background:#fff;border-radius:10px;border:1.5px solid var(--ve-green-mid);padding:20px 18px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:-0.03em;color:var(--ve-text);line-height:1;">3</p>
+          <p style="font-size:9px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-text-30);margin-top:4px;">Partner orgs</p>
+        </div>
+        <div style="background:var(--ve-green);border-radius:10px;padding:20px 18px;grid-column:span 2;">
+          <p style="font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:6px;">Each community includes</p>
+          <p style="font-size:12px;font-weight:500;color:#fff;line-height:1.7;">News &amp; updates<br>Event calendar<br>Local directory listings<br>Newsletter<br>Community partners</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM CTA -->
+  <section class="bottom-cta" aria-labelledby="cta-h2">
+    <h2 class="section-h2" id="cta-h2" style="color:#fff;margin-bottom:32px;">Ready to get started?</h2>
+    <div class="bottom-cta-inner">
+      <div class="cta-block light">
+        <p class="cta-eyebrow">For members</p>
+        <p class="cta-price" style="font-size:36px;line-height:1.15;">Free<span style="font-size:20px;color:rgba(255,255,255,0.4);"> or </span>$11</p>
+        <p class="cta-price-note">VE-run free - partner communities $11 each or $11/mo Passport</p>
+        <h3 class="cta-title">Join a community</h3>
+        <p class="cta-desc">VE-run city communities are free for every member. Partner communities are $11 each - or $11/month for unlimited access as a Passport Holder.</p>
+        <a href="/passport.html" class="btn-white">Get your Passport</a>
+      </div>
+      <div class="cta-block accent">
+        <p class="cta-eyebrow">For community managers</p>
+        <p class="cta-price">$111</p>
+        <p class="cta-price-note">Per month - or apply for a grant</p>
+        <h3 class="cta-title">Run a community</h3>
+        <p class="cta-desc">Bring your community onto our platform. Event module and Content Manager included. New modules added regularly. Earn affiliate commissions on every member you bring in.</p>
+        <a href="/intake.html" class="btn-white">Apply to run a community</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <script src="/public/footer.js"></script>
+
+</div>
+
+<script>
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

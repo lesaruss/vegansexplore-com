@@ -50,6 +50,7 @@
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') || isCurrent('/guides/ve-guide-chat-v1') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
+        '<a href="/platform"' + cur('/platform') + '>Platform</a>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/passport"' + cur('/passport') + '>Passport</a>' +
       '</div>' +
@@ -61,6 +62,7 @@
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
+        '<a href="/platform"' + cur('/platform') + '>Platform</a>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/passport"' + cur('/passport') + '>Passport</a>' +
       '</div>' +
