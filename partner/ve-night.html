@@ -554,6 +554,61 @@
       .compare-wrap[data-active-tier="4"] .compare-col-head:nth-child(5) { color: var(--ve-orange); }
       .compare-wrap[data-active-tier="4"] .compare-col-head:nth-child(5) .compare-price-head { color: var(--ve-orange); }
     }
+
+    /* ── EVENT CITY TILES ── */
+    .event-city-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .ec-card-wrap { perspective: 1200px; height: 420px; position: relative; }
+    .ec-flip { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.4,0,0.2,1); }
+    .ec-flip.is-flipped { transform: rotateY(180deg); }
+    .ec-front, .ec-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
+
+    /* FRONT */
+    .ec-front { background: #1a1a1a; cursor: pointer; }
+    .ec-front img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+    .ec-card-wrap:hover .ec-front img { transform: scale(1.03); }
+    .ec-front-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%); }
+    .ec-front-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; }
+    .ec-front-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+    .ec-front-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-orange); flex-shrink: 0; }
+    .ec-front-city { font-size: clamp(20px, 2.2vw, 26px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 4px; }
+    .ec-front-region { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.72); margin-bottom: 18px; }
+    .ec-flip-btn { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; }
+    .ec-flip-btn.to-back { background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(4px); }
+    .ec-flip-btn.to-back:hover { background: rgba(255,255,255,0.28); }
+    .ec-flip-btn.to-front { background: transparent; color: var(--ve-text-50); border: 1.5px solid var(--ve-border); font-size: 10px; padding: 8px 14px; }
+    .ec-flip-btn.to-front:hover { color: var(--ve-text); border-color: var(--ve-text-50); }
+
+    /* BACK */
+    .ec-back { transform: rotateY(180deg); background: #fff; border: 1.5px solid var(--ve-border); padding: 22px 22px 18px; display: flex; flex-direction: column; }
+    .ec-back-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #8a5200; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+    .ec-back-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #8a5200; flex-shrink: 0; }
+    .ec-back-city { font-size: 19px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 2px; color: var(--ve-text); }
+    .ec-back-loc { font-size: 11px; font-weight: 600; color: #666; margin-bottom: 12px; }
+    .ec-divider { height: 1px; background: var(--ve-border); margin-bottom: 12px; }
+    .ec-features { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; flex: 1; }
+    .ec-feature { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 600; color: var(--ve-text-75); }
+    .ec-feature::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: rgba(246,152,32,0.45); flex-shrink: 0; }
+    .ec-tier-row { display: flex; align-items: stretch; border: 1.5px solid var(--ve-border); border-radius: 8px; overflow: hidden; margin-bottom: 14px; }
+    .ec-tier-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 9px 8px; gap: 2px; background: #fafafa; }
+    .ec-tier-divider { width: 1px; background: var(--ve-border); flex-shrink: 0; }
+    .ec-tier-val { font-size: 14px; font-weight: 900; letter-spacing: -0.02em; line-height: 1; color: var(--ve-text); }
+    .ec-tier-label { font-size: 8px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #666; }
+    .ec-back-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+    .ec-apply-btn { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; background: #1a1a1a; color: #fff; border: none; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+    .ec-apply-btn:hover { background: #333; }
+
+    @media (max-width: 960px) {
+      .event-city-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .event-city-grid { grid-template-columns: 1fr; }
+      .ec-card-wrap { height: 400px; }
+    }
   </style>
 </head>
 <body>
@@ -658,14 +713,273 @@
       </div>
     </div>
 
-    <p class="eyebrow" style="margin-bottom:16px;">Participating Cities</p>
-    <div class="cities-strip" role="list" aria-label="Event cities">
-      <div class="city-badge" role="listitem"><span class="city-flag" aria-hidden="true">🇺🇸</span><span class="city-name-txt">South Florida</span></div>
-      <div class="city-badge" role="listitem"><span class="city-flag" aria-hidden="true">🇺🇸</span><span class="city-name-txt">Atlanta</span></div>
-      <div class="city-badge" role="listitem"><span class="city-flag" aria-hidden="true">🇺🇸</span><span class="city-name-txt">Los Angeles</span></div>
-      <div class="city-badge" role="listitem"><span class="city-flag" aria-hidden="true">🇬🇧</span><span class="city-name-txt">London</span></div>
-      <div class="city-badge" role="listitem"><span class="city-flag" aria-hidden="true">📍</span><span class="city-name-txt">More TBA</span></div>
-      <div class="city-badge online-badge" role="listitem"><span class="city-flag" aria-hidden="true">🌐</span><span class="city-name-txt">Online</span></div>
+  </section>
+
+  <!-- EVENT CITIES -->
+  <section class="section" aria-labelledby="regions-h2">
+    <p class="eyebrow">Event Cities</p>
+    <h2 class="section-title" id="regions-h2">Six Cities.<br>One Night.</h2>
+    <p class="section-sub">Each city runs its own event on July 1. Venue locations are being confirmed now. City-level packages let you put your brand in the markets that matter most.</p>
+
+    <div class="event-city-grid" role="list" aria-label="VE Night event cities">
+      <div class="ec-card-wrap" role="listitem" aria-label="South Florida VE Night partner opportunities">
+        <div class="ec-flip">
+          <div class="ec-front">
+            <img src="/communities/south-florida/banner.jpg" alt="South Florida illustrated cityscape" loading="lazy">
+            <div class="ec-front-overlay" aria-hidden="true"></div>
+            <div class="ec-front-content">
+              <p class="ec-front-tag">VE Night</p>
+              <h3 class="ec-front-city">South Florida</h3>
+              <p class="ec-front-region">SoFlo Vegans &middot; Florida, USA</p>
+              <button class="ec-flip-btn to-back" aria-label="See partner opportunities in South Florida">
+                See Opportunities
+              </button>
+            </div>
+          </div>
+          <div class="ec-back">
+            <span class="ec-back-tag">VE Night &middot; July 1, 2026</span>
+            <h3 class="ec-back-city">South Florida</h3>
+            <p class="ec-back-loc">Location TBD &middot; SoFlo Vegans &middot; Florida, USA</p>
+            <div class="ec-divider" aria-hidden="true"></div>
+            <ul class="ec-features" aria-label="What sponsors get in South Florida">
+              <li class="ec-feature">Sampling station or vendor table at the event</li>
+              <li class="ec-feature">Event program listing and city community page link</li>
+              <li class="ec-feature">Pre-event social mention to the local city audience</li>
+              <li class="ec-feature">Sponsor recognition at the event</li>
+            </ul>
+            <div class="ec-tier-row" aria-label="Available packages">
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$1,000</span>
+                <span class="ec-tier-label">Vendor</span>
+              </div>
+              <div class="ec-tier-divider" aria-hidden="true"></div>
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$3,000</span>
+                <span class="ec-tier-label">City Sponsor</span>
+              </div>
+            </div>
+            <div class="ec-back-footer">
+              <button class="ec-flip-btn to-front" aria-label="Back to South Florida photo">&larr; Back</button>
+              <button class="ec-apply-btn" onclick="openApply('City Sponsor','$3,000 / city',false)" aria-label="Apply to sponsor in South Florida">Apply to Sponsor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ec-card-wrap" role="listitem" aria-label="Central Florida VE Night partner opportunities">
+        <div class="ec-flip">
+          <div class="ec-front">
+            <img src="/communities/central-florida/banner.jpg" alt="Central Florida illustrated skyline" loading="lazy">
+            <div class="ec-front-overlay" aria-hidden="true"></div>
+            <div class="ec-front-content">
+              <p class="ec-front-tag">VE Night</p>
+              <h3 class="ec-front-city">Central Florida</h3>
+              <p class="ec-front-region">Orlando &middot; Tampa &middot; St. Pete</p>
+              <button class="ec-flip-btn to-back" aria-label="See partner opportunities in Central Florida">
+                See Opportunities
+              </button>
+            </div>
+          </div>
+          <div class="ec-back">
+            <span class="ec-back-tag">VE Night &middot; July 1, 2026</span>
+            <h3 class="ec-back-city">Central Florida</h3>
+            <p class="ec-back-loc">Location TBD &middot; Orlando &middot; Tampa &middot; St. Pete</p>
+            <div class="ec-divider" aria-hidden="true"></div>
+            <ul class="ec-features" aria-label="What sponsors get in Central Florida">
+              <li class="ec-feature">Sampling station or vendor table at the event</li>
+              <li class="ec-feature">Event program listing and city community page link</li>
+              <li class="ec-feature">Pre-event social mention to the local city audience</li>
+              <li class="ec-feature">Sponsor recognition at the event</li>
+            </ul>
+            <div class="ec-tier-row" aria-label="Available packages">
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$1,000</span>
+                <span class="ec-tier-label">Vendor</span>
+              </div>
+              <div class="ec-tier-divider" aria-hidden="true"></div>
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$3,000</span>
+                <span class="ec-tier-label">City Sponsor</span>
+              </div>
+            </div>
+            <div class="ec-back-footer">
+              <button class="ec-flip-btn to-front" aria-label="Back to Central Florida photo">&larr; Back</button>
+              <button class="ec-apply-btn" onclick="openApply('City Sponsor','$3,000 / city',false)" aria-label="Apply to sponsor in Central Florida">Apply to Sponsor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ec-card-wrap" role="listitem" aria-label="Atlanta VE Night partner opportunities">
+        <div class="ec-flip">
+          <div class="ec-front">
+            <img src="/communities/atlanta/banner.jpg" alt="Atlanta illustrated skyline" loading="lazy">
+            <div class="ec-front-overlay" aria-hidden="true"></div>
+            <div class="ec-front-content">
+              <p class="ec-front-tag">VE Night</p>
+              <h3 class="ec-front-city">Atlanta</h3>
+              <p class="ec-front-region">Georgia, USA</p>
+              <button class="ec-flip-btn to-back" aria-label="See partner opportunities in Atlanta">
+                See Opportunities
+              </button>
+            </div>
+          </div>
+          <div class="ec-back">
+            <span class="ec-back-tag">VE Night &middot; July 1, 2026</span>
+            <h3 class="ec-back-city">Atlanta</h3>
+            <p class="ec-back-loc">Location TBD &middot; Georgia, USA</p>
+            <div class="ec-divider" aria-hidden="true"></div>
+            <ul class="ec-features" aria-label="What sponsors get in Atlanta">
+              <li class="ec-feature">Sampling station or vendor table at the event</li>
+              <li class="ec-feature">Event program listing and city community page link</li>
+              <li class="ec-feature">Pre-event social mention to the local city audience</li>
+              <li class="ec-feature">Sponsor recognition at the event</li>
+            </ul>
+            <div class="ec-tier-row" aria-label="Available packages">
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$1,000</span>
+                <span class="ec-tier-label">Vendor</span>
+              </div>
+              <div class="ec-tier-divider" aria-hidden="true"></div>
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$3,000</span>
+                <span class="ec-tier-label">City Sponsor</span>
+              </div>
+            </div>
+            <div class="ec-back-footer">
+              <button class="ec-flip-btn to-front" aria-label="Back to Atlanta photo">&larr; Back</button>
+              <button class="ec-apply-btn" onclick="openApply('City Sponsor','$3,000 / city',false)" aria-label="Apply to sponsor in Atlanta">Apply to Sponsor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ec-card-wrap" role="listitem" aria-label="New York VE Night partner opportunities">
+        <div class="ec-flip">
+          <div class="ec-front">
+            <img src="/communities/new-york/banner.jpg" alt="New York City illustrated skyline" loading="lazy">
+            <div class="ec-front-overlay" aria-hidden="true"></div>
+            <div class="ec-front-content">
+              <p class="ec-front-tag">VE Night</p>
+              <h3 class="ec-front-city">New York</h3>
+              <p class="ec-front-region">New York, USA</p>
+              <button class="ec-flip-btn to-back" aria-label="See partner opportunities in New York">
+                See Opportunities
+              </button>
+            </div>
+          </div>
+          <div class="ec-back">
+            <span class="ec-back-tag">VE Night &middot; July 1, 2026</span>
+            <h3 class="ec-back-city">New York</h3>
+            <p class="ec-back-loc">Location TBD &middot; New York, USA</p>
+            <div class="ec-divider" aria-hidden="true"></div>
+            <ul class="ec-features" aria-label="What sponsors get in New York">
+              <li class="ec-feature">Sampling station or vendor table at the event</li>
+              <li class="ec-feature">Event program listing and city community page link</li>
+              <li class="ec-feature">Pre-event social mention to the local city audience</li>
+              <li class="ec-feature">Sponsor recognition at the event</li>
+            </ul>
+            <div class="ec-tier-row" aria-label="Available packages">
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$1,000</span>
+                <span class="ec-tier-label">Vendor</span>
+              </div>
+              <div class="ec-tier-divider" aria-hidden="true"></div>
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$3,000</span>
+                <span class="ec-tier-label">City Sponsor</span>
+              </div>
+            </div>
+            <div class="ec-back-footer">
+              <button class="ec-flip-btn to-front" aria-label="Back to New York photo">&larr; Back</button>
+              <button class="ec-apply-btn" onclick="openApply('City Sponsor','$3,000 / city',false)" aria-label="Apply to sponsor in New York">Apply to Sponsor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ec-card-wrap" role="listitem" aria-label="Los Angeles VE Night partner opportunities">
+        <div class="ec-flip">
+          <div class="ec-front">
+            <img src="/communities/los-angeles/banner.jpg" alt="Los Angeles illustrated skyline with palm trees" loading="lazy">
+            <div class="ec-front-overlay" aria-hidden="true"></div>
+            <div class="ec-front-content">
+              <p class="ec-front-tag">VE Night</p>
+              <h3 class="ec-front-city">Los Angeles</h3>
+              <p class="ec-front-region">California, USA</p>
+              <button class="ec-flip-btn to-back" aria-label="See partner opportunities in Los Angeles">
+                See Opportunities
+              </button>
+            </div>
+          </div>
+          <div class="ec-back">
+            <span class="ec-back-tag">VE Night &middot; July 1, 2026</span>
+            <h3 class="ec-back-city">Los Angeles</h3>
+            <p class="ec-back-loc">Location TBD &middot; California, USA</p>
+            <div class="ec-divider" aria-hidden="true"></div>
+            <ul class="ec-features" aria-label="What sponsors get in Los Angeles">
+              <li class="ec-feature">Sampling station or vendor table at the event</li>
+              <li class="ec-feature">Event program listing and city community page link</li>
+              <li class="ec-feature">Pre-event social mention to the local city audience</li>
+              <li class="ec-feature">Sponsor recognition at the event</li>
+            </ul>
+            <div class="ec-tier-row" aria-label="Available packages">
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$1,000</span>
+                <span class="ec-tier-label">Vendor</span>
+              </div>
+              <div class="ec-tier-divider" aria-hidden="true"></div>
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$3,000</span>
+                <span class="ec-tier-label">City Sponsor</span>
+              </div>
+            </div>
+            <div class="ec-back-footer">
+              <button class="ec-flip-btn to-front" aria-label="Back to Los Angeles photo">&larr; Back</button>
+              <button class="ec-apply-btn" onclick="openApply('City Sponsor','$3,000 / city',false)" aria-label="Apply to sponsor in Los Angeles">Apply to Sponsor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ec-card-wrap" role="listitem" aria-label="London VE Night partner opportunities">
+        <div class="ec-flip">
+          <div class="ec-front">
+            <img src="/communities/london/banner.jpg" alt="London illustrated Tower Bridge at night" loading="lazy">
+            <div class="ec-front-overlay" aria-hidden="true"></div>
+            <div class="ec-front-content">
+              <p class="ec-front-tag">VE Night</p>
+              <h3 class="ec-front-city">London</h3>
+              <p class="ec-front-region">England, UK</p>
+              <button class="ec-flip-btn to-back" aria-label="See partner opportunities in London">
+                See Opportunities
+              </button>
+            </div>
+          </div>
+          <div class="ec-back">
+            <span class="ec-back-tag">VE Night &middot; July 1, 2026</span>
+            <h3 class="ec-back-city">London</h3>
+            <p class="ec-back-loc">Location TBD &middot; England, UK</p>
+            <div class="ec-divider" aria-hidden="true"></div>
+            <ul class="ec-features" aria-label="What sponsors get in London">
+              <li class="ec-feature">Sampling station or vendor table at the event</li>
+              <li class="ec-feature">Event program listing and city community page link</li>
+              <li class="ec-feature">Pre-event social mention to the local city audience</li>
+              <li class="ec-feature">Sponsor recognition at the event</li>
+            </ul>
+            <div class="ec-tier-row" aria-label="Available packages">
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$1,000</span>
+                <span class="ec-tier-label">Vendor</span>
+              </div>
+              <div class="ec-tier-divider" aria-hidden="true"></div>
+              <div class="ec-tier-item">
+                <span class="ec-tier-val">$3,000</span>
+                <span class="ec-tier-label">City Sponsor</span>
+              </div>
+            </div>
+            <div class="ec-back-footer">
+              <button class="ec-flip-btn to-front" aria-label="Back to London photo">&larr; Back</button>
+              <button class="ec-apply-btn" onclick="openApply('City Sponsor','$3,000 / city',false)" aria-label="Apply to sponsor in London">Apply to Sponsor</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1300,6 +1614,30 @@
           e.preventDefault(); activate(tabs[0]); tabs[0].focus();
         } else if (e.key === 'End') {
           e.preventDefault(); activate(tabs[tabs.length - 1]); tabs[tabs.length - 1].focus();
+        }
+      });
+    });
+  }());
+
+  // Event city flip cards
+  (function () {
+    document.querySelectorAll('.ec-card-wrap').forEach(function (wrap) {
+      var flip = wrap.querySelector('.ec-flip');
+      var toBack = wrap.querySelector('.ec-flip-btn.to-back');
+      var toFront = wrap.querySelector('.ec-flip-btn.to-front');
+      if (toBack) toBack.addEventListener('click', function () {
+        flip.classList.add('is-flipped');
+        var firstFocus = wrap.querySelector('.ec-back .ec-flip-btn, .ec-back .ec-apply-btn');
+        if (firstFocus) setTimeout(function(){ firstFocus.focus(); }, 560);
+      });
+      if (toFront) toFront.addEventListener('click', function () {
+        flip.classList.remove('is-flipped');
+        if (toBack) setTimeout(function(){ toBack.focus(); }, 560);
+      });
+      wrap.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && flip.classList.contains('is-flipped')) {
+          flip.classList.remove('is-flipped');
+          if (toBack) toBack.focus();
         }
       });
     });
