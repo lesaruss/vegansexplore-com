@@ -3,874 +3,607 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegans Explore — Your Guides (Mock v1)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Vegans Explore: The Vegan Community Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --ve-green: #3A9B3E;
-      --ve-green-dark: #2d7d31;
-      --ve-green-light: #e8f5e9;
-      --ve-green-mid: #c8e6c9;
-      --ve-orange: #F69820;
-      --ve-orange-text: #7d4a00;
-      --ve-black: #1A1A1A;
-      --ve-gray: #555555;
-      --ve-border: rgba(0,0,0,0.09);
-      --ve-surface: #ffffff;
-      --ve-surface2: #f7faf7;
-      --ve-text: #1a1a1a;
-      --ve-text-75: rgba(26,26,26,0.75);
-      --ve-text-50: rgba(26,26,26,0.50);
-      --ve-text-30: rgba(26,26,26,0.35);
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #b8ddb9;
+      --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
     }
+    html { scroll-behavior: smooth; }
+    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .ve-nav { position: sticky; top: 0; z-index: 400; background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--ve-border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 60px; gap: 16px; }
+    .ve-wordmark { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .ve-leaf { width: 26px; height: 26px; background: var(--ve-green); border-radius: 50% 3px 50% 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .ve-leaf svg { width: 13px; height: 13px; fill: #fff; }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6B6B; text-decoration: none; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--ve-green); }
+    .nav-cta { background: var(--ve-orange); color: #fff !important; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 4px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
+    .nav-cta:hover { background: var(--ve-orange-dark) !important; }
 
-    body {
-      background: #f5f5f5;
-      color: var(--ve-text);
-      font-family: 'Montserrat', sans-serif;
-      min-height: 100vh;
+    /* ── Hero: Guide-Focused ── */
+    .hero {
+      position: relative;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      background-image: url('/public/events/vegan-foodie-fest-2025.jpg');
+      background-size: cover;
+      background-position: center 40%;
+      background-repeat: no-repeat;
+      overflow: hidden;
     }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.98) 0%,
+        rgba(0,0,0,0.94) 30%,
+        rgba(0,0,0,0.70) 54%,
+        rgba(0,0,0,0.24) 70%,
+        transparent 86%
+      );
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 40%);
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      padding: 88px 56px 72px;
+      max-width: 600px;
+    }
+    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    .hero h1 { font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
+    .hero h1 em { color: var(--ve-green); font-style: normal; display: block; }
+    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.82); max-width: 420px; margin-bottom: 36px; }
+    .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+    .btn-hero-primary { background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
+    .btn-hero-primary:hover { background: var(--ve-orange-dark); }
+    .btn-hero-ghost { background: transparent; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 28px; border-radius: 4px; text-decoration: none; transition: all 0.15s; display: inline-block; border: 1.5px solid rgba(255,255,255,0.2); }
+    .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+    .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.50); margin-bottom: 40px; }
 
-    /* ======== VIEWPORT SWITCHER ======== */
-    .vp-switcher {
-      position: fixed; bottom: 24px; right: 0; z-index: 999;
-      display: flex; flex-direction: column; align-items: flex-end; gap: 0;
-    }
-    .vp-handle {
-      background: var(--ve-orange); color: #fff;
-      font-size: 9px; font-weight: 800; letter-spacing: 0.12em;
-      text-transform: uppercase; writing-mode: vertical-rl;
-      padding: 12px 7px; border-radius: 6px 0 0 6px;
-      cursor: pointer; border: none; user-select: none;
-      box-shadow: -2px 0 8px rgba(0,0,0,0.12);
-    }
-    .vp-panel {
-      display: none; background: #fff; border: 1px solid var(--ve-border);
-      border-right: none; border-radius: 8px 0 0 8px;
-      padding: 10px 12px; gap: 8px; flex-direction: column;
-      box-shadow: -2px 0 12px rgba(0,0,0,0.10);
-    }
-    .vp-panel.open { display: flex; }
-    .vp-btn {
-      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      background: var(--ve-surface2); border: 1px solid var(--ve-border);
-      border-radius: 4px; padding: 6px 10px; cursor: pointer;
-      color: var(--ve-text-75); white-space: nowrap;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-    .vp-btn:hover, .vp-btn.active { background: var(--ve-green-light); color: var(--ve-green); border-color: var(--ve-green); }
 
-    /* ======== MOCK FRAME ======== */
-    #mockFrame {
-      width: 100%; max-width: 1200px; min-height: 100vh;
-      background: #fff; margin: 0 auto;
-      display: flex; flex-direction: column;
-      transition: max-width 0.25s ease;
-    }
-    #mockFrame.tablet { max-width: 768px; }
-    #mockFrame.mobile { max-width: 390px; }
+    /* ── Stats Bar ── */
+    .stats-bar { background: var(--ve-green-dark); padding: 22px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .stat-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .stat-num { font-size: 26px; font-weight: 900; letter-spacing: -0.03em; color: #fff; line-height: 1; }
+    .stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #ffffff; }
+    .stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); }
 
-    /* ======== HEADER ======== */
-    .ve-header {
-      position: sticky; top: 0; z-index: 400; width: 100%;
-      background: rgba(255,255,255,0.97);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--ve-border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px; height: 56px; gap: 12px;
-    }
-    .ve-wordmark {
-      font-size: 15px; font-weight: 900; text-transform: uppercase;
-      letter-spacing: 0.04em; color: var(--ve-text);
-      display: flex; align-items: center; gap: 7px; text-decoration: none;
-    }
-    .ve-leaf {
-      width: 22px; height: 22px; background: var(--ve-green);
-      border-radius: 50% 2px 50% 2px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .ve-leaf svg { width: 12px; height: 12px; fill: #fff; }
-    .header-nav { display: flex; align-items: center; gap: 24px; }
-    .header-nav a {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--ve-text-50);
-      text-decoration: none; transition: color 0.15s;
-    }
-    .header-nav a:hover { color: var(--ve-green); }
-    .header-nav a.nav-current { color: var(--ve-green-dark); border-bottom: 2px solid var(--ve-green-dark); padding-bottom: 2px; }
-    .header-cta {
-      background: var(--ve-green); color: #fff;
-      font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
-      text-transform: uppercase; padding: 8px 18px; border-radius: 4px;
-      text-decoration: none; transition: background 0.15s; white-space: nowrap;
-    }
-    .header-cta:hover { background: var(--ve-green-dark); }
+    /* ── Shared Section Styles ── */
+    .section-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    .section-h2 { font-size: clamp(26px, 3.5vw, 44px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.06; margin-bottom: 12px; }
+    .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 560px; }
 
-    /* ======== PAGE HERO ======== */
-    main { padding: 48px 32px 80px; max-width: 1200px; margin: 0 auto; width: 100%; }
-    .breadcrumb {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--ve-text-50);
-      margin-bottom: 20px; display: flex; gap: 8px; align-items: center;
-    }
-    .breadcrumb a { color: var(--ve-text-50); text-decoration: none; }
-    .breadcrumb a:hover { color: var(--ve-green); }
-    .page-eyebrow {
-      font-size: 11px; font-weight: 800; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--ve-green);
-      margin-bottom: 10px;
-    }
-    .page-title {
-      font-size: clamp(36px, 5vw, 58px); font-weight: 900;
-      text-transform: uppercase; letter-spacing: -0.02em;
-      line-height: 1.0; color: var(--ve-text); margin-bottom: 14px;
-    }
-    .page-sub {
-      font-size: 15px; font-weight: 400; color: var(--ve-text-75);
-      line-height: 1.65; max-width: 560px; margin-bottom: 36px;
-    }
+    /* ── Paths Section ── */
+    .paths-section { padding: 80px 56px; background: #fff; }
+    .paths-section .section-sub { margin-bottom: 52px; }
+    .how-section { padding: 80px 56px; background: #f9f9f9; border-top: 1px solid var(--ve-border); border-bottom: 1px solid var(--ve-border); }
+    .how-section .section-sub { margin-bottom: 56px; }
+    .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+    .how-grid::before { content: ''; position: absolute; top: 28px; left: calc(12.5% + 16px); right: calc(12.5% + 16px); height: 1px; background: var(--ve-green-mid); z-index: 0; }
+    .how-step { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 16px; position: relative; z-index: 1; }
+    .how-dot { width: 56px; height: 56px; border-radius: 50%; background: #fff; border: 2px solid var(--ve-green-mid); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; flex-shrink: 0; }
+    .how-dot.active { background: var(--ve-green); border-color: var(--ve-green); }
+    .how-dot svg { width: 22px; height: 22px; fill: var(--ve-green); }
+    .how-dot.active svg { fill: #fff; }
+    .how-step-num { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #6B6B6B; margin-bottom: 8px; }
+    .how-step-title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ve-text); margin-bottom: 8px; }
+    .how-step-desc { font-size: 12px; font-weight: 400; color: #6B6B6B; line-height: 1.6; }
 
-    /* ======== FILTER BAR ======== */
-    .filter-bar {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 32px; flex-wrap: wrap;
-    }
-    .filter-label {
-      font-size: 10px; font-weight: 800; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--ve-text-50);
-      margin-right: 4px;
-    }
-    .filter-btn {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; padding: 7px 14px;
-      border: 1px solid var(--ve-border); border-radius: 40px;
-      background: var(--ve-surface2); color: var(--ve-text-75);
-      cursor: pointer; transition: all 0.15s; white-space: nowrap;
-    }
-    .filter-btn:hover { border-color: var(--ve-green); color: var(--ve-green); background: var(--ve-green-light); }
-    .filter-btn.active { background: var(--ve-green); color: #fff; border-color: var(--ve-green); }
-    .roster-count {
-      margin-left: auto;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--ve-text-50);
-    }
+    /* ── Guide Cards ── */
+    .guides-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+    .flip-card { perspective: 1000px; height: 340px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; overflow: hidden; }
+    .flip-card-front { background: #fff; border: 1px solid var(--ve-border); box-shadow: 0 4px 24px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
+    .flip-front-img { flex: 1; overflow: hidden; }
+    .flip-front-img img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .flip-front-body { padding: 14px 18px; background: #fff; flex-shrink: 0; }
+    .flip-front-name { font-size: 15px; font-weight: 900; color: #1A1A1A; margin-bottom: 3px; }
+    .flip-front-role { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+    .flip-card-back { transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px 20px; }
+    .flip-back-overlay { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.55) 100%); }
+    .flip-back-content { position: relative; z-index: 1; }
+    .flip-back-path-label { font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+    .flip-back-path-name { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #fff; line-height: 1.15; margin-bottom: 10px; }
+    .flip-back-desc { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.78); line-height: 1.55; margin-bottom: 18px; }
+    .flip-back-btn { display: block; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px; text-decoration: none; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); color: #fff; transition: all 0.15s; }
+    .flip-back-btn:hover { background: rgba(255,255,255,0.3); }
+    .flip-hint { text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-top: 20px; }
 
-    /* ======== CARD GRID ======== */
-    .roster-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
-    }
+    /* ── Passport ── */
+    .passport-section { padding: 80px 56px; background: #1A1A1A; }
+    .passport-section .section-eyebrow::before { background: var(--ve-green); }
+    .passport-section .section-h2 { color: #fff; }
+    .passport-section .section-sub { color: rgba(255,255,255,0.55); margin-bottom: 52px; }
+    .passport-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+    .tier-card { border-radius: 12px; padding: 28px 24px; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 6px; }
+    .tier-card.featured { border-color: var(--ve-orange); background: rgba(246,152,32,0.07); }
+    .tier-badge { font-size: 8px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-orange); margin-bottom: 4px; }
+    .tier-badge.green { color: var(--ve-green); }
+    .tier-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 8px; }
+    .tier-price { font-size: 44px; font-weight: 900; letter-spacing: -0.04em; color: #fff; line-height: 1; }
+    .tier-period { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); }
+    .tier-note { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 12px; }
+    .tier-card.featured .tier-note { color: var(--ve-orange); }
+    .tier-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 4px 0 12px; }
+    .tier-desc { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.5); line-height: 1.6; flex: 1; }
+    .tier-btn { display: block; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 16px; border-radius: 4px; text-decoration: none; transition: all 0.15s; border: 1.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); margin-top: 8px; }
+    .tier-btn:hover { border-color: #fff; color: #fff; }
+    .tier-btn.featured-btn { background: var(--ve-orange); border-color: var(--ve-orange); color: #fff; }
+    .tier-btn.featured-btn:hover { background: var(--ve-orange-dark); }
+    .passport-all-cta { text-align: center; }
+    .passport-all-cta a { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.15s; }
+    .passport-all-cta a:hover { color: rgba(255,255,255,0.7); }
 
-    /* ======== FLIP CARD ======== */
-    .card-wrap {
-      height: 420px;
-      perspective: 1200px;
-      cursor: pointer;
-      outline: none;
-    }
-    .card-wrap:focus-visible .card-inner {
-      box-shadow: 0 0 0 3px var(--ve-green), 0 8px 32px rgba(0,0,0,0.10);
-    }
-    .card-inner {
-      position: relative; width: 100%; height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    }
-    .card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+    /* ── Vision ── */
+    .vision-section { padding: 80px 56px; background: var(--ve-green-light); border-top: 1px solid var(--ve-green-mid); border-bottom: 1px solid var(--ve-green-mid); }
+    .vision-section .section-sub { margin-bottom: 48px; }
+    .vision-timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--ve-green-mid); border-radius: 12px; overflow: hidden; }
+    .vision-year { padding: 28px 24px; border-right: 1px solid var(--ve-green-mid); display: flex; flex-direction: column; gap: 6px; background: #fff; }
+    .vision-year:last-child { border-right: none; }
+    .vision-year.now { background: var(--ve-green-dark); }
+    .vision-yr { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6B6B; }
+    .vision-year.now .vision-yr { color: #ffffff; }
+    .vision-count { font-size: 32px; font-weight: 900; letter-spacing: -0.04em; color: var(--ve-text); line-height: 1; }
+    .vision-year.now .vision-count { color: #fff; }
+    .vision-unit { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6B6B; }
+    .vision-year.now .vision-unit { color: #ffffff; }
 
-    .card-front, .card-back {
-      position: absolute; inset: 0;
-      backface-visibility: hidden; -webkit-backface-visibility: hidden;
-      border-radius: 12px; overflow: hidden;
-      background: #fff; border: 1px solid var(--ve-border);
-    }
-    .card-back { transform: rotateY(180deg); }
+    /* ── CTA ── */
+    .cta-section { background: #fff; padding: 88px 56px; text-align: center; border-top: 1px solid var(--ve-border); }
+    .cta-section .section-eyebrow { justify-content: center; }
+    .cta-section .section-eyebrow::before { display: none; }
+    .cta-section .section-h2 { max-width: 600px; margin: 0 auto 16px; }
+    .cta-section .section-h2 em { color: var(--ve-green); font-style: normal; }
+    .cta-section p { font-size: 16px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 460px; margin: 0 auto 40px; }
+    .btn-cta-lg { background: var(--ve-orange); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 17px 40px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
+    .btn-cta-lg:hover { background: var(--ve-orange-dark); }
+    .cta-fine { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6B6B; }
+    .cta-section .cta-fine { margin: 28px auto 0; display: block; }
 
-    /* FRONT */
-    .card-front { display: flex; flex-direction: column; }
-    .card-avatar-area {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      background: var(--ve-surface2);
-      border-bottom: 1px solid var(--ve-border);
-      position: relative; min-height: 240px;
-    }
-    .guide-avatar {
-      width: 140px; height: 140px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 38px; font-weight: 900; color: #fff;
-      letter-spacing: -0.02em;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-      overflow: hidden; flex-shrink: 0;
-    }
-    .guide-avatar img {
-      width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
-    }
-    .card-badge {
-      position: absolute; top: 14px; left: 14px;
-      font-size: 9px; font-weight: 800; letter-spacing: 0.16em;
-      text-transform: uppercase; padding: 4px 10px;
-      border-radius: 40px; background: var(--ve-green); color: #fff;
-    }
-    .card-badge.supporting {
-      background: var(--ve-orange); color: #fff;
-    }
-    .flip-hint {
-      position: absolute; bottom: 12px; right: 14px;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--ve-text-30);
-      display: flex; align-items: center; gap: 4px;
-    }
-    .flip-hint svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
-    .card-info {
-      padding: 18px 20px 20px;
-    }
-    .card-name {
-      font-size: 20px; font-weight: 900; letter-spacing: -0.01em;
-      color: var(--ve-text); margin-bottom: 2px;
-    }
-    .card-path {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
-      text-transform: uppercase; color: var(--ve-green);
-      margin-bottom: 8px;
-    }
-    .card-quote {
-      font-size: 13px; font-weight: 400; font-style: italic;
-      color: var(--ve-text-75); line-height: 1.5;
-      border-left: 3px solid var(--ve-green-mid);
-      padding-left: 10px;
-    }
-
-    /* BACK */
-    .card-back { display: flex; flex-direction: column; }
-    .card-back-header {
-      padding: 20px 20px 14px;
-      border-bottom: 1px solid var(--ve-border);
-    }
-    .back-guide-row {
-      display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
-    }
-    .back-avatar {
-      width: 42px; height: 42px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; font-weight: 900; color: #fff; flex-shrink: 0;
-    }
-    .back-name { font-size: 16px; font-weight: 900; color: var(--ve-text); }
-    .back-path {
-      font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
-      text-transform: uppercase; color: var(--ve-green);
-    }
-    .back-fit-label {
-      font-size: 9px; font-weight: 800; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--ve-text-50);
-    }
-    .card-back-body { flex: 1; padding: 14px 20px; overflow: hidden; }
-    .fit-list {
-      list-style: none; display: flex; flex-direction: column; gap: 8px;
-    }
-    .fit-list li {
-      font-size: 12px; font-weight: 500; color: var(--ve-text-75);
-      line-height: 1.45; display: flex; align-items: flex-start; gap: 8px;
-    }
-    .fit-check {
-      width: 16px; height: 16px; border-radius: 50%;
-      background: var(--ve-green-light); border: 1px solid var(--ve-green-mid);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 1px;
-    }
-    .fit-check svg { width: 9px; height: 9px; stroke: var(--ve-green); fill: none; stroke-width: 2.5; }
-    .card-back-footer { padding: 0 20px 20px; }
-    .free-cta {
-      display: block; width: 100%;
-      background: var(--ve-green); color: #fff;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 12px; font-weight: 800; letter-spacing: 0.1em;
-      text-transform: uppercase; padding: 12px 16px; border-radius: 6px;
-      text-align: center; text-decoration: none; border: none; cursor: pointer;
-      transition: background 0.15s; margin-bottom: 8px;
-    }
-    .free-cta:hover { background: var(--ve-green-dark); }
-    .upgrade-link {
-      display: block; text-align: center;
-      font-size: 11px; font-weight: 600; color: var(--ve-text-50);
-      text-decoration: none; transition: color 0.15s;
-    }
-    .upgrade-link strong { color: var(--ve-orange-text); font-weight: 800; }
-    .upgrade-link:hover { color: var(--ve-text); }
-    .flip-back-hint {
-      font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--ve-text-30);
-      text-align: center; margin-top: 6px;
-    }
-
-    /* ======== FOOTER ======== */
-    footer {
-      border-top: 1px solid var(--ve-border); padding: 28px 32px;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 16px; margin-top: 40px;
-    }
-    .footer-mark {
-      font-size: 13px; font-weight: 900; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--ve-text-50);
-    }
-    .footer-nav { display: flex; gap: 20px; flex-wrap: wrap; }
-    .footer-nav a {
-      font-size: 11px; font-weight: 600; color: var(--ve-text-50);
-      text-decoration: none; transition: color 0.15s;
-    }
-    .footer-nav a:hover { color: var(--ve-green); }
-    .footer-copy { font-size: 11px; color: var(--ve-text-30); }
-
-    @media (max-width: 600px) {
-      .header-nav { display: none; }
-      main { padding: 32px 16px 60px; }
-      .roster-grid { grid-template-columns: 1fr; }
-    }
-  
+    /* ── Footer ── */
+    .ve-footer { background: #1A1A1A; padding: 32px 56px; display: flex; align-items: center; justify-content: space-between; }
+    .footer-wordmark { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.7); }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.50); }
     .footer-social { display: flex; align-items: center; gap: 16px; }
     .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
     .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
     .footer-social .social-icon svg { display: block; }
+
+    /* ── Mobile Guide Picker ── */
+    .mobile-guide-picker { display: none; }
+    .mgp-select-wrap { position: relative; margin-bottom: 14px; user-select: none; }
+    .mgp-select-face { display: flex; align-items: center; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; padding: 11px 36px 11px 14px; cursor: pointer; background: #fff; }
+    .mgp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-right: 10px; }
+    .mgp-label { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; flex: 1; }
+    .mgp-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: rgba(26,26,26,0.4); font-size: 12px; pointer-events: none; }
+    .mgp-dropdown { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid rgba(26,26,26,0.15); border-radius: 6px; z-index: 10; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .mgp-dropdown.open { display: block; }
+    .mgp-option { display: flex; align-items: center; padding: 10px 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a1a1a; }
+    .mgp-option:hover { background: #f5f5f5; }
+    .mgp-option.active { background: #f0f0f0; }
+    .mgp-flip-card .flip-front-body { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .mgp-flip-icon { flex-shrink: 0; color: rgba(26,26,26,0.3); line-height: 0; }
+    .mgp-flip-card { height: calc((100vw - 40px) * 1.334 + 70px); margin-bottom: 10px; }
+    .mgp-thumb-strip { display: flex; gap: 2px; width: 100%; }
+    .mgp-thumb-tile { flex: 1; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s; }
+    .mgp-thumb-tile img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+
+    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .flip-card-inner { transition: none !important; }
+      .hero-guide-thumb { transition: none !important; }
+    }
+
+    @media (max-width: 768px) {
+      .ve-nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
+      .hero::before { background: rgba(0,0,0,0.32); }
+      .hero::after { display: none; }
+      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 32px 28px; max-width: calc(100% - 48px); margin: 0 24px 32px; border: 1px solid rgba(255,255,255,0.09); }
+      .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 60px 32px; }
+      .stats-bar { padding: 18px 32px; }
+      .how-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .how-grid::before { display: none; }
+      .guides-grid { grid-template-columns: repeat(3, 1fr); }
+      .passport-tiers { grid-template-columns: 1fr; gap: 12px; }
+      .vision-timeline { grid-template-columns: 1fr 1fr; }
+      .vision-year:nth-child(2) { border-right: none; }
+      .vision-year:nth-child(3) { border-top: 1px solid var(--ve-green-mid); }
+      .ve-footer { flex-direction: column; gap: 16px; padding: 28px 32px; text-align: center; }
+      .footer-links { justify-content: center; flex-wrap: wrap; }
+    }
+
+    @media (max-width: 480px) {
+      .ve-nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
+      .hero::before { background: rgba(0,0,0,0.32); }
+      .hero::after { display: none; }
+      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 28px 24px; max-width: calc(100% - 32px); margin: 0 16px 24px; border: 1px solid rgba(255,255,255,0.10); }
+      .stats-bar { padding: 16px 20px; gap: 10px; flex-wrap: wrap; justify-content: center; }
+      .stat-divider { display: none; }
+      .stat-passport { display: none; }
+      .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 52px 20px; }
+      .how-grid { grid-template-columns: 1fr; gap: 28px; }
+      .how-grid::before { display: none; }
+      .guides-grid { display: none; }
+      .mobile-guide-picker { display: block !important; }
+      .flip-card { height: 290px; }
+      .passport-tiers { grid-template-columns: 1fr; gap: 12px; }
+      .vision-timeline { grid-template-columns: 1fr 1fr; }
+      .vision-year:nth-child(2) { border-right: none; }
+      .vision-year:nth-child(3) { border-top: 1px solid var(--ve-green-mid); }
+      .ve-footer { flex-direction: column; gap: 14px; padding: 28px 20px; text-align: center; }
+      .footer-links { justify-content: center; flex-wrap: wrap; gap: 14px; }
+    }
   </style>
 </head>
 <body>
-
-<!-- VIEWPORT SWITCHER -->
-<div class="vp-switcher" role="complementary" aria-label="Viewport preview switcher">
-  <div class="vp-panel" id="vpPanel">
-    <button class="vp-btn active" onclick="setVP('desktop',this)" type="button">Desktop</button>
-    <button class="vp-btn" onclick="setVP('tablet',this)" type="button">Tablet</button>
-    <button class="vp-btn" onclick="setVP('mobile',this)" type="button">Mobile</button>
-  </div>
-  <button class="vp-handle" onclick="toggleVP()" type="button" aria-label="Toggle viewport switcher" aria-expanded="false" id="vpHandle">Preview</button>
-</div>
-
-<div id="mockFrame">
-
-  <!-- HEADER -->
+  <div class="page-frame">
   <script src="/public/nav.js"></script>
 
+  <!-- HERO: Guide-focused. Same background, new framing, guide portrait strip at bottom -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-inner">
+      <div class="hero-eyebrow" aria-hidden="true">Meet Your Guide</div>
+      <h1 id="hero-heading">Five Paths.<br><em>Your Guide is Waiting.</em></h1>
+      <p class="hero-sub">Tell us where you are in your vegan journey. Your Guide connects you to the right community, content, and resources for your path.</p>
+      <div class="hero-ctas">
+        <a href="/guides/ve-guides-roster-v1" class="btn-hero-primary">Find My Guide</a>
+      </div>
+    </div>
+  </section>
 
-  <!-- MAIN -->
-  <main>
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="#">Home</a>
-      <span aria-hidden="true">/</span>
-      <span aria-current="page">Guides</span>
-    </nav>
+  <!-- STATS BAR (unchanged) -->
+  <div class="stats-bar" role="list" aria-label="Platform statistics">
+    <div class="stat-item" role="listitem"><span class="stat-num">215+</span><span class="stat-label">Businesses Listed</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item" role="listitem"><span class="stat-num">5</span><span class="stat-label">Guide Paths</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item" role="listitem"><span class="stat-num">4</span><span class="stat-label">Active Communities</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item" role="listitem"><span class="stat-num">1,000</span><span class="stat-label">Communities by 2030</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item stat-passport" role="listitem"><span class="stat-num">$11</span><span class="stat-label">One-Time Passport</span></div>
+  </div>
 
-    <div class="page-eyebrow">Vegans Explore</div>
-    <h1 class="page-title">Your Guides.</h1>
-    <p class="page-sub">Five paths. Seven voices. One of them is going to feel like they're talking directly to you. Flip a card to find out if they're the right fit — then get your free getting started guide.</p>
+  <!-- PATHS SECTION (unchanged from current) -->
+  <section class="paths-section" aria-labelledby="paths-heading">
+    <div class="section-eyebrow" aria-hidden="true">Find Your Path</div>
+    <h2 class="section-h2" id="paths-heading">Where Are You on<br>Your Journey?</h2>
+    <p class="section-sub">Everyone's path is different. Each one has a dedicated Guide walking with you. Tap a card to meet yours.</p>
+    <div class="guides-grid" role="list" aria-label="Guide paths">
 
-    <!-- FILTER BAR -->
-    <div class="filter-bar" role="group" aria-label="Filter guides">
-      <span class="filter-label" aria-hidden="true">Show:</span>
-      <button class="filter-btn active" onclick="filterCards('all', this)" type="button">All Guides</button>
-      <button class="filter-btn" onclick="filterCards('lead', this)" type="button">Path Leads</button>
-      <button class="filter-btn" onclick="filterCards('supporting', this)" type="button">Supporting</button>
-      <span class="roster-count" id="rosterCount" aria-live="polite">7 Guides</span>
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Maya, Pre-Vegan Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="flip-front-img" style="border-bottom:3px solid #2d7d31;"><img src="/public/guides/maya.png" alt="Maya" loading="lazy"></div>
+            <div class="flip-front-body"><div class="flip-front-name">Maya</div><div class="flip-front-role" style="color:#2d7d31;">Pre-Vegan Guide</div></div>
+          </div>
+          <div class="flip-card-back" style="background:#2d7d31;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">Path 01</div>
+              <div class="flip-back-path-name">Pre-Vegan</div>
+              <p class="flip-back-desc">Vegan-curious. Real answers, real support, and a clear path to make the shift.</p>
+              <a href="/guides/ve-path-prevegan" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Theo, Seasoned Vegan Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="flip-front-img" style="border-bottom:3px solid #8B6914;"><img src="/public/guides/theo.png" alt="Theo" loading="lazy"></div>
+            <div class="flip-front-body"><div class="flip-front-name">Theo</div><div class="flip-front-role" style="color:#8B6914;">Seasoned Vegan Guide</div></div>
+          </div>
+          <div class="flip-card-back" style="background:#8B6914;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">Path 02</div>
+              <div class="flip-back-path-name">Seasoned Vegan</div>
+              <p class="flip-back-desc">Already living it. Deepen your impact, mentor others, and connect with the global movement.</p>
+              <a href="/guides/ve-path-seasonedvegan" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Nori, Entrepreneur Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="flip-front-img" style="border-bottom:3px solid #2D5F8A;"><img src="/public/guides/nori.png" alt="Nori" loading="lazy"></div>
+            <div class="flip-front-body"><div class="flip-front-name">Nori</div><div class="flip-front-role" style="color:#2D5F8A;">Entrepreneur Guide</div></div>
+          </div>
+          <div class="flip-card-back" style="background:#2D5F8A;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">Path 03</div>
+              <div class="flip-back-path-name">Entrepreneur</div>
+              <p class="flip-back-desc">Building a Vegan business. Get listed, grow your audience, and connect with Vegan customers.</p>
+              <a href="/guides/ve-path-entrepreneur" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="Dani, Nonprofit Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="flip-front-img" style="border-bottom:3px solid #C4522A;"><img src="/public/guides/dani.png" alt="Dani" loading="lazy"></div>
+            <div class="flip-front-body"><div class="flip-front-name">Dani</div><div class="flip-front-role" style="color:#C4522A;">Nonprofit Guide</div></div>
+          </div>
+          <div class="flip-card-back" style="background:#C4522A;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">Path 04</div>
+              <div class="flip-back-path-name">Nonprofit</div>
+              <p class="flip-back-desc">Running a Vegan org. Build your community on the platform and grow your base.</p>
+              <a href="/guides/ve-path-nonprofit" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" role="listitem" tabindex="0" aria-label="River, Creator Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" aria-hidden="true">
+            <div class="flip-front-img" style="border-bottom:3px solid #6B35A8;"><img src="/public/guides/river.jpg" alt="River" loading="lazy"></div>
+            <div class="flip-front-body"><div class="flip-front-name">River</div><div class="flip-front-role" style="color:#6B35A8;">Creator Guide</div></div>
+          </div>
+          <div class="flip-card-back" style="background:#6B35A8;" aria-hidden="true">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label">Path 05</div>
+              <div class="flip-back-path-name">Creator</div>
+              <p class="flip-back-desc">Creating content in the Vegan space. Grow your audience and earn through the ecosystem.</p>
+              <a href="/guides/ve-path-creator" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ROSTER GRID -->
-    <ul class="roster-grid" role="list" aria-label="Guide roster" id="rosterGrid">
-
-      <!-- MAYA -->
-      <li role="listitem" data-type="lead">
-        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
-             aria-label="Maya. Pre-Vegan Path lead. Press to flip card."
-             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-avatar-area">
-                <span class="card-badge" aria-hidden="true">Pre-Vegan Path</span>
-                <div class="guide-avatar" style="background:#3A9B3E;" aria-hidden="true"><img src="../public/guides/maya.png" alt="Maya"></div>
-                <span class="flip-hint" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                  Flip
-                </span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">Maya</div>
-                <div class="card-path">Pre-Vegan Path</div>
-                <blockquote class="card-quote">"What if you just tried one thing this week."</blockquote>
-              </div>
+    <!-- Mobile Guide Picker (unchanged) -->
+    <div class="mobile-guide-picker">
+      <div class="mgp-select-wrap" id="mgpSelectWrap">
+        <div class="mgp-select-face" id="mgpFace" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select a guide path">
+          <div class="mgp-dot" id="mgpDot" style="background:#2d7d31;"></div>
+          <span class="mgp-label" id="mgpLabel">Maya - Pre-Vegan</span>
+          <span class="mgp-arrow" aria-hidden="true">&#9660;</span>
+        </div>
+        <div class="mgp-dropdown" id="mgpDropdown" role="listbox"></div>
+      </div>
+      <div class="flip-card mgp-flip-card" id="mgpFlipCard" tabindex="0" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')" aria-label="Guide card, tap to flip">
+        <div class="flip-card-inner" id="mgpFlipInner">
+          <div class="flip-card-front">
+            <div class="flip-front-img" id="mgpFrontImgWrap" style="border-bottom:3px solid #2d7d31;">
+              <img id="mgpFrontImg" src="/public/guides/maya.png" alt="Maya" loading="lazy">
             </div>
-            <div class="card-back" aria-hidden="true">
-              <div class="card-back-header">
-                <div class="back-guide-row">
-                  <div class="back-avatar" style="background:#3A9B3E;">M</div>
-                  <div>
-                    <div class="back-name">Maya</div>
-                    <div class="back-path">Pre-Vegan Path</div>
-                  </div>
-                </div>
-                <div class="back-fit-label">Maya is a good fit if...</div>
+            <div class="flip-front-body">
+              <div>
+                <div class="flip-front-name" id="mgpFrontName">Maya</div>
+                <div class="flip-front-role" id="mgpFrontRole" style="color:#2d7d31;">Pre-Vegan Guide</div>
               </div>
-              <div class="card-back-body">
-                <ul class="fit-list">
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You're curious about veganism but don't know where to start
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    Food and family tradition feel like obstacles, not just habits
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You want small steps, not a complete overnight overhaul
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You're tired of content that makes you feel behind before you've started
-                  </li>
-                </ul>
-              </div>
-              <div class="card-back-footer">
-                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
-                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
-                <div class="flip-back-hint">Tap to flip back</div>
-              </div>
+              <div class="mgp-flip-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></div>
+            </div>
+          </div>
+          <div class="flip-card-back" id="mgpBack" style="background:#2d7d31;">
+            <div class="flip-back-overlay"></div>
+            <div class="flip-back-content">
+              <div class="flip-back-path-label" id="mgpBackPathLabel">Path 01</div>
+              <div class="flip-back-path-name" id="mgpBackPathName">Pre-Vegan</div>
+              <p class="flip-back-desc" id="mgpBackDesc">Vegan-curious. Real answers, real support, and a clear path to make the shift.</p>
+              <a href="/guides/ve-path-prevegan" class="flip-back-btn" id="mgpBackBtn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
             </div>
           </div>
         </div>
-      </li>
+      </div>
+      <div class="mgp-thumb-strip" id="mgpThumbStrip" role="list" aria-label="Guide thumbnails"></div>
+    </div>
+    <script>
+    (function() {
+      var guides = [
+        { name:'Maya', role:'Pre-Vegan Guide', path:'Path 01', pathName:'Pre-Vegan', desc:'Vegan-curious. Real answers, real support, and a clear path to make the shift.', color:'#2d7d31', img:'/public/guides/maya.png', href:'/guides/ve-path-prevegan', label:'Maya - Pre-Vegan' },
+        { name:'Theo', role:'Seasoned Vegan Guide', path:'Path 02', pathName:'Seasoned Vegan', desc:'Already living it. Deepen your impact, mentor others, and connect with the global movement.', color:'#8B6914', img:'/public/guides/theo.png', href:'/guides/ve-path-seasonedvegan', label:'Theo - Seasoned Vegan' },
+        { name:'Nori', role:'Entrepreneur Guide', path:'Path 03', pathName:'Entrepreneur', desc:'Building a Vegan business. Get listed, grow your audience, and connect with Vegan customers.', color:'#2D5F8A', img:'/public/guides/nori.png', href:'/guides/ve-path-entrepreneur', label:'Nori - Entrepreneur' },
+        { name:'Dani', role:'Nonprofit Guide', path:'Path 04', pathName:'Nonprofit', desc:'Running a Vegan org. Build your community on the platform and grow your base.', color:'#C4522A', img:'/public/guides/dani.png', href:'/guides/ve-path-nonprofit', label:'Dani - Nonprofit' },
+        { name:'River', role:'Creator Guide', path:'Path 05', pathName:'Creator', desc:'Creating content in the Vegan space. Grow your audience and earn through the ecosystem.', color:'#6B35A8', img:'/public/guides/river.jpg', href:'/guides/ve-path-creator', label:'River - Creator' }
+      ];
+      var activeIdx = 0;
+      function setGuide(idx, closeDD) {
+        activeIdx = idx;
+        var g = guides[idx];
+        document.getElementById('mgpDot').style.background = g.color;
+        document.getElementById('mgpLabel').textContent = g.label;
+        var img = document.getElementById('mgpFrontImg');
+        img.src = g.img; img.alt = g.name;
+        document.getElementById('mgpFrontImgWrap').style.borderBottomColor = g.color;
+        document.getElementById('mgpFrontName').textContent = g.name;
+        document.getElementById('mgpFrontRole').style.color = g.color;
+        document.getElementById('mgpFrontRole').textContent = g.role;
+        document.getElementById('mgpBack').style.background = g.color;
+        document.getElementById('mgpBackPathLabel').textContent = g.path;
+        document.getElementById('mgpBackPathName').textContent = g.pathName;
+        document.getElementById('mgpBackDesc').textContent = g.desc;
+        document.getElementById('mgpBackBtn').href = g.href;
+        document.getElementById('mgpFlipCard').setAttribute('aria-label', g.name + ' guide, tap to flip');
+        document.getElementById('mgpFlipCard').classList.remove('flipped');
+        document.querySelectorAll('.mgp-thumb-tile').forEach(function(t, i) {
+          t.style.outlineColor = i === idx ? guides[i].color : 'transparent';
+        });
+        document.querySelectorAll('.mgp-option').forEach(function(o, i) {
+          o.classList.toggle('active', i === idx);
+          o.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+        });
+        if (closeDD) toggleDD(false);
+      }
+      function toggleDD(forceClose) {
+        var dd = document.getElementById('mgpDropdown');
+        var face = document.getElementById('mgpFace');
+        var open = forceClose === false ? false : !dd.classList.contains('open');
+        dd.classList.toggle('open', open);
+        face.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      document.getElementById('mgpFace').addEventListener('click', function() { toggleDD(); });
+      document.getElementById('mgpFace').addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleDD(); }});
+      document.addEventListener('click', function(e) { var w=document.getElementById('mgpSelectWrap'); if(w&&!w.contains(e.target)) toggleDD(false); });
+      var dd2 = document.getElementById('mgpDropdown');
+      guides.forEach(function(g, i) {
+        var opt = document.createElement('div');
+        opt.className = 'mgp-option' + (i===0?' active':'');
+        opt.setAttribute('role','option');
+        opt.setAttribute('aria-selected', i===0?'true':'false');
+        opt.setAttribute('tabindex','0');
+        var dot = document.createElement('div');
+        dot.className = 'mgp-dot';
+        dot.style.background = g.color;
+        var lbl = document.createElement('span');
+        lbl.textContent = g.label;
+        opt.appendChild(dot); opt.appendChild(lbl);
+        opt.addEventListener('click', function() { setGuide(i, true); });
+        opt.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); setGuide(i, true); }});
+        dd2.appendChild(opt);
+      });
+      var strip = document.getElementById('mgpThumbStrip');
+      guides.forEach(function(g, i) {
+        var tile = document.createElement('div');
+        tile.className = 'mgp-thumb-tile';
+        tile.setAttribute('role','listitem');
+        tile.setAttribute('tabindex','0');
+        tile.setAttribute('aria-label', g.name + ' guide');
+        tile.style.outlineColor = i===0 ? g.color : 'transparent';
+        var img = document.createElement('img');
+        img.src = g.img; img.alt = g.name; img.loading = 'lazy';
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:top center;display:block;';
+        tile.appendChild(img);
+        tile.addEventListener('click', function() { setGuide(i, false); });
+        tile.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') setGuide(i, false); });
+        strip.appendChild(tile);
+      });
+    })();
+    </script>
+    <p class="flip-hint" aria-hidden="true">Tap a card to meet your Guide</p>
+  </section>
 
-      <!-- THEO -->
-      <li role="listitem" data-type="lead">
-        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
-             aria-label="Theo. Seasoned Vegan Path lead. Press to flip card."
-             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-avatar-area">
-                <span class="card-badge" aria-hidden="true">Seasoned Vegan Path</span>
-                <div class="guide-avatar" style="background:#8B6914;" aria-hidden="true"><img src="../public/guides/theo.png" alt="Theo"></div>
-                <span class="flip-hint" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                  Flip
-                </span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">Theo</div>
-                <div class="card-path">Seasoned Vegan Path</div>
-                <blockquote class="card-quote">"Here's what actually lasts."</blockquote>
-              </div>
-            </div>
-            <div class="card-back" aria-hidden="true">
-              <div class="card-back-header">
-                <div class="back-guide-row">
-                  <div class="back-avatar" style="background:#8B6914;">T</div>
-                  <div>
-                    <div class="back-name">Theo</div>
-                    <div class="back-path">Seasoned Vegan Path</div>
-                  </div>
-                </div>
-                <div class="back-fit-label">Theo is a good fit if...</div>
-              </div>
-              <div class="card-back-body">
-                <ul class="fit-list">
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You've been vegan for a while but feel disconnected from the bigger picture
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You want depth, not another beginner guide
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    Community and long-term impact matter more to you than personal milestones
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You want to mentor others but aren't sure where to start
-                  </li>
-                </ul>
-              </div>
-              <div class="card-back-footer">
-                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
-                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
-                <div class="flip-back-hint">Tap to flip back</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
+  <!-- HOW IT WORKS (unchanged) -->
+  <section class="how-section" aria-labelledby="how-heading">
+    <div class="section-eyebrow" aria-hidden="true">How It Works</div>
+    <h2 class="section-h2" id="how-heading">Four Steps.<br>One Movement.</h2>
+    <p class="section-sub">From curious to connected to fully equipped. Every step builds on the last.</p>
+    <div class="how-grid" role="list">
+      <div class="how-step" role="listitem">
+        <div class="how-dot active" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+        <div class="how-step-num">Step 01</div>
+        <div class="how-step-title">Find Your Path</div>
+        <p class="how-step-desc">Pick the Guide path that matches where you are right now. Pre-Vegan, seasoned, builder, or creator - every path has a dedicated Guide.</p>
+      </div>
+      <div class="how-step" role="listitem">
+        <div class="how-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+        <div class="how-step-num">Step 02</div>
+        <div class="how-step-title">Get Your Passport</div>
+        <p class="how-step-desc">$11 one-time activates your Passport, unlocks your community, and plants your permanent profile in the Vegans Explore network.</p>
+      </div>
+      <div class="how-step" role="listitem">
+        <div class="how-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
+        <div class="how-step-num">Step 03</div>
+        <div class="how-step-title">Join the Discuss</div>
+        <p class="how-step-desc">Your Guide runs a daily discussion for your path. Show up, ask questions, share your progress, and connect with members on the same road.</p>
+      </div>
+      <div class="how-step" role="listitem">
+        <div class="how-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg></div>
+        <div class="how-step-num">Step 04</div>
+        <div class="how-step-title">Build and Explore</div>
+        <p class="how-step-desc">Support Vegan businesses. Invite your community. Complete challenges. Level up. The platform grows with what you put into it.</p>
+      </div>
+    </div>
+  </section>
 
-      <!-- NORI -->
-      <li role="listitem" data-type="lead">
-        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
-             aria-label="Nori. Vegan Entrepreneur Path lead. Press to flip card."
-             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-avatar-area">
-                <span class="card-badge" aria-hidden="true">Entrepreneur Path</span>
-                <div class="guide-avatar" style="background:#2D5F8A;" aria-hidden="true"><img src="../public/guides/nori.png" alt="Nori"></div>
-                <span class="flip-hint" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                  Flip
-                </span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">Nori</div>
-                <div class="card-path">Entrepreneur Path</div>
-                <blockquote class="card-quote">"You can't help the movement if you're broke."</blockquote>
-              </div>
-            </div>
-            <div class="card-back" aria-hidden="true">
-              <div class="card-back-header">
-                <div class="back-guide-row">
-                  <div class="back-avatar" style="background:#2D5F8A;">N</div>
-                  <div>
-                    <div class="back-name">Nori</div>
-                    <div class="back-path">Entrepreneur Path</div>
-                  </div>
-                </div>
-                <div class="back-fit-label">Nori is a good fit if...</div>
-              </div>
-              <div class="card-back-body">
-                <ul class="fit-list">
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You're building or want to build a vegan business or product
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You want to claim your business listing and grow through the directory
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You think in systems and need structure, not inspiration
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    The mission matters, but so does making it financially sustainable
-                  </li>
-                </ul>
-              </div>
-              <div class="card-back-footer">
-                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
-                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
-                <div class="flip-back-hint">Tap to flip back</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
+  <!-- PASSPORT (unchanged) -->
+  <section class="passport-section" aria-labelledby="passport-heading">
+    <div class="section-eyebrow">Passport</div>
+    <h2 class="section-h2" id="passport-heading">One Fee.<br>The Whole World.</h2>
+    <p class="section-sub">Every plan activates your Passport and plants your permanent seat in the Vegans Explore network. Pick the one that fits where you are right now.</p>
+    <div class="passport-tiers" role="list">
+      <div class="tier-card" role="listitem">
+        <div class="tier-label">Individual Path</div>
+        <div><span class="tier-price">$11</span></div>
+        <div class="tier-note">One-time. No subscription.</div>
+        <div class="tier-divider"></div>
+        <div class="tier-desc">Pick one Guide path. Pay once. Unlock your community, daily discussions, and Passport membership permanently.</div>
+        <a href="/passport/join?plan=single" class="tier-btn">Get Started</a>
+      </div>
+      <div class="tier-card featured" role="listitem">
+        <div class="tier-badge">Most Popular</div>
+        <div class="tier-label">All Paths</div>
+        <div><span class="tier-price">$11</span><span class="tier-period"> /month</span></div>
+        <div class="tier-note">Cancel anytime.</div>
+        <div class="tier-divider"></div>
+        <div class="tier-desc">All 5 paths, every Guide, every community, every daily discussion. One subscription covers everything we ever add.</div>
+        <a href="/passport/join?plan=monthly" class="tier-btn featured-btn">Subscribe - $11/mo</a>
+      </div>
+      <div class="tier-card" role="listitem">
+        <div class="tier-badge green">Limited Time</div>
+        <div class="tier-label">Lifetime Access</div>
+        <div><span class="tier-price">$111</span></div>
+        <div class="tier-note">One-time. Yours forever.</div>
+        <div class="tier-divider"></div>
+        <div class="tier-desc">Pay once, own everything permanently. Every path, every Guide, every feature we ever build. Founding Member status included.</div>
+        <a href="/passport/join?plan=lifetime" class="tier-btn">Lifetime Access</a>
+      </div>
+    </div>
+    <div class="passport-all-cta"><a href="/passport">See full plan comparison</a></div>
+  </section>
 
-      <!-- DANI -->
-      <li role="listitem" data-type="lead">
-        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
-             aria-label="Dani. Nonprofit Builder Path lead. Press to flip card."
-             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-avatar-area">
-                <span class="card-badge" aria-hidden="true">Nonprofit Path</span>
-                <div class="guide-avatar" style="background:#C4522A;" aria-hidden="true"><img src="../public/guides/dani.png" alt="Dani"></div>
-                <span class="flip-hint" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                  Flip
-                </span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">Dani</div>
-                <div class="card-path">Nonprofit Path</div>
-                <blockquote class="card-quote">"This isn't just food — it's justice."</blockquote>
-              </div>
-            </div>
-            <div class="card-back" aria-hidden="true">
-              <div class="card-back-header">
-                <div class="back-guide-row">
-                  <div class="back-avatar" style="background:#C4522A;">D</div>
-                  <div>
-                    <div class="back-name">Dani</div>
-                    <div class="back-path">Nonprofit Path</div>
-                  </div>
-                </div>
-                <div class="back-fit-label">Dani is a good fit if...</div>
-              </div>
-              <div class="card-back-body">
-                <ul class="fit-list">
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You're running or building a nonprofit in the food justice or vegan space
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You want to grow your donor base and earn affiliate revenue through referrals
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    Community impact drives your decisions, not personal lifestyle goals
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You need a platform that amplifies your mission, not just adds to your feed
-                  </li>
-                </ul>
-              </div>
-              <div class="card-back-footer">
-                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
-                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
-                <div class="flip-back-hint">Tap to flip back</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
+  <!-- VISION (unchanged) -->
+  <section class="vision-section" aria-labelledby="vision-heading">
+    <div class="section-eyebrow" aria-hidden="true">The Vision</div>
+    <h2 class="section-h2" id="vision-heading">1,000 Communities<br>by 2030.</h2>
+    <p class="section-sub">Building the most connected Vegan network on the planet, one community at a time. From Miami to Accra, from London to Tokyo.</p>
+    <div class="vision-timeline" role="list" aria-label="Community growth timeline">
+      <div class="vision-year now" role="listitem"><div class="vision-yr">Now</div><div class="vision-count">4</div><div class="vision-unit">Active Communities</div></div>
+      <div class="vision-year" role="listitem"><div class="vision-yr">2026</div><div class="vision-count">50</div><div class="vision-unit">Communities</div></div>
+      <div class="vision-year" role="listitem"><div class="vision-yr">2028</div><div class="vision-count">300</div><div class="vision-unit">Communities</div></div>
+      <div class="vision-year" role="listitem"><div class="vision-yr">2030</div><div class="vision-count">1,000</div><div class="vision-unit">Communities</div></div>
+    </div>
+  </section>
 
-      <!-- RIVER -->
-      <li role="listitem" data-type="lead">
-        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
-             aria-label="River. Content Creator Path lead. Press to flip card."
-             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-avatar-area">
-                <span class="card-badge" aria-hidden="true">Content Creator Path</span>
-                <div class="guide-avatar" style="background:#6B35A8;" aria-hidden="true"><img src="../public/guides/river.jpg" alt="River"></div>
-                <span class="flip-hint" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                  Flip
-                </span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">River</div>
-                <div class="card-path">Content Creator Path</div>
-                <blockquote class="card-quote">"Nobody wants boring content about beans."</blockquote>
-              </div>
-            </div>
-            <div class="card-back" aria-hidden="true">
-              <div class="card-back-header">
-                <div class="back-guide-row">
-                  <div class="back-avatar" style="background:#6B35A8;">R</div>
-                  <div>
-                    <div class="back-name">River</div>
-                    <div class="back-path">Content Creator Path</div>
-                  </div>
-                </div>
-                <div class="back-fit-label">River is a good fit if...</div>
-              </div>
-              <div class="card-back-body">
-                <ul class="fit-list">
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You're creating vegan content or want to start building your audience
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You want to turn your personal vegan story into reach and community
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You care about authenticity more than polish and trends more than theory
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You want opportunities through the VE platform as your audience grows
-                  </li>
-                </ul>
-              </div>
-              <div class="card-back-footer">
-                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
-                <a href="#" class="upgrade-link">Unlock the full path for <strong>$11</strong> + membership perks</a>
-                <div class="flip-back-hint">Tap to flip back</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <!-- PASCAL -->
-      <li role="listitem" data-type="supporting">
-        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
-             aria-label="Pascal. Supporting Guide. Press to flip card."
-             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-avatar-area">
-                <span class="card-badge supporting" aria-hidden="true">Supporting Guide</span>
-                <div class="guide-avatar" style="background:#8B2635;" aria-hidden="true"><img src="../public/guides/pascal.png" alt="Pascal"></div>
-                <span class="flip-hint" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                  Flip
-                </span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">Pascal</div>
-                <div class="card-path">Cultural Bridge</div>
-                <blockquote class="card-quote">"There is always enough at my table."</blockquote>
-              </div>
-            </div>
-            <div class="card-back" aria-hidden="true">
-              <div class="card-back-header">
-                <div class="back-guide-row">
-                  <div class="back-avatar" style="background:#8B2635;">P</div>
-                  <div>
-                    <div class="back-name">Pascal</div>
-                    <div class="back-path">Cultural Bridge</div>
-                  </div>
-                </div>
-                <div class="back-fit-label">Pascal shows up for you if...</div>
-              </div>
-              <div class="card-back-body">
-                <ul class="fit-list">
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    Your cultural food traditions feel incompatible with veganism
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    Food is how you connect to family and you're afraid of losing that
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You need health-driven reasons alongside the ethics
-                  </li>
-                </ul>
-                <p style="font-size:11px;color:var(--ve-text-50);margin-top:12px;line-height:1.5;">Pascal is a supporting voice across all five paths. You'll meet him in the community, the daily chat, and inside your Guide's content.</p>
-              </div>
-              <div class="card-back-footer">
-                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
-                <div class="flip-back-hint">Tap to flip back</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <!-- JUNE -->
-      <li role="listitem" data-type="supporting">
-        <div class="card-wrap" tabindex="0" role="button" aria-pressed="false"
-             aria-label="June. Supporting Guide. Press to flip card."
-             onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-avatar-area">
-                <span class="card-badge supporting" aria-hidden="true">Supporting Guide</span>
-                <div class="guide-avatar" style="background:#2A6B5A;" aria-hidden="true"><img src="../public/guides/june.png" alt="June"></div>
-                <span class="flip-hint" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-                  Flip
-                </span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">June</div>
-                <div class="card-path">Real-Talk Guide</div>
-                <blockquote class="card-quote">"Y'all it gets easier, I promise."</blockquote>
-              </div>
-            </div>
-            <div class="card-back" aria-hidden="true">
-              <div class="card-back-header">
-                <div class="back-guide-row">
-                  <div class="back-avatar" style="background:#2A6B5A;">J</div>
-                  <div>
-                    <div class="back-name">June</div>
-                    <div class="back-path">Real-Talk Guide</div>
-                  </div>
-                </div>
-                <div class="back-fit-label">June shows up for you if...</div>
-              </div>
-              <div class="card-back-body">
-                <ul class="fit-list">
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    Your family and social circle are resistant and you feel isolated
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You're in a rural or smaller community with limited vegan options
-                  </li>
-                  <li>
-                    <span class="fit-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-                    You need someone who acknowledges how hard it actually is before giving advice
-                  </li>
-                </ul>
-                <p style="font-size:11px;color:var(--ve-text-50);margin-top:12px;line-height:1.5;">June is a supporting voice across all five paths. You'll find her wherever the conversation gets real.</p>
-              </div>
-              <div class="card-back-footer">
-                <a href="#" class="free-cta">Get Your Free Getting Started Guide</a>
-                <div class="flip-back-hint">Tap to flip back</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-
-    </ul><!-- /roster-grid -->
-  </main>
+  <!-- BOTTOM CTA (unchanged) -->
+  <section class="cta-section" aria-labelledby="cta-heading">
+    <div class="section-eyebrow">Ready</div>
+    <h2 class="section-h2" id="cta-heading">The Vegan World<br>is <em>Waiting for You.</em></h2>
+    <p>Find your path, get your Passport, and connect with a community that is building something real. One payment. No subscription required to start.</p>
+    <a href="/passport" class="btn-cta-lg">Get Your Passport</a>
+    <span class="cta-fine">$11 one-time per path. $11/month for all paths. $111 lifetime.</span>
+  </section>
 
   <script src="/public/footer.js"></script>
-
-</div><!-- /mockFrame -->
-
-<script>
-  // ======== FLIP ========
-  function flipCard(el) {
-    var isFlipped = el.classList.toggle('flipped');
-    el.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
-    var back = el.querySelector('.card-back');
-    if (back) back.setAttribute('aria-hidden', isFlipped ? 'false' : 'true');
-  }
-
-  // ======== FILTER ========
-  function filterCards(type, btn) {
-    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    var items = document.querySelectorAll('#rosterGrid > li');
-    var count = 0;
-    items.forEach(function(item) {
-      var show = type === 'all' || item.dataset.type === type;
-      item.style.display = show ? '' : 'none';
-      if (show) count++;
-    });
-    document.getElementById('rosterCount').textContent = count + ' Guide' + (count !== 1 ? 's' : '');
-  }
-
-  // ======== WIRE PATH LINKS ========
-  // Map each guide's aria-label prefix to their path page
-  var pathMap = {
-    'Maya':  've-path-prevegan.html',
-    'Theo':  've-path-seasonedvegan.html',
-    'Nori':  've-path-entrepreneur.html',
-    'Dani':  've-path-nonprofit.html',
-    'River': 've-path-creator.html'
-  };
-  document.querySelectorAll('#rosterGrid [data-type="lead"]').forEach(function(li) {
-    var label = li.querySelector('[aria-label]') && li.querySelector('[aria-label]').getAttribute('aria-label') || '';
-    var name = label.split('.')[0].trim();
-    var href = pathMap[name];
-    if (!href) return;
-    li.querySelectorAll('.free-cta, .upgrade-link').forEach(function(a) {
-      a.href = href;
-    });
-  });
-
-  // ======== VIEWPORT SWITCHER ========
-  function toggleVP() {
-    var panel = document.getElementById('vpPanel');
-    var handle = document.getElementById('vpHandle');
-    var open = panel.classList.toggle('open');
-    handle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-  function setVP(size, btn) {
-    var frame = document.getElementById('mockFrame');
-    frame.classList.remove('tablet', 'mobile');
-    if (size === 'tablet') frame.classList.add('tablet');
-    if (size === 'mobile') frame.classList.add('mobile');
-    document.querySelectorAll('.vp-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-  }
-</script>
+  </div><!-- /.page-frame -->
 </body>
 </html>
