@@ -284,6 +284,7 @@
       .page-footer { flex-direction: column; gap: 14px; padding: 24px 20px; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -316,7 +317,26 @@
       <div class="gate-error" id="gate-error" role="alert">Please fill in all fields.</div>
       <button class="gate-submit" type="submit">Get Access to Pricing</button>
     </form>
-    <p class="gate-login">Already a Passport holder? <a href="/passport">Sign in</a></p>
+    <p class="gate-login">Already a Passport holder? <button id="passport-btn" class="gate-passport-btn" type="button">Sign in</button></p>
+
+    <!-- Inline Passport login panel (shown after clicking Sign in) -->
+    <div id="gate-login-panel" class="gate-login-panel" role="region" aria-label="Passport sign in">
+      <div class="gate-divider" aria-hidden="true" style="margin-bottom:16px;"></div>
+      <div class="gate-field" style="margin-bottom:10px;">
+        <label class="gate-label" for="pl-email">Passport Email</label>
+        <input class="gate-input" id="pl-email" type="email" autocomplete="email" placeholder="your@email.com">
+      </div>
+      <div class="gate-field">
+        <label class="gate-label" for="pl-password">Password</label>
+        <input class="gate-input" id="pl-password" type="password" autocomplete="current-password" placeholder="Password">
+      </div>
+      <div class="gate-error" id="pl-error">Incorrect email or password.</div>
+      <button class="gate-submit" id="pl-submit" type="button">Sign In to Passport</button>
+      <div class="gate-login-success" id="pl-success">
+        <p>Signed in. Loading your access...</p>
+      </div>
+      <button class="gate-login-back" id="pl-back" type="button">&#8592; Back</button>
+    </div>
     <p style="text-align:center;margin-top:12px;">
       <a href="/partner" style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-30);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--ve-text-50)'" onmouseout="this.style.color='var(--ve-text-30)'">&#8592; Go back</a>
     </p>
@@ -520,7 +540,17 @@
 
 <script>
 (function () {
-  var GATE_KEY = 've-night-gate-v1';
+  var SUPABASE_URL  = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var GATE_KEY      = 've-night-gate-v1';
+  var _sb           = null;
+
+  function getClient() {
+    if (!_sb && window.supabase) {
+      _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    }
+    return _sb;
+  }
 
   function unlockGate() {
     var g = document.getElementById('gate');
@@ -563,7 +593,80 @@
     unlockGate();
   });
 
-  // Trap focus inside gate while it's open
+  // ── Passport "Sign in" click: check session first ─────────────────────────
+  document.getElementById('passport-btn').addEventListener('click', function () {
+    var sb = getClient();
+    if (!sb) { showLoginPanel(); return; }
+    sb.auth.getSession().then(function (res) {
+      if (res.data && res.data.session) {
+        unlockGate();
+      } else {
+        showLoginPanel();
+      }
+    }).catch(function () { showLoginPanel(); });
+  });
+
+  function showLoginPanel() {
+    var panel = document.getElementById('gate-login-panel');
+    panel.classList.add('active');
+    setTimeout(function () {
+      var em = document.getElementById('pl-email');
+      if (em) em.focus();
+    }, 50);
+  }
+
+  // Back button: hide login panel
+  document.getElementById('pl-back').addEventListener('click', function () {
+    document.getElementById('gate-login-panel').classList.remove('active');
+    document.getElementById('pl-error').style.display = 'none';
+    document.getElementById('pl-success').style.display = 'none';
+    document.getElementById('pl-email').value = '';
+    document.getElementById('pl-password').value = '';
+    document.getElementById('passport-btn').focus();
+  });
+
+  // Inline sign-in submit
+  document.getElementById('pl-submit').addEventListener('click', function () {
+    var sb = getClient();
+    var email = document.getElementById('pl-email').value.trim();
+    var password = document.getElementById('pl-password').value;
+    var errEl = document.getElementById('pl-error');
+    var succEl = document.getElementById('pl-success');
+    var btn = document.getElementById('pl-submit');
+    errEl.style.display = 'none';
+
+    if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
+    if (!sb) { errEl.textContent = 'Unable to connect. Please try again.'; errEl.style.display = 'block'; return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    sb.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
+      if (res.error) {
+        errEl.textContent = 'Incorrect email or password.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign In to Passport';
+      } else {
+        succEl.style.display = 'block';
+        btn.style.display = 'none';
+        setTimeout(function () { unlockGate(); }, 800);
+      }
+    }).catch(function () {
+      errEl.textContent = 'Something went wrong. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In to Passport';
+    });
+  });
+
+  // Allow Enter key in login panel fields
+  ['pl-email', 'pl-password'].forEach(function (id) {
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') document.getElementById('pl-submit').click();
+    });
+  });
+
+  // ── Trap focus inside gate while it's open ─────────────────────────────
   var gate = document.getElementById('gate');
   gate.addEventListener('keydown', function(e) {
     if (e.key !== 'Tab') return;
