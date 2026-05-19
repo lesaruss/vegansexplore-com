@@ -38,7 +38,7 @@
         'Vegans <span class="ve-wordmark-explore">Explore</span>' +
       '</a>' +
       '<div class="ve-nav-links">' +
-        '<a href="/guides/ve-guides-roster-v1"' + cur('/guides') + '>Guides</a>' +
+        '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/guides/ve-discuss"' + (p === '/guides/ve-discuss' || p === '/guides/ve-guide-chat-v1' ? ' aria-current="page"' : '') + '>Discuss</a>' +
         '<a href="/communities/find"' + cur('/communities') + '>Communities</a>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
