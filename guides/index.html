@@ -16,13 +16,6 @@
     html { scroll-behavior: smooth; }
     .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-    .ve-nav { position: sticky; top: 0; z-index: 400; background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--ve-border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 60px; gap: 16px; }
-    .ve-wordmark { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); display: flex; align-items: center; gap: 8px; text-decoration: none; }
-    .ve-leaf { width: 26px; height: 26px; background: var(--ve-green); border-radius: 50% 3px 50% 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .ve-leaf svg { width: 13px; height: 13px; fill: #fff; }
-    .nav-links { display: flex; align-items: center; gap: 24px; }
-    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6B6B; text-decoration: none; transition: color 0.15s; }
-    .nav-links a:hover { color: var(--ve-green); }
     .nav-cta { background: var(--ve-orange); color: #fff !important; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 4px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
     .nav-cta:hover { background: var(--ve-orange-dark) !important; }
 
@@ -218,8 +211,6 @@
     }
 
     @media (max-width: 768px) {
-      .ve-nav { padding: 0 20px; }
-      .nav-links { display: none; }
       .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
@@ -238,8 +229,6 @@
     }
 
     @media (max-width: 480px) {
-      .ve-nav { padding: 0 16px; }
-      .nav-links { display: none; }
       .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
