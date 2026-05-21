@@ -1,7 +1,8 @@
 (function () {
   /* ── Styles ── */
   var css = [
-    '.ve-nav{position:sticky;top:0;z-index:400;width:100%;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.09);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;gap:16px;font-family:"Montserrat",sans-serif;}',
+    '.ve-nav{position:sticky;top:0;z-index:400;width:100%;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.09);}',
+    '.ve-nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;gap:16px;font-family:"Montserrat",sans-serif;}',
     '.ve-wordmark{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#1a1a1a;display:flex;align-items:center;gap:8px;text-decoration:none;}',
     '.ve-wordmark-logo{height:34px;width:auto;flex-shrink:0;}',
     '.ve-nav-links{display:flex;align-items:center;gap:24px;}',
@@ -23,8 +24,8 @@
     '.ve-mob-cta{display:block !important;text-align:center;background:#F69820;color:#fff !important;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:14px;border-radius:4px;text-decoration:none;transition:background 0.15s;}',
     '.ve-mob-cta:hover{background:#d4800f !important;}',
     /* responsive */
-    '@media(max-width:768px){.ve-nav{padding:0 20px;}.ve-nav-links{display:none;}.ve-nav-cta{display:none;}.ve-hamburger{display:flex;align-items:center;justify-content:center;}}',
-    '@media(max-width:480px){.ve-nav{padding:0 16px;}}'
+    '@media(max-width:768px){.ve-nav-inner{padding:0 20px;}.ve-nav-links{display:none;}.ve-nav-cta{display:none;}.ve-hamburger{display:flex;align-items:center;justify-content:center;}}',
+    '@media(max-width:480px){.ve-nav-inner{padding:0 16px;}}'
   ].join('');
 
   var styleEl = document.createElement('style');
@@ -43,6 +44,7 @@
   /* ── Nav HTML ── */
   var html =
     '<nav class="ve-nav" role="navigation" aria-label="Main navigation">' +
+      '<div class="ve-nav-inner">' +
       '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '>' +
         '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">' +
       '</a>' +
@@ -55,6 +57,7 @@
       '</div>' +
       '<a href="/passport" class="ve-nav-cta">Get Passport - $11</a>' +
       '<button class="ve-hamburger" id="ve-hamburger-btn" aria-label="Open navigation" aria-expanded="false" aria-controls="ve-mob-menu">' + iconMenu + '</button>' +
+      '</div>' +
     '</nav>' +
     '<div class="ve-mob-menu" id="ve-mob-menu" role="dialog" aria-label="Navigation" aria-modal="true">' +
       '<div class="ve-mob-section">' +
