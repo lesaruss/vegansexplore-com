@@ -1,7 +1,8 @@
 (function () {
   /* ── Styles ── */
   var css = [
-    '.ve-footer{background:#1A1A1A;padding:32px 56px;display:flex;align-items:center;justify-content:space-between;font-family:"Montserrat",sans-serif;}',
+    '.ve-footer{background:#1A1A1A;}',
+    '.ve-footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:32px 56px;font-family:"Montserrat",sans-serif;}',
     '.footer-wordmark{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.7);}',
     '.footer-wordmark .ve-leaf{width:20px;height:20px;background:#3A9B3E;border-radius:50% 3px 50% 3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}',
     '.footer-wordmark .ve-leaf svg{width:10px;height:10px;fill:#fff;display:block;}',
@@ -13,8 +14,8 @@
     '.footer-social .social-icon:hover{color:rgba(255,255,255,0.9);}',
     '.footer-social .social-icon svg{display:block;}',
     '.footer-copy{font-size:11px;color:rgba(255,255,255,0.40);}',
-    '@media(max-width:768px){.ve-footer{flex-direction:column;gap:16px;padding:28px 32px;text-align:center;}.ve-footer .footer-links{justify-content:center;flex-wrap:wrap;}}',
-    '@media(max-width:480px){.ve-footer{flex-direction:column;gap:14px;padding:28px 20px;text-align:center;}.ve-footer .footer-links{justify-content:center;flex-wrap:wrap;gap:14px;}}'
+    '@media(max-width:768px){.ve-footer-inner{flex-direction:column;gap:16px;padding:28px 32px;text-align:center;}.ve-footer .footer-links{justify-content:center;flex-wrap:wrap;}}',
+    '@media(max-width:480px){.ve-footer-inner{flex-direction:column;gap:14px;padding:28px 20px;text-align:center;}.ve-footer .footer-links{justify-content:center;flex-wrap:wrap;gap:14px;}}'
   ].join('');
 
   var styleEl = document.createElement('style');
@@ -24,6 +25,7 @@
   /* ── Footer HTML ── */
   var html =
     '<footer class="ve-footer" role="contentinfo">' +
+      '<div class="ve-footer-inner">' +
       '<div class="footer-wordmark">' +
         '<div class="ve-leaf" aria-hidden="true">' +
           '<svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 19.34L5.71 21l1-1C8 18 10 17 12 17c3 0 5-2 5-5 0-1-.4-2-1-3z"/></svg>' +
@@ -43,6 +45,7 @@
         '<a href="#" aria-label="Facebook" class="social-icon"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>' +
       '</div>' +
       '<div class="footer-copy">2026 Vegans Explore</div>' +
+      '</div>' +
     '</footer>';
 
   /* ── Inject before this script tag ── */

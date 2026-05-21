@@ -135,7 +135,8 @@
     .flip-back-btn { display: block; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px; text-decoration: none; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); color: #fff; transition: all 0.15s; }
     .flip-back-btn:hover { background: rgba(255,255,255,0.3); }
     .flip-hint { text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-top: 20px; }
-    .cta-section { background: #1A1A1A; padding: 80px 56px; text-align: center; }
+    .cta-section { background: #1A1A1A; }
+    .cta-inner { max-width: 1200px; margin: 0 auto; padding: 80px 56px; text-align: center; }
     .cta-section .section-eyebrow { justify-content: center; color: var(--ve-green); }
     .cta-section .section-eyebrow::before { display: none; }
     .cta-section h2 { font-size: clamp(30px, 5vw, 56px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 16px; }
@@ -144,12 +145,6 @@
     .btn-orange-lg { background: var(--ve-orange); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 16px 36px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
     .btn-orange-lg:hover { background: var(--ve-orange-dark); }
     .cta-section .cta-fine { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin: 25px auto 0; }
-    .ve-footer { background: #f5f5f5; border-top: 1px solid var(--ve-border); padding: 28px 56px; display: flex; align-items: center; justify-content: space-between; }
-    .footer-brand { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
-    .footer-links { display: flex; gap: 24px; }
-    .footer-links a { font-size: 11px; font-weight: 600; color: var(--ve-text-50); text-decoration: none; transition: color 0.15s; }
-    .footer-links a:hover { color: var(--ve-green); }
-    .footer-copy { font-size: 11px; color: var(--ve-text-30); }
     @media (max-width: 768px) {
       .passport-hero { background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; min-height: 480px; align-items: flex-end; }
       .passport-hero::before { background: rgba(0,0,0,0.32); }
@@ -161,9 +156,7 @@
       .benefits-grid { grid-template-columns: 1fr 1fr; }
       .guides-section { padding: 52px 32px; }
       .guides-grid { grid-template-columns: repeat(3, 1fr); }
-      .cta-section { padding: 56px 32px; }
-      .ve-footer { flex-direction: column; gap: 16px; padding: 24px 32px; text-align: center; }
-      .footer-links { justify-content: center; flex-wrap: wrap; }
+      .cta-inner { padding: 56px 32px; }
     }
     @media (max-width: 480px) {
       .passport-hero { min-height: 480px; align-items: flex-end; background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; }
@@ -177,13 +170,12 @@
       .guides-section { padding: 44px 20px; }
       .guides-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
       .flip-card { height: 300px; }
-      .cta-section { padding: 52px 20px; }
-      .ve-footer { flex-direction: column; gap: 14px; padding: 24px 20px; text-align: center; }
-      .footer-links { justify-content: center; flex-wrap: wrap; gap: 14px; }
+      .cta-inner { padding: 52px 20px; }
     }
 
     /* Founder section */
-    .founder-section { background: #111; padding: 80px 56px; display: flex; gap: 48px; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); }
+    .founder-section { background: #111; border-top: 1px solid rgba(255,255,255,0.06); }
+    .founder-inner { max-width: 1200px; margin: 0 auto; padding: 80px 56px; display: flex; gap: 48px; align-items: center; }
     .founder-img-col { flex: 0 0 280px; }
     @keyframes founder-pulse { 0%, 100% { box-shadow: 0 0 0 0px rgba(246,152,32,0); } 50% { box-shadow: 0 0 22px 6px rgba(246,152,32,0.45); } }
     .founder-img-wrap { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid var(--ve-orange); animation: founder-pulse 2.8s ease-in-out infinite; }
@@ -198,19 +190,15 @@
     .founder-copy h2 em { color: var(--ve-green); font-style: normal; }
     .founder-copy p { font-size: 15px; font-weight: 400; color: rgba(255,255,255,0.65); line-height: 1.75; margin-bottom: 14px; max-width: 100%; }
     @media (max-width: 768px) {
-      .founder-section { flex-direction: column; padding: 52px 32px; gap: 36px; }
+      .founder-inner { flex-direction: column; padding: 52px 32px; gap: 36px; }
       .founder-img-col { flex: none; width: 100%; }
       .founder-img-wrap img { height: 320px; }
     }
     @media (max-width: 480px) {
-      .founder-section { padding: 44px 20px; }
+      .founder-inner { padding: 44px 20px; }
       .founder-img-wrap img { height: 260px; }
     }
   
-    .footer-social { display: flex; align-items: center; gap: 16px; }
-    .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
-    .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
-    .footer-social .social-icon svg { display: block; }
   </style>
 </head>
 <body>
@@ -442,6 +430,7 @@
   </section>
 
   <section class="founder-section" aria-labelledby="founder-heading">
+    <div class="founder-inner">
     <div class="founder-img-col">
       <div class="founder-img-wrap">
         <a href="https://seanarussell.com" target="_blank" rel="noopener" aria-label="Sean A. Russell" tabindex="-1" style="display:block;line-height:0;cursor:pointer;"><img src="/public/founder/sean-hero.jpg" alt="Sean A. Russell, Founder of Vegans Explore" loading="lazy"></a>
@@ -459,14 +448,17 @@
       <p>We built Vegans Explore to drive human-to-human connection. Your Guide is a framework built from real people. The community you are joining is made of real people. The goal is simple: get you connected to the right people faster than you could find them on your own.</p>
       </div>
     </div>
+    </div>
   </section>
 
   <section class="cta-section" aria-labelledby="cta-heading">
+    <div class="cta-inner">
     <div class="section-eyebrow">Ready</div>
     <h2 id="cta-heading">Pick Your Path.<br><em>Get Your Passport.</em></h2>
     <p>Start with one path for $11, subscribe to all of them for $11/month, or go lifetime for $111. Every option activates Passport and puts your Guide in your corner from day one.</p>
     <a href="/passport/join?plan=monthly" class="btn-orange-lg" aria-label="Get started with your Vegans Explore Passport">Get Your Passport</a>
     <p class="cta-fine">$11 one-time per path. $11/month for all paths. $111 lifetime, limited time.</p>
+    </div>
   </section>
 
   <script src="/public/footer.js"></script>
