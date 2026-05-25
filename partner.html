@@ -3,577 +3,648 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Partner with Vegans Explore</title>
   <meta name="description" content="Grow your brand with the Vegans Explore network. Get your Passport, become a Community Partner, or sponsor a campaign.">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Partner with Vegans Explore</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: rgba(58,155,62,0.4);
-      --ve-orange: #F69820; --ve-orange-dark: #d4800f; --ve-orange-light: rgba(246,152,32,0.10);
-      --ve-purple: #6B35A8; --ve-purple-dark: #52297f; --ve-purple-light: rgba(107,53,168,0.09);
-      --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
-      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    html { scroll-behavior: smooth; }
-    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
 
-    /* HERO */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #ffffff;
+    }
+
+    header {
+      padding: 20px 40px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #1a1a1a;
+    }
+
+    nav a {
+      margin-left: 30px;
+      text-decoration: none;
+      color: #1a1a1a;
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
     .hero {
-      position: relative; min-height: 540px;
-      display: flex; align-items: center;
-      background-image: url('/communities/find/hero.jpg');
-      background-size: cover; background-position: center 30%; background-repeat: no-repeat; overflow: hidden;
-    }
-    .hero::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to right, rgba(0,0,0,0.99) 0%, rgba(0,0,0,0.95) 28%, rgba(0,0,0,0.72) 52%, rgba(0,0,0,0.28) 68%, transparent 84%);
-    }
-    .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%); }
-    .hero-inner { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 620px; }
-    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-    .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
-    .hero h1 { font-size: clamp(34px, 5vw, 64px); font-weight: 900; line-height: 0.97; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 20px; }
-    .hero h1 em { color: var(--ve-green); font-style: normal; }
-    .hero-sub { font-size: 16px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.55); max-width: 480px; margin-bottom: 32px; }
-    .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
-    .hero-stat .num { font-size: 22px; font-weight: 900; color: #fff; line-height: 1; }
-    .hero-stat .lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 3px; }
-
-    /* SECTION CHROME */
-    .section { padding: 64px 56px 72px; }
-    .section-alt { background: #fafaf8; }
-    .step-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 9px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 10px; }
-    .step-badge::before { content: ''; width: 16px; height: 2px; background: var(--ve-green); }
-    .section-title { font-size: clamp(24px, 3.5vw, 40px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.025em; line-height: 1; margin-bottom: 10px; }
-    .section-sub { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.7; max-width: 540px; margin-bottom: 40px; }
-
-    /* PARTNER TILE GRID */
-    .partner-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
-
-    .pcard { border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; border: 1.5px solid var(--ve-border); background: #fff; }
-    .pcard-head { padding: 22px 24px 20px; }
-    .pcard-head.green  { background: linear-gradient(135deg, var(--ve-green-dark) 0%, var(--ve-green) 100%); }
-    .pcard-head.orange { background: linear-gradient(135deg, var(--ve-orange-dark) 0%, var(--ve-orange) 100%); }
-    .pcard-head.purple { background: linear-gradient(135deg, var(--ve-purple-dark) 0%, var(--ve-purple) 100%); }
-
-    .pcard-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 5px; }
-    .pcard-name { font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; color: #fff; line-height: 1.1; margin-bottom: 5px; }
-    .pcard-tagline { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.68); line-height: 1.45; margin-bottom: 14px; }
-    .pcard-price-row { display: flex; align-items: baseline; gap: 5px; }
-    .pcard-amount { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; letter-spacing: -0.03em; }
-    .pcard-per { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.65); }
-
-    .pcard-body { padding: 20px 24px 24px; flex: 1; display: flex; flex-direction: column; }
-    .pcard-feat-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 12px; }
-
-    [hidden] { display: none !important; }
-    .pcard-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; min-height: 90px; }
-    .pcard-features li { display: flex; gap: 9px; align-items: flex-start; font-size: 12px; font-weight: 600; line-height: 1.5; color: var(--ve-text-75); }
-
-    .pcard-features.green li::before {
-      content: ""; flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; border-radius: 50%;
-      background: var(--ve-green-light);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6l2.5 2.5 4.5-4.5' stroke='%233A9B3E' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: center;
-    }
-    .pcard-features.orange li::before {
-      content: ""; flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; border-radius: 50%;
-      background: var(--ve-orange-light);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6l2.5 2.5 4.5-4.5' stroke='%23F69820' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: center;
-    }
-    .pcard-features.purple li::before {
-      content: ""; flex-shrink: 0; width: 16px; height: 16px; margin-top: 1px; border-radius: 50%;
-      background: var(--ve-purple-light);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6l2.5 2.5 4.5-4.5' stroke='%236d28d9' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: center;
+      text-align: center;
+      margin-bottom: 80px;
     }
 
-    /* Passport price toggles — side by side in pcard-head (green bg) */
-    .tile-divider { height: 1px; background: var(--ve-border); margin-bottom: 14px; }
-    .price-toggles { display: flex; flex-direction: row; gap: 8px; margin-top: 11px; }
-    .price-toggle {
-      flex: 1;
-      display: flex; align-items: baseline; justify-content: center; gap: 5px;
-      padding: 0 10px; border-radius: 6px;
-      border: 1.5px solid rgba(255,255,255,0.35);
-      cursor: pointer; user-select: none;
-      color: rgba(255,255,255,0.6); background: transparent;
-      transition: color 0.14s, border-color 0.14s, background 0.14s;
-      font-family: 'Montserrat', sans-serif;
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: 700;
     }
-    .price-toggle:hover { color: #fff; border-color: rgba(255,255,255,0.65); }
-    .price-toggle.active { color: #fff; border-color: #fff; background: rgba(255,255,255,0.18); }
-    .toggle-amount { font-size: 32px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
-    .toggle-per { font-size: 11px; font-weight: 600; }
 
-    /* Tile CTA buttons */
-    .btn-tile {
-      display: block; text-align: center;
-      font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 12px 18px; border-radius: 5px;
-      transition: background 0.14s; text-decoration: none; margin-top: auto;
-      font-family: 'Montserrat', sans-serif;
+    .hero p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
     }
-    .btn-tile.green  { background: var(--ve-green);  color: #fff; }
-    .btn-tile.green:hover  { background: var(--ve-green-dark); }
-    .btn-tile.orange { background: var(--ve-orange); color: #fff; }
-    .btn-tile.orange:hover { background: var(--ve-orange-dark); }
-    .btn-tile.purple { background: var(--ve-purple); color: #fff; }
-    .btn-tile.purple:hover { background: var(--ve-purple-dark); }
 
-    /* FLIP CARD GRID */
-    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .card-wrapper { height: 340px; perspective: 1200px; }
-    .flip-card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); }
-    .flip-card.is-flipped { transform: rotateY(180deg); }
-    .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 10px; overflow: hidden; }
-    .flip-front { background: #1a1a1a; cursor: pointer; }
-    .flip-front img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
-    .card-wrapper:hover .flip-front img { transform: scale(1.03); }
-    .front-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%); }
-    .front-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 22px; }
-    .front-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-    .front-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
-    .front-tag.orange::before { background: var(--ve-orange); }
-    .front-title { font-size: clamp(18px, 2vw, 24px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 4px; }
-    .front-sub { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
-    .flip-btn { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 9px 16px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; font-family: 'Montserrat', sans-serif; }
-    .flip-btn.to-back { background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(4px); }
-    .flip-btn.to-back:hover { background: rgba(255,255,255,0.28); }
-    .flip-btn.to-front { background: transparent; color: var(--ve-text-50); border: 1.5px solid var(--ve-border); font-size: 10px; padding: 8px 14px; }
-    .flip-btn.to-front:hover { color: var(--ve-text); border-color: var(--ve-text-50); }
-    .front-solid { position: absolute; inset: 0; }
-    .front-solid.dark { background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%); }
-    .front-accent { position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; opacity: 0.1; background: #fff; }
-    .flip-back { transform: rotateY(180deg); background: #fff; border: 1.5px solid var(--ve-border); padding: 20px 20px 16px; display: flex; flex-direction: column; }
-    .back-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 5px; color: var(--ve-green-dark); }
-    .back-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
-    .back-tag.orange { color: var(--ve-orange-dark); }
-    .back-tag.orange::before { background: var(--ve-orange); }
-    .back-title { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 2px; }
-    .back-sub { font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-bottom: 10px; }
-    .card-divider { height: 1px; background: var(--ve-border); margin-bottom: 10px; }
-    .card-features { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; flex: 1; }
-    .card-feature { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; font-weight: 600; color: var(--ve-text-75); line-height: 1.4; }
-    .card-feature::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green-mid); flex-shrink: 0; margin-top: 4px; }
-    .card-feature.orange-dot::before { background: rgba(246,152,32,0.5); }
-    .back-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
-    .btn-cta { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; text-decoration: none; background: var(--ve-green); color: #fff; transition: background 0.15s; border: none; cursor: pointer; white-space: nowrap; font-family: 'Montserrat', sans-serif; }
-    .btn-cta:hover { background: var(--ve-green-dark); }
-    .btn-cta.orange { background: var(--ve-orange); }
-    .btn-cta.orange:hover { background: var(--ve-orange-dark); }
-
-    /* BOTTOM CTA */
-    .bottom-cta { border-top: 1px solid var(--ve-border); padding: 56px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; background: #fafafa; }
-    .bottom-cta-text h2 { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 8px; }
-    .bottom-cta-text p { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; max-width: 440px; }
-    .bottom-cta-actions { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
-    .btn-primary { background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 28px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
-    .btn-primary:hover { background: var(--ve-orange-dark); }
-    .btn-outline { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 22px; border-radius: 4px; text-decoration: none; background: transparent; color: var(--ve-text); border: 2px solid var(--ve-border); transition: all 0.15s; display: inline-block; }
-    .btn-outline:hover { border-color: var(--ve-text); }
-
-    /* FOOTER */
-    .footer { background: #1A1A1A; padding: 36px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-    .footer-brand { display: flex; align-items: center; gap: 10px; }
-    .footer-leaf { width: 26px; height: 26px; background: var(--ve-green); border-radius: 50% 3px 50% 3px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .footer-leaf svg { width: 13px; height: 13px; fill: #fff; }
-    .footer-wordmark { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; }
-    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.3); }
-    .footer-links { display: flex; align-items: center; gap: 20px; }
-    .footer-links a { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.15s; }
-    .footer-links a:hover { color: rgba(255,255,255,0.7); }
-    .footer-social { display: flex; align-items: center; gap: 16px; }
-    .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
-    .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
-    .footer-social .social-icon svg { display: block; }
-
-    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { transition-duration: 0.01ms !important; }
-      .flip-card { transition: none !important; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+      text-align: center;
     }
-    @media (max-width: 1000px) { .partner-grid { grid-template-columns: 1fr; max-width: 460px; } }
-    @media (max-width: 960px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 700px) {
-      .hero { background-position: center center; align-items: flex-end; min-height: 480px; }
-      .hero::before { background: rgba(0,0,0,0.32); }
-      .hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; max-width: calc(100% - 48px); border: 1px solid rgba(255,255,255,0.09); }
-      .section { padding: 40px 24px 52px; }
-      .card-grid { grid-template-columns: 1fr; }
-      .card-wrapper { height: 320px; }
-      .bottom-cta { padding: 40px 24px; }
-      .footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+
+    .stat-item {
+      padding: 20px;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: #228B22;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: #228B22;
+      color: white;
+      padding: 14px 40px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 40px;
+    }
+
+    .cta-button:hover {
+      background: #1a6b1a;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 50px;
+    }
+
+    .offerings {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-bottom: 80px;
+    }
+
+    .offering {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .offering.featured {
+      border-color: #228B22;
+      transform: translateY(-10px);
+    }
+
+    .offering.featured::before {
+      content: "MOST POPULAR";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #228B22;
+      color: white;
+      padding: 5px 15px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 20px;
+    }
+
+    .offering-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .offering-price {
+      font-size: 32px;
+      font-weight: 700;
+      color: #228B22;
+      margin-bottom: 10px;
+    }
+
+    .offering-period {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 30px;
+    }
+
+    .offering ul {
+      list-style: none;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .offering li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+    }
+
+    .offering li:before {
+      content: "✓ ";
+      color: #228B22;
+      font-weight: 700;
+      margin-right: 10px;
+    }
+
+    .offering-cta {
+      display: inline-block;
+      background: #228B22;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      width: 100%;
+      text-align: center;
+    }
+
+    .offering-cta:hover {
+      background: #1a6b1a;
+    }
+
+    .offering.basic .offering-cta {
+      background: #f0f0f0;
+      color: #1a1a1a;
+    }
+
+    .offering.basic .offering-cta:hover {
+      background: #e0e0e0;
+    }
+
+    .offering.custom .offering-cta {
+      background: #333;
+    }
+
+    .offering.custom .offering-cta:hover {
+      background: #555;
+    }
+
+    .partner-opportunities {
+      margin-bottom: 80px;
+    }
+
+    .opportunities-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .flip-card-container {
+      perspective: 1000px;
+      height: 400px;
+      cursor: pointer;
+    }
+
+    .flip-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .flip-card-container:hover .flip-card {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .flip-card-front {
+      background: #f0f0f0;
+      color: #1a1a1a;
+    }
+
+    .flip-card-back {
+      background: #228B22;
+      color: white;
+      transform: rotateY(180deg);
+      padding: 30px;
+    }
+
+    .flip-card-front img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .flip-card-front .content {
+      padding: 20px;
+    }
+
+    .flip-card-front .title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .flip-card-front .date {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .flip-card-back h3 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .flip-card-back p {
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .flip-card-back ul {
+      list-style: none;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .flip-card-back li:before {
+      content: "• ";
+      margin-right: 8px;
+    }
+
+    .flip-card-back .inquire-btn {
+      display: inline-block;
+      background: white;
+      color: #228B22;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .faq {
+      background: #f9f9f9;
+      padding: 60px 40px;
+      border-radius: 8px;
+      margin-bottom: 40px;
+    }
+
+    .faq h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 40px;
+    }
+
+    .faq-item {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 20px;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .faq-question:hover {
+      color: #228B22;
+    }
+
+    .faq-answer {
+      display: none;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    footer {
+      border-top: 1px solid #e0e0e0;
+      padding: 40px;
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .stats,
+      .offerings,
+      .opportunities-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      main {
+        padding: 40px 20px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="page-frame">
-  <script src="/public/nav.js"></script>
+  <header>
+    <a href="https://vegansexplore-com.vercel.app/" class="logo">VEGANS EXPLORE</a>
+    <nav>
+      <a href="https://vegansexplore-com.vercel.app/">Home</a>
+      <a href="https://vegansexplore-com.vercel.app/partner">Partner</a>
+      <a href="https://vegansexplore-com.vercel.app/passport">Get Your Passport</a>
+    </nav>
+  </header>
 
-  <!-- HERO -->
-  <section class="hero" aria-labelledby="partner-heading">
-    <div class="hero-inner">
-      <p class="hero-eyebrow">Partner With Us</p>
-      <h1 id="partner-heading">Grow With<br><em>Vegans Explore.</em></h1>
-      <p class="hero-sub">Real community. Real events. Real reach. Choose the level that fits where you are and where you want to go.</p>
-      <div class="hero-stats" aria-label="Key stats">
-        <div class="hero-stat"><div class="num">~24K</div><div class="lbl">Social Followers</div></div>
-        <div class="hero-stat"><div class="num">77K+</div><div class="lbl">Podcast Downloads</div></div>
-        <div class="hero-stat"><div class="num">8</div><div class="lbl">Active Cities</div></div>
-        <div class="hero-stat"><div class="num">200</div><div class="lbl">Influencer Partners</div></div>
+  <main>
+    <div class="hero">
+      <h1>Grow With Vegans Explore.</h1>
+      <p>Real community. Real events. Real reach. Choose the level that fits where you are and where you want to go.</p>
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-number">~24K</div>
+          <div class="stat-label">Social Followers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">77K+</div>
+          <div class="stat-label">Podcast Downloads</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">8</div>
+          <div class="stat-label">Active Cities</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">200</div>
+          <div class="stat-label">Influencer Partners</div>
+        </div>
+      </div>
+
+      <a href="https://vegansexplore-com.vercel.app/passport" class="cta-button">Get Your Passport: $11</a>
+    </div>
+
+    <h2 class="section-title">Find Your Path In.</h2>
+    <p class="section-subtitle">Three ways to grow with Vegans Explore - from community membership to full-service marketing production.</p>
+
+    <div class="offerings">
+      <div class="offering basic">
+        <div class="offering-name">VE Passport</div>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Your key to the Vegans Explore network.</p>
+        <div class="offering-price">$11</div>
+        <div class="offering-period">One-Time or $11/Month</div>
+        <ul>
+          <li>Access to all 8 active community hubs</li>
+          <li>Member pricing on all partner opportunities</li>
+          <li>VE digital membership badge</li>
+          <li>Community support & resources</li>
+        </ul>
+        <a href="https://vegansexplore-com.vercel.app/passport" class="offering-cta">Get Passport</a>
+      </div>
+
+      <div class="offering featured">
+        <div class="offering-name">Community Partner</div>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Monthly brand presence inside the VE network.</p>
+        <div class="offering-price">$111</div>
+        <div class="offering-period">Per Month</div>
+        <ul>
+          <li>Monthly Marketing Audit & action guide</li>
+          <li>Community Partner listing (one region)</li>
+          <li>Two scheduled social collaborations/month</li>
+          <li>Priority visibility to local vegan audiences</li>
+        </ul>
+        <a href="mailto:contact@vegansexplore.com?subject=Community Partner" class="offering-cta">Become a Partner</a>
+      </div>
+
+      <div class="offering custom">
+        <div class="offering-name">Marketing Services</div>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Full production through LESARUSS AI.</p>
+        <div class="offering-price">Custom</div>
+        <div class="offering-period">Flexible Pricing</div>
+        <ul>
+          <li>Web, video, food photography & coverage</li>
+          <li>Social media management & strategy</li>
+          <li>Custom campaigns under VE brand</li>
+          <li>Dedicated LESARUSS account team</li>
+        </ul>
+        <a href="mailto:contact@vegansexplore.com?subject=Marketing Services" class="offering-cta">Get a Quote</a>
       </div>
     </div>
-  </section>
 
-  <!-- PARTNER OPTIONS: 3-tile grid -->
-  <section class="section" id="partner-options" aria-labelledby="options-heading">
-    <p class="step-badge">Get Started</p>
-    <h2 class="section-title" id="options-heading">Find Your <em style="font-style:italic;">Path In.</em></h2>
-    <p class="section-sub">Three ways to grow with Vegans Explore - from community membership to full-service marketing production.</p>
+    <div class="partner-opportunities">
+      <h2 class="section-title">Partner Opportunities.</h2>
+      <p class="section-subtitle">From live events to video series sponsorships, there are multiple ways to show up inside the Vegans Explore network.</p>
 
-    <div class="partner-grid" role="list">
-
-      <!-- TILE 1: VE Passport (combined toggle) -->
-      <div class="pcard" role="listitem" id="passport-tile">
-        <div class="pcard-head green">
-          <div class="pcard-eyebrow">Join the Community</div>
-          <div class="pcard-name">VE Passport</div>
-          <div class="pcard-tagline">Your key to the Vegans Explore network.</div>
-          <!-- Price selectors sit in the header, matching where $111 lives on the other tiles -->
-          <div class="price-toggles" role="radiogroup" aria-label="Select Passport type">
-            <button class="price-toggle active" role="radio" aria-checked="true" data-feat="onetime">
-              <span class="toggle-amount">$11</span>
-              <span class="toggle-per">One-Time</span>
-            </button>
-            <button class="price-toggle" role="radio" aria-checked="false" data-feat="monthly">
-              <span class="toggle-amount">$11</span>
-              <span class="toggle-per">Per Month</span>
-            </button>
+      <div class="opportunities-grid">
+        <div class="flip-card-container">
+          <div class="flip-card">
+            <div class="flip-card-front">
+              <img src="https://vegansexplore-com.vercel.app/communities/south-florida/banner.jpg" alt="Dolphin Tailgate">
+              <div class="content">
+                <div class="title">Dolphin Tailgate</div>
+                <div class="date">September 13, 2026</div>
+              </div>
+            </div>
+            <div class="flip-card-back">
+              <h3>Live Event</h3>
+              <p><strong>Dolphin Tailgate</strong></p>
+              <p>Hard Rock Stadium · Miami, FL</p>
+              <ul>
+                <li>Miami Dolphins pre-game experience</li>
+                <li>Exclusive F1 garage space access</li>
+                <li>Highest-visibility VE event</li>
+                <li>Logo placement + on-site sampling</li>
+              </ul>
+              <a href="mailto:contact@vegansexplore.com?subject=Dolphin Tailgate Sponsorship" class="inquire-btn">Inquire</a>
+            </div>
           </div>
         </div>
-        <div class="pcard-body">
-          <div class="pcard-feat-label" id="passport-feat-lbl">What you get</div>
 
-          <!-- Features: One-Time (shown by default) -->
-          <ul class="pcard-features green" id="passport-feat-onetime" aria-labelledby="passport-feat-lbl">
-            <li>Access to all 8 active community hubs</li>
-            <li>Member pricing on all partner opportunities</li>
-            <li>VE digital membership badge for your profiles</li>
-            <li>&nbsp;</li>
-          </ul>
-
-          <!-- Features: Monthly (hidden by default) -->
-          <ul class="pcard-features green" id="passport-feat-monthly" aria-labelledby="passport-feat-lbl" hidden>
-            <li>Everything in the one-time Passport</li>
-            <li>Monthly VE member digest with curated content and event previews</li>
-            <li>Early access to events, campaigns, and new opportunities</li>
-            <li>&nbsp;</li>
-          </ul>
-
-          <div class="tile-divider" aria-hidden="true"></div>
-          <a href="/passport" class="btn-tile green">Get Passport</a>
-        </div>
-      </div>
-
-      <!-- TILE 2: Community Partner -->
-      <div class="pcard" role="listitem">
-        <div class="pcard-head orange">
-          <div class="pcard-eyebrow">Most Popular</div>
-          <div class="pcard-name">Community Partner</div>
-          <div class="pcard-tagline">Monthly brand presence inside the VE network.</div>
-          <div class="pcard-price-row">
-            <span class="pcard-amount">$111</span>
-            <span class="pcard-per">per month</span>
+        <div class="flip-card-container">
+          <div class="flip-card">
+            <div class="flip-card-front">
+              <img src="https://vegansexplore-com.vercel.app/public/events/vegan-foodie-fest-2025.jpg" alt="World Vegan EXPO">
+              <div class="content">
+                <div class="title">World Vegan EXPO</div>
+                <div class="date">November 1, 2026</div>
+              </div>
+            </div>
+            <div class="flip-card-back">
+              <h3>Flagship Event</h3>
+              <p><strong>World Vegan EXPO</strong></p>
+              <p>Annual flagship · Biggest day of the year</p>
+              <ul>
+                <li>Top sponsors recognized on stage</li>
+                <li>High foot-traffic visibility</li>
+                <li>Direct consumer engagement</li>
+                <li>Social & email promotion</li>
+              </ul>
+              <a href="mailto:contact@vegansexplore.com?subject=World Vegan EXPO Sponsorship" class="inquire-btn">Inquire</a>
+            </div>
           </div>
         </div>
-        <div class="pcard-body">
-          <div class="pcard-feat-label">What you get every month</div>
-          <ul class="pcard-features orange">
-            <li>Monthly Marketing Audit with a baseline of your brand and an action guide</li>
-            <li>Listed in one region as a Community Partner, visible to local vegan audiences</li>
-            <li>Up to two scheduled social collaborations per month across VE channels</li>
-          </ul>
-          <div class="tile-divider" aria-hidden="true"></div>
-          <a href="mailto:contact@vegansexplore.com?subject=Community Partner" class="btn-tile orange">Become a Partner</a>
-        </div>
-      </div>
 
-      <!-- TILE 3: Marketing Services -->
-      <div class="pcard" role="listitem">
-        <div class="pcard-head purple">
-          <div class="pcard-eyebrow">Done For You</div>
-          <div class="pcard-name">Marketing Services</div>
-          <div class="pcard-tagline">Full production through LESARUSS AI.</div>
-          <div class="pcard-price-row">
-            <span class="pcard-amount">Custom</span>
+        <div class="flip-card-container">
+          <div class="flip-card">
+            <div class="flip-card-front">
+              <img src="https://vegansexplore-com.vercel.app/communities/atlanta/banner.jpg" alt="Vegans Explore Night">
+              <div class="content">
+                <div class="title">Vegans Explore Night</div>
+                <div class="date">8 Active Cities</div>
+              </div>
+            </div>
+            <div class="flip-card-back">
+              <h3>Rolling Event</h3>
+              <p><strong>Vegans Explore Night</strong></p>
+              <p>City-by-city community meetups</p>
+              <ul>
+                <li>Direct face time with local audiences</li>
+                <li>Perfect for tastings & giveaways</li>
+                <li>Intimate, high-connection setting</li>
+                <li>Available across all 8 cities</li>
+              </ul>
+              <a href="mailto:contact@vegansexplore.com?subject=VE Night Sponsorship" class="inquire-btn">Inquire</a>
+            </div>
           </div>
         </div>
-        <div class="pcard-body">
-          <div class="pcard-feat-label">What we deliver</div>
-          <ul class="pcard-features purple">
-            <li>Web, video, food photography, and event coverage built for your brand</li>
-            <li>Social media management and community growth strategy</li>
-            <li>Custom campaigns built under the VE brand umbrella via LESARUSS AI</li>
-          </ul>
-          <div class="tile-divider" aria-hidden="true"></div>
-          <a href="mailto:contact@vegansexplore.com?subject=Marketing Services" class="btn-tile purple">Get a Quote</a>
-        </div>
       </div>
-
     </div>
-  </section>
 
-  <!-- PARTNER OPPORTUNITIES (flip cards) -->
-  <section class="section section-alt" aria-labelledby="opp-heading">
-    <p class="step-badge" style="color: var(--ve-text-50);">More Ways to Get Involved</p>
-    <h2 class="section-title" id="opp-heading">Partner <em style="font-style:italic;">Opportunities.</em></h2>
-    <p class="section-sub">From live events to video series sponsorships, there are multiple ways to show up inside the Vegans Explore network. Flip any card to learn more.</p>
+    <div class="faq">
+      <h2>Common Questions</h2>
 
-    <div class="card-grid" role="list">
-
-      <!-- DOLPHIN TAILGATE -->
-      <div class="card-wrapper" role="listitem" aria-label="Dolphin Tailgate sponsorship">
-        <div class="flip-card">
-          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see Dolphin Tailgate details">
-            <img src="/communities/south-florida/banner.jpg" alt="South Florida community" loading="lazy">
-            <div class="front-overlay" aria-hidden="true"></div>
-            <div class="front-content">
-              <p class="front-tag">Live Event</p>
-              <div class="front-title">Dolphin Tailgate</div>
-              <div class="front-sub">September 13, 2026</div>
-              <button class="flip-btn to-back">Learn More</button>
-            </div>
-          </div>
-          <div class="flip-back" aria-label="Dolphin Tailgate details">
-            <span class="back-tag">Live Event</span>
-            <div class="back-title">Dolphin Tailgate</div>
-            <div class="back-sub">Hard Rock Stadium &middot; Miami, FL</div>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Miami Dolphins pre-game experience</li>
-              <li class="card-feature">Access to an exclusive F1 garage space</li>
-              <li class="card-feature">One of the highest-visibility VE events of the year</li>
-              <li class="card-feature">Logo placement + on-site sampling opportunity</li>
-            </ul>
-            <div class="back-footer">
-              <button class="flip-btn to-front">&#8592; Back</button>
-              <a href="mailto:contact@vegansexplore.com?subject=Dolphin Tailgate Sponsorship" class="btn-cta">Inquire</a>
-            </div>
-          </div>
+      <div class="faq-item open">
+        <div class="faq-question">
+          <span>What does the Passport include?</span>
+          <span>−</span>
+        </div>
+        <div class="faq-answer">
+          The VE Passport is your key to the Vegans Explore network. It gives you access to all 8 active community hubs, member pricing on all partner opportunities, a digital membership badge for your profiles, and full community support. For just $11 one-time or $11/month, it opens the door to the entire Vegans Explore ecosystem.
         </div>
       </div>
 
-      <!-- WORLD VEGAN EXPO -->
-      <div class="card-wrapper" role="listitem" aria-label="World Vegan EXPO sponsorship">
-        <div class="flip-card">
-          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see World Vegan EXPO details">
-            <img src="/public/events/vegan-foodie-fest-2025.jpg" alt="Vegan event" loading="lazy">
-            <div class="front-overlay" aria-hidden="true"></div>
-            <div class="front-content">
-              <p class="front-tag">Flagship Event</p>
-              <div class="front-title">World Vegan EXPO</div>
-              <div class="front-sub">November 1, 2026</div>
-              <button class="flip-btn to-back">Learn More</button>
-            </div>
-          </div>
-          <div class="flip-back" aria-label="World Vegan EXPO details">
-            <span class="back-tag">Flagship Event</span>
-            <div class="back-title">World Vegan EXPO</div>
-            <div class="back-sub">Annual flagship &middot; Biggest day of the year</div>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Top sponsors recognized on stage</li>
-              <li class="card-feature">High-foot-traffic sampling and product visibility</li>
-              <li class="card-feature">Direct consumer engagement with the VE audience</li>
-              <li class="card-feature">Social and email promotion leading up to event</li>
-            </ul>
-            <div class="back-footer">
-              <button class="flip-btn to-front">&#8592; Back</button>
-              <a href="mailto:contact@vegansexplore.com?subject=World Vegan EXPO Sponsorship" class="btn-cta">Inquire</a>
-            </div>
-          </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>What is the difference between Passport and Community Partner?</span>
+          <span>+</span>
+        </div>
+        <div class="faq-answer">
+          The Passport is for individuals joining the community. Community Partner is for businesses and organizations that want monthly brand presence inside the VE network. Partners get a dedicated monthly marketing audit, a verified community listing, and two scheduled social collaborations per month with VE channels.
         </div>
       </div>
 
-      <!-- VE NIGHT -->
-      <div class="card-wrapper" role="listitem" aria-label="Vegans Explore Night sponsorship">
-        <div class="flip-card">
-          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see VE Night details">
-            <img src="/communities/atlanta/banner.jpg" alt="Community night event" loading="lazy">
-            <div class="front-overlay" aria-hidden="true"></div>
-            <div class="front-content">
-              <p class="front-tag">Rolling &middot; All Cities</p>
-              <div class="front-title">Vegans Explore Night</div>
-              <div class="front-sub">8 active cities</div>
-              <button class="flip-btn to-back">Learn More</button>
-            </div>
-          </div>
-          <div class="flip-back" aria-label="Vegans Explore Night details">
-            <span class="back-tag">Rolling Event</span>
-            <div class="back-title">Vegans Explore Night</div>
-            <div class="back-sub">City-by-city community meetups</div>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Direct face time with local vegan audiences</li>
-              <li class="card-feature">Perfect for tastings, giveaways, and introductions</li>
-              <li class="card-feature">Intimate setting - high connection, high recall</li>
-              <li class="card-feature">Available across all 8 active VE cities</li>
-            </ul>
-            <div class="back-footer">
-              <button class="flip-btn to-front">&#8592; Back</button>
-              <a href="mailto:contact@vegansexplore.com?subject=VE Night Sponsorship" class="btn-cta">Inquire</a>
-            </div>
-          </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>What is Marketing Services and who is it for?</span>
+          <span>+</span>
+        </div>
+        <div class="faq-answer">
+          Marketing Services is for brands that want LESARUSS to handle their marketing entirely. We create web, video, and food photography content, manage your social media, plan growth strategy, and run custom campaigns under the VE brand umbrella. Pricing is custom based on scope. Contact us to discuss your needs.
         </div>
       </div>
 
-      <!-- VE TOUR -->
-      <div class="card-wrapper" role="listitem" aria-label="Vegans Explore Tour sponsorship">
-        <div class="flip-card">
-          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see VE Tour details">
-            <div class="front-solid dark"></div>
-            <div class="front-accent"></div>
-            <div class="front-content">
-              <p class="front-tag orange">In Development</p>
-              <div class="front-title">Vegans Explore Tour</div>
-              <div class="front-sub">Multi-city</div>
-              <button class="flip-btn to-back">Learn More</button>
-            </div>
-          </div>
-          <div class="flip-back" aria-label="Vegans Explore Tour details">
-            <span class="back-tag orange">In Development</span>
-            <div class="back-title">Vegans Explore Tour</div>
-            <div class="back-sub">Multi-city &middot; Get in early</div>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Tour bringing the VE community on the road</li>
-              <li class="card-feature">Contributing, Co-Presenting, and Title tiers available</li>
-              <li class="card-feature">Best positioning for sponsors who come in early</li>
-              <li class="card-feature">Passport required to see sponsorship pricing</li>
-            </ul>
-            <div class="back-footer">
-              <button class="flip-btn to-front">&#8592; Back</button>
-              <a href="mailto:contact@vegansexplore.com?subject=VE Tour Sponsorship" class="btn-cta">Inquire</a>
-            </div>
-          </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Which cities are currently supported?</span>
+          <span>+</span>
+        </div>
+        <div class="faq-answer">
+          Vegans Explore currently operates in South Florida, Washington DC, New York City, Los Angeles, Philadelphia, Orlando, Atlanta, and London. More cities are coming. Partners outside these markets are still welcome and will receive placement as new chapters launch.
         </div>
       </div>
 
-      <!-- VIDEO SERIES -->
-      <div class="card-wrapper" role="listitem" aria-label="Vegans Explore the Globe video series">
-        <div class="flip-card">
-          <div class="flip-front" tabindex="0" role="button" aria-label="Flip to see video series details">
-            <img src="/communities/london/banner.jpg" alt="Travel video series" loading="lazy">
-            <div class="front-overlay" aria-hidden="true"></div>
-            <div class="front-content">
-              <p class="front-tag">Video Series</p>
-              <div class="front-title">Vegans Explore the Globe</div>
-              <div class="front-sub">Travel content sponsorship</div>
-              <button class="flip-btn to-back">Learn More</button>
-            </div>
-          </div>
-          <div class="flip-back" aria-label="Video series details">
-            <span class="back-tag">Content Sponsorship</span>
-            <div class="back-title">Vegans Explore the Globe</div>
-            <div class="back-sub">Episode, product placement, or title</div>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Brand woven into the travel story, not an ad break</li>
-              <li class="card-feature">Episode Sponsorship, Product Placement, or Presented By</li>
-              <li class="card-feature">Pathway to broadcast and streaming distribution</li>
-              <li class="card-feature">Pilot-stage entry gets most favorable terms</li>
-            </ul>
-            <div class="back-footer">
-              <button class="flip-btn to-front">&#8592; Back</button>
-              <a href="mailto:contact@vegansexplore.com?subject=Video Series Sponsorship" class="btn-cta">Inquire</a>
-            </div>
-          </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>How do I get started?</span>
+          <span>+</span>
+        </div>
+        <div class="faq-answer">
+          Start with your Passport. Once you're in, the conversation about next steps is easy. Get your Passport for $11 (one-time or monthly), join the community, and then reach out if you'd like to explore partnership or marketing services opportunities.
         </div>
       </div>
-
     </div>
-  </section>
 
-  <!-- BOTTOM CTA -->
-  <div class="bottom-cta">
-    <div class="bottom-cta-text">
-      <h2>Ready to Get Started?</h2>
-      <p>Start with your Passport. Once you are in, the conversation about next steps is easy.</p>
+    <div style="text-align: center; padding: 40px; background: #f9f9f9; border-radius: 8px; margin-bottom: 40px;">
+      <h3 style="margin-bottom: 15px;">Ready to Get Started?</h3>
+      <p style="margin-bottom: 20px; color: #666;">Start with your Passport. Once you are in, the conversation about next steps is easy.</p>
+      <a href="https://vegansexplore-com.vercel.app/passport" class="cta-button">Get Your Passport: $11</a>
+      <span style="margin: 0 15px; color: #999;">or</span>
+      <a href="mailto:contact@vegansexplore.com?subject=Partnership Inquiry" class="cta-button" style="background: #333;">Talk to Us</a>
     </div>
-    <div class="bottom-cta-actions">
-      <a href="/passport" class="btn-primary">Get Your Passport: $11</a>
-      <a href="mailto:contact@vegansexplore.com?subject=Partnership Inquiry" class="btn-outline">Talk to Us</a>
-    </div>
-  </div>
+  </main>
 
-  <!-- FOOTER -->
-  <script src="/public/footer.js"></script>
+  <footer>
+    <p>&copy; 2026 Vegans Explore. All rights reserved. | <a href="https://vegansexplore-com.vercel.app/" style="color: #228B22; text-decoration: none;">Back to Home</a></p>
+  </footer>
 
-</div>
-
-<script>
-  // Flip cards
-  (function () {
-    document.querySelectorAll('.flip-front').forEach(function (front) {
-      front.addEventListener('click', function () {
-        this.closest('.card-wrapper').querySelector('.flip-card').classList.add('is-flipped');
-      });
-      front.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          this.closest('.card-wrapper').querySelector('.flip-card').classList.add('is-flipped');
-        }
+  <script>
+    // FAQ Toggle
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        item.classList.toggle('open');
+        question.querySelector('span:last-child').textContent = item.classList.contains('open') ? '−' : '+';
       });
     });
-    document.querySelectorAll('.flip-btn.to-front').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        this.closest('.card-wrapper').querySelector('.flip-card').classList.remove('is-flipped');
-      });
-    });
-  })();
-
-  // Passport price toggle
-  (function () {
-    var tile = document.getElementById('passport-tile');
-    if (!tile) return;
-    var toggles = tile.querySelectorAll('.price-toggle');
-    var featOT  = document.getElementById('passport-feat-onetime');
-    var featMO  = document.getElementById('passport-feat-monthly');
-
-    function activate(btn) {
-      toggles.forEach(function (b) {
-        var on = b === btn;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-checked', on ? 'true' : 'false');
-      });
-      var feat = btn.dataset.feat;
-      featOT.hidden = (feat !== 'onetime');
-      featMO.hidden = (feat !== 'monthly');
-    }
-
-    toggles.forEach(function (btn) {
-      btn.addEventListener('click', function () { activate(btn); });
-      btn.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-          e.preventDefault();
-          var next = btn.nextElementSibling;
-          if (next && next.classList.contains('price-toggle')) { activate(next); next.focus(); }
-        }
-        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-          e.preventDefault();
-          var prev = btn.previousElementSibling;
-          if (prev && prev.classList.contains('price-toggle')) { activate(prev); prev.focus(); }
-        }
-      });
-    });
-  })();
-</script>
-
+  </script>
 </body>
 </html>
