@@ -320,7 +320,7 @@
     .tr-img {
       position: absolute;
       inset: 0;
-      bottom: 130px;
+      bottom: 155px;
       border-radius: 8px 8px 0 0;
       overflow: hidden;
     }
@@ -706,6 +706,27 @@
       .ask-grid { grid-template-columns: 1fr; }
       footer { flex-direction: column; gap: 16px; text-align: center; }
     }
+
+    /* ── HERO PULSE DOT ── */
+    .hero-pulse-dot {
+      color: var(--ve-green);
+      display: inline-block;
+      animation: hero-dot-glow 2.4s ease-in-out infinite;
+    }
+    @keyframes hero-dot-glow {
+      0%, 100% { text-shadow: none; opacity: 1; }
+      50% { text-shadow: 0 0 18px var(--ve-green), 0 0 40px rgba(58,155,62,0.45); opacity: 0.88; }
+    }
+    /* ── WATCH VIDEO BTN ── */
+    .watch-video-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.68); text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.22); padding: 14px 28px; border-radius: 4px;
+      margin-bottom: 36px; margin-left: 14px; transition: all 0.2s;
+    }
+    .watch-video-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; background: rgba(255,255,255,0.06); }
+
   </style>
 </head>
 <body>
@@ -731,20 +752,21 @@
     <img class="hero-bg" src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_235743_4d19dc52-da85-4e33-ad68-76850bd6b030.png" alt="Vegans Explore Guides at the tailgate outside Hard Rock Stadium, GeekFon style">
     <div class="hero-text animate fade-up">
       <div class="hero-eyebrow">Vegans Explore x Miami Dolphins | Partnership Proposal | 2026</div>
-      <h1>The Vegan<br><em>Tailgate</em><br>Takeover.</h1>
+      <h1>The Vegan<br><em>Tailgate</em><br>Takeover<span class="hero-pulse-dot">.</span></h1>
       <p class="hero-sub">
         A partnership proposal for the Miami Dolphins. We bring the community, the content, and the national reach. You bring the stage. Together, we prove what plant-based game day can do for South Florida and for your F&amp;B business.
       </p>
       <a href="#opportunity" class="scroll-cta">Read the Proposal</a>
+      <a href="#" class="watch-video-btn"><svg width="11" height="13" viewBox="0 0 11 13" fill="currentColor" style="flex-shrink:0"><path d="M0 0l11 6.5L0 13V0z"/></svg>Watch the Story</a>
       <p class="hero-meta">Prepared by Vegans Explore / LESARUSS, For Rachel Lee, Miami Dolphins, May 2026</p>
     </div>
   </div>
 
   <!-- OPPORTUNITY: image LEFT, text + stats below -->
   <div class="section" id="opportunity">
-    <div class="panel-img-left landscape">
-      <div class="panel-img animate fade-right">
-        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_225335_9105f7ce-cac8-4bad-a0c2-dcb173dd334c.png" alt="Vegans Explore Guides at a stadium, GeekFon style" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;">
+    <div class="panel-img-left">
+      <div class="panel-img animate fade-right" style="aspect-ratio:3/4;">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_235743_4d19dc52-da85-4e33-ad68-76850bd6b030.png" alt="Vegans Explore Guides outside Hard Rock Stadium, GeekFon style" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;">
       </div>
       <div class="animate fade-left">
         <div class="section-label">The Opportunity</div>
@@ -768,7 +790,7 @@
       <div class="stat-cell">
         <div class="stat-number">8+</div>
         <div class="stat-label">Active Community Cities</div>
-        <div class="stat-desc">South Florida, Atlanta, New York, Tampa, Central Florida, and more, with international expansion launching July 1.</div>
+        <div class="stat-desc">South Florida, Tampa, Orlando, Atlanta, New York, and more, with international expansion launching July 1.</div>
       </div>
       <div class="stat-cell">
         <div class="stat-number">215+</div>
@@ -795,12 +817,26 @@
       </p>
     </div>
     <div class="track-record-grid">
-      <!-- Static summary card - col 1 -->
-      <div class="record-static animate fade-right">
-        <div class="tr-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_232329_87fa591a-ace2-45de-aa90-d45590b1f56c.png" alt="All seven Guides in Dolphins jerseys in front of Hard Rock Stadium, GeekFon style"></div>
-        <div class="section-label" style="margin-bottom:20px">The Evidence</div>
-        <h3>We Have Done<br>This <em>Before.</em></h3>
-        <p>Two major South Florida sports venue activations. One sold out every ticket. The other left a $250 deposit on file and produced every insight that shapes this proposal. Five years of continuous growth between then and now.</p>
+      <!-- Transformation flip card - col 1 -->
+      <div class="flip-card animate fade-right">
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div class="tr-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_232329_87fa591a-ace2-45de-aa90-d45590b1f56c.png" alt="All seven Guides in Dolphins jerseys in front of Hard Rock Stadium, GeekFon style"></div>
+            <div class="flip-hint">Tap to flip</div>
+            <div class="flip-year">Vegans Explore - 2021 to 2026</div>
+            <div class="flip-title">Five Years<br>Later. We<br><em>Are Ready.</em></div>
+            <div class="flip-venue">The Platform Has Changed. The Mission Has Not.</div>
+          </div>
+          <div class="flip-back">
+            <div class="flip-back-label">The Transformation</div>
+            <div class="flip-back-headline">Grassroots Community. Full Platform.</div>
+            <div class="flip-back-body">In 2021 we showed up as a community group with passion and a vision. Today we arrive with in-house media production, a live technology platform, 215+ listed Vegan businesses, and an active network across 6 US cities with London launching July 1. Two activations. Five years of continuous growth. Everything we learned is built into this proposal.</div>
+            <div class="flip-stats">
+              <div><div class="flip-stat-num">6</div><div class="flip-stat-lbl">Active Cities</div></div>
+              <div><div class="flip-stat-num">5 Yrs</div><div class="flip-stat-lbl">Continuous Growth</div></div>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- Miami Heat flip card - col 2 -->
       <div class="flip-card animate fade-up delay-1">
@@ -869,7 +905,7 @@
         <p class="section-body">
           In 2021, we showed up as a grassroots Vegan community group. Today, we are a full platform with a media production company, a technology stack, a live directory, and a network of US cities plus London launching July 1. The asset we bring to this partnership is categorically different from what we had five years ago.
         </p>
-        <div class="diff-grid">
+        <div class="diff-grid" style="grid-template-columns:repeat(2,1fr);">
           <div class="diff-item">
             <div class="diff-num">5+</div>
             <h4>Years of Market Knowledge</h4>
@@ -911,7 +947,7 @@
         <div class="city-grid animate fade-up delay-2">
           <div class="city-cell highlight"><div class="city-name">South Florida</div><div class="city-role">Home Market</div></div>
           <div class="city-cell"><div class="city-name">Tampa</div><div class="city-role">Active Community</div></div>
-          <div class="city-cell"><div class="city-name">Central Florida</div><div class="city-role">Active Community</div></div>
+          <div class="city-cell"><div class="city-name">Orlando</div><div class="city-role">Active Community</div></div>
           <div class="city-cell"><div class="city-name">Atlanta</div><div class="city-role">Active Community</div></div>
           <div class="city-cell"><div class="city-name">New York</div><div class="city-role">Key Feeder Market</div></div>
           <div class="city-cell international"><div class="city-name">London</div><div class="city-role">Launching July 1</div></div>
@@ -935,7 +971,7 @@
 
     <!-- Social bar chart -->
     <div class="animate fade-up delay-1" style="margin-top:56px;">
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--ve-border);">Most Powerful Social Channels — Followers</div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--ve-border);">Most Powerful Social Channels: Followers by Platform</div>
 
       <div style="display:flex;flex-direction:column;gap:20px;">
 
@@ -1015,7 +1051,7 @@
       <div style="margin-top:32px;padding:24px 32px;background:var(--ve-green-light);border:1px solid var(--ve-green-mid);border-radius:8px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:28px;">
         <div style="font-size:clamp(28px,3vw,42px);font-weight:900;color:var(--ve-green);letter-spacing:-0.03em;line-height:1;">+592.6%</div>
         <div>
-          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--ve-text);margin-bottom:5px;">TikTok @vegansexplore — Year-Over-Year View Growth</div>
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--ve-text);margin-bottom:5px;">TikTok @vegansexplore: Year-Over-Year View Growth</div>
           <div style="font-size:13px;color:var(--ve-text-75);line-height:1.6;">From 32.3K views in 2024 to 194.3K in 2025. The fastest-growing channel in the network, and still accelerating.</div>
         </div>
       </div>
@@ -1058,8 +1094,8 @@
           The 2026 Vegan Tailgate Takeover is built on three connected pieces. Each one is designed to deliver value for the Miami Dolphins and for the plant-based, Vegan, and food-allergy community that has been waiting for this moment.
         </p>
       </div>
-      <div class="panel-img animate fade-left">
-        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_230732_dabcf99d-4deb-4622-9e99-9e3f80c44756.png" alt="June and Dani at the tailgate outside the stadium, GeekFon style" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;">
+      <div class="panel-img landscape animate fade-left">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_225335_9105f7ce-cac8-4bad-a0c2-dcb173dd334c.png" alt="Vegans Explore Guides at a stadium tailgate, GeekFon style" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;">
       </div>
     </div>
     <div class="card-grid animate fade-up delay-1">
@@ -1118,7 +1154,7 @@
         </p>
       </div>
       <div class="panel-img animate fade-left">
-        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_230736_0daa6a43-5c4c-42cc-ba9a-2bb6f58eeac7.png" alt="Pascal and Nori at a stadium F&B consultation, GeekFon style" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_230736_0daa6a43-5c4c-42cc-ba9a-2bb6f58eeac7.png" alt="Pascal and Nori at a stadium F&B consultation, GeekFon style" style="width:100%;height:100%;object-fit:contain;background:#f4f8f4;display:block;border-radius:8px;">
       </div>
     </div>
     <!-- Dark block now full-width, outside panel, text centered -->
@@ -1132,11 +1168,12 @@
     <div class="card-grid four animate fade-up delay-2">
       <div class="card">
         <div class="card-icon">
-          <!-- Flat handshake/consult icon -->
+          <!-- Two-people consulting icon -->
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 10h4l4 4-8 8-4-2"/>
-            <path d="M12 22l-4 2-4-4 4-4h4l4 4"/>
-            <line x1="16" y1="14" x2="12" y2="22"/>
+            <circle cx="9" cy="9" r="3.5"/>
+            <circle cx="23" cy="9" r="3.5"/>
+            <path d="M3 27v-2a5.5 5.5 0 0 1 11 0v2"/>
+            <path d="M18 27v-2a5.5 5.5 0 0 1 11 0v2"/>
           </svg>
         </div>
         <h3>Consult, Not Compete</h3>
@@ -1198,7 +1235,7 @@
       <div class="roi-block animate fade-left delay-1">
         <div class="roi-label">The Trade</div>
         <h3>What $11K in New Ticket Buyers Looks Like.</h3>
-        <p>Our three-month campaign targets Vegan, plant-based, and food-allergy fans who have never attended a Dolphins game. In South Florida alone, that is a significant untapped audience. Add the feeder markets: New York, Atlanta, Tampa, Central Florida. If even a fraction of that network buys tickets, the gate value from new buyers covers the garage rental. And our content archive continues to promote Hard Rock Stadium in perpetuity after the event closes.</p>
+        <p>Our three-month campaign targets Vegan, plant-based, and food-allergy fans who have never attended a Dolphins game. In South Florida alone, that is a significant untapped audience. Add the feeder markets: New York, Atlanta, Tampa, Orlando. If even a fraction of that network buys tickets, the gate value from new buyers covers the garage rental. And our content archive continues to promote Hard Rock Stadium in perpetuity after the event closes.</p>
         <div class="roi-vs">
           <div class="roi-side">
             <div class="roi-side-label">Renting to someone else</div>
@@ -1252,23 +1289,27 @@
 
     </div>
 
-    <!-- Baseline vs. activated comparison -->
-    <div class="animate fade-up delay-2" style="margin-top:32px;background:var(--ve-text);border-radius:8px;padding:56px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:40px;">
-      <div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:14px;">Current Organic Baseline</div>
-        <div style="font-size:clamp(40px,5vw,72px);font-weight:900;letter-spacing:-0.03em;color:#fff;line-height:0.9;margin-bottom:14px;">~20K+</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.65;">Combined social followers across all confirmed active channels. Per-platform, not rolled up. Growing week over week.</div>
+    <!-- Community network stats -->
+    <div class="animate fade-up delay-2" style="display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;margin-top:32px;">
+      <div class="stat-cell">
+        <div class="stat-number">8</div>
+        <div class="stat-label">City Markets Activated</div>
+        <div class="stat-desc">South FL, Tampa, Orlando, Atlanta, NYC, Philadelphia, DMV, and London (July 1). The full network promotes this event, not just South Florida.</div>
       </div>
-      <div style="text-align:center;padding:0 24px;">
-        <div style="width:1px;height:80px;background:rgba(255,255,255,0.12);margin:0 auto 16px;"></div>
-        <div style="font-size:28px;font-weight:900;color:var(--ve-green);">+</div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-top:10px;line-height:1.6;">Partnership<br>Activates</div>
-        <div style="width:1px;height:80px;background:rgba(255,255,255,0.12);margin:16px auto 0;"></div>
+      <div class="stat-cell">
+        <div class="stat-number">200+</div>
+        <div class="stat-label">Influencer Partners</div>
+        <div class="stat-desc">Individual creators from 5K to 2M followers embedded in the Vegan community. One brief activates all of them.</div>
       </div>
-      <div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:14px;">Full Network Reach</div>
-        <div style="font-size:clamp(40px,5vw,72px);font-weight:900;letter-spacing:-0.03em;color:var(--ve-green);line-height:0.9;margin-bottom:14px;">Millions</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.65;">Influencer network spans 5K to 2M per partner across 200+ accounts. One campaign brief. One activation. National exposure, driven by community trust.</div>
+      <div class="stat-cell">
+        <div class="stat-number">215+</div>
+        <div class="stat-label">Vegan Businesses Listed</div>
+        <div class="stat-desc">Our directory reaches high-intent buyers actively seeking Vegan-friendly venues. Every listing becomes an organic promotion channel for this event.</div>
+      </div>
+      <div class="stat-cell" style="border-right:none;">
+        <div class="stat-number">100K+</div>
+        <div class="stat-label">Total Podcast Reach</div>
+        <div class="stat-desc">Cumulative audience across both shows. A dedicated episode promoting the Dolphins partnership goes out in the 30-day lead-up campaign.</div>
       </div>
     </div>
   </div>
@@ -1355,9 +1396,8 @@
         </div>
       </div>
     </div>
-    <!-- Row 2: 2 flip cards centered -->
-    <div class="benefit-flip-grid-row2 animate fade-up delay-2">
-      <div></div><!-- spacer col 1 -->
+    <!-- Row 2: 3 flip cards -->
+    <div class="benefit-flip-grid animate fade-up delay-2" style="margin-top:24px;">
       <!-- Long-Term Vendor Pipeline -->
       <div class="flip-card">
         <div class="flip-card-inner">
@@ -1400,6 +1440,34 @@
           </div>
         </div>
       </div>
+      <!-- Multi-City Activation - 6th card -->
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-front">
+            <div class="flip-hint">Tap to flip</div>
+            <div class="benefit-front-img">
+              <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_230726_c399ddd8-dc5a-459d-a3d9-85c98dcbd07c.png" alt="Pascal and Nori mapping the Vegans Explore network, GeekFon style" style="width:100%;height:100%;object-fit:cover;display:block;">
+            </div>
+            <div class="benefit-front-content">
+              <div class="benefit-title">Multi-City<br>Activation</div>
+            </div>
+          </div>
+          <div class="flip-back benefit-back">
+            <div class="flip-back-label">Multi-City Activation</div>
+            <div class="flip-back-body">We do not promote this event only in South Florida. The full Vegans Explore network across 8 city markets activates simultaneously. New York sends a measurable number of visitors to Miami Dolphins games each season. We turn those communities into ticket buyers specifically because the Dolphins are offering something they have never seen at an NFL game.</div>
+            <div class="benefit-graph-zone" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;border:none;background:transparent;">
+              <div style="background:rgba(255,255,255,0.18);border-radius:4px;padding:12px;text-align:center;">
+                <div style="font-size:20px;font-weight:900;color:#fff;line-height:1;">8</div>
+                <div style="font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:4px;">City Markets</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.18);border-radius:4px;padding:12px;text-align:center;">
+                <div style="font-size:20px;font-weight:900;color:#fff;line-height:1;">200+</div>
+                <div style="font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:4px;">Partners</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1410,34 +1478,32 @@
       <h2 class="section-headline">Here Is the<br><em>Exchange,</em><br>Plain and Simple.</h2>
       <p class="section-body">This is a straightforward trade. Here is exactly what we need and exactly what we provide in return.</p>
     </div>
-    <div class="exchange-table animate fade-up delay-1">
-      <div class="exchange-col we-ask">
-        <div class="exchange-col-label">What We Are Asking For</div>
-        <ul class="exchange-list">
-          <li>F1 Garage at no cost for the Chiefs home opener game day</li>
-          <li>Discounted ticket block starting at 10 seats, scaling as sponsors confirm</li>
-          <li>Introduction to the F&amp;B partner for a 30-minute consultation</li>
-          <li>Co-branding rights to promote this as a Miami Dolphins partnership event</li>
+    <div class="ask-grid animate fade-up delay-1" style="grid-template-columns:repeat(2,1fr);">
+      <div class="ask-item" style="background:var(--ve-green);border-color:var(--ve-green);border-width:2px;">
+        <h4 style="color:rgba(255,255,255,0.75);">What We Are Asking For</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>F1 Garage at no cost for the Chiefs home opener game day</li>
+          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Discounted ticket block starting at 10 seats, scaling as sponsors confirm</li>
+          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Introduction to the F&amp;B partner for a 30-minute consultation</li>
+          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Co-branding rights to promote this as a Miami Dolphins partnership event</li>
         </ul>
       </div>
-      <div class="exchange-col we-give">
-        <div class="exchange-col-label">What We Provide in Return</div>
-        <ul class="exchange-list">
-          <li>F&amp;B consultation: plant-based menu built from existing sourced inventory, no new purchasing required</li>
-          <li>Three-month promotion campaign across social, email, app, paid ads, influencers, and in-person events</li>
-          <li>Full market research report delivered to the Miami Dolphins within 48 hours post-event</li>
-          <li>National community promotion across five US cities and London at platform launch scale</li>
+      <div class="ask-item" style="border-color:var(--ve-green);border-width:2px;">
+        <h4>What We Provide in Return</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>F&amp;B consultation: plant-based menu built from existing sourced inventory, no new purchasing required</li>
+          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Three-month promotion campaign across social, email, app, paid ads, influencers, and in-person events</li>
+          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Full market research report delivered within 48 hours post-event</li>
+          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>National community promotion across 8 city markets at global platform launch scale</li>
         </ul>
       </div>
-    </div>
-    <div class="ask-grid animate fade-up delay-2">
       <div class="ask-item primary">
         <h4>On the Ticket Block</h4>
-        <p>Pre-sale pricing at the 300-level is $95 per seat and expires Friday, May 28. We have a $250 deposit on file and are ready to cover the balance on the initial 10 seats immediately. Every additional seat we add from sponsor and donor commitments is a new ticket sale for the Miami Dolphins at no cost to them.</p>
+        <p>Pre-sale pricing at the 300-level is $95 per seat and expires Friday, May 28. We have a $250 deposit on file and are ready to cover the balance on the initial 10 seats immediately. Every additional seat added from sponsor and donor commitments is a new ticket sale for the Miami Dolphins at no cost to them.</p>
       </div>
       <div class="ask-item primary">
         <h4>On the Garage Cost</h4>
-        <p>We are not asking the Miami Dolphins to absorb the venue cost. Our co-sponsor model brings in plant-based brands and wellness companies to offset activation costs. We are also open to structuring sponsor revenue under the Dolphins' existing partnership umbrella so it avoids a separate approval track.</p>
+        <p>We are not asking the Miami Dolphins to absorb the venue cost. Our co-sponsor model brings in plant-based brands and wellness companies to offset activation costs. We are open to structuring sponsor revenue under the Dolphins' existing partnership umbrella so it avoids a separate approval track.</p>
       </div>
     </div>
   </div>
@@ -1504,8 +1570,8 @@
   <div class="cta-section animate fade-up">
     <h2>Let's Build<br>Something<br><em>Historic.</em></h2>
     <p>The Miami Heat is proof this works. The Miami Dolphins are the next chapter. The conversation starts Wednesday. We are ready, and we have been building toward this for five years.</p>
-    <a href="mailto:contact@lesaruss.com" class="btn-primary">Contact Sean</a>
-    <a href="mailto:rlee@miamidolphins.com" class="btn-secondary">Send to Rachel</a>
+    <a href="#" class="btn-primary">Watch the Story</a>
+    <a href="mailto:contact@lesaruss.com" class="btn-secondary">Contact Sean A. Russell</a>
   </div>
 
   <!-- FOOTER -->
