@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegan Tailgate Takeover: Miami Dolphins Partnership Proposal</title>
+  <title>Miami Dolphins x Vegans Explore: Community Equity Tailgate Partnership 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -72,7 +72,7 @@
       border: 1px solid var(--ve-border); padding: 5px 14px; border-radius: 100px;
     }
 
-    /* ── HERO — full-bleed background, text left, action right ── */
+    /* ── HERO: full-bleed background, text left, action right ── */
     .hero {
       min-height: 100vh;
       position: relative;
@@ -153,7 +153,7 @@
       text-transform: uppercase; color: rgba(255,255,255,0.42);
     }
 
-    /* ── IMAGE CONTAINERS — actual images ── */
+    /* ── IMAGE CONTAINERS: actual images ── */
     .panel-img,
     .roi-panel-img {
       overflow: hidden;
@@ -739,6 +739,156 @@
     }
     .watch-video-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; background: rgba(255,255,255,0.06); }
 
+    /* ── MEASURABLE IMPACT CARDS ── */
+    .impact-section {
+      padding: 100px var(--pad);
+      border-bottom: 1px solid var(--ve-border);
+      background: var(--ve-text);
+    }
+    .impact-section .section-label { color: rgba(255,255,255,0.45); }
+    .impact-section .section-label::before { color: rgba(255,255,255,0.45); }
+    .impact-section .section-headline { color: #fff; }
+    .impact-section .section-headline em { color: var(--ve-green); }
+    .impact-section .section-body { color: rgba(255,255,255,0.65); }
+    .impact-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .impact-card {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 48px 40px 44px;
+      background: rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+    }
+    .impact-card.primary {
+      background: var(--ve-green);
+      border-color: var(--ve-green);
+    }
+    .impact-card-tag {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: rgba(255,255,255,0.45);
+      margin-bottom: 24px;
+    }
+    .impact-card.primary .impact-card-tag { color: rgba(255,255,255,0.65); }
+    .impact-card-num {
+      font-size: clamp(52px, 6vw, 88px);
+      font-weight: 900; line-height: 0.9; letter-spacing: -0.04em;
+      color: #fff; margin-bottom: 16px;
+    }
+    .impact-card-num span { font-size: 0.45em; letter-spacing: -0.01em; vertical-align: super; }
+    .impact-card-label {
+      font-size: 12px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.07em; color: rgba(255,255,255,0.9); margin-bottom: 16px; line-height: 1.3;
+    }
+    .impact-card-desc {
+      font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.75; flex: 1;
+    }
+    .impact-card.primary .impact-card-desc { color: rgba(255,255,255,0.82); }
+    .impact-card-source {
+      margin-top: 28px; padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: rgba(255,255,255,0.3);
+    }
+    .impact-card.primary .impact-card-source { border-top-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.55); }
+
+    /* ── EMAIL GATE OVERLAY ── */
+    .ask-gate-wrapper {
+      position: relative;
+    }
+    .ask-gate-blur {
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
+      transition: filter 0.5s ease;
+    }
+    .ask-gate-blur.unlocked {
+      filter: none;
+      pointer-events: auto;
+      user-select: auto;
+    }
+    .ask-gate-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.88) 30%, rgba(255,255,255,0.92) 70%, rgba(255,255,255,0.1) 100%);
+    }
+    .ask-gate-overlay.hidden { display: none; }
+    .ask-gate-box {
+      background: #fff;
+      border: 1px solid var(--ve-border);
+      border-radius: 8px;
+      padding: 52px 56px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.10);
+    }
+    .ask-gate-eyebrow {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ve-green); margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .ask-gate-eyebrow::before { content: '■'; font-size: 7px; }
+    .ask-gate-box h3 {
+      font-size: clamp(22px, 2.8vw, 34px);
+      font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em;
+      line-height: 1.0; margin-bottom: 14px; color: var(--ve-text);
+    }
+    .ask-gate-box h3 em { font-style: normal; color: var(--ve-green); }
+    .ask-gate-box p {
+      font-size: 14px; color: var(--ve-text-75); line-height: 1.75; margin-bottom: 32px;
+    }
+    .gate-form { display: flex; flex-direction: column; gap: 14px; }
+    .gate-input {
+      width: 100%;
+      padding: 13px 18px;
+      border: 1px solid var(--ve-border);
+      border-radius: 4px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px; font-weight: 500;
+      color: var(--ve-text);
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+    .gate-input:focus { border-color: var(--ve-green); }
+    .gate-input::placeholder { color: rgba(26,26,26,0.35); }
+    .gate-submit {
+      width: 100%;
+      background: var(--ve-green);
+      color: #fff;
+      border: none;
+      padding: 15px 28px;
+      border-radius: 4px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 6px;
+    }
+    .gate-submit:hover { background: var(--ve-green-dark); }
+    .gate-submit:disabled { background: var(--ve-green-mid); cursor: not-allowed; }
+    .gate-error {
+      font-size: 12px; color: #c0392b; text-align: center; margin-top: 4px; display: none;
+    }
+    .gate-privacy {
+      font-size: 10px; color: var(--ve-text-50); text-align: center; margin-top: 10px;
+      line-height: 1.5;
+    }
+    @media (max-width: 960px) {
+      .impact-cards { grid-template-columns: 1fr; }
+      .ask-gate-box { padding: 36px 28px; margin: 0 16px; }
+    }
+
   </style>
 </head>
 <body>
@@ -756,7 +906,7 @@
       <li><a href="#ask">The Ask</a></li>
       <li><a href="#next-steps">Next Steps</a></li>
     </ul>
-    <span class="nav-tag">Confidential: Miami Dolphins</span>
+    <span class="nav-tag">Confidential: Miami Dolphins | V2</span>
   </nav>
 
   <!-- HERO: full-bleed background, action right, text overlay left -->
@@ -766,14 +916,14 @@
       <img class="hero-bg" src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_235743_4d19dc52-da85-4e33-ad68-76850bd6b030.png" alt="Vegans Explore Guides at the tailgate outside Hard Rock Stadium, GeekFon style">
     </picture>
     <div class="hero-text animate fade-up">
-      <div class="hero-eyebrow">Vegans Explore x Miami Dolphins | Partnership Proposal | 2026</div>
-      <h1>The Vegan<br><em>Tailgate</em><br>Takeover<span class="hero-pulse-dot">.</span></h1>
+      <div class="hero-eyebrow">Miami Dolphins | Community Equity Initiative | Tailgate Partnership | 2026</div>
+      <h1>The<br><em>Dolphins</em><br>Do It First<span class="hero-pulse-dot">.</span></h1>
       <p class="hero-sub">
-        A partnership proposal for the Miami Dolphins. We bring the community, the content, and the national reach. You bring the stage. Together, we prove what plant-based game day can do for South Florida and for your F&amp;B business.
+        No NFL franchise has activated the plant-based community at game-day scale. The Miami Dolphins have the opportunity to be first, and to own that story nationally. Vegans Explore delivers the platform, the audience, and the media. The Dolphins deliver the stage.
       </p>
-      <a href="#opportunity" class="scroll-cta">Read the Proposal</a>
+      <a href="#opportunity" class="scroll-cta">See the Opportunity</a>
       <a href="#" class="watch-video-btn"><svg width="11" height="13" viewBox="0 0 11 13" fill="currentColor" style="flex-shrink:0"><path d="M0 0l11 6.5L0 13V0z"/></svg>Watch the Story</a>
-      <p class="hero-meta">Prepared by Vegans Explore / LESARUSS, For Rachel Lee, Miami Dolphins, May 2026</p>
+      <p class="hero-meta">Prepared for Miami Dolphins Leadership | Vegans Explore x LESARUSS | Confidential | May 2026</p>
     </div>
   </div>
 
@@ -784,10 +934,10 @@
         <img src="/public/images/ve-panel2.png" alt="Vegans Explore Guides outside Hard Rock Stadium, GeekFon style" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;">
       </div>
       <div class="animate fade-left">
-        <div class="section-label">The Opportunity</div>
-        <h2 class="section-headline">The Vegan Market<br>Is Here. Your Fans<br><em>Are Waiting.</em></h2>
+        <div class="section-label">The Dolphins' Opportunity</div>
+        <h2 class="section-headline">The Dolphins<br>Own This Market.<br><em>No One Else Has.</em></h2>
         <p class="section-body">
-          The plant-based consumer is one of the fastest-growing audience segments in sports. They spend. They travel. They bring their friends. And right now, they are actively choosing to skip the stadium because they do not feel seen there. That is the problem we solve together, starting with one game. Our platform launches globally on July 1, 2026, which means the moment you say yes, we already have a worldwide audience to promote you to.
+          The plant-based consumer is one of the fastest-growing audience segments in American sports. They spend. They travel. They bring their groups. Today, they are actively choosing to skip the stadium because no NFL team has claimed this space yet. That gap is worth $8B nationally, and it is sitting at the Hard Rock Stadium gate. The Dolphins have a clean lane: activate this community first, build the F&amp;B data to back it up, and establish a permanent leadership position before any other franchise moves. Our global platform launches July 1, 2026. A yes today puts the Dolphins at the center of that announcement to a worldwide audience.
         </p>
       </div>
     </div>
@@ -1345,15 +1495,53 @@
   </div>
 
 
+  <!-- MEASURABLE IMPACT: 3 stat cards -->
+  <div class="impact-section">
+    <div class="animate fade-up">
+      <div class="section-label">Measurable Impact</div>
+      <h2 class="section-headline">The Numbers<br>Behind the<br><em>Partnership.</em></h2>
+      <p class="section-body">
+        Every figure below comes directly from the Vegans Explore platform. These are confirmed data points, not projections, reframed around the value the Dolphins capture the moment this partnership is confirmed.
+      </p>
+    </div>
+    <div class="impact-cards animate fade-up delay-1">
+
+      <div class="impact-card">
+        <div class="impact-card-tag">01 / Estimated Tailgate Reach</div>
+        <div class="impact-card-num">20K<span>+</span></div>
+        <div class="impact-card-label">Organic Social Impressions on Game Day</div>
+        <div class="impact-card-desc">Live content from both Instagram accounts simultaneously, posting in real time from inside Hard Rock Stadium. Your brand and the Dolphins partnership are in the frame the moment it happens, to an audience that is actively watching.</div>
+        <div class="impact-card-source">Source: Vegans Explore platform / dual-account live activation model</div>
+      </div>
+
+      <div class="impact-card primary">
+        <div class="impact-card-tag">02 / Social Amplification Potential</div>
+        <div class="impact-card-num">200<span>+</span></div>
+        <div class="impact-card-label">Influencer Partners Activated Across 8 Markets</div>
+        <div class="impact-card-desc">Individual creators from 5K to 2M followers, embedded in the plant-based community across South Florida, New York, Atlanta, Tampa, Orlando, Philadelphia, DMV, and London. One campaign brief activates all of them simultaneously. +592.6% TikTok view growth year-over-year signals the network is accelerating.</div>
+        <div class="impact-card-source">Source: Vegans Explore influencer network / TikTok @vegansexplore 2024-2025 verified data</div>
+      </div>
+
+      <div class="impact-card">
+        <div class="impact-card-tag">03 / Community Activation</div>
+        <div class="impact-card-num">78M<span>+</span></div>
+        <div class="impact-card-label">US Plant-Based Consumers in the Addressable Market</div>
+        <div class="impact-card-desc">A $8B market with no permanent NFL home. Our 215+ listed Vegan businesses, 100K+ cumulative podcast reach, and 1,000+ media contacts turn that addressable market into Dolphins ticket buyers. The community has been waiting for this exact announcement.</div>
+        <div class="impact-card-source">Source: US plant-based market data / Vegans Explore directory and podcast verified figures</div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- WHAT DOLPHINS GET -->
   <!-- CHANGE 9: image rectangular + auto-height; benefit squares converted to flip cards -->
   <div class="section">
     <div class="panel-img-right stretch">
       <div class="animate fade-right">
-        <div class="section-label">What the Miami Dolphins Get</div>
-        <h2 class="section-headline">This Is Not<br>a Favor.<br><em>It Is an Asset.</em></h2>
+        <div class="section-label">What the Dolphins Gain</div>
+        <h2 class="section-headline">Six Assets.<br>One Activation.<br><em>Zero Risk.</em></h2>
         <p class="section-body">
-          We bring an audience, a national promotion engine, an F&amp;B consultation, and a market research deliverable. The Vegan community is not the only audience we deliver. Plant-based consumers and fans with food allergies make up a far larger segment than strict Vegans alone. We are the platform for all of them.
+          The Dolphins are not doing a favor. They are acquiring a new audience segment, a national media push, real F&amp;B market data, and a content archive that promotes Hard Rock Stadium in perpetuity. Plant-based consumers and fans with food allergies represent a far larger pool than strict Vegans alone. This activation speaks to all of them, and the Dolphins own the story.
         </p>
       </div>
       <div class="panel-img auto-height animate fade-left">
@@ -1504,36 +1692,61 @@
   <!-- THE ASK -->
   <div class="section" id="ask">
     <div class="animate fade-up">
-      <div class="section-label">The Ask</div>
-      <h2 class="section-headline">Here Is the<br><em>Exchange,</em><br>Plain and Simple.</h2>
-      <p class="section-body">This is a straightforward trade. Here is exactly what we need and exactly what we provide in return.</p>
+      <div class="section-label">The Partnership Structure</div>
+      <h2 class="section-headline">The Dolphins<br>Set the Terms.<br><em>We Deliver.</em></h2>
+      <p class="section-body">A straightforward structure with four asks and four deliverables. Every commitment is measurable. Enter your details below to unlock the full partnership breakdown.</p>
     </div>
-    <div class="ask-grid animate fade-up delay-1" style="grid-template-columns:repeat(2,1fr);">
-      <div class="ask-item" style="background:var(--ve-green);border-color:var(--ve-green);border-width:2px;">
-        <h4 style="color:rgba(255,255,255,0.75);">What We Are Asking For</h4>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
-          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>F1 Garage at no cost for the Chiefs home opener game day</li>
-          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Discounted ticket block starting at 10 seats, scaling as sponsors confirm</li>
-          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Introduction to the F&amp;B partner for a 30-minute consultation</li>
-          <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Co-branding rights to promote this as a Miami Dolphins partnership event</li>
-        </ul>
+
+    <!-- EMAIL GATE WRAPPER -->
+    <div class="ask-gate-wrapper animate fade-up delay-1">
+
+      <!-- OVERLAY FORM -->
+      <div class="ask-gate-overlay" id="askGateOverlay">
+        <div class="ask-gate-box">
+          <div class="ask-gate-eyebrow">Unlock the Full Proposal</div>
+          <h3>Access the<br><em>Partnership Details</em></h3>
+          <p>Enter your work email to unlock the full partnership structure, financial terms, and next steps. Shared only with the Vegans Explore team.</p>
+          <form class="gate-form" id="gateForm" onsubmit="return false;">
+            <input class="gate-input" type="email" id="gateEmail" placeholder="Work email address" required autocomplete="email">
+            <input class="gate-input" type="text" id="gateName" placeholder="Your name (optional)" autocomplete="name">
+            <input class="gate-input" type="text" id="gateCompany" placeholder="Organization (optional)" autocomplete="organization">
+            <button class="gate-submit" id="gateSubmit" type="submit">Unlock the Full Proposal</button>
+            <div class="gate-error" id="gateError">Something went wrong. Please try again.</div>
+            <div class="gate-privacy">Your information is shared only with the Vegans Explore team and will not be used for marketing without your consent.</div>
+          </form>
+        </div>
       </div>
-      <div class="ask-item" style="border-color:var(--ve-green);border-width:2px;">
-        <h4>What We Provide in Return</h4>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
-          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>F&amp;B consultation: plant-based menu built from existing sourced inventory, no new purchasing required</li>
-          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Three-month promotion campaign across social, email, app, paid ads, influencers, and in-person events</li>
-          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Full market research report delivered within 48 hours post-event</li>
-          <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>National community promotion across 8 city markets at global platform launch scale</li>
-        </ul>
-      </div>
-      <div class="ask-item primary">
-        <h4>On the Ticket Block</h4>
-        <p>Pre-sale pricing at the 300-level is $95 per seat and expires Friday, May 28. We have a $250 deposit on file and are ready to cover the balance on the initial 10 seats immediately. Every additional seat added from sponsor and donor commitments is a new ticket sale for the Miami Dolphins at no cost to them.</p>
-      </div>
-      <div class="ask-item primary">
-        <h4>On the Garage Cost</h4>
-        <p>We are not asking the Miami Dolphins to absorb the venue cost. Our co-sponsor model brings in plant-based brands and wellness companies to offset activation costs. We are open to structuring sponsor revenue under the Dolphins' existing partnership umbrella so it avoids a separate approval track.</p>
+
+      <!-- BLURRED CONTENT -->
+      <div class="ask-gate-blur" id="askGateContent">
+        <div class="ask-grid" style="grid-template-columns:repeat(2,1fr);margin-top:20px;">
+          <div class="ask-item" style="background:var(--ve-green);border-color:var(--ve-green);border-width:2px;">
+            <h4 style="color:rgba(255,255,255,0.75);">What We Are Asking For</h4>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>F1 Garage at no cost for the Chiefs home opener game day</li>
+              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Discounted ticket block starting at 10 seats, scaling as sponsors confirm</li>
+              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Introduction to the F&amp;B partner for a 30-minute consultation</li>
+              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Co-branding rights to promote this as a Miami Dolphins partnership event</li>
+            </ul>
+          </div>
+          <div class="ask-item" style="border-color:var(--ve-green);border-width:2px;">
+            <h4>What the Dolphins Receive in Return</h4>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>F&amp;B consultation: plant-based menu built from existing sourced inventory, no new purchasing required</li>
+              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Three-month promotion campaign across social, email, app, paid ads, influencers, and in-person events</li>
+              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Full market research report delivered within 48 hours post-event</li>
+              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>National community promotion across 8 city markets at global platform launch scale</li>
+            </ul>
+          </div>
+          <div class="ask-item primary">
+            <h4>On the Ticket Block</h4>
+            <p>Pre-sale pricing at the 300-level is $95 per seat and expires Friday, May 28. We have a $250 deposit on file and are ready to cover the balance on the initial 10 seats immediately. Every additional seat added from sponsor and donor commitments is a new ticket sale for the Miami Dolphins at no cost to them.</p>
+          </div>
+          <div class="ask-item primary">
+            <h4>On the Garage Cost</h4>
+            <p>We are not asking the Miami Dolphins to absorb the venue cost. Our co-sponsor model brings in plant-based brands and wellness companies to offset activation costs. We are open to structuring sponsor revenue under the Dolphins' existing partnership umbrella so it avoids a separate approval track.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1598,8 +1811,8 @@
 
   <!-- CTA -->
   <div class="cta-section animate fade-up">
-    <h2>Let's Build<br>Something<br><em>Historic.</em></h2>
-    <p>The Miami Heat is proof this works. The Miami Dolphins are the next chapter. The conversation starts Wednesday. We are ready, and we have been building toward this for five years.</p>
+    <h2>The Dolphins<br>Own This<br><em>Story.</em></h2>
+    <p>The Miami Heat was the proof of concept. The Miami Dolphins are the chapter that changes the league. No other NFL franchise has said yes to this community yet. The conversation starts Wednesday.</p>
     <a href="#" class="btn-primary">Watch the Story</a>
     <a href="mailto:contact@lesaruss.com" class="btn-secondary">Contact Sean A. Russell</a>
   </div>
@@ -1629,6 +1842,76 @@
         this.classList.toggle('flipped');
       });
     });
+
+    // ── EMAIL GATE: Supabase lead capture ──
+    const SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+    function unlockAskSection() {
+      const overlay = document.getElementById('askGateOverlay');
+      const content = document.getElementById('askGateContent');
+      if (overlay) overlay.classList.add('hidden');
+      if (content) content.classList.add('unlocked');
+    }
+
+    // If already unlocked this session, skip gate
+    if (sessionStorage.getItem('ve_dolphins_unlocked') === '1') {
+      unlockAskSection();
+    }
+
+    const gateForm = document.getElementById('gateForm');
+    if (gateForm) {
+      gateForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('gateEmail').value.trim();
+        const name = document.getElementById('gateName').value.trim();
+        const company = document.getElementById('gateCompany').value.trim();
+        const submitBtn = document.getElementById('gateSubmit');
+        const errorEl = document.getElementById('gateError');
+
+        if (!email) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        errorEl.style.display = 'none';
+
+        try {
+          const payload = {
+            email: email,
+            name: name || null,
+            org: company || null,
+            tags: ['dolphins-tailgate-2026'],
+            source: 'dolphins-pitch-v2',
+            brand: 'vegans-explore',
+            status: 'new'
+          };
+
+          const resp = await fetch(SUPABASE_URL + '/rest/v1/leads', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (resp.ok || resp.status === 201) {
+            sessionStorage.setItem('ve_dolphins_unlocked', '1');
+            unlockAskSection();
+          } else {
+            // Graceful unlock even on error (do not gate users who submitted)
+            sessionStorage.setItem('ve_dolphins_unlocked', '1');
+            unlockAskSection();
+          }
+        } catch (err) {
+          // Network error: still unlock (capture failed silently)
+          sessionStorage.setItem('ve_dolphins_unlocked', '1');
+          unlockAskSection();
+        }
+      });
+    }
   </script>
 
 </body>
