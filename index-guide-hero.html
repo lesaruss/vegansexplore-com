@@ -14,7 +14,7 @@
       --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
     }
     html { scroll-behavior: smooth; }
-    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
+    .page-frame { width: 100%;  margin: 0 auto; background: #fff; }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
     .ve-nav { position: sticky; top: 0; z-index: 400; background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--ve-border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 60px; gap: 16px; }
     .ve-wordmark { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); display: flex; align-items: center; gap: 8px; text-decoration: none; }
@@ -61,13 +61,13 @@
       position: relative;
       z-index: 2;
       padding: 88px 56px 72px;
-      max-width: 600px;
+      
     }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
     .hero h1 em { color: var(--ve-green); font-style: normal; display: block; }
-    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.82); max-width: 420px; margin-bottom: 36px; }
+    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.82);  margin-bottom: 36px; }
     .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
     .btn-hero-primary { background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
     .btn-hero-primary:hover { background: var(--ve-orange-dark); }
@@ -87,7 +87,7 @@
     .section-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
     .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .section-h2 { font-size: clamp(26px, 3.5vw, 44px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.06; margin-bottom: 12px; }
-    .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 560px; }
+    .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65;  }
 
     /* ── Paths Section ── */
     .paths-section { padding: 80px 56px; background: #fff; }
@@ -170,9 +170,9 @@
     .cta-section { background: #fff; padding: 88px 56px; text-align: center; border-top: 1px solid var(--ve-border); }
     .cta-section .section-eyebrow { justify-content: center; }
     .cta-section .section-eyebrow::before { display: none; }
-    .cta-section .section-h2 { max-width: 600px; margin: 0 auto 16px; }
+    .cta-section .section-h2 {  margin: 0 auto 16px; }
     .cta-section .section-h2 em { color: var(--ve-green); font-style: normal; }
-    .cta-section p { font-size: 16px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 460px; margin: 0 auto 40px; }
+    .cta-section p { font-size: 16px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65;  margin: 0 auto 40px; }
     .btn-cta-lg { background: var(--ve-orange); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 17px 40px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
     .btn-cta-lg:hover { background: var(--ve-orange-dark); }
     .cta-fine { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6B6B; }
@@ -223,7 +223,7 @@
       .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 32px 28px; max-width: calc(100% - 48px); margin: 0 24px 32px; border: 1px solid rgba(255,255,255,0.09); }
+      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 32px 28px;  margin: 0 24px 32px; border: 1px solid rgba(255,255,255,0.09); }
       .paths-section, .how-section, .passport-section, .vision-section, .cta-section { padding: 60px 32px; }
       .stats-bar { padding: 18px 32px; }
       .how-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -243,7 +243,7 @@
       .hero { background-image: url('/public/events/ve-hero-mobile.png'); background-position: center center; align-items: flex-end; }
       .hero::before { background: rgba(0,0,0,0.32); }
       .hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 28px 24px; max-width: calc(100% - 32px); margin: 0 16px 24px; border: 1px solid rgba(255,255,255,0.10); }
+      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; padding: 28px 24px;  margin: 0 16px 24px; border: 1px solid rgba(255,255,255,0.10); }
       .stats-bar { padding: 16px 20px; gap: 10px; flex-wrap: wrap; justify-content: center; }
       .stat-divider { display: none; }
       .stat-passport { display: none; }
