@@ -52,6 +52,7 @@
     z-index: 2;
     padding: 88px 56px 72px;
     
+    
     max-width: 520px;
     }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
@@ -82,7 +83,7 @@
     .pricing-title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; color: var(--ve-text); }
     .pricing-card.featured .pricing-title { color: #fff; }
     .pricing-desc { font-size: 13px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; margin-bottom: 24px; }
-    .pricing-card.featured .pricing-desc { color: rgba(255,255,255,0.65); max-width: 520px; }
+    .pricing-card.featured .pricing-desc { color: rgba(255,255,255,0.65);  }
     .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; flex: 1; }
     .pricing-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; font-weight: 500; color: var(--ve-text-75); line-height: 1.45; }
     .pricing-features li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; margin-top: 5px; }
@@ -130,7 +131,7 @@
     .flip-card-back { transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px 20px; }
     .flip-back-overlay { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.55) 100%); }
     .flip-back-content { position: relative; z-index: 1; }
-    .flip-back-path-label { font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.65); max-width: 520px; }
+    .flip-back-path-label { font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.65);  }
     .flip-back-path-name { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #fff; line-height: 1.15; margin-bottom: 10px; }
     .flip-back-guide { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
     .flip-back-btn { display: block; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px; text-decoration: none; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); color: #fff; transition: all 0.15s; }
@@ -150,47 +151,49 @@
       .passport-hero { background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; min-height: 480px; align-items: flex-end; }
       .passport-hero::before { background: rgba(0,0,0,0.32); }
       .passport-hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px;  border: 1px solid rgba(255,255,255,0.09); max-width: 520px;
-    }
-      .pricing-section { padding: 52px 32px; max-width: 520px;
-    }
-      .pricing-grid { grid-template-columns: 1fr; gap: 16px; max-width: 520px;
-    }
-      .benefits-section { padding: 52px 32px; max-width: 520px;
-    }
-      .benefits-grid { grid-template-columns: 1fr 1fr; max-width: 520px;
-    }
-      .guides-section { padding: 52px 32px; max-width: 520px;
-    }
-      .guides-grid { grid-template-columns: repeat(3, 1fr); max-width: 520px;
-    }
-      .cta-inner { padding: 56px 32px; max-width: 520px;
-    }
+      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px;  border: 1px solid rgba(255,255,255,0.09); 
     max-width: 520px;
+    }
+      .pricing-section { padding: 52px 32px; 
+    }
+      .pricing-grid { grid-template-columns: 1fr; gap: 16px; 
+    }
+      .benefits-section { padding: 52px 32px; 
+    }
+      .benefits-grid { grid-template-columns: 1fr 1fr; 
+    }
+      .guides-section { padding: 52px 32px; 
+    }
+      .guides-grid { grid-template-columns: repeat(3, 1fr); 
+    }
+      .cta-inner { padding: 56px 32px; 
+    }
+    
     }
     @media (max-width: 480px) {
       .passport-hero { min-height: 480px; align-items: flex-end; background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; }
       .passport-hero::before { background: rgba(0,0,0,0.32); }
       .passport-hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px;  border: 1px solid rgba(255,255,255,0.10); max-width: 520px;
-    }
-      .pricing-section { padding: 44px 20px; max-width: 520px;
-    }
-      .pricing-grid { grid-template-columns: 1fr; gap: 14px; max-width: 520px;
-    }
-      .benefits-section { padding: 44px 20px; max-width: 520px;
-    }
-      .benefits-grid { grid-template-columns: 1fr; max-width: 520px;
-    }
-      .guides-section { padding: 44px 20px; max-width: 520px;
-    }
-      .guides-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 520px;
-    }
-      .flip-card { height: 300px; max-width: 520px;
-    }
-      .cta-inner { padding: 52px 20px; max-width: 520px;
-    }
+      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px;  border: 1px solid rgba(255,255,255,0.10); 
     max-width: 520px;
+    }
+      .pricing-section { padding: 44px 20px; 
+    }
+      .pricing-grid { grid-template-columns: 1fr; gap: 14px; 
+    }
+      .benefits-section { padding: 44px 20px; 
+    }
+      .benefits-grid { grid-template-columns: 1fr; 
+    }
+      .guides-section { padding: 44px 20px; 
+    }
+      .guides-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; 
+    }
+      .flip-card { height: 300px; 
+    }
+      .cta-inner { padding: 52px 20px; 
+    }
+    
     }
 
     /* Founder section */
