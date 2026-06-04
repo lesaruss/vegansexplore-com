@@ -59,7 +59,13 @@
       height: 64px;
     }
     .nav-logo img { height: 30px; }
-    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links { display: none; gap: 28px; list-style: none; }
+    body.plan-mode .nav-links,
+    body.present-mode .nav-links { display: flex; }
+    .nav-tag { display: none; }
+    body.plan-mode .nav-tag { display: block; }
+    #presentBtn { display: none; }
+    body.plan-mode #presentBtn { display: flex; }
     .nav-links a {
       font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
       text-transform: uppercase; text-decoration: none;
@@ -686,7 +692,7 @@
     @media (max-width: 960px) {
       :root { --pad: 24px; }
       nav { padding: 0 24px; }
-      .nav-links { display: none; }
+      .nav-links { display: none !important; }
       .hero { padding: 80px 24px 60px; }
       .hero-bg { object-position: center top; }
       .hero::after { background: linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.65) 100%); }
@@ -960,7 +966,7 @@
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           Guided Tour
         </button>
-        <a href="#opportunity" class="scroll-cta outline">See the Full Plan</a>
+        <button class="scroll-cta outline" onclick="enterFullPlan()">See the Full Plan</button>
       </div>
       <p class="hero-meta">Prepared for Miami Dolphins Leadership | Vegans Explore x LESARUSS | Confidential | May 2026</p>
     </div>
@@ -1973,13 +1979,35 @@
       return selectors.map(s => document.querySelector(s)).filter(Boolean);
     }
 
+    function enterFullPlan() {
+      document.body.classList.add('plan-mode');
+      document.querySelector('#opportunity').scrollIntoView({ behavior: 'smooth' });
+    }
+
     function startGuidedTour() {
       enterPresentMode();
-      // Skip hero slide, start at slide 1 (The Opportunity)
       goToSlide(1);
     }
 
+    // Map nav hrefs to slide indices (hero=0, opportunity=1, track-record=2, proposal=3, fb=4, ask=5, next-steps=6, cta=7)
+    const sectionSlideMap = {
+      'opportunity': 1, 'track-record': 2, 'proposal': 3, 'fb': 4, 'ask': 5, 'next-steps': 6
+    };
+
+    document.addEventListener('click', function(e) {
+      const link = e.target.closest('.nav-links a');
+      if (!link) return;
+      if (document.body.classList.contains('present-mode')) {
+        e.preventDefault();
+        const id = link.getAttribute('href').replace('#','');
+        const idx = sectionSlideMap[id];
+        if (idx !== undefined) goToSlide(idx);
+      }
+      // In plan-mode: default anchor scroll behavior works fine
+    });
+
     function enterPresentMode() {
+      document.body.classList.add('plan-mode');
       const sections = getSlideSections();
       const container = document.getElementById('slideContainer');
       container.innerHTML = '';
