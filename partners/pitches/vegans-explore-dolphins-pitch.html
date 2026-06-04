@@ -649,10 +649,13 @@
     .step p { font-size: 12px; color: var(--ve-text-75); line-height: 1.65; }
 
     /* ── CTA ── */
-    .cta-section { text-align: center; padding: 120px var(--pad); border-top: 1px solid var(--ve-border); }
-    .cta-section h2 { font-size: clamp(48px, 7vw, 96px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; line-height: 0.92; margin-bottom: 36px; }
-    .cta-section h2 em { font-style: normal; color: var(--ve-green); }
-    .cta-section p { font-size: 17px; color: var(--ve-text-75); max-width: 520px; margin: 0 auto 40px; line-height: 1.75; }
+    .cta-section { text-align: center; padding: 140px var(--pad); border-top: none; position: relative; overflow: hidden; background: #001a2e; }
+    .cta-section::before { content: ''; position: absolute; inset: 0; background: url('https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260604_165403_2f48e724-7cef-4276-bb99-38e891cef8dd.png') center center / cover no-repeat; opacity: 0.45; z-index: 0; }
+    .cta-section::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,10,20,0.55) 0%, rgba(0,10,20,0.75) 100%); z-index: 1; }
+    .cta-section > * { position: relative; z-index: 2; }
+    .cta-section h2 { font-size: clamp(48px, 7vw, 96px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; line-height: 0.92; margin-bottom: 36px; color: #ffffff; }
+    .cta-section h2 em { font-style: normal; color: #00d4e0; }
+    .cta-section p { font-size: 17px; color: rgba(255,255,255,0.85); max-width: 520px; margin: 0 auto 40px; line-height: 1.75; }
     .btn-primary {
       display: inline-block; background: var(--ve-green); color: #fff;
       font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
