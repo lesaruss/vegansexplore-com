@@ -925,6 +925,12 @@
     .present-slide-count { color:rgba(255,255,255,0.8); font-size:13px; font-weight:600; min-width:60px; text-align:center; }
     .present-exit { background:rgba(255,255,255,0.12) !important; border-radius:20px !important; padding:0 14px !important; width:auto !important; font-size:13px !important; font-weight:700; letter-spacing:0.03em; }
     .present-exit:hover { background:rgba(255,255,255,0.25) !important; }
+
+    /* Plan content hidden until activated */
+    #plan-content { display: none; }
+    body.plan-mode #plan-content { display: block; }
+    #plan-footer { display: none; }
+    body.plan-mode #plan-footer { display: block; }
   </style>
 </head>
 <body>
@@ -971,6 +977,8 @@
       <p class="hero-meta">Prepared for Miami Dolphins Leadership | Vegans Explore x LESARUSS | Confidential | May 2026</p>
     </div>
   </div>
+
+  <div id="plan-content">
 
   <!-- OPPORTUNITY: image LEFT, text + stats below -->
   <div class="section" id="opportunity">
@@ -1862,6 +1870,8 @@
   </div>
 
 
+  </div><!-- /#plan-content -->
+
   <!-- PRESENT MODE OVERLAY -->
   <div class="present-overlay" id="presentOverlay">
     <div id="slideContainer"></div>
@@ -1873,7 +1883,7 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
+  <div id="plan-footer"><!-- FOOTER -->
   <footer>
     <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
     <span>Vegans Explore x Miami Dolphins | Partnership Proposal | Confidential | 2026</span>
