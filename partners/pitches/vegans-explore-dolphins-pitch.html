@@ -1902,11 +1902,10 @@
 
     document.querySelectorAll('.animate').forEach(el => observer.observe(el));
 
-    // CHANGE 3: flip card toggle - single JS handler only (no onclick attrs on HTML)
-    document.querySelectorAll('.flip-card').forEach(card => {
-      card.addEventListener('click', function() {
-        this.classList.toggle('flipped');
-      });
+    // Delegated flip handler - works on original DOM and cloned present-mode slides
+    document.addEventListener('click', function(e) {
+      const card = e.target.closest('.flip-card');
+      if (card) card.classList.toggle('flipped');
     });
 
     // ── EMAIL GATE: Supabase lead capture ──
