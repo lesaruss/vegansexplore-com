@@ -689,6 +689,10 @@
     footer img { height: 20px; filter: brightness(0) invert(1); opacity: 0.35; }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .track-record-grid { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 960px) {
       :root { --pad: 24px; }
       nav { padding: 0 24px; }
@@ -703,7 +707,7 @@
       .stat-cell { border-right: none; }
       .card-grid, .card-grid.four { grid-template-columns: 1fr; }
       .flip-grid { grid-template-columns: 1fr; }
-      .track-record-grid { grid-template-columns: 1fr; }
+      /* track-record-grid: stays 2-col until 600px */
       .city-grid { grid-template-columns: repeat(3, 1fr); }
       .exchange-table { grid-template-columns: 1fr; }
       .exchange-col.we-give { border-left: none; border-top: 2px solid var(--ve-green); }
@@ -1042,7 +1046,7 @@
       <div class="flip-card animate fade-up delay-1">
         <div class="flip-card-inner">
           <div class="flip-front">
-            <div class="tr-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260604_191454_d4b69f06-dd1b-479e-b435-6185ce6db8aa.png" alt="Guides in red Heat jerseys cheering in the arena stands, GeekFon style"></div>
+            <div class="tr-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260604_191657_db878fa7-1e12-4d23-9124-6cef917b85e3.png" alt="Guides in red Heat jerseys cheering in the arena stands, GeekFon style"></div>
             <div class="flip-hint">Tap to flip</div>
             <div class="flip-year">Miami Heat / Kaseya Center - 2021</div>
             <div class="flip-title">The Night That<br><em>Laid the Groundwork.</em></div>
