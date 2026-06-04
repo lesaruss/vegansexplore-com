@@ -139,15 +139,18 @@
       font-size: 17px; font-weight: 400; color: rgba(255,255,255,0.78);
       max-width: 520px; margin-bottom: 40px; line-height: 1.75;
     }
+    .hero-btns { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:36px; }
     .scroll-cta {
       display: inline-flex; align-items: center; gap: 10px;
       font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
       text-transform: uppercase; color: #fff; text-decoration: none;
       border: 2px solid var(--ve-green); padding: 14px 28px; border-radius: 4px;
-      margin-bottom: 36px; transition: background 0.2s, color 0.2s;
+      transition: background 0.2s, color 0.2s; cursor:pointer;
       background: var(--ve-green);
     }
     .scroll-cta:hover { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
+    .scroll-cta.outline { background: transparent; color: #fff; border-color: rgba(255,255,255,0.55); }
+    .scroll-cta.outline:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
     .hero-meta {
       font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
       text-transform: uppercase; color: rgba(255,255,255,0.42);
@@ -952,7 +955,13 @@
       <p class="hero-sub">
         No NFL franchise has activated the plant-based community at game-day scale. The Miami Dolphins have the opportunity to be first, and to own that story nationally. Vegans Explore delivers the platform, the audience, and the media. The Dolphins deliver the stage.
       </p>
-      <a href="#opportunity" class="scroll-cta">See the Opportunity</a>
+      <div class="hero-btns">
+        <button class="scroll-cta" onclick="startGuidedTour()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Guided Tour
+        </button>
+        <a href="#opportunity" class="scroll-cta outline">See the Full Plan</a>
+      </div>
       <p class="hero-meta">Prepared for Miami Dolphins Leadership | Vegans Explore x LESARUSS | Confidential | May 2026</p>
     </div>
   </div>
@@ -1962,6 +1971,12 @@
       // Collect all major sections in DOM order
       const selectors = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#next-steps', '.cta-section'];
       return selectors.map(s => document.querySelector(s)).filter(Boolean);
+    }
+
+    function startGuidedTour() {
+      enterPresentMode();
+      // Skip hero slide, start at slide 1 (The Opportunity)
+      goToSlide(1);
     }
 
     function enterPresentMode() {
