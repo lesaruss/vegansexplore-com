@@ -330,8 +330,7 @@
     .tr-img {
       position: absolute;
       inset: 0;
-      bottom: 165px;
-      border-radius: 8px 8px 0 0;
+      border-radius: 8px;
       overflow: hidden;
     }
     .tr-img img {
@@ -342,18 +341,31 @@
       display: block;
       opacity: 0.8;
     }
-    /* Gradient overlay so text at bottom stays readable */
+    /* Subtle vignette only — text bar handles legibility */
     .tr-img::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, transparent 55%, rgba(17,24,39,0.75) 85%, rgba(17,24,39,0.75) 100%);
+      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.15) 100%);
       pointer-events: none;
     }
     /* record-static also needs relative positioning for the image overlay */
     .record-static {
       position: relative;
       overflow: hidden;
+    }
+
+
+    /* Text bar overlaid on image */
+    .tr-text-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(10, 14, 20, 0.62);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      border-radius: 0 0 8px 8px;
+      padding: 14px 20px 16px;
+      z-index: 2;
     }
 
     /* ── FLIP CARDS ── */
@@ -372,7 +384,7 @@
     }
     /* Smaller track record cards in 3-col layout */
     .track-record-grid .flip-card {
-      aspect-ratio: 3/4;
+      aspect-ratio: 16/9;
       margin-top: 0;
     }
     /* Benefit flip cards - more portrait */
@@ -397,7 +409,7 @@
       flex-direction: column;
       justify-content: flex-end;
     }
-    .flip-front { background: var(--ve-text); border: 1px solid rgba(255,255,255,0.06); padding-bottom: 24px; }
+    .flip-front { background: var(--ve-text); border: 1px solid rgba(255,255,255,0.06); }
     .flip-back { background: var(--ve-green); transform: rotateY(180deg); }
     .flip-hint {
       position: absolute; top: 20px; right: 20px;
@@ -1046,9 +1058,11 @@
           <div class="flip-front">
             <div class="tr-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260604_191657_db878fa7-1e12-4d23-9124-6cef917b85e3.png" alt="Guides in red Heat jerseys cheering in the arena stands, GeekFon style"></div>
             <div class="flip-hint">Tap to flip</div>
-            <div class="flip-year">Miami Heat / Kaseya Center - 2021</div>
-            <div class="flip-title">The Night That<br><em>Laid the Groundwork.</em></div>
-            <div class="flip-venue">South Florida's First Vegan Sports Arena Event</div>
+            <div class="tr-text-bar">
+              <div class="flip-year">Miami Heat / Kaseya Center - 2021</div>
+              <div class="flip-title">The Night That<br><em>Laid the Groundwork.</em></div>
+              <div class="flip-venue">South Florida's First Vegan Sports Arena Event</div>
+            </div>
           </div>
           <div class="flip-back">
             <div class="flip-back-label">Miami HEAT - 2021</div>
@@ -1073,9 +1087,11 @@
           <div class="flip-front">
             <div class="tr-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260604_191252_0f91d1ef-3877-475c-90a9-bb97fe3738ed.png" alt="Guides in Dolphins jerseys cheering in the stands at Hard Rock Stadium, GeekFon style"></div>
             <div class="flip-hint">Tap to flip</div>
-            <div class="flip-year">Miami Dolphins / Hard Rock Stadium - 2021</div>
-            <div class="flip-title">The Pilot That<br><em>Built This Pitch.</em></div>
-            <div class="flip-venue">Our First Dolphins Game Day - The Foundation</div>
+            <div class="tr-text-bar">
+              <div class="flip-year">Miami Dolphins / Hard Rock Stadium - 2021</div>
+              <div class="flip-title">The Pilot That<br><em>Built This Pitch.</em></div>
+              <div class="flip-venue">Our First Dolphins Game Day - The Foundation</div>
+            </div>
           </div>
           <div class="flip-back">
             <div class="flip-back-label">Miami Dolphins - 2021</div>
