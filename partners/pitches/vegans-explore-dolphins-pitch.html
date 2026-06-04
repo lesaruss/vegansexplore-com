@@ -892,6 +892,30 @@
       .ask-gate-box { padding: 36px 28px; margin: 0 16px; }
     }
 
+
+    /* ── PRESENTATION MODE ── */
+    .present-toggle { display:flex; align-items:center; gap:8px; background:var(--ve-green); color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:700; cursor:pointer; letter-spacing:0.04em; transition:background 0.2s; flex-shrink:0; }
+    .present-toggle:hover { background:var(--ve-green-dark,#1f5e39); }
+    .present-toggle svg { flex-shrink:0; }
+
+    body.present-mode { overflow:hidden; }
+    body.present-mode nav { display:none; }
+    body.present-mode footer { display:none; }
+
+    .present-overlay { display:none; position:fixed; inset:0; z-index:9000; background:#000; }
+    body.present-mode .present-overlay { display:block; }
+
+    .present-slide { position:absolute; inset:0; overflow-y:auto; background:#fff; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
+    .present-slide.active { opacity:1; pointer-events:auto; }
+    .present-slide > .slide-inner { min-height:100vh; display:flex; align-items:center; justify-content:center; }
+
+    .present-controls { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:9100; display:flex; align-items:center; gap:12px; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); border-radius:40px; padding:10px 20px; }
+    .present-controls button { background:none; border:none; color:#fff; cursor:pointer; width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.15s; font-size:18px; }
+    .present-controls button:hover { background:rgba(255,255,255,0.15); }
+    .present-controls button:disabled { opacity:0.3; cursor:not-allowed; }
+    .present-slide-count { color:rgba(255,255,255,0.8); font-size:13px; font-weight:600; min-width:60px; text-align:center; }
+    .present-exit { background:rgba(255,255,255,0.12) !important; border-radius:20px !important; padding:0 14px !important; width:auto !important; font-size:13px !important; font-weight:700; letter-spacing:0.03em; }
+    .present-exit:hover { background:rgba(255,255,255,0.25) !important; }
   </style>
 </head>
 <body>
@@ -910,7 +934,11 @@
       <li><a href="#next-steps">Next Steps</a></li>
     </ul>
     <span class="nav-tag">Confidential: Miami Dolphins | V2</span>
-  </nav>
+      <button class="present-toggle" id="presentBtn" onclick="enterPresentMode()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Present
+      </button>
+</nav>
 
   <!-- HERO: full-bleed background, action right, text overlay left -->
   <div class="hero">
@@ -1818,6 +1846,18 @@
     <a href="mailto:contact@lesaruss.com" class="btn-secondary">Contact Sean A. Russell</a>
   </div>
 
+
+  <!-- PRESENT MODE OVERLAY -->
+  <div class="present-overlay" id="presentOverlay">
+    <div id="slideContainer"></div>
+    <div class="present-controls">
+      <button id="prevBtn" onclick="prevSlide()" title="Previous (←)">&#8592;</button>
+      <span class="present-slide-count" id="slideCount">1 / 1</span>
+      <button id="nextBtn" onclick="nextSlide()" title="Next (→)">&#8594;</button>
+      <button class="present-exit" onclick="exitPresentMode()">✕ Exit</button>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer>
     <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
@@ -1913,6 +1953,78 @@
         }
       });
     }
+
+    // ── PRESENTATION MODE ──
+    let currentSlide = 0;
+    let slides = [];
+
+    function getSlideSections() {
+      // Collect all major sections in DOM order
+      const selectors = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#next-steps', '.cta-section'];
+      return selectors.map(s => document.querySelector(s)).filter(Boolean);
+    }
+
+    function enterPresentMode() {
+      const sections = getSlideSections();
+      const container = document.getElementById('slideContainer');
+      container.innerHTML = '';
+      slides = [];
+
+      sections.forEach((sec, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'present-slide' + (i === 0 ? ' active' : '');
+        slide.dataset.index = i;
+        const inner = document.createElement('div');
+        inner.className = 'slide-inner';
+        // Clone section and drop animations so content shows immediately
+        const clone = sec.cloneNode(true);
+        clone.querySelectorAll('.animate').forEach(el => {
+          el.classList.add('animated');
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+        clone.style.width = '100%';
+        inner.appendChild(clone);
+        slide.appendChild(inner);
+        container.appendChild(slide);
+        slides.push(slide);
+      });
+
+      currentSlide = 0;
+      updateControls();
+      document.body.classList.add('present-mode');
+      document.getElementById('presentOverlay').scrollTop = 0;
+    }
+
+    function exitPresentMode() {
+      document.body.classList.remove('present-mode');
+    }
+
+    function goToSlide(n) {
+      if (n < 0 || n >= slides.length) return;
+      slides[currentSlide].classList.remove('active');
+      currentSlide = n;
+      slides[currentSlide].classList.add('active');
+      slides[currentSlide].scrollTop = 0;
+      updateControls();
+    }
+
+    function nextSlide() { goToSlide(currentSlide + 1); }
+    function prevSlide() { goToSlide(currentSlide - 1); }
+
+    function updateControls() {
+      document.getElementById('slideCount').textContent = (currentSlide + 1) + ' / ' + slides.length;
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('nextBtn').disabled = currentSlide === slides.length - 1;
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (!document.body.classList.contains('present-mode')) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+      if (e.key === 'Escape') exitPresentMode();
+    });
+
   </script>
 
 </body>
