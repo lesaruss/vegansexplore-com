@@ -996,184 +996,128 @@
     #plan-footer { display: none; }
     body.plan-mode #plan-footer { display: block; }
   
-    /* ══════════════════════════════════════════════
-       PRINT / PDF STYLES
-       Each major section = one page. Clean, deliberate.
-    ══════════════════════════════════════════════ */
     @media print {
-      @page { size: letter; margin: 0.6in 0.75in 0.6in 0.75in; }
+      @page { size: letter; margin: 0.75in; }
 
-      /* ── Color fidelity ── */
+      /* ── Hide everything visual ── */
+      nav, .hero-bg, picture, img,
+      .hero-btns, .hero-pulse-dot, .scroll-indicator,
+      .present-overlay, #printBtnNav, .print-trigger,
+      .ask-gate-overlay, #gateForm, .gate-form,
+      .gate-submit, .gate-error, .gate-privacy,
+      .present-controls, .present-header,
+      #plan-footer, footer, .btn-secondary,
+      .panel-img, .next-steps-img-col,
+      .impact-stat-icon, .flip-card-back,
+      .cta-section::before, .cta-section::after,
+      .hero::before, .hero::after { display: none !important; }
+
+      /* ── Base reset ── */
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body { margin: 0; padding: 0; background: #fff; color: #1a1a1a; font-family: 'Montserrat', sans-serif; font-size: 11pt; }
 
-      /* ── Hide all chrome ── */
-      nav,
-      .hero-btns,
-      .hero-pulse-dot,
-      .scroll-indicator,
-      .present-overlay,
-      #printBtnNav,
-      .print-trigger,
-      .ask-gate-overlay,
-      #gateForm,
-      .gate-form,
-      .gate-submit,
-      .gate-error,
-      .gate-privacy,
-      .present-controls,
-      .present-header,
-      #plan-footer,
-      footer,
-      .btn-secondary { display: none !important; }
-
-      /* ── Reveal post-gate content unconditionally ── */
+      /* ── Reveal post-gate content ── */
       .post-gate { display: block !important; }
-      .ask-gate-blur { filter: none !important; pointer-events: auto !important; user-select: auto !important; }
+      .ask-gate-blur { filter: none !important; pointer-events: auto !important; }
 
-      /* ── Reset body / wrapper ── */
-      body { margin: 0; padding: 0; background: #fff; font-family: 'Montserrat', sans-serif; }
-      #plan-content { padding: 0; }
-
-      /* ── Page breaks ── */
-      .hero          { page-break-after:  always; break-after:  page; }
-      .section       { page-break-before: always; break-before: page; page-break-after: auto; }
-      .impact-section{ page-break-before: always; break-before: page; }
-      .cta-section   { page-break-before: always; break-before: page; }
-
-      /* ── Avoid orphan breaks ── */
-      .step, .ask-item, .stat-card, .impact-stat,
-      .pillar-card, .fb-card, .flip-card,
-      .panel-img, .sponsor-tier, .collab-tile { page-break-inside: avoid; break-inside: avoid; }
-
-      /* ══ PAGE 1: COVER ══ */
-      .hero {
-        position: relative;
-        min-height: 100vh;
-        background: #001a2e;
-        padding: 100px 80px 80px;
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        border: none;
-        margin: -0.6in -0.75in;
-        width: calc(100% + 1.5in);
-        box-sizing: border-box;
-      }
-      .hero-bg {
-        position: absolute; inset: 0;
-        width: 100%; height: 100%;
-        object-fit: cover;
-        opacity: 0.3;
-        z-index: 0;
-      }
-      .hero-text { position: relative; z-index: 2; }
-      .hero-eyebrow {
-        color: rgba(255,255,255,0.65);
-        font-size: 10px; font-weight: 700;
-        letter-spacing: 0.18em; text-transform: uppercase;
-        margin-bottom: 28px;
-      }
-      .hero h1 { color: #fff; font-size: 72px; line-height: 0.9; font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; margin: 0 0 32px; }
-      .hero h1 em { color: #00d4e0; font-style: normal; }
-      .hero-sub { color: rgba(255,255,255,0.82); font-size: 15px; line-height: 1.75; max-width: 520px; margin-bottom: 40px; }
-      .hero-meta { color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
-
-      /* ══ ALL BODY SECTIONS ══ */
-      .section {
-        padding: 56px 0;
-        border: none;
-        background: #fff !important;
-      }
-      .section:last-of-type { page-break-after: auto; }
-
-      /* Section text */
-      .section-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 14px; }
-      .section-headline { font-size: 40px; line-height: 0.95; font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; margin-bottom: 20px; }
-      .section-body { font-size: 13px; line-height: 1.75; color: var(--ve-text-75); max-width: 560px; }
-
-      /* ── Panel grids: keep 2-col in print ── */
-      .panel-img-left, .panel-img-right {
-        display: grid !important;
-        gap: 48px;
-        align-items: start;
-      }
-      .panel-img-left  { grid-template-columns: 280px 1fr !important; }
-      .panel-img-right { grid-template-columns: 1fr 280px !important; }
-      #proposal .panel-img-right { grid-template-columns: 1fr 1fr !important; }
-
-      .panel-img { max-height: 320px; overflow: hidden; border-radius: 6px; }
-      .panel-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-      /* ── Stats ── */
-      .stat-row, .stats-grid { display: grid !important; gap: 20px; margin-top: 28px; }
-      .stat-card { padding: 24px !important; border-radius: 6px; }
-
-      /* ── Flip cards: show front face only ── */
-      .flip-card-inner { transform: none !important; }
-      .flip-card-back { display: none !important; }
-      .flip-card-front { position: relative !important; transform: none !important; backface-visibility: visible !important; }
-      .flip-card { perspective: none !important; cursor: default !important; }
-
-      /* ── Steps 2x2 grid ── */
-      .steps { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
-      .step { padding: 24px !important; }
-
-      /* ── F&B cards grid ── */
-      .fb-grid, .pillars-grid { display: grid !important; gap: 16px; }
-
-      /* ── Impact section ── */
-      .impact-section {
-        padding: 56px 0;
-        background: #001a2e !important;
-        margin: 0 -0.75in;
-        padding-left: 0.75in; padding-right: 0.75in;
-        box-sizing: border-box;
-        width: calc(100% + 1.5in);
-      }
-      .impact-section .section-headline,
-      .impact-section .section-label,
-      .impact-section h2,
-      .impact-section h3 { color: #fff !important; }
-      .impact-section .section-body { color: rgba(255,255,255,0.8) !important; }
-
-      /* ── Ask / Gate section: show content, hide form ── */
-      .ask-gate-wrapper { position: static !important; }
-      .ask-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px !important; margin-top: 0 !important; }
-      .ask-item { padding: 24px !important; border-radius: 6px; }
-
-      /* ── CTA / Closing slide ── */
-      .cta-section {
-        min-height: 80vh;
-        padding: 80px 0;
-        background: #001a2e !important;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        margin: 0 -0.75in;
-        padding-left: 0.75in; padding-right: 0.75in;
-        box-sizing: border-box;
-        width: calc(100% + 1.5in);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      .cta-section::before { opacity: 0.4 !important; }
-      .cta-section > * { position: relative; z-index: 2; }
-
-      /* ── Platform stats section: alt bg ── */
-      #pg-platform { background: #f7f9f7 !important; }
-      #pg-collaboration { background: #f7f9f7 !important; }
-
-      /* ── Images general ── */
-      img { max-width: 100% !important; height: auto !important; }
-
-      /* ── Animated elements: force visible ── */
+      /* ── Animate reset ── */
       .animate { opacity: 1 !important; transform: none !important; }
 
-      /* ── Next-steps image col: show in print ── */
-      .next-steps-img-col { display: flex !important; }
-      .next-steps-img-col img { max-height: 320px; width: auto !important; }
+      /* ── Hero: text only, no background ── */
+      .hero {
+        background: #fff !important;
+        padding: 0 0 40px 0;
+        min-height: auto;
+        page-break-after: always;
+        break-after: page;
+      }
+      .hero-eyebrow { font-size: 8pt; letter-spacing: 0.15em; text-transform: uppercase; color: #555; margin-bottom: 16px; }
+      .hero h1 { font-size: 36pt; font-weight: 900; text-transform: uppercase; color: #1a1a1a; line-height: 1; margin: 0 0 20px; }
+      .hero h1 em { font-style: normal; color: #1a6e3c; }
+      .hero-sub { font-size: 11pt; line-height: 1.7; color: #444; max-width: 100%; margin-bottom: 24px; }
+      .hero-meta { font-size: 8pt; color: #888; letter-spacing: 0.08em; text-transform: uppercase; border-top: 1px solid #e0e0e0; padding-top: 16px; margin-top: 16px; }
+
+      /* ── Sections ── */
+      .section, .impact-section {
+        background: #fff !important;
+        padding: 40px 0;
+        border: none !important;
+        page-break-before: always;
+        break-before: page;
+      }
+      .cta-section {
+        background: #fff !important;
+        padding: 40px 0;
+        page-break-before: always;
+        break-before: page;
+      }
+      .cta-section h2 { color: #1a1a1a !important; font-size: 24pt; }
+      .cta-section h2 em { color: #1a6e3c !important; font-style: normal; }
+      .cta-section p { color: #444 !important; }
+
+      /* ── Section typography ── */
+      .section-label { font-size: 7pt; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #1a6e3c; margin-bottom: 10px; }
+      .section-headline { font-size: 24pt; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; color: #1a1a1a; margin-bottom: 16px; }
+      .section-headline em { font-style: normal; color: #1a6e3c; }
+      .section-body { font-size: 11pt; line-height: 1.75; color: #444; margin-bottom: 24px; }
+
+      /* ── Grids: stack single column ── */
+      .panel-img-left, .panel-img-right,
+      [style*="grid-template-columns"] { display: block !important; }
+
+      /* ── Stats ── */
+      .stat-row, .stats-grid { display: flex !important; flex-wrap: wrap; gap: 16px; margin-top: 20px; }
+      .stat-card { flex: 1 1 30%; padding: 16px !important; border: 1px solid #e0e0e0; border-radius: 4px; page-break-inside: avoid; break-inside: avoid; }
+      .stat-num { font-size: 20pt; font-weight: 900; color: #1a6e3c; }
+      .stat-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #555; }
+      .stat-desc { font-size: 10pt; color: #666; margin-top: 4px; }
+
+      /* ── Flip cards: front only ── */
+      .flip-card { page-break-inside: avoid; break-inside: avoid; }
+      .flip-card-inner { transform: none !important; }
+      .flip-card-back { display: none !important; }
+      .flip-card-front { position: static !important; transform: none !important; backface-visibility: visible !important; }
+      .track-record-grid, .benefit-flip-grid, .benefit-flip-grid-row2 { display: flex !important; flex-wrap: wrap; gap: 12px; }
+      .flip-card { width: auto !important; flex: 1 1 45%; }
+
+      /* ── Steps 2x2 ── */
+      .steps { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+      .step { padding: 20px !important; border: 1px solid #e0e0e0; border-radius: 4px; page-break-inside: avoid; break-inside: avoid; }
+      .step-num { font-size: 20pt; font-weight: 900; color: #e0e0e0; }
+      .step h4 { font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #1a1a1a; margin: 4px 0 8px; }
+      .step p { font-size: 10pt; color: #555; line-height: 1.6; }
+
+      /* ── Pillar / F&B cards ── */
+      .pillars-grid, .fb-grid { display: flex !important; flex-wrap: wrap; gap: 12px; }
+      .pillar-card, .fb-card { flex: 1 1 28%; padding: 16px !important; border: 1px solid #e0e0e0; border-radius: 4px; page-break-inside: avoid; break-inside: avoid; }
+
+      /* ── Ask items ── */
+      .ask-gate-wrapper { position: static !important; }
+      .ask-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; margin-top: 0 !important; }
+      .ask-item { padding: 20px !important; border: 1px solid #ccc !important; border-radius: 4px; page-break-inside: avoid; break-inside: avoid; }
+      .ask-item h4 { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #1a6e3c; margin-bottom: 8px; }
+      .ask-item p, .ask-item li { font-size: 10pt; color: #444; line-height: 1.65; }
+      .ask-item ul { padding-left: 0; list-style: none; }
+      .ask-item ul li { padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+
+      /* ── Impact section ── */
+      .impact-section { background: #fff !important; }
+      .impact-section .section-headline,
+      .impact-section .section-label,
+      .impact-section h2, .impact-section h3 { color: #1a1a1a !important; }
+      .impact-section .section-body { color: #444 !important; }
+      .impact-stat { page-break-inside: avoid; break-inside: avoid; }
+
+      /* ── Sponsor tiers ── */
+      .sponsor-tier, .collab-tile { page-break-inside: avoid; break-inside: avoid; border: 1px solid #e0e0e0 !important; background: #fff !important; }
+
+      /* ── Platform stat tables ── */
+      .platform-stat-row { border-bottom: 1px solid #f0f0f0; padding: 8px 0; }
+
+      /* ── All text color overrides ── */
+      h1, h2, h3, h4, h5, h6 { color: #1a1a1a; }
+      p, li, span, div { color: inherit; }
+      em { color: #1a6e3c !important; font-style: normal; }
     }
 </style>
 </head>
