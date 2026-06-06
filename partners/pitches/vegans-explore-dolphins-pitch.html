@@ -1877,7 +1877,7 @@
         <div class="section-label">The Partnership Structure</div>
         <h2 class="section-headline">The Dolphins<br>Set the Terms.<br><em>We Deliver.</em></h2>
         <p class="section-body">A straightforward structure with four asks and four deliverables. Every commitment is measurable. Enter your details below to unlock the full partnership breakdown.</p>
-        <div class="steps animate fade-up delay-1" style="margin-top:32px;">
+        <div class="steps animate fade-up delay-1" style="margin-top:32px;grid-template-columns:1fr 1fr;">
           <div class="step">
             <div class="step-num">01</div>
             <h4>Concept Confirmed</h4>
@@ -1905,8 +1905,11 @@
       </div>
     </div>
 
-    <!-- EMAIL GATE WRAPPER -->
-    <div class="ask-gate-wrapper animate fade-up delay-2">
+  </div>
+
+  <!-- GATE (standalone slide) -->
+  <div class="section" id="cta-gate">
+    <div class="ask-gate-wrapper animate fade-up">
 
       <!-- OVERLAY FORM -->
       <div class="ask-gate-overlay" id="askGateOverlay">
@@ -1983,6 +1986,7 @@
         <button onclick="goToSlide(3)" data-section="proposal">The Proposal</button>
         <button onclick="goToSlide(4)" data-section="fb">F&amp;B Strategy</button>
         <button onclick="goToSlide(5)" data-section="ask">The Ask</button>
+        <button onclick="goToSlide(6)" data-section="cta-gate">Unlock</button>
       </nav>
     </div>
     <div id="slideContainer"></div>
@@ -2095,7 +2099,7 @@
 
     function getSlideSections() {
       // Collect all major sections in DOM order
-      const selectors = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask'];
+      const selectors = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate'];
       return selectors.map(s => document.querySelector(s)).filter(Boolean);
     }
 
@@ -2111,7 +2115,7 @@
 
     // Map nav hrefs to slide indices (hero=0, opportunity=1, track-record=2, proposal=3, fb=4, ask=5, next-steps=6, cta=7)
     const sectionSlideMap = {
-      'opportunity': 1, 'track-record': 2, 'proposal': 3, 'fb': 4, 'ask': 5
+      'opportunity': 1, 'track-record': 2, 'proposal': 3, 'fb': 4, 'ask': 5, 'cta-gate': 6
     };
 
     document.addEventListener('click', function(e) {
