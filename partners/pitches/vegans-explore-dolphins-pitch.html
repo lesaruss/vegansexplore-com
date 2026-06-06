@@ -90,6 +90,18 @@
     .print-trigger { display: none; }
     .ve-unlocked .print-trigger { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green); cursor: pointer; background: none; border: 1px solid var(--ve-green); border-radius: 6px; padding: 6px 14px; text-decoration: none; }
     .present-controls .print-trigger { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); }
+    /* Post-gate sections: hidden until unlocked */
+    .post-gate { display: none; }
+    .ve-unlocked .post-gate { display: block; }
+    /* Nav tag centered */
+    body.plan-mode .nav-tag,
+    body.present-mode .nav-tag { flex: 1; text-align: center; }
+    /* Hide present button - print nav button replaces it */
+    body.plan-mode #presentBtn,
+    body.present-mode #presentBtn { display: none; }
+    /* Nav print button */
+    #printBtnNav { display: none; background: none; border: 1px solid var(--ve-border); border-radius: 6px; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-75); padding: 6px 14px; white-space: nowrap; }
+    .ve-unlocked #printBtnNav { display: flex; align-items: center; gap: 6px; }
     .nav-tag {
       font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
       text-transform: uppercase; color: var(--ve-text-50);
@@ -989,7 +1001,9 @@
     <div class="nav-logo">
       <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
     </div>
-    <button class="nav-hamburger" id="navHamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+    <span class="nav-tag">Confidential: Miami Dolphins | V3 - Game Night Activation</span>
+    <button id="printBtnNav" onclick="window.print()">&#128438; Print / PDF</button>
+    <button class="nav-hamburger" id="navHamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
     <ul class="nav-links" id="navLinks">
@@ -999,7 +1013,6 @@
       <li><a href="#fb">F&amp;B Strategy</a></li>
       <li><a href="#ask">The Ask</a></li>
     </ul>
-    <span class="nav-tag">Confidential: Miami Dolphins | V3 - Game Night Activation</span>
       <button class="present-toggle" id="presentBtn" onclick="enterPresentMode()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         Present
@@ -1153,7 +1166,7 @@
   </div>
 
   <!-- OUR ROLE: content left, image RIGHT -->
-  <div class="section">
+  <div class="section post-gate" id="pg-why-now">
     <div class="panel-img-right stretch">
       <div class="animate fade-right">
         <div class="section-label">Why Now Is Different</div>
@@ -1191,7 +1204,7 @@
   </div>
 
   <!-- THE CAMPAIGN -->
-  <div class="section">
+  <div class="section post-gate" id="pg-reach">
     <div class="panel-img-right stretch">
       <div class="animate fade-right">
         <div class="section-label">Our Reach</div>
@@ -1215,7 +1228,7 @@
   </div>
 
   <!-- CURRENT REACH: platform stats after Track Record -->
-  <div class="section" style="background:#f7f9f7;">
+  <div class="section post-gate" id="pg-platform" style="background:#f7f9f7;">
     <div class="animate fade-up">
       <div class="section-label">Our Reach Right Now</div>
       <h2 class="section-headline">The Platform<br>We Have<br><em>Already Built.</em></h2>
@@ -1523,7 +1536,7 @@
 
 
   <!-- PARTNERSHIP MODEL -->
-  <div class="section">
+  <div class="section post-gate" id="pg-roi">
     <div class="animate fade-up">
       <div class="section-label">The Partnership Structure</div>
       <h2 class="section-headline">The Director<br>Proposed It.<br><em>We Are Built for It.</em></h2>
@@ -1557,7 +1570,7 @@
   </div>
 
   <!-- ANTICIPATED REACH: what partnership activates -->
-  <div class="section" style="background:#f7f9f7;">
+  <div class="section post-gate" id="pg-collaboration" style="background:#f7f9f7;">
     <div class="animate fade-up">
       <div class="section-label">What This Collaboration Activates</div>
       <h2 class="section-headline">This Is the<br>Reach You<br><em>Buy Into.</em></h2>
@@ -1658,7 +1671,7 @@
 
   <!-- WHAT DOLPHINS GET -->
   <!-- CHANGE 9: image rectangular + auto-height; benefit squares converted to flip cards -->
-  <div class="section">
+  <div class="section post-gate" id="pg-assets">
     <div class="panel-img-right stretch">
       <div class="animate fade-right">
         <div class="section-label">What the Dolphins Gain</div>
@@ -1863,7 +1876,7 @@
   </div>
 
   <!-- HOW WE FUND IT -->
-  <div class="section">
+  <div class="section post-gate" id="pg-sponsorships">
     <div class="animate fade-up">
       <div class="section-label">Collaborative Sponsorships</div>
       <h2 class="section-headline">Sponsors Offset<br>the Cost.<br><em>Everyone Wins.</em></h2>
@@ -2061,6 +2074,29 @@
       if (overlay) overlay.classList.add('hidden');
       if (content) content.classList.add('unlocked');
       document.body.classList.add('ve-unlocked');
+      // Add post-gate nav buttons
+      const nav = document.getElementById('presentHeaderNav');
+      if (nav) {
+        const extras = [
+          ['pg-why-now','Why Now'],['pg-reach','Our Reach'],['pg-platform','Our Platform'],
+          ['pg-roi','Partnership Model'],['pg-collaboration','Reach Data'],
+          ['pg-assets','Six Assets'],['pg-sponsorships','Sponsorships']
+        ];
+        const base = getSlideSections().length - extras.length;
+        extras.forEach(([id, label], i) => {
+          const btn = document.createElement('button');
+          btn.textContent = label;
+          btn.onclick = () => goToSlide(base + i);
+          btn.dataset.section = id;
+          nav.appendChild(btn);
+        });
+      }
+      // Rebuild guided tour slides if active
+      if (document.body.classList.contains('present-mode')) {
+        const idx = currentSlide;
+        enterPresentMode();
+        goToSlide(idx);
+      }
     }
 
     // If already unlocked this session, skip gate
@@ -2128,9 +2164,10 @@
     let slides = [];
 
     function getSlideSections() {
-      // Collect all major sections in DOM order
-      const selectors = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate'];
-      return selectors.map(s => document.querySelector(s)).filter(Boolean);
+      const base = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate'];
+      const extra = ['#pg-why-now', '#pg-reach', '#pg-platform', '#pg-roi', '#pg-collaboration', '#pg-assets', '#pg-sponsorships'];
+      const unlocked = document.body.classList.contains('ve-unlocked');
+      return [...base, ...(unlocked ? extra : [])].map(s => document.querySelector(s)).filter(Boolean);
     }
 
     function enterFullPlan() {
