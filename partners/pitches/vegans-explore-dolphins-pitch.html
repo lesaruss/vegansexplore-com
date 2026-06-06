@@ -970,6 +970,9 @@
     .present-header-logo img { height:22px; width:auto; display:block; }
     .present-header-divider { width:1px; height:20px; background:rgba(0,0,0,0.12); margin:0 20px; flex-shrink:0; }
     .present-header-nav { display:flex; align-items:center; gap:4px; flex:1; }
+    .present-header-print { background:none; border:1px solid rgba(0,0,0,0.15); border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(26,26,26,0.55); padding:5px 12px; white-space:nowrap; flex-shrink:0; display:none; }
+    .ve-unlocked .present-header-print { display:inline-flex; align-items:center; gap:5px; }
+    .present-header-print:hover { background:rgba(0,0,0,0.05); color:var(--ve-green); border-color:var(--ve-green); }
     .present-header-nav button { background:none; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:rgba(26,26,26,0.45); padding:6px 10px; border-radius:6px; transition:color 0.15s, background 0.15s; white-space:nowrap; }
     .present-header-nav button:hover { color:var(--ve-green); background:var(--ve-green-light); }
     .present-header-nav button.active { color:var(--ve-green); background:var(--ve-green-light); }
@@ -2027,14 +2030,15 @@
         <button onclick="goToSlide(4)" data-section="fb">F&amp;B Strategy</button>
         <button onclick="goToSlide(5)" data-section="ask">The Ask</button>
         <button onclick="goToSlide(6)" data-section="cta-gate">Unlock</button>
+        <button onclick="goToSlide(7)" data-section="cta-section">Close</button>
       </nav>
+      <button class="present-header-print" onclick="window.print()">&#128438; Print / PDF</button>
     </div>
     <div id="slideContainer"></div>
     <div class="present-controls">
       <button id="prevBtn" onclick="prevSlide()" title="Previous (←)">&#8592;</button>
       <span class="present-slide-count" id="slideCount">1 / 1</span>
       <button id="nextBtn" onclick="nextSlide()" title="Next (→)">&#8594;</button>
-      <button class="print-trigger" onclick="window.print()" title="Print / Save PDF">&#128438; Print</button>
       <button class="present-exit" onclick="exitPresentMode()">✕ Exit</button>
     </div>
   </div>
@@ -2164,7 +2168,7 @@
     let slides = [];
 
     function getSlideSections() {
-      const base = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate'];
+      const base = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate', '.cta-section'];
       const extra = ['#pg-why-now', '#pg-reach', '#pg-platform', '#pg-roi', '#pg-collaboration', '#pg-assets', '#pg-sponsorships'];
       const unlocked = document.body.classList.contains('ve-unlocked');
       return [...base, ...(unlocked ? extra : [])].map(s => document.querySelector(s)).filter(Boolean);
@@ -2182,7 +2186,7 @@
 
     // Map nav hrefs to slide indices (hero=0, opportunity=1, track-record=2, proposal=3, fb=4, ask=5, next-steps=6, cta=7)
     const sectionSlideMap = {
-      'opportunity': 1, 'track-record': 2, 'proposal': 3, 'fb': 4, 'ask': 5, 'cta-gate': 6
+      'opportunity': 1, 'track-record': 2, 'proposal': 3, 'fb': 4, 'ask': 5, 'cta-gate': 6, 'cta-section': 7
     };
 
     document.addEventListener('click', function(e) {
