@@ -2043,59 +2043,51 @@
       unlockAskSection();
     }
 
-    const gateForm = document.getElementById('gateForm');
-    if (gateForm) {
-      gateForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const email = document.getElementById('gateEmail').value.trim();
-        const name = document.getElementById('gateName').value.trim();
-        const company = document.getElementById('gateCompany').value.trim();
-        const submitBtn = document.getElementById('gateSubmit');
-        const errorEl = document.getElementById('gateError');
+    // Use document-level delegation so the form works in both
+    // normal scroll mode AND present/guided mode (where sections are cloned)
+    document.addEventListener('submit', async function(e) {
+      if (!e.target.closest('#gateForm')) return;
+      e.preventDefault();
 
-        if (!email) return;
+      const form = e.target.closest('#gateForm');
+      const email = form.querySelector('#gateEmail') ? form.querySelector('#gateEmail').value.trim() : '';
+      const name = form.querySelector('#gateName') ? form.querySelector('#gateName').value.trim() : '';
+      const company = form.querySelector('#gateCompany') ? form.querySelector('#gateCompany').value.trim() : '';
+      const submitBtn = form.querySelector('#gateSubmit');
+      const errorEl = form.querySelector('#gateError');
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
-        errorEl.style.display = 'none';
+      if (!email) return;
 
-        try {
-          const payload = {
-            email: email,
-            name: name || null,
-            org: company || null,
-            tags: ['dolphins-game-night-2026'],
-            source: 'dolphins-pitch-v2',
-            brand: 'vegans-explore',
-            status: 'new'
-          };
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
+      if (errorEl) errorEl.style.display = 'none';
 
-          const resp = await fetch(SUPABASE_URL + '/rest/v1/leads', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify(payload)
-          });
+      try {
+        const payload = {
+          email: email,
+          name: name || null,
+          org: company || null,
+          tags: ['dolphins-game-night-2026'],
+          source: 'dolphins-pitch-v3',
+          brand: 'vegans-explore',
+          status: 'new'
+        };
 
-          if (resp.ok || resp.status === 201) {
-            sessionStorage.setItem('ve_dolphins_unlocked', '1');
-            unlockAskSection();
-          } else {
-            // Graceful unlock even on error (do not gate users who submitted)
-            sessionStorage.setItem('ve_dolphins_unlocked', '1');
-            unlockAskSection();
-          }
-        } catch (err) {
-          // Network error: still unlock (capture failed silently)
-          sessionStorage.setItem('ve_dolphins_unlocked', '1');
-          unlockAskSection();
-        }
-      });
-    }
+        await fetch(SUPABASE_URL + '/rest/v1/leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) { /* capture failed silently */ }
+
+      // Always unlock regardless of network result
+      sessionStorage.setItem('ve_dolphins_unlocked', '1');
+      unlockAskSection();
+    });
 
     // ── PRESENTATION MODE ──
     let currentSlide = 0;
