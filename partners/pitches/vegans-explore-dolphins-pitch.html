@@ -59,9 +59,7 @@
       height: 64px;
     }
     .nav-logo img { height: 30px; }
-    .nav-links { display: none; gap: 28px; list-style: none; }
-    body.plan-mode .nav-links,
-    body.present-mode .nav-links { display: flex; }
+    .nav-links { display: none; list-style: none; }
     .nav-tag { display: none; }
     body.plan-mode .nav-tag { display: block; }
     #presentBtn { display: none; }
@@ -72,6 +70,26 @@
       color: var(--ve-text-75); transition: color 0.15s;
     }
     .nav-links a:hover { color: var(--ve-green); }
+    /* Hamburger nav */
+    .nav-hamburger { display: none; background: none; border: 1px solid var(--ve-border); border-radius: 6px; cursor: pointer; padding: 6px 10px; gap: 4px; flex-direction: column; align-items: center; justify-content: center; }
+    .nav-hamburger span { display: block; width: 18px; height: 2px; background: var(--ve-text); border-radius: 2px; }
+    body.plan-mode .nav-hamburger,
+    body.present-mode .nav-hamburger { display: flex; }
+    body.plan-mode .nav-links.open,
+    body.present-mode .nav-links.open {
+      display: flex; flex-direction: column; gap: 0;
+      position: absolute; top: 64px; right: var(--pad); z-index: 200;
+      background: #fff; border: 1px solid var(--ve-border); border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08); min-width: 200px; padding: 8px 0;
+    }
+    body.plan-mode .nav-links.open li,
+    body.present-mode .nav-links.open li { list-style: none; }
+    body.plan-mode .nav-links.open a,
+    body.present-mode .nav-links.open a { display: block; padding: 10px 20px; font-size: 11px; }
+    /* Print link - hidden until unlocked */
+    .print-trigger { display: none; }
+    .ve-unlocked .print-trigger { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green); cursor: pointer; background: none; border: 1px solid var(--ve-green); border-radius: 6px; padding: 6px 14px; text-decoration: none; }
+    .present-controls .print-trigger { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); }
     .nav-tag {
       font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
       text-transform: uppercase; color: var(--ve-text-50);
@@ -971,13 +989,15 @@
     <div class="nav-logo">
       <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
     </div>
-    <ul class="nav-links">
+    <button class="nav-hamburger" id="navHamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
       <li><a href="#opportunity">The Opportunity</a></li>
       <li><a href="#track-record">Track Record</a></li>
       <li><a href="#proposal">The Proposal</a></li>
       <li><a href="#fb">F&amp;B Strategy</a></li>
       <li><a href="#ask">The Ask</a></li>
-      <li><a href="#next-steps">Next Steps</a></li>
     </ul>
     <span class="nav-tag">Confidential: Miami Dolphins | V3 - Game Night Activation</span>
       <button class="present-toggle" id="presentBtn" onclick="enterPresentMode()">
@@ -1963,6 +1983,9 @@
           </div>
         </div>
       </div>
+      <div style="margin-top:32px;text-align:center;">
+        <button class="print-trigger" onclick="window.print()">&#128438;&nbsp; Print / Save as PDF</button>
+      </div>
     </div>
   </div>
 
@@ -1998,6 +2021,7 @@
       <button id="prevBtn" onclick="prevSlide()" title="Previous (←)">&#8592;</button>
       <span class="present-slide-count" id="slideCount">1 / 1</span>
       <button id="nextBtn" onclick="nextSlide()" title="Next (→)">&#8594;</button>
+      <button class="print-trigger" onclick="window.print()" title="Print / Save PDF">&#128438; Print</button>
       <button class="present-exit" onclick="exitPresentMode()">✕ Exit</button>
     </div>
   </div>
@@ -2036,12 +2060,22 @@
       const content = document.getElementById('askGateContent');
       if (overlay) overlay.classList.add('hidden');
       if (content) content.classList.add('unlocked');
+      document.body.classList.add('ve-unlocked');
     }
 
     // If already unlocked this session, skip gate
     if (sessionStorage.getItem('ve_dolphins_unlocked') === '1') {
       unlockAskSection();
     }
+
+    // Close hamburger when clicking outside
+    document.addEventListener('click', function(e) {
+      const nav = document.getElementById('navLinks');
+      const btn = document.getElementById('navHamburger');
+      if (nav && btn && !nav.contains(e.target) && !btn.contains(e.target)) {
+        nav.classList.remove('open');
+      }
+    });
 
     // Use document-level delegation so the form works in both
     // normal scroll mode AND present/guided mode (where sections are cloned)
