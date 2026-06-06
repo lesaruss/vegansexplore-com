@@ -931,6 +931,9 @@
     .present-overlay { display:none; position:fixed; inset:0; z-index:9000; background:#000; }
     body.present-mode .present-overlay { display:block; }
 
+    .next-steps-img-col { display:block; }
+    @media (max-width: 768px) { .next-steps-img-col { display:none; } }
+    @media (max-width: 900px) { #next-steps [style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; } }
     .present-header { position:absolute; top:0; left:0; right:0; height:52px; background:#fff; border-bottom:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; padding:0 28px; gap:0; z-index:10; }
     .present-header-logo { flex-shrink:0; display:flex; align-items:center; }
     .present-header-logo img { height:22px; width:auto; display:block; }
@@ -1062,8 +1065,8 @@
           This is not a first-time pitch. We have activated inside two major South Florida sports venues. We sold out tickets at one. We ran a pilot at the other and walked away with everything we needed to come back and do it right. Click each card to see the details.
         </p>
       </div>
-      <div class="panel-img auto-height animate fade-left delay-1">
-        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260606_151656_def0c58e-f09f-4912-8956-22677c6f31a6.png" alt="Vegans Explore Guides in Dolphins jerseys, confident and proven, GeekFon style" style="width:100%;display:block;border-radius:8px;">
+      <div class="animate fade-left delay-1" style="display:flex;align-items:center;justify-content:center;">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260606_151656_def0c58e-f09f-4912-8956-22677c6f31a6.png" alt="Vegans Explore Guides in Dolphins jerseys, confident and proven, GeekFon style" style="max-width:100%;height:auto;display:block;">
       </div>
     </div>
     <div class="track-record-grid" style="margin-top:56px;">
@@ -1868,11 +1871,13 @@
 
   <!-- NEXT STEPS -->
   <div class="section" id="next-steps">
-    <div class="panel-img-right stretch" style="align-items:center;">
-      <div class="animate fade-right">
-        <div class="section-label">How We Move Forward</div>
-        <h2 class="section-headline">Four Steps<br>to Game Day.<br><em>Starting Now.</em></h2>
-        <div class="steps" style="margin-top:40px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+      <div>
+        <div class="animate fade-right">
+          <div class="section-label">How We Move Forward</div>
+          <h2 class="section-headline">Four Steps<br>to Game Day.<br><em>Starting Now.</em></h2>
+        </div>
+        <div class="steps animate fade-up delay-1" style="margin-top:40px;">
           <div class="step">
             <div class="step-num">01</div>
             <h4>Concept Confirmed</h4>
@@ -1895,8 +1900,8 @@
           </div>
         </div>
       </div>
-      <div class="panel-img auto-height animate fade-left delay-1">
-        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260606_151656_4f68bbac-78ad-4606-9d42-b4e819c982c5.png" alt="Vegans Explore Guides in Dolphins jerseys ready to launch, GeekFon style" style="width:100%;display:block;border-radius:8px;">
+      <div class="next-steps-img-col animate fade-left delay-1">
+        <!-- image pending approval -->
       </div>
     </div>
   </div>
@@ -1909,8 +1914,12 @@
       <p class="section-body">A straightforward structure with four asks and four deliverables. Every commitment is measurable. Enter your details below to unlock the full partnership breakdown.</p>
     </div>
 
+    <div class="animate fade-up delay-1" style="margin-top:48px;">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260606_151656_4f68bbac-78ad-4606-9d42-b4e819c982c5.png" alt="Vegans Explore Guides in Dolphins jerseys ready to launch, GeekFon style" style="max-width:100%;height:auto;display:block;">
+    </div>
+
     <!-- EMAIL GATE WRAPPER -->
-    <div class="ask-gate-wrapper animate fade-up delay-1">
+    <div class="ask-gate-wrapper animate fade-up delay-2">
 
       <!-- OVERLAY FORM -->
       <div class="ask-gate-overlay" id="askGateOverlay">
