@@ -2317,7 +2317,7 @@
       <button id="prevBtn" onclick="prevSlide()" title="Previous (←)">&#8592;</button>
       <span class="present-slide-count" id="slideCount">1 / 1</span>
       <button id="nextBtn" onclick="nextSlide()" title="Next (→)">&#8594;</button>
-      <button class="present-exit" onclick="exitPresentMode()">✕ Exit</button>
+      
     </div>
   </div>
 
@@ -2512,9 +2512,7 @@
       document.getElementById('presentOverlay').scrollTop = 0;
     }
 
-    function exitPresentMode() {
-      document.body.classList.remove('present-mode');
-    }
+    function exitPresentMode() { /* guided-only mode - no exit */ }
 
     function goToSlide(n) {
       if (n < 0 || n >= slides.length) return;
@@ -2540,8 +2538,10 @@
       if (!document.body.classList.contains('present-mode')) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
-      if (e.key === 'Escape') exitPresentMode();
+      // Escape disabled - guided-only mode
     });
+
+  document.addEventListener('DOMContentLoaded', function() { enterPresentMode(); });
 
   </script>
 
