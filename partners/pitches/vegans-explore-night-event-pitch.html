@@ -2523,7 +2523,9 @@
       document.getElementById('presentOverlay').scrollTop = 0;
     }
 
-    function exitPresentMode() { /* guided-only mode - no exit */ }
+    function exitPresentMode() {
+      document.body.classList.remove('present-mode');
+    }
 
     function goToSlide(n) {
       if (n < 0 || n >= slides.length) return;
@@ -2549,10 +2551,8 @@
       if (!document.body.classList.contains('present-mode')) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
-      // Escape disabled - guided-only mode
+      if (e.key === 'Escape') exitPresentMode();
     });
-
-  document.addEventListener('DOMContentLoaded', function() { enterPresentMode(); });
 
   </script>
 
