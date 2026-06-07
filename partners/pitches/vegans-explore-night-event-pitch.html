@@ -2227,67 +2227,35 @@
 
   <!-- GATE (standalone slide) -->
   <div class="section" id="cta-gate">
-    <div class="ask-gate-wrapper animate fade-up">
-
-      <!-- OVERLAY FORM -->
-      <div class="ask-gate-overlay" id="askGateOverlay">
-        <div class="ask-gate-box">
-          <div class="ask-gate-eyebrow">Sponsor Your City</div>
-          <h3>Get the<br><em>Season 1 Package</em></h3>
-          <p>Enter your details to confirm city interest and unlock Season 1 pricing, category availability, and the event calendar. Shared only with the VEGANS EXPLORE team.</p>
-          <form class="gate-form" id="gateForm" onsubmit="return false;">
-            <input class="gate-input" type="email" id="gateEmail" placeholder="Work email address" required autocomplete="email">
-            <input class="gate-input" type="text" id="gateName" placeholder="Your name (optional)" autocomplete="name">
-            <input class="gate-input" type="text" id="gateCompany" placeholder="Organization (optional)" autocomplete="organization">
-            <button class="gate-submit" id="gateSubmit" type="submit">Sponsor Your City</button>
-            <div class="gate-error" id="gateError">Something went wrong. Please try again.</div>
-            <div class="gate-privacy">Your information is shared only with the Vegans Explore team and will not be used for marketing without your consent.</div>
-          </form>
-        </div>
-      </div>
-
-      <!-- BLURRED CONTENT -->
-      <div class="ask-gate-blur" id="askGateContent">
-        <div class="ask-grid" style="grid-template-columns:repeat(2,1fr);margin-top:20px;">
-          <div class="ask-item" style="background:var(--ve-green);border-color:var(--ve-green);border-width:2px;">
-            <h4 style="color:rgba(255,255,255,0.75);">What We Are Asking For</h4>
-            <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
-              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Your city and business category for Season 1 sponsorship</li>
-              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Co-branding rights as an official VEGANS EXPLORE Night Event sponsor in your city</li>
-              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>A 30-minute call to align on event calendar, stage moment, and content integration preferences</li>
-              <li style="font-size:14px;color:#fff;line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:rgba(255,255,255,0.5);flex-shrink:0;">&rarr;</span>Confirmation of your category lock - no competitor can claim your slot once you sign</li>
-            </ul>
-          </div>
-          <div class="ask-item" style="border-color:var(--ve-green);border-width:2px;">
-            <h4>What the Dolphins Receive</h4>
-            <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px;">
-              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>12 monthly Night Event activations in your city with on-site sponsor presence</li>
-              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Monthly stage moment at every Night Event - an introduction, brand spotlight, or cause moment</li>
-              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>12 pieces of co-branded content featuring your sponsorship across the VE platform and creator network</li>
-              <li style="font-size:14px;color:var(--ve-text-75);line-height:1.6;display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--ve-green);flex-shrink:0;">&rarr;</span>Priority vendor marketplace access and first right of refusal on new city expansion for Season 2</li>
-            </ul>
-          </div>
-          <div class="ask-item primary">
-            <h4>On the Nonprofit Structure</h4>
-            <p>Vegans Explore is in the process of securing 501(c)(3) nonprofit status, expected to be in place by September 27. Any contribution from the Miami Dolphins organization can be structured as a tax-deductible charitable donation. If our 501(c)(3) is still pending at time of agreement, we have established nonprofit partners ready to process on our behalf, providing a clean, low-friction approval path for your organization.</p>
-          </div>
-          <div class="ask-item primary">
-            <h4>On Collaborative Sponsorships</h4>
-            <p>Vegans Explore and the Miami Dolphins bring sponsorship opportunities to market together. Both sides bring deliverables. Both sides bring audience. We split revenue on an agreed percentage: consistent, transparent, fair. National brands get something rare: a curated plant-based audience inside an NFL venue, with a platform that keeps reaching them year-round. Sponsorship tiers are custom and built around what each side can genuinely deliver.</p>
-          </div>
-        </div>
-      </div>
+    <div style="max-width:600px;margin:0 auto;padding:100px var(--pad);text-align:center;">
+      <div class="section-label">Let's Talk</div>
+      <h2 class="section-headline" style="margin-bottom:20px;">Ready to<br><em>Partner With Us?</em></h2>
+      <p class="section-body" style="margin:0 0 40px;">Tell us a bit about yourself and we will set up a call to walk through how this partnership works for your organization.</p>
+      <form id="partnerForm" style="display:flex;flex-direction:column;gap:14px;text-align:left;" onsubmit="return false;">
+        <input class="gate-input" type="text" id="partnerName" placeholder="Your name" required autocomplete="name">
+        <input class="gate-input" type="email" id="partnerEmail" placeholder="Work email" required autocomplete="email">
+        <input class="gate-input" type="text" id="partnerCompany" placeholder="Organization" autocomplete="organization">
+        <textarea class="gate-input" id="partnerMessage" placeholder="Tell us about your organization and what interests you about this partnership (optional)" rows="3" style="resize:vertical;font-family:inherit;font-size:14px;padding:14px 16px;line-height:1.5;"></textarea>
+        <button class="gate-submit" id="partnerSubmit" type="submit">Book a Discovery Call &#8594;</button>
+        <div id="partnerError" style="display:none;color:#c00;font-size:13px;text-align:center;">Something went wrong. Please try again.</div>
+        <div class="gate-privacy" style="text-align:center;">Your information is shared only with the VEGANS EXPLORE team and will not be used for marketing without your consent.</div>
+      </form>
+    </div>
+  </div>
       <div style="margin-top:32px;text-align:center;">
         <button class="print-trigger" onclick="window.print()">&#128438;&nbsp; Print / Save as PDF</button>
       </div>
     </div>
   </div>
 
-  <!-- CTA -->
-  <div class="cta-section animate fade-up">
-    <h2>Be Part of<br><em>Every Night.</em><br>Every Month.</h2>
-    <p>The plant-based community is building itself city by city, month by month. VEGANS EXPLORE has the infrastructure, the local teams, and the platform. Your brand has the opportunity to be part of that story from the very first season. Everything built in Season 1 compounds - in our content, in our community, and in the relationship between your brand and the fastest-growing consumer community in the country.</p>
-    <a href="mailto:contact@lesaruss.com" class="btn-secondary">Contact Sean A. Russell</a>
+  <div class="section" id="calendly-slide" style="background:#f7f9f7;padding:80px var(--pad);">
+    <div style="max-width:680px;margin:0 auto;text-align:center;">
+      <div class="section-label">Schedule Your Call</div>
+      <h2 class="section-headline" style="margin-bottom:8px;">Pick a<br><em>Time That Works.</em></h2>
+      <p class="section-body" style="margin:0 0 40px;">Pick a time below. A Zoom link will be sent to your email automatically.</p>
+      <div id="calendlyWidget" class="calendly-inline-widget" data-url="https://calendly.com/lesaruss/vegans-explore-partner-discovery-call-30-min&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=2d7a47" style="min-width:320px;height:700px;border-radius:12px;overflow:hidden;"></div>
+      <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+    </div>
   </div>
 
 
@@ -2307,8 +2275,8 @@
         <button onclick="goToSlide(3)" data-section="proposal">The Proposal</button>
         <button onclick="goToSlide(4)" data-section="fb">F&amp;B Strategy</button>
         <button onclick="goToSlide(5)" data-section="ask">The Ask</button>
-        <button onclick="goToSlide(6)" data-section="cta-gate">Unlock</button>
-        <button onclick="goToSlide(7)" data-section="cta-section">Close</button>
+        <button onclick="goToSlide(6)" data-section="cta-gate">Let's Talk</button>
+        <button onclick="goToSlide(7)" data-section="cta-section">Book a Call</button>
       </nav>
       <button class="present-header-print" onclick="window.print()">&#128438; Print / PDF</button>
     </div>
@@ -2441,12 +2409,60 @@
       unlockAskSection();
     });
 
+
+    // ── PARTNER BOOKING FORM ──
+    const CALENDLY_BASE = "https://calendly.com/lesaruss/vegans-explore-partner-discovery-call-30-min";
+
+    document.addEventListener('submit', async function(e) {
+      if (e.target.id !== 'partnerForm') return;
+      e.preventDefault();
+
+      const name    = document.getElementById('partnerName').value.trim();
+      const email   = document.getElementById('partnerEmail').value.trim();
+      const company = document.getElementById('partnerCompany').value.trim();
+      const message = document.getElementById('partnerMessage').value.trim();
+      const btn     = document.getElementById('partnerSubmit');
+      const err     = document.getElementById('partnerError');
+
+      btn.disabled = true;
+      btn.textContent = 'Booking...';
+      err.style.display = 'none';
+
+      // Store lead in Supabase
+      try {
+        await fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/partner_leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey':  + ANON_KEY + ,
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ name, email, company, message, source: window.location.pathname })
+        });
+      } catch(ex) { /* store silently - don't block booking */ }
+
+      // Pre-fill Calendly URL with lead info and advance to booking slide
+      const params = new URLSearchParams({ name, email, hide_event_type_details: '1', hide_gdpr_banner: '1', primary_color: '2d7a47' });
+      const widget = document.getElementById('calendlyWidget');
+      if (widget) {
+        widget.dataset.url = CALENDLY_BASE + '?' + params.toString();
+        // Reload Calendly widget with pre-filled data
+        if (window.Calendly) {
+          Calendly.initInlineWidgets();
+        }
+      }
+
+      // Advance to Calendly slide (last slide)
+      nextSlide();
+    });
+
     // ── PRESENTATION MODE ──
     let currentSlide = 0;
     let slides = [];
 
     function getSlideSections() {
-      const base = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate', '.cta-section'];
+      const base = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate', '#calendly-slide'];
       const extra = ['#pg-why-now', '#pg-reach', '#pg-platform', '#pg-roi', '#pg-collaboration', '#pg-assets', '#pg-sponsorships'];
       const unlocked = document.body.classList.contains('ve-unlocked');
       return [...base, ...(unlocked ? extra : [])].map(s => document.querySelector(s)).filter(Boolean);
