@@ -95,7 +95,7 @@
     .ve-unlocked .post-gate { display: block; }
     /* Nav tag centered */
     body.plan-mode .nav-tag,
-    body.present-mode .nav-tag { flex: 1; text-align: center; }
+    body.present-mode .nav-tag { width: fit-content; margin: 0 auto; }
     /* Hide present button - print nav button replaces it */
     body.plan-mode #presentBtn,
     body.present-mode #presentBtn { display: none; }
@@ -957,6 +957,7 @@
 
     body.present-mode { overflow:hidden; }
     body.present-mode nav { display:none; }
+    body.present-mode .present-header nav { display:flex !important; }
     body.present-mode footer { display:none; }
 
     .present-overlay { display:none; position:fixed; inset:0; z-index:9000; background:#000; }
@@ -2553,6 +2554,8 @@
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
       if (e.key === 'Escape') exitPresentMode();
     });
+
+  document.addEventListener('DOMContentLoaded', function() { enterPresentMode(); });
 
   </script>
 
