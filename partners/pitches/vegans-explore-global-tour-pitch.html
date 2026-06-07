@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VEGANS EXPLORE x World Vegan Explorer: City-by-City Global Tour Partnership 2026</title>
+  <title>VEGANS EXPLORE x Global Tour: City-by-City Partnership 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -71,21 +71,18 @@
     }
     .nav-links a:hover { color: var(--ve-green); }
     /* Hamburger nav */
-    .nav-hamburger { display: none; background: none; border: 1px solid var(--ve-border); border-radius: 6px; cursor: pointer; padding: 6px 10px; gap: 4px; flex-direction: column; align-items: center; justify-content: center; }
+    .nav-hamburger { display: flex; background: none; border: 1px solid var(--ve-border); border-radius: 6px; cursor: pointer; padding: 6px 10px; gap: 4px; flex-direction: column; align-items: center; justify-content: center; }
     .nav-hamburger span { display: block; width: 18px; height: 2px; background: var(--ve-text); border-radius: 2px; }
     body.plan-mode .nav-hamburger,
     body.present-mode .nav-hamburger { display: flex; }
-    body.plan-mode .nav-links.open,
-    body.present-mode .nav-links.open {
+    .nav-links.open {
       display: flex; flex-direction: column; gap: 0;
       position: absolute; top: 64px; right: var(--pad); z-index: 200;
       background: #fff; border: 1px solid var(--ve-border); border-radius: 8px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08); min-width: 200px; padding: 8px 0;
     }
-    body.plan-mode .nav-links.open li,
-    body.present-mode .nav-links.open li { list-style: none; }
-    body.plan-mode .nav-links.open a,
-    body.present-mode .nav-links.open a { display: block; padding: 10px 20px; font-size: 11px; }
+    .nav-links.open li { list-style: none; }
+    .nav-links.open a { display: block; padding: 10px 20px; font-size: 11px; }
     /* Print link - hidden until unlocked */
     .print-trigger { display: none; }
     .ve-unlocked .print-trigger { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green); cursor: pointer; background: none; border: 1px solid var(--ve-green); border-radius: 6px; padding: 6px 14px; text-decoration: none; }
@@ -115,7 +112,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 100px var(--pad) 80px;
+      padding: 40px var(--pad) 60px;
       border-bottom: 1px solid rgba(255,255,255,0.12);
       overflow: hidden;
       background: #0a0a0a;
@@ -741,7 +738,7 @@
       :root { --pad: 24px; }
       nav { padding: 0 24px; }
       .nav-links { display: none !important; }
-      .hero { padding: 80px 24px 60px; }
+      .hero { padding: 40px 24px 48px; }
       .hero-bg { object-position: center top; }
       .hero::after { background: linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.65) 100%); }
       .hero-text { max-width: 100%; }
@@ -1295,7 +1292,7 @@
     <div class="nav-logo">
       <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
     </div>
-    <span class="nav-tag">Confidential: Tourism &amp; Local Business | World Vegan Explorer Partnership Proposal</span>
+    <span class="nav-tag">Confidential: Tourism &amp; Local Business | VEGANS EXPLORE Partnership Proposal</span>
     <button id="printBtnNav" onclick="window.print()">&#128438; Print / PDF</button>
     <button class="nav-hamburger" id="navHamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -1305,7 +1302,6 @@
       <li><a href="#track-record">The Network</a></li>
       <li><a href="#proposal">The Model</a></li>
       <li><a href="#fb">City Benefits</a></li>
-      <li><a href="#ask">Claim Your City</a></li>
     </ul>
       <button class="present-toggle" id="presentBtn" onclick="enterPresentMode()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
@@ -1317,17 +1313,16 @@
   <div class="hero">
     <div class="img-zone"><div class="iz-icon">&#128247;</div><div class="iz-label">Hero background image - full bleed</div></div>
     <div class="hero-text animate fade-up">
-      <div class="hero-eyebrow">World Vegan Explorer x Tourism &amp; Local Business | City-by-City Partnership | 2026</div>
+      <div class="hero-eyebrow">VEGANS EXPLORE x Tourism &amp; Local Business | City-by-City Partnership | 2026</div>
       <h1>City by City.<br><em>You Own</em><br>Your Market.</h1>
       <p class="hero-sub">
-        World Vegan Explorer is the first city-by-city vegan travel experience. We bring our community into your destination. Tourism boards, local businesses, and destination sponsors get a permanent footprint in every market we enter. One copy-paste model, eight cities, one network.
+        VEGANS EXPLORE is the first city-by-city vegan travel experience. We bring our community into your destination. Tourism boards, local businesses, and destination sponsors get a permanent footprint in every market we enter. One copy-paste model, eight cities, one network.
       </p>
       <div class="hero-btns">
         <button class="scroll-cta" onclick="enterFullPlan()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           See the Full Plan
         </button>
-        <a href="#ask" class="scroll-cta outline">Claim Your City</a>
       </div>
       <p class="hero-meta">Prepared for Tourism Boards &amp; Local Business Partners | VEGANS EXPLORE x LESARUSS | Confidential | 2026</p>
     </div>
@@ -1345,7 +1340,7 @@
         <div class="section-label">The Tourism Opportunity</div>
         <h2 class="section-headline">Plant-Based Travel<br>Has No<br><em>Official Home.</em></h2>
         <p class="section-body">
-          Plant-based travelers spend more, stay longer, and bring their groups. No tourism board has built a destination guide specifically for them. World Vegan Explorer changes that city by city. When we enter your market, we bring a community with purpose and purchasing intent. You become their official destination.
+          Plant-based travelers spend more, stay longer, and bring their groups. No tourism board has built a destination guide specifically for them. VEGANS EXPLORE changes that city by city. When we enter your market, we bring a community with purpose and purchasing intent. You become their official destination.
         </p>
       </div>
     </div>
@@ -1373,7 +1368,7 @@
       <div class="stat-cell">
         <div class="stat-number">July 1</div>
         <div class="stat-label">Global Platform Launch</div>
-        <div class="stat-desc">Lock in now and your city gets promoted at full global launch scale as a World Vegan Explorer destination.</div>
+        <div class="stat-desc">Lock in now and your city gets promoted at full global launch scale as a VEGANS EXPLORE destination.</div>
       </div>
     </div>
   </div>
@@ -1387,7 +1382,7 @@
         <div class="section-label">The Network</div>
         <h2 class="section-headline">Eight Cities.<br><em>One Model.</em><br>It Compounds.</h2>
         <p class="section-body">
-          VEGANS EXPLORE operates across eight active city markets. The World Vegan Explorer model is copy-paste from city to city: we enter, build a local team, activate the community, and document everything. Each new city makes the network stronger. Click each card to see how it works.
+          VEGANS EXPLORE operates across eight active city markets. The VEGANS EXPLORE model is copy-paste from city to city: we enter, build a local team, activate the community, and document everything. Each new city makes the network stronger. Click each card to see how it works.
         </p>
       </div>
       <div class="animate fade-left delay-1" style="display:flex;align-items:center;justify-content:center;">
@@ -1404,13 +1399,13 @@
             <div class="tr-text-bar">
               <div class="flip-year">South Florida + Central Florida - Active</div>
               <div class="flip-title">The Home Markets<br><em>Where It Started.</em></div>
-              <div class="flip-venue">The Foundation Cities for the World Vegan Explorer Model</div>
+              <div class="flip-venue">The Foundation Cities for the VEGANS EXPLORE Model</div>
             </div>
           </div>
           <div class="flip-back">
             <div class="flip-back-label">Home Markets - Active</div>
             <div class="flip-back-headline">Where the Copy-Paste Model Was Perfected.</div>
-            <div class="flip-back-body">South Florida and Central Florida are the proving ground where every piece of the World Vegan Explorer model was tested and refined. Local team structure, monthly events, vendor marketplace, community building, and sponsor coordination - all developed here before being replicated city by city.</div>
+            <div class="flip-back-body">South Florida and Central Florida are the proving ground where every piece of the VEGANS EXPLORE model was tested and refined. Local team structure, monthly events, vendor marketplace, community building, and sponsor coordination - all developed here before being replicated city by city.</div>
             <div class="flip-stats">
               <div>
                 <div class="flip-stat-num">2 Cities</div>
@@ -1463,13 +1458,13 @@
         <div class="section-label">Why Your City Needs This</div>
         <h2 class="section-headline">The Model Is<br>Ready. Your<br><em>City Is Next.</em></h2>
         <p class="section-body">
-          World Vegan Explorer enters a new city with everything already built: the community platform, the vendor marketplace, the event infrastructure, and the content distribution network. Your city gets a fully operational plant-based ecosystem from day one. Tourism boards and local businesses get a permanent community footprint without building it from scratch.
+          VEGANS EXPLORE enters a new city with everything already built: the community platform, the vendor marketplace, the event infrastructure, and the content distribution network. Your city gets a fully operational plant-based ecosystem from day one. Tourism boards and local businesses get a permanent community footprint without building it from scratch.
         </p>
         <div class="diff-grid" style="grid-template-columns:repeat(2,1fr);">
           <div class="diff-item">
             <div class="diff-num">111</div>
             <h4>Days Per Season</h4>
-            <p>World Vegan Explorer runs on 111-day seasons. Your city sponsorship locks in for a full season of community events and content.</p>
+            <p>VEGANS EXPLORE runs on 111-day seasons. Your city sponsorship locks in for a full season of community events and content.</p>
           </div>
           <div class="diff-item">
             <div class="diff-num">1</div>
@@ -1479,7 +1474,7 @@
           <div class="diff-item">
             <div class="diff-num">Live</div>
             <h4>Platform Launches July 1</h4>
-            <p>Your city gets a permanent World Vegan Explorer destination page at global launch. Community members planning travel find your businesses first.</p>
+            <p>Your city gets a permanent VEGANS EXPLORE destination page at global launch. Community members planning travel find your businesses first.</p>
           </div>
           <div class="diff-item">
             <div class="diff-num">Gold</div>
@@ -1501,7 +1496,7 @@
         <div class="section-label">The City Network</div>
         <h2 class="section-headline">Eight Cities.<br><em>One Network.</em><br>Your City Is In It.</h2>
         <p class="section-body">
-          When your city joins the World Vegan Explorer network, the entire VE community knows your destination. Every city VE operates in sends travelers your way. Community members planning trips filter by VE-recommended cities. Your hotels, restaurants, and local businesses appear on the destination guide before any other search result for plant-based travelers.
+          When your city joins the VEGANS EXPLORE network, the entire VE community knows your destination. Every city VE operates in sends travelers your way. Community members planning trips filter by VE-recommended cities. Your hotels, restaurants, and local businesses appear on the destination guide before any other search result for plant-based travelers.
         </p>
         <div class="city-grid animate fade-up delay-2">
           <div class="city-cell highlight"><div class="city-name">South Florida</div><div class="city-role">Anchor Market</div></div>
@@ -1665,7 +1660,7 @@
         <div class="section-label">The Proposal</div>
         <h2 class="section-headline">Three Ways We<br>Show Up in<br><em>Your City.</em></h2>
         <p class="section-body">
-          World Vegan Explorer enters your city and activates it from three directions: a permanent destination guide your visitors find first, content episodes that feature your city in the VE travel series, and monthly Night Events that build a local community of plant-based residents and visitors who return every month.
+          VEGANS EXPLORE enters your city and activates it from three directions: a permanent destination guide your visitors find first, content episodes that feature your city in the VE travel series, and monthly Night Events that build a local community of plant-based residents and visitors who return every month.
         </p>
       </div>
       <div class="animate fade-left" style="display:flex;align-items:center;justify-content:center;align-self:stretch;">
@@ -1685,7 +1680,7 @@
         </div>
         <div class="card-num">Pillar 01</div>
         <h3>Destination Listing</h3>
-        <p>Your city, hotel, restaurant, or business gets a permanent featured listing on the World Vegan Explorer destination guide. When plant-based travelers plan their next trip, your market is the recommended destination. Community-verified and searchable globally from July 1.</p>
+        <p>Your city, hotel, restaurant, or business gets a permanent featured listing on the VEGANS EXPLORE destination guide. When plant-based travelers plan their next trip, your market is the recommended destination. Community-verified and searchable globally from July 1.</p>
       </div>
       <div class="card featured">
         <div class="card-icon">
@@ -1697,7 +1692,7 @@
         </div>
         <div class="card-num">Pillar 02</div>
         <h3>Travel Content Series</h3>
-        <p>World Vegan Explorer episodes feature sponsor cities and locations. Your hotel, restaurant, or attraction appears in the content your target customers already watch when deciding where to travel. Authentic community travel coverage, not paid advertising.</p>
+        <p>VEGANS EXPLORE episodes feature sponsor cities and locations. Your hotel, restaurant, or attraction appears in the content your target customers already watch when deciding where to travel. Authentic community travel coverage, not paid advertising.</p>
       </div>
       <div class="card">
         <div class="card-icon">
@@ -1722,7 +1717,7 @@
         <div class="section-label">City Partner Benefits</div>
         <h2 class="section-headline">Tourism Board.<br>Local Business.<br><em>Same Benefits.</em></h2>
         <p class="section-body">
-          Whether you represent a tourism board, a hotel, a restaurant, or a local business - the World Vegan Explorer partnership model delivers the same core benefits. A permanent destination listing, content appearances, monthly event presence, and affiliate tracking across every city VE operates in.
+          Whether you represent a tourism board, a hotel, a restaurant, or a local business - the VEGANS EXPLORE partnership model delivers the same core benefits. A permanent destination listing, content appearances, monthly event presence, and affiliate tracking across every city VE operates in.
         </p>
       </div>
       <div class="animate fade-left" style="display:flex;align-items:center;justify-content:center;">
@@ -1734,7 +1729,7 @@
       <div class="quote-text">
         "The city is the destination. We make the community want to go there." <em>Every business we feature is a reason for a plant-based traveler to book their trip.</em>
       </div>
-      <div class="attribution">World Vegan Explorer destination partner model. 2026 Season</div>
+      <div class="attribution">VEGANS EXPLORE destination partner model. 2026 Season</div>
     </div>
     <div class="card-grid four animate fade-up delay-2">
       <div class="card">
@@ -1748,7 +1743,7 @@
           </svg>
         </div>
         <h3>Destination Guide Listing</h3>
-        <p>Featured placement on the World Vegan Explorer city page. Your business is what our community finds first when they search for plant-based destinations in your market. Permanent, searchable, community-endorsed.</p>
+        <p>Featured placement on the VEGANS EXPLORE city page. Your business is what our community finds first when they search for plant-based destinations in your market. Permanent, searchable, community-endorsed.</p>
       </div>
       <div class="card">
         <div class="card-icon">
@@ -1760,7 +1755,7 @@
           </svg>
         </div>
         <h3>Travel Content Feature</h3>
-        <p>World Vegan Explorer episodes film in your city. Your hotel, restaurant, or attraction appears in the travel series content your customers watch when deciding where to go next. Authentic, community-trusted, and permanently archived.</p>
+        <p>VEGANS EXPLORE episodes film in your city. Your hotel, restaurant, or attraction appears in the travel series content your customers watch when deciding where to go next. Authentic, community-trusted, and permanently archived.</p>
       </div>
       <div class="card">
         <div class="card-icon">
@@ -1832,7 +1827,7 @@
       <div class="section-label">The Partnership Structure</div>
       <h2 class="section-headline">Tourism Board<br>or Local Business.<br><em>Same Clean Model.</em></h2>
       <p class="section-body">
-        World Vegan Explorer enters your city with its full community infrastructure already operational. Tourism boards get a city-wide destination endorsement. Local businesses get category-exclusive placement for the 111-day season. One clean model that scales the same way from South Florida to London.
+        VEGANS EXPLORE enters your city with its full community infrastructure already operational. Tourism boards get a city-wide destination endorsement. Local businesses get category-exclusive placement for the 111-day season. One clean model that scales the same way from South Florida to London.
       </p>
     </div>
     <div class="roi-panel">
@@ -1853,7 +1848,7 @@
           <div class="roi-side better">
             <div class="roi-side-label">Your City Gains</div>
             <div class="roi-side-num">Community Tourism</div>
-            <div class="roi-side-desc">A plant-based traveler community that chooses VE-endorsed destinations. Monthly Night Events building local residency. Category-exclusive placement. A destination listing that promotes your city in perpetuity on the World Vegan Explorer platform.</div>
+            <div class="roi-side-desc">A plant-based traveler community that chooses VE-endorsed destinations. Monthly Night Events building local residency. Category-exclusive placement. A destination listing that promotes your city in perpetuity on the VEGANS EXPLORE platform.</div>
           </div>
         </div>
       </div>
@@ -1866,7 +1861,7 @@
       <div class="section-label">What This Partnership Activates</div>
       <h2 class="section-headline">This Is the<br>Network You<br><em>Buy Into.</em></h2>
       <p class="section-body">
-        A confirmed city partnership activates the full World Vegan Explorer network. Every other VE city hears about your destination. Community members planning travel get directed to your market. Tourism boards gain a plant-based visitor pipeline from 8 city markets simultaneously.
+        A confirmed city partnership activates the full VEGANS EXPLORE network. Every other VE city hears about your destination. Community members planning travel get directed to your market. Tourism boards gain a plant-based visitor pipeline from 8 city markets simultaneously.
       </p>
     </div>
 
@@ -1937,7 +1932,7 @@
         <div class="impact-card-tag">01 / Organic Reach Per City Activation</div>
         <div class="impact-card-num">20K<span>+</span></div>
         <div class="impact-card-label">Organic Social Impressions When Your City Is Featured</div>
-        <div class="impact-card-desc">Every World Vegan Explorer travel episode and city feature goes out across both VE Instagram accounts simultaneously. Your destination is in the frame to an audience actively making travel plans based on what the VE community recommends.</div>
+        <div class="impact-card-desc">Every VEGANS EXPLORE travel episode and city feature goes out across both VE Instagram accounts simultaneously. Your destination is in the frame to an audience actively making travel plans based on what the VE community recommends.</div>
         <div class="impact-card-source">Source: Vegans Explore platform / dual-account live activation model</div>
       </div>
 
@@ -1953,7 +1948,7 @@
         <div class="impact-card-tag">03 / Travel Market Size</div>
         <div class="impact-card-num">78M<span>+</span></div>
         <div class="impact-card-label">US Plant-Based Consumers - Your Addressable Travel Market</div>
-        <div class="impact-card-desc">A $8B market of plant-based travelers actively seeking destinations with community infrastructure. Our 215+ listed businesses, 100K+ cumulative podcast reach, and 1,000+ media contacts turn that addressable market into visitors specifically choosing cities that World Vegan Explorer has endorsed.</div>
+        <div class="impact-card-desc">A $8B market of plant-based travelers actively seeking destinations with community infrastructure. Our 215+ listed businesses, 100K+ cumulative podcast reach, and 1,000+ media contacts turn that addressable market into visitors specifically choosing cities that VEGANS EXPLORE has endorsed.</div>
         <div class="impact-card-source">Source: US plant-based market data / Vegans Explore directory and podcast verified figures</div>
       </div>
 
@@ -1968,7 +1963,7 @@
         <div class="section-label">What Your City Gains</div>
         <h2 class="section-headline">Six Assets.<br>One Season.<br><em>Permanent Footprint.</em></h2>
         <p class="section-body">
-          Your city is not doing a favor. You are acquiring a permanent plant-based community that chooses your destination over others. Tourism boards get a visitor pipeline from 8 city markets. Local businesses get category-exclusive placement. And the World Vegan Explorer destination guide promotes your city in perpetuity to the fastest-growing travel segment in the country.
+          Your city is not doing a favor. You are acquiring a permanent plant-based community that chooses your destination over others. Tourism boards get a visitor pipeline from 8 city markets. Local businesses get category-exclusive placement. And the VEGANS EXPLORE destination guide promotes your city in perpetuity to the fastest-growing travel segment in the country.
         </p>
       </div>
       <div class="panel-img auto-height animate fade-left">
@@ -2018,7 +2013,7 @@
           </div>
           <div class="flip-back benefit-back">
             <div class="flip-back-label">Travel Content Features</div>
-            <div class="flip-back-body">World Vegan Explorer travel episodes feature your city, hotels, restaurants, and businesses to a community actively planning their next trip. Authentic community travel content reaches an audience that buys based on VE recommendations.</div>
+            <div class="flip-back-body">VEGANS EXPLORE travel episodes feature your city, hotels, restaurants, and businesses to a community actively planning their next trip. Authentic community travel content reaches an audience that buys based on VE recommendations.</div>
             <div class="benefit-graph-zone"><div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
   <div style="background:rgba(255,255,255,0.14);border-radius:5px;padding:8px;text-align:center;">
     <div style="font-size:16px;font-weight:900;color:#fff;line-height:1;">$0</div>
@@ -2119,7 +2114,7 @@
           </div>
           <div class="flip-back benefit-back">
             <div class="flip-back-label">Gold Tour Flagship</div>
-            <div class="flip-back-body">Every 111 days, World Vegan Explorer cities converge for the Gold Tour physical expo - GeekFon live, workshops, vendor expo, and community celebration. Anchor city sponsors at the Gold Tour get the highest visibility placement in the entire ecosystem.</div>
+            <div class="flip-back-body">Every 111 days, VEGANS EXPLORE cities converge for the Gold Tour physical expo - GeekFon live, workshops, vendor expo, and community celebration. Anchor city sponsors at the Gold Tour get the highest visibility placement in the entire ecosystem.</div>
             <div class="benefit-graph-zone"><div style="margin-top:10px;">
   <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:8px;">Content Reach Over Time</div>
   <svg viewBox="0 0 180 50" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:50px;">
@@ -2149,7 +2144,7 @@
           </div>
           <div class="flip-back benefit-back">
             <div class="flip-back-label">Affiliate Booking Tracking</div>
-            <div class="flip-back-body">VE affiliate links on every city recommendation and destination feature. Hotels track room nights attributed to VE. Restaurants track covers. Tourism boards track arrivals. You see the exact ROI of your World Vegan Explorer partnership in every monthly report.</div>
+            <div class="flip-back-body">VE affiliate links on every city recommendation and destination feature. Hotels track room nights attributed to VE. Restaurants track covers. Tourism boards track arrivals. You see the exact ROI of your VEGANS EXPLORE partnership in every monthly report.</div>
             <div class="benefit-graph-zone" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;border:none;background:transparent;">
               <div style="background:rgba(255,255,255,0.18);border-radius:4px;padding:12px;text-align:center;">
                 <div style="font-size:20px;font-weight:900;color:#fff;line-height:1;">8</div>
@@ -2219,7 +2214,7 @@
       <div class="step" style="padding:28px 32px;">
         <div class="step-num">02</div>
         <h4>Destination Listing Goes Live</h4>
-        <p>Your city page and business listing go live on the World Vegan Explorer platform immediately on agreement. Platform launches globally July 1 with your destination featured.</p>
+        <p>Your city page and business listing go live on the VEGANS EXPLORE platform immediately on agreement. Platform launches globally July 1 with your destination featured.</p>
       </div>
       <div class="step" style="padding:28px 32px;">
         <div class="step-num">03</div>
