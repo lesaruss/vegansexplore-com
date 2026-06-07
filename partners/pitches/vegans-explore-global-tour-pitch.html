@@ -2238,15 +2238,14 @@
     <div style="max-width:600px;margin:0 auto;padding:100px var(--pad);text-align:center;">
       <div class="section-label">Let's Talk</div>
       <h2 class="section-headline" style="margin-bottom:20px;">Ready to<br><em>Partner With Us?</em></h2>
-      <p class="section-body" style="margin:0 0 40px;">Tell us a bit about yourself and we will set up a call to walk through how this partnership works for your organization.</p>
+      <p class="section-body" style="margin:0 0 40px;">Tell us a bit about yourself to get started. You'll choose how you want to continue on the next screen.</p>
       <form id="partnerForm" style="display:flex;flex-direction:column;gap:14px;text-align:left;" onsubmit="return false;">
         <input class="gate-input" type="text" id="partnerName" placeholder="Your name" required autocomplete="name">
         <input class="gate-input" type="email" id="partnerEmail" placeholder="Work email" required autocomplete="email">
-        <input class="gate-input" type="text" id="partnerCompany" placeholder="Organization" autocomplete="organization">
-        <textarea class="gate-input" id="partnerMessage" placeholder="Tell us about your organization and what interests you about this partnership (optional)" rows="3" style="resize:vertical;font-family:inherit;font-size:14px;padding:14px 16px;line-height:1.5;"></textarea>
-        <button class="gate-submit" id="partnerSubmit" type="submit">Book a Discovery Call &#8594;</button>
+        <input class="gate-input" type="text" id="partnerCompany" placeholder="Organization" required autocomplete="organization">
+        <button class="gate-submit" id="partnerSubmit" type="submit">Continue &#8594;</button>
         <div id="partnerError" style="display:none;color:#c00;font-size:13px;text-align:center;">Something went wrong. Please try again.</div>
-        <div class="gate-privacy" style="text-align:center;">Your information is shared only with the VEGANS EXPLORE team and will not be used for marketing without your consent.</div>
+        <div class="gate-privacy" style="text-align:center;">Your information is shared only with the VEGANS EXPLORE team.</div>
       </form>
     </div>
   </div>
@@ -2261,6 +2260,90 @@
     </div>
   </div>
 
+
+
+  <!-- PARTNER CHOICE SLIDE -->
+  <div class="section" id="partner-choice" style="background:#fff;">
+    <div style="max-width:680px;margin:0 auto;padding:80px var(--pad);text-align:center;">
+      <div class="section-label">How Would You Like to Continue?</div>
+      <h2 class="section-headline" style="margin-bottom:16px;">Choose<br><em>Your Path.</em></h2>
+      <p class="section-body" style="margin:0 0 48px;">Pick what works for you right now. Either route gets you to the right place.</p>
+      <div class="choice-grid">
+        <div class="choice-card" onclick="goToSlide(8)">
+          <div class="choice-card-icon">&#128222;</div>
+          <h3>Talk to Someone</h3>
+          <p>Schedule a 30-minute Zoom with our team. We'll walk you through options, answer your questions, and confirm city availability.</p>
+          <button class="choice-btn choice-btn-primary">Schedule a Call &#8594;</button>
+        </div>
+        <div class="choice-card" onclick="goToSlide(9)">
+          <div class="choice-card-icon">&#128200;</div>
+          <h3>See Options &amp; Pricing</h3>
+          <p>Browse partnership tiers and pricing on your own. When you're ready, you can book a call directly from the pricing page.</p>
+          <button class="choice-btn choice-btn-outline">See Pricing &#8594;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING SLIDE -->
+  <div class="section" id="pricing-slide" style="background:#fff;">
+    <div style="max-width:900px;margin:0 auto;padding:80px var(--pad);">
+      <div style="text-align:center;margin-bottom:8px;">
+        <div class="section-label">Partnership Tiers</div>
+        <h2 class="section-headline" style="margin-bottom:16px;">Find the Tier<br><em>That Fits.</em></h2>
+        <p class="section-body" style="max-width:560px;margin:0 auto;">Every tier includes city exclusivity in your category, platform listing, and Night Event sponsorship. Choose the level of activation that works for your organization.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-tier">Tier 1</div>
+          <div class="pricing-price">$<span id="price-t1">TBD</span></div>
+          <div class="pricing-period">per season (111 days)</div>
+          <div class="pricing-name">City Listing Partner</div>
+          <hr class="pricing-divider">
+          <ul class="pricing-features">
+            <li>Category-exclusive city listing on VEGANS EXPLORE platform</li>
+            <li>Featured in city guide for your destination</li>
+            <li>Night Event sponsor mention</li>
+            <li>Launch at global platform debut July 1</li>
+          </ul>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-tier">Tier 2 &mdash; Most Popular</div>
+          <div class="pricing-price">$<span id="price-t2">TBD</span></div>
+          <div class="pricing-period">per season (111 days)</div>
+          <div class="pricing-name">Destination Partner</div>
+          <hr class="pricing-divider">
+          <ul class="pricing-features">
+            <li>Everything in Tier 1</li>
+            <li>Night Event presenting sponsor in your city</li>
+            <li>Filmed content episode at your location</li>
+            <li>Influencer visit &amp; social content</li>
+            <li>Affiliate tracking for community referrals</li>
+          </ul>
+        </div>
+        <div class="pricing-card">
+          <div class="pricing-tier">Tier 3</div>
+          <div class="pricing-price">$<span id="price-t3">TBD</span></div>
+          <div class="pricing-period">per season (111 days)</div>
+          <div class="pricing-name">Anchor Partner</div>
+          <hr class="pricing-divider">
+          <ul class="pricing-features">
+            <li>Everything in Tier 2</li>
+            <li>Gold Tour eligibility (end-of-season travel event)</li>
+            <li>Multi-city cross-promotion</li>
+            <li>Co-branded season recap content</li>
+            <li>Priority city lock for Season 2</li>
+          </ul>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:48px;">
+        <p style="font-size:14px;color:var(--ve-text-50);margin-bottom:24px;">Ready to lock your city? A 30-minute call gets everything confirmed.</p>
+        <button class="gate-submit" style="display:inline-flex;align-items:center;gap:8px;width:auto;padding:15px 36px;" onclick="goToSlide(8)">
+          Schedule a Call &#8594;
+        </button>
+      </div>
+    </div>
+  </div>
 
   </div><!-- /#plan-content -->
 
@@ -2283,7 +2366,8 @@
         <button onclick="goToSlide(4);document.getElementById('presentNavMenu').classList.remove('open')" data-section="fb">F&amp;B Strategy</button>
         <button onclick="goToSlide(5);document.getElementById('presentNavMenu').classList.remove('open')" data-section="ask">The Ask</button>
         <button onclick="goToSlide(6);document.getElementById('presentNavMenu').classList.remove('open')" data-section="cta-gate">Let's Talk</button>
-        <button onclick="goToSlide(7);document.getElementById('presentNavMenu').classList.remove('open')" data-section="cta-section">Book a Call</button>
+        <button onclick="goToSlide(8);document.getElementById('presentNavMenu').classList.remove('open')" data-section="calendly-slide">Book a Call</button>
+        <button onclick="goToSlide(9);document.getElementById('presentNavMenu').classList.remove('open')" data-section="pricing-slide">Pricing</button>
       </div>
     </div>
     <div id="slideContainer"></div>
@@ -2431,7 +2515,7 @@
       const err     = document.getElementById('partnerError');
 
       btn.disabled = true;
-      btn.textContent = 'Booking...';
+      btn.textContent = 'Saving...';
       err.style.display = 'none';
 
       // Store lead in Supabase
@@ -2459,8 +2543,8 @@
         }
       }
 
-      // Advance to Calendly slide (last slide)
-      nextSlide();
+      // Advance to choice slide
+      goToSlide(7);
     });
 
     // ── PRESENTATION MODE ──
@@ -2468,7 +2552,7 @@
     let slides = [];
 
     function getSlideSections() {
-      const base = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate', '#calendly-slide'];
+      const base = ['.hero', '#opportunity', '#track-record', '#proposal', '#fb', '#ask', '#cta-gate', '#partner-choice', '#calendly-slide', '#pricing-slide'];
       const extra = ['#pg-why-now', '#pg-reach', '#pg-platform', '#pg-roi', '#pg-collaboration', '#pg-assets', '#pg-sponsorships'];
       const unlocked = document.body.classList.contains('ve-unlocked');
       return [...base, ...(unlocked ? extra : [])].map(s => document.querySelector(s)).filter(Boolean);
@@ -2486,7 +2570,7 @@
 
     // Map nav hrefs to slide indices (hero=0, opportunity=1, track-record=2, proposal=3, fb=4, ask=5, next-steps=6, cta=7)
     const sectionSlideMap = {
-      'opportunity': 1, 'track-record': 2, 'proposal': 3, 'fb': 4, 'ask': 5, 'cta-gate': 6, 'cta-section': 7
+      'opportunity': 1, 'track-record': 2, 'proposal': 3, 'fb': 4, 'ask': 5, 'cta-gate': 6, 'partner-choice': 7, 'calendly-slide': 8, 'pricing-slide': 9
     };
 
     document.addEventListener('click', function(e) {
