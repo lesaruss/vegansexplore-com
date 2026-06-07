@@ -278,566 +278,252 @@
 </head>
 <body>
   <div class="page-frame">
+
+    /* ── Guide Steps (Snowman) ── */
+    .guide-section { padding: 80px 56px; background: #fff; }
+    .guide-section .section-sub { margin-bottom: 64px; max-width: 540px; }
+    .steps-list { display: flex; flex-direction: column; gap: 0; }
+    .guide-step {
+      display: grid; grid-template-columns: 80px 1fr; gap: 0 40px;
+      padding: 48px 0; border-bottom: 1px solid var(--ve-border);
+      align-items: start;
+    }
+    .guide-step:last-child { border-bottom: none; }
+    .step-num-col { display: flex; flex-direction: column; align-items: center; gap: 0; padding-top: 4px; }
+    .step-number {
+      font-size: 56px; font-weight: 900; line-height: 1;
+      letter-spacing: -0.04em; color: var(--ve-green-mid);
+      transition: color 0.3s;
+    }
+    .guide-step:hover .step-number { color: var(--ve-green); }
+    .step-connector { width: 1px; flex: 1; background: var(--ve-green-mid); margin-top: 8px; min-height: 24px; }
+    .guide-step:last-child .step-connector { display: none; }
+    .step-body { padding-bottom: 0; }
+    .step-label { font-size: 9px; font-weight: 800; letter-spacing: 0.26em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 10px; }
+    .step-title { font-size: clamp(20px, 2.5vw, 30px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.08; color: var(--ve-text); margin-bottom: 14px; }
+    .step-body p { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.7; max-width: 600px; }
+    .step-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .step-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; background: var(--ve-green-light); color: var(--ve-green-dark); }
+
+    /* ── CTA Section (Offer) ── */
+    .cta-section { background: #1a1a1a; padding: 100px 56px; text-align: center; position: relative; overflow: hidden; }
+    .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 60% 50%, rgba(58,155,62,0.12) 0%, transparent 70%); pointer-events: none; }
+    .cta-section > * { position: relative; z-index: 1; }
+    .cta-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .cta-eyebrow::before, .cta-eyebrow::after { content: ''; flex: 0 0 20px; height: 2px; background: var(--ve-green); }
+    .cta-section h2 { font-size: clamp(36px, 6vw, 76px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; line-height: 0.94; color: #fff; margin-bottom: 20px; }
+    .cta-section h2 em { color: var(--ve-green); font-style: normal; }
+    .cta-section p { font-size: 17px; font-weight: 400; color: rgba(255,255,255,0.7); line-height: 1.65; max-width: 480px; margin: 0 auto 48px; }
+    .cta-offer-row { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+    .cta-price { font-size: 72px; font-weight: 900; letter-spacing: -0.05em; line-height: 1; color: #fff; }
+    .cta-price-meta { text-align: left; }
+    .cta-price-meta strong { display: block; font-size: 14px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-orange); margin-bottom: 4px; }
+    .cta-price-meta span { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.45); }
+    .btn-cta-primary {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--ve-orange); color: #fff;
+      font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 18px 44px; border-radius: 6px; border: none; cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-cta-primary:hover { background: var(--ve-orange-dark); transform: translateY(-1px); }
+    .btn-cta-primary:active { transform: translateY(0); }
+    .btn-cta-primary.loading { opacity: 0.7; cursor: not-allowed; }
+    .cta-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-top: 16px; }
+    .cta-perks-row { display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap; margin-top: 40px; padding-top: 36px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .cta-perk { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .cta-perk-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .guide-section { padding: 56px 24px; }
+      .guide-step { grid-template-columns: 56px 1fr; gap: 0 24px; padding: 36px 0; }
+      .step-number { font-size: 42px; }
+      .cta-section { padding: 72px 24px; }
+      .cta-price { font-size: 56px; }
+      .stats-bar { padding: 18px 24px; flex-wrap: wrap; justify-content: center; gap: 16px; }
+      .stat-divider { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
   <script src="/public/nav.js"></script>
 
-  <!-- HERO: Restored original -->
+  <!-- HERO -->
   <section class="hero" aria-labelledby="hero-heading">
     <div class="hero-inner">
       <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
-      <h1 id="hero-heading">The Vegan<br><em>World is Open.</em></h1>
-      <p class="hero-sub">Find your path, connect with your community, and build something that lasts. Five guides, five paths - start with the one that fits where you are right now.</p>
+      <h1 id="hero-heading">Help Us<br><em>Build This.</em></h1>
+      <p class="hero-sub">The vegan world deserves one home. We're building it - and we're inviting 100 people to be part of it from day one.</p>
       <div class="hero-ctas">
-        <a href="/guides/ve-guides-roster-v1" class="btn-hero-primary">Find Your Guide</a>
+        <button class="btn-hero-primary" onclick="startCheckout(this)">Become a Founding Member - $11</button>
+        <a href="#guide" class="btn-hero-ghost">See How It Works</a>
       </div>
+      <p class="hero-fine">One-time payment. No subscription. No catch.</p>
     </div>
   </section>
 
   <!-- STATS BAR -->
   <div class="stats-bar" role="list" aria-label="Platform statistics">
-    <div class="stat-item" role="listitem"><span class="stat-num">215+</span><span class="stat-label">Businesses Listed</span></div>
+    <div class="stat-item" role="listitem"><span class="stat-num">2,800+</span><span class="stat-label">Businesses Listed</span></div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat-item" role="listitem"><span class="stat-num">63</span><span class="stat-label">Cities</span></div>
     <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat-item" role="listitem"><span class="stat-num">5</span><span class="stat-label">Guide Paths</span></div>
     <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item" role="listitem"><span class="stat-num">4</span><span class="stat-label">Active Communities</span></div>
+    <div class="stat-item" role="listitem"><span class="stat-num">Jul 1</span><span class="stat-label">Launch Date</span></div>
     <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item" role="listitem"><span class="stat-num">1,000</span><span class="stat-label">Communities by 2030</span></div>
-    <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item stat-passport" role="listitem"><span class="stat-num">$11</span><span class="stat-label">One-Time Passport</span></div>
+    <div class="stat-item" role="listitem"><span class="stat-num">$11</span><span class="stat-label">One-Time Access</span></div>
   </div>
 
-  <!-- PLATFORM SECTION: 5 flip cards with GeekFon placeholders -->
-  <section class="platform-section" aria-labelledby="platform-heading">
-    <div class="section-eyebrow" aria-hidden="true">The Platform</div>
-    <h2 class="section-h2" id="platform-heading">Built for Every Part<br>of Your Vegan Life.</h2>
-    <p class="section-sub">From the directory to daily discussions, from local events to original content - everything you need in one place. Tap any card to explore.</p>
+  <!-- 6-STEP GUIDE -->
+  <section class="guide-section" id="guide" aria-labelledby="guide-heading">
+    <div class="section-eyebrow" aria-hidden="true">How It Works</div>
+    <h2 class="section-h2" id="guide-heading">Six Steps.<br>One Decision.</h2>
+    <p class="section-sub">No guessing. No clicking around. Just read through - and by the end, you'll know exactly whether this is for you.</p>
 
-    <!-- Desktop 5-tile grid -->
-    <div class="flip-cards-grid" role="list" aria-label="Platform features">
+    <div class="steps-list" role="list">
 
-      <!-- DIRECTORY -->
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Directory" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="pf-front-art" style="background:#1a6b3a;">
-              <div class="pf-art-dots"></div>
-              <span class="pf-art-corner">GeekFon Art</span>
-              <div class="pf-art-icon">
-                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-              </div>
-            </div>
-            <div class="flip-front-body">
-              <div class="flip-front-name">Directory</div>
-              <div class="flip-front-role" style="color:#1a6b3a;">Tap to explore</div>
-            </div>
-          </div>
-          <div class="flip-card-back" style="background:#1a6b3a;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">The Platform</div>
-              <div class="flip-back-path-name">Directory</div>
-              <p class="flip-back-desc">215+ vegan businesses listed. Find restaurants, shops, and services anywhere in the world - or add your own.</p>
-              <a href="/directory" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Browse Directory</a>
-            </div>
+      <!-- STEP 1 -->
+      <div class="guide-step" role="listitem">
+        <div class="step-num-col" aria-hidden="true">
+          <span class="step-number">01</span>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">The Problem</div>
+          <h3 class="step-title">The Vegan World Is Scattered.</h3>
+          <p>You know the drill. Restaurant recommendations are buried in Reddit threads. Local events live in five different Facebook groups nobody checks. Vegan businesses close because nobody knew they existed. The community is real - it's just never had a home. Everything is fragmented, and that fragmentation is costing us.</p>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="guide-step" role="listitem">
+        <div class="step-num-col" aria-hidden="true">
+          <span class="step-number">02</span>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">The Vision</div>
+          <h3 class="step-title">One Platform. The Whole Vegan World.</h3>
+          <p>VEGANS EXPLORE is being built as the single destination for everything vegan - regardless of where you are on the journey. Whether you just switched, you've been vegan for years, you travel, you cook, you create content, or you run a vegan business. One place. Everyone welcome.</p>
+          <div class="step-tags">
+            <span class="step-tag">Directory</span>
+            <span class="step-tag">Communities</span>
+            <span class="step-tag">Events</span>
+            <span class="step-tag">Recipes</span>
+            <span class="step-tag">Travel</span>
           </div>
         </div>
       </div>
 
-      <!-- EVENTS -->
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Events" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="pf-front-art" style="background:#b85c1a;">
-              <div class="pf-art-dots"></div>
-              <span class="pf-art-corner">GeekFon Art</span>
-              <div class="pf-art-icon">
-                <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-              </div>
-            </div>
-            <div class="flip-front-body">
-              <div class="flip-front-name">Events</div>
-              <div class="flip-front-role" style="color:#b85c1a;">Tap to explore</div>
-            </div>
-          </div>
-          <div class="flip-card-back" style="background:#b85c1a;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">The Platform</div>
-              <div class="flip-back-path-name">Events</div>
-              <p class="flip-back-desc">Festivals, pop-ups, meetups, and gatherings in your city. Connect with your community in person - not just online.</p>
-              <a href="/events" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Find Events</a>
-            </div>
-          </div>
+      <!-- STEP 3 -->
+      <div class="guide-step" role="listitem">
+        <div class="step-num-col" aria-hidden="true">
+          <span class="step-number">03</span>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">The Platform</div>
+          <h3 class="step-title">Here's What's Already Built.</h3>
+          <p>2,800+ vegan-friendly businesses cataloged across 63 cities. Five guide paths - built for the foodie, the newcomer, the traveler, the creator, and the connector. A community layer launching July 1. Recipes, events, and more in the pipeline. This isn't a concept. The foundation is here.</p>
         </div>
       </div>
 
-      <!-- COMMUNITIES -->
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Communities" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="pf-front-art" style="background:#1455a0;">
-              <div class="pf-art-dots"></div>
-              <span class="pf-art-corner">GeekFon Art</span>
-              <div class="pf-art-icon">
-                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-              </div>
-            </div>
-            <div class="flip-front-body">
-              <div class="flip-front-name">Communities</div>
-              <div class="flip-front-role" style="color:#1455a0;">Tap to explore</div>
-            </div>
-          </div>
-          <div class="flip-card-back" style="background:#1455a0;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">The Platform</div>
-              <div class="flip-back-path-name">Communities</div>
-              <p class="flip-back-desc">4 active communities now. 1,000 by 2030. Find your city, find your people, and build something lasting.</p>
-              <a href="/communities" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Find Your Community</a>
-            </div>
-          </div>
+      <!-- STEP 4 -->
+      <div class="guide-step" role="listitem">
+        <div class="step-num-col" aria-hidden="true">
+          <span class="step-number">04</span>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">The Community</div>
+          <h3 class="step-title">It Grows With the People In It.</h3>
+          <p>A platform is only as good as the community behind it. The directory grows when people add and verify listings. Events get bigger when members show up and bring others. Guides get better when people share what works. We're not asking you to use a finished product. We're asking you to help build what it becomes.</p>
         </div>
       </div>
 
-      <!-- DISCUSS -->
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Discuss" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="pf-front-art" style="background:#5428a8;">
-              <div class="pf-art-dots"></div>
-              <span class="pf-art-corner">GeekFon Art</span>
-              <div class="pf-art-icon">
-                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
-              </div>
-            </div>
-            <div class="flip-front-body">
-              <div class="flip-front-name">Discuss</div>
-              <div class="flip-front-role" style="color:#5428a8;">Tap to explore</div>
-            </div>
-          </div>
-          <div class="flip-card-back" style="background:#5428a8;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">The Platform</div>
-              <div class="flip-back-path-name">Discuss</div>
-              <p class="flip-back-desc">Daily path discussions with your Guide. Ask questions, share your journey, and connect with members on the same road.</p>
-              <a href="/discuss" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Join Discuss</a>
-            </div>
-          </div>
+      <!-- STEP 5 -->
+      <div class="guide-step" role="listitem">
+        <div class="step-num-col" aria-hidden="true">
+          <span class="step-number">05</span>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">The Moment</div>
+          <h3 class="step-title">July 1. 100 Founding Spots. This Is It.</h3>
+          <p>We launch publicly on July 1, 2026. Before that, we're opening 100 founding member spots. After July 1, membership is $11 per month. Founding members get in for $11 one-time - and that price never changes, ever. This is the only window where that offer exists. After 100 spots are filled, it's gone.</p>
         </div>
       </div>
 
-      <!-- NETWORK -->
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Network" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="pf-front-art" style="background:#1a1a1a;">
-              <div class="pf-art-dots"></div>
-              <span class="pf-art-corner">GeekFon Art</span>
-              <div class="pf-art-icon">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-              </div>
-            </div>
-            <div class="flip-front-body">
-              <div class="flip-front-name">Network</div>
-              <div class="flip-front-role" style="color:#555;">Tap to explore</div>
-            </div>
-          </div>
-          <div class="flip-card-back" style="background:#1a1a1a;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">The Platform</div>
-              <div class="flip-back-path-name">Network</div>
-              <p class="flip-back-desc">Podcasts, original series, and creator content. The media arm of the vegan movement - built by the community, for the community.</p>
-              <a href="/network" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Explore Network</a>
-            </div>
-          </div>
+      <!-- STEP 6 -->
+      <div class="guide-step" role="listitem">
+        <div class="step-num-col" aria-hidden="true">
+          <span class="step-number">06</span>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Your Move</div>
+          <h3 class="step-title">Do You Want to Help Build This?</h3>
+          <p>That's the only question. If the answer is yes - join for $11, get your Founding Member badge, and your name on the Founder Wall at launch. You'll get full platform access, direct input on what we build next, and priority access to every event and community we launch. If the answer is no - that's fine too. Come back July 1. The door will be open.</p>
         </div>
       </div>
 
-    </div>
-
-    <!-- Platform Mobile Picker -->
-    <div class="platform-mobile-picker">
-      <div class="mgp-select-wrap" id="pfpSelectWrap">
-        <div class="mgp-select-face" id="pfpFace" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select a platform feature">
-          <div class="mgp-dot" id="pfpDot" style="background:#1a6b3a;"></div>
-          <span class="mgp-label" id="pfpLabel">Directory</span>
-          <span class="mgp-arrow" aria-hidden="true">&#9660;</span>
-        </div>
-        <div class="mgp-dropdown" id="pfpDropdown" role="listbox"></div>
-      </div>
-      <div class="flip-card mgp-flip-card" id="pfpFlipCard" tabindex="0" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')" aria-label="Platform card, tap to flip">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <div class="pf-front-art" id="pfpFrontArt" style="background:#1a6b3a;">
-              <div class="pf-art-dots"></div>
-              <div class="pf-art-icon" id="pfpArtIcon"></div>
-            </div>
-            <div class="flip-front-body">
-              <div>
-                <div class="flip-front-name" id="pfpFrontName">Directory</div>
-                <div class="flip-front-role" id="pfpFrontRole" style="color:#1a6b3a;">Tap to explore</div>
-              </div>
-              <div class="mgp-flip-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></div>
-            </div>
-          </div>
-          <div class="flip-card-back" id="pfpBack" style="background:#1a6b3a;">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label" id="pfpBackLabel">The Platform</div>
-              <div class="flip-back-path-name" id="pfpBackName">Directory</div>
-              <p class="flip-back-desc" id="pfpBackDesc">215+ vegan businesses listed. Find restaurants, shops, and services anywhere in the world - or add your own.</p>
-              <a href="/directory" class="flip-back-btn" id="pfpBackBtn" onclick="event.stopPropagation()" tabindex="0">Browse Directory</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="mgp-thumb-strip" id="pfpThumbStrip" role="list" aria-label="Platform feature thumbnails"></div>
-    </div>
-    <script>
-    (function() {
-      var iconPaths = {
-        directory: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-        events: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z',
-        communities: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z',
-        discuss: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z',
-        network: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z'
-      };
-      function makeSvg(pathKey, color) {
-        return '<svg viewBox="0 0 24 24" style="width:72px;height:72px;fill:rgba(255,255,255,0.88);filter:drop-shadow(0 2px 8px rgba(0,0,0,0.25));"><path d="' + iconPaths[pathKey] + '"/></svg>';
-      }
-      var platforms = [
-        { name:'Directory', color:'#1a6b3a', iconKey:'directory', desc:'215+ vegan businesses listed. Find restaurants, shops, and services anywhere in the world - or add your own.', href:'/directory', btnLabel:'Browse Directory', label:'Directory' },
-        { name:'Events', color:'#b85c1a', iconKey:'events', desc:'Festivals, pop-ups, meetups, and gatherings in your city. Connect with your community in person - not just online.', href:'/events', btnLabel:'Find Events', label:'Events' },
-        { name:'Communities', color:'#1455a0', iconKey:'communities', desc:'4 active communities now. 1,000 by 2030. Find your city, find your people, and build something lasting.', href:'/communities', btnLabel:'Find Your Community', label:'Communities' },
-        { name:'Discuss', color:'#5428a8', iconKey:'discuss', desc:'Daily path discussions with your Guide. Ask questions, share your journey, and connect with members on the same road.', href:'/discuss', btnLabel:'Join Discuss', label:'Discuss' },
-        { name:'Network', color:'#1a1a1a', iconKey:'network', desc:'Podcasts, original series, and creator content. The media arm of the vegan movement - built by the community, for the community.', href:'/network', btnLabel:'Explore Network', label:'Network' }
-      ];
-      var activeIdx = 0;
-      function setPlatform(idx, closeDD) {
-        activeIdx = idx;
-        var p = platforms[idx];
-        document.getElementById('pfpDot').style.background = p.color;
-        document.getElementById('pfpLabel').textContent = p.label;
-        document.getElementById('pfpFrontArt').style.background = p.color;
-        document.getElementById('pfpArtIcon').innerHTML = makeSvg(p.iconKey);
-        document.getElementById('pfpFrontName').textContent = p.name;
-        document.getElementById('pfpFrontRole').style.color = p.color === '#1a1a1a' ? '#555' : p.color;
-        document.getElementById('pfpBack').style.background = p.color;
-        document.getElementById('pfpBackName').textContent = p.name;
-        document.getElementById('pfpBackDesc').textContent = p.desc;
-        document.getElementById('pfpBackBtn').textContent = p.btnLabel;
-        document.getElementById('pfpBackBtn').href = p.href;
-        document.getElementById('pfpFlipCard').setAttribute('aria-label', p.name + ' feature, tap to flip');
-        document.getElementById('pfpFlipCard').classList.remove('flipped');
-        document.querySelectorAll('.pf-thumb-tile').forEach(function(t, i) {
-          t.style.outlineColor = i === idx ? platforms[i].color : 'transparent';
-        });
-        document.querySelectorAll('#pfpDropdown .mgp-option').forEach(function(o, i) {
-          o.classList.toggle('active', i === idx);
-          o.setAttribute('aria-selected', i === idx ? 'true' : 'false');
-        });
-        if (closeDD) togglePfpDD(false);
-      }
-      function togglePfpDD(forceClose) {
-        var dd = document.getElementById('pfpDropdown');
-        var face = document.getElementById('pfpFace');
-        var open = forceClose === false ? false : !dd.classList.contains('open');
-        dd.classList.toggle('open', open);
-        face.setAttribute('aria-expanded', open ? 'true' : 'false');
-      }
-      document.getElementById('pfpFace').addEventListener('click', function() { togglePfpDD(); });
-      document.getElementById('pfpFace').addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); togglePfpDD(); }});
-      document.addEventListener('click', function(e) { var w=document.getElementById('pfpSelectWrap'); if(w&&!w.contains(e.target)) togglePfpDD(false); });
-      var dd2 = document.getElementById('pfpDropdown');
-      platforms.forEach(function(p, i) {
-        var opt = document.createElement('div');
-        opt.className = 'mgp-option' + (i===0?' active':'');
-        opt.setAttribute('role','option');
-        opt.setAttribute('aria-selected', i===0?'true':'false');
-        opt.setAttribute('tabindex','0');
-        var dot = document.createElement('div');
-        dot.className = 'mgp-dot';
-        dot.style.background = p.color;
-        var lbl = document.createElement('span');
-        lbl.textContent = p.label;
-        opt.appendChild(dot); opt.appendChild(lbl);
-        opt.addEventListener('click', function() { setPlatform(i, true); });
-        opt.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); setPlatform(i, true); }});
-        dd2.appendChild(opt);
-      });
-      var strip = document.getElementById('pfpThumbStrip');
-      platforms.forEach(function(p, i) {
-        var tile = document.createElement('div');
-        tile.className = 'pf-thumb-tile';
-        tile.setAttribute('role','listitem');
-        tile.setAttribute('tabindex','0');
-        tile.setAttribute('aria-label', p.name);
-        tile.style.background = p.color;
-        tile.style.outlineColor = i===0 ? p.color : 'transparent';
-        tile.innerHTML = '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:rgba(255,255,255,0.8);"><path d="' + iconPaths[p.iconKey] + '"/></svg>';
-        tile.addEventListener('click', function() { setPlatform(i, false); });
-        tile.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') setPlatform(i, false); });
-        strip.appendChild(tile);
-      });
-      // Initialize icon on first load
-      document.getElementById('pfpArtIcon').innerHTML = makeSvg(platforms[0].iconKey);
-    })();
-    </script>
-    <p class="flip-hint" aria-hidden="true">Tap a card to learn more</p>
-  </section>
-
-  <!-- GUIDES SECTION -->
-  <section class="paths-section" aria-labelledby="paths-heading">
-    <div class="section-eyebrow" aria-hidden="true">Your Path In</div>
-    <h2 class="section-h2" id="paths-heading">The Platform Meets You<br>Where You Are.</h2>
-    <p class="section-sub">Every member has a Guide - a dedicated path that connects you to the right content, community, and resources for your journey. Tap a card to find yours.</p>
-    <div class="flip-cards-grid" role="list" aria-label="Guide paths">
-
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Maya, Pre-Vegan Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom:3px solid #2d7d31;"><img src="/public/guides/maya.png" alt="Maya" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Maya</div><div class="flip-front-role" style="color:#2d7d31;">Pre-Vegan Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#2d7d31;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 01</div>
-              <div class="flip-back-path-name">Pre-Vegan</div>
-              <p class="flip-back-desc">Vegan-curious. Real answers, real support, and a clear path to make the shift.</p>
-              <a href="/guides/ve-path-prevegan" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Theo, Seasoned Vegan Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom:3px solid #8B6914;"><img src="/public/guides/theo.png" alt="Theo" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Theo</div><div class="flip-front-role" style="color:#8B6914;">Seasoned Vegan Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#8B6914;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 02</div>
-              <div class="flip-back-path-name">Seasoned Vegan</div>
-              <p class="flip-back-desc">Already living it. Deepen your impact, mentor others, and connect with the global movement.</p>
-              <a href="/guides/ve-path-seasonedvegan" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Nori, Entrepreneur Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom:3px solid #2D5F8A;"><img src="/public/guides/nori.png" alt="Nori" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Nori</div><div class="flip-front-role" style="color:#2D5F8A;">Entrepreneur Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#2D5F8A;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 03</div>
-              <div class="flip-back-path-name">Entrepreneur</div>
-              <p class="flip-back-desc">Building a Vegan business. Get listed, grow your audience, and connect with Vegan customers.</p>
-              <a href="/guides/ve-path-entrepreneur" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Dani, Nonprofit Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom:3px solid #C4522A;"><img src="/public/guides/dani.png" alt="Dani" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Dani</div><div class="flip-front-role" style="color:#C4522A;">Nonprofit Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#C4522A;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 04</div>
-              <div class="flip-back-path-name">Nonprofit</div>
-              <p class="flip-back-desc">Running a Vegan org. Build your community on the platform and grow your base.</p>
-              <a href="/guides/ve-path-nonprofit" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="River, Creator Guide" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom:3px solid #6B35A8;"><img src="/public/guides/river.jpg" alt="River" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">River</div><div class="flip-front-role" style="color:#6B35A8;">Creator Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#6B35A8;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 05</div>
-              <div class="flip-back-path-name">Creator</div>
-              <p class="flip-back-desc">Creating content in the Vegan space. Grow your audience and earn through the ecosystem.</p>
-              <a href="/guides/ve-path-creator" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Mobile Guide Picker -->
-    <div class="mobile-guide-picker">
-      <div class="mgp-select-wrap" id="mgpSelectWrap">
-        <div class="mgp-select-face" id="mgpFace" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select a guide path">
-          <div class="mgp-dot" id="mgpDot" style="background:#2d7d31;"></div>
-          <span class="mgp-label" id="mgpLabel">Maya - Pre-Vegan</span>
-          <span class="mgp-arrow" aria-hidden="true">&#9660;</span>
-        </div>
-        <div class="mgp-dropdown" id="mgpDropdown" role="listbox"></div>
-      </div>
-      <div class="flip-card mgp-flip-card" id="mgpFlipCard" tabindex="0" onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')" aria-label="Guide card, tap to flip">
-        <div class="flip-card-inner" id="mgpFlipInner">
-          <div class="flip-card-front">
-            <div class="flip-front-img" id="mgpFrontImgWrap" style="border-bottom:3px solid #2d7d31;">
-              <img id="mgpFrontImg" src="/public/guides/maya.png" alt="Maya" loading="lazy">
-            </div>
-            <div class="flip-front-body">
-              <div>
-                <div class="flip-front-name" id="mgpFrontName">Maya</div>
-                <div class="flip-front-role" id="mgpFrontRole" style="color:#2d7d31;">Pre-Vegan Guide</div>
-              </div>
-              <div class="mgp-flip-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg></div>
-            </div>
-          </div>
-          <div class="flip-card-back" id="mgpBack" style="background:#2d7d31;">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label" id="mgpBackPathLabel">Path 01</div>
-              <div class="flip-back-path-name" id="mgpBackPathName">Pre-Vegan</div>
-              <p class="flip-back-desc" id="mgpBackDesc">Vegan-curious. Real answers, real support, and a clear path to make the shift.</p>
-              <a href="/guides/ve-path-prevegan" class="flip-back-btn" id="mgpBackBtn" onclick="event.stopPropagation()" tabindex="0">Start Here</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="mgp-thumb-strip" id="mgpThumbStrip" role="list" aria-label="Guide thumbnails"></div>
-    </div>
-    <script>
-    (function() {
-      var guides = [
-        { name:'Maya', role:'Pre-Vegan Guide', path:'Path 01', pathName:'Pre-Vegan', desc:'Vegan-curious. Real answers, real support, and a clear path to make the shift.', color:'#2d7d31', img:'/public/guides/maya.png', href:'/guides/ve-path-prevegan', label:'Maya - Pre-Vegan' },
-        { name:'Theo', role:'Seasoned Vegan Guide', path:'Path 02', pathName:'Seasoned Vegan', desc:'Already living it. Deepen your impact, mentor others, and connect with the global movement.', color:'#8B6914', img:'/public/guides/theo.png', href:'/guides/ve-path-seasonedvegan', label:'Theo - Seasoned Vegan' },
-        { name:'Nori', role:'Entrepreneur Guide', path:'Path 03', pathName:'Entrepreneur', desc:'Building a Vegan business. Get listed, grow your audience, and connect with Vegan customers.', color:'#2D5F8A', img:'/public/guides/nori.png', href:'/guides/ve-path-entrepreneur', label:'Nori - Entrepreneur' },
-        { name:'Dani', role:'Nonprofit Guide', path:'Path 04', pathName:'Nonprofit', desc:'Running a Vegan org. Build your community on the platform and grow your base.', color:'#C4522A', img:'/public/guides/dani.png', href:'/guides/ve-path-nonprofit', label:'Dani - Nonprofit' },
-        { name:'River', role:'Creator Guide', path:'Path 05', pathName:'Creator', desc:'Creating content in the Vegan space. Grow your audience and earn through the ecosystem.', color:'#6B35A8', img:'/public/guides/river.jpg', href:'/guides/ve-path-creator', label:'River - Creator' }
-      ];
-      var activeIdx = 0;
-      function setGuide(idx, closeDD) {
-        activeIdx = idx;
-        var g = guides[idx];
-        document.getElementById('mgpDot').style.background = g.color;
-        document.getElementById('mgpLabel').textContent = g.label;
-        var img = document.getElementById('mgpFrontImg');
-        img.src = g.img; img.alt = g.name;
-        document.getElementById('mgpFrontImgWrap').style.borderBottomColor = g.color;
-        document.getElementById('mgpFrontName').textContent = g.name;
-        document.getElementById('mgpFrontRole').style.color = g.color;
-        document.getElementById('mgpFrontRole').textContent = g.role;
-        document.getElementById('mgpBack').style.background = g.color;
-        document.getElementById('mgpBackPathLabel').textContent = g.path;
-        document.getElementById('mgpBackPathName').textContent = g.pathName;
-        document.getElementById('mgpBackDesc').textContent = g.desc;
-        document.getElementById('mgpBackBtn').href = g.href;
-        document.getElementById('mgpFlipCard').setAttribute('aria-label', g.name + ' guide, tap to flip');
-        document.getElementById('mgpFlipCard').classList.remove('flipped');
-        document.querySelectorAll('.mgp-thumb-tile').forEach(function(t, i) {
-          t.style.outlineColor = i === idx ? guides[i].color : 'transparent';
-        });
-        document.querySelectorAll('#mgpDropdown .mgp-option').forEach(function(o, i) {
-          o.classList.toggle('active', i === idx);
-          o.setAttribute('aria-selected', i === idx ? 'true' : 'false');
-        });
-        if (closeDD) toggleDD(false);
-      }
-      function toggleDD(forceClose) {
-        var dd = document.getElementById('mgpDropdown');
-        var face = document.getElementById('mgpFace');
-        var open = forceClose === false ? false : !dd.classList.contains('open');
-        dd.classList.toggle('open', open);
-        face.setAttribute('aria-expanded', open ? 'true' : 'false');
-      }
-      document.getElementById('mgpFace').addEventListener('click', function() { toggleDD(); });
-      document.getElementById('mgpFace').addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleDD(); }});
-      document.addEventListener('click', function(e) { var w=document.getElementById('mgpSelectWrap'); if(w&&!w.contains(e.target)) toggleDD(false); });
-      var dd2 = document.getElementById('mgpDropdown');
-      guides.forEach(function(g, i) {
-        var opt = document.createElement('div');
-        opt.className = 'mgp-option' + (i===0?' active':'');
-        opt.setAttribute('role','option');
-        opt.setAttribute('aria-selected', i===0?'true':'false');
-        opt.setAttribute('tabindex','0');
-        var dot = document.createElement('div');
-        dot.className = 'mgp-dot';
-        dot.style.background = g.color;
-        var lbl = document.createElement('span');
-        lbl.textContent = g.label;
-        opt.appendChild(dot); opt.appendChild(lbl);
-        opt.addEventListener('click', function() { setGuide(i, true); });
-        opt.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); setGuide(i, true); }});
-        dd2.appendChild(opt);
-      });
-      var strip = document.getElementById('mgpThumbStrip');
-      guides.forEach(function(g, i) {
-        var tile = document.createElement('div');
-        tile.className = 'mgp-thumb-tile';
-        tile.setAttribute('role','listitem');
-        tile.setAttribute('tabindex','0');
-        tile.setAttribute('aria-label', g.name + ' guide');
-        tile.style.outlineColor = i===0 ? g.color : 'transparent';
-        var img = document.createElement('img');
-        img.src = g.img; img.alt = g.name; img.loading = 'lazy';
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:top center;display:block;';
-        tile.appendChild(img);
-        tile.addEventListener('click', function() { setGuide(i, false); });
-        tile.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' ') setGuide(i, false); });
-        strip.appendChild(tile);
-      });
-    })();
-    </script>
-    <p class="flip-hint" aria-hidden="true">Tap a card to meet your Guide</p>
-  </section>
-
-  <!-- VISION -->
-  <section class="vision-section" aria-labelledby="vision-heading">
-    <div class="section-eyebrow" aria-hidden="true">The Vision</div>
-    <h2 class="section-h2" id="vision-heading">1,000 Communities<br>by 2030.</h2>
-    <p class="section-sub">Building the most connected Vegan network on the planet, one community at a time. From Miami to Accra, from London to Tokyo.</p>
-    <div class="vision-timeline" role="list" aria-label="Community growth timeline">
-      <div class="vision-year now" role="listitem"><div class="vision-yr">Now</div><div class="vision-count">4</div><div class="vision-unit">Active Communities</div></div>
-      <div class="vision-year" role="listitem"><div class="vision-yr">2026</div><div class="vision-count">50</div><div class="vision-unit">Communities</div></div>
-      <div class="vision-year" role="listitem"><div class="vision-yr">2028</div><div class="vision-count">300</div><div class="vision-unit">Communities</div></div>
-      <div class="vision-year" role="listitem"><div class="vision-yr">2030</div><div class="vision-count">1,000</div><div class="vision-unit">Communities</div></div>
     </div>
   </section>
 
-  <!-- BOTTOM CTA -->
+  <!-- CTA -->
   <section class="cta-section" aria-labelledby="cta-heading">
-    <div class="section-eyebrow">Ready</div>
-    <h2 class="section-h2" id="cta-heading">Your Guide<br>is <em>Waiting for You.</em></h2>
-    <p>Tell us where you are in your vegan journey. Your Guide connects you to the right community, content, and resources from day one.</p>
-    <a href="/guides/ve-guides-roster-v1" class="btn-cta-lg">Find Your Guide</a>
+    <div class="cta-eyebrow" aria-hidden="true">Founding Member</div>
+    <h2 id="cta-heading">100 Spots.<br><em>$11. Forever.</em></h2>
+    <p>One-time payment. Founder badge. Your name on the wall. Full platform access. This offer closes July 1 or when 100 spots are filled - whichever comes first.</p>
+    <div class="cta-offer-row">
+      <span class="cta-price" aria-label="11 dollars">$11</span>
+      <div class="cta-price-meta">
+        <strong>One-Time. Forever.</strong>
+        <span>$11/mo after July 1 launch</span>
+      </div>
+    </div>
+    <button class="btn-cta-primary" onclick="startCheckout(this)" aria-label="Claim your founding member spot for $11">
+      <span class="btn-text">Claim Your Founding Member Spot</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="cta-fine">Secure checkout via Stripe. You'll be redirected to a hosted payment page.</div>
+    <div class="cta-perks-row" aria-label="What founding members get">
+      <div class="cta-perk"><div class="cta-perk-dot"></div>Founding Member Badge</div>
+      <div class="cta-perk"><div class="cta-perk-dot"></div>Full Platform Access</div>
+      <div class="cta-perk"><div class="cta-perk-dot"></div>Founder Wall at Launch</div>
+      <div class="cta-perk"><div class="cta-perk-dot"></div>Shape What We Build</div>
+      <div class="cta-perk"><div class="cta-perk-dot"></div>Priority Event Access</div>
+    </div>
   </section>
 
   <script src="/public/footer.js"></script>
-  </div><!-- /.page-frame -->
+  </div>
 
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
-</script>
+  <script>
+    async function startCheckout(btn) {
+      const allBtns = document.querySelectorAll('.btn-hero-primary, .btn-cta-primary');
+      allBtns.forEach(b => { b.disabled = true; b.classList.add('loading'); });
+      const textEl = btn.querySelector('.btn-text') || btn;
+      const origText = textEl.textContent;
+      textEl.textContent = 'Loading...';
+      try {
+        const res = await fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ price: 'early-access', source: 'homepage', success_url: window.location.origin + '/welcome', cancel_url: window.location.href })
+        });
+        const data = await res.json();
+        if (data.url) { window.location.href = data.url; }
+        else { throw new Error(data.error || 'Checkout failed'); }
+      } catch (err) {
+        allBtns.forEach(b => { b.disabled = false; b.classList.remove('loading'); });
+        textEl.textContent = origText;
+        alert('Something went wrong. Please try again or email contact@vegansexplore.com');
+      }
+    }
+  </script>
 </body>
 </html>
