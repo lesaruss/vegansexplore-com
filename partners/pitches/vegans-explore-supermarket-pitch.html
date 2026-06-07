@@ -991,6 +991,15 @@
     .present-exit { background:rgba(255,255,255,0.12) !important; border-radius:20px !important; padding:0 14px !important; width:auto !important; font-size:13px !important; font-weight:700; letter-spacing:0.03em; }
     .present-exit:hover { background:rgba(255,255,255,0.25) !important; }
 
+    /* -- PRESENT MODE: MOBILE NAV -- */
+    @media (max-width: 768px) {
+      .present-header { padding: 0 16px; }
+      .present-header-divider { display: none; }
+      .present-header-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .present-header-nav::-webkit-scrollbar { display: none; }
+      .present-header-nav button { font-size: 10px; padding: 5px 8px; }
+    }
+
     /* Plan content hidden until activated */
     #plan-content { display: none; }
     body.plan-mode #plan-content { display: block; }
