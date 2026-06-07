@@ -1267,6 +1267,15 @@
       /* ── Page break avoidance ── */
       h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
     }
+    /* Fix: hero img-zone placeholder behaves like absolutely-positioned hero-bg */
+    .hero > .img-zone {
+      position: absolute;
+      inset: 0;
+      border-radius: 0;
+      min-height: unset;
+      z-index: 0;
+    }
+
 </style>
 </head>
 <body>
