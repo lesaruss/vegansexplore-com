@@ -967,13 +967,18 @@
     .present-header-logo { flex-shrink:0; display:flex; align-items:center; }
     .present-header-logo img { height:22px; width:auto; display:block; }
     .present-header-divider { width:1px; height:20px; background:rgba(0,0,0,0.12); margin:0 20px; flex-shrink:0; }
-    .present-header-nav { display:flex; align-items:center; gap:4px; flex:1; }
+    .present-header-nav { display:none; }
     .present-header-print { background:none; border:1px solid rgba(0,0,0,0.15); border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(26,26,26,0.55); padding:5px 12px; white-space:nowrap; flex-shrink:0; display:none; }
     .ve-unlocked .present-header-print { display:inline-flex; align-items:center; gap:5px; }
     .present-header-print:hover { background:rgba(0,0,0,0.05); color:var(--ve-green); border-color:var(--ve-green); }
-    .present-header-nav button { background:none; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:rgba(26,26,26,0.45); padding:6px 10px; border-radius:6px; transition:color 0.15s, background 0.15s; white-space:nowrap; }
-    .present-header-nav button:hover { color:var(--ve-green); background:var(--ve-green-light); }
-    .present-header-nav button.active { color:var(--ve-green); background:var(--ve-green-light); }
+    .present-nav-toggle { display:flex; background:none; border:1px solid rgba(0,0,0,0.15); border-radius:6px; cursor:pointer; padding:7px 10px; gap:4px; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; }
+    .present-nav-toggle span { display:block; width:18px; height:2px; background:rgba(0,0,0,0.6); border-radius:2px; }
+    .present-nav-toggle:hover { background:rgba(0,0,0,0.05); }
+    .present-nav-menu { display:none; position:absolute; top:52px; right:16px; background:#fff; border:1px solid rgba(0,0,0,0.1); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.1); min-width:200px; padding:8px 0; z-index:9200; }
+    .present-nav-menu.open { display:flex; flex-direction:column; }
+    .present-nav-menu button { background:none; border:none; width:100%; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:rgba(26,26,26,0.7); padding:10px 20px; text-align:left; transition:color 0.15s, background 0.15s; }
+    .present-nav-menu button:hover { color:var(--ve-green); background:rgba(58,155,62,0.07); }
+    .present-nav-menu button.active { color:var(--ve-green); background:rgba(58,155,62,0.07); }
 
     #slideContainer { position:absolute; top:52px; left:0; right:0; bottom:0; }
     .present-slide { position:absolute; inset:0; overflow-y:auto; background:#fff; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
@@ -992,9 +997,7 @@
     @media (max-width: 768px) {
       .present-header { padding: 0 16px; }
       .present-header-divider { display: none; }
-      .present-header-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-      .present-header-nav::-webkit-scrollbar { display: none; }
-      .present-header-nav button { font-size: 10px; padding: 5px 8px; }
+      /* present-nav-menu is a dropdown, no overflow needed on mobile */
     }
 
     /* Plan content hidden until activated */
@@ -2269,18 +2272,21 @@
       <div class="present-header-logo">
         <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
       </div>
-      <div class="present-header-divider"></div>
-      <nav class="present-header-nav" id="presentHeaderNav">
-        <button onclick="goToSlide(0)">Intro</button>
-        <button onclick="goToSlide(1)" data-section="opportunity">The Opportunity</button>
-        <button onclick="goToSlide(2)" data-section="track-record">Track Record</button>
-        <button onclick="goToSlide(3)" data-section="proposal">The Proposal</button>
-        <button onclick="goToSlide(4)" data-section="fb">F&amp;B Strategy</button>
-        <button onclick="goToSlide(5)" data-section="ask">The Ask</button>
-        <button onclick="goToSlide(6)" data-section="cta-gate">Let's Talk</button>
-        <button onclick="goToSlide(7)" data-section="cta-section">Book a Call</button>
-      </nav>
+      <div style="flex:1"></div>
       <button class="present-header-print" onclick="window.print()">&#128438; Print / PDF</button>
+      <button class="present-nav-toggle" id="presentNavToggle" aria-label="Menu" onclick="document.getElementById('presentNavMenu').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="present-nav-menu" id="presentNavMenu">
+        <button onclick="goToSlide(0);document.getElementById('presentNavMenu').classList.remove('open')">Intro</button>
+        <button onclick="goToSlide(1);document.getElementById('presentNavMenu').classList.remove('open')" data-section="opportunity">The Opportunity</button>
+        <button onclick="goToSlide(2);document.getElementById('presentNavMenu').classList.remove('open')" data-section="track-record">Track Record</button>
+        <button onclick="goToSlide(3);document.getElementById('presentNavMenu').classList.remove('open')" data-section="proposal">The Proposal</button>
+        <button onclick="goToSlide(4);document.getElementById('presentNavMenu').classList.remove('open')" data-section="fb">F&amp;B Strategy</button>
+        <button onclick="goToSlide(5);document.getElementById('presentNavMenu').classList.remove('open')" data-section="ask">The Ask</button>
+        <button onclick="goToSlide(6);document.getElementById('presentNavMenu').classList.remove('open')" data-section="cta-gate">Let's Talk</button>
+        <button onclick="goToSlide(7);document.getElementById('presentNavMenu').classList.remove('open')" data-section="cta-section">Book a Call</button>
+      </div>
     </div>
     <div id="slideContainer"></div>
     <div class="present-controls">
