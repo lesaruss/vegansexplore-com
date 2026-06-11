@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - Vegans Explore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-text: #1a1a1a;
+      --ve-text-50: rgba(26,26,26,0.50);
+    }
+    html, body { height: 100%; }
+    body {
+      background: #fff;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Nav */
+    .nav {
+      padding: 24px 48px;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-dot {
+      width: 28px;
+      height: 28px;
+      background: var(--ve-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo-dot svg { width: 14px; height: 14px; }
+    .nav-logo-text {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ve-text);
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 48px;
+      text-align: center;
+    }
+    .inner {
+      max-width: 480px;
+    }
+    .error-num {
+      font-size: clamp(96px, 18vw, 160px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.06em;
+      color: var(--ve-green-light);
+      margin-bottom: -8px;
+      user-select: none;
+    }
+    .eyebrow {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--ve-green);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 20px;
+      height: 2px;
+      background: var(--ve-green);
+    }
+    h1 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      color: var(--ve-text);
+      margin-bottom: 16px;
+      line-height: 1.05;
+    }
+    .body-text {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--ve-text-50);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--ve-green);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover { background: var(--ve-green-dark); }
+    .btn-primary:focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--ve-text);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 14px 24px;
+      border-radius: 4px;
+      text-decoration: none;
+      border: 1.5px solid rgba(0,0,0,0.15);
+      transition: border-color 0.15s;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-secondary:hover { border-color: rgba(0,0,0,0.4); }
+    .btn-secondary:focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+
+    /* Footer */
+    .footer {
+      padding: 24px 48px;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--ve-text-50);
+    }
+
+    @media (max-width: 480px) {
+      .nav { padding: 20px 24px; }
+      .main { padding: 60px 24px; }
+      .footer { padding: 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
+      <span class="nav-logo-dot" aria-hidden="true">
+        <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 1C4.5 1 2 3.5 2 7s2 6 5 6 5-2.5 5-6-2.5-6-5-6z" fill="#fff" fill-opacity="0.9"/>
+          <path d="M5 7c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z" fill="#3A9B3E"/>
+        </svg>
+      </span>
+      <span class="nav-logo-text">Vegans Explore</span>
+    </a>
+  </nav>
+
+  <main class="main">
+    <div class="inner">
+      <div class="error-num" aria-hidden="true">404</div>
+      <p class="eyebrow">Trail's End</p>
+      <h1>Page Not Found</h1>
+      <p class="body-text">
+        This page doesn't exist or may have moved.<br>
+        The journey continues from the home page.
+      </p>
+      <div class="cta-row">
+        <a href="/" class="btn-primary">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M5 2L1 6l4 4M1 6h10" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to Home
+        </a>
+        <a href="/app" class="btn-secondary">Explore the App</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span>Vegans Explore: Plant-based travel, worldwide.</span>
+  </footer>
+
+</body>
+</html>
