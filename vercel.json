@@ -1,1 +1,15 @@
-{"cleanUrls":true,"trailingSlash":false,"outputDirectory":"."}
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "outputDirectory": ".",
+  "redirects": [
+    { "source": "/wp-admin", "destination": "/", "permanent": true },
+    { "source": "/wp-admin/(.*)", "destination": "/", "permanent": true },
+    { "source": "/wp-login.php", "destination": "/", "permanent": true },
+    { "source": "/wp-content/(.*)", "destination": "/", "permanent": true },
+    { "source": "/wp-includes/(.*)", "destination": "/", "permanent": true },
+    { "source": "/feed", "destination": "/", "permanent": true },
+    { "source": "/feed/(.*)", "destination": "/", "permanent": true },
+    { "source": "/xmlrpc.php", "destination": "/", "permanent": true }
+  ]
+}
