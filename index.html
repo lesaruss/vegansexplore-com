@@ -44,7 +44,7 @@
     .btn-hero-primary:hover { background: var(--ve-orange-dark); }
     .btn-hero-secondary { background: transparent; color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 24px; border-radius: 4px; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.3); cursor: pointer; transition: border-color 0.15s, color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
     .btn-hero-secondary:hover { border-color: rgba(255,255,255,0.7); color: #fff; }
-    .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.40); margin-top: 14px; }
+    .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.60); margin-top: 14px; }
     .countdown { display: flex; gap: 4px; align-items: flex-start; margin-top: 32px; margin-bottom: 8px; }
     .countdown-block { text-align: center; min-width: 60px; }
     .countdown-num { display: block; font-size: 40px; font-weight: 900; color: #fff; letter-spacing: -1px; line-height: 1; }
@@ -102,9 +102,9 @@
     .btn-cta { display: inline-flex; align-items: center; gap: 12px; background: var(--ve-orange); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 18px 48px; border-radius: 6px; border: none; cursor: pointer; transition: background 0.15s, transform 0.1s; }
     .btn-cta:hover { background: var(--ve-orange-dark); transform: translateY(-1px); }
     .btn-cta.loading { opacity: 0.7; cursor: not-allowed; }
-    .cta-deadline { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.30); margin-top: 14px; }
+    .cta-deadline { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.60); margin-top: 14px; }
     .cta-perks { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 36px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.08); }
-    .cta-perk { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.40); }
+    .cta-perk { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.60); }
     .cta-perk-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
     .panel-controls { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 999; display: none; align-items: center; gap: 12px; background: rgba(0,0,0,0.78); backdrop-filter: blur(10px); border-radius: 40px; padding: 10px 20px; }
     .panel-controls.visible { display: flex; }
@@ -138,8 +138,11 @@
   </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-nav" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;background:#fff;color:#1a1a1a;padding:8px 16px;font-weight:700;font-size:14px;">Skip to main content</a>
+  <a href="#main-content" class="skip-nav" onfocus="this.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:8px;width:auto;height:auto;overflow:visible;z-index:9999;background:#fff;color:#1a1a1a;padding:8px 16px;font-weight:700;font-size:14px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.3);'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;'">Skip to main content</a>
   <div class="page-frame">
 
+  <header role="banner">
   <nav class="ve-topnav" aria-label="Main navigation">
     <a class="ve-topnav-logo" href="#">
       <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE" style="height:36px;width:auto;display:block;filter:brightness(0) invert(1);">
@@ -209,7 +212,7 @@
           <p class="panel-body">Restaurant recommendations buried in Reddit threads. Events scattered across Facebook groups nobody checks. Vegan businesses closing because people didn't know they existed. The community is real - it just never had a home. That fragmentation is costing us all, city by city.</p>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260608_094246_bd14f17f-4efe-4ee3-bd59-0844b019fb33_min.webp" alt="" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260608_094246_bd14f17f-4efe-4ee3-bd59-0844b019fb33_min.webp" alt="Illustrated scene of a fragmented Vegan community spread across social media and scattered sources" />
         </div>
       </div>
     </div>
@@ -227,7 +230,7 @@
           </div>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_223855_01920473-02b6-4406-a5a8-c224aa06565a_min.webp" alt="" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_223855_01920473-02b6-4406-a5a8-c224aa06565a_min.webp" alt="Illustration of the VEGANS EXPLORE platform uniting directory, communities, events, recipes, travel, and guides in one place" />
         </div>
       </div>
     </div>
@@ -242,7 +245,7 @@
           <p class="panel-body">Before the platform, before the launch date - the people behind VEGANS EXPLORE were already doing this work. Mapping Vegan cities. Building relationships with business owners. Learning what the community actually needed. 2,800+ businesses cataloged across 63 cities before this platform existed. We didn't find this community. We've been part of it. The platform is the infrastructure it always deserved.</p>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_224104_3fb08286-61b9-4b41-af85-318df37e06df_min.webp" alt="" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_224104_3fb08286-61b9-4b41-af85-318df37e06df_min.webp" alt="Illustrated portrait representing years of Vegan community research across 63 cities and 2,800 businesses" />
         </div>
       </div>
     </div>
@@ -269,7 +272,7 @@
           </div>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_225220_0566b8a3-61de-4f59-8e2c-ab9fd081defb_min.webp" alt="" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_225220_0566b8a3-61de-4f59-8e2c-ab9fd081defb_min.webp" alt="Illustrated map showing nine Vegan community launch regions including South Florida, New York, Los Angeles, London and more" />
         </div>
       </div>
     </div>
@@ -284,7 +287,7 @@
           <p class="panel-body">Founding members get beta access right now - not July 13. You'll be inside as we build, testing new features, shaping what works, and making sure it's ready. You're not waiting for a launch. You're part of one. When July 13 hits and the doors open publicly, you'll already be home.</p>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_231809_7befbb91-4126-421c-955f-52f4367f2020_min.webp" alt="" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_231809_7befbb91-4126-421c-955f-52f4367f2020_min.webp" alt="Illustration of a Founding Member getting early beta access to the VEGANS EXPLORE platform before the July 13 launch" />
         </div>
       </div>
     </div>
