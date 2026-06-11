@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vegans Explore — The App</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #b8ddb9;
+    --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+    --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
+    --ve-text-75: rgba(26,26,26,0.75);
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: 'Montserrat', sans-serif; background: #0d2010; color: var(--ve-text); -webkit-font-smoothing: antialiased; }
+
+  /* NAV */
+  .ve-topnav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 70px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%);
+  }
+  .ve-topnav-logo { display: flex; align-items: center; text-decoration: none; }
+  .nav-exit {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.6); border: 1.5px solid rgba(255,255,255,0.25);
+    padding: 8px 18px; border-radius: 4px; text-decoration: none; transition: all 0.15s; cursor: pointer; background: none;
+  }
+  .nav-exit:hover { color: #fff; border-color: rgba(255,255,255,0.7); }
+
+  /* PANELS */
+  .guide-panel {
+    display: none; position: fixed; inset: 0;
+    padding: 100px 56px 80px;
+    flex-direction: column; justify-content: center;
+    background-size: cover; background-position: center top;
+    overflow: hidden;
+  }
+  .guide-panel.active { display: flex; }
+  .guide-panel::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.88) 28%, rgba(0,0,0,0.60) 52%, rgba(0,0,0,0.20) 68%, transparent 84%);
+  }
+  .guide-panel::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%);
+  }
+  .panel-inner { position: relative; z-index: 2; max-width: 640px; }
+  .panel-two-col { display: flex; gap: 48px; align-items: center; width: 100%; max-width: 1100px; position: relative; z-index: 2; }
+  .panel-content { flex: 1; min-width: 0; }
+  .panel-visual { flex-shrink: 0; width: 40%; display: flex; align-items: center; justify-content: center; }
+
+  /* TYPOGRAPHY - verbatim from site */
+  .panel-num {
+    font-size: clamp(64px, 8vw, 100px); font-weight: 900; line-height: 0.9;
+    letter-spacing: -0.05em; color: rgba(255,255,255,0.06); margin-bottom: 12px;
+  }
+  .panel-step-tag {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--ve-green); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+  }
+  .panel-step-tag::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+  .panel-title {
+    font-size: clamp(28px, 4vw, 52px); font-weight: 900; text-transform: uppercase;
+    letter-spacing: -0.02em; line-height: 1.0; color: #fff; margin-bottom: 20px;
+  }
+  .panel-title em { color: var(--ve-green); font-style: normal; display: block; }
+  .panel-body { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.75); line-height: 1.75; max-width: 520px; }
+  .step-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .step-tag {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 20px; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85);
+  }
+  .step-tag.green { background: var(--ve-green-light); color: var(--ve-green-dark); }
+
+  /* CTA PANEL */
+  .cta-panel::before {
+    background: linear-gradient(to right, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.92) 30%, rgba(0,0,0,0.65) 52%, rgba(0,0,0,0.20) 70%, transparent 86%);
+  }
+  .cta-price-row { display: flex; align-items: center; gap: 16px; margin: 28px 0; flex-wrap: wrap; }
+  .cta-price { font-size: 80px; font-weight: 900; letter-spacing: -0.05em; line-height: 1; color: #fff; }
+  .cta-price-detail strong { display: block; font-size: 13px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-orange); margin-bottom: 4px; }
+  .cta-price-detail span { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.4); }
+  .btn-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--ve-orange); color: #fff; font-size: 13px; font-weight: 800;
+    letter-spacing: 0.14em; text-transform: uppercase; padding: 18px 48px;
+    border-radius: 6px; border: none; cursor: pointer; transition: background 0.15s; text-decoration: none;
+  }
+  .btn-cta:hover { background: var(--ve-orange-dark); }
+  .cta-deadline { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.30); margin-top: 14px; }
+  .cta-perks { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 36px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .cta-perk { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.40); }
+  .cta-perk::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
+
+  /* iPhone mockup */
+  .iphone-shell {
+    background: #0a0a0a; border-radius: 38px; padding: 9px;
+    box-shadow: 0 0 0 1px #333, 0 24px 64px rgba(0,0,0,0.7);
+    width: 220px;
+  }
+  .iphone-screen { background: #fff; border-radius: 31px; overflow: hidden; }
+  .iphone-notch { background: #0a0a0a; height: 24px; display: flex; align-items: center; justify-content: center; }
+  .notch-pill { background: #222; width: 72px; height: 11px; border-radius: 7px; }
+  .app-home { background: linear-gradient(160deg, #0d3d20 0%, #1e7042 100%); padding: 12px 9px 14px; }
+  .app-time { font-size: 30px; font-weight: 900; color: #fff; text-align: center; letter-spacing: -0.03em; margin-bottom: 1px; }
+  .app-date { font-size: 9px; color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 14px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+  .app-brand { display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 14px; }
+  .brand-mark { width: 18px; height: 18px; background: var(--ve-green); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: #fff; }
+  .brand-name { font-size: 9px; font-weight: 900; color: #fff; letter-spacing: 0.12em; text-transform: uppercase; }
+  .icons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 9px; }
+  .app-icon { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .app-icon-box { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+  .app-icon-lbl { font-size: 7px; color: rgba(255,255,255,0.75); font-weight: 700; letter-spacing: 0.04em; text-align: center; }
+  /* flat icon SVG squares */
+  .icon-sq { width: 20px; height: 20px; border-radius: 3px; }
+  .dock { background: rgba(255,255,255,0.12); border-radius: 12px; padding: 7px 5px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .dock-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--ve-green); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+  .home-bar { background: #fff; height: 22px; display: flex; align-items: center; justify-content: center; }
+  .home-pill { width: 80px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+
+  /* PANEL CONTROLS - verbatim from site */
+  .panel-controls {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; align-items: center; gap: 12px;
+    background: rgba(0,0,0,0.78); backdrop-filter: blur(10px);
+    border-radius: 40px; padding: 10px 20px;
+  }
+  .panel-controls button {
+    background: none; border: none; color: #fff; cursor: pointer;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: background 0.15s;
+  }
+  .panel-controls button:hover { background: rgba(255,255,255,0.15); }
+  .panel-controls button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .panel-count { color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 600; min-width: 56px; text-align: center; letter-spacing: 0.04em; }
+  .panel-dots { display: flex; gap: 6px; align-items: center; }
+  .panel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: background 0.2s, transform 0.2s; cursor: pointer; }
+  .panel-dot.active { background: var(--ve-green); transform: scale(1.3); }
+
+  @media (max-width: 900px) {
+    .ve-topnav { padding: 0 24px; }
+    .guide-panel { padding: 80px 28px 80px; }
+    .panel-two-col { flex-direction: column; gap: 32px; }
+    .panel-visual { width: 100%; justify-content: flex-start; }
+    .iphone-shell { width: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="ve-topnav">
+  <a class="ve-topnav-logo" href="https://vegansexplore.com">
+    <img src="/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE" style="height:34px;width:auto;filter:brightness(0) invert(1);">
+  </a>
+  <button class="nav-exit" onclick="window.location='https://vegansexplore.com'">&#x2190; Back to Site</button>
+</nav>
+
+<!-- PANEL 1: HERO -->
+<div class="guide-panel active" id="panel-1" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260611_020359_05efc5c8-7e0d-40aa-8877-10999d2aad5c_min.webp)">
+  <div class="panel-inner">
+    <div class="panel-num">01</div>
+    <div class="panel-step-tag">The VEGANS EXPLORE App</div>
+    <h1 class="panel-title">The Vegan Life.<br><em>In Your Pocket.</em></h1>
+    <p class="panel-body">Your guide, your community, your events, and your rewards. All in one app, built around your city and personalized to exactly where you are on your Vegan journey.</p>
+    <div class="step-tags">
+      <span class="step-tag">iOS</span>
+      <span class="step-tag">Android</span>
+      <span class="step-tag">Launching July 13</span>
+      <span class="step-tag">Founders First</span>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 2: DIRECTORY -->
+<div class="guide-panel" id="panel-2" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_223855_01920473-02b6-4406-a5a8-c224aa06565a_min.webp)">
+  <div class="panel-two-col">
+    <div class="panel-content">
+      <div class="panel-num">02</div>
+      <div class="panel-step-tag">Feature 01 of 05</div>
+      <h2 class="panel-title">The Vegan<br>Directory.</h2>
+      <p class="panel-body">GPS-powered listings for every Vegan-friendly restaurant, store, event space, and business near you. Community-verified, always current. We started cataloging before the app. 2,800+ listings at launch.</p>
+      <div class="step-tags">
+        <span class="step-tag">Restaurants</span>
+        <span class="step-tag">Stores</span>
+        <span class="step-tag">Services</span>
+        <span class="step-tag">Near You</span>
+        <span class="step-tag">Offline Access</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 3: EVENTS -->
+<div class="guide-panel" id="panel-3" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_224104_3fb08286-61b9-4b41-af85-318df37e06df_min.webp)">
+  <div class="panel-two-col">
+    <div class="panel-content">
+      <div class="panel-num">03</div>
+      <div class="panel-step-tag">Feature 02 of 05</div>
+      <h2 class="panel-title">Events.<br>In Your City.</h2>
+      <p class="panel-body">Browse Vegan festivals, dinners, pop-ups, workshops, and meetups near you. Buy tickets, RSVP, and share with your community, all inside the app. Real-time alerts when something new drops.</p>
+      <div class="step-tags">
+        <span class="step-tag">Ticketed</span>
+        <span class="step-tag">Free Events</span>
+        <span class="step-tag">Alerts</span>
+        <span class="step-tag">Share</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 4: COMMUNITY -->
+<div class="guide-panel" id="panel-4" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_225220_0566b8a3-61de-4f59-8e2c-ab9fd081defb_min.webp)">
+  <div class="panel-two-col">
+    <div class="panel-content">
+      <div class="panel-num">04</div>
+      <div class="panel-step-tag">Feature 03 of 05</div>
+      <h2 class="panel-title">Community.<br>Not Just a Feed.</h2>
+      <p class="panel-body">Real conversations with Vegans in your city and beyond. City-specific forums, challenges, stories, and a direct line to people who actually share your values. Not an algorithm. A community.</p>
+      <div class="step-tags">
+        <span class="step-tag">By City</span>
+        <span class="step-tag">Forums</span>
+        <span class="step-tag">Challenges</span>
+        <span class="step-tag">Stories</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 5: REWARDS + GUIDES -->
+<div class="guide-panel" id="panel-5" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_231809_7befbb91-4126-421c-955f-52f4367f2020_min.webp)">
+  <div class="panel-two-col">
+    <div class="panel-content">
+      <div class="panel-num">05</div>
+      <div class="panel-step-tag">Feature 04 + 05 of 05</div>
+      <h2 class="panel-title">Rewards and<br>Guide Tracks.</h2>
+      <p class="panel-body">Earn points for every action you take. Complete lessons, attend events, help others grow. Redeem rewards inside the app or donate to Vegan businesses you love. Your guide track keeps you moving, at your pace, toward your goals.</p>
+      <div class="step-tags">
+        <span class="step-tag">Points</span>
+        <span class="step-tag">Redeemable</span>
+        <span class="step-tag">Personalized Path</span>
+        <span class="step-tag">Lessons</span>
+        <span class="step-tag">Recipes</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 6: PREVIEW + CTA -->
+<div class="guide-panel cta-panel" id="panel-6" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260611_013323_3685bbbb-9aa7-4cda-aa06-7eb222f82555.png)">
+  <div class="panel-two-col">
+    <div class="panel-content">
+      <div class="panel-num">06</div>
+      <div class="panel-step-tag">Get the App</div>
+      <h2 class="panel-title">Founders Get<br><em>Access First.</em></h2>
+      <p class="panel-body">Lock in your Founder membership before July 13 and be first in line when the app launches. Founders get beta access right now, not at launch.</p>
+      <div class="cta-price-row">
+        <span class="cta-price">$11</span>
+        <div class="cta-price-detail">
+          <strong>One-Time. Forever.</strong>
+          <span>Closes July 13, 2026</span>
+        </div>
+      </div>
+      <a href="https://vegansexplore.com/#join" class="btn-cta">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Become a Founder
+      </a>
+      <p class="cta-deadline">Founding price and badge gone permanently after July 13.</p>
+      <div class="cta-perks">
+        <div class="cta-perk">Beta App Access Now</div>
+        <div class="cta-perk">Founder Badge Forever</div>
+        <div class="cta-perk">iOS + Android</div>
+        <div class="cta-perk">$11 One-Time</div>
+      </div>
+    </div>
+    <div class="panel-visual">
+      <div class="iphone-shell">
+        <div class="iphone-screen">
+          <div class="iphone-notch"><div class="notch-pill"></div></div>
+          <div class="app-home">
+            <div class="app-time">9:41</div>
+            <div class="app-date">Sunday, July 13</div>
+            <div class="app-brand">
+              <div class="brand-mark">V</div>
+              <div class="brand-name">Vegans Explore</div>
+            </div>
+            <div class="icons-grid">
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#2d7a4a;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#1e5c36"/><path d="M4 10h12M10 4v12" stroke="#7dd9a0" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="10" r="3" fill="#7dd9a0"/></svg>
+                </div>
+                <div class="app-icon-lbl">Directory</div>
+              </div>
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#1e5c36;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#175c30"/><rect x="3" y="4" width="14" height="12" rx="2" fill="none" stroke="#7dd9a0" stroke-width="1.5"/><path d="M3 8h14" stroke="#7dd9a0" stroke-width="1.5"/><path d="M7 2v3M13 2v3" stroke="#7dd9a0" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="app-icon-lbl">Events</div>
+              </div>
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#3a8c5c;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#2d7a4a"/><circle cx="8" cy="8" r="3" fill="none" stroke="#7dd9a0" stroke-width="1.5"/><circle cx="13" cy="8" r="3" fill="none" stroke="#7dd9a0" stroke-width="1.5"/><path d="M2 16c0-2.5 2.5-4 6-4s6 1.5 6 4" stroke="#7dd9a0" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="app-icon-lbl">Community</div>
+              </div>
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#256840;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#1d6638"/><path d="M10 3l1.8 5.5H17l-4.5 3.3 1.7 5.2L10 14l-4.2 3 1.7-5.2L3 8.5h5.2z" fill="#7dd9a0"/></svg>
+                </div>
+                <div class="app-icon-lbl">Rewards</div>
+              </div>
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#175c30;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#0d4020"/><path d="M5 10h10M5 7h7M5 13h5" stroke="#7dd9a0" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="10" r="2.5" fill="none" stroke="#7dd9a0" stroke-width="1.5"/></svg>
+                </div>
+                <div class="app-icon-lbl">Guides</div>
+              </div>
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#2a7040;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#1e5c36"/><path d="M4 6h12M4 10h12M4 14h8" stroke="#7dd9a0" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="app-icon-lbl">Feed</div>
+              </div>
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#1d6638;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#175c30"/><path d="M3 6a2 2 0 012-2h10a2 2 0 012 2v6a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V6z" fill="none" stroke="#7dd9a0" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="app-icon-lbl">Chat</div>
+              </div>
+              <div class="app-icon">
+                <div class="app-icon-box" style="background:#337850;">
+                  <svg class="icon-sq" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="3" fill="#256840"/><circle cx="10" cy="10" r="4" fill="none" stroke="#7dd9a0" stroke-width="1.5"/><circle cx="10" cy="10" r="1.5" fill="#7dd9a0"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke="#7dd9a0" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="app-icon-lbl">Settings</div>
+              </div>
+            </div>
+            <div class="dock">
+              <div class="dock-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M8 2L2 7v7h4v-4h4v4h4V7z" fill="white"/></svg></div>
+              <div class="dock-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none"><circle cx="8" cy="8" r="5" stroke="white" stroke-width="1.5"/><path d="M11 11l2.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+              <div class="dock-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M2 4a1 1 0 011-1h10a1 1 0 011 1v6a1 1 0 01-1 1H8L4 14v-3H3a1 1 0 01-1-1V4z" fill="none" stroke="white" stroke-width="1.2"/></svg></div>
+              <div class="dock-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none"><circle cx="8" cy="6" r="3" stroke="white" stroke-width="1.5"/><path d="M2 14c0-3 2.5-5 6-5s6 2 6 5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            </div>
+          </div>
+          <div class="home-bar"><div class="home-pill"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL CONTROLS -->
+<div class="panel-controls" id="panelControls">
+  <button id="btnPrev" onclick="navigate(-1)" aria-label="Previous" disabled>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+  </button>
+  <div class="panel-dots" id="panelDots"></div>
+  <span class="panel-count" id="panelCount">1 / 6</span>
+  <button id="btnNext" onclick="navigate(1)" aria-label="Next">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+  </button>
+</div>
+
+<script>
+  const TOTAL = 6;
+  let current = 1;
+
+  function showPanel(n) {
+    document.querySelectorAll('.guide-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + n).classList.add('active');
+    document.getElementById('panelCount').textContent = n + ' / ' + TOTAL;
+    document.getElementById('btnPrev').disabled = n === 1;
+    document.getElementById('btnNext').disabled = n === TOTAL;
+    document.querySelectorAll('.panel-dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === n);
+    });
+    current = n;
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= TOTAL) showPanel(next);
+  }
+
+  // Build dots
+  const dotsEl = document.getElementById('panelDots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'panel-dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => showPanel(i);
+    dotsEl.appendChild(d);
+  }
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+  });
+
+  // Touch/swipe
+  let touchX = 0;
+  document.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+  document.addEventListener('touchend', e => {
+    const diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+  });
+</script>
+</body>
+</html>
