@@ -191,7 +191,7 @@
     .scroll-cta.outline:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
     .hero-meta {
       font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
-      text-transform: uppercase; color: rgba(255,255,255,0.42);
+      text-transform: uppercase; color: rgba(255,255,255,0.65);
     }
 
     /* ── IMAGE CONTAINERS: actual images ── */
@@ -247,7 +247,7 @@
     }
     .section-label {
       font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--ve-green);
+      text-transform: uppercase; color: var(--ve-green-dark);
       margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
     }
     .section-label::before { content: '■'; font-size: 8px; }
@@ -523,7 +523,7 @@
       min-height: 0;
     }
     .benefit-front-img .img-zone .iz-label {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.70);
     }
     .benefit-front-content {
       position: absolute;
@@ -553,7 +553,7 @@
       padding: 16px;
     }
     .benefit-graph-zone .iz-label {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.70);
       text-align: center;
     }
 
@@ -807,8 +807,8 @@
       border-bottom: 1px solid var(--ve-border);
       background: var(--ve-text);
     }
-    .impact-section .section-label { color: rgba(255,255,255,0.45); }
-    .impact-section .section-label::before { color: rgba(255,255,255,0.45); }
+    .impact-section .section-label { color: rgba(255,255,255,0.70); }
+    .impact-section .section-label::before { color: rgba(255,255,255,0.70); }
     .impact-section .section-headline { color: #fff; }
     .impact-section .section-headline em { color: var(--ve-green); }
     .impact-section .section-body { color: rgba(255,255,255,0.65); }
@@ -1274,12 +1274,15 @@
 <body>
 
   <!-- NAV -->
+  <a href="#main-content" class="skip-nav">Skip to main content</a>
+  <header role="banner">
   <nav>
     <div class="nav-logo">
       <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
     </div>
 </nav>
-
+  </header>
+  <main id="main-content">
   <!-- HERO: full-bleed background, action right, text overlay left -->
   <div class="hero">
     <picture>
@@ -1437,22 +1440,22 @@
         <div class="diff-grid" style="grid-template-columns:repeat(2,1fr);">
           <div class="diff-item">
             <div class="diff-num">5+</div>
-            <h4>Years of Market Knowledge</h4>
+            <h3>Years of Market Knowledge</h3>
             <p>Over five years of relationships, research, and two real sports arena activations.</p>
           </div>
           <div class="diff-item">
             <div class="diff-num">Full</div>
-            <h4>Media Production In-House</h4>
+            <h3>Media Production In-House</h3>
             <p>LESARUSS Media produces campaigns, content, and storytelling entirely in-house at scale.</p>
           </div>
           <div class="diff-item">
             <div class="diff-num">Live</div>
-            <h4>Platform Launches July 1</h4>
+            <h3>Platform Launches July 1</h3>
             <p>A global Vegan platform with directory, events, community, and app launches July 1. This partnership launches with it.</p>
           </div>
           <div class="diff-item">
             <div class="diff-num">10yr</div>
-            <h4>Network and Connections</h4>
+            <h3>Network and Connections</h3>
             <p>Over a decade of relationships within the plant-based, Vegan, and wellness community worldwide.</p>
           </div>
         </div>
@@ -2182,22 +2185,22 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;" class="animate fade-up delay-1">
       <div class="step" style="padding:28px 32px;">
         <div class="step-num">01</div>
-        <h4>Concept Confirmed</h4>
+        <h3>Concept Confirmed</h3>
         <p>The activation model and the September 27 date are defined. The concept is clean and the opportunity is clear. Vegans Explore is ready to move the moment the Dolphins are.</p>
       </div>
       <div class="step" style="padding:28px 32px;">
         <div class="step-num">02</div>
-        <h4>Partnership Team Introduction</h4>
+        <h3>Partnership Team Introduction</h3>
         <p>We connect with the partnership team to align on vendor approvals, sponsorship structure, event space, and co-branding. Any nonprofit contribution paperwork is handled here.</p>
       </div>
       <div class="step" style="padding:28px 32px;">
         <div class="step-num">03</div>
-        <h4>F&amp;B Partner Coordination</h4>
+        <h3>F&amp;B Partner Coordination</h3>
         <p>30-minute session with the F&amp;B partner. We confirm sampling structure and menu coordination. Low lift: they tell us what they have, we build the activation around it.</p>
       </div>
       <div class="step" style="padding:28px 32px;">
         <div class="step-num">04</div>
-        <h4>Lock It and Launch</h4>
+        <h3>Lock It and Launch</h3>
         <p>Agreement confirmed. Campaign activates immediately. Three months of promotion, vendor coordination, and influencer ambassador outreach - all building to September 27, opening day against the Kansas City Chiefs.</p>
       </div>
     </div>
@@ -2215,8 +2218,11 @@
           <h3>Access the<br><em>Partnership Details</em></h3>
           <p>Enter your work email to unlock the full partnership structure, financial terms, and next steps. Shared only with the Vegans Explore team.</p>
           <form class="gate-form" id="gateForm" onsubmit="return false;">
+            <label for="gateEmail" class="sr-only">Work email address</label>
             <input class="gate-input" type="email" id="gateEmail" placeholder="Work email address" required autocomplete="email">
+            <label for="gateName" class="sr-only">Your name (optional)</label>
             <input class="gate-input" type="text" id="gateName" placeholder="Your name (optional)" autocomplete="name">
+            <label for="gateCompany" class="sr-only">Organization (optional)</label>
             <input class="gate-input" type="text" id="gateCompany" placeholder="Organization (optional)" autocomplete="organization">
             <button class="gate-submit" id="gateSubmit" type="submit">Unlock the Full Proposal</button>
             <div class="gate-error" id="gateError">Something went wrong. Please try again.</div>
