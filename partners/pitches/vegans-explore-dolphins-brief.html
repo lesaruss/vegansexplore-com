@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vegans Explore x Miami Dolphins - Partnership Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ve-green: #1a6b2f;
+    --ve-green-dark: #0f4a1f;
+    --ve-green-light: #e8f5e9;
+    --ve-teal: #00a878;
+    --bg: #f5f7f5;
+    --surface: #ffffff;
+    --surface2: #fafbfa;
+    --border: rgba(0,0,0,0.09);
+    --text: #1a1a1a;
+    --text-75: rgba(26,26,26,0.78);
+    --text-50: rgba(26,26,26,0.55);
+    --text-30: rgba(26,26,26,0.35);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Montserrat", -apple-system, sans-serif; background: var(--bg); color: var(--text); font-weight: 400; line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+
+  header.ve-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    height: 64px; background: #ffffff;
+    border-bottom: 3px solid var(--ve-green);
+    display: flex; align-items: center; padding: 0 28px;
+    gap: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .ve-logo { height: 32px; width: auto; display: block; }
+  .ve-header-divider { width: 1px; height: 32px; background: var(--border); }
+  .ve-header-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ve-green); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 100px 28px 80px; }
+  h1 { font-size: clamp(22px, 3.5vw, 38px); font-weight: 900; line-height: 1.05; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 18px; }
+  h2 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.22em; color: var(--ve-green); margin: 40px 0 16px; }
+  p { font-size: 15px; font-weight: 400; color: var(--text-75); line-height: 1.75; margin-bottom: 14px; }
+  p strong { color: var(--text); font-weight: 700; }
+
+  .meta-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .meta-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.22em; color: var(--text-30); }
+  .meta-value { font-size: 13px; font-weight: 600; color: var(--text); }
+
+  .audience-banner { background: rgba(26,107,47,0.07); border: 1px solid rgba(26,107,47,0.22); border-radius: 8px; padding: 16px 20px; margin-bottom: 32px; }
+  .audience-banner p { font-size: 13px; color: var(--text-75); margin: 0; }
+  .audience-banner p strong { color: var(--ve-green-dark); }
+
+  .outcome-banner { background: rgba(26,107,47,0.07); border: 1px solid rgba(26,107,47,0.30); border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; }
+  .outcome-banner .outcome-label { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.22em; color: var(--ve-green); margin-bottom: 6px; }
+  .outcome-banner p { font-size: 13px; color: var(--text-75); margin: 0; }
+
+  .section-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+  .section-block h3 { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text); margin-bottom: 14px; }
+
+  .decision-item { padding: 18px 0; border-bottom: 1px solid var(--border); }
+  .decision-item:last-child { border-bottom: none; }
+  .decision-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .decision-detail { font-size: 13px; color: var(--text-75); line-height: 1.65; }
+
+  .action-item { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .action-item:last-child { border-bottom: none; }
+  .action-num { font-size: 20px; font-weight: 900; color: var(--ve-green); min-width: 32px; line-height: 1; }
+  .action-body .action-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .action-body .action-detail { font-size: 13px; color: var(--text-75); line-height: 1.6; }
+  .action-body .action-sub { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-50); margin-top: 6px; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+  .stat-cell { background: var(--surface); padding: 20px 16px; text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 900; color: var(--ve-green); letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+  .stat-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-50); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .col-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; }
+  .col-card-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ve-green); margin-bottom: 12px; }
+  .col-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .col-card li { font-size: 13px; color: var(--text-75); line-height: 1.6; display: flex; gap: 10px; }
+  .col-card li::before { content: '→'; color: var(--ve-green); flex-shrink: 0; font-weight: 700; }
+
+  .asset-row { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center; }
+  .asset-row:last-child { border-bottom: none; }
+  .asset-num { font-size: 22px; font-weight: 900; color: var(--ve-green); min-width: 60px; line-height: 1; }
+  .asset-body .asset-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .asset-body .asset-detail { font-size: 13px; color: var(--text-75); line-height: 1.55; }
+
+  .tag { display: inline-block; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; padding: 4px 10px; border-radius: 4px; margin: 2px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-50); }
+  .tag.green { background: rgba(26,107,47,0.10); border-color: rgba(26,107,47,0.28); color: var(--ve-green-dark); }
+
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 28px 60px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 24px; }
+  footer .footer-left { font-size: 12px; font-weight: 700; color: var(--text); }
+  footer .footer-right { font-size: 12px; color: var(--text-50); }
+  footer a { color: var(--ve-green); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="ve-header" role="banner">
+  <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" class="ve-logo">
+  <div class="ve-header-divider" aria-hidden="true"></div>
+  <span class="ve-header-title">Partnership Brief — Miami Dolphins</span>
+</header>
+
+<main>
+  <h1>Vegans Explore x Miami Dolphins<br>Partnership Brief</h1>
+
+  <div class="meta-row">
+    <div class="meta-item">
+      <span class="meta-label">Date</span>
+      <span class="meta-value">June 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Event Date</span>
+      <span class="meta-value">September 27, 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Venue</span>
+      <span class="meta-value">Hard Rock Stadium — The Overlook</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Platform Launch</span>
+      <span class="meta-value">July 13, 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Produced By</span>
+      <span class="meta-value">Sean A. Russell — Vegans Explore</span>
+    </div>
+  </div>
+
+  <div class="audience-banner">
+    <p><strong>Purpose:</strong> This brief outlines the proposed partnership between Vegans Explore and the Miami Dolphins for a plant-based Opening Day activation on September 27, 2026. It covers the activation model, what each side brings, the vendor ticket structure, track record, and the path toward a long-term year-round collaboration.</p>
+  </div>
+
+  <!-- THE GOAL -->
+  <h2>The Goal</h2>
+  <div class="section-block">
+    <div class="decision-item">
+      <div class="decision-title">One game. One year of data. Then more.</div>
+      <div class="decision-detail">We are not coming in for a single night. The goal is to build a relationship — have a strong first outing, demonstrate what this new era of Vegans Explore can deliver, and then regroup. Gather the data. Sit down together. Figure out what a year-round collaboration looks like. This activation is how that conversation starts.</div>
+    </div>
+    <div class="decision-item">
+      <div class="decision-title">Why Opening Day against the Chiefs</div>
+      <div class="decision-detail">The first home game of the season — against Kansas City — is the highest-profile moment available. It maximizes earned media potential, audience size, and vendor and sponsor interest. A successful activation here becomes the proof of concept for everything that follows.</div>
+    </div>
+    <div class="decision-item">
+      <div class="decision-title">Platform launches July 13 — this partnership launches with it</div>
+      <div class="decision-detail">Vegans Explore goes live globally on July 13, 2026 — South Florida, Tampa, Orlando, Atlanta, New York, Philadelphia, DMV, and London. A confirmed Dolphins partnership is announced at launch, amplifying reach from day one.</div>
+    </div>
+  </div>
+
+  <!-- WHAT WE ARE ASKING FOR -->
+  <h2>What We Are Asking For</h2>
+  <div class="section-block">
+    <div class="action-item">
+      <div class="action-num">01</div>
+      <div class="action-body">
+        <div class="action-title">Event space for the plant-based game night activation</div>
+        <div class="action-detail">The Overlook or equivalent private space at Hard Rock Stadium for September 27, 2026 — Opening Day against the Kansas City Chiefs.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">02</div>
+      <div class="action-body">
+        <div class="action-title">F&B partner introduction — 30 minutes</div>
+        <div class="action-detail">One meeting with the Dolphins' food and beverage partner to coordinate plant-based sampling. The menu is built from existing sourced inventory — no new purchasing required.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">03</div>
+      <div class="action-body">
+        <div class="action-title">Co-branding rights</div>
+        <div class="action-detail">Permission to promote this as a Miami Dolphins partnership event across all Vegans Explore channels, press releases, and community materials.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">04</div>
+      <div class="action-body">
+        <div class="action-title">Partnership team introduction</div>
+        <div class="action-detail">Introduction to the relevant Dolphins partnership contact to finalize the activation structure, vendor approvals, and logistics.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT THE DOLPHINS RECEIVE -->
+  <h2>What the Dolphins Receive</h2>
+  <div class="section-block">
+    <div class="action-item">
+      <div class="action-num">→</div>
+      <div class="action-body">
+        <div class="action-title">F&B consultation at zero cost</div>
+        <div class="action-detail">Plant-based menu built from existing inventory. Real purchase data from a new consumer segment delivered in a full report within 48 hours post-event.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">→</div>
+      <div class="action-body">
+        <div class="action-title">Three-month promotional campaign</div>
+        <div class="action-detail">Full-stack media push: co-branded press release to 1,000+ media contacts, weekly social content, 25–35 influencer ambassadors with affiliate links, in-person community lead-up events, and paid social amplification across 8 city markets.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">→</div>
+      <div class="action-body">
+        <div class="action-title">National earned media</div>
+        <div class="action-detail">"First NFL plant-based game night" is a national story in food, wellness, and sports media. The Dolphins are at the center of it with no additional marketing spend.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">→</div>
+      <div class="action-body">
+        <div class="action-title">Permanent content archive</div>
+        <div class="action-detail">The activation is documented and archived on vegansexplore.com. The Dolphins stay in the VE content cycle as the team that said yes first, promoting the partnership in perpetuity.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REACH -->
+  <h2>Platform Reach</h2>
+  <div class="stat-row">
+    <div class="stat-cell">
+      <div class="stat-num">20K+</div>
+      <div class="stat-lbl">Organic Social<br>Reach Game Day</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">200+</div>
+      <div class="stat-lbl">Influencer<br>Partners</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">8</div>
+      <div class="stat-lbl">City Markets<br>Activated</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">100K+</div>
+      <div class="stat-lbl">Cumulative<br>Podcast Reach</div>
+    </div>
+  </div>
+
+  <!-- VENDOR TICKET MODEL -->
+  <h2>Vendor Ticket Model</h2>
+  <div class="section-block">
+    <p>Each vendor receives a ticket allotment as part of their participation fee. This drives group sales, fills the room with their audience, and adds immediate value to the deal. Sponsorship collaboration is built on top — opening the door for co-branded activations and shared promotional reach. An agreed-upon revenue structure ensures both sides benefit.</p>
+    <div class="two-col" style="margin-top:16px;margin-bottom:0;">
+      <div class="col-card">
+        <div class="col-card-label">Vendor Receives</div>
+        <ul>
+          <li>Ticket allotment included in participation fee</li>
+          <li>VE-designed bag inserts and branded materials</li>
+          <li>Audience exposure via VE + Dolphins co-promotion</li>
+          <li>Passport station presence for engagement</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <div class="col-card-label">Sponsorship Layer</div>
+        <ul>
+          <li>Co-branded activation with both VE and Dolphins</li>
+          <li>Social promotion across all VE channels</li>
+          <li>Revenue split on agreed percentage</li>
+          <li>Access to post-event market research report</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACK RECORD -->
+  <h2>Track Record</h2>
+  <div class="two-col">
+    <div class="col-card">
+      <div class="col-card-label">Miami HEAT / Kaseya Center — 2021</div>
+      <p style="margin:0;font-size:13px;color:var(--text-75);line-height:1.65;">South Florida's first Vegan sports arena event. We built a full campaign, sold out our ticket allotment, packed the arena with plant-based fans, and got skybox access. That night led to Full Bloom becoming a permanent Kaseya Center vendor.</p>
+    </div>
+    <div class="col-card">
+      <div class="col-card-label">Miami Dolphins / Hard Rock Stadium — 2021</div>
+      <p style="margin:0;font-size:13px;color:var(--text-75);line-height:1.65;">Our first Dolphins game day. Ran a focused pilot, sold our ticket allotment, and learned exactly how Hard Rock Stadium operates. We put down a $250 deposit that is still on file. We never walked away.</p>
+    </div>
+  </div>
+
+  <!-- WHAT WE BRING NOW -->
+  <h2>What We Bring Now (2025 vs. 2021)</h2>
+  <div class="section-block">
+    <div class="asset-row">
+      <div class="asset-num">5+ yrs</div>
+      <div class="asset-body">
+        <div class="asset-title">Market Knowledge</div>
+        <div class="asset-detail">Over five years of relationships, research, and two real sports arena activations in South Florida.</div>
+      </div>
+    </div>
+    <div class="asset-row">
+      <div class="asset-num">Full</div>
+      <div class="asset-body">
+        <div class="asset-title">Media Production In-House</div>
+        <div class="asset-detail">LESARUSS Media produces campaigns, content, and storytelling entirely in-house at scale.</div>
+      </div>
+    </div>
+    <div class="asset-row">
+      <div class="asset-num">Live</div>
+      <div class="asset-body">
+        <div class="asset-title">Platform Launches July 13</div>
+        <div class="asset-detail">A global Vegan platform with directory, events, community, and app — launching July 13 in 8 cities worldwide. This partnership launches with it.</div>
+      </div>
+    </div>
+    <div class="asset-row">
+      <div class="asset-num">10 yr</div>
+      <div class="asset-body">
+        <div class="asset-title">Network and Connections</div>
+        <div class="asset-detail">Over a decade of relationships within the plant-based, Vegan, and wellness community worldwide.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NONPROFIT NOTE -->
+  <h2>On Nonprofit Structure</h2>
+  <div class="outcome-banner">
+    <div class="outcome-label">501(c)(3) In Process</div>
+    <p>Vegans Explore is in the process of securing 501(c)(3) nonprofit status, expected by September 27. Any Dolphins organization contribution can be structured as a tax-deductible charitable donation. Established nonprofit partners are available to process on our behalf if still pending at time of agreement — providing a clean, low-friction approval path.</p>
+  </div>
+
+  <!-- CONTACT -->
+  <h2>Contact</h2>
+  <div class="section-block">
+    <div class="decision-item" style="border:none;padding-top:0;">
+      <div class="decision-title">Sean A. Russell — Founder, Vegans Explore</div>
+      <div class="decision-detail"><a href="mailto:contact@lesaruss.com" style="color:var(--ve-green);font-weight:700;">contact@lesaruss.com</a> &nbsp;·&nbsp; vegansexplore.com</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-left">Vegans Explore — Partnership Brief</div>
+  <div class="footer-right">Confidential · June 2026 · <a href="mailto:contact@lesaruss.com">contact@lesaruss.com</a></div>
+</footer>
+
+</body>
+</html>
