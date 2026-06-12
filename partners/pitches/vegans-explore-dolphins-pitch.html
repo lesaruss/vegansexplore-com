@@ -92,8 +92,8 @@
     .print-trigger { display: none; }
     .ve-unlocked .print-trigger { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green); cursor: pointer; background: none; border: 1px solid var(--ve-green); border-radius: 6px; padding: 6px 14px; text-decoration: none; }
     .present-controls .print-trigger { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); }
-    /* Post-gate sections: hidden until unlocked */
-    .post-gate { display: none; }
+    /* Gate removed - all content visible */
+    .post-gate { display: block; }
     .ve-unlocked .post-gate { display: block; }
     /* Nav tag centered */
     body.plan-mode .nav-tag,
@@ -1271,7 +1271,7 @@
     }
 </style>
 </head>
-<body>
+<body class="ve-unlocked">
 
   <!-- NAV -->
   <a href="#main-content" class="skip-nav">Skip to main content</a>
@@ -2207,32 +2207,12 @@
 
   </div>
 
-  <!-- GATE (standalone slide) -->
+  <!-- PARTNERSHIP DETAILS -->
   <div class="section" id="cta-gate">
-    <div class="ask-gate-wrapper animate fade-up">
+    <div class="animate fade-up">
+      <div class="section-label">The Details</div>
+      <h2 class="section-headline" style="margin-bottom:32px;">What We Are<br>Asking For.<br><em>What You Receive.</em></h2>
 
-      <!-- OVERLAY FORM -->
-      <div class="ask-gate-overlay" id="askGateOverlay">
-        <div class="ask-gate-box">
-          <div class="ask-gate-eyebrow">Unlock the Full Proposal</div>
-          <h3>Access the<br><em>Partnership Details</em></h3>
-          <p>Enter your work email to unlock the full partnership structure, financial terms, and next steps. Shared only with the Vegans Explore team.</p>
-          <form class="gate-form" id="gateForm" onsubmit="return false;">
-            <label for="gateEmail" class="sr-only">Work email address</label>
-            <input class="gate-input" type="email" id="gateEmail" placeholder="Work email address" required autocomplete="email">
-            <label for="gateName" class="sr-only">Your name (optional)</label>
-            <input class="gate-input" type="text" id="gateName" placeholder="Your name (optional)" autocomplete="name">
-            <label for="gateCompany" class="sr-only">Organization (optional)</label>
-            <input class="gate-input" type="text" id="gateCompany" placeholder="Organization (optional)" autocomplete="organization">
-            <button class="gate-submit" id="gateSubmit" type="submit">Unlock the Full Proposal</button>
-            <div class="gate-error" id="gateError">Something went wrong. Please try again.</div>
-            <div class="gate-privacy">Your information is shared only with the Vegans Explore team and will not be used for marketing without your consent.</div>
-          </form>
-        </div>
-      </div>
-
-      <!-- BLURRED CONTENT -->
-      <div class="ask-gate-blur" id="askGateContent">
         <div class="ask-grid" style="grid-template-columns:repeat(2,1fr);margin-top:20px;">
           <div class="ask-item" style="background:var(--ve-green);border-color:var(--ve-green);border-width:2px;">
             <h4 style="color:rgba(255,255,255,0.75);">What We Are Asking For</h4>
@@ -2261,14 +2241,14 @@
             <p>Vegans Explore and the Miami Dolphins bring sponsorship opportunities to market together. Both sides bring deliverables. Both sides bring audience. We split revenue on an agreed percentage: consistent, transparent, fair. National brands get something rare: a curated plant-based audience inside an NFL venue, with a platform that keeps reaching them year-round. Sponsorship tiers are custom and built around what each side can genuinely deliver.</p>
           </div>
         </div>
-      </div>
+      
       <div style="margin-top:32px;text-align:center;">
         <button class="print-trigger" onclick="window.print()">&#128438;&nbsp; Print / Save as PDF</button>
       </div>
     </div>
   </div>
 
-  <!-- CTA -->
+    <!-- CTA -->
   <div class="cta-section animate fade-up">
     <h2>Opening Day.<br><em>September 27.</em><br>Let's Build It.</h2>
     <p>The plant-based community has been waiting for a moment like this. The Dolphins have the stage. Vegans Explore has the audience. Everything built on September 27 lives forever, on our platform, in our content, and in the relationship between the Dolphins and one of the fastest-growing consumer communities in the country.</p>
@@ -2340,7 +2320,7 @@
       const content = document.getElementById('askGateContent');
       if (overlay) overlay.classList.add('hidden');
       if (content) content.classList.add('unlocked');
-      document.body.classList.add('ve-unlocked');
+      document.body.classList.add('ve-unlocked'); // gate removed, always unlocked
       // Add post-gate nav buttons
       const nav = document.getElementById('presentHeaderNav');
       if (nav) {
