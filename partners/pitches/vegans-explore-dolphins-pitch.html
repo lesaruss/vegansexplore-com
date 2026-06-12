@@ -441,6 +441,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      overflow: hidden;
     }
     .flip-front { background: var(--ve-text); border: 1px solid rgba(255,255,255,0.06); }
     .flip-back { background: var(--ve-green); transform: rotateY(180deg); }
@@ -760,7 +761,9 @@
       .roi-vs { grid-template-columns: 1fr; }
       .roi-panel { grid-template-columns: 1fr; }
       .diff-grid { grid-template-columns: 1fr !important; }
-      .flip-back .flip-back-body { font-size: 14px; }
+      .flip-back .flip-back-body { font-size: 12px; line-height: 1.5; }
+      .flip-back.benefit-back { padding: 18px; }
+      .benefit-graph-zone { padding: 10px; margin-top: 8px; }
       .benefit-flip-grid { grid-template-columns: 1fr; }
       .benefit-flip-grid-row2 { grid-template-columns: 1fr; }
       .benefit-flip-grid-row2 .flip-card:first-child { grid-column: 1; }
@@ -1422,7 +1425,7 @@
                 <div class="flip-stat-lbl">Deposit On File</div>
               </div>
               <div>
-                <div class="flip-stat-num">5 Years</div>
+                <div class="flip-stat-num">10 Years</div>
                 <div class="flip-stat-lbl">Of Growth Since Then</div>
               </div>
             </div>
@@ -1439,7 +1442,7 @@
         <div class="section-label">Why Now Is Different</div>
         <h2 class="section-headline">We Are Not<br>the Same<br><em>Organization.</em></h2>
         <p class="section-body">
-          In 2021, we showed up as a grassroots Vegan community group. Today, we are a full platform with a media production company, a technology stack, a live directory, and a network of US cities plus London launching July 13. The asset we bring to this partnership is categorically different from what we had five years ago.
+          In 2021, we showed up as a community-driven activation. Today, we are a full platform with a media production company, a technology stack, a live directory, and a network of US cities plus London launching July 13. The asset we bring to this partnership is categorically different from what we had five years ago.
         </p>
         <div class="diff-grid" style="grid-template-columns:repeat(2,1fr);">
           <div class="diff-item">
@@ -2131,7 +2134,7 @@
           </div>
           <div class="ask-item primary">
             <h4>On the Nonprofit Structure</h4>
-            <p>Vegans Explore is in the process of securing 501(c)(3) nonprofit status, expected to be in place by September 27. Any contribution from the Miami Dolphins organization can be structured as a tax-deductible charitable donation. If our 501(c)(3) is still pending at time of agreement, we have established nonprofit partners ready to process on our behalf, providing a clean, low-friction approval path for your organization.</p>
+            <p>Vegans Explore is in the process of securing 501(c)(3) nonprofit status, with filing expected complete before the event date. Any contribution from the Miami Dolphins organization can be structured as a tax-deductible charitable donation. If our 501(c)(3) is still pending at time of agreement, we have established nonprofit partners ready to process on our behalf, providing a clean, low-friction approval path for your organization.</p>
           </div>
           <div class="ask-item primary">
             <h4>On Collaborative Sponsorships</h4>
