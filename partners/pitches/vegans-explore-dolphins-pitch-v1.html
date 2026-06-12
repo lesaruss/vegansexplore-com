@@ -47,18 +47,20 @@
 
     /* ── NAV ── */
     nav {
-      position: sticky;
+      position: absolute;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 100;
-      background: #fff;
-      border-bottom: 1px solid var(--ve-border);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.60) 0%, transparent 100%);
+      border-bottom: none;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       padding: 0 var(--pad);
-      height: 64px;
+      height: 70px;
     }
-    .nav-logo img { height: 30px; }
+    .nav-logo img { height: 32px; filter: brightness(0) invert(1); }
     .nav-links { display: none; gap: 28px; list-style: none; }
     body.plan-mode .nav-links,
     body.present-mode .nav-links { display: flex; }
@@ -945,19 +947,6 @@
     <div class="nav-logo">
       <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
     </div>
-    <ul class="nav-links">
-      <li><a href="#opportunity">The Opportunity</a></li>
-      <li><a href="#track-record">Track Record</a></li>
-      <li><a href="#proposal">The Proposal</a></li>
-      <li><a href="#fb">F&amp;B Strategy</a></li>
-      <li><a href="#ask">The Ask</a></li>
-      <li><a href="#next-steps">Next Steps</a></li>
-    </ul>
-    <span class="nav-tag">Confidential: Miami Dolphins | V2</span>
-      <button class="present-toggle" id="presentBtn" onclick="enterPresentMode()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        Present
-      </button>
 </nav>
 
   <!-- HERO: full-bleed background, action right, text overlay left -->
@@ -975,15 +964,14 @@
       <div class="hero-btns">
         <button class="scroll-cta" onclick="startGuidedTour()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          Guided Tour
+          Take the Guided Tour
         </button>
-        <button class="scroll-cta outline" onclick="enterFullPlan()">See the Full Plan</button>
       </div>
       <p class="hero-meta">Prepared for Miami Dolphins Leadership | Vegans Explore x LESARUSS | Confidential | May 2026</p>
     </div>
   </div>
 
-  <div id="plan-content">
+  <div id="plan-content" style="display:none;">
 
   <!-- OPPORTUNITY: image LEFT, text + stats below -->
   <div class="section" id="opportunity">
