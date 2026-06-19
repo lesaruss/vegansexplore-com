@@ -581,6 +581,16 @@
       font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
       color: var(--ve-text-50); white-space: nowrap; min-width: 44px; text-align: center;
     }
+    #presentModeLabel {
+      font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+    }
+    body.present-surface #presentModeLabel {
+      background: var(--ve-green-light); color: var(--ve-green);
+    }
+    body.present-deep #presentModeLabel {
+      background: var(--ve-text); color: rgba(255,255,255,0.75);
+    }
 
     #slideContainer { min-height: calc(100vh - 56px); }
     .present-slide { display: none; }
@@ -639,12 +649,13 @@
         A platform built for the Vegan community is launching July 13. Every city needs one person to lead it. Tonight we are explaining exactly what that role looks like, what it pays, and how to step into it.
       </p>
       <div class="hero-btns">
-        <button class="scroll-cta" onclick="startGuidedTour()">
+        <button class="scroll-cta" onclick="enterPresentMode('deep')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          Start the Tour
+          Deep Dive
         </button>
-        <button class="scroll-cta outline" onclick="enterFullPlan()">View All Slides</button>
+        <button class="scroll-cta outline" onclick="enterPresentMode('surface')">Surface Level</button>
       </div>
+      <p class="hero-meta" style="margin-top:8px;font-size:9px;color:rgba(255,255,255,0.35);">Deep Dive: full detail &nbsp;|&nbsp; Surface Level: 2-min skim</p>
       <p class="hero-meta">VEGANS EXPLORE Community Manager Recruitment Webinar | June 2026</p>
     </div>
   </div>
@@ -1164,6 +1175,7 @@
     <button id="bottomHamburger" onclick="toggleSlideMenu()" aria-label="Jump to slide">
       <span></span><span></span><span></span>
     </button>
+    <span id="presentModeLabel"></span>
     <button id="prevBtn" class="bottom-btn" onclick="prevSlide()" disabled>Prev</button>
     <span id="slideCount">1 / 1</span>
     <button id="nextBtn" class="bottom-btn" onclick="nextSlide()">Next</button>
@@ -1236,27 +1248,28 @@
     let currentSlide = 0;
     let slides = [];
 
-    const SLIDE_SECTIONS = ['#hero', '#opportunity', '#platform', '#why-now', '#the-role', '#your-clients', '#earning-model', '#platform-depth', '#first-90', '#what-you-gain', '#three-paths', '#cm-signup'];
-    const SLIDE_LABELS = ['Cover', 'Opportunity', 'Platform', 'Why Now', 'The Role', 'Clients', 'Earnings', 'The Engine', '90 Days', 'What You Gain', 'Paths', 'Apply'];
+    // Deep Dive: all 12 slides, full detail
+    const DEEP_SECTIONS = ['#hero','#opportunity','#platform','#why-now','#the-role','#your-clients','#earning-model','#platform-depth','#first-90','#what-you-gain','#three-paths','#cm-signup'];
+    const DEEP_LABELS   = ['Cover','Opportunity','Platform','Why Now','The Role','Clients','Model','The Engine','90 Days','What You Gain','Paths','Apply'];
 
-    function enterFullPlan() {
-      document.getElementById('plan-content').style.display = 'block';
-      document.getElementById('opportunity').scrollIntoView({ behavior: 'smooth' });
-    }
+    // Surface Level: 7 slides, stripped to essentials
+    const SURFACE_SECTIONS = ['#hero','#opportunity','#why-now','#the-role','#earning-model','#three-paths','#cm-signup'];
+    const SURFACE_LABELS   = ['Cover','The Need','Why Now','The Role','The Model','Your Path','Apply'];
 
-    function startGuidedTour() {
-      document.getElementById('plan-content').style.display = 'block';
-      enterPresentMode();
-      goToSlide(1);
-    }
+    // Elements stripped in surface mode
+    const SURFACE_STRIP = ['.section-body','.path-desc','.earnings-note','.form-left-body','.form-checklist','.iceberg-items'];
 
-    function enterPresentMode() {
+    function enterPresentMode(mode) {
+      mode = mode || 'deep';
+      const sections = mode === 'surface' ? SURFACE_SECTIONS : DEEP_SECTIONS;
+      const labels   = mode === 'surface' ? SURFACE_LABELS   : DEEP_LABELS;
+
       document.getElementById('plan-content').style.display = 'block';
       const container = document.getElementById('slideContainer');
       container.innerHTML = '';
       slides = [];
 
-      SLIDE_SECTIONS.forEach((sel, i) => {
+      sections.forEach((sel, i) => {
         const sec = document.querySelector(sel);
         if (!sec) return;
         const slide = document.createElement('div');
@@ -1265,12 +1278,19 @@
         const inner = document.createElement('div');
         inner.className = 'slide-inner';
         const clone = sec.cloneNode(true);
+
+        // Surface: remove verbose content
+        if (mode === 'surface') {
+          SURFACE_STRIP.forEach(selector => {
+            clone.querySelectorAll(selector).forEach(el => el.remove());
+          });
+        }
+
         clone.querySelectorAll('.animate').forEach(el => {
           el.classList.add('visible');
           el.style.opacity = '1';
           el.style.transform = 'none';
         });
-        // Re-wire form in clone
         clone.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => e.preventDefault()));
         inner.appendChild(clone);
         slide.appendChild(inner);
@@ -1278,10 +1298,16 @@
         slides.push(slide);
       });
 
-      // Build section jump menu
+      // Mode label + body class
+      const modeLabel = document.getElementById('presentModeLabel');
+      if (modeLabel) modeLabel.textContent = mode === 'surface' ? 'Surface Level' : 'Deep Dive';
+      document.body.classList.remove('present-surface','present-deep');
+      document.body.classList.add('present-mode', mode === 'surface' ? 'present-surface' : 'present-deep');
+
+      // Jump menu
       const menu = document.getElementById('slideJumpMenu');
       menu.innerHTML = '';
-      SLIDE_LABELS.forEach((label, i) => {
+      labels.forEach((label, i) => {
         const btn = document.createElement('button');
         btn.textContent = label;
         btn.onclick = () => { goToSlide(i); closeSlideMenu(); };
@@ -1290,11 +1316,10 @@
 
       currentSlide = 0;
       updateControls();
-      document.body.classList.add('present-mode');
     }
 
     function exitPresentMode() {
-      document.body.classList.remove('present-mode');
+      document.body.classList.remove('present-mode','present-surface','present-deep');
       closeSlideMenu();
     }
 
