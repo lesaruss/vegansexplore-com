@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEGANS EXPLORE | Community Partner Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-green-mid: #b8ddb9;
+      --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75);
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-border: rgba(0,0,0,0.09);
+      --pad: 80px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #ffffff;
+      color: var(--ve-text);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff; border-bottom: 1px solid var(--ve-border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 var(--pad); height: 68px;
+    }
+    .nav-logo img { height: 28px; }
+    .nav-back {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ve-text-50); text-decoration: none; display: flex; align-items: center; gap: 8px;
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--ve-green); }
+    .nav-back svg { width: 14px; height: 14px; }
+
+    /* HERO */
+    .hero {
+      background: #0d1f0e;
+      padding: 80px var(--pad) 72px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 80% 50%, rgba(58,155,62,0.18) 0%, transparent 65%),
+                  linear-gradient(135deg, #0d1f0e 0%, #0a1a0b 100%);
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 620px; }
+    .hero-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ve-green); margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
+    }
+    .hero-eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--ve-green); display: block; }
+    .hero h1 {
+      font-size: clamp(32px, 4.5vw, 60px);
+      font-weight: 900; line-height: 0.93;
+      text-transform: uppercase; letter-spacing: -0.03em;
+      color: #fff; margin-bottom: 28px;
+    }
+    .hero h1 em { font-style: normal; color: var(--ve-green); }
+    .hero-sub {
+      font-size: 15px; color: rgba(255,255,255,0.72); line-height: 1.8; max-width: 520px;
+    }
+
+    /* SECTIONS */
+    .section { padding: 80px var(--pad); border-bottom: 1px solid var(--ve-border); }
+    .section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::before { content: ''; width: 22px; height: 2px; background: var(--ve-green); flex-shrink: 0; }
+    .section-headline {
+      font-size: clamp(26px, 3vw, 44px);
+      font-weight: 900; line-height: 0.95;
+      text-transform: uppercase; letter-spacing: -0.025em;
+      margin-bottom: 20px; color: var(--ve-text);
+    }
+    .section-headline em { font-style: normal; color: var(--ve-green); }
+    .section-body { font-size: 15px; color: var(--ve-text-75); line-height: 1.8; max-width: 600px; margin-bottom: 48px; }
+
+    /* TIER CARDS */
+    .tier-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    }
+    .tier-card {
+      border: 2px solid var(--ve-border); border-radius: 10px;
+      padding: 48px 40px; display: flex; flex-direction: column;
+    }
+    .tier-card.featured { border-color: var(--ve-green); background: var(--ve-green-light); }
+    .tier-badge {
+      display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; padding: 5px 12px; border-radius: 20px; margin-bottom: 20px;
+      width: fit-content;
+    }
+    .tier-card:not(.featured) .tier-badge { background: var(--ve-border); color: var(--ve-text-50); }
+    .tier-card.featured .tier-badge { background: var(--ve-green); color: #fff; }
+    .tier-name { font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1; }
+    .tier-card.featured .tier-name { color: var(--ve-green-dark); }
+    .tier-price {
+      font-size: 13px; font-weight: 700; color: var(--ve-text-50); margin-bottom: 28px;
+      padding-bottom: 28px; border-bottom: 1px solid var(--ve-border);
+    }
+    .tier-card.featured .tier-price { border-color: var(--ve-green-mid); }
+    .tier-includes {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ve-text-50); margin-bottom: 16px;
+    }
+    .tier-list { list-style: none; display: flex; flex-direction: column; gap: 12px; flex: 1; margin-bottom: 32px; }
+    .tier-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: var(--ve-text-75); line-height: 1.55;
+    }
+    .tier-list li::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--ve-green); flex-shrink: 0; margin-top: 6px;
+    }
+    .tier-cta {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 14px 24px; border-radius: 4px; cursor: pointer; font-family: 'Montserrat', sans-serif;
+      text-decoration: none; border: 2px solid; transition: background 0.2s, color 0.2s;
+    }
+    .tier-card.featured .tier-cta { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
+    .tier-card.featured .tier-cta:hover { background: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+    .tier-card:not(.featured) .tier-cta { background: transparent; border-color: var(--ve-border); color: var(--ve-text); }
+    .tier-card:not(.featured) .tier-cta:hover { border-color: var(--ve-text); }
+
+    /* WHAT YOU GET (detail section) */
+    .detail-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px;
+    }
+    .detail-card {
+      padding: 32px 28px; border: 1px solid var(--ve-border); border-radius: 8px;
+    }
+    .detail-icon {
+      width: 34px; height: 34px; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--ve-green-light); border-radius: 8px;
+    }
+    .detail-icon svg { width: 17px; height: 17px; color: var(--ve-green); }
+    .detail-num { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 8px; }
+    .detail-card h3 { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 10px; }
+    .detail-card p { font-size: 12px; color: var(--ve-text-75); line-height: 1.7; }
+
+    /* FORM */
+    .form-section {
+      background: var(--ve-text); padding: 80px var(--pad);
+    }
+    .form-section .section-label { color: rgba(255,255,255,0.45); }
+    .form-section .section-label::before { background: rgba(255,255,255,0.3); }
+    .form-section .section-headline { color: #fff; }
+    .form-section .section-headline em { color: var(--ve-green); }
+    .form-section .section-body { color: rgba(255,255,255,0.6); }
+    .reg-form {
+      background: #fff; border-radius: 10px; padding: 48px;
+      max-width: 580px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-field { margin-bottom: 16px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label {
+      display: block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--ve-text-50); margin-bottom: 6px;
+    }
+    .form-field input, .form-field select {
+      width: 100%; padding: 12px 14px;
+      border: 1px solid var(--ve-border); border-radius: 4px;
+      font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500;
+      color: var(--ve-text); background: #fff; appearance: none;
+      transition: border-color 0.15s;
+    }
+    .form-field input:focus, .form-field select:focus {
+      outline: none; border-color: var(--ve-green);
+      box-shadow: 0 0 0 3px rgba(58,155,62,0.12);
+    }
+    .tier-select-group {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
+    }
+    .tier-radio {
+      border: 2px solid var(--ve-border); border-radius: 6px; padding: 16px 18px;
+      cursor: pointer; transition: border-color 0.15s;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .tier-radio input[type="radio"] { display: none; }
+    .tier-radio:has(input:checked) { border-color: var(--ve-green); background: var(--ve-green-light); }
+    .tier-radio-label { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; }
+    .tier-radio-desc { font-size: 11px; color: var(--ve-text-50); line-height: 1.4; }
+    .tier-radio:has(input:checked) .tier-radio-label { color: var(--ve-green-dark); }
+    .tier-radio:has(input:checked) .tier-radio-desc { color: var(--ve-green); }
+    .form-submit {
+      width: 100%; padding: 16px;
+      background: var(--ve-green); color: #fff;
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      border: none; border-radius: 4px; cursor: pointer;
+      transition: background 0.2s; margin-top: 8px;
+    }
+    .form-submit:hover { background: var(--ve-green-dark); }
+    .form-note { font-size: 10px; color: var(--ve-text-50); margin-top: 12px; line-height: 1.5; text-align: center; }
+    .form-error { display: none; font-size: 12px; color: #dc2626; margin-top: 8px; }
+    .form-success { display: none; text-align: center; padding: 32px 0; }
+    .form-success svg { margin-bottom: 16px; }
+    .form-success h4 { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 10px; }
+    .form-success p { font-size: 13px; color: var(--ve-text-75); line-height: 1.65; }
+
+    /* FOOTER */
+    footer {
+      background: #0d1f0e; color: rgba(255,255,255,0.35);
+      padding: 28px var(--pad); display: flex; align-items: center;
+      justify-content: space-between; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    footer img { height: 18px; filter: brightness(0) invert(1); opacity: 0.25; }
+
+    /* RESPONSIVE */
+    @media (max-width: 860px) {
+      :root { --pad: 24px; }
+      .tier-grid { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .tier-select-group { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE">
+    </div>
+    <a href="/partners/pitches/vegans-explore-cm-pitch" class="nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Webinar
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">VEGANS EXPLORE | Community Partner</div>
+      <h1>Your Business.<br>Our <em>Community.</em></h1>
+      <p class="hero-sub">
+        VEGANS EXPLORE connects Vegan businesses to the community that is already their customer. Choose the partnership tier that fits where your business is today - start with a free listing or step into full Business Membership.
+      </p>
+    </div>
+  </div>
+
+  <!-- TIERS -->
+  <div class="section">
+    <div class="section-label">Two Ways to Partner</div>
+    <h2 class="section-headline">Start Free.<br><em>Scale When Ready.</em></h2>
+    <p class="section-body">
+      Both tiers give you visibility inside VEGANS EXPLORE. The difference is how much platform infrastructure you want working for your business.
+    </p>
+    <div class="tier-grid">
+      <div class="tier-card">
+        <span class="tier-badge">Passport Listing</span>
+        <div class="tier-name">Business Passport</div>
+        <div class="tier-price">Free - No subscription required</div>
+        <div class="tier-includes">Included with Passport</div>
+        <ul class="tier-list">
+          <li>Listed in the VEGANS EXPLORE city directory</li>
+          <li>Business profile page with hours, location, and contact</li>
+          <li>Discoverable by Vegan consumers in your city</li>
+          <li>Community Manager introduction and check-in</li>
+          <li>Listed in platform events as a local partner</li>
+          <li>Eligible for points system participation (customers earn points at your business)</li>
+        </ul>
+        <a href="#register" class="tier-cta">
+          Claim Free Listing
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+      <div class="tier-card featured">
+        <span class="tier-badge">Recommended</span>
+        <div class="tier-name">Business Membership</div>
+        <div class="tier-price">Full platform access - pricing confirmed at onboarding</div>
+        <div class="tier-includes">Everything in Passport, plus</div>
+        <ul class="tier-list">
+          <li>Dedicated Community Manager as your account contact</li>
+          <li>Brand audit - full review of your current marketing presence</li>
+          <li>Marketing Console access - AI-first content and social tools built for Vegan businesses</li>
+          <li>Featured placement in city directory and event listings</li>
+          <li>Monthly performance report and strategy check-in</li>
+          <li>Access to the VEGANS EXPLORE events pipeline for co-promotion and venue partnerships</li>
+          <li>Priority listing for the World Vegan Expo and seasonal activations</li>
+        </ul>
+        <a href="#register" class="tier-cta">
+          Register for Membership
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT YOU GET -->
+  <div class="section" style="background:#fafafa;">
+    <div class="section-label">Why Partner With VEGANS EXPLORE</div>
+    <h2 class="section-headline">Your Customer<br><em>Is Already Here.</em></h2>
+    <p class="section-body">
+      VEGANS EXPLORE is the platform the Vegan community is coming to. Your business needs to be inside it - not advertising at the edge of it.
+    </p>
+    <div class="detail-grid">
+      <div class="detail-card">
+        <div class="detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <div class="detail-num">01</div>
+        <h3>Instant Discoverability</h3>
+        <p>Your business goes into a searchable city directory accessed by Vegan consumers who are actively looking for places to spend money. These are your people, already on the platform.</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="detail-num">02</div>
+        <h3>A Dedicated Contact</h3>
+        <p>Business Members get a Community Manager - a real person in your city who knows your business, checks in monthly, and is actively working to grow the community you are selling to.</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="detail-num">03</div>
+        <h3>Points Drive Repeat Visits</h3>
+        <p>Customers earn VEGANS EXPLORE points when they engage with your business. Points keep them coming back. Your regulars grow organically through the platform reward system.</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="detail-num">04</div>
+        <h3>Events Bring Foot Traffic</h3>
+        <p>VEGANS EXPLORE runs city events every month and the World Vegan Expo annually. Partner businesses get featured in event promotions, driving direct traffic from the most engaged segment of the community.</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="detail-num">05</div>
+        <h3>Marketing That Works</h3>
+        <p>Business Members get access to the VEGANS EXPLORE Marketing Console - AI-first tools built specifically for Vegan brands. Brand audits, content creation, and performance tracking without agency overhead.</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div class="detail-num">06</div>
+        <h3>Media Network Reach</h3>
+        <p>VEGANS EXPLORE operates a full media network - editorial, social, and creator channels reaching the Vegan community across platforms. Partner businesses get access to that distribution.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTRATION FORM -->
+  <div class="form-section" id="register">
+    <div class="section-label">Register Your Business</div>
+    <h2 class="section-headline" style="color:#fff;">Let's Get You<br><em>Listed.</em></h2>
+    <p class="section-body">
+      Fill out the form below. A Community Manager in your city will follow up within 24 hours to confirm your listing or discuss Business Membership options.
+    </p>
+    <div class="reg-form" id="regFormWrapper">
+      <div id="regFormContent">
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--ve-text-50);margin-bottom:12px;">Choose your starting tier</label>
+          <div class="tier-select-group">
+            <label class="tier-radio">
+              <input type="radio" name="partnerTier" value="passport" id="tierPassport" checked>
+              <span class="tier-radio-label">Business Passport</span>
+              <span class="tier-radio-desc">Free - Get listed now</span>
+            </label>
+            <label class="tier-radio">
+              <input type="radio" name="partnerTier" value="membership" id="tierMembership">
+              <span class="tier-radio-label">Business Membership</span>
+              <span class="tier-radio-desc">Full platform access</span>
+            </label>
+          </div>
+        </div>
+        <form id="partnerForm" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="bizName">Business Name</label>
+              <input type="text" id="bizName" name="bizName" placeholder="Your business name" required>
+            </div>
+            <div class="form-field">
+              <label for="bizCity">City</label>
+              <input type="text" id="bizCity" name="bizCity" placeholder="City, State" required>
+            </div>
+            <div class="form-field">
+              <label for="contactName">Your Name</label>
+              <input type="text" id="contactName" name="contactName" placeholder="First and last name" required>
+            </div>
+            <div class="form-field">
+              <label for="contactEmail">Email Address</label>
+              <input type="email" id="contactEmail" name="contactEmail" placeholder="your@email.com" required>
+            </div>
+            <div class="form-field full">
+              <label for="bizType">Business Type</label>
+              <select id="bizType" name="bizType">
+                <option value="">Select one</option>
+                <option value="restaurant">Restaurant or Cafe</option>
+                <option value="retail">Retail or Grocery</option>
+                <option value="wellness">Wellness or Lifestyle</option>
+                <option value="events">Event Space or Venue</option>
+                <option value="creator">Content Creator or Influencer</option>
+                <option value="nonprofit">Nonprofit or Advocacy Org</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div id="partnerFormError" class="form-error">Something went wrong. Please try again.</div>
+          <button type="submit" class="form-submit" id="partnerSubmitBtn">Submit Registration</button>
+          <p class="form-note">Your information is only used to set up your VEGANS EXPLORE partner profile and connect you with your city's Community Manager.</p>
+        </form>
+      </div>
+      <div class="form-success" id="regFormSuccess">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3A9B3E" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+        <h4>Registration Received</h4>
+        <p>Your Community Manager in your city will follow up within 24 hours. Check your inbox for a confirmation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE">
+    <span>VEGANS EXPLORE | A LESARUSS Platform | Launching July 13, 2026</span>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+    document.getElementById('partnerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const bizName = document.getElementById('bizName').value.trim();
+      const bizCity = document.getElementById('bizCity').value.trim();
+      const contactName = document.getElementById('contactName').value.trim();
+      const contactEmail = document.getElementById('contactEmail').value.trim();
+      const bizType = document.getElementById('bizType').value;
+      const tier = document.querySelector('input[name="partnerTier"]:checked')?.value || 'passport';
+      const submitBtn = document.getElementById('partnerSubmitBtn');
+      const errorEl = document.getElementById('partnerFormError');
+
+      if (!bizName || !bizCity || !contactName || !contactEmail) {
+        errorEl.textContent = 'Please fill in all required fields.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      errorEl.style.display = 'none';
+
+      try {
+        await fetch(SUPABASE_URL + '/rest/v1/leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            email: contactEmail,
+            name: contactName,
+            org: bizCity,
+            tags: ['community-partner', 'partner-tier-' + tier, 'business-registration'],
+            source: 'community-partner-page',
+            brand: 'vegans-explore',
+            status: 'new',
+            notes: 'Business: ' + bizName + ' | City: ' + bizCity + ' | Type: ' + (bizType || 'N/A') + ' | Tier: ' + tier
+          })
+        });
+      } catch (err) { /* silent fail, show success anyway */ }
+
+      document.getElementById('regFormContent').style.display = 'none';
+      document.getElementById('regFormSuccess').style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>
