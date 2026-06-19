@@ -598,6 +598,33 @@
     .slide-inner { }
     .present-slide-count { display: none; }
 
+    /* ── CM APPLICATION MODAL ── */
+    #cmModal {
+      position: fixed; inset: 0; z-index: 9800;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    #cmModal.open { display: flex; }
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.62);
+    }
+    .modal-box {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 540px;
+      max-height: 92vh; overflow-y: auto;
+      border-radius: 10px;
+    }
+    .modal-close-btn {
+      position: absolute; top: 16px; right: 16px;
+      background: #fff; border: 1px solid var(--ve-border);
+      border-radius: 50%; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 2; transition: border-color 0.15s;
+    }
+    .modal-close-btn:hover { border-color: var(--ve-text); }
+    .modal-close-btn svg { width: 14px; height: 14px; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 960px) {
       :root { --pad: 24px; }
@@ -689,6 +716,57 @@
         <div class="stat-number">200+</div>
         <div class="stat-label">Vegan Businesses Listed</div>
         <div class="stat-desc">Already in the directory. All of them are potential clients for a Community Manager.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: WHAT WE ARE -->
+  <div class="section" id="what-we-do">
+    <div class="section-label">What We Are</div>
+    <h2 class="section-headline">Media Network.<br>Events. Business<br><em>Support. Platform.</em></h2>
+    <p class="section-body">
+      VEGANS EXPLORE is not a single app or directory. It is the full operating infrastructure for the global Vegan community. Four pillars running now, unified under one platform launching July 13.
+    </p>
+    <div class="card-grid animate fade-up delay-1">
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <div class="card-num">Pillar 01</div>
+        <h3>Media Network</h3>
+        <p>Editorial content, social channels, and creator partnerships reaching the Vegan community at scale. We produce and distribute content across every platform the community already uses.</p>
+      </div>
+      <div class="card featured">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3" stroke-linecap="round"/></svg>
+        </div>
+        <div class="card-num">Launching July 13</div>
+        <h3>The Official Platform</h3>
+        <p>A gamified, city-based mobile app. Directory, events, points system, leaderboards, and learning paths. The app the Vegan community has been waiting for - live on July 13, 2026.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="card-num">Pillar 02</div>
+        <h3>Events</h3>
+        <p>City-by-city activations, the World Vegan Expo, and monthly community gatherings. Events are a core revenue driver and the heartbeat of every local VEGANS EXPLORE market.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="card-num">Pillar 03</div>
+        <h3>Business Support</h3>
+        <p>Marketing console, directory listings, brand audits, and community partnerships for Vegan businesses. We connect businesses to the community that is already their customer.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="card-num">Pillar 04</div>
+        <h3>Nonprofit Marketing</h3>
+        <p>Specialized fundraising and awareness services for animal rights organizations, food justice groups, and Vegan advocacy nonprofits. We help mission-driven orgs raise more and reach more.</p>
       </div>
     </div>
   </div>
@@ -1036,7 +1114,7 @@
         <div class="path-tag">Primary Path</div>
         <div class="path-title">Community Manager</div>
         <p class="path-desc">You want to own your market. You are ready to build a client roster, run audits, manage platform presence for Vegan businesses in your city, and grow the local community. Founding CM applications open tonight.</p>
-        <button class="path-cta" onclick="document.getElementById('cm-signup').scrollIntoView({behavior:'smooth'})">
+        <button class="path-cta" onclick="openCMModal()">
           Apply Tonight
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
@@ -1053,8 +1131,8 @@
       <div class="path-card">
         <div class="path-tag">Business Path</div>
         <div class="path-title">Community Partner</div>
-        <p class="path-desc">You own or operate a Vegan business. Get listed in the VEGANS EXPLORE directory, get connected to a dedicated Community Manager in your city, and start reaching the community that is already your customer. Business registration is open now.</p>
-        <a class="path-cta" href="https://vegansexplore.com" target="_blank" rel="noopener">
+        <p class="path-desc">You own or operate a Vegan business. Get listed in the VEGANS EXPLORE directory, connect with a Community Manager in your city, and choose the partnership tier that fits where you are - from a free Passport listing to a full Business Membership.</p>
+        <a class="path-cta" href="/partners/community-partner" target="_blank" rel="noopener">
           Register Your Business
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
@@ -1062,92 +1140,17 @@
     </div>
   </div>
 
-  <!-- SECTION 11: CM SIGNUP FORM -->
+  <!-- SECTION 11: CM SIGNUP (scroll-mode backup) -->
   <div class="form-section" id="cm-signup">
-    <div class="section-label">Apply Tonight</div>
-    <h2 class="section-headline" style="color:#fff;max-width:600px;">Choose Your <em>Path.</em></h2>
-    <div class="form-wrapper animate fade-up delay-1">
-      <div>
-        <p class="form-left-body">
-          If you are ready to step into the Community Manager role, fill out the form now. First applicant in each city gets priority review. We will confirm your territory and begin onboarding before July 13.
-        </p>
-        <ul class="form-checklist">
-          <li>No deposit to apply. You lock in your territory on acceptance.</li>
-          <li>One Community Manager per city. First qualified applicant gets priority.</li>
-          <li>Onboarding begins immediately after acceptance.</li>
-          <li>Founding CM status: locked in at platform launch on July 13.</li>
-          <li>Full platform access, client pipeline, and operations support from day one.</li>
-        </ul>
-      </div>
-      <div>
-        <div class="cm-form" id="cmFormWrapper">
-          <div id="cmFormContent">
-            <div class="cm-form-title">Community Manager Application</div>
-            <div class="cm-form-sub">This takes 2 minutes. We will follow up within 24 hours.</div>
-            <form id="cmForm" novalidate>
-              <div class="form-field">
-                <label for="cmName">Full Name</label>
-                <input type="text" id="cmName" name="cmName" placeholder="Your name" required>
-              </div>
-              <div class="form-field">
-                <label for="cmEmail">Email Address</label>
-                <input type="email" id="cmEmail" name="cmEmail" placeholder="your@email.com" required>
-              </div>
-              <div class="form-field">
-                <label for="cmCity">Your City</label>
-                <input type="text" id="cmCity" name="cmCity" placeholder="City, State" required>
-              </div>
-              <div class="form-field">
-                <label for="cmRole">Current Role or Background</label>
-                <input type="text" id="cmRole" name="cmRole" placeholder="e.g. Marketing, Events, Health Coaching">
-              </div>
-              <div class="form-field">
-                <label for="cmConnection">Your connection to the Vegan community</label>
-                <select id="cmConnection" name="cmConnection">
-                  <option value="">Select one</option>
-                  <option value="personal">I am Vegan personally</option>
-                  <option value="business">I own or work for a Vegan business</option>
-                  <option value="community">I am active in the local wellness community</option>
-                  <option value="marketing">I work in marketing or community management</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div id="cmFormError" class="form-error">Something went wrong. Please try again.</div>
-              <button type="submit" class="form-submit" id="cmSubmitBtn">Submit Application</button>
-              <p class="form-note">Your information is kept private and is only used for the CM application process.</p>
-            </form>
-          </div>
-          <div class="form-success" id="cmFormSuccess">
-            <div class="form-success-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3A9B3E" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
-            </div>
-            <h4>Application Received</h4>
-            <p>We will review your application and follow up within 24 hours. Keep an eye on your inbox.</p>
-          </div>
-        </div>
-
-        <div class="other-paths-row">
-          <div class="other-path-tile">
-            <div class="other-path-label">Not Ready to Lead?</div>
-            <div class="other-path-title">Become a Member</div>
-            <p class="other-path-desc">Join VEGANS EXPLORE as a Founding Member. $11 gets you into the community from launch day. No subscription required to start.</p>
-            <a href="https://vegansexplore.com" target="_blank" rel="noopener" class="other-path-btn">
-              Join the Community
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-          </div>
-          <div class="other-path-tile">
-            <div class="other-path-label">Own a Vegan Business?</div>
-            <div class="other-path-title">Partner With Us</div>
-            <p class="other-path-desc">List your business in the directory. Get connected to a CM in your city. Reach the community that is already your customer.</p>
-            <a href="https://vegansexplore.com" target="_blank" rel="noopener" class="other-path-btn">
-              Register Your Business
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="section-label">Founding CM Applications Open Tonight</div>
+    <h2 class="section-headline" style="color:#fff;max-width:600px;">Claim Your <em>City.</em></h2>
+    <p style="font-size:16px;color:rgba(255,255,255,0.65);line-height:1.85;max-width:560px;margin:0 0 40px;">
+      First applicant in each city gets priority review. Fill out the form now and we will confirm your territory and begin onboarding before July 13.
+    </p>
+    <button class="scroll-cta" onclick="openCMModal()">
+      Apply Tonight
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
   </div>
 
   </div><!-- /#plan-content -->
@@ -1184,6 +1187,61 @@
 
   <!-- SECTION JUMP POPOVER -->
   <div id="slideJumpMenu"></div>
+
+  <!-- CM APPLICATION MODAL -->
+  <div id="cmModal" role="dialog" aria-modal="true" aria-labelledby="cmModalTitle">
+    <div class="modal-backdrop" onclick="closeCMModal()"></div>
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeCMModal()" aria-label="Close application form">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="cm-form" id="cmFormWrapper">
+        <div id="cmFormContent">
+          <div class="cm-form-title" id="cmModalTitle">Community Manager Application</div>
+          <div class="cm-form-sub">This takes 2 minutes. We will follow up within 24 hours.</div>
+          <form id="cmForm" novalidate>
+            <div class="form-field">
+              <label for="cmName">Full Name</label>
+              <input type="text" id="cmName" name="cmName" placeholder="Your name" required>
+            </div>
+            <div class="form-field">
+              <label for="cmEmail">Email Address</label>
+              <input type="email" id="cmEmail" name="cmEmail" placeholder="your@email.com" required>
+            </div>
+            <div class="form-field">
+              <label for="cmCity">Your City</label>
+              <input type="text" id="cmCity" name="cmCity" placeholder="City, State" required>
+            </div>
+            <div class="form-field">
+              <label for="cmRole">Current Role or Background</label>
+              <input type="text" id="cmRole" name="cmRole" placeholder="e.g. Marketing, Events, Health Coaching">
+            </div>
+            <div class="form-field">
+              <label for="cmConnection">Your connection to the Vegan community</label>
+              <select id="cmConnection" name="cmConnection">
+                <option value="">Select one</option>
+                <option value="personal">I am Vegan personally</option>
+                <option value="business">I own or work for a Vegan business</option>
+                <option value="community">I am active in the local wellness community</option>
+                <option value="marketing">I work in marketing or community management</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div id="cmFormError" class="form-error">Something went wrong. Please try again.</div>
+            <button type="submit" class="form-submit" id="cmSubmitBtn">Submit Application</button>
+            <p class="form-note">Your information is kept private and is only used for the CM application process.</p>
+          </form>
+        </div>
+        <div class="form-success" id="cmFormSuccess">
+          <div class="form-success-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3A9B3E" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+          </div>
+          <h4>Application Received</h4>
+          <p>We will review your application and follow up within 24 hours. Keep an eye on your inbox.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     // ── SCROLL ANIMATIONS ──
@@ -1244,17 +1302,27 @@
       document.getElementById('cmFormSuccess').style.display = 'block';
     });
 
+    // ── CM APPLICATION MODAL ──
+    function openCMModal() {
+      document.getElementById('cmModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeCMModal() {
+      document.getElementById('cmModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
     // ── GUIDED TOUR / PRESENT MODE ──
     let currentSlide = 0;
     let slides = [];
 
-    // Deep Dive: all 12 slides, full detail
-    const DEEP_SECTIONS = ['#hero','#opportunity','#platform','#why-now','#the-role','#your-clients','#earning-model','#platform-depth','#first-90','#what-you-gain','#three-paths','#cm-signup'];
-    const DEEP_LABELS   = ['Cover','Opportunity','Platform','Why Now','The Role','Clients','Model','The Engine','90 Days','What You Gain','Paths','Apply'];
+    // Deep Dive: 12 slides including What We Are; Three Paths is last
+    const DEEP_SECTIONS = ['#hero','#what-we-do','#opportunity','#platform','#why-now','#the-role','#your-clients','#earning-model','#platform-depth','#first-90','#what-you-gain','#three-paths'];
+    const DEEP_LABELS   = ['Cover','What We Are','Opportunity','Platform','Why Now','The Role','Clients','Model','The Engine','90 Days','What You Gain','Paths'];
 
-    // Surface Level: 7 slides, stripped to essentials
-    const SURFACE_SECTIONS = ['#hero','#opportunity','#why-now','#the-role','#earning-model','#three-paths','#cm-signup'];
-    const SURFACE_LABELS   = ['Cover','The Need','Why Now','The Role','The Model','Your Path','Apply'];
+    // Surface Level: 6 slides; Three Paths is slide 6 and last
+    const SURFACE_SECTIONS = ['#hero','#opportunity','#why-now','#the-role','#earning-model','#three-paths'];
+    const SURFACE_LABELS   = ['Cover','The Need','Why Now','The Role','The Model','Your Path'];
 
     // Elements stripped in surface mode
     const SURFACE_STRIP = ['.section-body','.path-desc','.earnings-note','.form-left-body','.form-checklist','.iceberg-items'];
@@ -1361,10 +1429,14 @@
     });
 
     document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('cmModal').classList.contains('open')) { closeCMModal(); return; }
+        if (document.body.classList.contains('present-mode')) { closeSlideMenu(); exitPresentMode(); }
+        return;
+      }
       if (!document.body.classList.contains('present-mode')) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
-      if (e.key === 'Escape') { closeSlideMenu(); exitPresentMode(); }
     });
   </script>
 
