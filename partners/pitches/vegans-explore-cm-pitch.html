@@ -506,34 +506,82 @@
     #presentOverlay {
       position: fixed; inset: 0; background: #fff;
       z-index: 9000; display: none; overflow-y: auto;
+      padding-bottom: 80px;
     }
     body.present-mode #presentOverlay { display: block; }
+
+    /* Logo-only header in present mode */
     .present-header {
       position: sticky; top: 0; z-index: 9100;
       background: #fff; border-bottom: 1px solid var(--ve-border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px; height: 56px; gap: 16px;
+      display: flex; align-items: center;
+      padding: 0 24px; height: 56px;
     }
     .present-logo img { height: 24px; }
-    #presentHeaderNav { display: flex; gap: 6px; flex: 1; overflow-x: auto; padding: 0 16px; }
-    #presentHeaderNav button {
-      flex-shrink: 0; background: none; border: 1px solid transparent;
-      border-radius: 4px; cursor: pointer; font-family: 'Montserrat', sans-serif;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--ve-text-50); padding: 5px 10px; white-space: nowrap; transition: all 0.15s;
+
+    /* Section jump nav - hidden, populated but not shown in header */
+    #presentHeaderNav { display: none; }
+
+    /* ── BOTTOM CONTROL BAR ── */
+    #presentBottomBar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 9200; display: none;
+      background: #fff; border-top: 1px solid var(--ve-border);
+      height: 64px;
+      align-items: center; justify-content: center;
+      gap: 12px;
     }
-    #presentHeaderNav button.active { border-color: var(--ve-green); color: var(--ve-green); background: var(--ve-green-light); }
-    .present-controls { display: flex; align-items: center; gap: 10px; }
-    .present-controls button {
+    body.present-mode #presentBottomBar { display: flex; }
+
+    /* Hamburger - opens section jump menu */
+    #bottomHamburger {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px; background: none; border: 1px solid var(--ve-border);
+      border-radius: 6px; cursor: pointer; padding: 8px 10px;
+    }
+    #bottomHamburger span { display: block; width: 16px; height: 2px; background: var(--ve-text); border-radius: 2px; }
+    #bottomHamburger:hover { border-color: var(--ve-green); }
+    #bottomHamburger:hover span { background: var(--ve-green); }
+
+    /* Section jump popover - floats above bottom bar */
+    #slideJumpMenu {
+      position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
+      z-index: 9300; display: none;
+      background: #fff; border: 1px solid var(--ve-border); border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      padding: 8px;
+      display: none;
+      flex-direction: column; gap: 2px;
+      min-width: 180px;
+    }
+    #slideJumpMenu.open { display: flex; }
+    #slideJumpMenu button {
+      background: none; border: none; border-radius: 5px; cursor: pointer;
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ve-text-75); padding: 9px 14px; text-align: left;
+      transition: background 0.1s, color 0.1s;
+    }
+    #slideJumpMenu button:hover { background: var(--ve-green-light); color: var(--ve-green); }
+    #slideJumpMenu button.active { background: var(--ve-green-light); color: var(--ve-green); }
+
+    /* Prev / Next / Exit buttons */
+    .bottom-btn {
       background: none; border: 1px solid var(--ve-border);
-      border-radius: 6px; cursor: pointer; padding: 7px 14px;
+      border-radius: 6px; cursor: pointer; padding: 9px 20px;
       font-family: 'Montserrat', sans-serif; font-size: 10px;
-      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--ve-text-75); transition: all 0.15s;
+      font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ve-text-75); transition: all 0.15s; white-space: nowrap;
     }
-    .present-controls button:hover:not(:disabled) { border-color: var(--ve-green); color: var(--ve-green); }
-    .present-controls button:disabled { opacity: 0.3; cursor: default; }
-    #slideCount { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--ve-text-50); white-space: nowrap; }
+    .bottom-btn:hover:not(:disabled) { border-color: var(--ve-green); color: var(--ve-green); }
+    .bottom-btn:disabled { opacity: 0.3; cursor: default; }
+    .bottom-btn.exit-btn:hover { border-color: #dc2626; color: #dc2626; }
+
+    #slideCount {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      color: var(--ve-text-50); white-space: nowrap; min-width: 44px; text-align: center;
+    }
+
     #slideContainer { min-height: calc(100vh - 56px); }
     .present-slide { display: none; }
     .present-slide.active { display: block; }
@@ -1115,16 +1163,23 @@
         <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE">
       </div>
       <div id="presentHeaderNav"></div>
-      <div class="present-controls">
-        <span id="slideCount">1 / 1</span>
-        <span class="present-slide-count"></span>
-        <button id="prevBtn" onclick="prevSlide()" disabled>Prev</button>
-        <button id="nextBtn" onclick="nextSlide()">Next</button>
-        <button onclick="exitPresentMode()">Exit</button>
-      </div>
     </div>
     <div id="slideContainer"></div>
   </div>
+
+  <!-- BOTTOM CONTROL BAR (present mode only) -->
+  <div id="presentBottomBar">
+    <button id="bottomHamburger" onclick="toggleSlideMenu()" aria-label="Jump to slide">
+      <span></span><span></span><span></span>
+    </button>
+    <button id="prevBtn" class="bottom-btn" onclick="prevSlide()" disabled>Prev</button>
+    <span id="slideCount">1 / 1</span>
+    <button id="nextBtn" class="bottom-btn" onclick="nextSlide()">Next</button>
+    <button class="bottom-btn exit-btn" onclick="exitPresentMode()">Exit</button>
+  </div>
+
+  <!-- SECTION JUMP POPOVER -->
+  <div id="slideJumpMenu"></div>
 
   <script>
     // ── SCROLL ANIMATIONS ──
@@ -1231,14 +1286,14 @@
         slides.push(slide);
       });
 
-      // Build nav buttons
-      const nav = document.getElementById('presentHeaderNav');
-      nav.innerHTML = '';
+      // Build section jump menu
+      const menu = document.getElementById('slideJumpMenu');
+      menu.innerHTML = '';
       SLIDE_LABELS.forEach((label, i) => {
         const btn = document.createElement('button');
         btn.textContent = label;
-        btn.onclick = () => goToSlide(i);
-        nav.appendChild(btn);
+        btn.onclick = () => { goToSlide(i); closeSlideMenu(); };
+        menu.appendChild(btn);
       });
 
       currentSlide = 0;
@@ -1248,6 +1303,7 @@
 
     function exitPresentMode() {
       document.body.classList.remove('present-mode');
+      closeSlideMenu();
     }
 
     function goToSlide(n) {
@@ -1263,20 +1319,35 @@
     function nextSlide() { goToSlide(currentSlide + 1); }
     function prevSlide() { goToSlide(currentSlide - 1); }
 
+    function toggleSlideMenu() {
+      const menu = document.getElementById('slideJumpMenu');
+      menu.classList.toggle('open');
+    }
+    function closeSlideMenu() {
+      document.getElementById('slideJumpMenu').classList.remove('open');
+    }
+
     function updateControls() {
       document.getElementById('slideCount').textContent = (currentSlide + 1) + ' / ' + slides.length;
       document.getElementById('prevBtn').disabled = currentSlide === 0;
       document.getElementById('nextBtn').disabled = currentSlide === slides.length - 1;
-      document.querySelectorAll('#presentHeaderNav button').forEach((btn, i) => {
+      document.querySelectorAll('#slideJumpMenu button').forEach((btn, i) => {
         btn.classList.toggle('active', i === currentSlide);
       });
     }
+
+    // Close jump menu when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#bottomHamburger') && !e.target.closest('#slideJumpMenu')) {
+        closeSlideMenu();
+      }
+    });
 
     document.addEventListener('keydown', function(e) {
       if (!document.body.classList.contains('present-mode')) return;
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
-      if (e.key === 'Escape') exitPresentMode();
+      if (e.key === 'Escape') { closeSlideMenu(); exitPresentMode(); }
     });
   </script>
 
