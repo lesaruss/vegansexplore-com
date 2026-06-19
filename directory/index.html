@@ -423,6 +423,10 @@ body {
   .dir-hero { min-height: 420px; }
   .dir-hero .hero-inner { padding: 64px 24px 48px; }
 }
+
+    /* Card placeholder initials */
+    .card-placeholder { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #2d7d31 0%, #3A9B3E 100%); }
+    .card-init { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: -0.02em; font-family: Montserrat, sans-serif; }
 </style>
 </head>
 <body>
@@ -534,9 +538,11 @@ function renderCards(list) {
     const featClass = isFeat ? ' featured' : '';
     const starClass = isFeat ? 'on' : 'off';
     const starLabel = isFeat ? 'Remove featured' : 'Mark as featured';
+    const initials = l.t.split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'VE';
+    const ph = `<div class="card-placeholder" aria-hidden="true" style="display:none"><span class="card-init">${initials}</span></div>`;
     const img = l.i
-      ? `<img class="card-img" src="${esc(l.i)}" alt="${esc(l.t)}" loading="lazy">`
-      : `<div class="card-placeholder" aria-hidden="true">${ICONS[l.type]||'🌱'}</div>`;
+      ? `<img class="card-img" src="${esc(l.i)}" alt="${esc(l.t)}" loading="lazy" onerror="this.onerror=null;this.style.display='none';var p=this.nextElementSibling;if(p&&p.classList.contains('card-placeholder'))p.style.display=''">${ph}`
+      : `<div class="card-placeholder" aria-hidden="true"><span class="card-init">${initials}</span></div>`;
     const tb = `<span class="tag ${TC[l.type]||''}">${esc(l.type)}</span>`;
     const rb = l.region ? `<span class="tag t-reg">${esc(l.region.split(',')[0].trim())}</span>` : '';
     const body = `${img}<div class="card-body"><div class="card-name">${esc(l.t)}</div><div class="card-tags">${tb}${rb}</div></div>`;
