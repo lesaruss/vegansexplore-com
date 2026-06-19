@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEGANS EXPLORE | Community Manager Opportunity 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-green-mid: #b8ddb9;
+      --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75);
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-border: rgba(0,0,0,0.09);
+      --pad: 80px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body {
+      overflow-x: hidden;
+      font-family: 'Montserrat', sans-serif;
+      background: #ffffff;
+      color: var(--ve-text);
+      line-height: 1.6;
+    }
+
+    /* ── SCROLL ANIMATIONS ── */
+    .animate {
+      opacity: 0;
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .animate.fade-up    { transform: translateY(48px); }
+    .animate.fade-left  { transform: translateX(48px); }
+    .animate.fade-right { transform: translateX(-48px); }
+    .animate.visible {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    /* ── NAV ── */
+    nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 var(--pad);
+      height: 70px;
+    }
+    .nav-logo img { height: 32px; filter: brightness(0) invert(1); }
+    .nav-links { display: none; list-style: none; }
+    .nav-hamburger { display: none; background: none; border: 1px solid var(--ve-border); border-radius: 6px; cursor: pointer; padding: 6px 10px; gap: 4px; flex-direction: column; align-items: center; justify-content: center; }
+    .nav-hamburger span { display: block; width: 18px; height: 2px; background: var(--ve-text); border-radius: 2px; }
+    body.plan-mode .nav-hamburger,
+    body.present-mode .nav-hamburger { display: flex; }
+    body.plan-mode .nav-links.open,
+    body.present-mode .nav-links.open {
+      display: flex; flex-direction: column; gap: 0;
+      position: absolute; top: 64px; right: var(--pad); z-index: 200;
+      background: #fff; border: 1px solid var(--ve-border); border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08); min-width: 200px; padding: 8px 0;
+    }
+    body.plan-mode .nav-links.open li,
+    body.present-mode .nav-links.open li { list-style: none; }
+    body.plan-mode .nav-links.open a,
+    body.present-mode .nav-links.open a { display: block; padding: 10px 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--ve-text-75); }
+    .nav-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(255,255,255,0.65);
+      margin-left: 20px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 100px var(--pad) 80px;
+      overflow: hidden;
+      background: #0d1f0e;
+    }
+    .hero-bg-gradient {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 70% at 70% 50%, rgba(58,155,62,0.22) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 80% at 15% 80%, rgba(20,83,45,0.45) 0%, transparent 60%),
+        linear-gradient(135deg, #0d1f0e 0%, #0a1a0b 50%, #111f11 100%);
+      z-index: 0;
+    }
+    .hero-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(58,155,62,0.03) 0px,
+        rgba(58,155,62,0.03) 1px,
+        transparent 1px,
+        transparent 40px
+      );
+      z-index: 1;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(13,31,14,0.7) 0%, rgba(13,31,14,0.3) 60%, rgba(13,31,14,0.0) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .hero-text {
+      position: relative;
+      z-index: 3;
+      max-width: 520px;
+    }
+    .hero-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ve-green);
+      margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 32px; height: 2px; background: var(--ve-green);
+    }
+    .hero h1 {
+      font-size: clamp(38px, 5vw, 72px);
+      font-weight: 900; line-height: 0.92;
+      text-transform: uppercase; letter-spacing: -0.03em;
+      margin-bottom: 32px;
+      color: #ffffff;
+    }
+    .hero h1 em { font-style: normal; color: var(--ve-green); }
+    .hero-sub {
+      font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.78);
+      max-width: 440px; margin-bottom: 40px; line-height: 1.75;
+    }
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 36px; }
+    .scroll-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #fff; text-decoration: none;
+      border: 2px solid var(--ve-green); padding: 14px 28px; border-radius: 4px;
+      transition: background 0.2s, color 0.2s; cursor: pointer;
+      background: var(--ve-green);
+    }
+    .scroll-cta:hover { background: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+    .scroll-cta.outline { background: transparent; color: #fff; border-color: rgba(255,255,255,0.55); }
+    .scroll-cta.outline:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+    .hero-meta {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,255,255,0.45);
+    }
+    .hero-pulse-dot {
+      color: var(--ve-green);
+      display: inline-block;
+      animation: hero-dot-glow 2.4s ease-in-out infinite;
+    }
+    @keyframes hero-dot-glow {
+      0%, 100% { text-shadow: none; opacity: 1; }
+      50% { text-shadow: 0 0 18px var(--ve-green), 0 0 40px rgba(58,155,62,0.45); opacity: 0.88; }
+    }
+
+    /* ── SECTION SHELL ── */
+    .section {
+      padding: 100px var(--pad);
+      border-bottom: 1px solid var(--ve-border);
+    }
+    .section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--ve-green);
+      margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::before {
+      content: ''; display: block; width: 24px; height: 2px; background: var(--ve-green); flex-shrink: 0;
+    }
+    .section-headline {
+      font-size: clamp(28px, 3.5vw, 56px);
+      font-weight: 900; line-height: 0.95;
+      text-transform: uppercase; letter-spacing: -0.025em;
+      margin-bottom: 24px; color: var(--ve-text);
+    }
+    .section-headline em { font-style: normal; color: var(--ve-green); }
+    .section-body {
+      font-size: 16px; color: var(--ve-text-75); line-height: 1.8;
+      max-width: 640px; margin-bottom: 48px;
+    }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--ve-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .stat-cell {
+      padding: 36px 28px;
+      border-right: 1px solid var(--ve-border);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-number {
+      font-size: clamp(32px, 3.5vw, 52px);
+      font-weight: 900; letter-spacing: -0.04em;
+      color: var(--ve-green); line-height: 1; margin-bottom: 10px;
+    }
+    .stat-label {
+      font-size: 10px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--ve-text); margin-bottom: 8px;
+    }
+    .stat-desc { font-size: 12px; color: var(--ve-text-50); line-height: 1.65; }
+
+    /* ── CARD GRID ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+    .card-grid.four { grid-template-columns: repeat(4, 1fr); }
+    .card-grid.two { grid-template-columns: repeat(2, 1fr); }
+    .card {
+      padding: 36px 32px;
+      border: 1px solid var(--ve-border);
+      border-radius: 8px;
+    }
+    .card.featured { background: var(--ve-green); border-color: var(--ve-green); }
+    .card-icon {
+      width: 36px; height: 36px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--ve-green-light); border-radius: 8px;
+    }
+    .card.featured .card-icon { background: rgba(255,255,255,0.18); }
+    .card-icon svg { width: 18px; height: 18px; color: var(--ve-green); }
+    .card.featured .card-icon svg { color: #fff; }
+    .card-num { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 10px; }
+    .card.featured .card-num { color: rgba(255,255,255,0.6); }
+    .card h3 { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 12px; line-height: 1.2; }
+    .card.featured h3 { color: #fff; }
+    .card p { font-size: 13px; color: var(--ve-text-75); line-height: 1.75; }
+    .card.featured p { color: rgba(255,255,255,0.85); }
+
+    /* ── TWO-COL LAYOUT ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+    .two-col.center { align-items: center; }
+
+    /* ── ROLE LIST ── */
+    .role-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .role-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      font-size: 14px; color: var(--ve-text-75); line-height: 1.6;
+      padding: 16px; border: 1px solid var(--ve-border); border-radius: 6px;
+    }
+    .role-list li::before {
+      content: '';
+      display: block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ve-green); flex-shrink: 0; margin-top: 6px;
+    }
+    .role-list li strong { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text); margin-bottom: 4px; }
+
+    /* ── EARNINGS TABLE ── */
+    .earnings-table { width: 100%; border-collapse: collapse; margin-top: 48px; }
+    .earnings-table thead th {
+      font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--ve-text-50); padding: 16px 24px; text-align: left;
+      border-bottom: 2px solid var(--ve-border);
+    }
+    .earnings-table tbody tr { border-bottom: 1px solid var(--ve-border); }
+    .earnings-table tbody tr:last-child { border-bottom: none; }
+    .earnings-table tbody td {
+      padding: 20px 24px; font-size: 14px; color: var(--ve-text-75);
+    }
+    .earnings-table tbody td:first-child { font-weight: 900; font-size: 18px; color: var(--ve-green); }
+    .earnings-table tbody td.highlight { font-weight: 800; font-size: 18px; color: var(--ve-text); }
+    .earnings-table tbody tr.featured-row { background: var(--ve-green-light); }
+    .earnings-table tbody tr.featured-row td:first-child { color: var(--ve-green-dark); }
+    .earnings-note { font-size: 12px; color: var(--ve-text-50); margin-top: 20px; line-height: 1.6; }
+
+    /* ── DARK BLOCK (ICEBERG REVEAL) ── */
+    .dark-section {
+      background: var(--ve-text);
+      padding: 100px var(--pad);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .dark-section .section-label { color: rgba(255,255,255,0.5); }
+    .dark-section .section-label::before { background: rgba(255,255,255,0.3); }
+    .dark-section .section-headline { color: #fff; }
+    .dark-section .section-headline em { color: var(--ve-green); }
+    .dark-section .section-body { color: rgba(255,255,255,0.6); }
+    .iceberg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 48px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .iceberg-half {
+      padding: 48px 44px;
+    }
+    .iceberg-half.surface {
+      background: var(--ve-green);
+    }
+    .iceberg-half.depth {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .iceberg-half-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .iceberg-half.surface .iceberg-half-label { color: rgba(255,255,255,0.7); }
+    .iceberg-half.depth .iceberg-half-label { color: rgba(255,255,255,0.35); }
+    .iceberg-half h3 {
+      font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em;
+      margin-bottom: 20px; line-height: 1.1;
+    }
+    .iceberg-half.surface h3 { color: #fff; }
+    .iceberg-half.depth h3 { color: rgba(255,255,255,0.9); }
+    .iceberg-items { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .iceberg-items li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; line-height: 1.55;
+    }
+    .iceberg-half.surface .iceberg-items li { color: rgba(255,255,255,0.9); }
+    .iceberg-half.depth .iceberg-items li { color: rgba(255,255,255,0.55); }
+    .iceberg-items li::before { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; margin-top: 6px; opacity: 0.65; }
+
+    /* ── STEPS ── */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+    .step { padding: 36px 28px; border: 1px solid var(--ve-border); border-radius: 8px; }
+    .step-num { font-size: 48px; font-weight: 900; color: var(--ve-green-mid); line-height: 1; margin-bottom: 18px; }
+    .step h4 { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; color: var(--ve-text); }
+    .step p { font-size: 12px; color: var(--ve-text-75); line-height: 1.65; }
+    .step-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 12px; }
+
+    /* ── GAIN CARDS ── */
+    .gain-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 48px; }
+    .gain-card {
+      padding: 44px 40px;
+      border-radius: 8px;
+      border: 1px solid var(--ve-border);
+    }
+    .gain-card:nth-child(1) { background: var(--ve-green-light); border-color: var(--ve-green-mid); }
+    .gain-card:nth-child(2) { background: #f0f4ff; border-color: #c7d2fe; }
+    .gain-card:nth-child(3) { background: #fff9f0; border-color: #fde68a; }
+    .gain-card:nth-child(4) { background: var(--ve-text); border-color: var(--ve-text); }
+    .gain-label { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 16px; }
+    .gain-card:nth-child(1) .gain-label { color: var(--ve-green); }
+    .gain-card:nth-child(2) .gain-label { color: #4f46e5; }
+    .gain-card:nth-child(3) .gain-label { color: #92400e; }
+    .gain-card:nth-child(4) .gain-label { color: rgba(255,255,255,0.45); }
+    .gain-title {
+      font-size: clamp(22px, 2.5vw, 32px);
+      font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em;
+      line-height: 1.0; margin-bottom: 16px;
+    }
+    .gain-card:nth-child(4) .gain-title { color: #fff; }
+    .gain-desc { font-size: 14px; line-height: 1.75; }
+    .gain-card:nth-child(4) .gain-desc { color: rgba(255,255,255,0.65); }
+    .gain-card:not(:nth-child(4)) .gain-desc { color: var(--ve-text-75); }
+
+    /* ── PATH CARDS ── */
+    .path-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .path-card {
+      border: 2px solid var(--ve-border);
+      border-radius: 8px;
+      padding: 44px 36px;
+      display: flex;
+      flex-direction: column;
+    }
+    .path-card.primary { border-color: var(--ve-green); background: var(--ve-green-light); }
+    .path-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 16px; }
+    .path-card.primary .path-tag { color: var(--ve-green); }
+    .path-card:not(.primary) .path-tag { color: var(--ve-text-50); }
+    .path-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 16px; line-height: 1.05; }
+    .path-card.primary .path-title { color: var(--ve-green-dark); }
+    .path-desc { font-size: 13px; color: var(--ve-text-75); line-height: 1.75; flex: 1; margin-bottom: 28px; }
+    .path-cta {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; padding: 14px 24px; border-radius: 4px;
+      transition: background 0.2s, color 0.2s; cursor: pointer; border: none;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .path-card.primary .path-cta { background: var(--ve-green); color: #fff; }
+    .path-card.primary .path-cta:hover { background: var(--ve-green-dark); }
+    .path-card:not(.primary) .path-cta { background: transparent; color: var(--ve-text); border: 2px solid var(--ve-border); }
+    .path-card:not(.primary) .path-cta:hover { border-color: var(--ve-text); }
+
+    /* ── CM SIGNUP FORM ── */
+    .form-section {
+      background: var(--ve-text);
+      padding: 100px var(--pad);
+    }
+    .form-section .section-label { color: rgba(255,255,255,0.5); }
+    .form-section .section-label::before { background: rgba(255,255,255,0.3); }
+    .form-section .section-headline { color: #fff; }
+    .form-section .section-headline em { color: var(--ve-green); }
+    .form-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      margin-top: 48px;
+      align-items: start;
+    }
+    .form-left-body { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.85; margin-bottom: 36px; }
+    .form-checklist { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .form-checklist li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5;
+    }
+    .form-checklist li::before { content: 'v'; font-weight: 900; color: var(--ve-green); flex-shrink: 0; margin-top: 1px; }
+    .cm-form {
+      background: #fff;
+      border-radius: 8px;
+      padding: 48px;
+    }
+    .cm-form-title { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ve-text); margin-bottom: 6px; }
+    .cm-form-sub { font-size: 12px; color: var(--ve-text-50); margin-bottom: 32px; line-height: 1.5; }
+    .form-field { margin-bottom: 16px; }
+    .form-field label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ve-text-50); margin-bottom: 6px; }
+    .form-field input, .form-field select {
+      width: 100%; padding: 12px 14px;
+      border: 1px solid var(--ve-border); border-radius: 4px;
+      font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500;
+      color: var(--ve-text); background: #fff; appearance: none;
+      transition: border-color 0.15s;
+    }
+    .form-field input:focus, .form-field select:focus {
+      outline: none; border-color: var(--ve-green);
+      box-shadow: 0 0 0 3px rgba(58,155,62,0.12);
+    }
+    .form-submit {
+      width: 100%; padding: 16px;
+      background: var(--ve-green); color: #fff;
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      border: none; border-radius: 4px; cursor: pointer;
+      transition: background 0.2s; margin-top: 8px;
+    }
+    .form-submit:hover { background: var(--ve-green-dark); }
+    .form-success {
+      display: none; text-align: center; padding: 32px 0;
+    }
+    .form-success-icon { font-size: 36px; margin-bottom: 16px; }
+    .form-success h4 { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 10px; }
+    .form-success p { font-size: 13px; color: var(--ve-text-75); line-height: 1.65; }
+    .form-note { font-size: 10px; color: var(--ve-text-50); margin-top: 12px; line-height: 1.5; text-align: center; }
+    .form-error { display: none; font-size: 12px; color: #dc2626; margin-top: 8px; }
+
+    /* ── OTHER PATHS ROW (below form) ── */
+    .other-paths-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .other-path-tile {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 8px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .other-path-label { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    .other-path-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; color: #fff; }
+    .other-path-desc { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.65; flex: 1; }
+    .other-path-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.7); text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+      padding: 10px 18px; transition: border-color 0.15s, color 0.15s;
+      width: fit-content; cursor: pointer; background: none; font-family: 'Montserrat', sans-serif;
+    }
+    .other-path-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0d1f0e; color: rgba(255,255,255,0.35);
+      padding: 32px var(--pad); display: flex; align-items: center;
+      justify-content: space-between; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    footer img { height: 20px; filter: brightness(0) invert(1); opacity: 0.25; }
+
+    /* ── PRESENT MODE OVERLAY ── */
+    #presentOverlay {
+      position: fixed; inset: 0; background: #fff;
+      z-index: 9000; display: none; overflow-y: auto;
+    }
+    body.present-mode #presentOverlay { display: block; }
+    .present-header {
+      position: sticky; top: 0; z-index: 9100;
+      background: #fff; border-bottom: 1px solid var(--ve-border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 56px; gap: 16px;
+    }
+    .present-logo img { height: 24px; }
+    #presentHeaderNav { display: flex; gap: 6px; flex: 1; overflow-x: auto; padding: 0 16px; }
+    #presentHeaderNav button {
+      flex-shrink: 0; background: none; border: 1px solid transparent;
+      border-radius: 4px; cursor: pointer; font-family: 'Montserrat', sans-serif;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ve-text-50); padding: 5px 10px; white-space: nowrap; transition: all 0.15s;
+    }
+    #presentHeaderNav button.active { border-color: var(--ve-green); color: var(--ve-green); background: var(--ve-green-light); }
+    .present-controls { display: flex; align-items: center; gap: 10px; }
+    .present-controls button {
+      background: none; border: 1px solid var(--ve-border);
+      border-radius: 6px; cursor: pointer; padding: 7px 14px;
+      font-family: 'Montserrat', sans-serif; font-size: 10px;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ve-text-75); transition: all 0.15s;
+    }
+    .present-controls button:hover:not(:disabled) { border-color: var(--ve-green); color: var(--ve-green); }
+    .present-controls button:disabled { opacity: 0.3; cursor: default; }
+    #slideCount { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--ve-text-50); white-space: nowrap; }
+    #slideContainer { min-height: calc(100vh - 56px); }
+    .present-slide { display: none; }
+    .present-slide.active { display: block; }
+    .slide-inner { }
+    .present-slide-count { display: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      :root { --pad: 24px; }
+      nav { padding: 0 24px; }
+      .hero { padding: 80px 24px 60px; }
+      .hero-text { max-width: 100%; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .stat-cell { border-right: none; border-bottom: 1px solid var(--ve-border); }
+      .stat-cell:last-child { border-bottom: none; }
+      .card-grid, .card-grid.four, .card-grid.two { grid-template-columns: 1fr; }
+      .two-col { grid-template-columns: 1fr; gap: 40px; }
+      .iceberg-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .gain-grid { grid-template-columns: 1fr; }
+      .path-grid { grid-template-columns: 1fr; }
+      .form-wrapper { grid-template-columns: 1fr; gap: 40px; }
+      .other-paths-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+    }
+
+    /* ── SKIP NAV ── */
+    .skip-nav { position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+    .skip-nav:focus { position:fixed; left:50%; transform:translateX(-50%); top:12px; width:auto; height:auto; overflow:visible; clip:auto; white-space:normal; z-index:9999; background:#fff; color:#1a1a1a; padding:10px 20px; font-weight:800; font-size:14px; border-radius:4px; box-shadow:0 2px 12px rgba(0,0,0,0.4); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Skip to main content</a>
+
+  <!-- NAV -->
+  <header role="banner">
+    <nav>
+      <div class="nav-logo">
+        <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE">
+      </div>
+      <span class="nav-tag">Community Manager Webinar</span>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+  <!-- HERO -->
+  <div class="hero" id="hero">
+    <div class="hero-bg-gradient"></div>
+    <div class="hero-pattern"></div>
+    <div class="hero-text animate fade-up">
+      <div class="hero-eyebrow">VEGANS EXPLORE | Community Manager Webinar | June 19, 2026</div>
+      <h1>Your City<br>Is Hungry<br>For <em>This.</em><span class="hero-pulse-dot">.</span></h1>
+      <p class="hero-sub">
+        A platform built for the Vegan community is launching July 13. Every city needs one person to lead it. Tonight we are explaining exactly what that role looks like, what it pays, and how to step into it.
+      </p>
+      <div class="hero-btns">
+        <button class="scroll-cta" onclick="startGuidedTour()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Start the Tour
+        </button>
+        <button class="scroll-cta outline" onclick="enterFullPlan()">View All Slides</button>
+      </div>
+      <p class="hero-meta">VEGANS EXPLORE Community Manager Recruitment Webinar | June 2026</p>
+    </div>
+  </div>
+
+  <div id="plan-content" style="display:none;">
+
+  <!-- SECTION 1: THE OPPORTUNITY -->
+  <div class="section" id="opportunity">
+    <div class="section-label">The Opportunity</div>
+    <h2 class="section-headline">The Vegan Consumer<br>Is Here. Your City<br><em>Isn't Ready for Them.</em></h2>
+    <p class="section-body">
+      The plant-based market is not coming. It has arrived. Vegan restaurants, wellness brands, grocery stores, and event spaces are growing in every major city - and right now, none of them have a unified platform, a dedicated community, or a guide to connect them to the people who are already their customers. That gap is what VEGANS EXPLORE was built to close. And it needs someone in every city to lead that work.
+    </p>
+    <div class="stats-grid animate fade-up delay-1">
+      <div class="stat-cell">
+        <div class="stat-number">78M+</div>
+        <div class="stat-label">Plant-Based US Consumers</div>
+        <div class="stat-desc">A high-spending segment actively looking for community, not just products.</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">$8B+</div>
+        <div class="stat-label">US Plant-Based Food Market</div>
+        <div class="stat-desc">Growing 12% year over year. The businesses serving this market need visibility.</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">15+</div>
+        <div class="stat-label">Cities Launching July 13</div>
+        <div class="stat-desc">South Florida, Atlanta, New York, Chicago, Los Angeles and more. Every city needs one CM.</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">200+</div>
+        <div class="stat-label">Vegan Businesses Listed</div>
+        <div class="stat-desc">Already in the directory. All of them are potential clients for a Community Manager.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: WHAT WE'VE BUILT -->
+  <div class="section" id="platform" style="background:#fafafa;">
+    <div class="section-label">The Platform</div>
+    <h2 class="section-headline">The Engine<br>Is Running.<br><em>The Platform Is Live.</em></h2>
+    <p class="section-body">
+      This is not a startup pitch. VEGANS EXPLORE is an operating platform. The tools, the community infrastructure, and the business model are already built. You are not joining a project - you are joining a launch.
+    </p>
+    <div class="card-grid animate fade-up delay-1">
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <div class="card-num">Module 01</div>
+        <h3>City Directory</h3>
+        <p>A searchable directory of Vegan businesses in every city. Restaurants, stores, services, wellness brands. Members discover. Businesses get found.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="card-num">Module 02</div>
+        <h3>Events Platform</h3>
+        <p>City-by-city event calendars. Monthly community gatherings, the Vegan Village activation, and the Global Tour. Built-in ticketing and attendance tracking.</p>
+      </div>
+      <div class="card featured">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="card-num">Module 03</div>
+        <h3>Community Manager Console</h3>
+        <p>Your dedicated dashboard. Client roster, audit pipeline, content calendar, performance metrics. Everything you need to run your market from one screen.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="card-num">Module 04</div>
+        <h3>Points and Rewards</h3>
+        <p>A universal currency earned through community activity. Up to 50% off services for active contributors. Your clients' customers earn points by engaging with their businesses.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 0 3-3h7z"/></svg>
+        </div>
+        <div class="card-num">Module 05</div>
+        <h3>Learning Paths</h3>
+        <p>111-lesson guided paths for every audience segment. Pre-Vegan through Content Creator. Members stay engaged. Businesses benefit from an educated community.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="card-num">Module 06</div>
+        <h3>Marketing Console</h3>
+        <p>AI-first marketing tools for Vegan businesses. Brand audits, content creation, social scheduling, performance tracking. You run the console. The platform runs the engine.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: WHY NOW -->
+  <div class="section" id="why-now">
+    <div class="section-label">Why Now</div>
+    <h2 class="section-headline">Founding Members<br>Open July 13.<br><em>Your Territory Won't Wait.</em></h2>
+    <p class="section-body">
+      VEGANS EXPLORE is launching its founding member window on July 13, 2026. The first Community Manager to claim a city sets the standard for that market. There will not be a second first. This webinar is for the people who want to move first.
+    </p>
+    <div class="steps animate fade-up delay-1">
+      <div class="step">
+        <div class="step-tag">Now - June 19</div>
+        <div class="step-num">01</div>
+        <h4>Claim Your City</h4>
+        <p>Submit your application tonight. First applicant in each city gets priority review. No deposit required to apply.</p>
+      </div>
+      <div class="step">
+        <div class="step-tag">June 20 - July 12</div>
+        <div class="step-num">02</div>
+        <h4>Onboarding and Setup</h4>
+        <p>Your territory is confirmed. You get platform access, your client pipeline, and a full orientation on the tools and processes before launch day.</p>
+      </div>
+      <div class="step">
+        <div class="step-tag">July 13, 2026</div>
+        <div class="step-num">03</div>
+        <h4>Founding Member Launch</h4>
+        <p>The platform goes live. Your city is open. You are the Community Manager for your market from day one - Founding CM status, locked in.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: THE CM ROLE -->
+  <div class="section" id="the-role" style="background:#fafafa;">
+    <div class="section-label">The Role</div>
+    <h2 class="section-headline">You Are the<br><em>Brand in Your City.</em></h2>
+    <p class="section-body">
+      A Community Manager is the human face of VEGANS EXPLORE in a specific market. You recruit Vegan businesses as clients, manage their presence on the platform, and build the local community around them. The platform handles the tech. You handle the relationships.
+    </p>
+    <div class="two-col animate fade-up delay-1">
+      <div>
+        <ul class="role-list">
+          <li>
+            <div>
+              <strong>Build Your Client Roster</strong>
+              Identify and recruit Vegan businesses in your city - restaurants, stores, wellness brands, event spaces. These are your clients. You represent VEGANS EXPLORE to them.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>Run Brand Audits</strong>
+              Every new client starts with a brand audit. You assess their current marketing, online presence, and visibility gaps. The audit is your entry point and your 50% deposit trigger.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>Manage Their Platform Presence</strong>
+              You set up their directory listing, connect them to community events, manage their marketing console, and track their performance metrics. You are their dedicated platform manager.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>Grow the Local Community</strong>
+              You host events, activate the points system locally, and grow the VEGANS EXPLORE membership in your city. A larger community means more value for every client you manage.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>Report Outcomes, Not Hours</strong>
+              You do not bill for time. You deliver results. Directory traffic, event attendance, social reach, membership growth. Your clients pay for what moves the needle.
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div style="background:var(--ve-green-light);border:1px solid var(--ve-green-mid);border-radius:8px;padding:48px 40px;">
+          <div class="section-label" style="margin-bottom:16px;">The Ideal CM</div>
+          <p style="font-size:14px;color:var(--ve-text-75);line-height:1.85;margin-bottom:24px;">
+            You do not need a marketing degree. You need to understand your community, communicate clearly, and be consistent. The best Community Managers are people who are already embedded in the local Vegan or wellness scene - they know the restaurants, the events, and the people. We give them the platform and the tools to monetize that knowledge.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ve-text-75);">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--ve-green);flex-shrink:0;"></div>
+              Connected to the local Vegan or wellness community
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ve-text-75);">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--ve-green);flex-shrink:0;"></div>
+              Comfortable with client-facing communication
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ve-text-75);">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--ve-green);flex-shrink:0;"></div>
+              Organized and self-directed in managing a client roster
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ve-text-75);">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--ve-green);flex-shrink:0;"></div>
+              Motivated by outcomes, not just activity
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: YOUR CLIENTS -->
+  <div class="section" id="your-clients">
+    <div class="section-label">Your Clients</div>
+    <h2 class="section-headline">Vegan Businesses Are<br>Spending on Marketing<br><em>That Doesn't Work.</em></h2>
+    <p class="section-body">
+      The typical Vegan business owner is pouring money into Instagram ads, generic email platforms, and directories that their customers never visit. They have no dedicated community, no audience built for them, and no one translating their values into visibility. You walk in with a platform that already has their customer on it. That is your opening.
+    </p>
+    <div class="card-grid animate fade-up delay-1">
+      <div class="card">
+        <div class="card-num">Client Type 01</div>
+        <h3>Vegan Restaurants and Cafes</h3>
+        <p>High foot traffic, strong social presence, but no dedicated Vegan audience driving discovery. They want regulars, not one-time visitors. The directory and events pipeline delivers both.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">Client Type 02</div>
+        <h3>Vegan Retail and Grocery</h3>
+        <p>Product-first businesses that struggle to build community. VEGANS EXPLORE gives them a storefront inside a community, not just a listing inside a directory.</p>
+      </div>
+      <div class="card featured">
+        <div class="card-num">Highest Value</div>
+        <h3>Wellness and Lifestyle Brands</h3>
+        <p>Yoga studios, supplement brands, coaching practices, health-forward services. Their audience is the VEGANS EXPLORE audience. The alignment is immediate and the conversion is straightforward.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">Client Type 04</div>
+        <h3>Event Spaces and Venues</h3>
+        <p>Spaces that want to host Vegan events, markets, and community gatherings. VEGANS EXPLORE provides the audience and the event platform. They provide the space and the experience.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">Client Type 05</div>
+        <h3>Vegan Content Creators</h3>
+        <p>Influencers and creators who are already talking to your target audience. Bringing them onto the platform amplifies reach for every business client in your roster.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">Client Type 06</div>
+        <h3>Nonprofits and Orgs</h3>
+        <p>Animal rights organizations, food justice groups, Vegan advocacy nonprofits. They get the $111/month membership tier at no cost and bring their own membership onto the platform.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: THE MODEL -->
+  <div class="section" id="earning-model" style="background:#fafafa;">
+    <div class="section-label">The Earning Model</div>
+    <h2 class="section-headline">One CM.<br>Up to 50 Clients.<br><em>Outcomes-Based. Not Hours.</em></h2>
+    <p class="section-body">
+      You are not billing for time. Every client engagement starts with a brand audit. The audit is your paid discovery. From there, you manage their ongoing platform presence on a monthly retainer. The more clients you bring in, the more your income scales - with the same platform doing the work behind you.
+    </p>
+    <table class="earnings-table animate fade-up delay-1">
+      <thead>
+        <tr>
+          <th>Active Clients</th>
+          <th>Avg Monthly Per Client</th>
+          <th>Monthly Revenue</th>
+          <th>Annual Revenue</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>10</td>
+          <td>$450</td>
+          <td class="highlight">$4,500</td>
+          <td>$54,000</td>
+          <td>Getting started. Building your roster and your reputation.</td>
+        </tr>
+        <tr class="featured-row">
+          <td>25</td>
+          <td>$450</td>
+          <td class="highlight">$11,250</td>
+          <td>$135,000</td>
+          <td>Full stride. Standard caseload with room to grow.</td>
+        </tr>
+        <tr>
+          <td>50</td>
+          <td>$450</td>
+          <td class="highlight">$22,500</td>
+          <td>$270,000</td>
+          <td>At capacity. Maximum caseload for a solo CM.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="earnings-note">Revenue figures are estimates based on standard retainer rates. Actual earnings depend on your market, your client mix, and your audit conversion rate. Audit revenue (one-time, 50% deposit) is separate from monthly retainer and adds to these figures.</p>
+  </div>
+
+  <!-- SECTION 7: THE PLATFORM BEHIND YOU (ICEBERG REVEAL) -->
+  <div class="dark-section" id="platform-depth">
+    <div class="section-label">The Platform Behind You</div>
+    <h2 class="section-headline" style="color:#fff;">You Don't Build It.<br><em>You Run It.</em></h2>
+    <p class="section-body">
+      Every tool you need to serve 50 clients is already built and running. When you walk into a client conversation, you are backed by a platform that most agencies cannot match. You show up as the human. The platform is the infrastructure.
+    </p>
+    <div class="iceberg-grid animate fade-up delay-1">
+      <div class="iceberg-half surface">
+        <div class="iceberg-half-label">What Clients See</div>
+        <h3>The Community Manager</h3>
+        <ul class="iceberg-items">
+          <li>Your face, your relationship, your territory</li>
+          <li>Brand audit delivered by you</li>
+          <li>Monthly check-ins and performance reports</li>
+          <li>Event coordination and community activation</li>
+          <li>One point of contact for everything VEGANS EXPLORE</li>
+        </ul>
+      </div>
+      <div class="iceberg-half depth">
+        <div class="iceberg-half-label">What's Running Behind You</div>
+        <h3>The VEGANS EXPLORE Engine</h3>
+        <ul class="iceberg-items">
+          <li>AI-first Marketing Console with brand audit templates and content automation</li>
+          <li>LESARUSS HQ - your operational hub for managing every client account</li>
+          <li>Platform playbooks for every client type and scenario</li>
+          <li>Signal system - live platform health and performance data</li>
+          <li>Points and rewards engine driving client customer retention</li>
+          <li>Global community of 78M+ potential customers in your clients' market</li>
+          <li>Dedicated support from VEGANS EXPLORE operations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: FIRST 90 DAYS -->
+  <div class="section" id="first-90">
+    <div class="section-label">Your First 90 Days</div>
+    <h2 class="section-headline">A Territory.<br>A Pipeline.<br><em>A System. In 90 Days.</em></h2>
+    <p class="section-body">
+      We remove every "how do I start?" question before it gets asked. Your onboarding puts you in front of warm leads in your city before you finish setup. By day 90, you have a running client roster, your first community event, and a repeating revenue cycle.
+    </p>
+    <div class="steps animate fade-up delay-1">
+      <div class="step">
+        <div class="step-tag">Days 1 - 14</div>
+        <div class="step-num">01</div>
+        <h4>Territory Setup and First Clients</h4>
+        <p>Platform access confirmed. Pre-seeded list of Vegan businesses in your city from the existing directory. First outreach and audit bookings. Onboarding walkthrough with the VEGANS EXPLORE team.</p>
+      </div>
+      <div class="step">
+        <div class="step-tag">Days 15 - 45</div>
+        <div class="step-num">02</div>
+        <h4>First Audits and Retainers</h4>
+        <p>Complete first brand audits. Convert audit clients to monthly retainers. Set up their directory listings, connect them to platform events, and run first performance reports.</p>
+      </div>
+      <div class="step">
+        <div class="step-tag">Days 46 - 90</div>
+        <div class="step-num">03</div>
+        <h4>First Community Event</h4>
+        <p>Host your first VEGANS EXPLORE community event in your city. Co-sponsored by your client roster. Drives new member sign-ups, new business leads, and establishes you as the market anchor.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 9: WHAT YOU GAIN -->
+  <div class="section" id="what-you-gain" style="background:#fafafa;">
+    <div class="section-label">What You Gain</div>
+    <h2 class="section-headline">Territory.<br>Identity. Income.<br><em>Community.</em></h2>
+    <p class="section-body">
+      This is not a gig. There is no algorithm penalizing you, no platform cutting your rate, and no ceiling on what you can build. You are building a business inside a platform that wants you to succeed.
+    </p>
+    <div class="gain-grid animate fade-up delay-1">
+      <div class="gain-card">
+        <div class="gain-label">01 - Territory</div>
+        <div class="gain-title">Your Market. Your Call.</div>
+        <p class="gain-desc">Every city has one primary Community Manager. When you claim your market, it is yours to build. No competing CMs from VEGANS EXPLORE in your city. You set the standard.</p>
+      </div>
+      <div class="gain-card">
+        <div class="gain-label">02 - Identity</div>
+        <div class="gain-title">A Platform Behind Your Name</div>
+        <p class="gain-desc">You walk into every client conversation as the face of VEGANS EXPLORE in your city. A community of 78M+ potential customers is your context. You are not a freelancer - you are a platform partner.</p>
+      </div>
+      <div class="gain-card">
+        <div class="gain-label">03 - Income</div>
+        <div class="gain-title">Scalable. Predictable. Yours.</div>
+        <p class="gain-desc">Monthly retainers create recurring revenue. Audits front-load your income with a 50% deposit on every new client. At 25 clients, you are earning $135,000 annually. At 50, you are at $270,000.</p>
+      </div>
+      <div class="gain-card">
+        <div class="gain-label">04 - Community</div>
+        <div class="gain-title">You Are Not Doing This Alone</div>
+        <p class="gain-desc">VEGANS EXPLORE Community Managers are a network. Access to the national platform, the operations team, the content library, and the annual community event. You are the market leader in your city and part of a national movement.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 10: THREE PATHS IN -->
+  <div class="section" id="three-paths">
+    <div class="section-label">Choose Your Path</div>
+    <h2 class="section-headline">Not Everyone Wants<br>to Run a Market.<br><em>That's Fine Too.</em></h2>
+    <p class="section-body">
+      Tonight's webinar is focused on the Community Manager role. But VEGANS EXPLORE has room for everyone. If you are not ready to manage a market - or if you are a Vegan business looking for a different kind of partnership - there is a path for you below.
+    </p>
+    <div class="path-grid animate fade-up delay-1">
+      <div class="path-card primary">
+        <div class="path-tag">Primary Path</div>
+        <div class="path-title">Community Manager</div>
+        <p class="path-desc">You want to own your market. You are ready to build a client roster, run audits, manage platform presence for Vegan businesses in your city, and grow the local community. Founding CM applications open tonight.</p>
+        <button class="path-cta" onclick="document.getElementById('cm-signup').scrollIntoView({behavior:'smooth'})">
+          Apply Tonight
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+      <div class="path-card">
+        <div class="path-tag">Community Path</div>
+        <div class="path-title">Founding Member</div>
+        <p class="path-desc">You are not ready to manage a market yet - but you want to be part of VEGANS EXPLORE from day one. Join as a Founding Member at the founding rate. Access the full platform, your city community, events, and the rewards system from July 13.</p>
+        <a class="path-cta" href="https://vegansexplore.com" target="_blank" rel="noopener">
+          Join as a Member
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+      <div class="path-card">
+        <div class="path-tag">Business Path</div>
+        <div class="path-title">Community Partner</div>
+        <p class="path-desc">You own or operate a Vegan business. Get listed in the VEGANS EXPLORE directory, get connected to a dedicated Community Manager in your city, and start reaching the community that is already your customer. Business registration is open now.</p>
+        <a class="path-cta" href="https://vegansexplore.com" target="_blank" rel="noopener">
+          Register Your Business
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 11: CM SIGNUP FORM -->
+  <div class="form-section" id="cm-signup">
+    <div class="section-label">Apply Tonight</div>
+    <h2 class="section-headline" style="color:#fff;max-width:600px;">Choose Your <em>Path.</em></h2>
+    <div class="form-wrapper animate fade-up delay-1">
+      <div>
+        <p class="form-left-body">
+          If you are ready to step into the Community Manager role, fill out the form now. First applicant in each city gets priority review. We will confirm your territory and begin onboarding before July 13.
+        </p>
+        <ul class="form-checklist">
+          <li>No deposit to apply. You lock in your territory on acceptance.</li>
+          <li>One Community Manager per city. First qualified applicant gets priority.</li>
+          <li>Onboarding begins immediately after acceptance.</li>
+          <li>Founding CM status: locked in at platform launch on July 13.</li>
+          <li>Full platform access, client pipeline, and operations support from day one.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="cm-form" id="cmFormWrapper">
+          <div id="cmFormContent">
+            <div class="cm-form-title">Community Manager Application</div>
+            <div class="cm-form-sub">This takes 2 minutes. We will follow up within 24 hours.</div>
+            <form id="cmForm" novalidate>
+              <div class="form-field">
+                <label for="cmName">Full Name</label>
+                <input type="text" id="cmName" name="cmName" placeholder="Your name" required>
+              </div>
+              <div class="form-field">
+                <label for="cmEmail">Email Address</label>
+                <input type="email" id="cmEmail" name="cmEmail" placeholder="your@email.com" required>
+              </div>
+              <div class="form-field">
+                <label for="cmCity">Your City</label>
+                <input type="text" id="cmCity" name="cmCity" placeholder="City, State" required>
+              </div>
+              <div class="form-field">
+                <label for="cmRole">Current Role or Background</label>
+                <input type="text" id="cmRole" name="cmRole" placeholder="e.g. Marketing, Events, Health Coaching">
+              </div>
+              <div class="form-field">
+                <label for="cmConnection">Your connection to the Vegan community</label>
+                <select id="cmConnection" name="cmConnection">
+                  <option value="">Select one</option>
+                  <option value="personal">I am Vegan personally</option>
+                  <option value="business">I own or work for a Vegan business</option>
+                  <option value="community">I am active in the local wellness community</option>
+                  <option value="marketing">I work in marketing or community management</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div id="cmFormError" class="form-error">Something went wrong. Please try again.</div>
+              <button type="submit" class="form-submit" id="cmSubmitBtn">Submit Application</button>
+              <p class="form-note">Your information is kept private and is only used for the CM application process.</p>
+            </form>
+          </div>
+          <div class="form-success" id="cmFormSuccess">
+            <div class="form-success-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3A9B3E" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+            </div>
+            <h4>Application Received</h4>
+            <p>We will review your application and follow up within 24 hours. Keep an eye on your inbox.</p>
+          </div>
+        </div>
+
+        <div class="other-paths-row">
+          <div class="other-path-tile">
+            <div class="other-path-label">Not Ready to Lead?</div>
+            <div class="other-path-title">Become a Member</div>
+            <p class="other-path-desc">Join VEGANS EXPLORE as a Founding Member. $11 gets you into the community from launch day. No subscription required to start.</p>
+            <a href="https://vegansexplore.com" target="_blank" rel="noopener" class="other-path-btn">
+              Join the Community
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+          <div class="other-path-tile">
+            <div class="other-path-label">Own a Vegan Business?</div>
+            <div class="other-path-title">Partner With Us</div>
+            <p class="other-path-desc">List your business in the directory. Get connected to a CM in your city. Reach the community that is already your customer.</p>
+            <a href="https://vegansexplore.com" target="_blank" rel="noopener" class="other-path-btn">
+              Register Your Business
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /#plan-content -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE">
+    <span>VEGANS EXPLORE | A LESARUSS Platform | July 13, 2026 Launch</span>
+  </footer>
+
+  <!-- PRESENT MODE OVERLAY -->
+  <div id="presentOverlay">
+    <div class="present-header">
+      <div class="present-logo">
+        <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE">
+      </div>
+      <div id="presentHeaderNav"></div>
+      <div class="present-controls">
+        <span id="slideCount">1 / 1</span>
+        <span class="present-slide-count"></span>
+        <button id="prevBtn" onclick="prevSlide()" disabled>Prev</button>
+        <button id="nextBtn" onclick="nextSlide()">Next</button>
+        <button onclick="exitPresentMode()">Exit</button>
+      </div>
+    </div>
+    <div id="slideContainer"></div>
+  </div>
+
+  <script>
+    // ── SCROLL ANIMATIONS ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+
+    // ── CM FORM SUBMIT ──
+    const SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+    document.getElementById('cmForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('cmName').value.trim();
+      const email = document.getElementById('cmEmail').value.trim();
+      const city = document.getElementById('cmCity').value.trim();
+      const role = document.getElementById('cmRole').value.trim();
+      const connection = document.getElementById('cmConnection').value;
+      const submitBtn = document.getElementById('cmSubmitBtn');
+      const errorEl = document.getElementById('cmFormError');
+
+      if (!email || !name || !city) {
+        errorEl.textContent = 'Please fill in your name, email, and city.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      errorEl.style.display = 'none';
+
+      try {
+        await fetch(SUPABASE_URL + '/rest/v1/leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            email: email,
+            name: name,
+            org: city,
+            tags: ['cm-application-2026', 'webinar-june-19'],
+            source: 'cm-pitch-webinar',
+            brand: 'vegans-explore',
+            status: 'new',
+            notes: 'City: ' + city + ' | Role: ' + (role || 'N/A') + ' | Connection: ' + (connection || 'N/A')
+          })
+        });
+      } catch (err) { /* silent fail, show success anyway */ }
+
+      document.getElementById('cmFormContent').style.display = 'none';
+      document.getElementById('cmFormSuccess').style.display = 'block';
+    });
+
+    // ── GUIDED TOUR / PRESENT MODE ──
+    let currentSlide = 0;
+    let slides = [];
+
+    const SLIDE_SECTIONS = ['#hero', '#opportunity', '#platform', '#why-now', '#the-role', '#your-clients', '#earning-model', '#platform-depth', '#first-90', '#what-you-gain', '#three-paths', '#cm-signup'];
+    const SLIDE_LABELS = ['Cover', 'Opportunity', 'Platform', 'Why Now', 'The Role', 'Clients', 'Earnings', 'The Engine', '90 Days', 'What You Gain', 'Paths', 'Apply'];
+
+    function enterFullPlan() {
+      document.getElementById('plan-content').style.display = 'block';
+      document.getElementById('opportunity').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function startGuidedTour() {
+      document.getElementById('plan-content').style.display = 'block';
+      enterPresentMode();
+      goToSlide(1);
+    }
+
+    function enterPresentMode() {
+      document.getElementById('plan-content').style.display = 'block';
+      const container = document.getElementById('slideContainer');
+      container.innerHTML = '';
+      slides = [];
+
+      SLIDE_SECTIONS.forEach((sel, i) => {
+        const sec = document.querySelector(sel);
+        if (!sec) return;
+        const slide = document.createElement('div');
+        slide.className = 'present-slide' + (i === 0 ? ' active' : '');
+        slide.dataset.index = i;
+        const inner = document.createElement('div');
+        inner.className = 'slide-inner';
+        const clone = sec.cloneNode(true);
+        clone.querySelectorAll('.animate').forEach(el => {
+          el.classList.add('visible');
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+        // Re-wire form in clone
+        clone.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => e.preventDefault()));
+        inner.appendChild(clone);
+        slide.appendChild(inner);
+        container.appendChild(slide);
+        slides.push(slide);
+      });
+
+      // Build nav buttons
+      const nav = document.getElementById('presentHeaderNav');
+      nav.innerHTML = '';
+      SLIDE_LABELS.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.onclick = () => goToSlide(i);
+        nav.appendChild(btn);
+      });
+
+      currentSlide = 0;
+      updateControls();
+      document.body.classList.add('present-mode');
+    }
+
+    function exitPresentMode() {
+      document.body.classList.remove('present-mode');
+    }
+
+    function goToSlide(n) {
+      if (n < 0 || n >= slides.length) return;
+      slides[currentSlide].classList.remove('active');
+      currentSlide = n;
+      slides[currentSlide].classList.add('active');
+      const overlay = document.getElementById('presentOverlay');
+      if (overlay) overlay.scrollTop = 0;
+      updateControls();
+    }
+
+    function nextSlide() { goToSlide(currentSlide + 1); }
+    function prevSlide() { goToSlide(currentSlide - 1); }
+
+    function updateControls() {
+      document.getElementById('slideCount').textContent = (currentSlide + 1) + ' / ' + slides.length;
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('nextBtn').disabled = currentSlide === slides.length - 1;
+      document.querySelectorAll('#presentHeaderNav button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === currentSlide);
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (!document.body.classList.contains('present-mode')) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+      if (e.key === 'Escape') exitPresentMode();
+    });
+  </script>
+
+</body>
+</html>
