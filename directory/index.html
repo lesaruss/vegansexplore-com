@@ -1149,12 +1149,21 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // Global error handler for listing logo images - avoids onerror quoting issues
+  document.addEventListener('error', function(e) {
+    if (e.target.tagName === 'IMG' && e.target.classList.contains('listing-logo')) {
+      e.target.style.display = 'none';
+      var next = e.target.nextElementSibling;
+      if (next) { next.style.display = 'flex'; }
+    }
+  }, true);
+
   function makeAvatar(l) {
     var initial = ((l.initials || l.name || 'V').charAt(0)).toUpperCase();
     var color = l.color || '#3A9B3E';
-    var fallbackDiv = '<div class="av" style="width:72px;height:72px;min-width:72px;border-radius:8px;background:' + color + ';display:none;align-items:center;justify-content:center"><span style="font-size:28px;font-weight:900;color:#fff;line-height:1">' + initial + '</span></div>';
+    var fallback = '<div class="av" style="width:72px;height:72px;min-width:72px;border-radius:8px;background:' + color + ';display:none;align-items:center;justify-content:center"><span style="font-size:28px;font-weight:900;color:#fff;line-height:1">' + initial + '</span></div>';
     if (l.logo_url) {
-      return '<img src="' + esc(l.logo_url) + '" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:72px;height:72px;min-width:72px;object-fit:cover;border-radius:8px;display:block">' + fallbackDiv;
+      return '<img class="listing-logo" src="' + esc(l.logo_url) + '" style="width:72px;height:72px;min-width:72px;object-fit:cover;border-radius:8px">' + fallback;
     }
     return '<div class="av" style="width:72px;height:72px;min-width:72px;border-radius:8px;background:' + color + ';display:flex;align-items:center;justify-content:center"><span style="font-size:28px;font-weight:900;color:#fff;line-height:1">' + initial + '</span></div>';
   }
