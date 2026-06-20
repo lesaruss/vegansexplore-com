@@ -462,9 +462,8 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 .search-row button{background:#5EC47A;color:#000;border:none;padding:13px 22px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap}
 .city-row{display:flex;gap:8px;align-items:center}
 .city-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#666}
-.city-pills{display:flex;gap:6px;flex-wrap:wrap}
-.city-pill{font-size:11px;font-weight:700;letter-spacing:0.06em;padding:6px 14px;border-radius:20px;border:1px solid #333;background:transparent;color:#888;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all .15s}
-.city-pill:hover,.city-pill.active{border-color:#5EC47A;color:#5EC47A;background:rgba(94,196,122,0.08)}
+.city-dropdown{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;color:#eee;background:#1a1a1a;border:1px solid #444;border-radius:6px;padding:8px 32px 8px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235EC47A'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;min-width:200px;transition:border-color .15s}
+.city-dropdown:hover,.city-dropdown:focus{border-color:#5EC47A;outline:none}
 /* CONTENT */
 .content{margin:0;padding:28px 40px;width:100%}
 .founding-callout{background:#0a1a0f;border:1px solid #2d5a3a;border-radius:10px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
@@ -579,13 +578,16 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 </div>
 <div class="city-row">
 <span class="city-label">City</span>
-<div class="city-pills">
-<button class="city-pill active">All</button>
-<button class="city-pill">South Florida</button>
-<button class="city-pill">Central Florida</button>
-<button class="city-pill">New York</button>
-<button class="city-pill">Online</button>
-</div>
+<select class="city-dropdown" id="city-dropdown" aria-label="Filter by city">
+<option value="">All Regions</option>
+<option value="South Florida">South Florida</option>
+<option value="Central Florida">Central Florida</option>
+<option value="Atlanta">Atlanta</option>
+<option value="New York">New York</option>
+<option value="Los Angeles">Los Angeles</option>
+<option value="London">London</option>
+<option value="Online">Online</option>
+</select>
 </div>
 </div>
 </div>
@@ -620,7 +622,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="">All regions</option>
 <option value="South Florida">South Florida</option>
 <option value="Central Florida">Central Florida</option>
+<option value="Atlanta">Atlanta</option>
 <option value="New York">New York</option>
+<option value="Los Angeles">Los Angeles</option>
+<option value="London">London</option>
 </select>
 <select aria-label="Results per page" class="perpage-select" onchange="setPerPage(this,'food')">
 <option value="24">Show 24</option>
@@ -682,7 +687,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="">All regions</option>
 <option value="South Florida">South Florida</option>
 <option value="Central Florida">Central Florida</option>
+<option value="Atlanta">Atlanta</option>
 <option value="New York">New York</option>
+<option value="Los Angeles">Los Angeles</option>
+<option value="London">London</option>
 </select>
 <select aria-label="Results per page" class="perpage-select" onchange="setPerPage(this,'products')">
 <option value="24">Show 24</option>
@@ -744,7 +752,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="">All regions</option>
 <option value="South Florida">South Florida</option>
 <option value="Central Florida">Central Florida</option>
+<option value="Atlanta">Atlanta</option>
 <option value="New York">New York</option>
+<option value="Los Angeles">Los Angeles</option>
+<option value="London">London</option>
 </select>
 <select aria-label="Results per page" class="perpage-select" onchange="setPerPage(this,'services')">
 <option value="24">Show 24</option>
@@ -806,7 +817,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="">All regions</option>
 <option value="South Florida">South Florida</option>
 <option value="Central Florida">Central Florida</option>
+<option value="Atlanta">Atlanta</option>
 <option value="New York">New York</option>
+<option value="Los Angeles">Los Angeles</option>
+<option value="London">London</option>
 </select>
 <select aria-label="Results per page" class="perpage-select" onchange="setPerPage(this,'community')">
 <option value="24">Show 24</option>
@@ -868,7 +882,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="">All regions</option>
 <option value="South Florida">South Florida</option>
 <option value="Central Florida">Central Florida</option>
+<option value="Atlanta">Atlanta</option>
 <option value="New York">New York</option>
+<option value="Los Angeles">Los Angeles</option>
+<option value="London">London</option>
 </select>
 <select aria-label="Results per page" class="perpage-select" onchange="setPerPage(this,'events')">
 <option value="24">Show 24</option>
@@ -930,7 +947,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="">All regions</option>
 <option value="South Florida">South Florida</option>
 <option value="Central Florida">Central Florida</option>
+<option value="Atlanta">Atlanta</option>
 <option value="New York">New York</option>
+<option value="Los Angeles">Los Angeles</option>
+<option value="London">London</option>
 </select>
 <select aria-label="Results per page" class="perpage-select" onchange="setPerPage(this,'media')">
 <option value="24">Show 24</option>
@@ -1062,33 +1082,27 @@ function sortCards(sel,cat,panelId){
   });
   cards.forEach(function(c){grid.appendChild(c);});
 }
-// City pills in hero
-document.querySelectorAll('.city-pill').forEach(function(pill){
-  pill.addEventListener('click',function(){
-    document.querySelectorAll('.city-pill').forEach(p=>p.classList.remove('active'));
-    this.classList.add('active');
-    var city=this.textContent.trim();
-    // Sync to all region dropdowns
-    document.querySelectorAll('.region-select').forEach(function(sel){
-      if(city==='All'){sel.value='';sel.classList.remove('filtered');}
-      else if(city==='Online'){sel.value='';sel.classList.remove('filtered');}
-      else{sel.value=city;sel.classList.add('filtered');}
-    });
-    // Filter all panels
-    document.querySelectorAll('.board-panel').forEach(function(panel){
-      var catId=panel.id.replace('board-','');
-      if(city==='All'){
-        panel.querySelectorAll('.rank-card').forEach(c=>c.style.display='');
-      } else if(city==='Online'){
-        panel.querySelectorAll('.rank-card').forEach(function(c){
-          c.style.display=c.dataset.online==='1'?'':'none';
-        });
-      } else {
-        panel.querySelectorAll('.rank-card').forEach(function(c){
-          c.style.display=c.dataset.region===city?'':'none';
-        });
-      }
-    });
+// City dropdown in hero
+document.getElementById('city-dropdown').addEventListener('change',function(){
+  var city=this.value;
+  // Sync to all region dropdowns
+  document.querySelectorAll('.region-select').forEach(function(sel){
+    if(!city||city==='Online'){sel.value='';sel.classList.remove('filtered');}
+    else{sel.value=city;sel.classList.add('filtered');}
+  });
+  // Filter all panels
+  document.querySelectorAll('.board-panel').forEach(function(panel){
+    if(!city){
+      panel.querySelectorAll('.rank-card').forEach(c=>c.style.display='');
+    } else if(city==='Online'){
+      panel.querySelectorAll('.rank-card').forEach(function(c){
+        c.style.display=c.dataset.online==='1'?'':'none';
+      });
+    } else {
+      panel.querySelectorAll('.rank-card').forEach(function(c){
+        c.style.display=c.dataset.region===city?'':'none';
+      });
+    }
   });
 });
 // Vote buttons
