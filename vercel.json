@@ -2,6 +2,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/directory/:slug", "destination": "/directory/listing" }
+  ],
   "redirects": [
     { "source": "/wp-admin", "destination": "/", "permanent": true },
     { "source": "/wp-admin/(.*)", "destination": "/", "permanent": true },
