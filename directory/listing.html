@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Loading... — Vegans Explore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#e8f5e9;
+  --ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-surface:#f7faf7;
+  --ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.50);
+}
+html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text);background:#f5f5f5}
+#frame{width:100%;min-height:100vh;background:#fff;display:flex;flex-direction:column}
+
+/* HERO */
+.listing-hero{background:#111;padding:40px 40px 32px;border-bottom:1px solid #222;display:flex;gap:28px;align-items:flex-start}
+.listing-hero-avatar{width:88px;height:88px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:28px;font-weight:900;color:#fff;overflow:hidden}
+.listing-hero-avatar img{width:100%;height:100%;object-fit:cover}
+.listing-hero-body{flex:1;min-width:0}
+.listing-breadcrumb{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#666;margin-bottom:8px}
+.listing-breadcrumb a{color:#5EC47A;text-decoration:none}
+.listing-breadcrumb a:hover{text-decoration:underline}
+.listing-name{font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.02em;line-height:1.1;margin-bottom:8px}
+.listing-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.badge-cat{font-size:10px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:#5EC47A;color:#000}
+.badge-subcat{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.1);color:#ccc;border:1px solid #333}
+.badge-verified{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:rgba(94,196,122,0.15);color:#5EC47A;border:1px solid rgba(94,196,122,0.3);display:inline-flex;align-items:center;gap:4px}
+.listing-tagline{font-size:13px;color:#aaa;line-height:1.5;max-width:560px}
+.listing-hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px;flex-shrink:0}
+.listing-rating{text-align:center}
+.rating-num{font-size:28px;font-weight:900;color:#fff;line-height:1}
+.rating-stars{font-size:12px;color:#F69820;letter-spacing:1px}
+.rating-count{font-size:10px;font-weight:600;color:#666;letter-spacing:0.06em}
+.vote-hero-btn{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:12px 24px;border-radius:6px;background:#5EC47A;color:#000;border:none;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+.vote-hero-btn:hover{background:#4db368}
+.vote-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
+.vote-count-display{font-size:10px;font-weight:700;color:#888;text-align:center;letter-spacing:0.08em}
+
+/* QUICK INFO BAR */
+.info-bar{background:#f9f9f9;border-bottom:1px solid var(--ve-border);padding:12px 40px;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+.info-chip{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--ve-text-75);letter-spacing:0.04em}
+.info-chip svg{color:#5EC47A;flex-shrink:0}
+.info-chip.open-now{color:#2d7d31}
+.info-chip.closed{color:#c62828}
+.info-chip a{color:inherit;text-decoration:none}
+.info-chip a:hover{text-decoration:underline}
+
+/* CONTENT AREA */
+.listing-body{display:grid;grid-template-columns:1fr 320px;gap:28px;padding:32px 40px;max-width:100%}
+.listing-main{}
+.listing-sidebar{}
+
+/* SECTION */
+.section{margin-bottom:28px}
+.section-title{font-size:12px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--ve-green-light)}
+.about-text{font-size:14px;line-height:1.75;color:var(--ve-text)}
+
+/* DELIVERY BADGES */
+.delivery-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.delivery-btn{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;transition:.15s}
+.delivery-btn:hover{border-color:#5EC47A;color:#2d7d31}
+.delivery-btn:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}
+
+/* HOURS TABLE */
+.hours-table{width:100%;border-collapse:collapse}
+.hours-table td{padding:6px 0;font-size:12px;font-weight:600;color:var(--ve-text-75);border-bottom:1px solid var(--ve-border)}
+.hours-table td:first-child{font-weight:800;color:var(--ve-text);width:100px}
+.hours-table tr.today td{color:#2d7d31;font-weight:800}
+
+/* PLATFORMS (MEDIA) */
+.platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.platform-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:1px solid var(--ve-border);background:#fff;text-decoration:none;color:var(--ve-text);font-family:Montserrat,sans-serif;transition:.15s;cursor:pointer}
+.platform-btn:hover{border-color:#5EC47A;background:var(--ve-green-light)}
+.platform-btn:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}
+.platform-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.platform-label{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase}
+.platform-sub{font-size:10px;font-weight:600;color:var(--ve-text-50);margin-top:1px}
+
+/* SIDEBAR CARDS */
+.side-card{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:18px;margin-bottom:14px}
+.side-card-title{font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px}
+.contact-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:12px;font-weight:600;color:var(--ve-text-75)}
+.contact-row svg{flex-shrink:0;margin-top:1px;color:#5EC47A}
+.contact-row a{color:var(--ve-text-75);text-decoration:none}
+.contact-row a:hover{color:#2d7d31;text-decoration:underline}
+.social-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.social-btn{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:6px 12px;border-radius:4px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text-75);text-decoration:none;transition:.15s}
+.social-btn:hover{border-color:#5EC47A;color:#2d7d31}
+.claim-box{background:#0a1a0f;border:1px solid #2d5a3a;border-radius:8px;padding:14px 16px;text-align:center}
+.claim-box p{font-size:11px;color:#aaa;line-height:1.5;margin-bottom:10px}
+.claim-btn{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;border-radius:4px;background:transparent;color:#5EC47A;border:1px solid #5EC47A;text-decoration:none;transition:.15s}
+.claim-btn:hover{background:#5EC47A;color:#000}
+
+/* PHOTOS GRID */
+.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee}
+.photo-item img{width:100%;height:100%;object-fit:cover}
+
+/* LOADING / ERROR */
+.listing-loading{display:flex;align-items:center;justify-content:center;min-height:60vh;font-size:13px;font-weight:700;color:var(--ve-text-50);letter-spacing:0.1em}
+.listing-not-found{text-align:center;padding:80px 40px}
+.listing-not-found h2{font-size:24px;font-weight:900;margin-bottom:12px}
+.listing-not-found p{color:var(--ve-text-50);font-size:14px;margin-bottom:24px}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#5EC47A;text-decoration:none}
+.back-link:hover{text-decoration:underline}
+
+/* OWNERSHIP TAGS */
+.ownership-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ownership-tag{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:var(--ve-green-light);color:#2d7d31;border:1px solid #c8e6c9}
+
+@media(max-width:768px){
+  .listing-hero{flex-direction:column;padding:24px}
+  .listing-hero-right{flex-direction:row;align-items:center;width:100%}
+  .listing-body{grid-template-columns:1fr;padding:20px 16px}
+  .info-bar{padding:12px 16px;gap:14px}
+  .photos-grid{grid-template-columns:repeat(2,1fr)}
+  .platform-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="frame">
+<script src="/public/nav.js"></script>
+
+<div id="listing-root">
+  <div class="listing-loading">Loading...</div>
+</div>
+
+</div><!-- /frame -->
+
+<script>
+(function(){
+var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+var FOOD_CATS = ['Restaurants','Bakeries & Cafes','Food Brands','Catering','Meal Prep'];
+var MEDIA_CATS = ['Media','Content Creation & Media'];
+var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function esc(s){ return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+
+function getSlug(){
+  var parts = window.location.pathname.replace(/\/$/,'').split('/');
+  return parts[parts.length-1] || '';
+}
+
+function fetchListing(slug){
+  var url = SUPABASE_URL + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=*&limit=1';
+  return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+    .then(function(r){ return r.json(); });
+}
+
+function initials(name){
+  var words = (name||'').trim().split(/\s+/);
+  if(words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return (name||'').substring(0,2).toUpperCase();
+}
+
+function stars(rating){
+  if(!rating) return '';
+  var full = Math.floor(rating), half = (rating - full) >= 0.5 ? 1 : 0, empty = 5 - full - half;
+  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+}
+
+function getCategoryType(cat){
+  if(FOOD_CATS.indexOf(cat) !== -1) return 'food';
+  if(MEDIA_CATS.indexOf(cat) !== -1) return 'media';
+  return 'general';
+}
+
+function renderOwnership(l){
+  var tags = [];
+  if(l.is_black_owned) tags.push('Black-Owned');
+  if(l.is_women_owned) tags.push('Women-Owned');
+  if(l.is_lgbtq_owned) tags.push('LGBTQ+-Owned');
+  if(l.is_veteran_owned) tags.push('Veteran-Owned');
+  if(l.is_family_owned) tags.push('Family-Owned');
+  if(l.is_immigrant_owned) tags.push('Immigrant-Owned');
+  if(!tags.length) return '';
+  return '<div class="ownership-tags">' + tags.map(function(t){ return '<span class="ownership-tag">'+esc(t)+'</span>'; }).join('') + '</div>';
+}
+
+function renderHours(hoursJson){
+  if(!hoursJson) return '<p style="font-size:12px;color:var(--ve-text-50)">Hours not available</p>';
+  var today = DAYS[new Date().getDay()];
+  var rows = DAYS.map(function(day){
+    var h = hoursJson[day] || hoursJson[day.toLowerCase()] || 'N/A';
+    var cls = day === today ? ' class="today"' : '';
+    return '<tr'+cls+'><td>'+esc(day.substring(0,3))+'</td><td>'+esc(h)+'</td></tr>';
+  }).join('');
+  return '<table class="hours-table"><tbody>'+rows+'</tbody></table>';
+}
+
+function renderPhotos(photos){
+  if(!photos || !photos.length) return '';
+  return '<div class="photos-grid">' + photos.slice(0,6).map(function(url){
+    return '<div class="photo-item"><img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
+  }).join('') + '</div>';
+}
+
+function renderDelivery(l){
+  var btns = [];
+  if(l.uber_eats_url) btns.push('<a href="'+esc(l.uber_eats_url)+'" target="_blank" rel="noopener" class="delivery-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>Uber Eats</a>');
+  if(l.doordash_url) btns.push('<a href="'+esc(l.doordash_url)+'" target="_blank" rel="noopener" class="delivery-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>DoorDash</a>');
+  if(!btns.length) return '';
+  return '<div class="section"><h2 class="section-title">Order Online</h2><div class="delivery-row">'+btns.join('')+'</div></div>';
+}
+
+function renderPlatforms(l){
+  var platforms = [];
+  if(l.spotify_url) platforms.push({href:l.spotify_url, color:'#1DB954', label:'Spotify', sub:'Listen on Spotify', icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>'});
+  if(l.apple_podcasts_url) platforms.push({href:l.apple_podcasts_url, color:'#9c27b0', label:'Apple Podcasts', sub:'Listen on Apple', icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#9c27b0"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 15c-2.67 0-5.01-1.28-6.48-3.24.18-.36.54-.6.96-.6h11.04c.42 0 .78.24.96.6C17.01 18.22 14.67 19.5 12 19.5z"/></svg>'});
+  if(l.amazon_music_url) platforms.push({href:l.amazon_music_url, color:'#00A8E1', label:'Amazon Music', sub:'Listen on Amazon', icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#00A8E1"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0z"/></svg>'});
+  if(l.youtube) platforms.push({href:'https://youtube.com/'+esc(l.youtube), color:'#FF0000', label:'YouTube', sub:'Watch on YouTube', icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>'});
+  if(!platforms.length) return '';
+  return '<div class="section"><h2 class="section-title">Listen & Watch</h2><div class="platform-grid">' +
+    platforms.map(function(p){
+      return '<a href="'+esc(p.href)+'" target="_blank" rel="noopener" class="platform-btn">'+
+        '<div class="platform-icon" style="background:'+p.color+'20">'+p.icon+'</div>'+
+        '<div><div class="platform-label">'+esc(p.label)+'</div><div class="platform-sub">'+esc(p.sub)+'</div></div>'+
+        '</a>';
+    }).join('') + '</div></div>';
+}
+
+function renderSidebar(l){
+  var contact = '';
+  if(l.phone) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg><a href="tel:'+esc(l.phone)+'">'+esc(l.phone)+'</a></div>';
+  if(l.website) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Visit Website</a></div>';
+  if(l.address_street) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>'+esc(l.address_street)+', '+esc(l.address_city)+', '+esc(l.address_state)+'</span></div>';
+  else if(l.address_city) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>'+esc(l.address_city)+', '+esc(l.address_state)+'</span></div>';
+  if(l.email) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a></div>';
+  if(l.booking_url) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener">Book Appointment</a></div>';
+
+  var socials = [];
+  if(l.instagram) socials.push('<a href="https://instagram.com/'+esc(l.instagram.replace('@',''))+'" target="_blank" rel="noopener" class="social-btn"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>Instagram</a>');
+  if(l.tiktok) socials.push('<a href="https://tiktok.com/'+esc(l.tiktok)+'" target="_blank" rel="noopener" class="social-btn">TikTok</a>');
+  if(l.facebook) socials.push('<a href="'+esc(l.facebook)+'" target="_blank" rel="noopener" class="social-btn">Facebook</a>');
+  if(l.youtube) socials.push('<a href="https://youtube.com/'+esc(l.youtube)+'" target="_blank" rel="noopener" class="social-btn">YouTube</a>');
+  if(l.twitter) socials.push('<a href="https://twitter.com/'+esc(l.twitter)+'" target="_blank" rel="noopener" class="social-btn">Twitter/X</a>');
+
+  var verifBadge = l.ve_verified ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">VE Verified</span>' : '';
+  var claimSection = !l.claimed_by_member_id ? '<div class="claim-box"><p>Is this your business? Claim this listing to update your info and unlock analytics.</p><a href="/intake" class="claim-btn">Claim Listing</a></div>' : '';
+
+  return '<div class="listing-sidebar">'+
+    '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
+    (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
+    (l.google_rating ? '<div class="side-card"><div class="side-card-title">Google Rating</div><div style="font-size:26px;font-weight:900;color:var(--ve-text)">'+l.google_rating+'</div><div style="color:#F69820;font-size:14px;letter-spacing:2px">'+stars(l.google_rating)+'</div>'+(l.google_reviews_count ? '<div style="font-size:11px;color:var(--ve-text-50);margin-top:4px">'+l.google_reviews_count.toLocaleString()+' reviews</div>':'')+'</div>' : '')+
+    claimSection+
+    '</div>';
+}
+
+function renderListing(l){
+  var catType = getCategoryType(l.category);
+  var cityRegion = l.address_city && l.address_city !== l.location ? l.address_city : (l.location || '');
+  var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
+
+  // Breadcrumb
+  var breadcrumb = '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+catType+'">'+esc(dirLabel)+'</a> / '+esc(l.name)+'</div>';
+
+  // Avatar
+  var av = l.logo_url
+    ? '<img src="'+esc(l.logo_url)+'" alt="'+esc(l.name)+' logo"/>'
+    : esc(l.initials || (l.name||'').substring(0,2).toUpperCase());
+  var avBg = l.logo_url ? '#111' : (l.color || '#2d7d31');
+
+  // Badges
+  var verifiedBadge = l.ve_verified
+    ? '<span class="badge-verified"><svg width="10" height="10" fill="#5EC47A" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="#5EC47A" stroke-width="2.5"/></svg>VE Verified</span>' : '';
+
+  // Vote count
+  var votes = (l.favorites_count||0) + (l.likes_count||0);
+
+  // Info bar chips
+  var todayHours = '';
+  if(l.google_hours_json){
+    var today = DAYS[new Date().getDay()];
+    todayHours = l.google_hours_json[today] || l.google_hours_json[today.toLowerCase()] || '';
+  }
+  var infoChips = [];
+  if(l.address_city) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>'+esc(l.address_city)+', '+esc(l.address_state)+'</span>');
+  if(todayHours) infoChips.push('<span class="info-chip open-now"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+esc(todayHours)+'</span>');
+  if(l.pricing_range) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(l.pricing_range)+'</span>');
+  if(l.website) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Website</a></span>');
+
+  // MAIN content by category type
+  var mainContent = '';
+
+  // Description (universal)
+  if(l.description || l.tagline) {
+    mainContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
+  }
+
+  if(catType === 'food'){
+    // Delivery
+    mainContent += renderDelivery(l);
+    // Photos
+    var photoHtml = renderPhotos(l.google_photos);
+    if(photoHtml) mainContent += '<div class="section"><h2 class="section-title">Photos</h2>'+photoHtml+'</div>';
+    // Hours
+    if(l.google_hours_json){
+      mainContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
+    }
+  } else if(catType === 'media'){
+    mainContent += renderPlatforms(l);
+    if(l.target_audience) mainContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';
+  } else {
+    // General/services
+    if(l.core_services && l.core_services.length){
+      mainContent += '<div class="section"><h2 class="section-title">Services</h2><div style="display:flex;gap:8px;flex-wrap:wrap">'+
+        l.core_services.map(function(s){ return '<span style="font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--ve-border);background:var(--ve-surface)">'+esc(s)+'</span>'; }).join('') + '</div></div>';
+    }
+    if(l.booking_url) mainContent += '<div class="section"><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener" class="delivery-btn" style="display:inline-flex">Book a Session</a></div>';
+  }
+
+  // Rating section (food, if not in sidebar)
+  if(catType === 'food' && !l.google_rating && l.google_reviews_count){
+    mainContent += '<div class="section"><h2 class="section-title">Reviews</h2><p class="about-text">'+l.google_reviews_count+' Google reviews</p></div>';
+  }
+
+  // Build page
+  document.title = esc(l.name) + ' — Vegans Explore';
+  document.getElementById('listing-root').innerHTML =
+    '<div class="listing-hero">'+
+      '<div class="listing-hero-avatar" style="background:'+esc(avBg)+'">'+av+'</div>'+
+      '<div class="listing-hero-body">'+
+        breadcrumb+
+        '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
+        '<div class="listing-badges">'+
+          '<span class="badge-cat">'+esc(l.category)+'</span>'+
+          (l.specialty && l.specialty !== l.category ? '<span class="badge-subcat">'+esc(l.specialty)+'</span>' : '')+
+          verifiedBadge+
+        '</div>'+
+        (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
+      '</div>'+
+      '<div class="listing-hero-right">'+
+        (l.google_rating ? '<div class="listing-rating"><div class="rating-num">'+l.google_rating+'</div><div class="rating-stars">'+stars(l.google_rating)+'</div>'+(l.google_reviews_count?'<div class="rating-count">'+l.google_reviews_count.toLocaleString()+' reviews</div>':'')+'</div>' : '')+
+        '<button class="vote-hero-btn" id="vote-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote</button>'+
+        '<div class="vote-count-display" id="vote-display">'+votes+' votes</div>'+
+      '</div>'+
+    '</div>'+
+    (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
+    '<div class="listing-body">'+
+      '<div class="listing-main">'+mainContent+'</div>'+
+      renderSidebar(l)+
+    '</div>';
+
+  // Vote button handler
+  document.getElementById('vote-btn').addEventListener('click', function(){
+    if(this.dataset.voted) return;
+    this.dataset.voted = '1';
+    this.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted!';
+    this.style.background = '#2d7d31';
+    var disp = document.getElementById('vote-display');
+    if(disp){
+      var n = parseInt(disp.textContent)||0;
+      disp.textContent = (n+1) + ' votes';
+    }
+  });
+}
+
+function showNotFound(){
+  document.getElementById('listing-root').innerHTML =
+    '<div class="listing-not-found">'+
+      '<h2>Listing Not Found</h2>'+
+      '<p>We couldn\'t find this listing. It may have been removed or the link is incorrect.</p>'+
+      '<a href="/directory" class="back-link"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back to Directory</a>'+
+    '</div>';
+}
+
+// Init
+var slug = getSlug();
+if(!slug || slug === 'listing'){
+  showNotFound();
+} else {
+  fetchListing(slug).then(function(data){
+    if(data && data.length) renderListing(data[0]);
+    else showNotFound();
+  }).catch(function(){ showNotFound(); });
+}
+
+})();
+</script>
+</body>
+</html>
