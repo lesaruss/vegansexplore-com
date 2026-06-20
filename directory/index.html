@@ -1129,6 +1129,10 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
 
   var CAT_MAP = {
     'Restaurants': 'food',
+    'Bakeries & Cafes': 'food',
+    'Food Brands': 'food',
+    'Catering': 'food',
+    'Meal Prep': 'food',
     'Brands': 'products',
     'Beauty and Personal Care': 'products',
     'Clothing and Fashion': 'products',
@@ -1149,7 +1153,16 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     'Uncategorized': 'media'
   };
 
+  var CITY_REGION = {
+    'Los Angeles': 'Los Angeles',
+    'Atlanta': 'Atlanta',
+    'New York': 'New York',
+    'Brooklyn': 'New York',
+    'Queens': 'New York',
+    'London': 'London'
+  };
   function getRegion(l) {
+    if (l.address_city && CITY_REGION[l.address_city]) return CITY_REGION[l.address_city];
     if (l.specialty) return l.specialty.split(' - ')[0].trim();
     if (l.location) return l.location;
     if (l.address_city && l.address_state) return l.address_city + ', ' + l.address_state;
