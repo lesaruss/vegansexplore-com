@@ -111,6 +111,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .photo-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);transition:background .2s;cursor:pointer}
 .photo-dot.active{background:var(--ve-green)}
 
+/* AT A GLANCE */
+.glance-groups{display:flex;flex-direction:column;gap:16px}
+.glance-group-label{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:8px}
+.glance-chips{display:flex;flex-wrap:wrap;gap:6px}
+.glance-chip{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text-75);transition:.15s}
+.glance-chip.on{background:var(--ve-green-light);color:#2d7d31;border-color:#c8e6c9}
+.glance-chip.on.community{background:#0a1a0f;color:#5EC47A;border-color:#2d5a3a}
+.glance-chip.off{opacity:0.3}
+
 /* COMMUNITY SUPPORT */
 .community-stats{display:flex;gap:0;margin-bottom:18px;border:1px solid var(--ve-border);border-radius:10px;overflow:hidden}
 .community-stat{flex:1;padding:16px 20px;text-align:center;background:#fff}
@@ -394,6 +403,81 @@ function renderPlatforms(l){
     }).join('') + '</div></div>';
 }
 
+function renderAtAGlance(l){
+  var accom = l.accommodations || [];
+  function has(val){ return accom.indexOf(val) !== -1; }
+
+  function chip(label, active, type){
+    var cls = 'glance-chip' + (active ? ' on'+(type?' '+type:'') : ' off');
+    return '<span class="'+cls+'">'+label+'</span>';
+  }
+
+  var groups = [
+    {
+      label: 'Atmosphere',
+      chips: [
+        chip('Casual',      l.atmosphere === 'casual'),
+        chip('Upscale',     l.atmosphere === 'upscale'),
+        chip('Fine Dining', l.atmosphere === 'fine-dining'),
+        chip('Fast Casual', l.atmosphere === 'fast-casual'),
+        chip('Bar / Lounge',l.atmosphere === 'bar-lounge'),
+        chip('Late Hours',  !!l.late_hours),
+        chip('Live Music',  has('Live Music')),
+      ]
+    },
+    {
+      label: 'Seating',
+      chips: [
+        chip('Dine-In',          has('Dine-in')),
+        chip('Indoor Seating',   !!l.indoor_seating),
+        chip('Outdoor Seating',  has('Outdoor Seating')),
+        chip('Reservations',     has('Reservations')),
+      ]
+    },
+    {
+      label: 'Amenities',
+      chips: [
+        chip('WiFi',             has('WiFi')),
+        chip('High-Speed WiFi',  !!l.high_speed_wifi),
+        chip('Parking',          has('Parking')),
+        chip('Takeout',          has('Takeout')),
+        chip('Catering',         has('Catering') || l.category === 'Catering'),
+        chip('BYOB',             has('BYOB')),
+        chip('Dog-Friendly',     has('Dog-Friendly')),
+        chip('Family-Friendly',  has('Family-Friendly')),
+      ]
+    },
+    {
+      label: 'Accessibility',
+      chips: [
+        chip('Wheelchair Accessible', has('Wheelchair Accessible')),
+        chip('Gender-Neutral Restroom', false),
+        chip('Service Animal Friendly', false),
+      ]
+    },
+    {
+      label: 'Community',
+      chips: [
+        chip('LGBTQ+ Friendly',   !!l.lgbtq_friendly,      'community'),
+        chip('Black-Owned',       !!l.is_black_owned,       'community'),
+        chip('Women-Owned',       !!l.is_women_owned,       'community'),
+        chip('Latino/Hispanic-Owned', !!l.is_latino_owned,  'community'),
+        chip('Asian-Owned',       !!l.is_asian_owned,       'community'),
+        chip('Immigrant-Owned',   !!l.is_immigrant_owned,   'community'),
+        chip('Veteran-Owned',     !!l.is_veteran_owned,     'community'),
+      ]
+    }
+  ];
+
+  var html = '<div class="glance-groups">';
+  groups.forEach(function(g){
+    html += '<div><div class="glance-group-label">'+g.label+'</div><div class="glance-chips">'+g.chips.join('')+'</div></div>';
+  });
+  html += '</div>';
+
+  return '<div class="section"><h2 class="section-title">At a Glance</h2>'+html+'</div>';
+}
+
 function renderSidebar(l){
   var contact = '';
   if(l.phone) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg><a href="tel:'+esc(l.phone)+'">'+esc(l.phone)+'</a></div>';
@@ -554,9 +638,8 @@ function renderListing(l){
   }
 
   if(catType === 'food'){
+    overviewContent += renderAtAGlance(l);
     overviewContent += renderOrderingPlatforms(l);
-    overviewContent += renderMenuOptions(l);
-    overviewContent += renderAccommodations(l);
     if(l.google_hours_json){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }
