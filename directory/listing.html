@@ -404,9 +404,30 @@ function renderSidebar(l){
       '</div></div>';
   }
 
+  // Delivery apps - always show all, color + link if URL exists, gray if not
+  var DELIVERY_APPS = [
+    {key:'uber_eats',  alt:'ubereats_url',  label:'Uber Eats',  color:'#06C167'},
+    {key:'doordash',   alt:'doordash_url',  label:'DoorDash',   color:'#FF3008'},
+    {key:'grubhub',    alt:'grubhub_url',   label:'Grubhub',    color:'#F63440'},
+    {key:'instacart',  alt:'',              label:'Instacart',  color:'#43B02A'},
+    {key:'chownow',    alt:'',              label:'ChowNow',    color:'#E8473F'},
+    {key:'seamless',   alt:'',              label:'Seamless',   color:'#EA1917'},
+  ];
+  var deliveryPills = '';
+  if(FOOD_CATS.indexOf(l.category) !== -1){
+    deliveryPills = DELIVERY_APPS.map(function(app){
+      var url = l[app.key] || (app.alt ? l[app.alt] : '');
+      if(url){
+        return '<a href="'+esc(url)+'" target="_blank" rel="noopener" class="social-btn" style="border-color:'+app.color+';color:'+app.color+'">'+esc(app.label)+'</a>';
+      }
+      return '<span class="social-btn" style="opacity:0.3;cursor:default;pointer-events:none">'+esc(app.label)+'</span>';
+    }).join('');
+  }
+
   return '<div class="listing-sidebar">'+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
     (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
+    (deliveryPills ? '<div class="side-card"><div class="side-card-title">Delivery</div><div class="social-row">'+deliveryPills+'</div></div>' : '')+
     collabBadges+
     claimSection+
     '</div>';
