@@ -118,6 +118,25 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .photo-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);transition:background .2s;cursor:pointer}
 .photo-dot.active{background:var(--ve-green)}
 
+/* PHOTOS TAB — 2-col infinite scroll */
+.photos-tab-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.photos-tab-grid .photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee;cursor:pointer;position:relative}
+.photos-tab-grid .photo-item img{width:100%;height:100%;object-fit:cover;transition:transform .2s}
+.photos-tab-grid .photo-item:hover img{transform:scale(1.04)}
+.photos-tab-grid .photo-item:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}
+
+/* LIGHTBOX */
+.lb-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);align-items:center;justify-content:center}
+.lb-overlay.open{display:flex}
+.lb-img{max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain;display:block}
+.lb-close{position:absolute;top:16px;right:20px;font-size:28px;font-weight:700;color:#fff;cursor:pointer;line-height:1;background:none;border:none;font-family:inherit}
+.lb-close:hover{color:#5EC47A}
+.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);font-size:36px;font-weight:700;color:rgba(255,255,255,.7);cursor:pointer;background:none;border:none;font-family:inherit;padding:12px;line-height:1}
+.lb-arrow:hover{color:#fff}
+.lb-prev{left:12px}
+.lb-next{right:12px}
+.lb-caption{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap}
+
 /* AT A GLANCE */
 .glance-groups{display:flex;flex-direction:column;gap:16px}
 .glance-group-label{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:8px}
@@ -223,6 +242,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   <div class="listing-loading">Loading...</div>
 </div>
 
+<!-- LIGHTBOX -->
+<div class="lb-overlay" id="lb-overlay" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-close" id="lb-close" aria-label="Close">&times;</button>
+  <button class="lb-arrow lb-prev" id="lb-prev" aria-label="Previous">&#8249;</button>
+  <img class="lb-img" id="lb-img" src="" alt=""/>
+  <button class="lb-arrow lb-next" id="lb-next" aria-label="Next">&#8250;</button>
+  <span class="lb-caption" id="lb-caption"></span>
+</div>
+
 </div><!-- /frame -->
 
 <script>
@@ -305,23 +333,80 @@ function renderHours(hoursJson){
   return '<table class="hours-table"><tbody>'+rows+'</tbody></table>';
 }
 
-function renderPhotos(photos, prefix){
+// Shared lightbox state
+var lbImages = [];
+var lbIndex = 0;
+
+function openLightbox(imgs, idx){
+  lbImages = imgs;
+  lbIndex = idx;
+  var overlay = document.getElementById('lb-overlay');
+  var img = document.getElementById('lb-img');
+  var cap = document.getElementById('lb-caption');
+  if(!overlay || !img) return;
+  img.src = lbImages[lbIndex];
+  if(cap) cap.textContent = (lbIndex+1) + ' / ' + lbImages.length;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(){
+  var overlay = document.getElementById('lb-overlay');
+  if(overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function moveLightbox(dir){
+  lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+  var img = document.getElementById('lb-img');
+  var cap = document.getElementById('lb-caption');
+  if(img) img.src = lbImages[lbIndex];
+  if(cap) cap.textContent = (lbIndex+1) + ' / ' + lbImages.length;
+}
+
+(function wireLightboxControls(){
+  document.addEventListener('DOMContentLoaded', function(){
+    var overlay = document.getElementById('lb-overlay');
+    document.getElementById('lb-close') && document.getElementById('lb-close').addEventListener('click', closeLightbox);
+    document.getElementById('lb-prev') && document.getElementById('lb-prev').addEventListener('click', function(){ moveLightbox(-1); });
+    document.getElementById('lb-next') && document.getElementById('lb-next').addEventListener('click', function(){ moveLightbox(1); });
+    overlay && overlay.addEventListener('click', function(e){ if(e.target === overlay) closeLightbox(); });
+    document.addEventListener('keydown', function(e){
+      if(!document.getElementById('lb-overlay').classList.contains('open')) return;
+      if(e.key === 'Escape') closeLightbox();
+      if(e.key === 'ArrowLeft') moveLightbox(-1);
+      if(e.key === 'ArrowRight') moveLightbox(1);
+    });
+  });
+})();
+
+function renderPhotos(photos, prefix, tabMode){
   if(!photos || !photos.length) return '';
   prefix = prefix || 'photos';
 
-  // Desktop: 3-col x 2-row grid (max 6)
+  function photoItem(url, idx, allUrls){
+    return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" onclick="openLightbox('+JSON.stringify(allUrls)+','+idx+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \')openLightbox('+JSON.stringify(allUrls)+','+idx+')">'+
+      '<img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
+  }
+
+  if(tabMode){
+    // Photos tab: 2-col full grid, all photos, lightbox on click
+    return '<div class="photos-tab-grid">'+
+      photos.map(function(url,i){ return photoItem(url, i, photos); }).join('')+
+    '</div>';
+  }
+
+  // Overview: desktop 3-col x 2-row (max 6), mobile 2-up carousel
   var gridHtml = '<div class="photos-grid">'+
-    photos.slice(0,6).map(function(url){
-      return '<div class="photo-item"><img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
-    }).join('')+
+    photos.slice(0,6).map(function(url,i){ return photoItem(url, i, photos.slice(0,6)); }).join('')+
   '</div>';
 
-  // Mobile: 2-up swipeable carousel
   var pairs = [];
   for(var i=0; i<photos.length; i+=2) pairs.push(photos.slice(i, i+2));
-  var slides = pairs.map(function(pair){
-    return '<div class="photo-slide">'+pair.map(function(url){
-      return '<div class="photo-item"><img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
+  var slides = pairs.map(function(pair, pi){
+    return '<div class="photo-slide">'+pair.map(function(url, j){
+      var globalIdx = pi*2 + j;
+      return photoItem(url, globalIdx, photos);
     }).join('')+'</div>';
   }).join('');
   var dots = pairs.length > 1 ? '<div class="photos-dots" id="'+prefix+'-dots">'+
@@ -712,8 +797,8 @@ function renderListing(l){
 
   // Unlock section lives in sidebar for unclaimed listings
 
-  // PHOTOS tab content
-  var photoHtml = renderPhotos(l.google_photos, 'tab-photos');
+  // PHOTOS tab content — 2-col infinite scroll with lightbox
+  var photoHtml = renderPhotos(l.google_photos, 'tab-photos', true);
   var photosTabContent = photoHtml
     ? '<div style="padding:24px 40px 40px">'+photoHtml+'</div>'
     : lockedTab('photos');
@@ -925,13 +1010,13 @@ function renderInstagramContent(veBusinessId){
       // ── Photos tab — merge Instagram photos below google_photos ────────────
       var photoEl = document.getElementById('tab-photos');
       if(photoEl && photos.length){
+        var igUrls = photos.filter(function(p){ return !!p.thumbnail_url; }).map(function(p){ return p.thumbnail_url; });
         var igSection = '<div style="padding:0 40px 40px">' +
           '<p style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px">Explorer Photos — via VEGANS EXPLORE</p>' +
-          '<div class="photos-grid">' +
-          photos.slice(0,6).map(function(p){
-            return '<div class="photo-item"><a href="'+esc(p.post_url)+'" target="_blank" rel="noopener">' +
-              (p.thumbnail_url ? '<img src="'+esc(p.thumbnail_url)+'" alt="'+esc(p.caption||'Photo')+'" loading="lazy"/>' : '') +
-              '</a></div>';
+          '<div class="photos-tab-grid">' +
+          igUrls.map(function(url, i){
+            return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" onclick="openLightbox('+JSON.stringify(igUrls)+','+i+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \')openLightbox('+JSON.stringify(igUrls)+','+i+')">'+
+              '<img src="'+esc(url)+'" loading="lazy"/></div>';
           }).join('') +
           '</div></div>';
         photoEl.innerHTML += igSection;
