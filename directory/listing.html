@@ -384,12 +384,19 @@ function renderSidebar(l){
   if(l.email) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a></div>';
   if(l.booking_url) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener">Book Appointment</a></div>';
 
-  var socials = [];
-  if(l.instagram) socials.push('<a href="https://instagram.com/'+esc(l.instagram.replace('@',''))+'" target="_blank" rel="noopener" class="social-btn"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>Instagram</a>');
-  if(l.tiktok) socials.push('<a href="https://tiktok.com/'+esc(l.tiktok)+'" target="_blank" rel="noopener" class="social-btn">TikTok</a>');
-  if(l.facebook) socials.push('<a href="'+esc(l.facebook)+'" target="_blank" rel="noopener" class="social-btn">Facebook</a>');
-  if(l.youtube) socials.push('<a href="https://youtube.com/'+esc(l.youtube)+'" target="_blank" rel="noopener" class="social-btn">YouTube</a>');
-  if(l.twitter) socials.push('<a href="https://twitter.com/'+esc(l.twitter)+'" target="_blank" rel="noopener" class="social-btn">Twitter/X</a>');
+  var SOCIAL_PLATFORMS = [
+    {key:'instagram', label:'Instagram', href: l.instagram ? 'https://instagram.com/'+l.instagram.replace('@','') : ''},
+    {key:'tiktok',    label:'TikTok',    href: l.tiktok    ? 'https://tiktok.com/'+l.tiktok : ''},
+    {key:'facebook',  label:'Facebook',  href: l.facebook  ? l.facebook : ''},
+    {key:'youtube',   label:'YouTube',   href: l.youtube   ? 'https://youtube.com/'+l.youtube : ''},
+    {key:'twitter',   label:'Twitter/X', href: l.twitter   ? 'https://twitter.com/'+l.twitter : ''},
+  ];
+  var socials = SOCIAL_PLATFORMS.map(function(p){
+    if(p.href){
+      return '<a href="'+esc(p.href)+'" target="_blank" rel="noopener" class="social-btn">'+esc(p.label)+'</a>';
+    }
+    return '<span class="social-btn" style="opacity:0.3;cursor:default;pointer-events:none">'+esc(p.label)+'</span>';
+  });
 
   var verifBadge = l.ve_verified ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">VE Verified</span>' : '';
   var claimSection = !l.claimed_by_member_id ? '<div class="claim-box"><p>Is this your business? Claim this listing to update your info and unlock analytics.</p><a href="/intake" class="claim-btn">Claim Listing</a></div>' : '';
@@ -426,7 +433,7 @@ function renderSidebar(l){
 
   return '<div class="listing-sidebar">'+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
-    (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
+    '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>'+
     (deliveryPills ? '<div class="side-card"><div class="side-card-title">Delivery</div><div class="social-row">'+deliveryPills+'</div></div>' : '')+
     collabBadges+
     claimSection+
