@@ -184,11 +184,27 @@ function renderOwnership(l){
   return '<div class="ownership-tags">' + tags.map(function(t){ return '<span class="ownership-tag">'+esc(t)+'</span>'; }).join('') + '</div>';
 }
 
+function hoursMap(hoursJson){
+  // Normalize: array [{day,hours}] or [{day,openingHours}] → {Day: "hours string"}
+  if(!hoursJson) return {};
+  if(Array.isArray(hoursJson)){
+    var map = {};
+    hoursJson.forEach(function(h){
+      var d = h.day || h.name || '';
+      var t = h.hours || h.openingHours || h.time || '';
+      if(d) map[d] = t;
+    });
+    return map;
+  }
+  return hoursJson; // already object
+}
+
 function renderHours(hoursJson){
   if(!hoursJson) return '<p style="font-size:12px;color:var(--ve-text-50)">Hours not available</p>';
+  var map = hoursMap(hoursJson);
   var today = DAYS[new Date().getDay()];
   var rows = DAYS.map(function(day){
-    var h = hoursJson[day] || hoursJson[day.toLowerCase()] || 'N/A';
+    var h = map[day] || map[day.toLowerCase()] || map[day.substring(0,3)] || 'N/A';
     var cls = day === today ? ' class="today"' : '';
     return '<tr'+cls+'><td>'+esc(day.substring(0,3))+'</td><td>'+esc(h)+'</td></tr>';
   }).join('');
@@ -340,16 +356,26 @@ function renderListing(l){
   // Vote count
   var votes = (l.favorites_count||0) + (l.likes_count||0);
 
+  // Business status badge
+  var statusBadge = '';
+  if(l.business_status === 'CLOSED_PERMANENTLY'){
+    statusBadge = '<div style="background:#b71c1c;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;text-align:center">Permanently Closed</div>';
+  } else if(l.business_status === 'CLOSED_TEMPORARILY'){
+    statusBadge = '<div style="background:#e65100;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;text-align:center">Temporarily Closed</div>';
+  }
+
   // Info bar chips
   var todayHours = '';
   if(l.google_hours_json){
-    var today = DAYS[new Date().getDay()];
-    todayHours = l.google_hours_json[today] || l.google_hours_json[today.toLowerCase()] || '';
+    var hmap = hoursMap(l.google_hours_json);
+    var todayName = DAYS[new Date().getDay()];
+    todayHours = hmap[todayName] || hmap[todayName.toLowerCase()] || hmap[todayName.substring(0,3)] || '';
   }
+  var priceDisplay = l.google_price_level || l.pricing_range || '';
   var infoChips = [];
   if(l.address_city) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>'+esc(l.address_city)+', '+esc(l.address_state)+'</span>');
   if(todayHours) infoChips.push('<span class="info-chip open-now"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+esc(todayHours)+'</span>');
-  if(l.pricing_range) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(l.pricing_range)+'</span>');
+  if(priceDisplay) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(priceDisplay)+'</span>');
   if(l.website) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Website</a></span>');
 
   // MAIN content by category type
@@ -415,6 +441,7 @@ function renderListing(l){
         '<div class="vote-count-display" id="vote-display">'+votes+' votes</div>'+
       '</div>'+
     '</div>'+
+    statusBadge+
     (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
     '<div class="listing-body">'+
       '<div class="listing-main">'+mainContent+'</div>'+
