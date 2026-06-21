@@ -1064,7 +1064,7 @@ function renderListing(l){
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
           '<div class="listing-badges">'+
             '<span class="badge-cat">'+esc(l.category)+'</span>'+
-            (l.vegan_status ? '<span class="badge-subcat" style="color:#5EC47A;border-color:#5EC47A">'+esc(l.vegan_status)+'</span>' : '')+
+            (l.vegan_status ? '<span class="badge-subcat" style="color:#5EC47A;border-color:#5EC47A">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
             verifiedBadge+
           '</div>'+
           (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
