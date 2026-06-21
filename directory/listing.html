@@ -467,8 +467,8 @@ function renderAtAGlance(l){
       c('Gender-Neutral Restroom', false),
       c('Service Animal Friendly', false),
     ]},
-    { label:'Community', items:[
-      c('LGBTQ+ Friendly',       !!l.lgbtq_friendly,    'community'),
+    { label:'Ownership', items:[
+      c('LGBTQ+-Owned',          !!l.lgbtq_friendly,    'community'),
       c('Black-Owned',           !!l.is_black_owned,    'community'),
       c('Women-Owned',           !!l.is_women_owned,    'community'),
       c('Latino/Hispanic-Owned', !!l.is_latino_owned,   'community'),
@@ -502,7 +502,8 @@ function renderAtAGlance(l){
 
   var html = '<div class="glance-groups">';
   groups.forEach(function(g){
-    var chips = coldStart
+    var isOwnership = g.label === 'Ownership';
+    var chips = (coldStart || isOwnership)
       ? g.items.filter(function(ci){ return ci.active; }).map(chipHtml)
       : g.items.map(chipHtml);
     if(!chips.length) return;
