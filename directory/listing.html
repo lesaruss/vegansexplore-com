@@ -270,8 +270,9 @@ function renderHours(hoursJson){
   return '<table class="hours-table"><tbody>'+rows+'</tbody></table>';
 }
 
-function renderPhotos(photos){
+function renderPhotos(photos, prefix){
   if(!photos || !photos.length) return '';
+  prefix = prefix || 'photos';
 
   // Desktop: 3-col x 2-row grid (max 6)
   var gridHtml = '<div class="photos-grid">'+
@@ -288,12 +289,30 @@ function renderPhotos(photos){
       return '<div class="photo-item"><img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
     }).join('')+'</div>';
   }).join('');
-  var dots = pairs.length > 1 ? '<div class="photos-dots" id="photos-dots">'+
+  var dots = pairs.length > 1 ? '<div class="photos-dots" id="'+prefix+'-dots">'+
     pairs.map(function(_,i){ return '<span class="photo-dot'+(i===0?' active':'')+'"></span>'; }).join('')+
   '</div>' : '';
-  var carouselHtml = '<div class="photos-carousel-wrap"><div class="photos-track" id="photos-track">'+slides+'</div>'+dots+'</div>';
+  var carouselHtml = '<div class="photos-carousel-wrap"><div class="photos-track" id="'+prefix+'-track">'+slides+'</div>'+dots+'</div>';
 
   return gridHtml + carouselHtml;
+}
+
+function wireCarousel(prefix){
+  var track = document.getElementById(prefix+'-track');
+  if(track && !track.dataset.wired){
+    track.dataset.wired = '1';
+    track.addEventListener('scroll', function(){
+      var dots = document.querySelectorAll('#'+prefix+'-dots .photo-dot');
+      if(!dots.length) return;
+      var idx = Math.round(track.scrollLeft / track.offsetWidth);
+      dots.forEach(function(d,i){ d.classList.toggle('active', i===idx); });
+    }, {passive:true});
+    document.querySelectorAll('#'+prefix+'-dots .photo-dot').forEach(function(dot,i){
+      dot.addEventListener('click', function(){
+        track.scrollTo({left: i * track.offsetWidth, behavior:'smooth'});
+      });
+    });
+  }
 }
 
 var ORDER_PLATFORMS = {
@@ -431,11 +450,34 @@ function renderSidebar(l){
     }).join('');
   }
 
+  var listingVotes = (l.favorites_count||0) + (l.likes_count||0);
+  var communityCard =
+    '<div class="side-card">'+
+      '<div class="side-card-title">Community Support</div>'+
+      '<div style="display:flex;border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;margin-bottom:12px">'+
+        '<div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--ve-border)">'+
+          '<div class="cstat-num" id="community-votes" style="font-size:20px">'+listingVotes+'</div>'+
+          '<div class="cstat-label">Votes</div>'+
+        '</div>'+
+        '<div style="flex:1;padding:10px 8px;text-align:center">'+
+          '<div class="cstat-num" id="community-lesars" style="font-size:20px">0</div>'+
+          '<div class="cstat-label">LESARs</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:6px;margin-bottom:8px">'+
+        '<input class="donate-input" id="donate-amount" type="number" min="1" placeholder="Donate LESARs" style="font-size:11px;padding:8px 10px"/>'+
+        '<button class="donate-btn" id="donate-btn" style="font-size:9px;padding:8px 10px;white-space:nowrap">Send</button>'+
+      '</div>'+
+      '<div class="donate-confirm" id="donate-confirm">LESARs sent!</div>'+
+      '<p class="member-note">Every vote earns +1 LESAR. <a href="#">Join $11/mo</a> to donate.</p>'+
+    '</div>';
+
   return '<div class="listing-sidebar">'+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
     '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>'+
     (deliveryPills ? '<div class="side-card"><div class="side-card-title">Delivery</div><div class="social-row">'+deliveryPills+'</div></div>' : '')+
     collabBadges+
+    communityCard+
     claimSection+
     '</div>';
 }
@@ -505,6 +547,12 @@ function renderListing(l){
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
 
+  // Photos right after About
+  var overviewPhotoHtml = renderPhotos(l.google_photos, 'ov');
+  if(overviewPhotoHtml){
+    overviewContent += '<div class="section"><h2 class="section-title">Photos</h2>'+overviewPhotoHtml+'</div>';
+  }
+
   if(catType === 'food'){
     overviewContent += renderOrderingPlatforms(l);
     overviewContent += renderMenuOptions(l);
@@ -523,27 +571,8 @@ function renderListing(l){
     if(l.booking_url) overviewContent += '<div class="section"><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener" class="delivery-btn" style="display:inline-flex">Book a Session</a></div>';
   }
 
-  // Community support section (universal)
-  overviewContent +=
-    '<div class="section">'+
-      '<h2 class="section-title">Community Support</h2>'+
-      '<div class="community-stats">'+
-        '<div class="community-stat"><div class="cstat-num" id="community-votes">'+votes+'</div><div class="cstat-label">Community Votes</div></div>'+
-        '<div class="community-stat"><div class="cstat-num" id="community-lesars">0</div><div class="cstat-label">LESARs Donated</div></div>'+
-      '</div>'+
-      '<div class="donate-card">'+
-        '<p class="donate-text">Members earn LESARs through participation and can donate them directly to businesses they love. Businesses use LESARs to unlock professional photos, video, and marketing services from VEGANS EXPLORE. Every vote also earns the business +1 LESAR automatically.</p>'+
-        '<div class="donate-row">'+
-          '<input class="donate-input" id="donate-amount" type="number" min="1" placeholder="LESARs to donate" />'+
-          '<button class="donate-btn" id="donate-btn">Donate LESARs</button>'+
-        '</div>'+
-        '<div class="donate-confirm" id="donate-confirm">Done! Your LESARs have been sent to this business.</div>'+
-        '<p class="member-note">Not a member yet? <a href="#">Join for $11/mo</a> to earn LESARs, vote, and support Vegan businesses directly.</p>'+
-      '</div>'+
-    '</div>';
-
   // PHOTOS tab content
-  var photoHtml = renderPhotos(l.google_photos);
+  var photoHtml = renderPhotos(l.google_photos, 'tab-photos');
   var photosTabContent = photoHtml
     ? '<div style="padding:24px 40px 40px">'+photoHtml+'</div>'
     : lockedTab('photos');
@@ -617,31 +646,12 @@ function renderListing(l){
       var panel = document.getElementById('tab-'+target);
       if(panel) panel.classList.add('active');
 
-      // Wire up photo carousel scroll/dots when Photos tab is activated
-      if(target === 'photos'){
-        wirePhotoCarousel();
-      }
+      if(target === 'photos') wireCarousel('tab-photos');
     });
   });
 
-  // Photo carousel in Overview is wired on load; Photos tab is wired on first click
-  function wirePhotoCarousel(){
-    var photoTrack = document.getElementById('photos-track');
-    if(photoTrack && !photoTrack.dataset.wired){
-      photoTrack.dataset.wired = '1';
-      photoTrack.addEventListener('scroll', function(){
-        var dots = document.querySelectorAll('.photo-dot');
-        if(!dots.length) return;
-        var idx = Math.round(photoTrack.scrollLeft / photoTrack.offsetWidth);
-        dots.forEach(function(d,i){ d.classList.toggle('active', i===idx); });
-      }, {passive:true});
-      document.querySelectorAll('.photo-dot').forEach(function(dot, i){
-        dot.addEventListener('click', function(){
-          photoTrack.scrollTo({left: i * photoTrack.offsetWidth, behavior:'smooth'});
-        });
-      });
-    }
-  }
+  // Wire overview carousel on load; Photos tab carousel on first click
+  wireCarousel('ov');
 
   // Vote button - increments vote display + community votes stat + gives business +1 LESARs
   document.getElementById('vote-btn').addEventListener('click', function(){
