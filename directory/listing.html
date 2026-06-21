@@ -254,6 +254,67 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 </div><!-- /frame -->
 
 <script>
+// ── Global lightbox (must be outside IIFE so event handlers can reach it) ──
+var _lbReg = {};   // key → string[] of image URLs
+var _lbKey = null;
+var _lbIdx = 0;
+
+function openLightbox(key, idx){
+  var imgs = _lbReg[key];
+  if(!imgs || !imgs.length) return;
+  _lbKey = key; _lbIdx = idx;
+  var overlay = document.getElementById('lb-overlay');
+  var img    = document.getElementById('lb-img');
+  var cap    = document.getElementById('lb-caption');
+  if(!overlay || !img) return;
+  img.src = imgs[_lbIdx];
+  if(cap) cap.textContent = (_lbIdx+1) + ' / ' + imgs.length;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  var overlay = document.getElementById('lb-overlay');
+  if(overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function moveLightbox(dir){
+  var imgs = _lbReg[_lbKey];
+  if(!imgs) return;
+  _lbIdx = (_lbIdx + dir + imgs.length) % imgs.length;
+  var img = document.getElementById('lb-img');
+  var cap = document.getElementById('lb-caption');
+  if(img) img.src = imgs[_lbIdx];
+  if(cap) cap.textContent = (_lbIdx+1) + ' / ' + imgs.length;
+}
+
+// Wire lightbox controls once DOM is ready
+document.addEventListener('DOMContentLoaded', function(){
+  var overlay = document.getElementById('lb-overlay');
+  var closeBtn = document.getElementById('lb-close');
+  var prevBtn  = document.getElementById('lb-prev');
+  var nextBtn  = document.getElementById('lb-next');
+  if(closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  if(prevBtn)  prevBtn.addEventListener('click',  function(){ moveLightbox(-1); });
+  if(nextBtn)  nextBtn.addEventListener('click',  function(){ moveLightbox(1); });
+  if(overlay)  overlay.addEventListener('click',  function(e){ if(e.target === overlay) closeLightbox(); });
+  document.addEventListener('keydown', function(e){
+    if(!overlay || !overlay.classList.contains('open')) return;
+    if(e.key === 'Escape')     closeLightbox();
+    if(e.key === 'ArrowLeft')  moveLightbox(-1);
+    if(e.key === 'ArrowRight') moveLightbox(1);
+  });
+  // Event delegation for photo items
+  document.addEventListener('click', function(e){
+    var item = e.target.closest('[data-lb-key]');
+    if(item) openLightbox(item.dataset.lbKey, parseInt(item.dataset.lbIdx, 10));
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    var item = document.activeElement && document.activeElement.closest('[data-lb-key]');
+    if(item){ e.preventDefault(); openLightbox(item.dataset.lbKey, parseInt(item.dataset.lbIdx, 10)); }
+  });
+});
+
 (function(){
 var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
 var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
@@ -333,80 +394,41 @@ function renderHours(hoursJson){
   return '<table class="hours-table"><tbody>'+rows+'</tbody></table>';
 }
 
-// Shared lightbox state
-var lbImages = [];
-var lbIndex = 0;
-
-function openLightbox(imgs, idx){
-  lbImages = imgs;
-  lbIndex = idx;
-  var overlay = document.getElementById('lb-overlay');
-  var img = document.getElementById('lb-img');
-  var cap = document.getElementById('lb-caption');
-  if(!overlay || !img) return;
-  img.src = lbImages[lbIndex];
-  if(cap) cap.textContent = (lbIndex+1) + ' / ' + lbImages.length;
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox(){
-  var overlay = document.getElementById('lb-overlay');
-  if(overlay) overlay.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function moveLightbox(dir){
-  lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
-  var img = document.getElementById('lb-img');
-  var cap = document.getElementById('lb-caption');
-  if(img) img.src = lbImages[lbIndex];
-  if(cap) cap.textContent = (lbIndex+1) + ' / ' + lbImages.length;
-}
-
-(function wireLightboxControls(){
-  document.addEventListener('DOMContentLoaded', function(){
-    var overlay = document.getElementById('lb-overlay');
-    document.getElementById('lb-close') && document.getElementById('lb-close').addEventListener('click', closeLightbox);
-    document.getElementById('lb-prev') && document.getElementById('lb-prev').addEventListener('click', function(){ moveLightbox(-1); });
-    document.getElementById('lb-next') && document.getElementById('lb-next').addEventListener('click', function(){ moveLightbox(1); });
-    overlay && overlay.addEventListener('click', function(e){ if(e.target === overlay) closeLightbox(); });
-    document.addEventListener('keydown', function(e){
-      if(!document.getElementById('lb-overlay').classList.contains('open')) return;
-      if(e.key === 'Escape') closeLightbox();
-      if(e.key === 'ArrowLeft') moveLightbox(-1);
-      if(e.key === 'ArrowRight') moveLightbox(1);
-    });
-  });
-})();
-
 function renderPhotos(photos, prefix, tabMode){
   if(!photos || !photos.length) return '';
   prefix = prefix || 'photos';
+  var lbKey = prefix + '-lb';
+  _lbReg[lbKey] = photos; // register in global lightbox registry
 
-  function photoItem(url, idx, allUrls){
-    return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" onclick="openLightbox('+JSON.stringify(allUrls)+','+idx+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \')openLightbox('+JSON.stringify(allUrls)+','+idx+')">'+
+  function photoItem(url, idx){
+    return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" data-lb-key="'+lbKey+'" data-lb-idx="'+idx+'">'+
       '<img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
   }
 
   if(tabMode){
     // Photos tab: 2-col full grid, all photos, lightbox on click
     return '<div class="photos-tab-grid">'+
-      photos.map(function(url,i){ return photoItem(url, i, photos); }).join('')+
+      photos.map(function(url,i){ return photoItem(url, i); }).join('')+
     '</div>';
   }
 
   // Overview: desktop 3-col x 2-row (max 6), mobile 2-up carousel
+  var ovKey = prefix + '-ov-lb';
+  _lbReg[ovKey] = photos.slice(0, 6);
+  function ovPhotoItem(url, idx){
+    return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" data-lb-key="'+ovKey+'" data-lb-idx="'+idx+'">'+
+      '<img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
+  }
+
   var gridHtml = '<div class="photos-grid">'+
-    photos.slice(0,6).map(function(url,i){ return photoItem(url, i, photos.slice(0,6)); }).join('')+
+    photos.slice(0,6).map(function(url,i){ return ovPhotoItem(url, i); }).join('')+
   '</div>';
 
   var pairs = [];
   for(var i=0; i<photos.length; i+=2) pairs.push(photos.slice(i, i+2));
   var slides = pairs.map(function(pair, pi){
     return '<div class="photo-slide">'+pair.map(function(url, j){
-      var globalIdx = pi*2 + j;
-      return photoItem(url, globalIdx, photos);
+      return photoItem(url, pi*2+j);
     }).join('')+'</div>';
   }).join('');
   var dots = pairs.length > 1 ? '<div class="photos-dots" id="'+prefix+'-dots">'+
@@ -1011,11 +1033,13 @@ function renderInstagramContent(veBusinessId){
       var photoEl = document.getElementById('tab-photos');
       if(photoEl && photos.length){
         var igUrls = photos.filter(function(p){ return !!p.thumbnail_url; }).map(function(p){ return p.thumbnail_url; });
+        var igLbKey = 'ig-photos-lb';
+        _lbReg[igLbKey] = igUrls;
         var igSection = '<div style="padding:0 40px 40px">' +
           '<p style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px">Explorer Photos — via VEGANS EXPLORE</p>' +
           '<div class="photos-tab-grid">' +
           igUrls.map(function(url, i){
-            return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" onclick="openLightbox('+JSON.stringify(igUrls)+','+i+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \')openLightbox('+JSON.stringify(igUrls)+','+i+')">'+
+            return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" data-lb-key="'+igLbKey+'" data-lb-idx="'+i+'">'+
               '<img src="'+esc(url)+'" loading="lazy"/></div>';
           }).join('') +
           '</div></div>';
