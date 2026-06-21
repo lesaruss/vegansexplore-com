@@ -609,7 +609,7 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 </div>
 <div class="cat-tabs" role="tablist"><button class="cat-tab active" onclick="showBoard(this,'food')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg> Food</button><button class="cat-tab" onclick="showBoard(this,'products')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg> Products</button><button class="cat-tab" onclick="showBoard(this,'services')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg> Services</button><button class="cat-tab" onclick="showBoard(this,'community')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg> Community</button><button class="cat-tab" onclick="showBoard(this,'events')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><rect height="18" rx="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg> Events</button><button class="cat-tab" onclick="showBoard(this,'media')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect height="14" rx="2" width="15" x="1" y="5"></rect></svg> Media</button></div>
 <div class="board-panel active" id="board-food">
-<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'food')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Restaurants</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Bakeries &amp; Cafes</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Food Brands</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Catering</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Meal Prep</button></div>
+<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'food')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Restaurants</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Bakeries &amp; Cafes</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Food Brands</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Catering</button><button class="subcat-pill" onclick="filterSubcat(this,'food')">Meal Prep</button><button class="subcat-pill" onclick="filterSubcat(this,'food')" data-special="vf" style="border-color:#5EC47A;color:#2d7a4f">Vegan Friendly</button><button class="subcat-pill" onclick="filterSubcat(this,'food')" data-special="closed" style="border-color:#999;color:#666">Closed</button></div>
 <div class="pill-row">
 <div class="pill-group">
 <button class="pill active" onclick="showPill(this,'featured','food')">Featured</button>
@@ -673,8 +673,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="nearest">Nearest</option>
 </select>
 </div><div class="rank-grid" id="food-online-grid"></div></div>
+<div class="sub-panel" id="food-vf" style="display:none"><div class="rank-grid" id="food-vf-grid"></div></div>
+<div class="sub-panel" id="food-closed" style="display:none"><div class="rank-grid" id="food-closed-grid"></div></div>
 </div><div class="board-panel" id="board-products">
-<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'products')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Beauty</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Supplements</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Apparel</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Home Goods</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Books &amp; Education</button></div>
+<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'products')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Beauty</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Supplements</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Apparel</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Home Goods</button><button class="subcat-pill" onclick="filterSubcat(this,'products')">Books &amp; Education</button><button class="subcat-pill" onclick="filterSubcat(this,'products')" data-special="closed" style="border-color:#999;color:#666">Closed</button></div>
 <div class="pill-row">
 <div class="pill-group">
 <button class="pill active" onclick="showPill(this,'featured','products')">Featured</button>
@@ -738,8 +740,9 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="nearest">Nearest</option>
 </select>
 </div><div class="rank-grid" id="products-online-grid"></div></div>
+<div class="sub-panel" id="products-closed" style="display:none"><div class="rank-grid" id="products-closed-grid"></div></div>
 </div><div class="board-panel" id="board-services">
-<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'services')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Health &amp; Wellness</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Fitness</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Salon &amp; Spa</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Coaching</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Legal &amp; Financial</button></div>
+<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'services')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Health &amp; Wellness</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Fitness</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Salon &amp; Spa</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Coaching</button><button class="subcat-pill" onclick="filterSubcat(this,'services')">Legal &amp; Financial</button><button class="subcat-pill" onclick="filterSubcat(this,'services')" data-special="closed" style="border-color:#999;color:#666">Closed</button></div>
 <div class="pill-row">
 <div class="pill-group">
 <button class="pill active" onclick="showPill(this,'featured','services')">Featured</button>
@@ -803,8 +806,9 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="nearest">Nearest</option>
 </select>
 </div><div class="rank-grid" id="services-online-grid"></div></div>
+<div class="sub-panel" id="services-closed" style="display:none"><div class="rank-grid" id="services-closed-grid"></div></div>
 </div><div class="board-panel" id="board-community">
-<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'community')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Nonprofits</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Advocacy</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Animal Rescue</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Education</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Faith &amp; Spiritual</button></div>
+<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'community')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Nonprofits</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Advocacy</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Animal Rescue</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Education</button><button class="subcat-pill" onclick="filterSubcat(this,'community')">Faith &amp; Spiritual</button><button class="subcat-pill" onclick="filterSubcat(this,'community')" data-special="closed" style="border-color:#999;color:#666">Closed</button></div>
 <div class="pill-row">
 <div class="pill-group">
 <button class="pill active" onclick="showPill(this,'featured','community')">Featured</button>
@@ -868,8 +872,9 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="nearest">Nearest</option>
 </select>
 </div><div class="rank-grid" id="community-online-grid"></div></div>
+<div class="sub-panel" id="community-closed" style="display:none"><div class="rank-grid" id="community-closed-grid"></div></div>
 </div><div class="board-panel" id="board-events">
-<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'events')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Festivals</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Markets</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Workshops</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Retreats</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Classes</button></div>
+<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'events')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Festivals</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Markets</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Workshops</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Retreats</button><button class="subcat-pill" onclick="filterSubcat(this,'events')">Classes</button><button class="subcat-pill" onclick="filterSubcat(this,'events')" data-special="closed" style="border-color:#999;color:#666">Closed</button></div>
 <div class="pill-row">
 <div class="pill-group">
 <button class="pill active" onclick="showPill(this,'featured','events')">Featured</button>
@@ -933,8 +938,9 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="nearest">Nearest</option>
 </select>
 </div><div class="rank-grid" id="events-online-grid"></div></div>
+<div class="sub-panel" id="events-closed" style="display:none"><div class="rank-grid" id="events-closed-grid"></div></div>
 </div><div class="board-panel" id="board-media">
-<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'media')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">Blogs</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">Podcasts</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">Magazines</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">YouTube</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">News</button></div>
+<div class="subcat-pills"><button class="subcat-pill sc-active" onclick="filterSubcat(this,'media')">All</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">Blogs</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">Podcasts</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">Magazines</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">YouTube</button><button class="subcat-pill" onclick="filterSubcat(this,'media')">News</button><button class="subcat-pill" onclick="filterSubcat(this,'media')" data-special="closed" style="border-color:#999;color:#666">Closed</button></div>
 <div class="pill-row">
 <div class="pill-group">
 <button class="pill active" onclick="showPill(this,'featured','media')">Featured</button>
@@ -998,6 +1004,7 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <option value="nearest">Nearest</option>
 </select>
 </div><div class="rank-grid" id="media-online-grid"></div></div>
+<div class="sub-panel" id="media-closed" style="display:none"><div class="rank-grid" id="media-closed-grid"></div></div>
 </div>
 <div class="points-callout">
 <div>
@@ -1028,6 +1035,28 @@ function filterSubcat(pill,cat){
   var panel=document.getElementById('board-'+cat);
   panel.querySelectorAll('.subcat-pill').forEach(p=>p.classList.remove('sc-active'));
   pill.classList.add('sc-active');
+  var special=pill.dataset.special;
+  var pillRow=panel.querySelector('.pill-row');
+  // Hide/show all sub-panels
+  panel.querySelectorAll('.sub-panel').forEach(function(sp){sp.style.display='none';});
+  if(special==='vf'){
+    if(pillRow)pillRow.style.display='none';
+    var vfPanel=document.getElementById(cat+'-vf');
+    if(vfPanel)vfPanel.style.display='';
+    return;
+  }
+  if(special==='closed'){
+    if(pillRow)pillRow.style.display='none';
+    var clPanel=document.getElementById(cat+'-closed');
+    if(clPanel)clPanel.style.display='';
+    return;
+  }
+  // Normal subcat - restore pill-row and active sub-panel
+  if(pillRow)pillRow.style.display='';
+  var activePill=panel.querySelector('.pill.active');
+  var activeId=activePill?activePill.getAttribute('onclick').match(/'([^']+)'/g)[0].replace(/'/g,''):'featured';
+  var activePanel=document.getElementById(cat+'-'+activeId);
+  if(activePanel)activePanel.style.display='';
   var sel=pill.textContent.trim();
   panel.querySelectorAll('.rank-card').forEach(function(card){
     if(sel==='All'){card.style.display='';return;}
@@ -1258,11 +1287,32 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     });
   }
 
-  function populateGrids(listings) {
+  function makeClosedCard(l, idx) {
+    var region = getRegion(l);
+    var online = isOnline(l) ? '1' : '0';
+    var votes = (l.favorites_count || 0) + (l.likes_count || 0);
+    var subcat = l.specialty || l.category || '';
+    return '<div class="rank-card browse-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-region="' + esc(region) + '" data-subcat="' + esc(subcat) + '" data-online="' + online + '" data-slug="' + esc(l.slug||'') + '" style="opacity:0.7">' +
+      makeAvatar(l) +
+      '<div class="rank-info"><div class="rank-name" style="color:#888">' + esc(l.name) + '</div>' +
+      '<div class="rank-meta">' + (online === '1' ? '<span class="online-badge">Nationwide</span>' : esc(region)) + '</div>' +
+      '<div class="rank-subcat"><span style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:#c00;border:1px solid #c00;border-radius:20px;padding:2px 8px;text-transform:uppercase">Permanently Closed</span></div></div>' +
+      '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span></div>' +
+      '</div>';
+  }
+
+  function populateGrids(approved, closed) {
+    closed = closed || [];
     var tabs = { food: [], products: [], services: [], community: [], events: [], media: [] };
-    listings.forEach(function(l) {
+    var closedTabs = { food: [], products: [], services: [], community: [], events: [], media: [] };
+
+    approved.forEach(function(l) {
       var tab = CAT_MAP[l.category] || 'services';
       tabs[tab].push(l);
+    });
+    closed.forEach(function(l) {
+      var tab = CAT_MAP[l.category] || 'services';
+      closedTabs[tab].push(l);
     });
 
     Object.keys(tabs).forEach(function(tab) {
@@ -1271,10 +1321,14 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
         return ((b.favorites_count||0)+(b.likes_count||0)) - ((a.favorites_count||0)+(a.likes_count||0));
       });
 
-      var online = all.filter(function(l) { return isOnline(l); });
-      var physical = all.filter(function(l) { return !isOnline(l); });
-      var featured = all.filter(function(l) { return l.is_featured; });
-      if (featured.length < 5) featured = all.slice(0, Math.min(all.length, 20));
+      // Separate vegan-friendly from regular (food tab only)
+      var veganFriendly = tab === 'food' ? all.filter(function(l){ return l.vegan_status === 'vegan_friendly'; }) : [];
+      var regular = all.filter(function(l){ return l.vegan_status !== 'vegan_friendly'; });
+
+      var online = regular.filter(function(l) { return isOnline(l); });
+      var physical = regular.filter(function(l) { return !isOnline(l); });
+      var featured = regular.filter(function(l) { return l.is_featured; });
+      if (featured.length < 5) featured = regular.slice(0, Math.min(regular.length, 20));
 
       var featuredGrid = document.getElementById(tab + '-featured-grid');
       if (featuredGrid) featuredGrid.innerHTML = featured.map(makeBrowseCard).join('');
@@ -1288,25 +1342,44 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
       var top10Panel = document.getElementById(tab + '-top10');
       if (top10Panel) {
         var top10Grid = top10Panel.querySelector('.rank-grid');
-        if (top10Grid) top10Grid.innerHTML = all.slice(0, 10).map(function(l, i) { return makeTop10Card(l, i+1); }).join('');
+        if (top10Grid) top10Grid.innerHTML = regular.slice(0, 10).map(function(l, i) { return makeTop10Card(l, i+1); }).join('');
       }
+
+      // Vegan Friendly panel (food only)
+      var vfGrid = document.getElementById(tab + '-vf-grid');
+      if (vfGrid) vfGrid.innerHTML = veganFriendly.map(makeBrowseCard).join('') ||
+        '<p style="color:#aaa;font-size:13px;padding:24px 0">No vegan-friendly listings yet.</p>';
+
+      // Closed panel
+      var clGrid = document.getElementById(tab + '-closed-grid');
+      if (clGrid) clGrid.innerHTML = closedTabs[tab].map(makeClosedCard).join('') ||
+        '<p style="color:#aaa;font-size:13px;padding:24px 0">No closed listings recorded.</p>';
     });
 
     bindVoteButtons();
     bindCardClicks();
   }
 
+  var _approvedListings = [];
   function fetchAll(offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,initials,color&status=eq.approved&limit=1000&offset=' + (offset||0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,initials,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset||0);
     fetch(url, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         acc = acc.concat(data);
         if (data.length === 1000) { fetchAll(offset + 1000, acc); }
-        else { populateGrids(acc); }
+        else { _approvedListings = acc; fetchClosed(); }
       })
       .catch(function(e) { console.error('VE Directory load error', e); });
+  }
+
+  function fetchClosed() {
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,initials,color&status=eq.closed&limit=1000';
+    fetch(url, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
+      .then(function(r) { return r.json(); })
+      .then(function(data) { populateGrids(_approvedListings, data); })
+      .catch(function(e) { populateGrids(_approvedListings, []); });
   }
 
   fetchAll();
