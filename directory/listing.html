@@ -746,7 +746,6 @@ function renderListing(l){
     '<div class="listing-hero">'+
       '<div class="listing-hero-avatar" style="background:'+esc(avBg)+'">'+av+'</div>'+
       '<div class="listing-hero-content">'+
-        (l.logo_url ? '<img src="'+esc(l.logo_url)+'" alt="'+esc(l.name)+' logo" style="width:60px;height:60px;border-radius:10px;object-fit:cover;border:1px solid var(--ve-border);flex-shrink:0;align-self:flex-start" onerror="this.style.display=\'none\'">' : '')+
         '<div class="listing-hero-body">'+
           breadcrumb+
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
