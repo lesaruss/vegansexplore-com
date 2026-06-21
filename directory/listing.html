@@ -163,7 +163,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .listing-hero-avatar{width:64px;min-width:64px;height:auto;align-self:stretch;border-radius:10px;font-size:18px;flex-shrink:0}
   .listing-hero-content{display:flex;flex-direction:row;flex:1;min-width:0;align-items:center;gap:10px}
   .listing-hero-body{flex:1;min-width:0}
-  .listing-breadcrumb{display:none}
+  .listing-breadcrumb{font-size:9px;letter-spacing:0.15em}
   .listing-tagline{display:none}
   .listing-name{font-size:15px;margin-bottom:5px}
   .listing-badges{gap:5px;margin-bottom:0}
@@ -594,6 +594,17 @@ function renderListing(l){
     '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
     '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>'+
     '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>';
+
+  // Square avatar: read hero-body height after layout and match avatar dimensions
+  requestAnimationFrame(function(){
+    var body = document.querySelector('.listing-hero-body');
+    var av = document.querySelector('.listing-hero-avatar');
+    if(body && av){
+      var h = body.offsetHeight;
+      av.style.width = h + 'px';
+      av.style.height = h + 'px';
+    }
+  });
 
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function(btn){
