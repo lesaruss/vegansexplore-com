@@ -662,10 +662,8 @@ function renderSidebar(l){
   if(FOOD_CATS.indexOf(l.category) !== -1){
     deliveryPills = DELIVERY_APPS.map(function(app){
       var url = l[app.key] || (app.alt ? l[app.alt] : '');
-      if(url){
-        return '<a href="'+esc(url)+'" target="_blank" rel="noopener" class="social-btn" style="border-color:'+app.color+';color:'+app.color+'">'+esc(app.label)+'</a>';
-      }
-      return '<span class="social-btn" style="opacity:0.3;cursor:default;pointer-events:none">'+esc(app.label)+'</span>';
+      if(!url) return '';
+      return '<a href="'+esc(url)+'" target="_blank" rel="noopener" class="social-btn" style="border-color:'+app.color+';color:'+app.color+'">'+esc(app.label)+'</a>';
     }).join('');
   }
 
@@ -792,7 +790,6 @@ function renderListing(l){
 
   if(catType === 'food'){
     overviewContent += renderAtAGlance(l);
-    overviewContent += renderOrderingPlatforms(l);
     if(l.google_hours_json){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }
