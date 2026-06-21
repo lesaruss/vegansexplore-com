@@ -229,6 +229,20 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .unlock-section p{font-size:12px;color:var(--ve-text-50);line-height:1.65;max-width:340px;margin:0 auto 16px}
 .unlock-features{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
 .unlock-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border-radius:20px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text-50)}
+
+/* MENU TAB */
+.menu-category{margin-bottom:28px}
+.menu-category-title{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-text-50);border-bottom:1px solid var(--ve-border);padding-bottom:8px;margin-bottom:14px}
+.menu-item{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--ve-border);gap:16px}
+.menu-item:last-child{border-bottom:none}
+.menu-item-info{flex:1;min-width:0}
+.menu-item-name{font-size:14px;font-weight:700;color:var(--ve-text);margin-bottom:4px}
+.menu-item-desc{font-size:12px;color:var(--ve-text-50);line-height:1.55}
+.menu-item-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.menu-item-tag{font-size:10px;font-weight:800;letter-spacing:.08em;padding:3px 8px;border-radius:20px}
+.menu-item-tag.gf{background:#e8f5e9;color:#2d7d31}
+.menu-item-tag.pick{background:var(--ve-green-light);color:var(--ve-green-dark)}
+.menu-item-price{font-size:15px;font-weight:800;color:var(--ve-text);white-space:nowrap;padding-top:2px}
 </style>
 </head>
 <body>
@@ -734,6 +748,43 @@ function lockedTab(tabName){
   '</div>';
 }
 
+function fetchMenuItems(listingId){
+  var url = SUPABASE_URL+'/rest/v1/ve_menu_items?listing_id=eq.'+encodeURIComponent(listingId)+'&is_available=eq.true&order=sort_order.asc';
+  return fetch(url,{headers:{apikey:ANON_KEY,Authorization:'Bearer '+ANON_KEY}})
+    .then(function(r){return r.json();})
+    .catch(function(){return [];});
+}
+
+function menuTabContent(items){
+  if(!items||!items.length) return '<div class="tab-locked"><div class="tab-locked-title">No menu items yet</div><div class="tab-locked-sub">Menu items will appear here once this listing is updated.</div></div>';
+  var cats=[];var catMap={};
+  items.forEach(function(item){
+    if(!catMap[item.category]){catMap[item.category]=[];cats.push(item.category);}
+    catMap[item.category].push(item);
+  });
+  var html='<div class="section">';
+  cats.forEach(function(cat){
+    html+='<div class="menu-category">';
+    html+='<div class="menu-category-title">'+esc(cat)+'</div>';
+    catMap[cat].forEach(function(item){
+      var tags='';
+      if(item.is_featured) tags+='<span class="menu-item-tag pick">Chef\'s Pick</span>';
+      if(item.is_gluten_free) tags+='<span class="menu-item-tag gf">GF</span>';
+      html+='<div class="menu-item">'+
+        '<div class="menu-item-info">'+
+          '<div class="menu-item-name">'+esc(item.name)+'</div>'+
+          (item.description?'<div class="menu-item-desc">'+esc(item.description)+'</div>':'')+
+          (tags?'<div class="menu-item-tags">'+tags+'</div>':'')+
+        '</div>'+
+        (item.price_display?'<div class="menu-item-price">'+esc(item.price_display)+'</div>':'')+
+      '</div>';
+    });
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
 function renderListing(l){
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
@@ -1052,8 +1103,15 @@ if(!slug || slug === 'listing'){
 } else {
   fetchListing(slug).then(function(data){
     if(data && data.length){
-      renderListing(data[0]);
-      if(data[0].ve_business_id) renderInstagramContent(data[0].ve_business_id);
+      var l = data[0];
+      renderListing(l);
+      if(l.ve_business_id) renderInstagramContent(l.ve_business_id);
+      if(l.claimed_by_member_id){
+        fetchMenuItems(l.id).then(function(items){
+          var panel = document.getElementById('tab-menu');
+          if(panel) panel.innerHTML = menuTabContent(items);
+        });
+      }
     } else {
       showNotFound();
     }
