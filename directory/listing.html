@@ -254,7 +254,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .vc-label{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:18px}
 .vc-stage{overflow:hidden;border-radius:12px}
 .vc-track{transition:opacity .18s ease,transform .18s ease}
-.vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .vc-item{}
 .vc-thumb-wrap{position:relative;aspect-ratio:16/9;background:#111;border-radius:10px;overflow:hidden;cursor:pointer}
 .vc-thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
@@ -1180,7 +1180,7 @@ function renderVideoCarousel(videos){
   if(!items.length) return;
 
   var carouselId = 'vc-' + Date.now();
-  var perPage = 2; // desktop; mobile CSS overrides to 1 col but we still paginate by 2
+  var perPage = 6; // 3 cols x 2 rows desktop; mobile single col
   var page = 0;
   var total = items.length;
   var pages = Math.ceil(total / perPage);
