@@ -202,13 +202,68 @@ function renderPhotos(photos){
   }).join('') + '</div>';
 }
 
-function renderDelivery(l){
+var ORDER_PLATFORMS = {
+  uber_eats:  {label:'Uber Eats',  color:'#06C167'},
+  doordash:   {label:'DoorDash',   color:'#FF3008'},
+  grubhub:    {label:'Grubhub',    color:'#F63440'},
+  instacart:  {label:'Instacart',  color:'#43B02A'},
+  chownow:    {label:'ChowNow',    color:'#E8473F'},
+  toast:      {label:'Toast',      color:'#FF4C00'},
+  square:     {label:'Square',     color:'#3E4348'},
+  goldbelly:  {label:'Goldbelly',  color:'#F47920'},
+  caviar:     {label:'Caviar',     color:'#1A1A1A'},
+  seamless:   {label:'Seamless',   color:'#EA1917'},
+  own_site:   {label:'Order Direct', color:'#2d7d31'}
+};
+
+function renderOrderingPlatforms(l){
   var btns = [];
-  if(l.uber_eats_url) btns.push('<a href="'+esc(l.uber_eats_url)+'" target="_blank" rel="noopener" class="delivery-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>Uber Eats</a>');
-  if(l.doordash_url) btns.push('<a href="'+esc(l.doordash_url)+'" target="_blank" rel="noopener" class="delivery-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>DoorDash</a>');
+  // New jsonb column (primary source)
+  var op = l.ordering_platforms || {};
+  // Fallback to legacy columns
+  if(!op.uber_eats && l.uber_eats_url) op.uber_eats = l.uber_eats_url;
+  if(!op.doordash && l.doordash_url) op.doordash = l.doordash_url;
+  Object.keys(op).forEach(function(key){
+    var url = op[key];
+    if(!url) return;
+    var meta = ORDER_PLATFORMS[key] || {label: key.replace(/_/g,' '), color:'#555'};
+    btns.push('<a href="'+esc(url)+'" target="_blank" rel="noopener" class="delivery-btn" style="border-left:3px solid '+meta.color+'">'+
+      '<span style="width:8px;height:8px;border-radius:50%;background:'+meta.color+';display:inline-block;flex-shrink:0"></span>'+
+      esc(meta.label)+'</a>');
+  });
   if(!btns.length) return '';
   return '<div class="section"><h2 class="section-title">Order Online</h2><div class="delivery-row">'+btns.join('')+'</div></div>';
 }
+
+function renderAccommodations(l){
+  var items = l.accommodations || [];
+  if(!items.length) return '';
+  var ICONS = {
+    'Dine-in':'🍽','Takeout':'📦','Delivery':'🛵','Outdoor Seating':'☀️',
+    'Reservations':'📅','WiFi':'📶','Parking':'🅿️','Dog-Friendly':'🐕',
+    'Wheelchair Accessible':'♿','BYOB':'🍷','Live Music':'🎵','Family-Friendly':'👨‍👩‍👧'
+  };
+  return '<div class="section"><h2 class="section-title">Accommodations</h2>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    items.map(function(a){
+      var icon = ICONS[a] || '•';
+      return '<span style="font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--ve-border);background:var(--ve-surface);display:inline-flex;align-items:center;gap:5px">'+icon+' '+esc(a)+'</span>';
+    }).join('')+'</div></div>';
+}
+
+function renderMenuOptions(l){
+  var items = l.menu_options || [];
+  var phil = l.vegan_philosophy || [];
+  var all = items.concat(phil);
+  if(!all.length) return '';
+  return '<div class="section"><h2 class="section-title">Menu & Dietary Options</h2>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    all.map(function(o){
+      return '<span style="font-size:10px;font-weight:800;padding:5px 12px;border-radius:20px;background:var(--ve-green-light);color:#2d7d31;border:1px solid #c8e6c9">'+esc(o)+'</span>';
+    }).join('')+'</div></div>';
+}
+
+function renderDelivery(l){ return renderOrderingPlatforms(l); }
 
 function renderPlatforms(l){
   var platforms = [];
@@ -245,10 +300,21 @@ function renderSidebar(l){
   var verifBadge = l.ve_verified ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">VE Verified</span>' : '';
   var claimSection = !l.claimed_by_member_id ? '<div class="claim-box"><p>Is this your business? Claim this listing to update your info and unlock analytics.</p><a href="/intake" class="claim-btn">Claim Listing</a></div>' : '';
 
+  // Collaboration badges
+  var collabBadges = '';
+  if(l.collaboration_open || l.media_opportunities_open){
+    collabBadges = '<div class="side-card" style="background:#0a1a0f;border-color:#2d5a3a"><div class="side-card-title" style="color:#5EC47A">Open To</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
+      (l.collaboration_open ? '<span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:10px;background:rgba(94,196,122,0.15);color:#5EC47A;border:1px solid rgba(94,196,122,0.3)">Collaborations</span>' : '')+
+      (l.media_opportunities_open ? '<span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:10px;background:rgba(94,196,122,0.15);color:#5EC47A;border:1px solid rgba(94,196,122,0.3)">Media Opportunities</span>' : '')+
+      '</div></div>';
+  }
+
   return '<div class="listing-sidebar">'+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
     (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
     (l.google_rating ? '<div class="side-card"><div class="side-card-title">Google Rating</div><div style="font-size:26px;font-weight:900;color:var(--ve-text)">'+l.google_rating+'</div><div style="color:#F69820;font-size:14px;letter-spacing:2px">'+stars(l.google_rating)+'</div>'+(l.google_reviews_count ? '<div style="font-size:11px;color:var(--ve-text-50);margin-top:4px">'+l.google_reviews_count.toLocaleString()+' reviews</div>':'')+'</div>' : '')+
+    collabBadges+
     claimSection+
     '</div>';
 }
@@ -295,8 +361,12 @@ function renderListing(l){
   }
 
   if(catType === 'food'){
-    // Delivery
-    mainContent += renderDelivery(l);
+    // Online ordering (new unified + legacy fallback)
+    mainContent += renderOrderingPlatforms(l);
+    // Menu & dietary options
+    mainContent += renderMenuOptions(l);
+    // Accommodations
+    mainContent += renderAccommodations(l);
     // Photos
     var photoHtml = renderPhotos(l.google_photos);
     if(photoHtml) mainContent += '<div class="section"><h2 class="section-title">Photos</h2>'+photoHtml+'</div>';
@@ -332,6 +402,9 @@ function renderListing(l){
         '<div class="listing-badges">'+
           '<span class="badge-cat">'+esc(l.category)+'</span>'+
           (l.specialty && l.specialty !== l.category ? '<span class="badge-subcat">'+esc(l.specialty)+'</span>' : '')+
+          (l.cuisine_type ? '<span class="badge-subcat">'+esc(l.cuisine_type)+'</span>' : '')+
+          (l.vegan_status ? '<span class="badge-subcat" style="color:#5EC47A;border-color:#5EC47A">'+esc(l.vegan_status)+'</span>' : '')+
+          (l.location_type ? '<span class="badge-subcat">'+esc(l.location_type)+'</span>' : '')+
           verifiedBadge+
         '</div>'+
         (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
