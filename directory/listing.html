@@ -96,10 +96,24 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .claim-btn{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;border-radius:4px;background:transparent;color:#5EC47A;border:1px solid #5EC47A;text-decoration:none;transition:.15s}
 .claim-btn:hover{background:#5EC47A;color:#000}
 
-/* PHOTOS GRID */
-.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee}
-.photo-item img{width:100%;height:100%;object-fit:cover}
+/* PHOTOS CAROUSEL */
+.photos-carousel{position:relative}
+.photos-track{display:flex;overflow-x:scroll;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;gap:8px}
+.photos-track::-webkit-scrollbar{display:none}
+.photo-slide{display:flex;gap:8px;flex:0 0 100%;scroll-snap-align:start}
+.photo-slide .photo-item{flex:1;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee}
+.photo-slide .photo-item img{width:100%;height:100%;object-fit:cover}
+.photos-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.photo-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);transition:background .2s;cursor:pointer}
+.photo-dot.active{background:var(--ve-green)}
+/* Mobile rating under badges */
+.rating-mobile{display:none}
+@media(max-width:768px){
+  .rating-mobile{display:flex;align-items:center;gap:5px;margin-top:6px}
+  .rating-mobile .rm-num{font-size:13px;font-weight:900;color:#fff}
+  .rating-mobile .rm-stars{font-size:11px;color:#F69820;letter-spacing:1px}
+  .rating-mobile .rm-count{font-size:10px;color:#888}
+}
 
 /* LOADING / ERROR */
 .listing-loading{display:flex;align-items:center;justify-content:center;min-height:60vh;font-size:13px;font-weight:700;color:var(--ve-text-50);letter-spacing:0.1em}
@@ -114,24 +128,22 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .ownership-tag{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:var(--ve-green-light);color:#2d7d31;border:1px solid #c8e6c9}
 
 @media(max-width:768px){
-  .listing-hero{flex-direction:row;padding:14px 16px;gap:12px;align-items:center}
-  .listing-hero-avatar{width:52px;min-width:52px;height:52px;border-radius:10px;font-size:16px;flex-shrink:0}
+  .listing-hero{flex-direction:row;padding:14px 16px;gap:12px;align-items:stretch}
+  .listing-hero-avatar{width:64px;min-width:64px;height:auto;align-self:stretch;border-radius:10px;font-size:18px;flex-shrink:0}
   .listing-hero-content{display:flex;flex-direction:row;flex:1;min-width:0;align-items:center;gap:10px}
   .listing-hero-body{flex:1;min-width:0}
   .listing-breadcrumb{display:none}
   .listing-tagline{display:none}
-  .listing-name{font-size:15px;margin-bottom:6px}
-  .listing-badges{gap:5px}
+  .listing-name{font-size:15px;margin-bottom:5px}
+  .listing-badges{gap:5px;margin-bottom:0}
   .badge-cat{font-size:9px;padding:3px 8px}
   .badge-subcat{font-size:9px;padding:3px 8px}
-  .listing-hero-right{flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+  .listing-hero-right{flex-direction:column;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
   .listing-rating{display:none}
-  .rating-num{font-size:20px}
   .vote-hero-btn{padding:10px 14px;font-size:10px}
   .vote-count-display{font-size:9px}
   .listing-body{grid-template-columns:1fr;padding:20px 16px}
   .info-bar{padding:10px 16px;gap:12px}
-  .photos-grid{grid-template-columns:repeat(2,1fr)}
   .platform-grid{grid-template-columns:1fr}
 }
 </style>
@@ -227,9 +239,18 @@ function renderHours(hoursJson){
 
 function renderPhotos(photos){
   if(!photos || !photos.length) return '';
-  return '<div class="photos-grid">' + photos.slice(0,6).map(function(url){
-    return '<div class="photo-item"><img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
-  }).join('') + '</div>';
+  // Group into pairs for 2-per-slide
+  var pairs = [];
+  for(var i=0; i<photos.length; i+=2) pairs.push(photos.slice(i, i+2));
+  var slides = pairs.map(function(pair){
+    return '<div class="photo-slide">'+pair.map(function(url){
+      return '<div class="photo-item"><img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
+    }).join('')+'</div>';
+  }).join('');
+  var dots = pairs.length > 1 ? '<div class="photos-dots" id="photos-dots">'+
+    pairs.map(function(_,i){ return '<span class="photo-dot'+(i===0?' active':'')+'"></span>'; }).join('')+
+  '</div>' : '';
+  return '<div class="photos-carousel"><div class="photos-track" id="photos-track">'+slides+'</div>'+dots+'</div>';
 }
 
 var ORDER_PLATFORMS = {
@@ -391,7 +412,6 @@ function renderListing(l){
   if(todayHours) infoChips.push('<span class="info-chip open-now"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+esc(todayHours)+'</span>');
   if(priceDisplay) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(priceDisplay)+'</span>');
   if(l.website) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Website</a></span>');
-  if(l.google_rating) infoChips.push('<span class="info-chip" style="margin-left:auto"><span style="font-weight:900;color:var(--ve-text)">'+l.google_rating+'</span><span style="color:#F69820;font-size:11px;margin-left:2px">'+stars(l.google_rating)+'</span>'+(l.google_reviews_count ? '<span style="color:var(--ve-text-50);font-size:10px;margin-left:4px">'+l.google_reviews_count.toLocaleString()+'</span>' : '')+'</span>');
 
   // MAIN content by category type
   var mainContent = '';
@@ -449,6 +469,7 @@ function renderListing(l){
             (l.location_type ? '<span class="badge-subcat">'+esc(l.location_type)+'</span>' : '')+
             verifiedBadge+
           '</div>'+
+          (l.google_rating ? '<div class="rating-mobile"><span class="rm-num">'+l.google_rating+'</span><span class="rm-stars">'+stars(l.google_rating)+'</span>'+(l.google_reviews_count ? '<span class="rm-count">'+l.google_reviews_count.toLocaleString()+' reviews</span>' : '')+'</div>' : '')+
           (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
         '</div>'+
         '<div class="listing-hero-right">'+
@@ -466,6 +487,23 @@ function renderListing(l){
     '</div>';
 
   // Vote button handler
+  // Photo carousel dots
+  var photoTrack = document.getElementById('photos-track');
+  if(photoTrack){
+    photoTrack.addEventListener('scroll', function(){
+      var dots = document.querySelectorAll('.photo-dot');
+      if(!dots.length) return;
+      var idx = Math.round(photoTrack.scrollLeft / photoTrack.offsetWidth);
+      dots.forEach(function(d,i){ d.classList.toggle('active', i===idx); });
+    }, {passive:true});
+    // Dot click navigation
+    document.querySelectorAll('.photo-dot').forEach(function(dot, i){
+      dot.addEventListener('click', function(){
+        photoTrack.scrollTo({left: i * photoTrack.offsetWidth, behavior:'smooth'});
+      });
+    });
+  }
+
   document.getElementById('vote-btn').addEventListener('click', function(){
     if(this.dataset.voted) return;
     this.dataset.voted = '1';
