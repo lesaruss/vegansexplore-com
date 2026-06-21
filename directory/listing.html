@@ -96,8 +96,12 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .claim-btn{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;border-radius:4px;background:transparent;color:#5EC47A;border:1px solid #5EC47A;text-decoration:none;transition:.15s}
 .claim-btn:hover{background:#5EC47A;color:#000}
 
-/* PHOTOS CAROUSEL */
-.photos-carousel{position:relative}
+/* PHOTOS - desktop 3x2 grid */
+.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.photos-grid .photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee}
+.photos-grid .photo-item img{width:100%;height:100%;object-fit:cover}
+/* PHOTOS - mobile 2-up carousel */
+.photos-carousel-wrap{display:none}
 .photos-track{display:flex;overflow-x:scroll;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;gap:8px}
 .photos-track::-webkit-scrollbar{display:none}
 .photo-slide{display:flex;gap:8px;flex:0 0 100%;scroll-snap-align:start}
@@ -106,14 +110,24 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .photos-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
 .photo-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);transition:background .2s;cursor:pointer}
 .photo-dot.active{background:var(--ve-green)}
-/* Mobile rating under badges */
-.rating-mobile{display:none}
-@media(max-width:768px){
-  .rating-mobile{display:flex;align-items:center;gap:5px;margin-top:6px}
-  .rating-mobile .rm-num{font-size:13px;font-weight:900;color:#fff}
-  .rating-mobile .rm-stars{font-size:11px;color:#F69820;letter-spacing:1px}
-  .rating-mobile .rm-count{font-size:10px;color:#888}
-}
+
+/* COMMUNITY SUPPORT */
+.community-stats{display:flex;gap:0;margin-bottom:18px;border:1px solid var(--ve-border);border-radius:10px;overflow:hidden}
+.community-stat{flex:1;padding:16px 20px;text-align:center;background:#fff}
+.community-stat+.community-stat{border-left:1px solid var(--ve-border)}
+.cstat-num{font-size:28px;font-weight:900;color:var(--ve-text);line-height:1;margin-bottom:4px}
+.cstat-label{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-50)}
+.donate-card{background:var(--ve-surface);border:1px solid var(--ve-border);border-radius:10px;padding:18px}
+.donate-text{font-size:12px;line-height:1.7;color:var(--ve-text-75);margin-bottom:14px}
+.donate-row{display:flex;gap:8px;margin-bottom:10px}
+.donate-input{flex:1;font-size:12px;font-weight:700;font-family:Montserrat,sans-serif;padding:10px 14px;border:1px solid var(--ve-border);border-radius:6px;outline:none;color:var(--ve-text)}
+.donate-input:focus{border-color:var(--ve-green)}
+.donate-btn{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:10px 18px;border-radius:6px;background:var(--ve-green);color:#fff;border:none;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;transition:background .15s}
+.donate-btn:hover{background:var(--ve-green-dark)}
+.member-note{font-size:11px;color:var(--ve-text-50);line-height:1.5}
+.member-note a{color:var(--ve-green-dark);font-weight:700;text-decoration:none}
+.member-note a:hover{text-decoration:underline}
+.donate-confirm{font-size:12px;font-weight:700;color:#2d7d31;margin-top:8px;display:none}
 
 /* TABS */
 .listing-tabs{display:flex;overflow-x:auto;border-bottom:2px solid var(--ve-border);background:#fff;z-index:10;scrollbar-width:none;position:sticky;top:0}
@@ -156,8 +170,10 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .badge-cat{font-size:9px;padding:3px 8px}
   .badge-subcat{font-size:9px;padding:3px 8px}
   .listing-hero-right{flex-direction:column;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
-  .listing-rating{display:none}
   .vote-hero-btn{padding:10px 14px;font-size:10px}
+  .photos-grid{display:none}
+  .photos-carousel-wrap{display:block}
+  .donate-row{flex-direction:column}
   .vote-count-display{font-size:9px}
   .listing-body{grid-template-columns:1fr;padding:20px 16px}
   .info-bar{padding:10px 16px;gap:12px}
@@ -256,7 +272,15 @@ function renderHours(hoursJson){
 
 function renderPhotos(photos){
   if(!photos || !photos.length) return '';
-  // Group into pairs for 2-per-slide
+
+  // Desktop: 3-col x 2-row grid (max 6)
+  var gridHtml = '<div class="photos-grid">'+
+    photos.slice(0,6).map(function(url){
+      return '<div class="photo-item"><img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
+    }).join('')+
+  '</div>';
+
+  // Mobile: 2-up swipeable carousel
   var pairs = [];
   for(var i=0; i<photos.length; i+=2) pairs.push(photos.slice(i, i+2));
   var slides = pairs.map(function(pair){
@@ -267,7 +291,9 @@ function renderPhotos(photos){
   var dots = pairs.length > 1 ? '<div class="photos-dots" id="photos-dots">'+
     pairs.map(function(_,i){ return '<span class="photo-dot'+(i===0?' active':'')+'"></span>'; }).join('')+
   '</div>' : '';
-  return '<div class="photos-carousel"><div class="photos-track" id="photos-track">'+slides+'</div>'+dots+'</div>';
+  var carouselHtml = '<div class="photos-carousel-wrap"><div class="photos-track" id="photos-track">'+slides+'</div>'+dots+'</div>';
+
+  return gridHtml + carouselHtml;
 }
 
 var ORDER_PLATFORMS = {
@@ -381,7 +407,6 @@ function renderSidebar(l){
   return '<div class="listing-sidebar">'+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
     (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
-    (l.google_rating ? '<div class="side-card"><div class="side-card-title">Google Rating</div><div style="font-size:26px;font-weight:900;color:var(--ve-text)">'+l.google_rating+'</div><div style="color:#F69820;font-size:14px;letter-spacing:2px">'+stars(l.google_rating)+'</div>'+(l.google_reviews_count ? '<div style="font-size:11px;color:var(--ve-text-50);margin-top:4px">'+l.google_reviews_count.toLocaleString()+' reviews</div>':'')+'</div>' : '')+
     collabBadges+
     claimSection+
     '</div>';
@@ -458,9 +483,6 @@ function renderListing(l){
     if(l.google_hours_json){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }
-    if(!l.google_rating && l.google_reviews_count){
-      overviewContent += '<div class="section"><h2 class="section-title">Reviews</h2><p class="about-text">'+l.google_reviews_count+' Google reviews</p></div>';
-    }
   } else if(catType === 'media'){
     overviewContent += renderPlatforms(l);
     if(l.target_audience) overviewContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';
@@ -472,14 +494,30 @@ function renderListing(l){
     if(l.booking_url) overviewContent += '<div class="section"><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener" class="delivery-btn" style="display:inline-flex">Book a Session</a></div>';
   }
 
+  // Community support section (universal)
+  overviewContent +=
+    '<div class="section">'+
+      '<h2 class="section-title">Community Support</h2>'+
+      '<div class="community-stats">'+
+        '<div class="community-stat"><div class="cstat-num" id="community-votes">'+votes+'</div><div class="cstat-label">Community Votes</div></div>'+
+        '<div class="community-stat"><div class="cstat-num" id="community-lesars">0</div><div class="cstat-label">LESARs Donated</div></div>'+
+      '</div>'+
+      '<div class="donate-card">'+
+        '<p class="donate-text">Members earn LESARs through participation and can donate them directly to businesses they love. Businesses use LESARs to unlock professional photos, video, and marketing services from VEGANS EXPLORE. Every vote also earns the business +1 LESARs automatically.</p>'+
+        '<div class="donate-row">'+
+          '<input class="donate-input" id="donate-amount" type="number" min="1" placeholder="LESARs to donate" />'+
+          '<button class="donate-btn" id="donate-btn">Donate LESARs</button>'+
+        '</div>'+
+        '<div class="donate-confirm" id="donate-confirm">Done! Your LESARs have been sent to this business.</div>'+
+        '<p class="member-note">Not a member yet? <a href="#">Join for $11/mo</a> to earn LESARs, vote, and support Vegan businesses directly.</p>'+
+      '</div>'+
+    '</div>';
+
   // PHOTOS tab content
   var photoHtml = renderPhotos(l.google_photos);
   var photosTabContent = photoHtml
-    ? '<div style="padding:20px 16px 32px">'+photoHtml+'</div>'
+    ? '<div style="padding:24px 40px 40px">'+photoHtml+'</div>'
     : lockedTab('photos');
-
-  // Show/hide Photos tab if no photos yet
-  var photosTabLabel = l.google_photos && l.google_photos.length ? 'Photos' : 'Photos';
 
   // Build page
   document.title = esc(l.name) + ' — Vegans Explore';
@@ -498,11 +536,9 @@ function renderListing(l){
             (l.location_type ? '<span class="badge-subcat">'+esc(l.location_type)+'</span>' : '')+
             verifiedBadge+
           '</div>'+
-          (l.google_rating ? '<div class="rating-mobile"><span class="rm-num">'+l.google_rating+'</span><span class="rm-stars">'+stars(l.google_rating)+'</span>'+(l.google_reviews_count ? '<span class="rm-count">'+l.google_reviews_count.toLocaleString()+' reviews</span>' : '')+'</div>' : '')+
           (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
         '</div>'+
         '<div class="listing-hero-right">'+
-          (l.google_rating ? '<div class="listing-rating"><div class="rating-num">'+l.google_rating+'</div><div class="rating-stars">'+stars(l.google_rating)+'</div>'+(l.google_reviews_count?'<div class="rating-count">'+l.google_reviews_count.toLocaleString()+' reviews</div>':'')+'</div>' : '')+
           '<button class="vote-hero-btn" id="vote-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote</button>'+
           '<div class="vote-count-display" id="vote-display">'+votes+' votes</div>'+
         '</div>'+
@@ -565,18 +601,45 @@ function renderListing(l){
     }
   }
 
-  // Vote button
+  // Vote button - increments vote display + community votes stat + gives business +1 LESARs
   document.getElementById('vote-btn').addEventListener('click', function(){
     if(this.dataset.voted) return;
     this.dataset.voted = '1';
     this.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted!';
     this.style.background = '#2d7d31';
     var disp = document.getElementById('vote-display');
-    if(disp){
-      var n = parseInt(disp.textContent)||0;
-      disp.textContent = (n+1) + ' votes';
-    }
+    if(disp){ disp.textContent = ((parseInt(disp.textContent)||0)+1) + ' votes'; }
+    var cv = document.getElementById('community-votes');
+    if(cv){ cv.textContent = (parseInt(cv.textContent)||0) + 1; }
+    // +1 LESARs to business on every vote
+    var cl = document.getElementById('community-lesars');
+    if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
   });
+
+  // Donate LESARs button
+  var donateBtn = document.getElementById('donate-btn');
+  if(donateBtn){
+    donateBtn.addEventListener('click', function(){
+      var input = document.getElementById('donate-amount');
+      var amt = parseInt(input ? input.value : 0) || 0;
+      if(amt < 1){ input && (input.style.borderColor='#c62828'); return; }
+      input.style.borderColor = '';
+      var cl = document.getElementById('community-lesars');
+      if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + amt; }
+      var confirm = document.getElementById('donate-confirm');
+      if(confirm){ confirm.style.display = 'block'; }
+      input.value = '';
+      donateBtn.disabled = true;
+      donateBtn.textContent = 'Sent!';
+      donateBtn.style.background = '#2d7d31';
+      setTimeout(function(){
+        donateBtn.disabled = false;
+        donateBtn.textContent = 'Donate LESARs';
+        donateBtn.style.background = '';
+        if(confirm) confirm.style.display = 'none';
+      }, 3000);
+    });
+  }
 }
 
 function showNotFound(){
