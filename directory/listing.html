@@ -103,8 +103,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .claim-btn{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;border-radius:4px;background:transparent;color:#5EC47A;border:1px solid #5EC47A;text-decoration:none;transition:.15s}
 .claim-btn:hover{background:#5EC47A;color:#000}
 
-/* PHOTOS - desktop 3x2 grid */
-.photos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+/* PHOTOS - overview 2-col 1-row */
+.photos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .photos-grid .photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee}
 .photos-grid .photo-item img{width:100%;height:100%;object-fit:cover}
 /* PHOTOS - mobile 2-up carousel */
@@ -118,8 +118,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .photo-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);transition:background .2s;cursor:pointer}
 .photo-dot.active{background:var(--ve-green)}
 
-/* PHOTOS TAB — 2-col infinite scroll */
-.photos-tab-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* PHOTOS TAB — 3-col infinite scroll */
+.photos-tab-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .photos-tab-grid .photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee;cursor:pointer;position:relative}
 .photos-tab-grid .photo-item img{width:100%;height:100%;object-fit:cover;transition:transform .2s}
 .photos-tab-grid .photo-item:hover img{transform:scale(1.04)}
@@ -195,7 +195,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 
 @media(max-width:768px){
   .listing-hero{flex-direction:row;padding:14px 16px;gap:12px;align-items:stretch}
-  .listing-hero-avatar{width:64px;min-width:64px;height:auto;align-self:stretch;border-radius:10px;font-size:18px;flex-shrink:0}
+  .listing-hero-avatar{width:48px;min-width:48px;height:48px;align-self:flex-start;border-radius:8px;font-size:16px;flex-shrink:0}
   .listing-hero-content{display:flex;flex-direction:row;flex:1;min-width:0;align-items:center;gap:10px}
   .listing-hero-body{flex:1;min-width:0}
   .listing-breadcrumb{font-size:9px;letter-spacing:0.15em}
@@ -414,14 +414,14 @@ function renderPhotos(photos, prefix, tabMode){
 
   // Overview: desktop 3-col x 2-row (max 6), mobile 2-up carousel
   var ovKey = prefix + '-ov-lb';
-  _lbReg[ovKey] = photos.slice(0, 6);
+  _lbReg[ovKey] = photos.slice(0, 2);
   function ovPhotoItem(url, idx){
     return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" data-lb-key="'+ovKey+'" data-lb-idx="'+idx+'">'+
       '<img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
   }
 
   var gridHtml = '<div class="photos-grid">'+
-    photos.slice(0,6).map(function(url,i){ return ovPhotoItem(url, i); }).join('')+
+    photos.slice(0,2).map(function(url,i){ return ovPhotoItem(url, i); }).join('')+
   '</div>';
 
   var pairs = [];
