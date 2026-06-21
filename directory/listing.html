@@ -103,12 +103,9 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .claim-btn{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;border-radius:4px;background:transparent;color:#5EC47A;border:1px solid #5EC47A;text-decoration:none;transition:.15s}
 .claim-btn:hover{background:#5EC47A;color:#000}
 
-/* PHOTOS - overview 2-col 1-row */
-.photos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.photos-grid .photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee}
-.photos-grid .photo-item img{width:100%;height:100%;object-fit:cover}
-/* PHOTOS - mobile 2-up carousel */
-.photos-carousel-wrap{display:none}
+/* PHOTOS - overview carousel (desktop + mobile) */
+.photos-grid{display:none}
+.photos-carousel-wrap{display:block}
 .photos-track{display:flex;overflow-x:scroll;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;gap:8px}
 .photos-track::-webkit-scrollbar{display:none}
 .photo-slide{display:flex;gap:8px;flex:0 0 100%;scroll-snap-align:start}
@@ -413,30 +410,20 @@ function renderPhotos(photos, prefix, tabMode){
   }
 
   // Overview: desktop 3-col x 2-row (max 6), mobile 2-up carousel
-  var ovKey = prefix + '-ov-lb';
-  _lbReg[ovKey] = photos.slice(0, 2);
-  function ovPhotoItem(url, idx){
-    return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" data-lb-key="'+ovKey+'" data-lb-idx="'+idx+'">'+
-      '<img src="'+esc(url)+'" alt="Photo" loading="lazy"/></div>';
-  }
-
-  var gridHtml = '<div class="photos-grid">'+
-    photos.slice(0,2).map(function(url,i){ return ovPhotoItem(url, i); }).join('')+
-  '</div>';
-
-  var pairs = [];
-  for(var i=0; i<photos.length; i+=2) pairs.push(photos.slice(i, i+2));
-  var slides = pairs.map(function(pair, pi){
-    return '<div class="photo-slide">'+pair.map(function(url, j){
-      return photoItem(url, pi*2+j);
+  // Overview: 3-per-slide carousel with dots, desktop + mobile
+  var triplets = [];
+  for(var i=0; i<photos.length; i+=3) triplets.push(photos.slice(i, i+3));
+  var slides = triplets.map(function(trip, ti){
+    return '<div class="photo-slide">'+trip.map(function(url, j){
+      return photoItem(url, ti*3+j);
     }).join('')+'</div>';
   }).join('');
-  var dots = pairs.length > 1 ? '<div class="photos-dots" id="'+prefix+'-dots">'+
-    pairs.map(function(_,i){ return '<span class="photo-dot'+(i===0?' active':'')+'"></span>'; }).join('')+
+  var dots = triplets.length > 1 ? '<div class="photos-dots" id="'+prefix+'-dots">'+
+    triplets.map(function(_,i){ return '<span class="photo-dot'+(i===0?' active':'')+'"></span>'; }).join('')+
   '</div>' : '';
   var carouselHtml = '<div class="photos-carousel-wrap"><div class="photos-track" id="'+prefix+'-track">'+slides+'</div>'+dots+'</div>';
 
-  return gridHtml + carouselHtml;
+  return carouselHtml;
 }
 
 function wireCarousel(prefix){
@@ -632,18 +619,21 @@ function renderSidebar(l){
   if(l.email) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a></div>';
   if(l.booking_url) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener">Book Appointment</a></div>';
 
+  function normSocial(val, prefix){
+    if(!val) return '';
+    if(val.startsWith('http')) return val;
+    return prefix + val.replace('@','');
+  }
   var SOCIAL_PLATFORMS = [
-    {key:'instagram', label:'Instagram', href: l.instagram ? 'https://instagram.com/'+l.instagram.replace('@','') : ''},
-    {key:'tiktok',    label:'TikTok',    href: l.tiktok    ? 'https://tiktok.com/'+l.tiktok : ''},
-    {key:'facebook',  label:'Facebook',  href: l.facebook  ? l.facebook : ''},
-    {key:'youtube',   label:'YouTube',   href: l.youtube   ? 'https://youtube.com/'+l.youtube : ''},
-    {key:'twitter',   label:'Twitter/X', href: l.twitter   ? 'https://twitter.com/'+l.twitter : ''},
+    {key:'instagram', label:'Instagram', href: normSocial(l.instagram, 'https://instagram.com/')},
+    {key:'facebook',  label:'Facebook',  href: normSocial(l.facebook,  '')},
+    {key:'tiktok',    label:'TikTok',    href: normSocial(l.tiktok,    'https://tiktok.com/@')},
+    {key:'youtube',   label:'YouTube',   href: normSocial(l.youtube,   'https://youtube.com/')},
+    {key:'twitter',   label:'Twitter/X', href: normSocial(l.twitter,   'https://twitter.com/')},
   ];
-  var socials = SOCIAL_PLATFORMS.map(function(p){
-    if(p.href){
-      return '<a href="'+esc(p.href)+'" target="_blank" rel="noopener" class="social-btn">'+esc(p.label)+'</a>';
-    }
-    return '<span class="social-btn" style="opacity:0.3;cursor:default;pointer-events:none">'+esc(p.label)+'</span>';
+  // Only show platforms that have a URL
+  var socials = SOCIAL_PLATFORMS.filter(function(p){ return !!p.href; }).map(function(p){
+    return '<a href="'+esc(p.href)+'" target="_blank" rel="noopener" class="social-btn">'+esc(p.label)+'</a>';
   });
 
   var verifBadge = l.ve_verified ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">VE Verified</span>' : '';
