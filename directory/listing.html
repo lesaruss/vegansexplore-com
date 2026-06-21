@@ -417,7 +417,8 @@ function lockedTab(tabName){
   var msgs = {
     menu: {title:'Menu Coming Soon', sub:'When this business unlocks their menu slot with LESARs, we\'ll post their full menu right here.'},
     photos: {title:'Photos Coming Soon', sub:'Professional photos taken by the VEGANS EXPLORE team will appear here once this listing is activated.'},
-    video: {title:'Video Coming Soon', sub:'Unlock this slot with LESARs and we\'ll send a crew to film a professional video for your listing.'}
+    video: {title:'Video Coming Soon', sub:'Unlock this slot with LESARs and we\'ll send a crew to film a professional video for your listing.'},
+    pulse: {title:'Pulse Not Yet Active', sub:'Community Partners can post updates, news, collabs, and announcements directly to their listing. Think of it as their channel inside VEGANS EXPLORE.'}
   };
   var m = msgs[tabName] || {title:'Content Coming Soon', sub:'This slot can be unlocked with LESARs.'};
   return '<div class="tab-locked">'+
@@ -552,6 +553,7 @@ function renderListing(l){
       '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false">Menu</button>'+
       '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
       '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>'+
+      '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>'+
     '</nav>'+
     // Tab panels
     '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
@@ -562,7 +564,8 @@ function renderListing(l){
     '</div>'+
     '<div class="tab-panel" id="tab-menu" role="tabpanel">'+lockedTab('menu')+'</div>'+
     '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
-    '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>';
+    '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>'+
+    '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>';
 
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function(btn){
