@@ -4,6 +4,13 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Loading... — Vegans Explore</title>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="VEGANS EXPLORE"/>
+<meta id="og-title" property="og:title" content="VEGANS EXPLORE Directory"/>
+<meta id="og-description" property="og:description" content="Find the best Vegan-friendly businesses near you."/>
+<meta id="og-image" property="og:image" content="https://vegansexplore.com/public/og-default.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta id="meta-description" name="description" content="Find the best Vegan-friendly businesses near you."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
@@ -188,6 +195,24 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .info-bar{padding:10px 16px;gap:12px}
   .platform-grid{grid-template-columns:1fr}
 }
+
+/* MOBILE STICKY BAR */
+.mobile-sticky{display:none}
+@media(max-width:768px){
+  .mobile-sticky{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;border-top:1px solid var(--ve-border);padding:10px 12px;gap:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  .mobile-sticky-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:12px 6px;border-radius:8px;border:none;cursor:pointer;font-family:Montserrat,sans-serif;text-decoration:none;transition:.15s}
+  .mobile-sticky-btn.primary{background:var(--ve-green);color:#fff}
+  .mobile-sticky-btn.primary:hover{background:var(--ve-green-dark)}
+  .mobile-sticky-btn.secondary{background:var(--ve-green-light);color:#2d7d31;border:1px solid #c8e6c9}
+  #listing-root{padding-bottom:80px}
+}
+
+/* UNLOCK SECTION */
+.unlock-section{border:1px solid var(--ve-border);border-radius:10px;padding:24px;text-align:center;background:var(--ve-surface)}
+.unlock-section h3{font-size:14px;font-weight:900;color:var(--ve-text);margin:10px 0 8px;letter-spacing:-.01em}
+.unlock-section p{font-size:12px;color:var(--ve-text-50);line-height:1.65;max-width:340px;margin:0 auto 16px}
+.unlock-features{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.unlock-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border-radius:20px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text-50)}
 </style>
 </head>
 <body>
@@ -407,75 +432,88 @@ function renderAtAGlance(l){
   var accom = l.accommodations || [];
   function has(val){ return accom.indexOf(val) !== -1; }
 
-  function chip(label, active, type){
-    var cls = 'glance-chip' + (active ? ' on'+(type?' '+type:'') : ' off');
-    return '<span class="'+cls+'">'+label+'</span>';
-  }
+  // Build data objects first so we can count confirmed before rendering
+  function c(label, active, type){ return {label:label, active:!!active, type:type||''}; }
 
   var groups = [
-    {
-      label: 'Atmosphere',
-      chips: [
-        chip('Casual',      l.atmosphere === 'casual'),
-        chip('Upscale',     l.atmosphere === 'upscale'),
-        chip('Fine Dining', l.atmosphere === 'fine-dining'),
-        chip('Fast Casual', l.atmosphere === 'fast-casual'),
-        chip('Bar / Lounge',l.atmosphere === 'bar-lounge'),
-        chip('Late Hours',  !!l.late_hours),
-        chip('Live Music',  has('Live Music')),
-      ]
-    },
-    {
-      label: 'Seating',
-      chips: [
-        chip('Dine-In',          has('Dine-in')),
-        chip('Indoor Seating',   !!l.indoor_seating),
-        chip('Outdoor Seating',  has('Outdoor Seating')),
-        chip('Reservations',     has('Reservations')),
-      ]
-    },
-    {
-      label: 'Amenities',
-      chips: [
-        chip('WiFi',             has('WiFi')),
-        chip('High-Speed WiFi',  !!l.high_speed_wifi),
-        chip('Parking',          has('Parking')),
-        chip('Takeout',          has('Takeout')),
-        chip('Catering',         has('Catering') || l.category === 'Catering'),
-        chip('BYOB',             has('BYOB')),
-        chip('Dog-Friendly',     has('Dog-Friendly')),
-        chip('Family-Friendly',  has('Family-Friendly')),
-      ]
-    },
-    {
-      label: 'Accessibility',
-      chips: [
-        chip('Wheelchair Accessible', has('Wheelchair Accessible')),
-        chip('Gender-Neutral Restroom', false),
-        chip('Service Animal Friendly', false),
-      ]
-    },
-    {
-      label: 'Community',
-      chips: [
-        chip('LGBTQ+ Friendly',   !!l.lgbtq_friendly,      'community'),
-        chip('Black-Owned',       !!l.is_black_owned,       'community'),
-        chip('Women-Owned',       !!l.is_women_owned,       'community'),
-        chip('Latino/Hispanic-Owned', !!l.is_latino_owned,  'community'),
-        chip('Asian-Owned',       !!l.is_asian_owned,       'community'),
-        chip('Immigrant-Owned',   !!l.is_immigrant_owned,   'community'),
-        chip('Veteran-Owned',     !!l.is_veteran_owned,     'community'),
-      ]
-    }
+    { label:'Atmosphere', items:[
+      c('Casual',       l.atmosphere==='casual'),
+      c('Upscale',      l.atmosphere==='upscale'),
+      c('Fine Dining',  l.atmosphere==='fine-dining'),
+      c('Fast Casual',  l.atmosphere==='fast-casual'),
+      c('Bar / Lounge', l.atmosphere==='bar-lounge'),
+      c('Late Hours',   !!l.late_hours),
+      c('Live Music',   has('Live Music')),
+    ]},
+    { label:'Seating', items:[
+      c('Dine-In',         has('Dine-in')),
+      c('Indoor Seating',  !!l.indoor_seating),
+      c('Outdoor Seating', has('Outdoor Seating')),
+      c('Reservations',    has('Reservations')),
+    ]},
+    { label:'Amenities', items:[
+      c('WiFi',            has('WiFi')),
+      c('High-Speed WiFi', !!l.high_speed_wifi),
+      c('Parking',         has('Parking')),
+      c('Takeout',         has('Takeout')),
+      c('Catering',        has('Catering')||l.category==='Catering'),
+      c('BYOB',            has('BYOB')),
+      c('Dog-Friendly',    has('Dog-Friendly')),
+      c('Family-Friendly', has('Family-Friendly')),
+    ]},
+    { label:'Accessibility', items:[
+      c('Wheelchair Accessible',   has('Wheelchair Accessible')),
+      c('Gender-Neutral Restroom', false),
+      c('Service Animal Friendly', false),
+    ]},
+    { label:'Community', items:[
+      c('LGBTQ+ Friendly',       !!l.lgbtq_friendly,    'community'),
+      c('Black-Owned',           !!l.is_black_owned,    'community'),
+      c('Women-Owned',           !!l.is_women_owned,    'community'),
+      c('Latino/Hispanic-Owned', !!l.is_latino_owned,   'community'),
+      c('Asian-Owned',           !!l.is_asian_owned,    'community'),
+      c('Immigrant-Owned',       !!l.is_immigrant_owned,'community'),
+      c('Veteran-Owned',         !!l.is_veteran_owned,  'community'),
+    ]}
   ];
+
+  // Count confirmed attributes
+  var confirmedCount = 0;
+  groups.forEach(function(g){ g.items.forEach(function(ci){ if(ci.active) confirmedCount++; }); });
+
+  // Cold start: unclaimed listing with fewer than 4 confirmed attributes
+  var coldStart = !l.claimed_by_member_id && confirmedCount < 4;
+
+  function chipHtml(item){
+    var cls = 'glance-chip' + (item.active ? ' on'+(item.type?' '+item.type:'') : ' off');
+    return '<span class="'+cls+'">'+item.label+'</span>';
+  }
+
+  // Empty cold start - no confirmed attributes at all
+  if(coldStart && confirmedCount === 0){
+    return '<div class="section"><h2 class="section-title">At a Glance</h2>'+
+      '<div style="text-align:center;padding:20px;background:var(--ve-surface);border-radius:8px;border:1px solid var(--ve-border)">'+
+        '<p style="font-size:12px;color:var(--ve-text-50);line-height:1.65;margin-bottom:12px">Atmosphere, seating, accessibility, and community attributes appear here once this business is claimed.</p>'+
+        '<a href="/intake" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;border:1px solid var(--ve-green);padding:8px 16px;border-radius:4px;background:var(--ve-green-light);display:inline-block">Own this business? Add details</a>'+
+      '</div>'+
+    '</div>';
+  }
 
   var html = '<div class="glance-groups">';
   groups.forEach(function(g){
-    html += '<div><div class="glance-group-label">'+g.label+'</div><div class="glance-chips">'+g.chips.join('')+'</div></div>';
+    var chips = coldStart
+      ? g.items.filter(function(ci){ return ci.active; }).map(chipHtml)
+      : g.items.map(chipHtml);
+    if(!chips.length) return;
+    html += '<div><div class="glance-group-label">'+g.label+'</div><div class="glance-chips">'+chips.join('')+'</div></div>';
   });
   html += '</div>';
 
-  return '<div class="section"><h2 class="section-title">At a Glance</h2>'+html+'</div>';
+  var footer = coldStart
+    ? '<div style="margin-top:14px;text-align:center"><a href="/intake" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none">Own this business? Add missing details</a></div>'
+    : '';
+
+  return '<div class="section"><h2 class="section-title">At a Glance</h2>'+html+footer+'</div>';
 }
 
 function renderSidebar(l){
@@ -502,7 +540,7 @@ function renderSidebar(l){
   });
 
   var verifBadge = l.ve_verified ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">VE Verified</span>' : '';
-  var claimSection = !l.claimed_by_member_id ? '<div class="claim-box"><p>Is this your business? Claim this listing to update your info and unlock analytics.</p><a href="/intake" class="claim-btn">Claim Listing</a></div>' : '';
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your business? Claim this listing to update your info and unlock full analytics.</p><a href="/intake" class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
@@ -538,9 +576,10 @@ function renderSidebar(l){
   var communityCard =
     '<div class="side-card">'+
       '<div class="side-card-title">Community Support</div>'+
+      (listingVotes === 0 ? '<p style="font-size:11px;color:var(--ve-text-50);text-align:center;padding:4px 0 8px;line-height:1.6">Be the first to support this business</p>' : '')+
       '<div style="display:flex;border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;margin-bottom:12px">'+
         '<div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--ve-border)">'+
-          '<div class="cstat-num" id="community-votes" style="font-size:20px">'+listingVotes+'</div>'+
+          '<div class="cstat-num" id="community-votes" style="font-size:20px'+(listingVotes===0?';color:var(--ve-green)':'')+'">'+listingVotes+'</div>'+
           '<div class="cstat-label">Votes</div>'+
         '</div>'+
         '<div style="flex:1;padding:10px 8px;text-align:center">'+
@@ -557,12 +596,12 @@ function renderSidebar(l){
     '</div>';
 
   return '<div class="listing-sidebar">'+
+    claimSection+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
     '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>'+
     (deliveryPills ? '<div class="side-card"><div class="side-card-title">Delivery</div><div class="social-row">'+deliveryPills+'</div></div>' : '')+
     collabBadges+
     communityCard+
-    claimSection+
     '</div>';
 }
 
@@ -654,14 +693,50 @@ function renderListing(l){
     if(l.booking_url) overviewContent += '<div class="section"><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener" class="delivery-btn" style="display:inline-flex">Book a Session</a></div>';
   }
 
+  // Unlock section - always shown at bottom of Overview
+  var lockSvgSm = '<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
+  overviewContent += '<div class="section"><div class="unlock-section">'+
+    '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--ve-green);display:block;margin:0 auto"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+
+    '<h3>More coming to this profile</h3>'+
+    '<p>Community Partners can unlock a full menu, professional video, and a Pulse feed for news and updates on their listing.</p>'+
+    '<div class="unlock-features">'+
+      '<span class="unlock-chip">'+lockSvgSm+' Menu</span>'+
+      '<span class="unlock-chip">'+lockSvgSm+' Video</span>'+
+      '<span class="unlock-chip">'+lockSvgSm+' Pulse</span>'+
+    '</div>'+
+    '<a href="/intake" class="tab-locked-cta">Learn About LESARs</a>'+
+  '</div></div>';
+
   // PHOTOS tab content
   var photoHtml = renderPhotos(l.google_photos, 'tab-photos');
   var photosTabContent = photoHtml
     ? '<div style="padding:24px 40px 40px">'+photoHtml+'</div>'
     : lockedTab('photos');
 
+  // SEO: title, OG tags, schema.org
+  var _ogTitle = esc(l.name) + ' — VEGANS EXPLORE';
+  var _ogDesc = ((l.description || l.tagline || '')+(l.address_city ? ' · '+l.address_city+(l.address_state?', '+l.address_state:'') : '')).substring(0,200) || 'Find the best Vegan-friendly businesses on VEGANS EXPLORE.';
+  var _ogImg = (l.google_photos && l.google_photos[0]) || l.logo_url || 'https://vegansexplore.com/public/og-default.png';
+  document.title = _ogTitle;
+  var _metaMap = {'og-title':_ogTitle,'og-description':_ogDesc,'og-image':_ogImg,'meta-description':_ogDesc};
+  Object.keys(_metaMap).forEach(function(id){ var el=document.getElementById(id); if(el) el.setAttribute('content',_metaMap[id]); });
+  var _schema = {
+    '@context':'https://schema.org',
+    '@type':l.category==='Restaurants'?'Restaurant':'LocalBusiness',
+    'name':l.name,
+    'description':l.description||l.tagline||undefined,
+    'url':window.location.href,
+    'telephone':l.phone||undefined,
+    'image':l.logo_url||(l.google_photos&&l.google_photos[0])||undefined,
+    'address':l.address_city?{'@type':'PostalAddress','streetAddress':l.address_street||undefined,'addressLocality':l.address_city,'addressRegion':l.address_state,'addressCountry':'US'}:undefined,
+    'sameAs':[l.instagram?'https://instagram.com/'+l.instagram.replace('@',''):null,l.facebook||null,l.twitter?'https://twitter.com/'+l.twitter:null].filter(Boolean)
+  };
+  var _schEl=document.getElementById('schema-ld')||document.createElement('script');
+  _schEl.id='schema-ld';_schEl.type='application/ld+json';
+  _schEl.textContent=JSON.stringify(_schema,function(k,v){return v===undefined?undefined:v;});
+  document.head.appendChild(_schEl);
+
   // Build page
-  document.title = esc(l.name) + ' — Vegans Explore';
   document.getElementById('listing-root').innerHTML =
     '<div class="listing-hero">'+
       '<div class="listing-hero-avatar" style="background:'+esc(avBg)+'">'+av+'</div>'+
@@ -687,13 +762,10 @@ function renderListing(l){
     '</div>'+
     statusBadge+
     (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
-    // Tab nav
+    // Tab nav — Menu / Video / Pulse graduate to tabs when unlocked; until then they live in the Unlock section
     '<nav class="listing-tabs" role="tablist">'+
       '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
-      '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false">Menu</button>'+
       '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
-      '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>'+
-      '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>'+
     '</nav>'+
     // Tab panels
     '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
@@ -702,10 +774,25 @@ function renderListing(l){
         renderSidebar(l)+
       '</div>'+
     '</div>'+
-    '<div class="tab-panel" id="tab-menu" role="tabpanel">'+lockedTab('menu')+'</div>'+
-    '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
-    '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>'+
-    '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>';
+    '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>';
+
+  // Mobile sticky action bar (directions / call / order)
+  (function(){
+    var dirUrl = l.address_street ? 'https://maps.google.com/?q='+encodeURIComponent((l.address_street||'')+' '+(l.address_city||'')+' '+(l.address_state||'')) : '';
+    var stickyBtns = '';
+    if(dirUrl) stickyBtns += '<a href="'+esc(dirUrl)+'" target="_blank" rel="noopener" class="mobile-sticky-btn secondary">'+
+      '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Directions</a>';
+    if(l.phone) stickyBtns += '<a href="tel:'+esc(l.phone)+'" class="mobile-sticky-btn secondary">'+
+      '<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>Call</a>';
+    var firstDelivery = l.uber_eats || l.doordash || l.grubhub || (l.ordering_platforms && Object.values(l.ordering_platforms)[0]) || '';
+    if(catType === 'food' && firstDelivery) stickyBtns += '<a href="'+esc(firstDelivery)+'" target="_blank" rel="noopener" class="mobile-sticky-btn primary">Order</a>';
+    if(stickyBtns){
+      var bar = document.createElement('div');
+      bar.className = 'mobile-sticky';
+      bar.innerHTML = stickyBtns;
+      document.getElementById('frame').appendChild(bar);
+    }
+  })();
 
   // Square avatar: read hero-body height after layout and match avatar dimensions
   requestAnimationFrame(function(){
