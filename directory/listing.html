@@ -1080,10 +1080,10 @@ function renderListing(l){
     // Persistent two-column layout: main tabs on left, sidebar always on right
     '<div class="listing-page-grid">'+
       '<div class="listing-page-main">'+
-        // Tab nav — claimed listings show full set; unclaimed show Overview + Photos only
+        // Tab nav — Menu tab hidden until items confirmed; Video + Pulse require claimed status
         '<nav class="listing-tabs" role="tablist">'+
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
-          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false">Menu</button>' : '')+
+          '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">Menu</button>'+
           '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
@@ -1092,7 +1092,7 @@ function renderListing(l){
         '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
           '<div style="padding:32px 40px 40px">'+overviewContent+'</div>'+
         '</div>'+
-        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-menu" role="tabpanel">'+lockedTab('menu')+'</div>' : '')+
+        '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>' : '')+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>' : '')+
@@ -1536,13 +1536,18 @@ if(!slug || slug === 'listing'){
       var l = data[0];
       renderListing(l);
       initBillboard();
+      // Always fetch menu items — show tab for any listing that has them
+      fetchMenuItems(l.id).then(function(items){
+        if(items && items.length){
+          var panel = document.getElementById('tab-menu');
+          if(panel) panel.innerHTML = menuTabContent(items);
+          var btn = document.getElementById('tab-btn-menu');
+          if(btn) btn.style.display = '';
+        }
+      });
       if(l.claimed_by_member_id){
         fetchListingVideos(l.id).then(function(vids){
           if(vids && vids.length) renderVideoCarousel(vids);
-        });
-        fetchMenuItems(l.id).then(function(items){
-          var panel = document.getElementById('tab-menu');
-          if(panel) panel.innerHTML = menuTabContent(items);
         });
         fetchPulsePosts(l.id).then(function(posts){
           renderPulse(posts, l.name);
