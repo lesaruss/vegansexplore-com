@@ -276,10 +276,11 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .vc-grid{grid-template-columns:1fr}
 }
 
-/* PULSE TAB */
+/* PULSE TAB — blurb cards */
 .pulse-wrap{padding:32px 40px 48px;max-width:780px}
-.pulse-post{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;margin-bottom:24px;background:#fff}
-.pulse-post-header{padding:22px 26px 0}
+.pulse-card{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;margin-bottom:20px;background:#fff;transition:box-shadow .15s}
+.pulse-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07)}
+.pulse-card-inner{padding:22px 26px}
 .pulse-type-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .pulse-type-badge{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:var(--ve-green-light);color:var(--ve-green-dark)}
 .pulse-type-badge.press{background:#fef9c3;color:#854d0e}
@@ -287,24 +288,40 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pulse-type-badge.update{background:#e0f2fe;color:#075985}
 .pulse-date{font-size:11px;font-weight:600;color:var(--ve-text-50)}
 .pulse-pinned{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#5EC47A;margin-left:auto}
-.pulse-headline{font-size:20px;font-weight:900;color:var(--ve-text);line-height:1.25;letter-spacing:-.01em;margin-bottom:8px}
-.pulse-subhead{font-size:14px;color:var(--ve-text-75);line-height:1.6;margin-bottom:18px;font-style:italic}
-.pulse-divider{height:1px;background:var(--ve-border);margin:0 26px}
-.pulse-body{padding:22px 26px;font-size:14px;line-height:1.85;color:#333}
-.pulse-body p{margin-bottom:14px}
-.pulse-body p:last-child{margin-bottom:0}
-.pulse-body strong{font-weight:800;color:var(--ve-text)}
-.pulse-cta-row{padding:18px 26px;border-top:1px solid var(--ve-border);display:flex;align-items:center;gap:12px;background:#fafafa}
-.pulse-cta-btn{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:10px 20px;border-radius:6px;background:#5EC47A;color:#000;text-decoration:none;transition:.15s}
-.pulse-cta-btn:hover{background:#4db368}
-.pulse-author{font-size:11px;font-weight:700;color:var(--ve-text-50);margin-left:auto}
+.pulse-headline{font-size:19px;font-weight:900;color:var(--ve-text);line-height:1.25;letter-spacing:-.01em;margin-bottom:6px;cursor:pointer}
+.pulse-headline:hover{color:var(--ve-green-dark)}
+.pulse-subhead{font-size:13px;color:var(--ve-text-75);line-height:1.6;margin-bottom:10px;font-style:italic}
+.pulse-excerpt{font-size:13px;color:var(--ve-text-50);line-height:1.7;margin-bottom:16px}
+.pulse-read-more{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-dark);background:none;border:none;padding:0;cursor:pointer;font-family:Montserrat,sans-serif;display:inline-flex;align-items:center;gap:6px}
+.pulse-read-more:hover{color:#2d7d31}
+.pulse-read-more svg{transition:transform .15s}
+.pulse-read-more:hover svg{transform:translateX(3px)}
+
+/* PULSE FULL ARTICLE VIEW */
+#article-view{display:none;min-height:100vh;background:#fff;font-family:Montserrat,sans-serif}
+.article-topbar{background:#fff;border-bottom:1px solid var(--ve-border);padding:14px 40px;position:sticky;top:0;z-index:100}
+.article-breadcrumb{font-size:11px;font-weight:700;color:var(--ve-text-50);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.article-breadcrumb a,.article-breadcrumb button{color:var(--ve-text-50);text-decoration:none;background:none;border:none;padding:0;font:inherit;cursor:pointer;font-size:11px;font-weight:700}
+.article-breadcrumb a:hover,.article-breadcrumb button:hover{color:var(--ve-green-dark)}
+.article-breadcrumb span{color:var(--ve-border)}
+.article-body-wrap{max-width:760px;margin:0 auto;padding:48px 40px 80px}
+.article-type-row{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.article-h1{font-size:32px;font-weight:900;color:var(--ve-text);line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+.article-subhead{font-size:16px;color:var(--ve-text-75);line-height:1.65;font-style:italic;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--ve-border)}
+.article-prose{font-size:15px;line-height:1.9;color:#333}
+.article-prose p{margin-bottom:18px}
+.article-prose p:last-child{margin-bottom:0}
+.article-prose strong{font-weight:800;color:var(--ve-text)}
+.article-cta{margin-top:36px;padding-top:28px;border-top:1px solid var(--ve-border)}
+.article-cta-btn{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:13px 24px;border-radius:8px;background:#5EC47A;color:#000;text-decoration:none;transition:.15s}
+.article-cta-btn:hover{background:#4db368}
 @media(max-width:640px){
   .pulse-wrap{padding:20px 16px 32px}
-  .pulse-post-header{padding:18px 18px 0}
-  .pulse-body{padding:18px 18px}
-  .pulse-divider{margin:0 18px}
-  .pulse-cta-row{padding:14px 18px;flex-wrap:wrap}
-  .pulse-headline{font-size:17px}
+  .pulse-card-inner{padding:18px}
+  .article-topbar{padding:12px 16px}
+  .article-body-wrap{padding:28px 16px 60px}
+  .article-h1{font-size:22px}
+  .article-subhead{font-size:14px}
 }
 </style>
 </head>
@@ -1323,7 +1340,63 @@ function fetchPulsePosts(listingId){
     .catch(function(){ return []; });
 }
 
-function renderPulse(posts){
+function bodyToHtml(raw){
+  return (raw || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .split('\n\n').filter(function(p){ return p.trim(); })
+    .map(function(p){ return '<p>' + p.trim().replace(/\n/g,'<br>') + '</p>'; })
+    .join('');
+}
+
+function openArticle(post, listingName){
+  var typeLabels = { article:'Article', update:'Update', press:'Press', event:'Event', collab:'Collab', announcement:'Announcement' };
+  var typeClass = post.type === 'press' ? ' press' : post.type === 'event' ? ' event' : post.type === 'update' ? ' update' : '';
+  var date = post.published_at ? new Date(post.published_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '';
+
+  // Update breadcrumb label
+  var bcLabel = document.getElementById('article-bc-label');
+  if(bcLabel) bcLabel.textContent = (post.headline||'').length > 42 ? (post.headline||'').substring(0,42)+'...' : (post.headline||'');
+
+  // Update "Back to listing" label
+  var backBtn = document.getElementById('article-back');
+  if(backBtn) backBtn.textContent = listingName || 'Back to listing';
+
+  document.getElementById('article-content').innerHTML =
+    '<div class="article-type-row">' +
+      '<span class="pulse-type-badge' + typeClass + '">' + (typeLabels[post.type]||'Post') + '</span>' +
+      (date ? '<span class="pulse-date">' + date + '</span>' : '') +
+    '</div>' +
+    '<h1 class="article-h1">' + esc(post.headline) + '</h1>' +
+    (post.subhead ? '<p class="article-subhead">' + esc(post.subhead) + '</p>' : '') +
+    '<div class="article-prose">' + bodyToHtml(post.body) + '</div>' +
+    (post.source_url ?
+      '<div class="article-cta">' +
+        '<a href="' + esc(post.source_url) + '" target="_blank" rel="noopener" class="article-cta-btn">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+          esc(post.source_label || 'Watch Now') +
+        '</a>' +
+      '</div>'
+    : '');
+
+  document.getElementById('frame').style.display = 'none';
+  var av = document.getElementById('article-view');
+  av.style.display = 'block';
+  av.removeAttribute('aria-hidden');
+  window.scrollTo(0,0);
+}
+
+function closeArticle(){
+  document.getElementById('frame').style.display = '';
+  var av = document.getElementById('article-view');
+  av.style.display = 'none';
+  av.setAttribute('aria-hidden','true');
+  // Scroll back to pulse tab area
+  var pulsePanel = document.getElementById('tab-pulse');
+  if(pulsePanel) pulsePanel.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderPulse(posts, listingName){
   var panel = document.getElementById('tab-pulse');
   if(!panel) return;
   if(!posts || !posts.length){
@@ -1332,41 +1405,39 @@ function renderPulse(posts){
   }
   var typeLabels = { article:'Article', update:'Update', press:'Press', event:'Event', collab:'Collab', announcement:'Announcement' };
   var html = '<div class="pulse-wrap">';
-  posts.forEach(function(post){
+  posts.forEach(function(post, idx){
     var date = post.published_at ? new Date(post.published_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '';
     var typeClass = post.type === 'press' ? ' press' : post.type === 'event' ? ' event' : post.type === 'update' ? ' update' : '';
-    // Convert **bold** markdown to <strong>
-    var bodyHtml = (post.body || '')
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-      .split('\n\n').filter(function(p){ return p.trim(); })
-      .map(function(p){ return '<p>' + p.trim().replace(/\n/g,'<br>') + '</p>'; })
-      .join('');
+    // Excerpt: first paragraph only, capped at 200 chars
+    var firstPara = (post.body || '').replace(/\*\*/g,'').split('\n\n')[0] || '';
+    var excerpt = firstPara.length > 200 ? firstPara.substring(0,200).trimEnd() + '...' : firstPara;
     html +=
-      '<div class="pulse-post">' +
-        '<div class="pulse-post-header">' +
+      '<div class="pulse-card" id="pulse-card-' + idx + '">' +
+        '<div class="pulse-card-inner">' +
           '<div class="pulse-type-row">' +
-            '<span class="pulse-type-badge' + typeClass + '">' + (typeLabels[post.type] || 'Post') + '</span>' +
+            '<span class="pulse-type-badge' + typeClass + '">' + (typeLabels[post.type]||'Post') + '</span>' +
             (date ? '<span class="pulse-date">' + date + '</span>' : '') +
             (post.is_pinned ? '<span class="pulse-pinned">Pinned</span>' : '') +
           '</div>' +
-          '<div class="pulse-headline">' + esc(post.headline) + '</div>' +
+          '<div class="pulse-headline" data-idx="' + idx + '">' + esc(post.headline) + '</div>' +
           (post.subhead ? '<div class="pulse-subhead">' + esc(post.subhead) + '</div>' : '') +
+          (excerpt ? '<div class="pulse-excerpt">' + esc(excerpt) + '</div>' : '') +
+          '<button class="pulse-read-more" data-idx="' + idx + '">' +
+            'Read full article' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>' +
+          '</button>' +
         '</div>' +
-        (bodyHtml ? '<div class="pulse-divider"></div><div class="pulse-body">' + bodyHtml + '</div>' : '') +
-        (post.source_url ?
-          '<div class="pulse-cta-row">' +
-            '<a href="' + esc(post.source_url) + '" target="_blank" rel="noopener" class="pulse-cta-btn">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
-              esc(post.source_label || 'Watch Now') +
-            '</a>' +
-            (post.author ? '<span class="pulse-author">by ' + esc(post.author) + '</span>' : '') +
-          '</div>'
-        : '') +
       '</div>';
   });
   html += '</div>';
   panel.innerHTML = html;
+
+  // Wire clicks
+  panel.querySelectorAll('[data-idx]').forEach(function(el){
+    el.addEventListener('click', function(){
+      openArticle(posts[parseInt(el.getAttribute('data-idx'))], listingName);
+    });
+  });
 }
 
 // Init
@@ -1387,7 +1458,7 @@ if(!slug || slug === 'listing'){
           if(panel) panel.innerHTML = menuTabContent(items);
         });
         fetchPulsePosts(l.id).then(function(posts){
-          renderPulse(posts);
+          renderPulse(posts, l.name);
         });
       }
       if(l.ve_business_id) renderInstagramContent(l.ve_business_id);
@@ -1399,5 +1470,19 @@ if(!slug || slug === 'listing'){
 
 })();
 </script>
+
+<div id="article-view" aria-hidden="true">
+  <div class="article-topbar">
+    <nav class="article-breadcrumb" aria-label="Breadcrumb">
+      <a href="/directory">Directory</a>
+      <span>&#8250;</span>
+      <button id="article-back" onclick="closeArticle()">Back to listing</button>
+      <span>&#8250;</span>
+      <span id="article-bc-label">Pulse</span>
+    </nav>
+  </div>
+  <div class="article-body-wrap" id="article-content"></div>
+</div>
+
 </body>
 </html>
