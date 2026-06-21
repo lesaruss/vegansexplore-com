@@ -762,15 +762,15 @@ function menuTabContent(items){
     if(!catMap[item.category]){catMap[item.category]=[];cats.push(item.category);}
     catMap[item.category].push(item);
   });
-  var html='<div class="section">';
+  var inner='';
   cats.forEach(function(cat){
-    html+='<div class="menu-category">';
-    html+='<div class="menu-category-title">'+esc(cat)+'</div>';
+    inner+='<div class="menu-category">';
+    inner+='<div class="menu-category-title">'+esc(cat)+'</div>';
     catMap[cat].forEach(function(item){
       var tags='';
       if(item.is_featured) tags+='<span class="menu-item-tag pick">Chef\'s Pick</span>';
       if(item.is_gluten_free) tags+='<span class="menu-item-tag gf">GF</span>';
-      html+='<div class="menu-item">'+
+      inner+='<div class="menu-item">'+
         '<div class="menu-item-info">'+
           '<div class="menu-item-name">'+esc(item.name)+'</div>'+
           (item.description?'<div class="menu-item-desc">'+esc(item.description)+'</div>':'')+
@@ -779,10 +779,9 @@ function menuTabContent(items){
         (item.price_display?'<div class="menu-item-price">'+esc(item.price_display)+'</div>':'')+
       '</div>';
     });
-    html+='</div>';
+    inner+='</div>';
   });
-  html+='</div>';
-  return html;
+  return '<div class="listing-body" style="grid-template-columns:1fr"><div class="listing-main">'+inner+'</div></div>';
 }
 
 function renderListing(l){
