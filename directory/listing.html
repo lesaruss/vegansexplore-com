@@ -872,6 +872,74 @@ function renderListing(l){
   }
 }
 
+// ── Instagram content (video + photos tabs) ──────────────────────────────────
+function renderInstagramContent(veBusinessId){
+  if(!veBusinessId) return;
+  var url = SUPABASE_URL + '/rest/v1/ve_reel_business_matches' +
+    '?select=display_role,confidence,ve_instagram_posts(id,shortcode,post_url,post_type,caption,video_url,thumbnail_url,like_count,posted_at,source_account)' +
+    '&business_id=eq.' + encodeURIComponent(veBusinessId) +
+    '&review_status=eq.approved' +
+    '&order=confidence.desc';
+  fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(rows){
+      if(!Array.isArray(rows)) return;
+      var videos = [], photos = [];
+      rows.forEach(function(row){
+        var p = row.ve_instagram_posts;
+        if(!p) return;
+        if(p.post_type === 'Video') videos.push(p);
+        else photos.push(p);
+      });
+
+      // ── Video tab ──────────────────────────────────────────────────────────
+      var videoEl = document.getElementById('tab-video');
+      if(videoEl && videos.length){
+        var vHtml = '<div style="padding:24px 40px 40px">';
+        vHtml += '<p style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:16px">Explorer Content — via VEGANS EXPLORE</p>';
+        vHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">';
+        videos.forEach(function(v){
+          var caption = (v.caption||'').substring(0,100) + ((v.caption||'').length>100?'…':'');
+          var src = v.source_account === 'vegansexplore' ? '@vegansexplore' : '@soflovegans';
+          var date = v.posted_at ? new Date(v.posted_at).getFullYear() : '';
+          vHtml += '<a href="'+esc(v.post_url)+'" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;background:var(--ve-surface);border:1px solid var(--ve-border);border-radius:10px;overflow:hidden">' +
+            '<div style="position:relative;aspect-ratio:9/16;background:#111;overflow:hidden">' +
+              (v.thumbnail_url ? '<img src="'+esc(v.thumbnail_url)+'" alt="'+esc(v.caption||'Video')+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"/>' : '') +
+              '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25)">' +
+                '<div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center">' +
+                  '<svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div style="padding:12px 14px">' +
+              '<p style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:4px">'+esc(src)+(date?' · '+date:'')+'</p>' +
+              '<p style="font-size:12px;line-height:1.55;color:var(--ve-text-75);margin:0">'+esc(caption)+'</p>' +
+              (v.like_count > 0 ? '<p style="font-size:10px;color:var(--ve-text-50);margin-top:6px">'+v.like_count.toLocaleString()+' likes</p>' : '') +
+            '</div>' +
+          '</a>';
+        });
+        vHtml += '</div></div>';
+        videoEl.innerHTML = vHtml;
+      }
+
+      // ── Photos tab — merge Instagram photos below google_photos ────────────
+      var photoEl = document.getElementById('tab-photos');
+      if(photoEl && photos.length){
+        var igSection = '<div style="padding:0 40px 40px">' +
+          '<p style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px">Explorer Photos — via VEGANS EXPLORE</p>' +
+          '<div class="photos-grid">' +
+          photos.slice(0,6).map(function(p){
+            return '<div class="photo-item"><a href="'+esc(p.post_url)+'" target="_blank" rel="noopener">' +
+              (p.thumbnail_url ? '<img src="'+esc(p.thumbnail_url)+'" alt="'+esc(p.caption||'Photo')+'" loading="lazy"/>' : '') +
+              '</a></div>';
+          }).join('') +
+          '</div></div>';
+        photoEl.innerHTML += igSection;
+      }
+    })
+    .catch(function(e){ console.warn('Instagram fetch failed', e); });
+}
+
 function showNotFound(){
   document.getElementById('listing-root').innerHTML =
     '<div class="listing-not-found">'+
@@ -887,8 +955,12 @@ if(!slug || slug === 'listing'){
   showNotFound();
 } else {
   fetchListing(slug).then(function(data){
-    if(data && data.length) renderListing(data[0]);
-    else showNotFound();
+    if(data && data.length){
+      renderListing(data[0]);
+      if(data[0].ve_business_id) renderInstagramContent(data[0].ve_business_id);
+    } else {
+      showNotFound();
+    }
   }).catch(function(){ showNotFound(); });
 }
 
