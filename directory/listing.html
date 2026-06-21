@@ -248,6 +248,33 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .menu-item-tag.gf{background:#e8f5e9;color:#2d7d31}
 .menu-item-tag.pick{background:var(--ve-green-light);color:var(--ve-green-dark)}
 .menu-item-price{font-size:15px;font-weight:800;color:var(--ve-text);white-space:nowrap;padding-top:2px}
+
+/* VIDEO CAROUSEL */
+.vc-wrap{padding:32px 40px 40px}
+.vc-label{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:18px}
+.vc-stage{overflow:hidden;border-radius:12px}
+.vc-track{transition:opacity .18s ease,transform .18s ease}
+.vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vc-item{}
+.vc-thumb-wrap{position:relative;aspect-ratio:16/9;background:#111;border-radius:10px;overflow:hidden;cursor:pointer}
+.vc-thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.vc-thumb-wrap:hover .vc-thumb{transform:scale(1.03)}
+.vc-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);transition:background .15s}
+.vc-play-btn:hover{background:rgba(0,0,0,.45)}
+.vc-play-btn > div, .vc-play-btn{display:flex;align-items:center;justify-content:center}
+.vc-play-btn svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.vc-play-circle{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center}
+.vc-iframe-wrap{position:absolute;inset:0}
+.vc-controls{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:18px}
+.vc-arrow{width:36px;height:36px;border-radius:50%;border:1px solid var(--ve-border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ve-text-75);transition:.15s}
+.vc-arrow:hover{border-color:#5EC47A;color:#2d7d31}
+.vc-dots{display:flex;gap:8px;align-items:center}
+.vc-dot{width:8px;height:8px;border-radius:50%;border:none;background:var(--ve-border);cursor:pointer;padding:0;transition:.15s}
+.vc-dot.active{background:#5EC47A;width:22px;border-radius:4px}
+@media(max-width:640px){
+  .vc-wrap{padding:24px 16px 32px}
+  .vc-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -1127,31 +1154,134 @@ function showNotFound(){
     '</div>';
 }
 
-// ── Promo video (YouTube embed) ───────────────────────────────────────────────
-function injectPromoVideo(promoUrl){
+// ── Video carousel ────────────────────────────────────────────────────────────
+function extractYtId(url){
+  var m = (url||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+function fetchListingVideos(listingId){
+  var url = SUPABASE_URL + '/rest/v1/ve_listing_videos?listing_id=eq.' + encodeURIComponent(listingId) + '&order=sort_order.asc';
+  return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+    .then(function(r){ return r.json(); })
+    .catch(function(){ return []; });
+}
+
+function renderVideoCarousel(videos){
   var videoEl = document.getElementById('tab-video');
-  if(!videoEl || !promoUrl) return;
-  // Extract YouTube video ID from any youtube.com or youtu.be URL
-  var ytId = null;
-  var m = promoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
-  if(m) ytId = m[1];
-  if(!ytId) return;
-  var promoHtml =
-    '<div style="padding:32px 40px 0">' +
-      '<p style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:14px">Featured Video — VEGANS EXPLORE</p>' +
-      '<div style="position:relative;width:100%;padding-top:56.25%;background:#111;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12)">' +
-        '<iframe ' +
-          'src="https://www.youtube.com/embed/'+ytId+'?rel=0&modestbranding=1" ' +
-          'title="Featured video" ' +
-          'frameborder="0" ' +
-          'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
-          'allowfullscreen ' +
-          'style="position:absolute;top:0;left:0;width:100%;height:100%;border:none">' +
-        '</iframe>' +
+  if(!videoEl || !videos || !videos.length) return;
+
+  // Filter to valid YouTube IDs
+  var items = [];
+  videos.forEach(function(v){
+    var id = extractYtId(v.video_url);
+    if(id) items.push({ id: id, title: v.title || '' });
+  });
+  if(!items.length) return;
+
+  var carouselId = 'vc-' + Date.now();
+  var perPage = 2; // desktop; mobile CSS overrides to 1 col but we still paginate by 2
+  var page = 0;
+  var total = items.length;
+  var pages = Math.ceil(total / perPage);
+
+  function buildSlide(pageIdx){
+    var start = pageIdx * perPage;
+    var slice = items.slice(start, start + perPage);
+    return slice.map(function(item){
+      var thumb = 'https://img.youtube.com/vi/' + item.id + '/hqdefault.jpg';
+      return '<div class="vc-item" data-ytid="' + item.id + '">' +
+        '<div class="vc-thumb-wrap">' +
+          '<img class="vc-thumb" src="' + thumb + '" alt="' + esc(item.title || 'Video') + '" loading="lazy"/>' +
+          '<div class="vc-play-btn" role="button" tabindex="0" aria-label="Play video">' +
+            '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+          '</div>' +
+          '<div class="vc-iframe-wrap" style="display:none"></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function buildDots(){
+    if(pages <= 1) return '';
+    var d = '<div class="vc-dots" id="' + carouselId + '-dots">';
+    for(var i=0;i<pages;i++) d += '<button class="vc-dot' + (i===0?' active':'') + '" data-page="' + i + '" aria-label="Slide ' + (i+1) + '"></button>';
+    d += '</div>';
+    return d;
+  }
+
+  var html =
+    '<div class="vc-wrap" id="' + carouselId + '">' +
+      '<p class="vc-label">VEGANS EXPLORE — Video</p>' +
+      '<div class="vc-stage">' +
+        '<div class="vc-track" id="' + carouselId + '-track">' +
+          '<div class="vc-slide vc-grid">' + buildSlide(0) + '</div>' +
+        '</div>' +
       '</div>' +
+      (pages > 1 ?
+        '<div class="vc-controls">' +
+          '<button class="vc-arrow vc-prev" id="' + carouselId + '-prev" aria-label="Previous">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>' +
+          '</button>' +
+          buildDots() +
+          '<button class="vc-arrow vc-next" id="' + carouselId + '-next" aria-label="Next">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' +
+          '</button>' +
+        '</div>'
+      : '') +
     '</div>';
-  // Prepend above any existing content (Instagram reels load async after this)
-  videoEl.innerHTML = promoHtml;
+
+  videoEl.innerHTML = html;
+
+  // Wire up controls after render
+  var track = document.getElementById(carouselId + '-track');
+  var prevBtn = document.getElementById(carouselId + '-prev');
+  var nextBtn = document.getElementById(carouselId + '-next');
+
+  function goTo(p){
+    if(p < 0 || p >= pages) return;
+    var dir = p > page ? '-12px' : '12px';
+    page = p;
+    // Animate out / in
+    track.style.opacity = '0';
+    track.style.transform = 'translateX(' + dir + ')';
+    setTimeout(function(){
+      track.innerHTML = '<div class="vc-slide vc-grid">' + buildSlide(page) + '</div>';
+      track.style.transform = 'translateX(0)';
+      track.style.opacity = '1';
+      wireThumbClicks();
+      // Update dots
+      var dots = document.querySelectorAll('#' + carouselId + '-dots .vc-dot');
+      dots.forEach(function(d,i){ d.classList.toggle('active', i===page); });
+    }, 180);
+  }
+
+  function wireThumbClicks(){
+    track.querySelectorAll('.vc-item').forEach(function(item){
+      var ytId = item.getAttribute('data-ytid');
+      var playBtn = item.querySelector('.vc-play-btn');
+      var iframeWrap = item.querySelector('.vc-iframe-wrap');
+      var thumbImg = item.querySelector('.vc-thumb');
+      function activateEmbed(){
+        iframeWrap.style.display = 'block';
+        iframeWrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe>';
+        if(thumbImg) thumbImg.style.display = 'none';
+        if(playBtn) playBtn.style.display = 'none';
+      }
+      if(playBtn){
+        playBtn.addEventListener('click', activateEmbed);
+        playBtn.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') activateEmbed(); });
+      }
+    });
+    // Dot clicks
+    track.closest('.vc-wrap') && track.closest('.vc-wrap').querySelectorAll('.vc-dot').forEach(function(dot){
+      dot.addEventListener('click', function(){ goTo(parseInt(dot.getAttribute('data-page'))); });
+    });
+  }
+
+  if(prevBtn) prevBtn.addEventListener('click', function(){ goTo(page - 1); });
+  if(nextBtn) nextBtn.addEventListener('click', function(){ goTo(page + 1); });
+  wireThumbClicks();
 }
 
 // Init
@@ -1163,14 +1293,16 @@ if(!slug || slug === 'listing'){
     if(data && data.length){
       var l = data[0];
       renderListing(l);
-      if(l.promo_video_url) injectPromoVideo(l.promo_video_url);
-      if(l.ve_business_id) renderInstagramContent(l.ve_business_id);
       if(l.claimed_by_member_id){
+        fetchListingVideos(l.id).then(function(vids){
+          if(vids && vids.length) renderVideoCarousel(vids);
+        });
         fetchMenuItems(l.id).then(function(items){
           var panel = document.getElementById('tab-menu');
           if(panel) panel.innerHTML = menuTabContent(items);
         });
       }
+      if(l.ve_business_id) renderInstagramContent(l.ve_business_id);
     } else {
       showNotFound();
     }
