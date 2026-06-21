@@ -60,7 +60,12 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 /* CONTENT AREA */
 .listing-body{display:grid;grid-template-columns:1fr 320px;gap:28px;padding:32px 40px;max-width:100%}
 .listing-main{}
-.listing-sidebar{}
+
+/* PERSISTENT TWO-COLUMN PAGE LAYOUT */
+.listing-page-grid{display:grid;grid-template-columns:1fr 320px;gap:0;align-items:start}
+.listing-page-main{min-width:0}
+.listing-sidebar{padding:28px 0 40px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column}
+.listing-sidebar::-webkit-scrollbar{display:none}
 
 /* SECTION */
 .section{margin-bottom:28px}
@@ -115,8 +120,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .photo-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);transition:background .2s;cursor:pointer}
 .photo-dot.active{background:var(--ve-green)}
 
-/* PHOTOS TAB — 3-col infinite scroll */
-.photos-tab-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+/* PHOTOS TAB — 2-col grid (sidebar is persistent on right) */
+.photos-tab-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .photos-tab-grid .photo-item{aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:#eee;cursor:pointer;position:relative}
 .photos-tab-grid .photo-item img{width:100%;height:100%;object-fit:cover;transition:transform .2s}
 .photos-tab-grid .photo-item:hover img{transform:scale(1.04)}
@@ -208,8 +213,12 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .donate-row{flex-direction:column}
   .vote-count-display{font-size:9px}
   .listing-body{grid-template-columns:1fr;padding:20px 16px}
+  .listing-page-grid{grid-template-columns:1fr}
+  .listing-sidebar{position:static;padding:0 16px 24px;max-height:none}
   .info-bar{padding:10px 16px;gap:12px}
   .platform-grid{grid-template-columns:1fr}
+  .photos-tab-grid{grid-template-columns:1fr 1fr}
+  .vc-grid{grid-template-columns:1fr}
 }
 
 /* MOBILE STICKY BAR */
@@ -254,7 +263,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .vc-label{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:18px}
 .vc-stage{overflow:hidden;border-radius:12px}
 .vc-track{transition:opacity .18s ease,transform .18s ease}
-.vc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .vc-item{}
 .vc-thumb-wrap{position:relative;aspect-ratio:16/9;background:#111;border-radius:10px;overflow:hidden;cursor:pointer}
 .vc-thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
@@ -919,14 +928,14 @@ function menuTabContent(items){
   });
   var firstCount = catMap[cats[0]] ? catMap[cats[0]].length : 0;
   var html=
-    '<div class="listing-body" style="grid-template-columns:1fr"><div class="listing-main">'+
+    '<div style="padding:32px 40px 40px">'+
       '<div class="menu-nav">'+
         '<span class="menu-nav-label">Browse</span>'+
         '<select class="menu-cat-select" id="menu-cat-select" aria-label="Menu category">'+opts+'</select>'+
         '<span class="menu-item-count" id="menu-item-count">'+firstCount+' items</span>'+
       '</div>'+
       '<div id="menu-blocks">'+blocks+'</div>'+
-    '</div></div>';
+    '</div>';
   // Attach event after render (use setTimeout so DOM is ready)
   setTimeout(function(){
     var sel=document.getElementById('menu-cat-select');
@@ -1016,10 +1025,10 @@ function renderListing(l){
 
   // Unlock section lives in sidebar for unclaimed listings
 
-  // PHOTOS tab content — 2-col infinite scroll with lightbox
+  // PHOTOS tab content — 2-col grid with lightbox
   var photoHtml = renderPhotos(l.google_photos, 'tab-photos', true);
   var photosTabContent = photoHtml
-    ? '<div style="padding:24px 40px 40px">'+photoHtml+'</div>'
+    ? '<div style="padding:32px 40px 40px">'+photoHtml+'</div>'
     : lockedTab('photos');
 
   // SEO: title, OG tags, schema.org
@@ -1068,25 +1077,28 @@ function renderListing(l){
     '</div>'+
     statusBadge+
     (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
-    // Tab nav — claimed listings show full set; unclaimed show Overview + Photos only
-    '<nav class="listing-tabs" role="tablist">'+
-      '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
-      (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false">Menu</button>' : '')+
-      '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
-      (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
-      (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
-    '</nav>'+
-    // Tab panels
-    '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
-      '<div class="listing-body">'+
-        '<div class="listing-main">'+overviewContent+'</div>'+
-        renderSidebar(l)+
+    // Persistent two-column layout: main tabs on left, sidebar always on right
+    '<div class="listing-page-grid">'+
+      '<div class="listing-page-main">'+
+        // Tab nav — claimed listings show full set; unclaimed show Overview + Photos only
+        '<nav class="listing-tabs" role="tablist">'+
+          '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
+          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false">Menu</button>' : '')+
+          '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
+          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
+          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
+        '</nav>'+
+        // Tab panels
+        '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
+          '<div style="padding:32px 40px 40px">'+overviewContent+'</div>'+
+        '</div>'+
+        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-menu" role="tabpanel">'+lockedTab('menu')+'</div>' : '')+
+        '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
+        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>' : '')+
+        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>' : '')+
       '</div>'+
-    '</div>'+
-    (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-menu" role="tabpanel">'+lockedTab('menu')+'</div>' : '')+
-    '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
-    (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>' : '')+
-    (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>' : '');
+      renderSidebar(l)+
+    '</div>';
 
   // Mobile sticky action bar (directions / call / order)
   (function(){
