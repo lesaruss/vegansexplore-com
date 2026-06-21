@@ -455,7 +455,7 @@ function getSlug(){
 }
 
 function fetchListing(slug){
-  var url = SUPABASE_URL + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=*&limit=1';
+  var url = SUPABASE_URL + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&select=*&limit=1';
   return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.json(); });
 }
@@ -975,7 +975,7 @@ function renderListing(l){
 
   // Business status badge
   var statusBadge = '';
-  if(l.business_status === 'CLOSED_PERMANENTLY'){
+  if(l.status === 'closed' || l.business_status === 'CLOSED_PERMANENTLY'){
     statusBadge = '<div style="background:#b71c1c;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;text-align:center">Permanently Closed</div>';
   } else if(l.business_status === 'CLOSED_TEMPORARILY'){
     statusBadge = '<div style="background:#e65100;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;text-align:center">Temporarily Closed</div>';
@@ -1064,7 +1064,7 @@ function renderListing(l){
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
           '<div class="listing-badges">'+
             '<span class="badge-cat">'+esc(l.category)+'</span>'+
-            (l.vegan_status ? '<span class="badge-subcat" style="color:#5EC47A;border-color:#5EC47A">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
+            (l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?'color:#777;border-color:#999':'color:#5EC47A;border-color:#5EC47A')+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
             verifiedBadge+
           '</div>'+
           (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
