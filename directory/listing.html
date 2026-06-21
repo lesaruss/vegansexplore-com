@@ -275,6 +275,37 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .vc-wrap{padding:24px 16px 32px}
   .vc-grid{grid-template-columns:1fr}
 }
+
+/* PULSE TAB */
+.pulse-wrap{padding:32px 40px 48px;max-width:780px}
+.pulse-post{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;margin-bottom:24px;background:#fff}
+.pulse-post-header{padding:22px 26px 0}
+.pulse-type-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pulse-type-badge{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:var(--ve-green-light);color:var(--ve-green-dark)}
+.pulse-type-badge.press{background:#fef9c3;color:#854d0e}
+.pulse-type-badge.event{background:#ede9fe;color:#5b21b6}
+.pulse-type-badge.update{background:#e0f2fe;color:#075985}
+.pulse-date{font-size:11px;font-weight:600;color:var(--ve-text-50)}
+.pulse-pinned{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#5EC47A;margin-left:auto}
+.pulse-headline{font-size:20px;font-weight:900;color:var(--ve-text);line-height:1.25;letter-spacing:-.01em;margin-bottom:8px}
+.pulse-subhead{font-size:14px;color:var(--ve-text-75);line-height:1.6;margin-bottom:18px;font-style:italic}
+.pulse-divider{height:1px;background:var(--ve-border);margin:0 26px}
+.pulse-body{padding:22px 26px;font-size:14px;line-height:1.85;color:#333}
+.pulse-body p{margin-bottom:14px}
+.pulse-body p:last-child{margin-bottom:0}
+.pulse-body strong{font-weight:800;color:var(--ve-text)}
+.pulse-cta-row{padding:18px 26px;border-top:1px solid var(--ve-border);display:flex;align-items:center;gap:12px;background:#fafafa}
+.pulse-cta-btn{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:10px 20px;border-radius:6px;background:#5EC47A;color:#000;text-decoration:none;transition:.15s}
+.pulse-cta-btn:hover{background:#4db368}
+.pulse-author{font-size:11px;font-weight:700;color:var(--ve-text-50);margin-left:auto}
+@media(max-width:640px){
+  .pulse-wrap{padding:20px 16px 32px}
+  .pulse-post-header{padding:18px 18px 0}
+  .pulse-body{padding:18px 18px}
+  .pulse-divider{margin:0 18px}
+  .pulse-cta-row{padding:14px 18px;flex-wrap:wrap}
+  .pulse-headline{font-size:17px}
+}
 </style>
 </head>
 <body>
@@ -1284,6 +1315,60 @@ function renderVideoCarousel(videos){
   wireThumbClicks();
 }
 
+// ── Pulse ─────────────────────────────────────────────────────────────────────
+function fetchPulsePosts(listingId){
+  var url = SUPABASE_URL + '/rest/v1/ve_pulse_posts?listing_id=eq.' + encodeURIComponent(listingId) + '&order=is_pinned.desc,published_at.desc';
+  return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+    .then(function(r){ return r.json(); })
+    .catch(function(){ return []; });
+}
+
+function renderPulse(posts){
+  var panel = document.getElementById('tab-pulse');
+  if(!panel) return;
+  if(!posts || !posts.length){
+    panel.innerHTML = '<div class="tab-locked"><div class="tab-locked-title">No posts yet</div><div class="tab-locked-sub">Updates, press, and stories will appear here.</div></div>';
+    return;
+  }
+  var typeLabels = { article:'Article', update:'Update', press:'Press', event:'Event', collab:'Collab', announcement:'Announcement' };
+  var html = '<div class="pulse-wrap">';
+  posts.forEach(function(post){
+    var date = post.published_at ? new Date(post.published_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '';
+    var typeClass = post.type === 'press' ? ' press' : post.type === 'event' ? ' event' : post.type === 'update' ? ' update' : '';
+    // Convert **bold** markdown to <strong>
+    var bodyHtml = (post.body || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .split('\n\n').filter(function(p){ return p.trim(); })
+      .map(function(p){ return '<p>' + p.trim().replace(/\n/g,'<br>') + '</p>'; })
+      .join('');
+    html +=
+      '<div class="pulse-post">' +
+        '<div class="pulse-post-header">' +
+          '<div class="pulse-type-row">' +
+            '<span class="pulse-type-badge' + typeClass + '">' + (typeLabels[post.type] || 'Post') + '</span>' +
+            (date ? '<span class="pulse-date">' + date + '</span>' : '') +
+            (post.is_pinned ? '<span class="pulse-pinned">Pinned</span>' : '') +
+          '</div>' +
+          '<div class="pulse-headline">' + esc(post.headline) + '</div>' +
+          (post.subhead ? '<div class="pulse-subhead">' + esc(post.subhead) + '</div>' : '') +
+        '</div>' +
+        (bodyHtml ? '<div class="pulse-divider"></div><div class="pulse-body">' + bodyHtml + '</div>' : '') +
+        (post.source_url ?
+          '<div class="pulse-cta-row">' +
+            '<a href="' + esc(post.source_url) + '" target="_blank" rel="noopener" class="pulse-cta-btn">' +
+              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+              esc(post.source_label || 'Watch Now') +
+            '</a>' +
+            (post.author ? '<span class="pulse-author">by ' + esc(post.author) + '</span>' : '') +
+          '</div>'
+        : '') +
+      '</div>';
+  });
+  html += '</div>';
+  panel.innerHTML = html;
+}
+
 // Init
 var slug = getSlug();
 if(!slug || slug === 'listing'){
@@ -1300,6 +1385,9 @@ if(!slug || slug === 'listing'){
         fetchMenuItems(l.id).then(function(items){
           var panel = document.getElementById('tab-menu');
           if(panel) panel.innerHTML = menuTabContent(items);
+        });
+        fetchPulsePosts(l.id).then(function(posts){
+          renderPulse(posts);
         });
       }
       if(l.ve_business_id) renderInstagramContent(l.ve_business_id);
