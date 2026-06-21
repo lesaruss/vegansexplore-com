@@ -115,6 +115,23 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .rating-mobile .rm-count{font-size:10px;color:#888}
 }
 
+/* TABS */
+.listing-tabs{display:flex;overflow-x:auto;border-bottom:2px solid var(--ve-border);background:#fff;z-index:10;scrollbar-width:none;position:sticky;top:0}
+.listing-tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:14px 22px;border:none;background:none;color:var(--ve-text-50);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:Montserrat,sans-serif;transition:color .15s,border-color .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--ve-text)}
+.tab-btn.active{color:var(--ve-green-dark);border-bottom-color:var(--ve-green)}
+.tab-btn:focus-visible{outline:2px solid var(--ve-green);outline-offset:-2px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* LOCKED TAB STATE */
+.tab-locked{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 24px;text-align:center;gap:12px}
+.tab-locked-icon{width:56px;height:56px;border-radius:50%;background:var(--ve-green-light);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.tab-locked-title{font-size:15px;font-weight:900;color:var(--ve-text);letter-spacing:-.01em}
+.tab-locked-sub{font-size:13px;color:var(--ve-text-50);max-width:260px;line-height:1.65}
+.tab-locked-cta{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;border-radius:6px;border:1px solid var(--ve-green);color:var(--ve-green-dark);background:var(--ve-green-light);text-decoration:none;margin-top:4px;display:inline-block}
+
 /* LOADING / ERROR */
 .listing-loading{display:flex;align-items:center;justify-content:center;min-height:60vh;font-size:13px;font-weight:700;color:var(--ve-text-50);letter-spacing:0.1em}
 .listing-not-found{text-align:center;padding:80px 40px}
@@ -370,9 +387,24 @@ function renderSidebar(l){
     '</div>';
 }
 
+function lockedTab(tabName){
+  var lockSvg = '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
+  var msgs = {
+    menu: {title:'Menu Coming Soon', sub:'When this business unlocks their menu slot with LESARs points, we\'ll post their full menu right here.'},
+    photos: {title:'Photos Coming Soon', sub:'Professional photos taken by the VEGANS EXPLORE team will appear here once this listing is activated.'},
+    video: {title:'Video Coming Soon', sub:'Unlock this slot with LESARs points and we\'ll send a crew to film a professional video for your listing.'}
+  };
+  var m = msgs[tabName] || {title:'Content Coming Soon', sub:'This slot can be unlocked with LESARs points.'};
+  return '<div class="tab-locked">'+
+    '<div class="tab-locked-icon">'+lockSvg+'</div>'+
+    '<div class="tab-locked-title">'+m.title+'</div>'+
+    '<div class="tab-locked-sub">'+m.sub+'</div>'+
+    '<a href="/directory" class="tab-locked-cta">Learn About LESARs</a>'+
+  '</div>';
+}
+
 function renderListing(l){
   var catType = getCategoryType(l.category);
-  var cityRegion = l.address_city && l.address_city !== l.location ? l.address_city : (l.location || '');
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
 
   // Breadcrumb
@@ -413,44 +445,41 @@ function renderListing(l){
   if(priceDisplay) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(priceDisplay)+'</span>');
   if(l.website) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Website</a></span>');
 
-  // MAIN content by category type
-  var mainContent = '';
-
-  // Description (universal)
+  // OVERVIEW content
+  var overviewContent = '';
   if(l.description || l.tagline) {
-    mainContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
+    overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
 
   if(catType === 'food'){
-    // Online ordering (new unified + legacy fallback)
-    mainContent += renderOrderingPlatforms(l);
-    // Menu & dietary options
-    mainContent += renderMenuOptions(l);
-    // Accommodations
-    mainContent += renderAccommodations(l);
-    // Photos
-    var photoHtml = renderPhotos(l.google_photos);
-    if(photoHtml) mainContent += '<div class="section"><h2 class="section-title">Photos</h2>'+photoHtml+'</div>';
-    // Hours
+    overviewContent += renderOrderingPlatforms(l);
+    overviewContent += renderMenuOptions(l);
+    overviewContent += renderAccommodations(l);
     if(l.google_hours_json){
-      mainContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
+      overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
+    }
+    if(!l.google_rating && l.google_reviews_count){
+      overviewContent += '<div class="section"><h2 class="section-title">Reviews</h2><p class="about-text">'+l.google_reviews_count+' Google reviews</p></div>';
     }
   } else if(catType === 'media'){
-    mainContent += renderPlatforms(l);
-    if(l.target_audience) mainContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';
+    overviewContent += renderPlatforms(l);
+    if(l.target_audience) overviewContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';
   } else {
-    // General/services
     if(l.core_services && l.core_services.length){
-      mainContent += '<div class="section"><h2 class="section-title">Services</h2><div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      overviewContent += '<div class="section"><h2 class="section-title">Services</h2><div style="display:flex;gap:8px;flex-wrap:wrap">'+
         l.core_services.map(function(s){ return '<span style="font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--ve-border);background:var(--ve-surface)">'+esc(s)+'</span>'; }).join('') + '</div></div>';
     }
-    if(l.booking_url) mainContent += '<div class="section"><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener" class="delivery-btn" style="display:inline-flex">Book a Session</a></div>';
+    if(l.booking_url) overviewContent += '<div class="section"><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener" class="delivery-btn" style="display:inline-flex">Book a Session</a></div>';
   }
 
-  // Rating section (food, if not in sidebar)
-  if(catType === 'food' && !l.google_rating && l.google_reviews_count){
-    mainContent += '<div class="section"><h2 class="section-title">Reviews</h2><p class="about-text">'+l.google_reviews_count+' Google reviews</p></div>';
-  }
+  // PHOTOS tab content
+  var photoHtml = renderPhotos(l.google_photos);
+  var photosTabContent = photoHtml
+    ? '<div style="padding:20px 16px 32px">'+photoHtml+'</div>'
+    : lockedTab('photos');
+
+  // Show/hide Photos tab if no photos yet
+  var photosTabLabel = l.google_photos && l.google_photos.length ? 'Photos' : 'Photos';
 
   // Build page
   document.title = esc(l.name) + ' — Vegans Explore';
@@ -481,29 +510,62 @@ function renderListing(l){
     '</div>'+
     statusBadge+
     (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
-    '<div class="listing-body">'+
-      '<div class="listing-main">'+mainContent+'</div>'+
-      renderSidebar(l)+
-    '</div>';
+    // Tab nav
+    '<nav class="listing-tabs" role="tablist">'+
+      '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
+      '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false">Menu</button>'+
+      '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">'+photosTabLabel+'</button>'+
+      '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>'+
+    '</nav>'+
+    // Tab panels
+    '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
+      '<div class="listing-body">'+
+        '<div class="listing-main">'+overviewContent+'</div>'+
+        renderSidebar(l)+
+      '</div>'+
+    '</div>'+
+    '<div class="tab-panel" id="tab-menu" role="tabpanel">'+lockedTab('menu')+'</div>'+
+    '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
+    '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>';
 
-  // Vote button handler
-  // Photo carousel dots
-  var photoTrack = document.getElementById('photos-track');
-  if(photoTrack){
-    photoTrack.addEventListener('scroll', function(){
-      var dots = document.querySelectorAll('.photo-dot');
-      if(!dots.length) return;
-      var idx = Math.round(photoTrack.scrollLeft / photoTrack.offsetWidth);
-      dots.forEach(function(d,i){ d.classList.toggle('active', i===idx); });
-    }, {passive:true});
-    // Dot click navigation
-    document.querySelectorAll('.photo-dot').forEach(function(dot, i){
-      dot.addEventListener('click', function(){
-        photoTrack.scrollTo({left: i * photoTrack.offsetWidth, behavior:'smooth'});
-      });
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = this.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+      this.classList.add('active');
+      this.setAttribute('aria-selected','true');
+      var panel = document.getElementById('tab-'+target);
+      if(panel) panel.classList.add('active');
+
+      // Wire up photo carousel scroll/dots when Photos tab is activated
+      if(target === 'photos'){
+        wirePhotoCarousel();
+      }
     });
+  });
+
+  // Photo carousel in Overview is wired on load; Photos tab is wired on first click
+  function wirePhotoCarousel(){
+    var photoTrack = document.getElementById('photos-track');
+    if(photoTrack && !photoTrack.dataset.wired){
+      photoTrack.dataset.wired = '1';
+      photoTrack.addEventListener('scroll', function(){
+        var dots = document.querySelectorAll('.photo-dot');
+        if(!dots.length) return;
+        var idx = Math.round(photoTrack.scrollLeft / photoTrack.offsetWidth);
+        dots.forEach(function(d,i){ d.classList.toggle('active', i===idx); });
+      }, {passive:true});
+      document.querySelectorAll('.photo-dot').forEach(function(dot, i){
+        dot.addEventListener('click', function(){
+          photoTrack.scrollTo({left: i * photoTrack.offsetWidth, behavior:'smooth'});
+        });
+      });
+    }
   }
 
+  // Vote button
   document.getElementById('vote-btn').addEventListener('click', function(){
     if(this.dataset.voted) return;
     this.dataset.voted = '1';
