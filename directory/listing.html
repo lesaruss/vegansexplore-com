@@ -767,10 +767,13 @@ function renderListing(l){
     '</div>'+
     statusBadge+
     (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
-    // Tab nav — Menu / Video / Pulse graduate to tabs when unlocked; until then they live in the Unlock section
+    // Tab nav — claimed listings show full set; unclaimed show Overview + Photos only
     '<nav class="listing-tabs" role="tablist">'+
       '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
+      (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false">Menu</button>' : '')+
       '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
+      (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
+      (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
     '</nav>'+
     // Tab panels
     '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
@@ -779,7 +782,10 @@ function renderListing(l){
         renderSidebar(l)+
       '</div>'+
     '</div>'+
-    '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>';
+    (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-menu" role="tabpanel">'+lockedTab('menu')+'</div>' : '')+
+    '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
+    (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>' : '')+
+    (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>' : '');
 
   // Mobile sticky action bar (directions / call / order)
   (function(){
