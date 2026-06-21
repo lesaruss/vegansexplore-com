@@ -1200,7 +1200,7 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     var online = isOnline(l) ? '1' : '0';
     var votes = (l.favorites_count || 0) + (l.likes_count || 0);
     var subcat = l.specialty || l.category || '';
-    return '<div class="rank-card browse-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-region="' + esc(region) + '" data-subcat="' + esc(subcat) + '" data-online="' + online + '">' +
+    return '<div class="rank-card browse-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-region="' + esc(region) + '" data-subcat="' + esc(subcat) + '" data-online="' + online + '" data-slug="' + esc(l.slug||'') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + (online === '1' ? '<span class="online-badge">Nationwide</span>' : esc(region)) + '</div>' +
@@ -1217,7 +1217,7 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     var pts = Math.max(0, 111 - (rank - 1) * 5);
     var rankClass = rank <= 3 ? 'rank-num top3' : 'rank-num';
     var ptsColor = rank <= 3 ? '#5EC47A' : rank <= 7 ? '#888' : '#aaa';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + (rank-1) + '" data-region="' + esc(region) + '" data-subcat="' + esc(subcat) + '" data-online="' + online + '">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + (rank-1) + '" data-region="' + esc(region) + '" data-subcat="' + esc(subcat) + '" data-online="' + online + '" data-slug="' + esc(l.slug||'') + '">' +
       '<div class="rank-num-col"><span class="' + rankClass + '">' + rank + '</span><span class="rank-pts" style="color:' + ptsColor + '">+' + pts + 'pts</span></div>' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
@@ -1225,6 +1225,19 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
       '<div class="rank-subcat">' + esc(l.category || '') + '</div></div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn">+ Vote</button></div>' +
       '</div>';
+  }
+
+  function bindCardClicks() {
+    document.querySelectorAll('.rank-card[data-slug]').forEach(function(card) {
+      if (card.dataset.clickbound) return;
+      card.dataset.clickbound = '1';
+      var slug = card.dataset.slug;
+      if (!slug) return;
+      card.addEventListener('click', function(e) {
+        if (e.target.classList.contains('vote-btn') || e.target.closest('.vote-btn')) return;
+        window.location = '/directory/' + slug;
+      });
+    });
   }
 
   function bindVoteButtons() {
@@ -1280,11 +1293,12 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     });
 
     bindVoteButtons();
+    bindCardClicks();
   }
 
   function fetchAll(offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,name,category,specialty,location,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,initials,color&status=eq.approved&limit=1000&offset=' + (offset||0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,initials,color&status=eq.approved&limit=1000&offset=' + (offset||0);
     fetch(url, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
       .then(function(r) { return r.json(); })
       .then(function(data) {
