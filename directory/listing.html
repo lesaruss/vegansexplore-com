@@ -280,6 +280,7 @@ function renderOwnership(l){
 function hoursMap(hoursJson){
   // Normalize: array [{day,hours}] or [{day,openingHours}] → {Day: "hours string"}
   if(!hoursJson) return {};
+  if(typeof hoursJson === 'string'){ try{ hoursJson = JSON.parse(hoursJson); }catch(e){ return {}; } }
   if(Array.isArray(hoursJson)){
     var map = {};
     hoursJson.forEach(function(h){
