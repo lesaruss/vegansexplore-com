@@ -1066,6 +1066,7 @@ function renderInstagramContent(veBusinessId){
       if(videoEl && videos.length){
         var vHtml = '<div style="padding:24px 40px 40px">';
         vHtml += '<p style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:16px">Explorer Content — via VEGANS EXPLORE</p>';
+
         vHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">';
         videos.forEach(function(v){
           var caption = (v.caption||'').substring(0,100) + ((v.caption||'').length>100?'…':'');
@@ -1088,7 +1089,13 @@ function renderInstagramContent(veBusinessId){
           '</a>';
         });
         vHtml += '</div></div>';
-        videoEl.innerHTML = vHtml;
+        // Append reels below promo video (if already injected) or replace locked state
+        var promoEl = videoEl.querySelector('iframe');
+        if(promoEl){
+          videoEl.innerHTML += vHtml;
+        } else {
+          videoEl.innerHTML = vHtml;
+        }
       }
 
       // ── Photos tab — merge Instagram photos below google_photos ────────────
@@ -1120,6 +1127,33 @@ function showNotFound(){
     '</div>';
 }
 
+// ── Promo video (YouTube embed) ───────────────────────────────────────────────
+function injectPromoVideo(promoUrl){
+  var videoEl = document.getElementById('tab-video');
+  if(!videoEl || !promoUrl) return;
+  // Extract YouTube video ID from any youtube.com or youtu.be URL
+  var ytId = null;
+  var m = promoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  if(m) ytId = m[1];
+  if(!ytId) return;
+  var promoHtml =
+    '<div style="padding:32px 40px 0">' +
+      '<p style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:14px">Featured Video — VEGANS EXPLORE</p>' +
+      '<div style="position:relative;width:100%;padding-top:56.25%;background:#111;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12)">' +
+        '<iframe ' +
+          'src="https://www.youtube.com/embed/'+ytId+'?rel=0&modestbranding=1" ' +
+          'title="Featured video" ' +
+          'frameborder="0" ' +
+          'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
+          'allowfullscreen ' +
+          'style="position:absolute;top:0;left:0;width:100%;height:100%;border:none">' +
+        '</iframe>' +
+      '</div>' +
+    '</div>';
+  // Prepend above any existing content (Instagram reels load async after this)
+  videoEl.innerHTML = promoHtml;
+}
+
 // Init
 var slug = getSlug();
 if(!slug || slug === 'listing'){
@@ -1129,6 +1163,7 @@ if(!slug || slug === 'listing'){
     if(data && data.length){
       var l = data[0];
       renderListing(l);
+      if(l.promo_video_url) injectPromoVideo(l.promo_video_url);
       if(l.ve_business_id) renderInstagramContent(l.ve_business_id);
       if(l.claimed_by_member_id){
         fetchMenuItems(l.id).then(function(items){
