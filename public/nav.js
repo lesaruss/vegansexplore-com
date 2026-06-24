@@ -56,6 +56,7 @@
     '</nav>' +
     '<div class="ve-mob-menu" id="ve-mob-menu" role="dialog" aria-label="Navigation" aria-modal="true">' +
       '<div class="ve-mob-section">' +
+        '<a href="/welcome"' + cur('/welcome') + '>Welcome</a>' +
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
