@@ -473,7 +473,9 @@
     try { member = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) {}
 
     if (!token || !member) {
-      window.location.href = '/login?next=' + encodeURIComponent('/account');
+      VEAuth.showAuthModal('Sign in to your Passport to view your account.', function() {
+        window.location.reload();
+      });
       return;
     }
 
