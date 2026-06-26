@@ -20,8 +20,11 @@
     '.ve-hamburger{display:flex;align-items:center;justify-content:center;background:none;border:1px solid rgba(0,0,0,0.12);border-radius:6px;cursor:pointer;padding:8px 10px;color:#1a1a1a;line-height:0;-webkit-tap-highlight-color:transparent;transition:border-color 0.15s;}',
     '.ve-hamburger:hover{border-color:rgba(0,0,0,0.3);}',
     '.ve-hamburger:focus-visible{outline:3px solid #22C55E;outline-offset:3px;border-radius:6px;}',
-    '.ve-mob-menu{display:none;position:fixed;top:60px;left:0;right:0;background:#fff;border-bottom:1px solid rgba(0,0,0,0.09);box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:399;overflow-y:auto;max-height:calc(100vh - 60px);}',
-    '.ve-mob-menu.open{display:block;}',
+    '.ve-mob-menu{display:none;position:fixed;top:60px;right:0;bottom:0;width:280px;max-width:85vw;background:#fff;border-left:1px solid rgba(0,0,0,0.09);box-shadow:-8px 0 24px rgba(0,0,0,0.12);z-index:401;overflow-y:auto;}',
+    '.ve-mob-menu.open{display:block;animation:ve-slide-in 0.22s cubic-bezier(0.4,0,0.2,1);}',
+    '@keyframes ve-slide-in{from{transform:translateX(100%);}to{transform:translateX(0);}}',
+    '.ve-mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:400;}',
+    '.ve-mob-overlay.open{display:block;}',
     '.ve-mob-section{padding:4px 0;}',
     '.ve-mob-menu a{display:flex;align-items:center;gap:10px;padding:13px 20px;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1a1a1a;text-decoration:none;transition:background 0.1s;}',
     '.ve-mob-menu a:hover{background:#f5f5f5;color:#22C55E;}',
@@ -119,6 +122,7 @@
         '<button class="ve-hamburger" id="ve-hamburger-btn" aria-label="Open navigation" aria-expanded="false" aria-controls="ve-mob-menu">' + iconMenu + '</button>' +
       '</div>' +
     '</nav>' +
+    '<div class="ve-mob-overlay" id="ve-mob-overlay" aria-hidden="true"></div>' +
     '<div class="ve-mob-menu" id="ve-mob-menu" role="dialog" aria-label="Navigation" aria-modal="true">' +
       '<div class="ve-mob-section">' +
         '<a href="/welcome"' + cur('/welcome') + '>Welcome</a>' +
@@ -161,12 +165,14 @@
     });
   }
 
-  /* ---- Hamburger toggle ---- */
+  /* ---- Hamburger + drawer toggle ---- */
   var hamburger = document.getElementById('ve-hamburger-btn');
   var mobMenu   = document.getElementById('ve-mob-menu');
+  var overlay   = document.getElementById('ve-mob-overlay');
 
   function setMobOpen(open) {
     mobMenu.classList.toggle('open', open);
+    overlay.classList.toggle('open', open);
     hamburger.setAttribute('aria-expanded', String(open));
     hamburger.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
     hamburger.innerHTML = open ? iconClose : iconMenu;
@@ -176,6 +182,8 @@
     e.stopPropagation();
     setMobOpen(!mobMenu.classList.contains('open'));
   });
+
+  overlay.addEventListener('click', function () { setMobOpen(false); });
 
   document.addEventListener('click', function (e) {
     if (mobMenu.classList.contains('open') && !mobMenu.contains(e.target) && !hamburger.contains(e.target)) {
