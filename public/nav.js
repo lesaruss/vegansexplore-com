@@ -185,10 +185,28 @@
   /* ---- Passport gate (event delegation - runs on every page nav.js is included) ---- */
   var _gated = ['.vote-hero-btn', '.donate-btn', '#donate-btn', '.btn-join', '.star-btn', '.mobile-sticky-btn-vote', '.mobile-sticky-btn-save'];
   function _showGateModal(msg) {
+    var _msg = msg || 'You need a free Passport to do that.';
     if (window.VEAuth && typeof VEAuth.showAuthModal === 'function') {
-      VEAuth.showAuthModal(msg || 'You need a free Passport to do that.');
+      VEAuth.showAuthModal(_msg);
+      return;
+    }
+    // Lazy-load ve-auth.js then open modal
+    function _tryShow() {
+      if (window.VEAuth && typeof VEAuth.showAuthModal === 'function') {
+        VEAuth.showAuthModal(_msg);
+      }
+    }
+    if (!document.querySelector('script[src*="ve-auth"]')) {
+      var _s = document.createElement('script');
+      _s.src = '/public/ve-auth.js';
+      _s.onload = _tryShow;
+      document.head.appendChild(_s);
     } else {
-      window.location.href = '/join';
+      var _t = 0, _iv = setInterval(function() {
+        _t++;
+        if (window.VEAuth && typeof VEAuth.showAuthModal === 'function') { clearInterval(_iv); _tryShow(); }
+        else if (_t > 50) { clearInterval(_iv); window.location.href = '/join'; }
+      }, 100);
     }
   }
   document.addEventListener('click', function(e) {
