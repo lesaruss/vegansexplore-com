@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Your Passport - VEGANS EXPLORE</title>
+  <meta name="description" content="Join VEGANS EXPLORE free. Vote for your favorites, save listings, join communities, and unlock Guides with LESARs.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Montserrat", sans-serif; background: #fff; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; }
+    .join-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 48px 20px 80px; }
+    .join-card { width: 100%; max-width: 420px; }
+    .join-logo { text-align: center; margin-bottom: 28px; }
+    .join-logo img { height: 36px; width: auto; }
+    h1 { font-size: 26px; font-weight: 900; color: #1a1a1a; text-align: center; margin-bottom: 6px; }
+    .join-sub { font-size: 14px; color: #666; text-align: center; margin-bottom: 8px; line-height: 1.5; }
+    .join-perks { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px 20px; margin: 20px 0 28px; }
+    .join-perks-title { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #166534; margin-bottom: 10px; }
+    .join-perk { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #15803D; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+    .join-perk:last-child { margin-bottom: 0; }
+    .join-perk-icon { flex-shrink: 0; margin-top: 1px; }
+    .join-google-wrap { margin-bottom: 16px; display: flex; justify-content: center; }
+    #join-google-btn { width: 100%; }
+    .join-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+    .join-divider-line { flex: 1; border-top: 1px solid rgba(0,0,0,0.1); }
+    .join-divider-text { font-size: 11px; font-weight: 600; color: #999; white-space: nowrap; }
+    label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 5px; }
+    .join-field { margin-bottom: 14px; }
+    input[type="text"], input[type="email"], input[type="password"] { display: block; width: 100%; padding: 12px 14px; border: 1.5px solid rgba(0,0,0,0.15); border-radius: 6px; font-family: "Montserrat", sans-serif; font-size: 14px; color: #1a1a1a; background: #fff; transition: border-color 0.15s; -webkit-appearance: none; }
+    input:focus { outline: none; border-color: #22C55E; }
+    .join-submit { display: block; width: 100%; padding: 14px; background: #22C55E; color: #fff; font-family: "Montserrat", sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; margin-top: 4px; }
+    .join-submit:hover { background: #16A34A; }
+    .join-submit:disabled { background: #9CA3AF; cursor: not-allowed; }
+    .join-error { display: none; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 12px 14px; font-size: 13px; color: #dc2626; font-weight: 600; margin-bottom: 14px; line-height: 1.4; }
+    .join-error.visible { display: block; }
+    .join-terms { font-size: 11px; color: #999; text-align: center; margin-top: 16px; line-height: 1.5; }
+    .join-terms a { color: #22C55E; text-decoration: none; }
+    .join-login { text-align: center; margin-top: 24px; font-size: 13px; color: #555; }
+    .join-login a { color: #22C55E; font-weight: 700; text-decoration: none; }
+    .join-referral-toggle { font-size: 11px; color: #999; text-align: center; margin-bottom: 14px; cursor: pointer; text-decoration: underline; background: none; border: none; font-family: "Montserrat", sans-serif; }
+    .join-referral-field { display: none; }
+    .join-referral-field.visible { display: block; }
+    @media (max-width: 480px) { .join-wrap { padding: 32px 16px 60px; } h1 { font-size: 22px; } }
+  </style>
+</head>
+<body>
+  <script src="/public/nav.js"></script>
+  <div class="join-wrap">
+    <div class="join-card">
+      <div class="join-logo">
+        <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
+      </div>
+      <h1>Get Your Passport</h1>
+      <p class="join-sub">Free to join. Use LESARs to unlock Guides and support the community.</p>
+      <div class="join-perks">
+        <div class="join-perks-title">What you unlock</div>
+        <div class="join-perk">
+          <span class="join-perk-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#22C55E"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Vote for your favorite businesses and save to your List
+        </div>
+        <div class="join-perk">
+          <span class="join-perk-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#22C55E"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Comment on the Daily Pulse
+        </div>
+        <div class="join-perk">
+          <span class="join-perk-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#22C55E"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Join Communities and connect with members
+        </div>
+        <div class="join-perk">
+          <span class="join-perk-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#22C55E"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <strong>+111 LESARs welcome grant</strong> - use toward any Guide
+        </div>
+      </div>
+      <div class="join-google-wrap">
+        <div id="join-google-btn"></div>
+      </div>
+      <div class="join-divider">
+        <div class="join-divider-line"></div>
+        <span class="join-divider-text">or sign up with email</span>
+        <div class="join-divider-line"></div>
+      </div>
+      <div id="join-error" class="join-error" role="alert"></div>
+      <form id="join-form" novalidate>
+        <div class="join-field">
+          <label for="join-name">Full Name</label>
+          <input type="text" id="join-name" name="name" autocomplete="name" placeholder="Your name" required>
+        </div>
+        <div class="join-field">
+          <label for="join-email">Email</label>
+          <input type="email" id="join-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+        <div class="join-field">
+          <label for="join-password">Password</label>
+          <input type="password" id="join-password" name="password" autocomplete="new-password" placeholder="At least 8 characters" required minlength="8">
+        </div>
+        <button type="button" class="join-referral-toggle" id="join-referral-toggle">Have a referral code?</button>
+        <div class="join-referral-field" id="join-referral-wrap">
+          <div class="join-field">
+            <label for="join-referral">Referral Code</label>
+            <input type="text" id="join-referral" name="referral_code" placeholder="VE-XXXXXX" autocomplete="off" style="text-transform:uppercase;">
+          </div>
+        </div>
+        <button type="submit" class="join-submit" id="join-submit">Create My Passport</button>
+      </form>
+      <p class="join-terms">By joining, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.</p>
+      <p class="join-login">Already have a Passport? <a href="/login">Sign in</a></p>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    if (VEAuth.isLoggedIn()) window.location.replace('/directory');
+    var form = document.getElementById('join-form');
+    var submitBtn = document.getElementById('join-submit');
+    var errorBox = document.getElementById('join-error');
+    var refToggle = document.getElementById('join-referral-toggle');
+    var refWrap = document.getElementById('join-referral-wrap');
+    refToggle.addEventListener('click', function() {
+      refWrap.classList.toggle('visible');
+      if (refWrap.classList.contains('visible')) document.getElementById('join-referral').focus();
+    });
+    function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('visible'); }
+    function clearError() { errorBox.classList.remove('visible'); }
+    function setLoading(on) { submitBtn.disabled = on; submitBtn.textContent = on ? 'Creating your Passport...' : 'Create My Passport'; }
+    form.addEventListener('submit', function(e) {
+      e.preventDefault(); clearError();
+      var name = document.getElementById('join-name').value.trim();
+      var email = document.getElementById('join-email').value.trim();
+      var password = document.getElementById('join-password').value;
+      var refCode = (document.getElementById('join-referral').value || '').trim().toUpperCase() || null;
+      if (!name) { showError('Please enter your name.'); return; }
+      if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
+      if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
+      setLoading(true);
+      VEAuth.signup(email, password, name, refCode)
+        .then(function(d) {
+          if (d.error) { showError(d.error); setLoading(false); return; }
+          window.location.replace('/welcome?joined=1');
+        })
+        .catch(function() { showError('Something went wrong. Please try again.'); setLoading(false); });
+    });
+    window.addEventListener('load', function() {
+      VEAuth.initGoogleSignIn(document.getElementById('join-google-btn'), function(d) {
+        if (d.error) { showError(d.error); return; }
+        window.location.replace('/welcome?joined=1');
+      });
+    });
+  </script>
+</body>
+</html>

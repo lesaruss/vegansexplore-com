@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - VEGANS EXPLORE</title>
+  <meta name="description" content="Sign in to your VEGANS EXPLORE Passport.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Montserrat", sans-serif; background: #fff; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; }
+    .login-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 48px 20px 80px; }
+    .login-card { width: 100%; max-width: 400px; }
+    .login-logo { text-align: center; margin-bottom: 32px; }
+    .login-logo img { height: 36px; width: auto; }
+    h1 { font-size: 24px; font-weight: 900; color: #1a1a1a; text-align: center; margin-bottom: 6px; }
+    .login-sub { font-size: 14px; color: #666; text-align: center; margin-bottom: 28px; }
+    .login-google-wrap { margin-bottom: 16px; display: flex; justify-content: center; }
+    #login-google-btn { width: 100%; }
+    .login-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+    .login-divider-line { flex: 1; border-top: 1px solid rgba(0,0,0,0.1); }
+    .login-divider-text { font-size: 11px; font-weight: 600; color: #999; white-space: nowrap; }
+    label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #555; margin-bottom: 5px; }
+    .login-field { margin-bottom: 14px; }
+    input[type="email"], input[type="password"] { display: block; width: 100%; padding: 12px 14px; border: 1.5px solid rgba(0,0,0,0.15); border-radius: 6px; font-family: "Montserrat", sans-serif; font-size: 14px; color: #1a1a1a; background: #fff; transition: border-color 0.15s; -webkit-appearance: none; }
+    input:focus { outline: none; border-color: #22C55E; }
+    .login-forgot { display: block; text-align: right; font-size: 11px; color: #22C55E; text-decoration: none; font-weight: 700; margin-top: -8px; margin-bottom: 16px; }
+    .login-submit { display: block; width: 100%; padding: 14px; background: #22C55E; color: #fff; font-family: "Montserrat", sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+    .login-submit:hover { background: #16A34A; }
+    .login-submit:disabled { background: #9CA3AF; cursor: not-allowed; }
+    .login-error { display: none; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 12px 14px; font-size: 13px; color: #dc2626; font-weight: 600; margin-bottom: 14px; line-height: 1.4; }
+    .login-error.visible { display: block; }
+    .login-join { text-align: center; margin-top: 24px; font-size: 13px; color: #555; }
+    .login-join a { color: #22C55E; font-weight: 700; text-decoration: none; }
+    @media (max-width: 480px) { .login-wrap { padding: 32px 16px 60px; } h1 { font-size: 20px; } }
+  </style>
+</head>
+<body>
+  <script src="/public/nav.js"></script>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
+      </div>
+      <h1>Welcome back</h1>
+      <p class="login-sub">Sign in to your Passport</p>
+      <div class="login-google-wrap">
+        <div id="login-google-btn"></div>
+      </div>
+      <div class="login-divider">
+        <div class="login-divider-line"></div>
+        <span class="login-divider-text">or sign in with email</span>
+        <div class="login-divider-line"></div>
+      </div>
+      <div id="login-error" class="login-error" role="alert"></div>
+      <form id="login-form" novalidate>
+        <div class="login-field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+        <div class="login-field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="Your password" required>
+        </div>
+        <a href="/forgot-password" class="login-forgot">Forgot password?</a>
+        <button type="submit" class="login-submit" id="login-submit">Sign In</button>
+      </form>
+      <p class="login-join">Don't have a Passport? <a href="/join">Get one free</a></p>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    if (VEAuth.isLoggedIn()) {
+      var next = new URLSearchParams(window.location.search).get('next') || '/directory';
+      window.location.replace(next);
+    }
+    var form = document.getElementById('login-form');
+    var submitBtn = document.getElementById('login-submit');
+    var errorBox = document.getElementById('login-error');
+    function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('visible'); }
+    function clearError() { errorBox.classList.remove('visible'); }
+    function setLoading(on) { submitBtn.disabled = on; submitBtn.textContent = on ? 'Signing in...' : 'Sign In'; }
+    form.addEventListener('submit', function(e) {
+      e.preventDefault(); clearError();
+      var email = document.getElementById('login-email').value.trim();
+      var password = document.getElementById('login-password').value;
+      if (!email) { showError('Please enter your email.'); return; }
+      if (!password) { showError('Please enter your password.'); return; }
+      setLoading(true);
+      VEAuth.login(email, password)
+        .then(function(d) {
+          if (d.error) { showError(d.error); setLoading(false); return; }
+          var next = new URLSearchParams(window.location.search).get('next') || '/directory';
+          window.location.replace(next);
+        })
+        .catch(function() { showError('Something went wrong. Please try again.'); setLoading(false); });
+    });
+    window.addEventListener('load', function() {
+      VEAuth.initGoogleSignIn(document.getElementById('login-google-btn'), function(d) {
+        if (d.error) { showError(d.error); return; }
+        var next = new URLSearchParams(window.location.search).get('next') || '/directory';
+        window.location.replace(next);
+      });
+    });
+  </script>
+</body>
+</html>
