@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account - Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f5f7f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .ve-account-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .ve-acct-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #15803D;
+      margin-bottom: 10px;
+    }
+
+    .ve-acct-welcome {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .ve-acct-since {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      letter-spacing: 0.04em;
+    }
+
+    .ve-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 700px) {
+      .ve-stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .ve-stat-card {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      padding: 20px 16px 18px;
+    }
+
+    .ve-stat-card-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #767676;
+      margin-bottom: 10px;
+    }
+
+    .ve-stat-card-value {
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a1a1a;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .ve-stat-card-value.green { color: #15803D; }
+
+    .ve-stat-card-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: #767676;
+      letter-spacing: 0.04em;
+    }
+
+    .ve-section {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 12px;
+      padding: 28px;
+      margin-top: 20px;
+    }
+
+    .ve-section-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .ve-lesars-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .ve-lesars-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .ve-lesars-row:last-child { border-bottom: none; }
+
+    .ve-lesars-row-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    .ve-lesars-row-value {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a1a1a;
+    }
+
+    .ve-lesars-row-value .ve-lesars-unit {
+      font-size: 11px;
+      font-weight: 700;
+      color: #767676;
+      margin-left: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .ve-lesars-row-value.earned { color: #15803D; }
+
+    .ve-lesars-desc {
+      font-size: 11px;
+      font-weight: 600;
+      color: #767676;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    .ve-earn-ways {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ve-earn-chip {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      color: #15803D;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .ve-perks-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .ve-perks-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .ve-perks-list li::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #22C55E;
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .ve-passport-meta {
+      font-size: 11px;
+      font-weight: 700;
+      color: #767676;
+      letter-spacing: 0.04em;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .ve-empty-state {
+      text-align: center;
+      padding: 32px 16px;
+    }
+
+    .ve-empty-state p {
+      font-size: 12px;
+      font-weight: 600;
+      color: #767676;
+      margin-bottom: 14px;
+    }
+
+    .ve-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 11px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    .ve-btn:focus-visible {
+      outline: 3px solid #22C55E;
+      outline-offset: 2px;
+    }
+
+    .ve-btn-primary {
+      background: #22C55E;
+      color: #fff;
+    }
+
+    .ve-btn-primary:hover { background: #16A34A; }
+
+    .ve-btn-outline {
+      background: #fff;
+      color: #1a1a1a;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .ve-btn-outline:hover { background: #f5f5f5; }
+
+    .ve-activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .ve-activity-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .ve-activity-row:last-child { border-bottom: none; }
+
+    .ve-activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22C55E;
+      flex-shrink: 0;
+    }
+
+    .ve-activity-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a1a1a;
+      flex: 1;
+    }
+
+    .ve-activity-time {
+      font-size: 10px;
+      font-weight: 600;
+      color: #767676;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    #ve-dashboard-loading {
+      text-align: center;
+      padding: 80px 24px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #767676;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #ve-dashboard-content { display: none; }
+
+    @media (max-width: 600px) {
+      .ve-account-page { padding: 24px 16px 60px; }
+      .ve-acct-welcome { font-size: 20px; }
+      .ve-section { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/nav.js"></script>
+
+  <main class="ve-account-page" role="main" aria-label="Member dashboard">
+
+    <div id="ve-dashboard-loading" aria-live="polite">Loading your account...</div>
+
+    <div id="ve-dashboard-content">
+
+      <div>
+        <p class="ve-acct-label">Member Dashboard</p>
+        <h1 class="ve-acct-welcome" id="ve-welcome-name">WELCOME BACK</h1>
+        <p class="ve-acct-since" id="ve-passport-since">Passport holder since --</p>
+      </div>
+
+      <div class="ve-stat-grid" role="list">
+        <div class="ve-stat-card" role="listitem">
+          <p class="ve-stat-card-label">Passport</p>
+          <p class="ve-stat-card-value green">Free</p>
+          <p class="ve-stat-card-sub">Active</p>
+        </div>
+        <div class="ve-stat-card" role="listitem">
+          <p class="ve-stat-card-label">LESARs Balance</p>
+          <p class="ve-stat-card-value" id="ve-stat-lesars">--</p>
+          <p class="ve-stat-card-sub">Your balance</p>
+        </div>
+        <div class="ve-stat-card" role="listitem">
+          <p class="ve-stat-card-label">Communities</p>
+          <p class="ve-stat-card-value" id="ve-stat-communities">--</p>
+          <p class="ve-stat-card-sub">Joined</p>
+        </div>
+        <div class="ve-stat-card" role="listitem">
+          <p class="ve-stat-card-label">Lists Saved</p>
+          <p class="ve-stat-card-value" id="ve-stat-saves">--</p>
+          <p class="ve-stat-card-sub">All time</p>
+        </div>
+      </div>
+
+      <section class="ve-section" aria-labelledby="ve-lesars-title">
+        <h2 class="ve-section-title" id="ve-lesars-title">LESARs Balance</h2>
+        <div class="ve-lesars-rows">
+          <div class="ve-lesars-row">
+            <span class="ve-lesars-row-label">Total Balance</span>
+            <span class="ve-lesars-row-value" id="ve-bal-total">-- <span class="ve-lesars-unit">LESARs</span></span>
+          </div>
+          <div class="ve-lesars-row">
+            <span class="ve-lesars-row-label">Earned This Month</span>
+            <span class="ve-lesars-row-value earned" id="ve-bal-month">+--</span>
+          </div>
+          <div class="ve-lesars-row">
+            <span class="ve-lesars-row-label">Lifetime Earned</span>
+            <span class="ve-lesars-row-value" id="ve-bal-lifetime">-- <span class="ve-lesars-unit">LESARs</span></span>
+          </div>
+        </div>
+        <p class="ve-lesars-desc">
+          Earn LESARs by engaging with the Vegans Explore community. Spend them to unlock premium Guides and exclusive rewards.
+        </p>
+        <div class="ve-earn-ways" aria-label="Ways to earn LESARs">
+          <span class="ve-earn-chip">+5 Vote a listing</span>
+          <span class="ve-earn-chip">+3 Save a listing</span>
+          <span class="ve-earn-chip">+10 Comment on Pulse</span>
+          <span class="ve-earn-chip">+25 Join a community</span>
+          <span class="ve-earn-chip">+2 Daily login</span>
+          <span class="ve-earn-chip">+111 Refer a friend</span>
+        </div>
+      </section>
+
+      <section class="ve-section" aria-labelledby="ve-passport-title">
+        <h2 class="ve-section-title" id="ve-passport-title">Free Passport - Active</h2>
+        <ul class="ve-perks-list" aria-label="Passport perks">
+          <li>Vote and save listings in the Directory</li>
+          <li>Comment on Pulse discussions</li>
+          <li>Join Communities and connect with others</li>
+          <li>Unlock premium Guides with LESARs</li>
+          <li>Earn LESARs with every action</li>
+          <li>+111 LESARs welcome grant on signup</li>
+        </ul>
+        <p class="ve-passport-meta" id="ve-member-since-line">Member since --</p>
+      </section>
+
+      <section class="ve-section" aria-labelledby="ve-guides-title">
+        <h2 class="ve-section-title" id="ve-guides-title">Guides Unlocked</h2>
+        <div id="ve-guides-content">
+          <div class="ve-empty-state">
+            <p>No guides unlocked yet.</p>
+            <a href="/guides" class="ve-btn ve-btn-primary">Explore Guides</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="ve-section" aria-labelledby="ve-activity-title">
+        <h2 class="ve-section-title" id="ve-activity-title">Recent Activity</h2>
+        <div id="ve-activity-content">
+          <div class="ve-empty-state">
+            <p>No activity yet. Start exploring!</p>
+            <a href="/directory" class="ve-btn ve-btn-outline">Browse Directory</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <script>
+  (function () {
+    var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+    function fmt(n) { return Number(n || 0).toLocaleString(); }
+
+    function monthYear(s) {
+      if (!s) return '--';
+      try { return new Date(s).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
+      catch (e) { return '--'; }
+    }
+
+    function relTime(s) {
+      if (!s) return '';
+      try {
+        var diff = Date.now() - new Date(s).getTime();
+        var mins = Math.floor(diff / 60000);
+        if (mins < 60) return mins + 'm ago';
+        var hrs = Math.floor(mins / 60);
+        if (hrs < 24) return hrs + 'h ago';
+        var days = Math.floor(hrs / 24);
+        if (days < 30) return days + 'd ago';
+        return new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      } catch (e) { return ''; }
+    }
+
+    function setText(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+    function setHTML(id, val) { var el = document.getElementById(id); if (el) el.innerHTML = val; }
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    var token = localStorage.getItem('ve_token');
+    var member = null;
+    try { member = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) {}
+
+    if (!token || !member) {
+      window.location.href = '/login?next=' + encodeURIComponent('/account');
+      return;
+    }
+
+    function renderMember(m) {
+      setText('ve-welcome-name', 'WELCOME BACK, ' + (m.name ? m.name.toUpperCase() : 'MEMBER'));
+      setText('ve-passport-since', 'Passport holder since ' + monthYear(m.created_at));
+      setText('ve-member-since-line', 'Member since ' + monthYear(m.created_at));
+      setText('ve-stat-lesars', fmt(m.lesars_balance));
+      setHTML('ve-bal-total', fmt(m.lesars_balance) + ' <span class="ve-lesars-unit">LESARs</span>');
+    }
+
+    renderMember(member);
+    document.getElementById('ve-dashboard-loading').style.display = 'none';
+    document.getElementById('ve-dashboard-content').style.display = 'block';
+
+    function apiFetch(path) {
+      return fetch(SUPABASE_URL + path, {
+        headers: { 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + token }
+      }).then(function (r) { return r.json(); });
+    }
+
+    fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.member) {
+        try { localStorage.setItem('ve_member', JSON.stringify(d.member)); } catch (e) {}
+        renderMember(d.member);
+      }
+    }).catch(function () {});
+
+    apiFetch('/rest/v1/ve_community_members?member_id=eq.' + member.id + '&select=id')
+      .then(function (rows) { setText('ve-stat-communities', Array.isArray(rows) ? fmt(rows.length) : '0'); })
+      .catch(function () { setText('ve-stat-communities', '0'); });
+
+    apiFetch('/rest/v1/ve_listing_saves?member_id=eq.' + member.id + '&select=id')
+      .then(function (rows) { setText('ve-stat-saves', Array.isArray(rows) ? fmt(rows.length) : '0'); })
+      .catch(function () { setText('ve-stat-saves', '0'); });
+
+    apiFetch('/rest/v1/lesars_ledger?member_id=eq.' + member.id + '&amount=gt.0&select=amount')
+      .then(function (rows) {
+        if (!Array.isArray(rows)) return;
+        var total = rows.reduce(function (a, r) { return a + (r.amount || 0); }, 0);
+        setHTML('ve-bal-lifetime', fmt(total) + ' <span class="ve-lesars-unit">LESARs</span>');
+      }).catch(function () {});
+
+    var ms = new Date(); ms.setDate(1); ms.setHours(0,0,0,0);
+    apiFetch('/rest/v1/lesars_ledger?member_id=eq.' + member.id + '&amount=gt.0&created_at=gte.' + ms.toISOString() + '&select=amount')
+      .then(function (rows) {
+        if (!Array.isArray(rows)) return;
+        var total = rows.reduce(function (a, r) { return a + (r.amount || 0); }, 0);
+        setText('ve-bal-month', '+' + fmt(total));
+      }).catch(function () {});
+
+    apiFetch('/rest/v1/ve_guide_purchases?member_id=eq.' + member.id + '&select=id,purchased_at,lesars_spent,ve_guides(title,slug)')
+      .then(function (rows) {
+        if (!Array.isArray(rows) || rows.length === 0) return;
+        var html = '<div class="ve-activity-list">';
+        rows.forEach(function (row) {
+          var title = (row.ve_guides && row.ve_guides.title) ? row.ve_guides.title : 'Guide';
+          var slug = row.ve_guides && row.ve_guides.slug ? '/guides/' + row.ve_guides.slug : '/guides';
+          html += '<div class="ve-activity-row"><div class="ve-activity-dot"></div>' +
+            '<span class="ve-activity-text"><a href="' + slug + '" style="color:#15803D;text-decoration:none;">' + escHtml(title) + '</a></span>' +
+            '<span class="ve-activity-time">' + fmt(row.lesars_spent) + ' L</span></div>';
+        });
+        html += '</div>';
+        setHTML('ve-guides-content', html);
+      }).catch(function () {});
+
+    Promise.all([
+      apiFetch('/rest/v1/ve_community_members?member_id=eq.' + member.id + '&select=joined_at,ve_communities(name)&order=joined_at.desc&limit=5'),
+      apiFetch('/rest/v1/ve_listing_saves?member_id=eq.' + member.id + '&select=saved_at&order=saved_at.desc&limit=5')
+    ]).then(function (res) {
+      var evts = [];
+      (Array.isArray(res[0]) ? res[0] : []).forEach(function (r) {
+        evts.push({ text: 'Joined ' + ((r.ve_communities && r.ve_communities.name) || 'a community'), ts: r.joined_at });
+      });
+      (Array.isArray(res[1]) ? res[1] : []).forEach(function (r) {
+        evts.push({ text: 'Saved a listing', ts: r.saved_at });
+      });
+      evts.sort(function (a, b) { return new Date(b.ts) - new Date(a.ts); });
+      evts = evts.slice(0, 8);
+      if (evts.length === 0) return;
+      var html = '<div class="ve-activity-list">';
+      evts.forEach(function (ev) {
+        html += '<div class="ve-activity-row"><div class="ve-activity-dot"></div>' +
+          '<span class="ve-activity-text">' + escHtml(ev.text) + '</span>' +
+          '<span class="ve-activity-time">' + relTime(ev.ts) + '</span></div>';
+      });
+      html += '</div>';
+      setHTML('ve-activity-content', html);
+    }).catch(function () {});
+
+  })();
+  </script>
+
+</body>
+</html>
