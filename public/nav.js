@@ -33,7 +33,12 @@
     '.ve-mob-signout{padding:13px 20px;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#dc2626;cursor:pointer;background:none;border:none;width:100%;text-align:left;}',
     '.ve-mob-signout:hover{background:#fef2f2;}',
     '.ve-mob-lesars{display:inline-block;background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D;font-size:10px;font-weight:800;letter-spacing:0.06em;padding:3px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;}',
-    '@media(max-width:480px){.ve-nav-inner{padding:0 16px;}}'
+    '@media(max-width:480px){.ve-nav-inner{padding:0 16px;}}',
+    '.ve-desktop-links{display:flex;align-items:center;gap:0;margin-right:16px;}',
+    '.ve-desktop-links a{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#1a1a1a;text-decoration:none;padding:7px 11px;border-radius:4px;transition:background 0.1s,color 0.1s;white-space:nowrap;}',
+    '.ve-desktop-links a:hover{background:#f5f5f5;color:#22C55E;}',
+    '.ve-desktop-links a[aria-current="page"]{color:#22C55E;}',
+    '@media(max-width:900px){.ve-desktop-links{display:none;}}'
   ].join('');
 
   var styleEl = document.createElement('style');
@@ -103,13 +108,13 @@
           '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">' +
         '</a>' +
         '<div class="ve-nav-spacer"></div>' +
-'<div class="ve-desktop-links">' +
-'<a href="/welcome"' + cur('/welcome') + '>Welcome</a>' +
-'<a href="/guides"' + cur('/guides') + '>Guides</a>' +
-'<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
-'<a href="/communities"' + cur('/communities') + '>Communities</a>' +
-'<a href="/directory"' + cur('/directory') + '>Directory</a>' +
-'</div>' +
+        '<div class="ve-desktop-links">' +
+          '<a href="/welcome"' + cur('/welcome') + '>Welcome</a>' +
+          '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
+          '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
+          '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
+          '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
+        '</div>' +
         desktopRight +
         '<button class="ve-hamburger" id="ve-hamburger-btn" aria-label="Open navigation" aria-expanded="false" aria-controls="ve-mob-menu">' + iconMenu + '</button>' +
       '</div>' +
@@ -125,12 +130,7 @@
       mobileBottom +
     '</div>';
 
-  document.currentScript.insertAdjacentHTML('beforebegin',
-'.ve-desktop-links{display:flex;align-items:center;gap:0;margin-right:16px;}',
-'.ve-desktop-links a{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#1a1a1a;text-decoration:none;padding:7px 11px;border-radius:4px;transition:background 0.1s,color 0.1s;white-space:nowrap;}',
-'.ve-desktop-links a:hover{background:#f5f5f5;color:#22C55E;}',
-'.ve-desktop-links a[aria-current='page']{color:#22C55E;}',
-'@media(max-width:900px){.ve-desktop-links{display:none;}}', html);
+  document.currentScript.insertAdjacentHTML('beforebegin', html);
 
   /* ---- Member menu toggle (desktop) ---- */
   if (loggedIn) {
@@ -202,7 +202,6 @@
       VEAuth.showAuthModal(_msg);
       return;
     }
-    // Lazy-load ve-auth.js then open modal
     function _tryShow() {
       if (window.VEAuth && typeof VEAuth.showAuthModal === 'function') {
         VEAuth.showAuthModal(_msg);
