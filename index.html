@@ -46,6 +46,7 @@
     .btn-hero-secondary:hover { border-color: rgba(255,255,255,0.7); color: #fff; }
     .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.60); margin-top: 14px; }
     .countdown { display: flex; gap: 4px; align-items: flex-start; margin-top: 32px; margin-bottom: 8px; }
+    .countdown-title { display: none; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.60); }
     .countdown-block { text-align: center; min-width: 60px; }
     .countdown-num { display: block; font-size: 40px; font-weight: 900; color: #fff; letter-spacing: -1px; line-height: 1; }
     .countdown-unit { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 6px; }
@@ -123,9 +124,12 @@
       .ve-topnav-links a { display: none; }
       .hero { background-position: center top; align-items: flex-end; background-image: url(https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/02a62013-ba24-4f32-8859-2befe9b9676b.png) !important; }
       .hero-inner { background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; border: 1px solid rgba(255,255,255,0.09); max-width: 100%; }
+      .countdown-title { display: block; margin-top: 30px; }
+      .countdown { margin-top: 10px; }
+      .hero-ctas { margin-top: 30px; }
       .panel-two-col { flex-direction: column; }
       .panel-portrait { width: 100%; max-width: 480px; max-width: none; }
-      .stats-bar { padding: 18px 32px; }
+      .stats-bar { display: none; }
       .guide-panel { padding: 56px 28px; }
       .city-grid { grid-template-columns: repeat(2, 1fr); }
       #panel-6 { background-image: url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260611_013323_3685bbbb-9aa7-4cda-aa06-7eb222f82555.png) !important; }
@@ -187,6 +191,7 @@
       <h1 id="hero-heading">Help Us Build<br><em>Your City.</em></h1>
       <p class="hero-sub">We're building the Vegan world's home base, city by city.</p>
       <p class="hero-sub-line2">Take the guided tour and find out how to be part of it from day one.</p>
+      <p class="countdown-title" aria-hidden="true">Founding Membership Closes In</p>
       <div class="countdown" id="countdown" aria-label="Countdown to July 13 launch">
         <div class="countdown-block"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit">Days</span></div>
         <div class="countdown-sep" aria-hidden="true">:</div>
