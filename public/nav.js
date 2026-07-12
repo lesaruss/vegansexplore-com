@@ -75,11 +75,11 @@
     desktopRight =
       '<div class="ve-nav-member" id="ve-nav-member-chip" aria-haspopup="true" aria-expanded="false">' +
         '<div class="ve-nav-avatar" style="' + avatarStyle + '">' + avatarSrc + '</div>' +
-        '<span class="ve-nav-lesars">' + lesarsBalance + ' L</span>' +
+        '<span class="ve-nav-lesars">' + lesarsBalance + ' Points</span>' +
         '<div class="ve-nav-member-menu" id="ve-member-menu" role="menu">' +
           '<a href="/account"' + cur('/account') + ' role="menuitem">My Account</a>' +
           '<a href="/account/my-list"' + cur('/account/my-list') + ' role="menuitem">My List</a>' +
-          '<a href="/account/lesars"' + cur('/account/lesars') + ' role="menuitem">LESARs Balance</a>' +
+          '<a href="/account/lesars"' + cur('/account/lesars') + ' role="menuitem">Points Balance</a>' +
           '<hr>' +
           '<button id="ve-signout-desktop" role="menuitem">Sign Out</button>' +
         '</div>' +
@@ -90,7 +90,7 @@
       '<div class="ve-mob-section">' +
         '<a href="/account"' + cur('/account') + '>' +
           'Account' +
-          '<span class="ve-mob-lesars">' + lesarsBalance + ' L</span>' +
+          '<span class="ve-mob-lesars">' + lesarsBalance + ' Points</span>' +
         '</a>' +
         '<a href="/account/my-list"' + cur('/account/my-list') + '>My List</a>' +
       '</div>' +
