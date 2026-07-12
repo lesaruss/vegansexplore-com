@@ -42,12 +42,19 @@
     '.ve-desktop-links a:hover{background:#f5f5f5;color:#22C55E;}',
     '.ve-desktop-links a[aria-current="page"]{color:#22C55E;}',
     '@media(max-width:900px){.ve-desktop-links{display:none;}}',
-    '.ve-va-panel{padding:14px 20px 18px;}',
+    '.ve-va-panel{padding:14px 20px 18px;position:relative;}',
     '.ve-va-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(0,0,0,0.4);margin-bottom:10px;}',
-    '.ve-va-opt{display:block;width:100%;text-align:left;padding:10px 12px;margin-bottom:4px;border:1px solid rgba(0,0,0,0.1);border-radius:6px;background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;transition:background 0.1s,border-color 0.1s;}',
-    '.ve-va-opt:last-child{margin-bottom:0;}',
+    '.ve-va-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:10px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:6px;background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;transition:border-color 0.1s;}',
+    '.ve-va-trigger:hover{border-color:rgba(0,0,0,0.3);}',
+    '.ve-va-trigger.open{border-color:#22C55E;}',
+    '.ve-va-caret{width:14px;height:14px;stroke:rgba(0,0,0,0.4);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:transform 0.15s;}',
+    '.ve-va-trigger.open .ve-va-caret{transform:rotate(180deg);}',
+    '.ve-va-menu{display:none;margin-top:6px;border:1px solid rgba(0,0,0,0.1);border-radius:6px;overflow:hidden;}',
+    '.ve-va-menu.open{display:block;}',
+    '.ve-va-opt{display:block;width:100%;text-align:left;padding:10px 12px;border:none;border-bottom:1px solid rgba(0,0,0,0.07);background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;transition:background 0.1s;}',
+    '.ve-va-opt:last-child{border-bottom:none;}',
     '.ve-va-opt:hover{background:#f5f5f5;}',
-    '.ve-va-opt.ve-va-active{border-color:#22C55E;background:#F0FDF4;color:#15803D;}'
+    '.ve-va-opt.ve-va-active{background:#F0FDF4;color:#15803D;}'
   ].join('');
 
   var styleEl = document.createElement('style');
@@ -144,16 +151,23 @@
   var vaId = 'real';
   if (viewAs) { vaId = viewAs.mode === 'public' ? 'public' : ('member-' + (viewAs.points || 0)); }
   function vaCls(id) { return vaId === id ? ' ve-va-active' : ''; }
+  var VA_LABELS = { 'real': 'My Account (Real)', 'public': 'Public - Logged Out', 'member-0': 'Free Member - 0 Points', 'member-1500': 'Free Member - 1,500 Points' };
   var adminPanel = '';
   if (isRealSuperAdmin) {
     adminPanel =
       '<hr class="ve-mob-divider">' +
       '<div class="ve-mob-section ve-va-panel">' +
         '<div class="ve-va-label">Super Admin - View As</div>' +
-        '<button class="ve-va-opt' + vaCls('real') + '" data-va="real">My Account (Real)</button>' +
-        '<button class="ve-va-opt' + vaCls('public') + '" data-va="public">Public - Logged Out</button>' +
-        '<button class="ve-va-opt' + vaCls('member-0') + '" data-va="member-0">Free Member - 0 Points</button>' +
-        '<button class="ve-va-opt' + vaCls('member-1500') + '" data-va="member-1500">Free Member - 1,500 Points</button>' +
+        '<button class="ve-va-trigger" id="ve-va-trigger" aria-haspopup="listbox" aria-expanded="false">' +
+          '<span id="ve-va-trigger-label">' + VA_LABELS[vaId] + '</span>' +
+          '<svg viewBox="0 0 24 24" class="ve-va-caret"><path d="M6 9l6 6 6-6"/></svg>' +
+        '</button>' +
+        '<div class="ve-va-menu" id="ve-va-menu" role="listbox">' +
+          '<button class="ve-va-opt' + vaCls('real') + '" data-va="real" role="option">My Account (Real)</button>' +
+          '<button class="ve-va-opt' + vaCls('public') + '" data-va="public" role="option">Public - Logged Out</button>' +
+          '<button class="ve-va-opt' + vaCls('member-0') + '" data-va="member-0" role="option">Free Member - 0 Points</button>' +
+          '<button class="ve-va-opt' + vaCls('member-1500') + '" data-va="member-1500" role="option">Free Member - 1,500 Points</button>' +
+        '</div>' +
       '</div>';
   }
 
@@ -220,11 +234,27 @@
     });
   }
 
-  /* ---- Super Admin "View As" option clicks (drawer) ---- */
+  /* ---- Super Admin "View As" dropdown (drawer) ---- */
   if (isRealSuperAdmin) {
+    var vaTrigger = document.getElementById('ve-va-trigger');
+    var vaMenu = document.getElementById('ve-va-menu');
+    if (vaTrigger && vaMenu) {
+      vaTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var open = vaMenu.classList.toggle('open');
+        vaTrigger.classList.toggle('open', open);
+        vaTrigger.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', function() {
+        vaMenu.classList.remove('open');
+        vaTrigger.classList.remove('open');
+        vaTrigger.setAttribute('aria-expanded', 'false');
+      });
+    }
     var vaOpts = document.querySelectorAll('.ve-va-opt');
     for (var _i = 0; _i < vaOpts.length; _i++) {
-      vaOpts[_i].addEventListener('click', function() {
+      vaOpts[_i].addEventListener('click', function(e) {
+        e.stopPropagation();
         var v = this.getAttribute('data-va');
         if (v === 'real') {
           try { localStorage.removeItem('ve_view_as'); } catch(e) {}
