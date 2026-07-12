@@ -202,6 +202,38 @@
     .mgp-thumb-tile { flex: 1; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; cursor: pointer; outline: 2px solid transparent; outline-offset: -2px; transition: outline-color 0.15s; }
     .mgp-thumb-tile img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
 
+    /* ── Guide Catalog (new) ── */
+    .gc-section { padding: 80px 56px; background: #fff; }
+    .gc-section .section-sub { margin-bottom: 44px; }
+    .gc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    @media (max-width: 900px) { .gc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .gc-grid { grid-template-columns: 1fr; } }
+    .gc-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 12px; padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.15s, transform 0.15s; }
+    .gc-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+    .gc-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .gc-label { font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .gc-soon-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #b45309; background: #fff3e0; border-radius: 20px; padding: 3px 10px; }
+    .gc-title { font-size: 17px; font-weight: 900; line-height: 1.25; letter-spacing: -0.01em; }
+    .gc-desc { font-size: 12.5px; color: var(--ve-text-75); line-height: 1.6; flex: 1; }
+    .gc-meta-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gc-chip { font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); background: var(--ve-green-light); border-radius: 20px; padding: 6px 12px; }
+    .gc-chip.price { color: #1a1a1a; background: #f0f0f0; }
+    .gc-chip.free { color: var(--ve-green-dark); background: var(--ve-green-light); }
+    .gc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; width: 100%; margin-top: 4px; }
+    .gc-btn-primary { background: var(--ve-green-dark); color: #fff; }
+    .gc-btn-primary:hover { background: var(--ve-green); }
+    .gc-btn-outline { background: #fff; color: #1a1a1a; border: 1px solid rgba(0,0,0,0.15); }
+    .gc-btn-outline:hover { background: #f5f5f5; }
+    .gc-cta-guest, .gc-cta-member { display: none; }
+    body.gc-guest .gc-cta-guest { display: flex; }
+    body.gc-member .gc-cta-member { display: flex; }
+    .gc-waitlist { display: none; margin-top: 6px; }
+    .gc-waitlist.open { display: flex; flex-direction: column; gap: 8px; }
+    .gc-waitlist input { padding: 9px 12px; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 12px; }
+    .gc-waitlist input:focus { outline: none; border-color: var(--ve-green-dark); }
+    .gc-waitlist-success { display: none; font-size: 11px; font-weight: 700; color: var(--ve-green-dark); text-align: center; }
+    .gc-note { text-align: center; font-size: 11px; color: #999; margin-top: 32px; line-height: 1.6; }
+
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
 
     @media (prefers-reduced-motion: reduce) {
@@ -253,6 +285,7 @@
 </head>
 <body>
   <div class="page-frame">
+  <script src="/public/ve-auth.js"></script>
   <script src="/public/nav.js"></script>
 
   <!-- HERO: Guide-focused. Same background, new framing, guide portrait strip at bottom -->
@@ -277,7 +310,7 @@
     <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat-item" role="listitem"><span class="stat-num">1,000</span><span class="stat-label">Communities by 2030</span></div>
     <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item stat-passport" role="listitem"><span class="stat-num">$11</span><span class="stat-label">One-Time Passport</span></div>
+    <div class="stat-item stat-passport" role="listitem"><span class="stat-num">Free</span><span class="stat-label">To Join</span></div>
   </div>
 
   <!-- PATHS SECTION (unchanged from current) -->
@@ -501,6 +534,149 @@
     <p class="flip-hint" aria-hidden="true">Tap a card to meet your Guide</p>
   </section>
 
+  <!-- GUIDE CATALOG (new) -->
+  <section class="gc-section" aria-labelledby="gc-heading">
+    <div class="section-eyebrow" aria-hidden="true">Guides</div>
+    <h2 class="section-h2" id="gc-heading">Step-By-Step<br>Guides.</h2>
+    <p class="section-sub">Practical guides for wherever you are on the journey. Join free, then unlock guides with Points as they publish.</p>
+    <div class="gc-grid" role="list" aria-label="Guide catalog">
+
+      <!-- Welcome Guide - free, live -->
+      <div class="gc-card" role="listitem">
+        <div class="gc-topline"><span class="gc-label">Getting Started</span></div>
+        <div class="gc-title">Welcome Guide</div>
+        <p class="gc-desc">Your first steps on Vegans Explore: set up your profile, find your city, and see how Points work.</p>
+        <div class="gc-meta-row">
+          <span class="gc-chip">5 Steps</span>
+          <span class="gc-chip free">Free</span>
+        </div>
+        <a href="/welcome" class="gc-btn gc-btn-primary">Start Guide</a>
+      </div>
+
+      <!-- Vegan Restaurant Survival Guide - built, not yet published -->
+      <div class="gc-card" role="listitem" data-slug="vegan-restaurant-survival-guide">
+        <div class="gc-topline"><span class="gc-label">Business</span><span class="gc-soon-tag">Publishing Soon</span></div>
+        <div class="gc-title">Vegan Restaurant Survival Guide</div>
+        <p class="gc-desc">A personalized 10-step walkthrough for restaurant owners navigating the Vegan market.</p>
+        <div class="gc-meta-row">
+          <span class="gc-chip">10 Steps</span>
+          <span class="gc-chip price">1,000 Points</span>
+        </div>
+        <button class="gc-btn gc-btn-outline" onclick="gcToggleWaitlist(this)">Notify Me When It's Live</button>
+        <div class="gc-waitlist">
+          <input type="email" placeholder="Your email address" aria-label="Email for notify me">
+          <button class="gc-btn gc-btn-primary" onclick="gcSubmitWaitlist(this,'vegan-restaurant-survival-guide')">Join Waitlist</button>
+          <div class="gc-waitlist-success">You're on the list.</div>
+        </div>
+      </div>
+
+      <!-- Five Path-aligned guides - in development -->
+      <div class="gc-card" role="listitem" data-slug="entrepreneur">
+        <div class="gc-topline"><span class="gc-label">Entrepreneur Path</span><span class="gc-soon-tag">In Development</span></div>
+        <div class="gc-title">Entrepreneur Guide</div>
+        <p class="gc-desc">Getting your Vegan business listed, claimed, and growing on the platform - step by step.</p>
+        <div class="gc-meta-row"><span class="gc-chip price">~1,000 Points</span></div>
+        <button class="gc-btn gc-btn-outline" onclick="gcToggleWaitlist(this)">Notify Me</button>
+        <div class="gc-waitlist">
+          <input type="email" placeholder="Your email address" aria-label="Email for notify me">
+          <button class="gc-btn gc-btn-primary" onclick="gcSubmitWaitlist(this,'entrepreneur')">Join Waitlist</button>
+          <div class="gc-waitlist-success">You're on the list.</div>
+        </div>
+      </div>
+
+      <div class="gc-card" role="listitem" data-slug="creator">
+        <div class="gc-topline"><span class="gc-label">Creator Path</span><span class="gc-soon-tag">In Development</span></div>
+        <div class="gc-title">Creator Guide</div>
+        <p class="gc-desc">Building an audience and earning through the Vegans Explore ecosystem as a content creator.</p>
+        <div class="gc-meta-row"><span class="gc-chip price">~1,000 Points</span></div>
+        <button class="gc-btn gc-btn-outline" onclick="gcToggleWaitlist(this)">Notify Me</button>
+        <div class="gc-waitlist">
+          <input type="email" placeholder="Your email address" aria-label="Email for notify me">
+          <button class="gc-btn gc-btn-primary" onclick="gcSubmitWaitlist(this,'creator')">Join Waitlist</button>
+          <div class="gc-waitlist-success">You're on the list.</div>
+        </div>
+      </div>
+
+      <div class="gc-card" role="listitem" data-slug="nonprofit">
+        <div class="gc-topline"><span class="gc-label">Nonprofit Path</span><span class="gc-soon-tag">In Development</span></div>
+        <div class="gc-title">Nonprofit Guide</div>
+        <p class="gc-desc">Building your org's community on the platform and growing your base of supporters.</p>
+        <div class="gc-meta-row"><span class="gc-chip price">~1,000 Points</span></div>
+        <button class="gc-btn gc-btn-outline" onclick="gcToggleWaitlist(this)">Notify Me</button>
+        <div class="gc-waitlist">
+          <input type="email" placeholder="Your email address" aria-label="Email for notify me">
+          <button class="gc-btn gc-btn-primary" onclick="gcSubmitWaitlist(this,'nonprofit')">Join Waitlist</button>
+          <div class="gc-waitlist-success">You're on the list.</div>
+        </div>
+      </div>
+
+      <div class="gc-card" role="listitem" data-slug="prevegan">
+        <div class="gc-topline"><span class="gc-label">Pre-Vegan Path</span><span class="gc-soon-tag">In Development</span></div>
+        <div class="gc-title">Pre-Vegan Guide</div>
+        <p class="gc-desc">Real answers for going Vegan-curious to confident: what to eat, what to expect, and how to start.</p>
+        <div class="gc-meta-row"><span class="gc-chip price">~1,000 Points</span></div>
+        <button class="gc-btn gc-btn-outline" onclick="gcToggleWaitlist(this)">Notify Me</button>
+        <div class="gc-waitlist">
+          <input type="email" placeholder="Your email address" aria-label="Email for notify me">
+          <button class="gc-btn gc-btn-primary" onclick="gcSubmitWaitlist(this,'prevegan')">Join Waitlist</button>
+          <div class="gc-waitlist-success">You're on the list.</div>
+        </div>
+      </div>
+
+      <div class="gc-card" role="listitem" data-slug="seasonedvegan">
+        <div class="gc-topline"><span class="gc-label">Seasoned Vegan Path</span><span class="gc-soon-tag">In Development</span></div>
+        <div class="gc-title">Seasoned Vegan Guide</div>
+        <p class="gc-desc">Deepen your impact: advocacy, mentoring, and connecting with the global movement.</p>
+        <div class="gc-meta-row"><span class="gc-chip price">~1,000 Points</span></div>
+        <button class="gc-btn gc-btn-outline" onclick="gcToggleWaitlist(this)">Notify Me</button>
+        <div class="gc-waitlist">
+          <input type="email" placeholder="Your email address" aria-label="Email for notify me">
+          <button class="gc-btn gc-btn-primary" onclick="gcSubmitWaitlist(this,'seasonedvegan')">Join Waitlist</button>
+          <div class="gc-waitlist-success">You're on the list.</div>
+        </div>
+      </div>
+
+    </div>
+    <p class="gc-note">New guides publish as they're built. Join the waitlist on any guide to get notified the moment it's live.</p>
+  </section>
+  <script>
+    (function() {
+      function gcInitView() {
+        var loggedIn = !!(window.VEAuth && VEAuth.isLoggedIn());
+        document.body.classList.add(loggedIn ? 'gc-member' : 'gc-guest');
+      }
+      if (window.VEAuth) { gcInitView(); } else { window.addEventListener('load', gcInitView); }
+
+      window.gcToggleWaitlist = function(btn) {
+        var card = btn.closest('.gc-card');
+        card.querySelector('.gc-waitlist').classList.toggle('open');
+      };
+      window.gcSubmitWaitlist = function(btn, slug) {
+        var card = btn.closest('.gc-card');
+        var input = card.querySelector('input[type="email"]');
+        var email = (input.value || '').trim();
+        if (!email || email.indexOf('@') === -1) { input.focus(); return; }
+        btn.textContent = 'Sending...'; btn.disabled = true;
+        fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/member_interest', {
+          method: 'POST',
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA',
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ email: email, role_slug: 'guide-waitlist-' + slug, source: 'guides-live-catalog' })
+        }).then(function (r) {
+          if (!r.ok) throw new Error('failed');
+          card.querySelector('.gc-waitlist').classList.remove('open');
+          card.querySelector('.gc-waitlist-success').style.display = 'block';
+        }).catch(function () {
+          btn.textContent = 'Try Again'; btn.disabled = false;
+        });
+      };
+    })();
+  </script>
+
   <!-- HOW IT WORKS (unchanged) -->
   <section class="how-section" aria-labelledby="how-heading">
     <div class="section-eyebrow" aria-hidden="true">How It Works</div>
@@ -517,7 +693,7 @@
         <div class="how-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
         <div class="how-step-num">Step 02</div>
         <div class="how-step-title">Get Your Passport</div>
-        <p class="how-step-desc">$11 one-time activates your Passport, unlocks your community, and plants your permanent profile in the Vegans Explore network.</p>
+        <p class="how-step-desc">Free to join. Your Passport unlocks your community and plants your permanent profile in the Vegans Explore network.</p>
       </div>
       <div class="how-step" role="listitem">
         <div class="how-dot" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
@@ -537,37 +713,37 @@
   <!-- PASSPORT (unchanged) -->
   <section class="passport-section" aria-labelledby="passport-heading">
     <div class="section-eyebrow">Passport</div>
-    <h2 class="section-h2" id="passport-heading">One Fee.<br>The Whole World.</h2>
-    <p class="section-sub">Every plan activates your Passport and plants your permanent seat in the Vegans Explore network. Pick the one that fits where you are right now.</p>
+    <h2 class="section-h2" id="passport-heading">Free To Join.<br>Points To Unlock.</h2>
+    <p class="section-sub">Every Passport starts free and plants your permanent seat in the Vegans Explore network. Earn Points by being active in the community, or unlock a Guide instantly with Points you buy.</p>
     <div class="passport-tiers" role="list">
       <div class="tier-card" role="listitem">
-        <div class="tier-label">Individual Path</div>
-        <div><span class="tier-price">$11</span></div>
-        <div class="tier-note">One-time. No subscription.</div>
+        <div class="tier-label">Individual Passport</div>
+        <div><span class="tier-price">Free</span></div>
+        <div class="tier-note">No cost. No subscription.</div>
         <div class="tier-divider"></div>
-        <div class="tier-desc">Pick one Guide path. Pay once. Unlock your community, daily discussions, and Passport membership permanently.</div>
-        <a href="/passport/join?plan=single" class="tier-btn">Get Started</a>
+        <div class="tier-desc">Create your profile, join your community, vote for local Vegan businesses, and browse the Guides catalog - completely free.</div>
+        <a href="/join" class="tier-btn">Join Free</a>
       </div>
       <div class="tier-card featured" role="listitem">
         <div class="tier-badge">Most Popular</div>
-        <div class="tier-label">All Paths</div>
-        <div><span class="tier-price">$11</span><span class="tier-period"> /month</span></div>
-        <div class="tier-note">Cancel anytime.</div>
+        <div class="tier-label">Earn Points</div>
+        <div><span class="tier-price">Free</span><span class="tier-period"> + activity</span></div>
+        <div class="tier-note">Stay active, earn more.</div>
         <div class="tier-divider"></div>
-        <div class="tier-desc">All 5 paths, every Guide, every community, every daily discussion. One subscription covers everything we ever add.</div>
-        <a href="/passport/join?plan=monthly" class="tier-btn featured-btn">Subscribe - $11/mo</a>
+        <div class="tier-desc">Vote, comment on the Daily Pulse, invite friends, and complete community actions to earn Points - then spend them on any Guide.</div>
+        <a href="/account" class="tier-btn featured-btn">See Ways to Earn</a>
       </div>
       <div class="tier-card" role="listitem">
-        <div class="tier-badge green">Limited Time</div>
-        <div class="tier-label">Lifetime Access</div>
-        <div><span class="tier-price">$111</span></div>
-        <div class="tier-note">One-time. Yours forever.</div>
+        <div class="tier-badge green">Instant Unlock</div>
+        <div class="tier-label">Buy Points</div>
+        <div><span class="tier-price">1,000 Points</span></div>
+        <div class="tier-note">= $11 in value</div>
         <div class="tier-divider"></div>
-        <div class="tier-desc">Pay once, own everything permanently. Every path, every Guide, every feature we ever build. Founding Member status included.</div>
-        <a href="/passport/join?plan=lifetime" class="tier-btn">Lifetime Access</a>
+        <div class="tier-desc">Need it now? Purchase Points directly to unlock any Guide the moment you want it - no waiting to earn.</div>
+        <a href="/account" class="tier-btn">Manage My Points</a>
       </div>
     </div>
-    <div class="passport-all-cta"><a href="/passport">See full plan comparison</a></div>
+    <div class="passport-all-cta"><a href="/join">Get your free Passport</a></div>
   </section>
 
   <!-- VISION (unchanged) -->
@@ -587,9 +763,9 @@
   <section class="cta-section" aria-labelledby="cta-heading">
     <div class="section-eyebrow">Ready</div>
     <h2 class="section-h2" id="cta-heading">The Vegan World<br>is <em>Waiting for You.</em></h2>
-    <p>Find your path, get your Passport, and connect with a community that is building something real. One payment. No subscription required to start.</p>
-    <a href="/passport" class="btn-cta-lg">Get Your Passport</a>
-    <span class="cta-fine">$11 one-time per path. $11/month for all paths. $111 lifetime.</span>
+    <p>Find your path, get your Passport, and connect with a community that is building something real. Free to join. No subscription required.</p>
+    <a href="/join" class="btn-cta-lg">Get Your Free Passport</a>
+    <span class="cta-fine">Free to join. Earn Points by being active, or buy them anytime.</span>
   </section>
 
   <script src="/public/footer.js"></script>
