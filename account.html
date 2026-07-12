@@ -307,6 +307,70 @@
       white-space: nowrap;
     }
 
+    /* OPPORTUNITIES TABS (Member / Partner) - visible to any logged-in member */
+    .veopp-tab-bar { display: flex; gap: 0; border-bottom: 2px solid rgba(0,0,0,0.08); margin-bottom: 24px; }
+    .veopp-tab-btn { background: none; border: none; padding: 10px 20px 12px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #767676; cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; }
+    .veopp-tab-btn:hover { color: #1a1a1a; }
+    .veopp-tab-btn.active { color: #15803D; border-bottom-color: #22C55E; }
+    .veopp-tab-panel { display: none; }
+    .veopp-tab-panel.active { display: block; }
+
+    .veopp-intro { font-size: 12px; font-weight: 400; color: #555; line-height: 1.7; margin-bottom: 20px; max-width: 560px; }
+
+    .veopp-campaign-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (max-width: 700px) { .veopp-campaign-grid { grid-template-columns: 1fr; } }
+    .veopp-campaign-tile { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.15s, transform 0.15s; }
+    .veopp-campaign-tile:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .veopp-tile-img { width: calc(100% + 40px); margin: -20px -20px 6px -20px; aspect-ratio: 16/9; overflow: hidden; border-radius: 8px 8px 0 0; }
+    .veopp-tile-img img { width: 100%; height: 100%; object-fit: cover; }
+    .veopp-campaign-tile.featured { background: #1a1a1a; border-color: transparent; }
+    .veopp-campaign-tile.featured .veopp-tile-name { color: #fff; }
+    .veopp-campaign-tile.featured .veopp-tile-desc { color: rgba(255,255,255,0.6); }
+    .veopp-tile-tier { font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #15803D; }
+    .veopp-campaign-tile.featured .veopp-tile-tier { color: #22C55E; }
+    .veopp-tile-tier.orange { color: #b45309; }
+    .veopp-tile-name { font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; color: #1a1a1a; line-height: 1.2; }
+    .veopp-tile-desc { font-size: 12px; font-weight: 400; color: #555; line-height: 1.6; flex: 1; }
+    .veopp-tile-cta { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #15803D; text-decoration: none; padding: 9px 16px; border: 1.5px solid #BBF7D0; border-radius: 6px; width: fit-content; background: none; cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s; }
+    .veopp-tile-cta:hover { background: #F0FDF4; border-color: #22C55E; }
+    .veopp-tile-cta.orange { color: #b45309; border-color: #fde3b4; }
+    .veopp-tile-cta.orange:hover { background: #fff8ec; border-color: #b45309; }
+    .veopp-campaign-tile.featured .veopp-tile-cta { color: #fff; border-color: rgba(255,255,255,0.2); }
+    .veopp-campaign-tile.featured .veopp-tile-cta:hover { background: rgba(255,255,255,0.08); }
+
+    .veopp-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .veopp-trail-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #15803D; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
+    .veopp-trail-btn:hover { color: #22C55E; }
+    .veopp-breadcrumb-sep { font-size: 11px; color: rgba(0,0,0,0.15); font-weight: 600; }
+    .veopp-breadcrumb-current { font-size: 11px; font-weight: 800; color: #1a1a1a; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .veopp-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #15803D; margin-bottom: 10px; }
+    .veopp-h2 { font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.15; color: #1a1a1a; margin-bottom: 14px; }
+    .veopp-lede { font-size: 13px; font-weight: 400; color: #555; line-height: 1.7; margin-bottom: 20px; }
+    .veopp-section-head { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #1a1a1a; margin: 20px 0 10px; }
+    .veopp-p { font-size: 13px; font-weight: 400; color: #555; line-height: 1.7; margin-bottom: 14px; }
+    .veopp-list { list-style: none; padding: 0; margin: 0 0 20px; display: flex; flex-direction: column; gap: 10px; }
+    .veopp-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #555; line-height: 1.6; }
+    .veopp-list li strong { color: #1a1a1a; font-weight: 700; }
+    .veopp-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; flex-shrink: 0; margin-top: 6px; }
+
+    .veopp-comp-path { display: flex; align-items: center; gap: 8px; background: #F0FDF4; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .veopp-comp-path span { font-size: 11px; font-weight: 700; color: #15803D; }
+    .veopp-comp-path .veopp-arrow { color: #22C55E; font-weight: 900; font-size: 13px; }
+
+    .veopp-interest { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 22px; margin-top: 4px; }
+    .veopp-interest-head { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #15803D; margin-bottom: 5px; }
+    .veopp-interest-sub { font-size: 12px; font-weight: 400; color: #15803D; line-height: 1.6; margin-bottom: 16px; opacity: 0.85; }
+    .veopp-interest-fields { display: flex; flex-direction: column; gap: 9px; }
+    .veopp-interest-row { display: flex; gap: 9px; }
+    .veopp-interest-input { flex: 1; padding: 10px 13px; border: 1.5px solid #BBF7D0; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 500; color: #1a1a1a; background: #fff; outline: none; width: 100%; }
+    .veopp-interest-input:focus { border-color: #22C55E; }
+    .veopp-submit { width: 100%; padding: 12px; background: #15803D; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; margin-top: 4px; }
+    .veopp-submit:hover { background: #0f5c2c; }
+    .veopp-success { text-align: center; padding: 10px 0 2px; }
+    .veopp-success-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #15803D; margin-bottom: 4px; }
+    .veopp-success-sub { font-size: 11px; font-weight: 500; color: #15803D; opacity: 0.8; line-height: 1.5; }
+
     #ve-dashboard-loading {
       text-align: center;
       padding: 80px 24px;
@@ -406,6 +470,125 @@
           <li>+111 LESARs welcome grant on signup</li>
         </ul>
         <p class="ve-passport-meta" id="ve-member-since-line">Member since --</p>
+      </section>
+
+      <section class="ve-section" aria-labelledby="ve-opp-title">
+        <h2 class="ve-section-title" id="ve-opp-title">Get Involved</h2>
+        <div class="veopp-tab-bar" role="tablist">
+          <button class="veopp-tab-btn active" role="tab" aria-selected="true" id="veopp-btn-member" onclick="veoppSwitchTab('member')">Member Opportunities</button>
+          <button class="veopp-tab-btn" role="tab" aria-selected="false" id="veopp-btn-partner" onclick="veoppSwitchTab('partner')">Partner Opportunities</button>
+        </div>
+
+        <!-- ============ MEMBER OPPORTUNITIES ============ -->
+        <div class="veopp-tab-panel active" id="veopp-tab-member" role="tabpanel">
+          <div id="veopp-list-view">
+            <p class="veopp-intro">As a member you get first access to both community roles. These are the people who build VEGANS EXPLORE city by city - pick the one that fits where you are right now.</p>
+            <div class="veopp-campaign-grid">
+              <div class="veopp-campaign-tile featured" style="cursor:pointer;" onclick="veoppOpenOpportunity('community-manager','Community Manager')">
+                <div class="veopp-tile-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_213628_278b3739-d852-4571-b0de-7b324f25f6be.png" alt=""></div>
+                <div class="veopp-tile-tier">Leadership Role</div>
+                <div class="veopp-tile-name">Community Manager</div>
+                <div class="veopp-tile-desc">The official face of VEGANS EXPLORE in your city. Build the local community, manage events, and grow from volunteer to $4,000/month salary when your city hits its milestone.</div>
+                <button class="veopp-tile-cta" style="background:none;cursor:pointer;font-family:inherit;">Learn More &#8594;</button>
+              </div>
+              <div class="veopp-campaign-tile" style="cursor:pointer;" onclick="veoppOpenOpportunity('vegan-explorer','Vegan Explorer')">
+                <div class="veopp-tile-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_214438_cd4c0eec-2f37-4965-96be-eb562471b42d.png" alt=""></div>
+                <div class="veopp-tile-tier">Explorer Role</div>
+                <div class="veopp-tile-name">Vegan Explorer</div>
+                <div class="veopp-tile-desc">Know your city's Vegan scene? Turn that local knowledge into verified directory listings, community recognition, and a path to Community Manager.</div>
+                <button class="veopp-tile-cta" style="background:none;cursor:pointer;font-family:inherit;">Learn More &#8594;</button>
+              </div>
+            </div>
+          </div>
+          <div id="veopp-detail-view" style="display:none;" aria-live="polite">
+            <div class="veopp-breadcrumb">
+              <button class="veopp-trail-btn" onclick="veoppBackToOpportunities()">Member Opportunities</button>
+              <span class="veopp-breadcrumb-sep">/</span>
+              <span class="veopp-breadcrumb-current" id="veopp-breadcrumb-name"></span>
+            </div>
+
+            <div id="veopp-detail-community-manager" style="display:none;">
+              <div class="veopp-eyebrow">Leadership</div>
+              <h3 class="veopp-h2">Community Manager</h3>
+              <p class="veopp-lede">You run VEGANS EXPLORE in your city. Building the local community, showing up at events, connecting with Vegan businesses, and developing the people around you. It starts volunteer. It pays $4,000 a month when your city hits its milestone - no renegotiation, automatic.</p>
+              <div class="veopp-section-head">What the Role Looks Like</div>
+              <p class="veopp-p">Day to day you find and onboard Vegan businesses, recruit and support Vegan Explorers, show up at events, and make sure your region is actually building. You're the first person a new member meets and the last line of quality for everything that comes out of your city.</p>
+              <p class="veopp-p">This is a leadership role, not a content creator role. The job is building something real - a local community that keeps growing after you leave a room.</p>
+              <div class="veopp-section-head">The Pay Path</div>
+              <div class="veopp-comp-path"><span>Volunteer + Affiliate</span><span class="veopp-arrow">&#8594;</span><span>$2K / mo Stipend</span><span class="veopp-arrow">&#8594;</span><span>$4K / mo Salaried</span></div>
+              <p class="veopp-p">You earn affiliate commission from day one - on every member and Community Partner you bring in. Hit the first milestone and the $2,000 monthly stipend kicks in. Hit the full milestone and you're at $4,000 with quarterly bonus pool access. Everything is defined upfront.</p>
+              <div class="veopp-interest" id="veopp-cm-section">
+                <div class="veopp-interest-head">I'm Interested in This Role</div>
+                <p class="veopp-interest-sub">Let us know you're interested and we'll reach out when a position opens in your city.</p>
+                <div id="veopp-cm-form" class="veopp-interest-fields">
+                  <div class="veopp-interest-row"><input class="veopp-interest-input" type="text" id="veopp-cm-name" placeholder="Your name" /><input class="veopp-interest-input" type="text" id="veopp-cm-city" placeholder="Your city" /></div>
+                  <input class="veopp-interest-input" type="email" id="veopp-cm-email" placeholder="Your email address" />
+                  <button class="veopp-submit" onclick="veoppRegisterInterest('community-manager','veopp-cm')">Count Me In</button>
+                </div>
+                <div id="veopp-cm-success" class="veopp-success" style="display:none;"><div class="veopp-success-title">You're on the list.</div><div class="veopp-success-sub">We'll reach out when a position opens in your city.</div></div>
+              </div>
+            </div>
+            <div id="veopp-detail-vegan-explorer" style="display:none;">
+              <div class="veopp-eyebrow">Explorer</div>
+              <h3 class="veopp-h2">Vegan Explorer</h3>
+              <p class="veopp-lede">You already know your city's Vegan scene - where to eat, what's worth trying, what events actually show up. The Vegan Explorer program puts that to use. You explore, document, and review. Your work goes directly into the live directory, credited to your profile, visible to the whole community.</p>
+              <div class="veopp-section-head">What You Contribute</div>
+              <p class="veopp-p">You find and submit Vegan businesses, events, and spots in your city. Every verified listing earns points. You write honest reviews and keep your city's section accurate. The quality of your work is the quality of the platform in your region.</p>
+              <div class="veopp-section-head">What You Get Back</div>
+              <ul class="veopp-list">
+                <li><div class="veopp-dot"></div><div>Points toward your membership - every verified listing and review earns.</div></li>
+                <li><div class="veopp-dot"></div><div>Your name on your work. Every contribution is permanently credited to your profile.</div></li>
+                <li><div class="veopp-dot"></div><div>Featured placement in the directory if you're a top contributor in your region.</div></li>
+                <li><div class="veopp-dot"></div><div>First consideration for Community Manager openings in your city.</div></li>
+              </ul>
+              <div class="veopp-interest" id="veopp-ve-section">
+                <div class="veopp-interest-head">I Want to Be a Vegan Explorer</div>
+                <p class="veopp-interest-sub">Tell us your city and we'll reach out when we're ready to get you started.</p>
+                <div id="veopp-ve-form" class="veopp-interest-fields">
+                  <div class="veopp-interest-row"><input class="veopp-interest-input" type="text" id="veopp-ve-name" placeholder="Your name" /><input class="veopp-interest-input" type="text" id="veopp-ve-city" placeholder="Your city" /></div>
+                  <input class="veopp-interest-input" type="email" id="veopp-ve-email" placeholder="Your email address" />
+                  <button class="veopp-submit" onclick="veoppRegisterInterest('vegan-explorer','veopp-ve')">I'm In</button>
+                </div>
+                <div id="veopp-ve-success" class="veopp-success" style="display:none;"><div class="veopp-success-title">Welcome to the Explorer crew.</div><div class="veopp-success-sub">We'll be in touch before launch day.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ PARTNER OPPORTUNITIES ============ -->
+        <div class="veopp-tab-panel" id="veopp-tab-partner" role="tabpanel">
+          <p class="veopp-intro">VEGANS EXPLORE is building with partners who believe in what this community is becoming. Every campaign below is an entry point - pick the one that fits where you are, or reach out if you want to talk through a custom arrangement.</p>
+          <div class="veopp-campaign-grid">
+            <div class="veopp-campaign-tile featured">
+              <div class="veopp-tile-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_224322_ae5f662a-c6c6-445e-87ff-f6b38f5b97b3_min.webp" alt=""></div>
+              <div class="veopp-tile-tier">Founding Partner</div>
+              <div class="veopp-tile-name">Night Event Partnership</div>
+              <div class="veopp-tile-desc">First-in partner placement across all nine launch regions on July 13. Homepage visibility, event presence, and a permanent Founding Partner badge on your business profile.</div>
+              <a href="https://vegansexplore.com/partners/pitches/vegans-explore-night-event-pitch" class="veopp-tile-cta" target="_blank">View Campaign &#8594;</a>
+            </div>
+            <div class="veopp-campaign-tile">
+              <div class="veopp-tile-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_224958_625649d0-378a-4ac0-a84e-4aa90d4d38a0_min.webp" alt=""></div>
+              <div class="veopp-tile-tier">Community Tier</div>
+              <div class="veopp-tile-name">Supermarket Partnership</div>
+              <div class="veopp-tile-desc">Support local events and community activations in one or more regions. Your brand appears on event pages, RSVP confirmations, and post-event recaps sent to members.</div>
+              <a href="https://vegansexplore.com/partners/pitches/vegans-explore-supermarket-pitch" class="veopp-tile-cta" target="_blank">View Campaign &#8594;</a>
+            </div>
+            <div class="veopp-campaign-tile">
+              <div class="veopp-tile-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_225437_3c76b8a7-1579-45f7-a8ab-469b2ed3d504_min.webp" alt=""></div>
+              <div class="veopp-tile-tier orange">Recipe Sponsor</div>
+              <div class="veopp-tile-name">Recipe Sponsor Deck</div>
+              <div class="veopp-tile-desc">Partner with VEGANS EXPLORE on the recipe ecosystem - from creator content and confidence scoring to the Cooking Show pipeline and affiliate distribution.</div>
+              <a href="https://hq.lesaruss.ai/mock/vegans-explore/recipe-sponsor-deck" class="veopp-tile-cta orange" target="_blank">View Campaign &#8594;</a>
+            </div>
+            <div class="veopp-campaign-tile">
+              <div class="veopp-tile-img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_225940_c4ff0fd3-db3f-45c8-b009-00852b8a51d7_min.webp" alt=""></div>
+              <div class="veopp-tile-tier orange">Sports + Entertainment</div>
+              <div class="veopp-tile-name">Dolphins Partnership</div>
+              <div class="veopp-tile-desc">Collaborate with VEGANS EXPLORE on sports and entertainment crossover activations. Reach active, health-conscious fans in South Florida and beyond.</div>
+              <a href="https://vegansexplore.com/partners/pitches/vegans-explore-dolphins-pitch" class="veopp-tile-cta orange" target="_blank">View Campaign &#8594;</a>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="ve-section" aria-labelledby="ve-guides-title">
@@ -570,6 +753,80 @@
       setHTML('ve-activity-content', html);
     }).catch(function () {});
 
+  })();
+  </script>
+
+  <script>
+  (function () {
+    var SUPA_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+    function veoppMember() {
+      try { return JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) { return null; }
+    }
+
+    window.veoppSwitchTab = function (name) {
+      document.querySelectorAll('.veopp-tab-btn').forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      document.querySelectorAll('.veopp-tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      document.getElementById('veopp-btn-' + name).classList.add('active');
+      document.getElementById('veopp-btn-' + name).setAttribute('aria-selected', 'true');
+      document.getElementById('veopp-tab-' + name).classList.add('active');
+      if (name !== 'member') { window.veoppBackToOpportunities(); }
+    };
+
+    window.veoppOpenOpportunity = function (slug, title) {
+      document.getElementById('veopp-list-view').style.display = 'none';
+      document.getElementById('veopp-detail-view').style.display = 'block';
+      document.getElementById('veopp-breadcrumb-name').textContent = title;
+      document.querySelectorAll('#veopp-detail-view > div[id^="veopp-detail-"]').forEach(function (el) { el.style.display = 'none'; });
+      var el = document.getElementById('veopp-detail-' + slug);
+      if (el) el.style.display = 'block';
+
+      var m = veoppMember();
+      if (m && m.email) {
+        var prefix = slug === 'community-manager' ? 'veopp-cm' : 'veopp-ve';
+        var emailEl = document.getElementById(prefix + '-email');
+        var nameEl = document.getElementById(prefix + '-name');
+        if (emailEl && !emailEl.value) emailEl.value = m.email;
+        if (nameEl && !nameEl.value && m.name) nameEl.value = m.name;
+      }
+
+      document.getElementById('veopp-detail-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    window.veoppBackToOpportunities = function () {
+      var lv = document.getElementById('veopp-list-view');
+      var dv = document.getElementById('veopp-detail-view');
+      if (lv) lv.style.display = 'block';
+      if (dv) dv.style.display = 'none';
+      document.querySelectorAll('#veopp-detail-view > div[id^="veopp-detail-"]').forEach(function (el) { el.style.display = 'none'; });
+    };
+
+    window.veoppRegisterInterest = function (roleSlug, prefix) {
+      var email = document.getElementById(prefix + '-email').value.trim();
+      var cityEl = document.getElementById(prefix + '-city');
+      var nameEl = document.getElementById(prefix + '-name');
+      var city = cityEl ? cityEl.value.trim() : null;
+      var name = nameEl ? nameEl.value.trim() : null;
+      if (!email || email.indexOf('@') === -1) { document.getElementById(prefix + '-email').focus(); return; }
+      var btn = document.querySelector('#' + prefix + '-form .veopp-submit');
+      if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
+      var m = veoppMember();
+      var noteParts = [];
+      if (name) noteParts.push('Name: ' + name);
+      if (m && m.id) noteParts.push('member_id: ' + m.id);
+      fetch(SUPA_URL + '/rest/v1/member_interest', {
+        method: 'POST',
+        headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ email: email, role_slug: roleSlug, city: city || null, notes: noteParts.length ? noteParts.join(' | ') : null, source: 'account-page' })
+      }).then(function (r) {
+        if (!r.ok) { throw new Error('insert failed'); }
+        document.getElementById(prefix + '-form').style.display = 'none';
+        document.getElementById(prefix + '-success').style.display = 'block';
+      }).catch(function () {
+        if (btn) { btn.textContent = 'Try Again'; btn.disabled = false; }
+      });
+    };
   })();
   </script>
 
