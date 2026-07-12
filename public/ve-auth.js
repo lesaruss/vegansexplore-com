@@ -4,10 +4,21 @@ var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
 var FN_URL='https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
 var GOOGLE_ID='450477549015-ioh43e9qi7m89qknkoo318b2geejja4t.apps.googleusercontent.com';
 function getToken(){try{return localStorage.getItem('ve_token')||null;}catch(e){return null;}}
-function getMember(){try{return JSON.parse(localStorage.getItem('ve_member')||'null');}catch(e){return null;}}
+function getRealMember(){try{return JSON.parse(localStorage.getItem('ve_member')||'null');}catch(e){return null;}}
 function setSession(t,m){try{localStorage.setItem('ve_token',t);localStorage.setItem('ve_member',JSON.stringify(m));}catch(e){}}
 function clearSession(){try{localStorage.removeItem('ve_token');localStorage.removeItem('ve_member');}catch(e){}}
-function isLoggedIn(){return!!getToken();}
+// --- Super Admin "View As" simulator (2026-07-12). Lets Sean's own account
+// (members.is_superadmin = true) preview the site as a logged-out visitor or a
+// simulated free member with a chosen Points balance, without touching his real
+// session. Preview only: getToken() always returns the REAL token, so any real
+// network call (signup, login, spend_points_for_guide, etc.) never runs against
+// faked data. Only ever honored when the real underlying account is a super admin.
+function isRealSuperAdmin(){var m=getRealMember();return!!(m&&m.is_superadmin);}
+function getViewAs(){if(!isRealSuperAdmin())return null;try{var v=JSON.parse(localStorage.getItem('ve_view_as')||'null');if(!v||(v.mode!=='public'&&v.mode!=='member'))return null;return v;}catch(e){return null;}}
+function setViewAs(mode,points){if(!isRealSuperAdmin())return;try{localStorage.setItem('ve_view_as',JSON.stringify({mode:mode,points:points||0}));}catch(e){}window.location.reload();}
+function clearViewAs(){try{localStorage.removeItem('ve_view_as');}catch(e){}window.location.reload();}
+function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0}):null;}return getRealMember();}
+function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken();}
 function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();});}
 function signup(email,password,name,ref){return call('signup',{email:email,password:password,name:name,referral_code:ref||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
@@ -86,5 +97,5 @@ if(d.error){_showErr(d.error);return;}
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}
-global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,initGoogleSignIn:initGoogleSignIn,signOut:signOut,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal};
+global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,initGoogleSignIn:initGoogleSignIn,signOut:signOut,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
 })(window);
