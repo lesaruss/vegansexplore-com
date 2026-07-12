@@ -3,314 +3,383 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegans Explore — The Daily Pulse</title>
+  <title>The Daily Pulse - Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-mid: #b8ddb9; --ve-green-light: #e8f5e9;
       --ve-orange: #F69820; --ve-orange-dark: #d4800f;
       --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
       --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
     }
     html { scroll-behavior: smooth; }
-    .page-frame { width: 100%;  margin: 0 auto; background: #fff; }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-    .discuss-outer { display: flex; flex-direction: column; min-height: calc(100vh - 60px); }
-    .discuss-sticky-bar {
-      position: sticky; top: 60px; z-index: 300;
-      background: rgba(255,255,255,0.98);
-      border-bottom: 1px solid var(--ve-border);
-      padding: 16px 40px 14px;
-    }
-    .discuss-top-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
-    .discuss-board-title { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ve-text); }
-    .discuss-board-count { font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-top: 2px; }
-    .discuss-search {
-      flex: 1; 
-      border: 1px solid var(--ve-border); border-radius: 6px;
-      padding: 8px 14px; font-family: 'Montserrat', sans-serif;
-      font-size: 12px; font-weight: 500; color: var(--ve-text);
-      background: #fff; outline: none; transition: border-color 0.15s;
-    }
-    .discuss-search:focus { border-color: var(--ve-green-dark); }
-    .discuss-search::placeholder { color: var(--ve-text-30); }
-    .discuss-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .discuss-select {
-      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
-      border: 1px solid var(--ve-border); border-radius: 6px;
-      padding: 8px 28px 8px 14px; background: #fff; color: var(--ve-text);
-      outline: none; cursor: pointer; transition: border-color 0.15s;
-      appearance: none; -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%231a1a1a' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 10px center;
-    }
-    .discuss-select:focus { border-color: var(--ve-green-dark); }
-    .discuss-list-wrap { flex: 1; padding: 24px 40px 64px;  margin: 0 auto; width: 100%; }
-    .discuss-list { display: flex; flex-direction: column; gap: 10px; }
-    .discuss-empty { text-align: center; padding: 60px 24px; font-size: 13px; font-weight: 600; color: var(--ve-text-50); }
-    .topic-card {
-      background: #fff; border: 1px solid var(--ve-border); border-radius: 10px; padding: 18px 20px;
-      cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
-      display: flex; align-items: flex-start; gap: 16px; text-decoration: none; color: inherit;
-    }
-    .topic-card:hover:not(.tc-locked) { border-color: var(--ve-green-dark); box-shadow: 0 2px 12px rgba(45,125,49,0.1); }
-    .topic-card:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 2px; }
-    .topic-card.tc-locked { opacity: 0.55; cursor: default; pointer-events: none; }
-    .tc-guide-av {
-      width: 90px; height: 90px; border-radius: 12px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; overflow: hidden;
-    }
-    .tc-guide-av img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-    .tc-lock-av { width: 90px; height: 90px; border-radius: 12px; flex-shrink: 0; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-    .tc-body { flex: 1; min-width: 0; }
-    .tc-cats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-    .tc-cat { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; background: var(--ve-green-light); color: var(--ve-green-dark); border-radius: 3px; padding: 2px 8px; }
-    .tc-headline { font-size: 14px; font-weight: 800; color: var(--ve-text); line-height: 1.35; margin-bottom: 10px; }
-    .tc-stats { display: flex; align-items: center; gap: 18px; }
-    .tc-stat { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--ve-text-50); }
-    .tc-stat svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-    .tc-time { font-size: 10px; font-weight: 600; color: var(--ve-text-30); margin-left: auto; white-space: nowrap; }
-    .tc-upcoming { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-left: auto; white-space: nowrap; }
-    .discuss-hero {
-      position: relative; min-height: 520px;
+    .page-frame { width: 100%; margin: 0 auto; background: #fff; }
+
+    /* HERO (reused hero pattern, updated copy for content-feed Pulse) */
+    .pulse-hero {
+      position: relative; min-height: 460px;
       background-image: url('/public/pulse-ve-banner.png');
       background-size: cover; background-position: center;
       display: flex; align-items: flex-end;
     }
-    .discuss-hero::before {
+    .pulse-hero::before {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.72) 58%, rgba(0,0,0,0.28) 78%, transparent 94%);
       z-index: 1;
     }
-    .discuss-hero::after {
+    .pulse-hero::after {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.32) 0%, transparent 28%); z-index: 1;
     }
-    .discuss-hero .hero-inner { position: relative; z-index: 2; padding: 88px 56px 72px;  }
-    .discuss-hero .hero-eyebrow {
+    .pulse-hero .hero-inner { position: relative; z-index: 2; padding: 72px 56px 56px; }
+    .pulse-hero .hero-eyebrow {
       font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase;
-      color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+      color: var(--ve-green); margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
     }
-    .discuss-hero .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); flex-shrink: 0; }
-    .discuss-hero h1 {
-      font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.95;
-      letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 22px;
+    .pulse-hero .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); flex-shrink: 0; }
+    .pulse-hero h1 {
+      font-size: clamp(36px, 5.5vw, 68px); font-weight: 900; line-height: 0.98;
+      letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 18px;
     }
-    .discuss-hero h1 em { color: var(--ve-green); font-style: normal; }
-    .discuss-hero .hero-sub { font-size: 16px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.62);  margin-bottom: 36px; }
-    .discuss-hero .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    .discuss-hero .btn-hero-primary {
+    .pulse-hero h1 em { color: var(--ve-green); font-style: normal; }
+    .pulse-hero .hero-sub { font-size: 15px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.65); max-width: 560px; margin-bottom: 28px; }
+    .pulse-hero .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .pulse-hero .btn-hero-primary {
       background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800;
       letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 30px;
-      border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block;
+      border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; border: none; cursor: pointer; font-family: inherit;
     }
-    .discuss-hero .btn-hero-primary:hover { background: var(--ve-orange-dark); }
-    .discuss-hero .btn-hero-ghost {
-      background: transparent; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 26px;
-      border-radius: 4px; text-decoration: none; transition: all 0.15s; display: inline-block;
-      border: 1.5px solid rgba(255,255,255,0.22);
-    }
-    .discuss-hero .btn-hero-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+    .pulse-hero .btn-hero-primary:hover { background: var(--ve-orange-dark); }
     @media (max-width: 640px) {
-      .discuss-sticky-bar { padding: 14px 16px 12px; top: 60px; }
-      .discuss-list-wrap { padding: 16px 16px 48px; }
-      .discuss-search {  }
-      .discuss-hero {
-        min-height: 480px;
-        background-image: url('/public/pulse-ve-banner-mobile.png');
-        background-position: center center;
-        align-items: flex-end;
-      }
-      .discuss-hero::before { background: rgba(0,0,0,0.32); }
-      .discuss-hero::after { display: none; }
-      .discuss-hero .hero-inner {
-        background: rgba(0,0,0,0.58);
-        backdrop-filter: blur(8px);
-        border-radius: 8px;
-        margin: 0 24px 32px;
-        padding: 32px 28px;
-        
+      .pulse-hero { min-height: 420px; background-image: url('/public/pulse-ve-banner-mobile.png'); background-position: center center; }
+      .pulse-hero::before { background: rgba(0,0,0,0.32); }
+      .pulse-hero::after { display: none; }
+      .pulse-hero .hero-inner {
+        background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; max-width: calc(100% - 48px);
         border: 1px solid rgba(255,255,255,0.09);
       }
     }
+
+    /* STICKY FILTER BAR */
+    .pulse-sticky-bar { position: sticky; top: 60px; z-index: 300; background: rgba(255,255,255,0.98); border-bottom: 1px solid var(--ve-border); padding: 16px 40px 14px; }
+    .pulse-top-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+    .pulse-board-title { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ve-text); }
+    .pulse-board-count { font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-top: 2px; }
+    .pulse-search { flex: 1; min-width: 160px; border: 1px solid var(--ve-border); border-radius: 6px; padding: 8px 14px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 500; color: var(--ve-text); background: #fff; outline: none; transition: border-color 0.15s; }
+    .pulse-search:focus { border-color: var(--ve-green-dark); }
+    .pulse-search::placeholder { color: var(--ve-text-30); }
+    .pulse-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .pulse-select {
+      font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
+      border: 1px solid var(--ve-border); border-radius: 6px; padding: 8px 28px 8px 14px;
+      background: #fff; color: var(--ve-text); outline: none; cursor: pointer; transition: border-color 0.15s;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%231a1a1a' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+    }
+    .pulse-select:focus { border-color: var(--ve-green-dark); }
+
+    /* CONTENT AREA */
+    .pulse-outer { display: flex; flex-direction: column; min-height: calc(100vh - 60px); }
+    .pulse-list-wrap { flex: 1; padding: 28px 40px 64px; }
+    .pulse-empty { text-align: center; padding: 60px 24px; font-size: 13px; font-weight: 600; color: var(--ve-text-50); }
+
+    /* POST CARDS - editorial feed, no chat / no reply counts */
+    .pulse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .pulse-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: box-shadow 0.15s, transform 0.15s; cursor: pointer; text-decoration: none; display: block; color: inherit; }
+    .pulse-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.09); transform: translateY(-2px); }
+    .pulse-card:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 2px; }
+    .pulse-card-img { width: 100%; aspect-ratio: 16/9; background: var(--ve-green-light); position: relative; overflow: hidden; }
+    .pulse-card-img.orange { background: #fff3e0; }
+    .pulse-card-img.dark { background: #1a1a1a; }
+    .pulse-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .pulse-card-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); }
+    .pulse-card-play svg { width: 44px; height: 44px; color: #fff; }
+    .pulse-card-body { padding: 16px; }
+    .pulse-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .pulse-card-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-green); }
+    .pulse-card-tag.orange { color: var(--ve-orange-dark); }
+    .pulse-card-type { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-text-30); }
+    .pulse-card-type::before { content: '\2022'; margin-right: 8px; color: var(--ve-text-30); }
+    .pulse-card-title { font-size: 13px; font-weight: 800; line-height: 1.35; color: var(--ve-text); margin-bottom: 8px; letter-spacing: -0.01em; }
+    .pulse-card-excerpt { font-size: 11px; font-weight: 400; color: var(--ve-text-50); line-height: 1.6; }
+    .pulse-card-meta { font-size: 10px; font-weight: 600; color: var(--ve-text-50); margin-top: 12px; letter-spacing: 0.04em; }
+
+    /* ARTICLE DETAIL (reused from welcome.html article pattern) */
+    .panel-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+    .panel-trail-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; transition: color 0.15s; }
+    .panel-trail-btn:hover { color: var(--ve-green); }
+    .panel-breadcrumb-sep { font-size: 11px; color: var(--ve-border); font-weight: 600; }
+    .panel-breadcrumb-current { font-size: 11px; font-weight: 800; color: var(--ve-text); text-transform: uppercase; letter-spacing: 0.08em; }
+    .article { width: 100%; max-width: 760px; }
+    .article-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 12px; }
+    .article-eyebrow.orange { color: var(--ve-orange-dark); }
+    .article-h1 { font-size: clamp(22px, 3vw, 38px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.05; color: var(--ve-text); margin-bottom: 16px; }
+    .article-lede { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.75; margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--ve-border); }
+    .article-section-head { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-text); margin: 28px 0 12px; }
+    .article-p { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.8; margin-bottom: 16px; }
+    .article-list { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 12px; }
+    .article-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 13px; color: var(--ve-text-75); line-height: 1.65; }
+    .article-list li strong { color: var(--ve-text); font-weight: 700; }
+    .article-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; margin-top: 6px; }
+    .article-dot.orange { background: var(--ve-orange); }
+    .region-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+    .region-pill { background: var(--ve-green-light); border-radius: 8px; padding: 12px 16px; }
+    .region-pill-name { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ve-green-dark); margin-bottom: 3px; }
+    .region-pill-detail { font-size: 11px; font-weight: 500; color: var(--ve-green-dark); opacity: 0.75; line-height: 1.4; }
+
+    @media (max-width: 960px) {
+      .pulse-grid { grid-template-columns: repeat(2, 1fr); }
+      .region-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .pulse-sticky-bar { padding: 14px 16px 12px; top: 60px; }
+      .pulse-list-wrap { padding: 16px 16px 48px; }
+      .pulse-grid { grid-template-columns: 1fr; }
+      .region-grid { grid-template-columns: 1fr; }
+    }
+    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
   </style>
 </head>
 <body>
   <div class="page-frame">
   <script src="/public/nav.js"></script>
 
-  <section class="discuss-hero" aria-labelledby="pulse-hero-h1">
+  <section class="pulse-hero" aria-labelledby="pulse-hero-h1">
     <div class="hero-inner">
       <p class="hero-eyebrow">Vegans Explore</p>
       <h1 id="pulse-hero-h1">The Daily<br><em>Pulse.</em></h1>
-      <p class="hero-sub">A new conversation every day. Real topics, real guides, real community.<br>Jump in and add your voice to the vegan conversation.</p>
+      <p class="hero-sub">Daily news, opinion pieces, and stories from across the VEGANS EXPLORE ecosystem. New content, every day.</p>
       <div class="hero-ctas">
-        <a href="#discussList" class="btn-hero-primary">Join the Pulse</a>
-        <a href="/guides" class="btn-hero-ghost">Find Your Guide</a>
+        <a href="#pulseList" class="btn-hero-primary">Read Today's Pulse</a>
       </div>
     </div>
   </section>
 
-  <div class="discuss-outer">
-    <div class="discuss-sticky-bar">
-      <div class="discuss-top-row">
-        <div class="discuss-title-group">
-          <div class="discuss-board-title">Daily Pulse</div>
-          <div class="discuss-board-count" id="discussCount">7 topics</div>
+  <div class="pulse-outer">
+    <div class="pulse-sticky-bar">
+      <div class="pulse-top-row">
+        <div class="pulse-title-group">
+          <div class="pulse-board-title">Daily Pulse</div>
+          <div class="pulse-board-count" id="pulseCount">9 posts</div>
         </div>
-        <input class="discuss-search" id="discussSearch" type="search" placeholder="Search topics..." aria-label="Search discussions" oninput="filterBoard()">
+        <input class="pulse-search" id="pulseSearch" type="search" placeholder="Search the Pulse..." aria-label="Search posts" oninput="filterPulse()">
       </div>
-      <div class="discuss-filters" role="group" aria-label="Filter and sort topics">
-        <select class="discuss-select" id="categorySelect" aria-label="Filter by category" onchange="filterBoard()">
-          <option value="all">All Categories</option>
-          <option value="Relationships">Relationships</option>
-          <option value="Community">Community</option>
-          <option value="Lifestyle">Lifestyle</option>
-          <option value="Nutrition">Nutrition</option>
-          <option value="Fitness">Fitness</option>
-          <option value="Food Science">Food Science</option>
-          <option value="Activism">Activism</option>
-          <option value="Business">Business</option>
+      <div class="pulse-filters" role="group" aria-label="Filter and sort posts">
+        <select class="pulse-select" id="typeSelect" aria-label="Filter by content type" onchange="filterPulse()">
+          <option value="all">All Types</option>
+          <option value="news">News</option>
+          <option value="opinion">Opinion</option>
+          <option value="photo">Photo</option>
+          <option value="video">Video</option>
         </select>
-        <select class="discuss-select" id="sortSelect" aria-label="Sort topics" onchange="filterBoard()">
+        <select class="pulse-select" id="categorySelect" aria-label="Filter by category" onchange="filterPulse()">
+          <option value="all">All Categories</option>
+          <option value="Platform">Platform</option>
+          <option value="Beta">Beta</option>
+          <option value="Guides">Guides</option>
+          <option value="Regions">Regions</option>
+          <option value="Community">Community</option>
+          <option value="Events">Events</option>
+          <option value="Recipes">Recipes</option>
+          <option value="Points">Points</option>
+          <option value="Story">Story</option>
+        </select>
+        <select class="pulse-select" id="sortSelect" aria-label="Sort posts" onchange="filterPulse()">
           <option value="latest">Latest</option>
-          <option value="replies">Most Replies</option>
         </select>
       </div>
     </div>
 
-    <div class="discuss-list-wrap">
-      <div class="discuss-list" id="discussList" role="list" aria-label="Discussion topics"></div>
-      <div class="discuss-empty" id="discussEmpty" style="display:none;">No topics match your search.</div>
+    <div class="pulse-list-wrap">
+      <div id="pulse-list-view">
+        <div class="pulse-grid" id="pulseList" role="list" aria-label="Pulse posts"></div>
+        <div class="pulse-empty" id="pulseEmpty" style="display:none;">No posts match your search.</div>
+      </div>
+
+      <div id="pulse-detail-view" style="display:none;" aria-live="polite">
+        <div class="panel-breadcrumb">
+          <button class="panel-trail-btn" onclick="backToPulse()">Pulse</button>
+          <span class="panel-breadcrumb-sep">/</span>
+          <span class="panel-breadcrumb-current" id="pulse-breadcrumb-name"></span>
+        </div>
+        <div id="pulse-article-mount"></div>
+      </div>
     </div>
   </div>
   </div>
 
 <script>
-  var topics = [
+  var posts = [
     {
-      headline: "Vegan dating - does it matter if your partner isn't vegan?",
-      categories: ["Relationships", "Community", "Lifestyle"],
-      participants: 11, comments: 63, lastPost: "14m ago",
-      guide: { name: "Maya", color: "#3A9B3E", img: "/public/guides/maya.png" },
-      locked: false
+      slug: 'directory', type: 'news', category: 'Platform', tagClass: '',
+      headline: "The Directory Is Growing: 2,800+ Businesses and Counting",
+      excerpt: "We're actively cataloging Vegan businesses across all 9 launch regions. Here's what we're finding city by city.",
+      date: 'Jun 8, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_191306_d3274cac-433f-4b7f-bb98-ba598006f59a.png',
+      imgClass: '',
+      body: '<div class="article-eyebrow">Platform</div><h2 class="article-h1">2,800+ Businesses. 9 Regions. And We\'re Just Getting Started.</h2><p class="article-lede">Before anyone could join, before the platform had a name anyone knew, the work had already been happening. Cataloging Vegan businesses city by city, block by block. Right now the directory sits at over 2,800 verified listings across 63 cities - and we\'re adding more every week leading up to July 13.</p><div class="article-section-head">What\'s in the Directory Right Now</div><p class="article-p">Restaurants, cafes, markets, health food stores, Vegan beauty brands, wellness spaces, community gardens, pop-up vendors - if it\'s Vegan and it\'s operating in one of our nine launch regions, our team has been working to find it, verify it, and document it. Every listing includes location, category, and enough detail to actually be useful.</p><p class="article-p">We\'ve been deliberate about quality over volume. Every listing in the directory has been manually reviewed. We\'re not scraping Yelp. We\'re building something you can actually trust.</p><div class="article-section-head">How We\'re Building It</div><p class="article-p">The cataloging work started long before the platform existed. In city after city, the approach has been the same: on-the-ground research, community sourcing, and verification. The Vegan Explorer program - which opens to Founding Members on July 13 - is the next phase of that work. You become the eyes and ears. Your city, your knowledge, your contribution to a directory that belongs to everyone.</p><div class="article-section-head">What Goes Live July 13</div><p class="article-p">On launch day, the full directory opens across all nine regions. Search by city, neighborhood, category, or dietary need. Filter for delivery, outdoor seating, Black-owned, women-owned, and more. Every listing links to a business profile page that can be claimed, updated, and expanded by the business owner. Founding Members will be among the first to explore it - and the first to contribute to it.</p>'
     },
     {
-      headline: '"But where do you get your protein?" - the question that never stops.',
-      categories: ["Nutrition", "Fitness", "Lifestyle"],
-      participants: 8, comments: 52, lastPost: "1h ago",
-      guide: { name: "Theo", color: "#8B6914", img: "/public/guides/theo.png" },
-      locked: false
+      slug: 'beta', type: 'news', category: 'Beta', tagClass: 'orange',
+      headline: "Beta Access Is Live for Founding Members",
+      excerpt: "You're inside. Here's what you can explore right now and what features are still being built before July 13.",
+      date: 'Jun 8, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_191822_aa0d2b7e-89f1-4893-b958-e3d251e67aef.png',
+      imgClass: 'orange',
+      body: '<div class="article-eyebrow orange">Beta Access</div><h2 class="article-h1">You\'re Inside. Here\'s What That Means Right Now.</h2><p class="article-lede">Beta access is live for Founding Members. This isn\'t a waitlist confirmation or a holding page - you\'re in. The platform isn\'t complete, and that\'s intentional. Here\'s what\'s available to explore right now, and what\'s still being built before July 13.</p><div class="article-section-head">What\'s Live Right Now</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>This hub.</strong> The Founding Member welcome page is your pre-launch home. The Pulse updates here daily as things develop.</div></li><li><div class="article-dot"></div><div><strong>The directory preview.</strong> A growing view of what\'s been cataloged across our launch regions.</div></li><li><div class="article-dot"></div><div><strong>Opportunity registration.</strong> Community Manager and Vegan Explorer interest forms are live. If a role opens in your city, you\'ll be contacted first.</div></li></ul><div class="article-section-head">What\'s Coming Before July 13</div><ul class="article-list"><li><div class="article-dot orange"></div><div><strong>Login access.</strong> A link will be emailed to you when full platform login opens. One click, no password needed.</div></li><li><div class="article-dot orange"></div><div><strong>Full directory search.</strong> Filter by city, category, neighborhood, and more across all nine regions.</div></li><li><div class="article-dot orange"></div><div><strong>Guide track enrollment.</strong> Your 111-day path opens on July 13. You\'ll choose your starting point at first login.</div></li><li><div class="article-dot orange"></div><div><strong>Community events.</strong> RSVP opens for Founding Members before public tickets drop.</div></li></ul><p class="article-p">Beta isn\'t a lesser version - it\'s the version where Founding Members shape what ships. If something doesn\'t feel right, that\'s the point of this window.</p>'
     },
     {
-      headline: "Are ultra-processed vegan foods actually good for you?",
-      categories: ["Nutrition", "Food Science"],
-      participants: 9, comments: 47, lastPost: "2h ago",
-      guide: { name: "Maya", color: "#3A9B3E", img: "/public/guides/maya.png" },
-      locked: false
+      slug: 'guide-tracks', type: 'news', category: 'Guides', tagClass: '',
+      headline: "Your 111-Day Guide Track: What to Expect When It Goes Live",
+      excerpt: "The guide tracks unlock July 13. Here's a look at what the first 7 days look like for both paths.",
+      date: 'Jun 7, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_192200_2efeca9b-c2a5-4cd0-a507-70ed60fac6e4.png',
+      imgClass: '',
+      body: '<div class="article-eyebrow">Guide Tracks</div><h2 class="article-h1">111 Days. Your Path. Two Starting Points.</h2><p class="article-lede">The guide tracks are VEGANS EXPLORE\'s answer to the question every person gets stuck on at the start: where do I even begin? The 111-day format is based on research around how long meaningful habit change actually takes. Here\'s how the system works and what it looks like from day one.</p><div class="article-section-head">Two Entry Points</div><p class="article-p">You choose your starting point at first login. The two core paths on launch day are the Pre-Vegan track and the Seasoned Vegan track. Pre-Vegan is for people who are curious, transitioning, or just starting to take plant-based eating seriously. Seasoned Vegan is for people who are already there and want to go deeper - community, advocacy, contribution, and leadership.</p><div class="article-section-head">What the First Seven Days Look Like</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>Day 1.</strong> Profile setup and your first city check-in. What\'s Vegan in your neighborhood right now.</div></li><li><div class="article-dot"></div><div><strong>Days 2-3.</strong> Your guide introduces the five pillars: Discover, Learn, Connect, Participate, Reward.</div></li><li><div class="article-dot"></div><div><strong>Days 4-5.</strong> First directory contribution. You find and submit a Vegan spot in your city.</div></li><li><div class="article-dot"></div><div><strong>Days 6-7.</strong> First community touchpoint. You connect with other members in your region and earn your first points.</div></li></ul><div class="article-section-head">After Day 111</div><p class="article-p">Completing a guide track unlocks the next level of the platform - expanded contribution tools, featured profile placement, and eligibility for Community Manager consideration in your city.</p>'
     },
     {
-      headline: "Going vegan when your family isn't. How do you handle the table?",
-      categories: ["Relationships", "Lifestyle"],
-      participants: 7, comments: 38, lastPost: "6h ago",
-      guide: { name: "Dani", color: "#2A6B5A", img: "/public/guides/dani.png" },
-      locked: false
+      slug: 'regions', type: 'news', category: 'Regions', tagClass: '',
+      headline: "Meet the Nine Launch Regions Going Live on July 13",
+      excerpt: "South Florida. London. New York. Atlanta. Here's the full map of day-one cities and what's already built in each.",
+      date: 'Jun 6, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_192515_7ecf6fcb-69cb-475e-bc73-545e9f1ba48a.png',
+      imgClass: '',
+      body: '<div class="article-eyebrow">Launch Regions</div><h2 class="article-h1">Nine Regions. One Launch Day. July 13.</h2><p class="article-lede">South Florida. London. New York. Atlanta. Central Florida. Philadelphia. Los Angeles. North Carolina. DMV. These are the nine regions going live on July 13, 2026. Each one has been in active development - directory cataloging, community building, and infrastructure - for months before a single public member has access.</p><div class="article-section-head">The Regions</div><div class="region-grid"><div class="region-pill"><div class="region-pill-name">South Florida</div><div class="region-pill-detail">Miami, Fort Lauderdale, Boca Raton and surrounding areas</div></div><div class="region-pill"><div class="region-pill-name">London</div><div class="region-pill-detail">Greater London - one of the world\'s most Vegan-dense cities</div></div><div class="region-pill"><div class="region-pill-name">New York</div><div class="region-pill-detail">NYC metro - five boroughs and beyond</div></div><div class="region-pill"><div class="region-pill-name">Atlanta</div><div class="region-pill-detail">ATL metro including Decatur, College Park, and surrounding areas</div></div><div class="region-pill"><div class="region-pill-name">Central Florida</div><div class="region-pill-detail">Orlando, Kissimmee, and the I-4 corridor</div></div><div class="region-pill"><div class="region-pill-name">Philadelphia</div><div class="region-pill-detail">Philly and the Delaware Valley region</div></div><div class="region-pill"><div class="region-pill-name">Los Angeles</div><div class="region-pill-detail">LA County - one of the most active Vegan markets in the US</div></div><div class="region-pill"><div class="region-pill-name">North Carolina</div><div class="region-pill-detail">Charlotte, Raleigh-Durham, Asheville and Triangle cities</div></div><div class="region-pill"><div class="region-pill-name">DMV</div><div class="region-pill-detail">DC, Maryland, Virginia - the capital corridor</div></div></div><div class="article-section-head">Why These Nine</div><p class="article-p">These regions were selected based on three criteria: the size of the existing Vegan community, the density of Vegan-friendly businesses already operating, and the presence of people ready to build local infrastructure from day one.</p><div class="article-section-head">What Expansion Looks Like</div><p class="article-p">Nine regions is the beginning, not the ceiling. New regions open when a Community Manager candidate emerges and the local directory reaches a minimum threshold. If your city isn\'t on this list, the path to getting it there is through the Vegan Explorer program.</p>'
     },
     {
-      headline: "Is the vegan movement becoming too exclusive?",
-      categories: ["Activism", "Community"],
-      participants: 0, comments: 0, lastPost: "Drops Jun 21",
-      guide: null, locked: true
+      slug: 'founder-badge', type: 'news', category: 'Community', tagClass: '',
+      headline: "What the Founder Badge Means on Your Profile",
+      excerpt: "It's permanent. It's visible. And it will never be available again after July 13. Here's how it shows up.",
+      date: 'Jun 5, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_192718_7f641c42-c387-41fe-a93d-0d4118beacff.png',
+      imgClass: 'dark',
+      body: '<div class="article-eyebrow">Community</div><h2 class="article-h1">Permanent. Visible. Gone After July 13.</h2><p class="article-lede">The Founder Badge is not a loyalty point. It\'s not a tier that resets annually. It\'s a permanent credential attached to your profile from the moment you joined - and it will never be available again after July 13, 2026.</p><div class="article-section-head">What the Badge Does</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>It\'s on your profile permanently.</strong> Every member who joins after July 13 will see it and know you were here first.</div></li><li><div class="article-dot"></div><div><strong>It routes you to the front of every line.</strong> Community Manager openings, Vegan Explorer featured slots, early event access - Founding Members are always contacted first.</div></li><li><div class="article-dot"></div><div><strong>It marks your contributions differently.</strong> Content, reviews, and listings submitted by Founding Members carry the badge in the directory and community feeds.</div></li><li><div class="article-dot"></div><div><strong>It\'s social proof inside the community.</strong> As the platform grows, the Founder Badge becomes rarer and more meaningful.</div></li></ul><div class="article-section-head">What Closes on July 13</div><p class="article-p">At midnight on July 13, the Founding Member program closes permanently. The $11 price goes away. The badge goes away. The early access window goes away. There is no version of this that comes back around later.</p>'
     },
     {
-      headline: "How do you stay vegan when you're broke?",
-      categories: ["Lifestyle", "Community"],
-      participants: 0, comments: 0, lastPost: "Drops Mon, Jun 22",
-      guide: null, locked: true
+      slug: 'events', type: 'news', category: 'Events', tagClass: 'orange',
+      headline: "First Community Events Drop on Launch Day",
+      excerpt: "Founding Members get first access to RSVP for launch week events in their city before public tickets open.",
+      date: 'Jun 4, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_193036_59710f70-d432-4954-a0b1-7314ffcabe2f.png',
+      imgClass: 'orange',
+      body: '<div class="article-eyebrow orange">Events</div><h2 class="article-h1">First Community Events Drop on Launch Day.</h2><p class="article-lede">Launch week isn\'t just a website going live. It\'s a real-world activation across nine regions. The first VEGANS EXPLORE community events are being planned city by city right now - and Founding Members get first access to RSVP before a single public ticket is released.</p><div class="article-section-head">What Launch Week Looks Like</div><p class="article-p">Every region is planning at least one launch week activation. Restaurant takeovers, outdoor markets, community meetups - the format varies by city. Founding Members receive RSVP access before public tickets open. In most cases that means exclusive access to events that will sell out before they hit general availability.</p><div class="article-section-head">The Event Infrastructure</div><p class="article-p">Events run through the platform\'s affiliate ticket model - Community Partners and Vegan Explorers can drive ticket sales and earn commission, and every ticket sold goes back into building the community that hosted it.</p><div class="article-section-head">After Launch Week</div><p class="article-p">The calendar stays live and grows as Community Managers in each region establish their local event cadence. If you want to host an event through the platform, the Community Manager in your city is your first contact.</p>'
     },
     {
-      headline: "Should vegan businesses hire non-vegans?",
-      categories: ["Business", "Activism"],
-      participants: 0, comments: 0, lastPost: "Drops Tue, Jun 23",
-      guide: null, locked: true
+      slug: 'recipes', type: 'news', category: 'Recipes', tagClass: '',
+      headline: "The Recipe Ecosystem Is Opening to Creators on Launch Day",
+      excerpt: "Community creators can start submitting recipes. Confidence scoring, affiliate tiers, and the Cooking Show pipeline explained.",
+      date: 'Jun 3, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_193919_cbe48df1-25d8-4d2c-92d0-e2d277cfe5b6.png',
+      imgClass: '',
+      body: '<div class="article-eyebrow">Recipe Ecosystem</div><h2 class="article-h1">The Recipe Ecosystem Is Bigger Than a Recipe Page.</h2><p class="article-lede">VEGANS EXPLORE was never going to be a recipe site. But it was always going to take recipes seriously. What\'s been built is an ecosystem - from submission to scoring to affiliate revenue to a Cooking Show pipeline.</p><div class="article-section-head">How Submission Works</div><p class="article-p">Any member can submit a recipe. Once submitted, it enters the Confidence Score pipeline - a composite rating built on community rating (40%), nutritional verification via USDA FoodData Central (40%), and editorial review (20%). A recipe earns its placement.</p><div class="article-section-head">The Affiliate Tier</div><p class="article-p">Recipes that perform generate affiliate value. Creators who build a following around their recipes earn through the platform\'s affiliate structure - initially tied to VEGANS EXPLORE membership signups that flow through their content.</p><div class="article-section-head">The Cooking Show Pipeline</div><p class="article-p">The Cooking Show is a Phase 2 program that unlocks at 1,000 members or 10 verified creators. Creators who have built an audience and a body of high-confidence recipes become candidates. Community-first, not celebrity-first.</p>'
+    },
+    {
+      slug: 'points', type: 'news', category: 'Points', tagClass: '',
+      headline: "Earn Points for Every Action. Redeem Against Your Membership.",
+      excerpt: "The cross-community points system goes live July 13. Service-earned only. Here's what you can do with them.",
+      date: 'Jun 2, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_212740_7395ee05-3c4b-46fe-a999-b4e4afca8d8a.png',
+      imgClass: '',
+      body: '<div class="article-eyebrow">Points System</div><h2 class="article-h1">Earn Points for Every Action. Redeem Against Your Membership.</h2><p class="article-lede">The VEGANS EXPLORE points system is service-earned only. You cannot buy them, trade for them, or receive them for signing up and doing nothing. You earn them by contributing to the community.</p><div class="article-section-head">How You Earn</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>Directory contributions.</strong> Submit, verify, or update a business listing and earn points for each verified addition.</div></li><li><div class="article-dot"></div><div><strong>Recipe submissions.</strong> Submit a recipe that passes the Confidence Score threshold and earn points based on its rating.</div></li><li><div class="article-dot"></div><div><strong>Community engagement.</strong> Event attendance, guide track milestones, and referred members all generate points.</div></li><li><div class="article-dot"></div><div><strong>Volunteer hours.</strong> Community Managers and Vegan Explorers earn points for documented platform-building activity.</div></li></ul><div class="article-section-head">How You Redeem</div><p class="article-p">Points redeem directly against your membership cost - up to 50% of the total through donated points to local businesses and community organizations. There\'s also a store of zero-cost digital goods that only points can unlock.</p><div class="article-section-head">The Leaderboard</div><p class="article-p">Every region has a live leaderboard. The top contributors in each city are featured on that city\'s directory page and community hub. Your points total is public. Your ranking is public. The community sees who\'s showing up.</p>'
+    },
+    {
+      slug: 'origin', type: 'news', category: 'Story', tagClass: '',
+      headline: "63 Cities. 2,800+ Listings. Before the Platform Even Existed.",
+      excerpt: "How the team behind VEGANS EXPLORE spent years mapping the Vegan world before building the infrastructure it deserved.",
+      date: 'Jun 1, 2026',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_213329_20a43b05-2d41-49c6-bb23-c44955c61b25.png',
+      imgClass: 'dark',
+      body: '<div class="article-eyebrow">The Story</div><h2 class="article-h1">63 Cities. 2,800+ Listings. Before the Platform Even Existed.</h2><p class="article-lede">Most platforms launch and then go find their content. VEGANS EXPLORE was built the other way around. The work started years before a single line of platform code was written - people on the ground in cities around the world, cataloging the Vegan world one listing at a time.</p><div class="article-section-head">How the Work Started</div><p class="article-p">It began as a personal project. The Vegan community had restaurants, markets, events, and spaces worth knowing about - and no single place to find them that wasn\'t outdated, incomplete, or buried inside a platform that treated Vegan content as a niche. The response was to start building the list. City by city. Category by category.</p><div class="article-section-head">63 Cities Later</div><p class="article-p">By the time the platform was ready to launch, 63 cities had been cataloged and over 2,800 businesses verified. The work happened across South Florida, New York, London, Atlanta, LA, and everywhere in between. Not scraped - researched, visited, verified, and documented by people who actually knew the communities they were mapping.</p><div class="article-section-head">Why It Matters That You\'re Here</div><p class="article-p">The Vegan Explorer program - which opens to Founding Members on July 13 - is how the catalog grows beyond what any single team could build. You take what was started and extend it into every block of every city that isn\'t on the list yet. The 63 cities are the proof of concept. What happens next is the real work.</p>'
     }
   ];
 
-  function filterBoard() {
-    var query = (document.getElementById('discussSearch').value || '').toLowerCase().trim();
+  function typeLabel(t) {
+    if (t === 'news') return 'News';
+    if (t === 'opinion') return 'Opinion';
+    if (t === 'photo') return 'Photo';
+    if (t === 'video') return 'Video';
+    return t;
+  }
+
+  function playIconHtml() {
+    return '<div class="pulse-card-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>';
+  }
+
+  function filterPulse() {
+    var query = (document.getElementById('pulseSearch').value || '').toLowerCase().trim();
+    var type = document.getElementById('typeSelect').value;
     var cat = document.getElementById('categorySelect').value;
-    var sort = document.getElementById('sortSelect').value;
-    var list = document.getElementById('discussList');
-    var empty = document.getElementById('discussEmpty');
-    var count = document.getElementById('discussCount');
+    var list = document.getElementById('pulseList');
+    var empty = document.getElementById('pulseEmpty');
+    var count = document.getElementById('pulseCount');
 
-    var filtered = topics.filter(function(t) {
-      var matchCat = cat === 'all' || t.categories.indexOf(cat) !== -1;
-      var matchQ = !query || t.headline.toLowerCase().indexOf(query) !== -1
-        || t.categories.some(function(c) { return c.toLowerCase().indexOf(query) !== -1; });
-      return matchCat && matchQ;
+    var filtered = posts.filter(function(p) {
+      var matchType = type === 'all' || p.type === type;
+      var matchCat = cat === 'all' || p.category === cat;
+      var matchQ = !query || p.headline.toLowerCase().indexOf(query) !== -1
+        || p.category.toLowerCase().indexOf(query) !== -1
+        || p.excerpt.toLowerCase().indexOf(query) !== -1;
+      return matchType && matchCat && matchQ;
     });
-
-    if (sort === 'replies') {
-      filtered = filtered.slice().sort(function(a, b) {
-        if (a.locked && !b.locked) return 1;
-        if (!a.locked && b.locked) return -1;
-        return b.comments - a.comments;
-      });
-    }
 
     list.innerHTML = '';
     if (filtered.length === 0) {
       empty.style.display = 'block';
       list.style.display = 'none';
-      count.textContent = '0 topics';
+      count.textContent = '0 posts';
       return;
     }
     empty.style.display = 'none';
-    list.style.display = 'flex';
-    count.textContent = filtered.length + ' topic' + (filtered.length !== 1 ? 's' : '');
+    list.style.display = 'grid';
+    count.textContent = filtered.length + ' post' + (filtered.length !== 1 ? 's' : '');
 
-    filtered.forEach(function(t) {
-      var card = document.createElement(t.locked ? 'div' : 'a');
-      card.className = 'topic-card' + (t.locked ? ' tc-locked' : '');
+    filtered.forEach(function(p) {
+      var card = document.createElement('a');
+      card.className = 'pulse-card';
+      card.setAttribute('href', '#');
       card.setAttribute('role', 'listitem');
-      if (!t.locked) {
-        card.setAttribute('href', '/guides/ve-guide-chat-v1');
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('aria-label', t.headline);
-      } else {
-        card.setAttribute('tabindex', '-1');
-        card.setAttribute('aria-label', t.headline + ' - upcoming');
-      }
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', p.headline);
+      card.onclick = function(e) { e.preventDefault(); openPost(p.slug); };
 
-      var avHtml = t.locked
-        ? '<div class="tc-lock-av" aria-hidden="true">&#128274;</div>'
-        : '<div class="tc-guide-av" style="background:' + t.guide.color + ';" aria-hidden="true"><img src="' + t.guide.img + '" alt="' + t.guide.name + '"></div>';
+      var imgHtml = '<div class="pulse-card-img' + (p.imgClass ? ' ' + p.imgClass : '') + '">'
+        + '<img src="' + p.img + '" alt="">'
+        + (p.type === 'video' ? playIconHtml() : '')
+        + '</div>';
 
-      var catsHtml = t.categories.map(function(c) {
-        return '<span class="tc-cat">' + c + '</span>';
-      }).join('');
-
-      var statsHtml = t.locked
-        ? '<div class="tc-upcoming">' + t.lastPost + '</div>'
-        : '<div class="tc-stat"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="5" cy="4" r="2.5"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="10" cy="4" r="2"/><path d="M10 8c1.7 0 3 1.3 3 3"/></svg>' + t.participants + ' joined</div>'
-          + '<div class="tc-stat"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2h10v8H7l-3 2V10H2z"/></svg>' + t.comments + ' replies</div>'
-          + '<div class="tc-time">' + t.lastPost + '</div>';
-
-      card.innerHTML = avHtml
-        + '<div class="tc-body">'
-        + '<div class="tc-cats">' + catsHtml + '</div>'
-        + '<div class="tc-headline">' + t.headline + '</div>'
-        + '<div class="tc-stats">' + statsHtml + '</div>'
+      card.innerHTML = imgHtml
+        + '<div class="pulse-card-body">'
+        + '<div class="pulse-card-top"><span class="pulse-card-tag' + (p.tagClass ? ' ' + p.tagClass : '') + '">' + p.category + '</span><span class="pulse-card-type">' + typeLabel(p.type) + '</span></div>'
+        + '<div class="pulse-card-title">' + p.headline + '</div>'
+        + '<p class="pulse-card-excerpt">' + p.excerpt + '</p>'
+        + '<div class="pulse-card-meta">' + p.date + '</div>'
         + '</div>';
 
       list.appendChild(card);
     });
   }
 
-  filterBoard();
+  function openPost(slug) {
+    var p = posts.filter(function(x) { return x.slug === slug; })[0];
+    if (!p) return;
+    document.getElementById('pulse-list-view').style.display = 'none';
+    document.getElementById('pulse-detail-view').style.display = 'block';
+    document.getElementById('pulse-breadcrumb-name').textContent = p.category;
+    document.getElementById('pulse-article-mount').innerHTML = '<div class="article">' + p.body + '</div>';
+    window.scrollTo({ top: document.querySelector('.pulse-sticky-bar').offsetTop - 60, behavior: 'smooth' });
+  }
+
+  function backToPulse() {
+    document.getElementById('pulse-detail-view').style.display = 'none';
+    document.getElementById('pulse-list-view').style.display = 'block';
+  }
+
+  filterPulse();
 </script>
 
 <script src="/public/footer.js"></script>
