@@ -414,7 +414,7 @@
           <p class="ve-stat-card-sub">Active</p>
         </div>
         <div class="ve-stat-card" role="listitem">
-          <p class="ve-stat-card-label">LESARs Balance</p>
+          <p class="ve-stat-card-label">Points Balance</p>
           <p class="ve-stat-card-value" id="ve-stat-lesars">--</p>
           <p class="ve-stat-card-sub">Your balance</p>
         </div>
@@ -431,11 +431,11 @@
       </div>
 
       <section class="ve-section" aria-labelledby="ve-lesars-title">
-        <h2 class="ve-section-title" id="ve-lesars-title">LESARs Balance</h2>
+        <h2 class="ve-section-title" id="ve-lesars-title">Points Balance</h2>
         <div class="ve-lesars-rows">
           <div class="ve-lesars-row">
             <span class="ve-lesars-row-label">Total Balance</span>
-            <span class="ve-lesars-row-value" id="ve-bal-total">-- <span class="ve-lesars-unit">LESARs</span></span>
+            <span class="ve-lesars-row-value" id="ve-bal-total">-- <span class="ve-lesars-unit">Points</span></span>
           </div>
           <div class="ve-lesars-row">
             <span class="ve-lesars-row-label">Earned This Month</span>
@@ -443,13 +443,13 @@
           </div>
           <div class="ve-lesars-row">
             <span class="ve-lesars-row-label">Lifetime Earned</span>
-            <span class="ve-lesars-row-value" id="ve-bal-lifetime">-- <span class="ve-lesars-unit">LESARs</span></span>
+            <span class="ve-lesars-row-value" id="ve-bal-lifetime">-- <span class="ve-lesars-unit">Points</span></span>
           </div>
         </div>
         <p class="ve-lesars-desc">
-          Earn LESARs by engaging with the Vegans Explore community. Spend them to unlock premium Guides and exclusive rewards.
+          Earn Points by engaging with the Vegans Explore community. Spend them to unlock premium Guides and exclusive rewards.
         </p>
-        <div class="ve-earn-ways" aria-label="Ways to earn LESARs">
+        <div class="ve-earn-ways" aria-label="Ways to earn Points">
           <span class="ve-earn-chip">+5 Vote a listing</span>
           <span class="ve-earn-chip">+3 Save a listing</span>
           <span class="ve-earn-chip">+10 Comment on Pulse</span>
@@ -465,9 +465,9 @@
           <li>Vote and save listings in the Directory</li>
           <li>Comment on Pulse discussions</li>
           <li>Join Communities and connect with others</li>
-          <li>Unlock premium Guides with LESARs</li>
-          <li>Earn LESARs with every action</li>
-          <li>+111 LESARs welcome grant on signup</li>
+          <li>Unlock premium Guides with Points</li>
+          <li>Earn Points with every action</li>
+          <li>+111 Points welcome grant on signup</li>
         </ul>
         <p class="ve-passport-meta" id="ve-member-since-line">Member since --</p>
       </section>
@@ -667,7 +667,7 @@
       setText('ve-passport-since', 'Passport holder since ' + monthYear(m.created_at));
       setText('ve-member-since-line', 'Member since ' + monthYear(m.created_at));
       setText('ve-stat-lesars', fmt(m.lesars_balance));
-      setHTML('ve-bal-total', fmt(m.lesars_balance) + ' <span class="ve-lesars-unit">LESARs</span>');
+      setHTML('ve-bal-total', fmt(m.lesars_balance) + ' <span class="ve-lesars-unit">Points</span>');
     }
 
     renderMember(member);
@@ -703,7 +703,7 @@
       .then(function (rows) {
         if (!Array.isArray(rows)) return;
         var total = rows.reduce(function (a, r) { return a + (r.amount || 0); }, 0);
-        setHTML('ve-bal-lifetime', fmt(total) + ' <span class="ve-lesars-unit">LESARs</span>');
+        setHTML('ve-bal-lifetime', fmt(total) + ' <span class="ve-lesars-unit">Points</span>');
       }).catch(function () {});
 
     var ms = new Date(); ms.setDate(1); ms.setHours(0,0,0,0);
@@ -723,7 +723,7 @@
           var slug = row.ve_guides && row.ve_guides.slug ? '/guides/' + row.ve_guides.slug : '/guides';
           html += '<div class="ve-activity-row"><div class="ve-activity-dot"></div>' +
             '<span class="ve-activity-text"><a href="' + slug + '" style="color:#15803D;text-decoration:none;">' + escHtml(title) + '</a></span>' +
-            '<span class="ve-activity-time">' + fmt(row.lesars_spent) + ' L</span></div>';
+            '<span class="ve-activity-time">' + fmt(row.lesars_spent) + ' Points</span></div>';
         });
         html += '</div>';
         setHTML('ve-guides-content', html);
