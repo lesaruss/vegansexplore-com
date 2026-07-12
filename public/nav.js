@@ -41,7 +41,13 @@
     '.ve-desktop-links a{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#1a1a1a;text-decoration:none;padding:7px 11px;border-radius:4px;transition:background 0.1s,color 0.1s;white-space:nowrap;}',
     '.ve-desktop-links a:hover{background:#f5f5f5;color:#22C55E;}',
     '.ve-desktop-links a[aria-current="page"]{color:#22C55E;}',
-    '@media(max-width:900px){.ve-desktop-links{display:none;}}'
+    '@media(max-width:900px){.ve-desktop-links{display:none;}}',
+    '.ve-va-panel{padding:14px 20px 18px;}',
+    '.ve-va-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(0,0,0,0.4);margin-bottom:10px;}',
+    '.ve-va-opt{display:block;width:100%;text-align:left;padding:10px 12px;margin-bottom:4px;border:1px solid rgba(0,0,0,0.1);border-radius:6px;background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;transition:background 0.1s,border-color 0.1s;}',
+    '.ve-va-opt:last-child{margin-bottom:0;}',
+    '.ve-va-opt:hover{background:#f5f5f5;}',
+    '.ve-va-opt.ve-va-active{border-color:#22C55E;background:#F0FDF4;color:#15803D;}'
   ].join('');
 
   var styleEl = document.createElement('style');
@@ -49,9 +55,39 @@
   document.head.appendChild(styleEl);
 
   /* ---- Auth state ---- */
-  var member = null;
-  try { member = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch(e) {}
-  var loggedIn = !!(member && localStorage.getItem('ve_token'));
+  var realMember = null;
+  try { realMember = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch(e) {}
+  var realLoggedIn = !!(realMember && localStorage.getItem('ve_token'));
+
+  /* ---- Super Admin "View As" simulator (2026-07-12) ----
+     Mirrors the override formula in public/ve-auth.js (VEAuth.getViewAs / getMember /
+     isLoggedIn). Duplicated here rather than calling VEAuth because nav.js renders the
+     chrome synchronously on every page load, while ve-auth.js is only lazy-loaded on
+     pages that need the sign-in modal - this matches nav.js's existing pattern of
+     reading localStorage directly instead of depending on VEAuth being preloaded.
+     Only ever honored when the REAL underlying account is a super admin. */
+  var isRealSuperAdmin = !!(realMember && realMember.is_superadmin);
+  var viewAs = null;
+  if (isRealSuperAdmin) {
+    try {
+      var _va = JSON.parse(localStorage.getItem('ve_view_as') || 'null');
+      if (_va && (_va.mode === 'public' || _va.mode === 'member')) viewAs = _va;
+    } catch (e) {}
+  }
+
+  var member, loggedIn;
+  if (viewAs) {
+    if (viewAs.mode === 'public') {
+      member = null;
+      loggedIn = false;
+    } else {
+      member = Object.assign({}, realMember, { lesars_balance: viewAs.points || 0 });
+      loggedIn = true;
+    }
+  } else {
+    member = realMember;
+    loggedIn = realLoggedIn;
+  }
 
   /* ---- Current-page detection ---- */
   var p = window.location.pathname.replace(/\/$/, '') || '/';
@@ -103,6 +139,24 @@
       '</div>';
   }
 
+  /* ---- Super Admin "View As" panel (drawer-only, always available regardless of
+     simulated state - matches the GeekFon Society "View as membership" precedent) ---- */
+  var vaId = 'real';
+  if (viewAs) { vaId = viewAs.mode === 'public' ? 'public' : ('member-' + (viewAs.points || 0)); }
+  function vaCls(id) { return vaId === id ? ' ve-va-active' : ''; }
+  var adminPanel = '';
+  if (isRealSuperAdmin) {
+    adminPanel =
+      '<hr class="ve-mob-divider">' +
+      '<div class="ve-mob-section ve-va-panel">' +
+        '<div class="ve-va-label">Super Admin - View As</div>' +
+        '<button class="ve-va-opt' + vaCls('real') + '" data-va="real">My Account (Real)</button>' +
+        '<button class="ve-va-opt' + vaCls('public') + '" data-va="public">Public - Logged Out</button>' +
+        '<button class="ve-va-opt' + vaCls('member-0') + '" data-va="member-0">Free Member - 0 Points</button>' +
+        '<button class="ve-va-opt' + vaCls('member-1500') + '" data-va="member-1500">Free Member - 1,500 Points</button>' +
+      '</div>';
+  }
+
   /* ---- Nav HTML ---- */
   var html =
     '<nav class="ve-nav" role="navigation" aria-label="Main navigation">' +
@@ -132,6 +186,7 @@
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
       '</div>' +
       mobileBottom +
+      adminPanel +
     '</div>';
 
   document.currentScript.insertAdjacentHTML('beforebegin', html);
@@ -163,6 +218,25 @@
       localStorage.removeItem('ve_member');
       window.location.href = '/';
     });
+  }
+
+  /* ---- Super Admin "View As" option clicks (drawer) ---- */
+  if (isRealSuperAdmin) {
+    var vaOpts = document.querySelectorAll('.ve-va-opt');
+    for (var _i = 0; _i < vaOpts.length; _i++) {
+      vaOpts[_i].addEventListener('click', function() {
+        var v = this.getAttribute('data-va');
+        if (v === 'real') {
+          try { localStorage.removeItem('ve_view_as'); } catch(e) {}
+        } else if (v === 'public') {
+          try { localStorage.setItem('ve_view_as', JSON.stringify({ mode: 'public' })); } catch(e) {}
+        } else {
+          var pts = v === 'member-1500' ? 1500 : 0;
+          try { localStorage.setItem('ve_view_as', JSON.stringify({ mode: 'member', points: pts })); } catch(e) {}
+        }
+        window.location.reload();
+      });
+    }
   }
 
   /* ---- Hamburger + drawer toggle ---- */
