@@ -806,15 +806,15 @@ function renderSidebar(l){
         '</div>'+
         '<div style="flex:1;padding:10px 8px;text-align:center">'+
           '<div class="cstat-num" id="community-lesars" style="font-size:20px">0</div>'+
-          '<div class="cstat-label">LESARs</div>'+
+          '<div class="cstat-label">Points</div>'+
         '</div>'+
       '</div>'+
       '<div style="display:flex;gap:6px;margin-bottom:8px">'+
-        '<input class="donate-input" id="donate-amount" type="number" min="1" placeholder="Donate LESARs" style="font-size:11px;padding:8px 10px"/>'+
+        '<input class="donate-input" id="donate-amount" type="number" min="1" placeholder="Donate Points" style="font-size:11px;padding:8px 10px"/>'+
         '<button class="donate-btn" id="donate-btn" style="font-size:9px;padding:8px 10px;white-space:nowrap">Send</button>'+
       '</div>'+
-      '<div class="donate-confirm" id="donate-confirm">LESARs sent!</div>'+
-      '<p class="member-note">Every vote earns +1 LESAR. <a href="#">Join $11/mo</a> to donate.</p>'+
+      '<div class="donate-confirm" id="donate-confirm">Points sent!</div>'+
+      '<p class="member-note">Every vote earns +1 Point. <a href="#">Join $11/mo</a> to donate.</p>'+
     '</div>';
 
   // Unlock card — only for unclaimed listings; claimed listings use real tabs
@@ -829,7 +829,7 @@ function renderSidebar(l){
           '<span class="unlock-chip">'+_lkSvg+' Video</span>'+
           '<span class="unlock-chip">'+_lkSvg+' Pulse</span>'+
         '</div>'+
-        '<a href="/intake" class="tab-locked-cta" style="display:inline-block">Learn About LESARs</a>'+
+        '<a href="/intake" class="tab-locked-cta" style="display:inline-block">Learn About Points</a>'+
       '</div>'
     : '';
 
@@ -874,17 +874,17 @@ function renderSidebar(l){
 function lockedTab(tabName){
   var lockSvg = '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
   var msgs = {
-    menu: {title:'Menu Coming Soon', sub:'When this business unlocks their menu slot with LESARs, we\'ll post their full menu right here.'},
+    menu: {title:'Menu Coming Soon', sub:'When this business unlocks their menu slot with Points, we\'ll post their full menu right here.'},
     photos: {title:'Photos Coming Soon', sub:'Professional photos taken by the VEGANS EXPLORE team will appear here once this listing is activated.'},
-    video: {title:'Video Coming Soon', sub:'Unlock this slot with LESARs and we\'ll send a crew to film a professional video for your listing.'},
+    video: {title:'Video Coming Soon', sub:'Unlock this slot with Points and we\'ll send a crew to film a professional video for your listing.'},
     pulse: {title:'Pulse Not Yet Active', sub:'Community Partners can post updates, news, collabs, and announcements directly to their listing. Think of it as their channel inside VEGANS EXPLORE.'}
   };
-  var m = msgs[tabName] || {title:'Content Coming Soon', sub:'This slot can be unlocked with LESARs.'};
+  var m = msgs[tabName] || {title:'Content Coming Soon', sub:'This slot can be unlocked with Points.'};
   return '<div class="tab-locked">'+
     '<div class="tab-locked-icon">'+lockSvg+'</div>'+
     '<div class="tab-locked-title">'+m.title+'</div>'+
     '<div class="tab-locked-sub">'+m.sub+'</div>'+
-    '<a href="/directory" class="tab-locked-cta">Learn About LESARs</a>'+
+    '<a href="/directory" class="tab-locked-cta">Learn About Points</a>'+
   '</div>';
 }
 
@@ -1138,7 +1138,7 @@ function renderListing(l){
   // Wire overview carousel on load; Photos tab carousel on first click
   wireCarousel('ov');
 
-  // Vote button - increments vote display + community votes stat + gives business +1 LESARs
+  // Vote button - increments vote display + community votes stat + gives business +1 Point
   document.getElementById('vote-btn').addEventListener('click', function(){
     if(this.dataset.voted) return;
     this.dataset.voted = '1';
@@ -1148,12 +1148,12 @@ function renderListing(l){
     if(disp){ disp.textContent = ((parseInt(disp.textContent)||0)+1) + ' votes'; }
     var cv = document.getElementById('community-votes');
     if(cv){ cv.textContent = (parseInt(cv.textContent)||0) + 1; }
-    // +1 LESARs to business on every vote
+    // +1 Point to business on every vote
     var cl = document.getElementById('community-lesars');
     if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
   });
 
-  // Donate LESARs button
+  // Donate Points button
   var donateBtn = document.getElementById('donate-btn');
   if(donateBtn){
     donateBtn.addEventListener('click', function(){
@@ -1171,7 +1171,7 @@ function renderListing(l){
       donateBtn.style.background = '#2d7d31';
       setTimeout(function(){
         donateBtn.disabled = false;
-        donateBtn.textContent = 'Donate LESARs';
+        donateBtn.textContent = 'Donate Points';
         donateBtn.style.background = '';
         if(confirm) confirm.style.display = 'none';
       }, 3000);
