@@ -43,6 +43,27 @@
 
   function initGate() {
     if (!introBtn) return;
+
+    // Super Admin "View As" preview (2026-07-12): when Sean is simulating a view via
+    // the nav.js drawer panel, render the gate purely from the simulated Points balance
+    // instead of calling the real ve-guide-unlock backend. This keeps a simulated view
+    // from ever reading or spending Sean's REAL Points balance.
+    var viewAs = (window.VEAuth && VEAuth.getViewAs && VEAuth.getViewAs()) || null;
+    if (viewAs) {
+      var COST = 1000; // matches the Points price shown on the Guide Catalog card
+      if (viewAs.mode === 'public') {
+        setBtn('Join Free to Get Started', function(){ alert('Preview only - this is what a logged-out visitor sees. No real action was taken.'); }, false);
+        return;
+      }
+      var bal = viewAs.points || 0;
+      if (bal >= COST) {
+        setBtn('Unlock for ' + COST.toLocaleString() + ' Points', function(){ alert('Preview only - viewing as a simulated member. This will not spend real Points.'); }, false);
+      } else {
+        setBtn('Need ' + (COST - bal).toLocaleString() + ' More Points', function(){ alert('Preview only - viewing as a simulated member with ' + bal.toLocaleString() + ' Points.'); }, true);
+      }
+      return;
+    }
+
     var loggedIn = !!(window.VEAuth && VEAuth.isLoggedIn());
     if (!loggedIn) {
       setBtn('Join Free to Get Started', goJoin, false);
