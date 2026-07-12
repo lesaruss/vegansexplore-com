@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vegan Restaurant Survival Guide - Vegans Explore Guides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f5f7f5;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  .ve-topbar {
+    background: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ve-wordmark {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: #1a1a1a;
+    text-decoration: none;
+  }
+
+  .ve-wordmark em { color: #15803D; font-style: normal; }
+
+  .ve-exit {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #767676;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 20px;
+    padding: 8px 16px;
+  }
+  .ve-exit:hover { background: #f5f5f5; }
+
+  .guide-shell {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 20px 100px;
+  }
+
+  .guide-progress-wrap {
+    margin-bottom: 28px;
+  }
+
+  .guide-progress-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #767676;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .guide-progress-track {
+    height: 6px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .guide-progress-fill {
+    height: 100%;
+    background: #15803D;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .guide-dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .guide-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    background: #eceeec;
+    color: #a3a3a3;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .guide-dot.done { background: #15803D; color: #fff; border-color: #15803D; }
+  .guide-dot.current { background: #fff; color: #15803D; border-color: #15803D; border-width: 2px; }
+  .guide-dot.locked { background: #eceeec; color: #c3c5c3; }
+
+  .card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    padding: 32px 28px;
+  }
+
+  /* Intro screen */
+  .intro-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #15803D;
+    margin-bottom: 12px;
+  }
+
+  .intro-title {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+
+  .intro-byline {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 22px;
+  }
+
+  .intro-body {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #333;
+    margin-bottom: 24px;
+  }
+
+  .intro-meta-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+
+  .meta-chip {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #15803D;
+    background: rgba(21,128,61,0.08);
+    border-radius: 20px;
+    padding: 7px 14px;
+  }
+
+  .meta-chip.price {
+    color: #1a1a1a;
+    background: #f0f0f0;
+  }
+
+  .ve-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 15px 26px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  .ve-btn-primary { background: #15803D; color: #fff; }
+  .ve-btn-primary:hover { background: #16A34A; }
+
+  .ve-btn-outline {
+    background: #fff;
+    color: #1a1a1a;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+  .ve-btn-outline:hover { background: #f5f5f5; }
+
+  /* Step screen */
+  .step-tag {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #767676;
+    margin-bottom: 10px;
+  }
+
+  .step-flag-note {
+    display: none;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #15803D;
+    background: rgba(21,128,61,0.1);
+    border-radius: 20px;
+    padding: 5px 12px;
+    margin-bottom: 14px;
+  }
+
+  .step-number-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #15803D;
+    color: #fff;
+    font-weight: 900;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+
+  .step-title {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  .step-problem {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 22px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+
+  .step-subhead {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+  }
+
+  .step-list {
+    list-style: none;
+    margin-bottom: 22px;
+  }
+
+  .step-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .step-list li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+    border-radius: 50%;
+    background: rgba(21,128,61,0.12);
+    border: 1px solid #15803D;
+  }
+
+  .action-step {
+    background: #f5f9f6;
+    border: 1px solid rgba(21,128,61,0.25);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 26px;
+  }
+
+  .action-step-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #15803D;
+    margin-bottom: 6px;
+  }
+
+  .action-step-text {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  /* Completion screen */
+  .complete-badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #15803D;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 900;
+    margin: 0 auto 18px;
+  }
+
+  .complete-title {
+    font-size: 24px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .complete-sub {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .checklist-recap {
+    list-style: none;
+    counter-reset: recap;
+    margin-bottom: 28px;
+  }
+
+  .checklist-recap li {
+    counter-increment: recap;
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .checklist-recap li::before {
+    content: counter(recap);
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #15803D;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .next-step-card {
+    background: #f5f9f6;
+    border: 1px solid rgba(21,128,61,0.25);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .next-step-eyebrow {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #15803D;
+    margin-bottom: 8px;
+  }
+
+  .next-step-body {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+  }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 22px; }
+  .btn-row .ve-btn { width: auto; flex: 1; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  @media (max-width: 480px) {
+    .card { padding: 26px 20px; }
+    .intro-title { font-size: 24px; }
+    .field-row { flex-direction: column; }
+  }
+  /* narration audio player */
+  .audio{display:flex;align-items:center;gap:14px;max-width:460px;margin:22px auto 24px;background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:999px;padding:9px 16px 9px 9px;text-align:left;}
+  .audio-btn{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:none;background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .audio-btn:hover{background:#000;}
+  .audio-btn .ic-pause{display:none;}
+  .audio.playing .audio-btn .ic-play{display:none;}
+  .audio.playing .audio-btn .ic-pause{display:block;}
+  .wave{flex:1;position:relative;display:flex;align-items:center;gap:2px;height:34px;cursor:pointer;touch-action:none;}
+  .wave span.bar{flex:1;min-width:2px;background:#d8d8d8;border-radius:2px;transition:background .12s;}
+  .wave span.bar.on{background:#15803D;}
+  .wave .handle{position:absolute;top:-3px;bottom:-3px;width:3px;border-radius:2px;background:#1a1a1a;left:0;transform:translateX(-1px);pointer-events:none;}
+  .audio-meta{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+  .audio-label{font-size:12px;font-weight:800;color:#1a1a1a;}
+  .audio-tag{font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:#15803D;background:rgba(21,128,61,0.1);padding:2px 7px;border-radius:999px;}
+  .guide-dot.clickable{cursor:pointer;}
+  .guide-dot.clickable:hover{filter:brightness(0.92);}
+  .guide-dot.locked{cursor:default;}
+
+  .quiz-q { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid rgba(0,0,0,0.07); }
+  .quiz-q:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  .quiz-q-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #767676; margin-bottom: 8px; }
+  .quiz-q-text { font-size: 14.5px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-option { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #333; padding: 10px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; cursor: pointer; }
+  .quiz-option:hover { background: #f5f9f6; }
+  .quiz-option.selected { border-color: #15803D; background: rgba(21,128,61,0.06); }
+  .quiz-option input { accent-color: #15803D; }
+  .quiz-result { text-align: center; padding: 10px 0 20px; }
+  .quiz-score { font-size: 32px; font-weight: 900; color: #1a1a1a; margin-bottom: 6px; }
+  .quiz-score.pass { color: #15803D; }
+  .quiz-score.fail { color: #b91c1c; }
+  .quiz-result-msg { font-size: 13px; color: #555; margin-bottom: 4px; }
+  .badge { width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(180deg,#1FA34F,#15803D); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 8px 20px rgba(21,128,61,0.28); }
+  .badge-title { font-size: 17px; font-weight: 900; text-align: center; margin-bottom: 4px; }
+  .badge-sub { font-size: 12px; color: #555; text-align: center; margin-bottom: 22px; }
+
+  /* intake form */
+  .field-group { margin-bottom: 20px; }
+  .field-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .field-input, .field-textarea {
+    width: 100%;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1a1a1a;
+    background: #fff;
+  }
+  .field-input:focus, .field-textarea:focus { outline: 2px solid #15803D; outline-offset: 1px; }
+  .field-textarea { min-height: 80px; resize: vertical; }
+  .field-row { display: flex; gap: 14px; }
+  .field-row .field-group { flex: 1; }
+  .check-grid { display: flex; flex-direction: column; gap: 8px; }
+  .check-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #333;
+    padding: 11px 14px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .check-option:hover { background: #f5f9f6; }
+  .check-option input { accent-color: #15803D; margin-top: 2px; flex-shrink: 0; }
+  .check-option.checked { border-color: #15803D; background: rgba(21,128,61,0.06); }
+
+  /* floating step control bar */
+  .guide-control-bar { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 999; display: none; align-items: center; gap: 8px; background: rgba(0,0,0,0.82); backdrop-filter: blur(10px); border-radius: 40px; padding: 8px 12px; max-width: calc(100vw - 24px); }
+  .guide-control-bar.visible { display: flex; }
+  .guide-control-bar button { background: none; border: none; color: #fff; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.15s; flex-shrink: 0; }
+  .guide-control-bar button:hover { background: rgba(255,255,255,0.15); }
+  .guide-control-bar button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .guide-control-count { color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 600; min-width: 46px; text-align: center; letter-spacing: 0.03em; flex-shrink: 0; }
+  .guide-control-exit { background: rgba(255,255,255,0.1) !important; border-radius: 20px !important; padding: 0 14px !important; width: auto !important; font-size: 11px !important; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none !important; }
+  .guide-control-exit:hover { background: rgba(255,255,255,0.22) !important; }
+  .guide-control-audio { background: #F69820; }
+  .guide-control-audio:hover { background: #d4800f; }
+  .guide-control-audio .gc-ic-pause { display: none; }
+  .guide-control-audio.playing .gc-ic-play { display: none; }
+  .guide-control-audio.playing .gc-ic-pause { display: block; }
+  .guide-control-dots { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+  .guide-control-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: background 0.2s, transform 0.2s; }
+  .guide-control-dot.clickable { cursor: pointer; }
+  .guide-control-dot.current { background: #4ADE80; transform: scale(1.3); }
+  .guide-control-dot.done { background: rgba(74,222,128,0.55); }
+  @media (max-width: 480px) {
+    .guide-control-bar { gap: 5px; padding: 7px 9px; }
+    .guide-control-count { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<script src="/public/ve-auth.js"></script>
+<script src="/public/nav.js"></script>
+
+<div class="guide-shell">
+
+  <div class="guide-progress-wrap" id="progressWrap" style="display:none;">
+    <div class="guide-progress-label">
+      <span id="progressLabel">Guide Overview</span>
+      <span id="progressCount"></span>
+    </div>
+    <div class="guide-progress-track"><div class="guide-progress-fill" id="progressFill"></div></div>
+    <div class="guide-dots" id="guideDots"></div>
+  </div>
+
+  <div class="guide-control-bar" id="guideControlBar">
+    <button id="guidePrevBtn" aria-label="Previous step" onclick="guidePrevStep()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div class="guide-control-dots" id="panelDots"></div>
+    <span class="guide-control-count" id="panelCount">1 / 10</span>
+    <button class="guide-control-audio" id="guideAudioBtn" aria-label="Play narration" onclick="toggleStepAudioFromBar()">
+      <svg class="gc-ic-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="gc-ic-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    </button>
+    <button id="guideNextBtn" aria-label="Next step" onclick="completeStep()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <a class="guide-control-exit" href="/guides">Exit</a>
+  </div>
+
+  <!-- INTRO SCREEN -->
+  <div class="screen active" id="screen-intro">
+    <div class="card">
+      <div class="intro-label">Vegans Explore Guide - Entrepreneur Track</div>
+      <div class="intro-title">Vegan Restaurant Survival Guide</div>
+      <div class="intro-byline">Written by Sean A. Russell, VegansExplore.com</div>
+      <div class="intro-body">
+        Running a Vegan restaurant is about more than serving food. It is about building experiences, creating community, and staying financially sustainable. Yet many close within a few years, often because of avoidable mistakes. Answer a few quick questions and we will build this guide around your specific pain points first.
+      </div>
+      <div class="intro-meta-row">
+        <span class="meta-chip">10 Steps</span>
+        <span class="meta-chip">Personalized For You</span>
+        <span class="meta-chip price" id="gcPriceChip">1,000 Points</span>
+      </div>
+      <div class="audio" id="audioIntro"></div>
+      <button class="ve-btn ve-btn-primary" id="introActionBtn" onclick="goToIntake()">Start Guide</button>
+    </div>
+  </div>
+
+  <!-- INTAKE SCREEN -->
+  <div class="screen" id="screen-intake">
+    <div class="card">
+      <div class="intro-label">Let's Personalize This For You</div>
+      <div class="intro-title" style="font-size:24px;">Quick Questions Before We Begin</div>
+      <div class="intro-body">
+        This takes about two minutes. Tell us what's going on and we will reorder this guide so your biggest pain points come first, with the rest of the information right after.
+      </div>
+
+      <form id="intakeForm">
+        <div class="field-group">
+          <label class="field-label" for="in-business">Business Name</label>
+          <input class="field-input" id="in-business" type="text" required>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="in-city">City</label>
+          <input class="field-input" id="in-city" type="text">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Which of these are you currently dealing with? Select all that apply.</label>
+          <div class="check-grid" id="intakeCheckGrid"></div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="in-challenge">What's the biggest challenge on your mind right now?</label>
+          <textarea class="field-textarea" id="in-challenge"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="in-name">Your Name</label>
+            <input class="field-input" id="in-name" type="text" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="in-email">Your Email</label>
+            <input class="field-input" id="in-email" type="email" required>
+          </div>
+        </div>
+
+        <button class="ve-btn ve-btn-primary" type="submit">Build My Guide</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- STEP SCREENS injected by JS -->
+  <div class="screen" id="screen-step">
+    <div class="card">
+      <div class="step-tag" id="stepTag"></div>
+      <div class="step-flag-note" id="stepFlagNote">You Flagged This As A Priority</div>
+      <div class="step-number-badge" id="stepBadge"></div>
+      <div class="step-title" id="stepTitle"></div>
+      <div class="step-problem" id="stepProblem"></div>
+      <div class="step-subhead">What You Can Do</div>
+      <ul class="step-list" id="stepList"></ul>
+      <div class="action-step">
+        <div class="action-step-label">Action Step</div>
+        <div class="action-step-text" id="stepAction"></div>
+      </div>
+      <div class="audio" id="audioStep"></div>
+      <button class="ve-btn ve-btn-primary" id="stepBtn" onclick="completeStep()">Mark Complete and Continue</button>
+    </div>
+  </div>
+
+  <!-- ASSESSMENT SCREEN -->
+  <div class="screen" id="screen-quiz">
+    <div class="card">
+      <div class="intro-label">Final Assessment</div>
+      <div class="step-title" style="margin-bottom:8px;">Test What You Learned</div>
+      <div class="step-problem" style="border-bottom:none;padding-bottom:0;">Score 80% or higher to earn your Entrepreneur Track badge. You can retake this as many times as you need.</div>
+      <div id="quizQuestions"></div>
+      <div id="quizResult" style="display:none;"></div>
+      <button class="ve-btn ve-btn-primary" id="quizSubmitBtn" onclick="submitQuiz()">Submit Assessment</button>
+      <button class="ve-btn ve-btn-outline" id="quizRetryBtn" style="display:none;margin-top:10px;" onclick="retryQuiz()">Try Again</button>
+    </div>
+  </div>
+
+  <!-- COMPLETION SCREEN -->
+  <div class="screen" id="screen-complete">
+    <div class="card">
+      <div class="badge" aria-hidden="true">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.44.91-5.32-3.87-3.77 5.34-.78L12 2z" fill="#fff"/></svg>
+      </div>
+      <div class="badge-title">Badge Earned</div>
+      <div class="badge-sub">Entrepreneur Track, Vegan Restaurant Survival Guide</div>
+      <div class="complete-title">Guide Complete</div>
+      <div class="complete-sub">Here is your full Quick Action Checklist, gathered in one place.</div>
+      <ul class="checklist-recap" id="recapList"></ul>
+      <div class="audio" id="audioComplete"></div>
+      <button class="ve-btn ve-btn-primary" onclick="showAuditScreen()">See Your Next Step</button>
+      <div class="btn-row">
+        <a class="ve-btn ve-btn-outline" href="/guides">Back to Guides</a>
+        <button class="ve-btn ve-btn-outline" onclick="resetGuide()">Restart Guide</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUDIT UPSELL SCREEN (final slide) -->
+  <div class="screen" id="screen-audit">
+    <div class="card">
+      <div class="intro-label">Your Next Step</div>
+      <div class="intro-title" style="font-size:24px;">Ready For The Full Picture?</div>
+      <div class="step-problem" id="auditSummary" style="border-bottom:none;padding-bottom:0;"></div>
+      <div class="next-step-card">
+        <div class="next-step-eyebrow">Get Your $111 Blueprint</div>
+        <div class="next-step-body">
+          A soft audit tells you where to look. The Blueprint goes deeper: a real mockup of what your site could look like, a full audit of your online presence, and a fixed price to fix it. No obligation, no contract to see it.
+        </div>
+        <a class="ve-btn ve-btn-primary" id="auditCta" href="https://lesaruss.ai/blueprint" target="_blank" rel="noopener">Get My $111 Blueprint &rarr;</a>
+      </div>
+      <div class="btn-row">
+        <a class="ve-btn ve-btn-outline" href="/guides">Back to Guides</a>
+        <button class="ve-btn ve-btn-outline" onclick="resetGuide()">Restart Guide</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var STORAGE_KEY = 've_guide_progress_vegan-restaurant-survival-guide';
+
+  var steps = [
+    {
+      id: "location",
+      origIndex: 0,
+      tag: "Poor Location Choices",
+      title: "Poor Location Choices",
+      problem: "Once you are locked into a lease, high rent can squeeze out your profits. Many Vegan businesses close because they cannot keep up with rising costs, even if their food is excellent.",
+      list: [
+        "Research your market before committing.",
+        "Test your concept with a food truck or pop-up before signing a lease.",
+        "Explore food halls or shared spaces to lower rent.",
+        "Partner with complementary vendors to share costs.",
+        "Long-term, owning your property creates stability."
+      ],
+      action: "Review your lease renewal timeline. If your rent is climbing faster than your revenue, explore shared models or alternative locations before it is too late."
+    },
+    {
+      id: "branding",
+      origIndex: 1,
+      title: "Unclear Branding",
+      problem: "If people cannot tell what you stand for, they will not stick around. Branding is not just your logo, it is how people feel when they hear your name.",
+      list: [
+        "Create a brand story rooted in your values and make sure staff know it.",
+        "Keep your visuals, colors, and tone consistent online and in store.",
+        "Deliver the same customer experience every time.",
+        "Think about scalability and franchising with a clear identity."
+      ],
+      action: "Ask three customers how they would describe your brand. If the answers vary wildly, it is time to clarify your story."
+    },
+    {
+      id: "info",
+      origIndex: 2,
+      title: "Outdated or Hard-to-Find Information",
+      problem: "Closing early without notice or having missing menus online frustrates customers. If they cannot find your hours or menu, they will choose another restaurant.",
+      list: [
+        "Keep hours updated on your Google Business Profile, website, and social media.",
+        "Assign a staff member to check your listings weekly.",
+        "Answer calls or use voicemail to confirm open hours.",
+        "Extend hours if possible to serve dinner customers."
+      ],
+      action: "Google your restaurant name. If the first page has outdated hours, missing menus, or broken links, fix it today."
+    },
+    {
+      id: "seo",
+      origIndex: 3,
+      title: "Weak Online Visibility (SEO and Listings)",
+      problem: "If people cannot find you online, you are invisible.",
+      list: [
+        "Claim free listings on Vegans Explore, Google, Yelp, and HappyCow.",
+        "Use Google Search Console to make sure your site is indexed.",
+        "Run quarterly SEO checks with our free SEO audit.",
+        "Ensure your site loads quickly and is mobile friendly."
+      ],
+      action: "Run a free SEO scan. If your score is below a B, you are losing customers to competitors. Visit VegansExplore.com/SEO."
+    },
+    {
+      id: "social",
+      origIndex: 4,
+      title: "Inconsistent Social Media Presence",
+      problem: "Posting once in a while does not keep your brand in people's minds. A dead feed can make customers assume you are closed.",
+      list: [
+        "Post at least weekly with food, staff, and customer highlights.",
+        "Host influencer nights or offer free meals for tagged photos.",
+        "Cross-post content across Instagram, Facebook, and TikTok.",
+        "Boost best posts with small ad budgets."
+      ],
+      action: "Pick one day this week to batch-create content. Schedule at least three posts in advance."
+    },
+    {
+      id: "visuals",
+      origIndex: 5,
+      title: "Lack of High-Quality Visuals",
+      problem: "Blurry photos can turn people off before they try your food.",
+      list: [
+        "Use your phone with good lighting or invest in professional photos once a year.",
+        "Show food, interior, and ambiance.",
+        "Update visuals whenever your menu or space changes."
+      ],
+      action: "Compare your food photos to a competitor's. If theirs look more appealing, it is time to upgrade your visuals."
+    },
+    {
+      id: "feedback",
+      origIndex: 6,
+      title: "Ignoring Customer Feedback",
+      problem: "Bad reviews hurt. Ignoring them or arguing back hurts even more.",
+      list: [
+        "Respond quickly and respectfully to all reviews.",
+        "Thank positive reviewers and acknowledge criticism with solutions.",
+        "Use feedback to adjust menus and service."
+      ],
+      action: "Reply to three of your most recent reviews today. Show your community you are listening."
+    },
+    {
+      id: "menu",
+      origIndex: 7,
+      title: "Limited Menu Innovation",
+      problem: "Menus that never change can feel stale. On the other hand, changing popular items drives loyal customers away.",
+      list: [
+        "Review sales data regularly and drop items that do not sell.",
+        "Add seasonal specials to create excitement.",
+        "Keep core bestsellers untouched.",
+        "Involve customers in testing new items."
+      ],
+      action: "Plan one limited-time special for next month. Market it as available until sold out."
+    },
+    {
+      id: "community",
+      origIndex: 8,
+      title: "Weak Community Presence",
+      problem: "Restaurants that only show up when they need help struggle to build loyalty.",
+      list: [
+        "Partner with nonprofits on giveback nights or co-branded menu items.",
+        "Join Vegan festivals and markets to showcase your brand.",
+        "Host events like trivia nights or tastings.",
+        "Share your community contributions online."
+      ],
+      action: "Reach out to one local organization this week to explore a partnership that benefits both sides."
+    },
+    {
+      id: "burnout",
+      origIndex: 9,
+      title: "Burnout and Lack of Support",
+      problem: "Owners often burn out under long hours, rising costs, and staff turnover. When you burn out, the whole business suffers.",
+      list: [
+        "Train staff to take on more responsibility.",
+        "Explore collective purchasing groups to lower costs.",
+        "Take short breaks when possible and communicate closures.",
+        "Build support networks with other business owners."
+      ],
+      action: "Identify one task you can delegate this week. Small shifts prevent burnout long term."
+    }
+  ];
+
+  var state = loadState();
+  var orderedSteps = steps.slice();
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { currentStep: 0, completed: [], quizPassed: false, personalized: false, flaggedIds: [], businessName: '', city: '', challenge: '', contactName: '', contactEmail: '' };
+  }
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function reorderSteps(flaggedIds) {
+    flaggedIds = flaggedIds || [];
+    var flagged = steps.filter(function (s) { return flaggedIds.indexOf(s.id) > -1; });
+    var rest = steps.filter(function (s) { return flaggedIds.indexOf(s.id) === -1; });
+    return flagged.concat(rest);
+  }
+
+  function showScreen(id) {
+    if (typeof stopAllAudio === 'function') { stopAllAudio(); }
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    var pw = document.getElementById('progressWrap');
+    if (pw) { pw.style.display = 'none'; }
+    var cb = document.getElementById('guideControlBar');
+    if (cb) { cb.classList.toggle('visible', id === 'screen-step'); }
+  }
+
+  function goToIntake() {
+    showScreen('screen-intake');
+    document.getElementById('progressLabel').textContent = 'Personalize Your Guide';
+  }
+
+  function renderDots() {
+    var containers = [document.getElementById('guideDots'), document.getElementById('panelDots')].filter(Boolean);
+    containers.forEach(function (wrap) {
+      var isPanel = wrap.id === 'panelDots';
+      wrap.innerHTML = '';
+      for (var i = 0; i < orderedSteps.length; i++) {
+        var dot = document.createElement('div');
+        dot.className = isPanel ? 'guide-control-dot' : 'guide-dot';
+        var clickable = false;
+        if (state.personalized && state.completed.indexOf(i) > -1) { dot.className += ' done'; if (!isPanel) dot.textContent = String(i+1); clickable = true; }
+        else if (state.personalized && i === state.currentStep && state.currentStep < orderedSteps.length) { dot.className += ' current'; if (!isPanel) dot.textContent = String(i+1); clickable = true; }
+        else { dot.className += ' locked'; if (!isPanel) dot.textContent = String(i+1); }
+        if (clickable) {
+          dot.className += ' clickable';
+          dot.setAttribute('role', 'button');
+          dot.setAttribute('aria-label', 'Go to step ' + (i+1));
+          (function (idx) { dot.addEventListener('click', function () { goToStep(idx); }); })(i);
+        }
+        wrap.appendChild(dot);
+      }
+    });
+  }
+
+  function goToStep(idx) {
+    state.currentStep = idx;
+    saveState();
+    renderStep();
+    showScreen('screen-step');
+    document.getElementById('progressLabel').textContent = 'Your Progress';
+    renderProgress();
+  }
+
+  function renderProgress() {
+    var pct = Math.round((state.completed.length / orderedSteps.length) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = state.completed.length + ' / ' + orderedSteps.length + ' complete';
+    renderDots();
+  }
+
+  function startGuide() {
+    if (state.currentStep >= orderedSteps.length) { renderComplete(); showScreen('screen-complete'); document.getElementById('progressLabel').textContent = 'Guide Complete'; renderProgress(); return; }
+    renderStep();
+    showScreen('screen-step');
+    document.getElementById('progressLabel').textContent = 'Your Progress';
+    renderProgress();
+  }
+
+  function renderStep() {
+    var s = orderedSteps[state.currentStep];
+    document.getElementById('stepTag').textContent = 'Tip ' + (state.currentStep + 1) + ' of ' + orderedSteps.length;
+    var flagNote = document.getElementById('stepFlagNote');
+    flagNote.style.display = (state.flaggedIds && state.flaggedIds.indexOf(s.id) > -1) ? 'inline-block' : 'none';
+    document.getElementById('stepBadge').textContent = String(state.currentStep + 1);
+    document.getElementById('stepTitle').textContent = s.title;
+    document.getElementById('stepProblem').textContent = s.problem;
+    document.getElementById('stepAction').textContent = s.action;
+    if (typeof setStepAudioSrc === 'function') { setStepAudioSrc(s.origIndex); }
+    var list = document.getElementById('stepList');
+    list.innerHTML = '';
+    s.list.forEach(function(item){
+      var li = document.createElement('li');
+      li.textContent = item;
+      list.appendChild(li);
+    });
+    document.getElementById('stepBtn').textContent = (state.currentStep === orderedSteps.length - 1) ? 'Complete Guide' : 'Mark Complete and Continue';
+    var panelCount = document.getElementById('panelCount');
+    if (panelCount) { panelCount.textContent = (state.currentStep + 1) + ' / ' + orderedSteps.length; }
+    var guidePrevBtnEl = document.getElementById('guidePrevBtn');
+    if (guidePrevBtnEl) { guidePrevBtnEl.disabled = (state.currentStep === 0); }
+  }
+
+  function completeStep() {
+    if (state.completed.indexOf(state.currentStep) === -1) state.completed.push(state.currentStep);
+    state.currentStep = state.currentStep + 1;
+    saveState();
+    if (state.currentStep >= orderedSteps.length) {
+      if (state.quizPassed) {
+        renderComplete();
+        showScreen('screen-complete');
+        document.getElementById('progressLabel').textContent = 'Guide Complete';
+      } else {
+        showQuiz();
+      }
+    } else {
+      renderStep();
+      showScreen('screen-step');
+    }
+    renderProgress();
+  }
+
+  function renderComplete() {
+    var recap = document.getElementById('recapList');
+    recap.innerHTML = '';
+    orderedSteps.forEach(function(s){
+      var li = document.createElement('li');
+      li.textContent = s.action;
+      recap.appendChild(li);
+    });
+  }
+
+  function resetGuide() {
+    state = { currentStep: 0, completed: [], quizPassed: false, personalized: false, flaggedIds: [], businessName: '', city: '', challenge: '', contactName: '', contactEmail: '' };
+    orderedSteps = steps.slice();
+    saveState();
+    document.getElementById('intakeForm').reset();
+    document.querySelectorAll('#intakeCheckGrid .check-option').forEach(function (el) { el.classList.remove('checked'); });
+    showScreen('screen-intro');
+    document.getElementById('progressLabel').textContent = 'Guide Overview';
+    document.getElementById('progressCount').textContent = '';
+    document.getElementById('progressFill').style.width = '0%';
+    renderDots();
+  }
+
+  function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+  var AUDIO_BASE = 'https://hq.lesaruss.ai/audio/vegan-restaurant-survival-guide/';
+
+  function buildPlayer(container, src) {
+    container.innerHTML =
+      '<button class="audio-btn" aria-label="Play narration">' +
+      '<svg class="ic-play" width="18" height="18" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>' +
+      '<svg class="ic-pause" width="16" height="16" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>' +
+      '</button>' +
+      '<div class="wave"><span class="handle"></span></div>' +
+      '<div class="audio-meta"><span class="audio-label">Prefer to listen?</span><span class="audio-tag">Narration</span></div>' +
+      '<audio preload="metadata" src="' + src + '"></audio>';
+    var wv = container.querySelector('.wave');
+    var handle = container.querySelector('.handle');
+    var bars = [];
+    for (var w = 0; w < 34; w++) {
+      var sBar = document.createElement('span');
+      sBar.className = 'bar';
+      sBar.style.height = (35 + Math.round(55 * Math.abs(Math.sin(w * 0.9)))) + '%';
+      wv.appendChild(sBar); bars.push(sBar);
+    }
+    var btn = container.querySelector('.audio-btn');
+    var au = container.querySelector('audio');
+    function paint(frac) {
+      if (frac < 0) frac = 0; if (frac > 1) frac = 1;
+      for (var b = 0; b < bars.length; b++) { bars[b].classList.toggle('on', (b + 1) / bars.length <= frac); }
+      handle.style.left = (frac * 100) + '%';
+    }
+    au.addEventListener('timeupdate', function () { if (au.duration) paint(au.currentTime / au.duration); });
+    au.addEventListener('ended', function () { container.classList.remove('playing'); paint(1); });
+    btn.addEventListener('click', function () {
+      var willPlay = !container.classList.contains('playing');
+      stopAllAudio();
+      if (willPlay) {
+        if (au.ended || au.currentTime >= (au.duration || 1)) { au.currentTime = 0; }
+        container.classList.add('playing'); au.play();
+      }
+    });
+    function seekAt(clientX) {
+      var r = wv.getBoundingClientRect();
+      var frac = (clientX - r.left) / r.width;
+      if (frac < 0) frac = 0; if (frac > 1) frac = 1;
+      if (au.duration) { au.currentTime = frac * au.duration; }
+      paint(frac);
+    }
+    var dragging = false;
+    wv.addEventListener('pointerdown', function (e) { dragging = true; seekAt(e.clientX); e.preventDefault(); });
+    window.addEventListener('pointermove', function (e) { if (dragging) seekAt(e.clientX); });
+    window.addEventListener('pointerup', function () { dragging = false; });
+    paint(0);
+    return { setSrc: function(newSrc) { container.classList.remove('playing'); au.pause(); au.src = newSrc; au.load(); au.currentTime = 0; paint(0); } };
+  }
+
+  function stopAllAudio() {
+    var pls = document.querySelectorAll('audio');
+    for (var k = 0; k < pls.length; k++) { pls[k].pause(); }
+    var ons = document.querySelectorAll('.audio.playing');
+    for (var j = 0; j < ons.length; j++) { ons[j].classList.remove('playing'); }
+  }
+
+  var audioIntroPlayer = buildPlayer(document.getElementById('audioIntro'), AUDIO_BASE + '01.mp3');
+  var audioStepPlayer = buildPlayer(document.getElementById('audioStep'), AUDIO_BASE + '02.mp3');
+  var audioCompletePlayer = buildPlayer(document.getElementById('audioComplete'), AUDIO_BASE + '12.mp3');
+
+  function setStepAudioSrc(origIdx) {
+    audioStepPlayer.setSrc(AUDIO_BASE + pad2(origIdx + 2) + '.mp3');
+    var barBtn = document.getElementById('guideAudioBtn');
+    if (barBtn) { barBtn.classList.remove('playing'); }
+  }
+
+  function guidePrevStep() {
+    if (state.currentStep > 0) { goToStep(state.currentStep - 1); }
+  }
+
+  function toggleStepAudioFromBar() {
+    var innerBtn = document.querySelector('#audioStep .audio-btn');
+    if (innerBtn) { innerBtn.click(); }
+  }
+
+  (function () {
+    var stepAudioEl = document.querySelector('#audioStep audio');
+    var barBtn = document.getElementById('guideAudioBtn');
+    if (stepAudioEl && barBtn) {
+      stepAudioEl.addEventListener('play', function () { barBtn.classList.add('playing'); });
+      stepAudioEl.addEventListener('pause', function () { barBtn.classList.remove('playing'); });
+    }
+  })();
+
+  var intakeCategories = [
+    { id: "location", label: "Location and rent are squeezing my margins" },
+    { id: "branding", label: "My branding feels unclear or inconsistent" },
+    { id: "info", label: "My hours or menu online are outdated" },
+    { id: "seo", label: "I'm hard to find online (SEO, listings)" },
+    { id: "social", label: "My social media is inconsistent or dead" },
+    { id: "visuals", label: "My photos and visuals are weak" },
+    { id: "feedback", label: "I struggle to respond to reviews and feedback" },
+    { id: "menu", label: "My menu hasn't changed in a long time" },
+    { id: "community", label: "I don't have a strong local community presence" },
+    { id: "burnout", label: "I'm burned out and don't have enough support" }
+  ];
+
+  var intakeGrid = document.getElementById('intakeCheckGrid');
+  intakeCategories.forEach(function (c) {
+    var label = document.createElement('label');
+    label.className = 'check-option';
+    label.innerHTML = '<input type="checkbox" value="' + c.id + '"> <span>' + c.label + '</span>';
+    label.querySelector('input').addEventListener('change', function (e) {
+      label.classList.toggle('checked', e.target.checked);
+    });
+    intakeGrid.appendChild(label);
+  });
+
+  document.getElementById('intakeForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var checked = Array.prototype.slice.call(intakeGrid.querySelectorAll('input:checked')).map(function (i) { return i.value; });
+    state.businessName = document.getElementById('in-business').value;
+    state.city = document.getElementById('in-city').value;
+    state.challenge = document.getElementById('in-challenge').value;
+    state.contactName = document.getElementById('in-name').value;
+    state.contactEmail = document.getElementById('in-email').value;
+    state.flaggedIds = checked;
+    state.personalized = true;
+    state.currentStep = 0;
+    state.completed = [];
+    state.quizPassed = false;
+    orderedSteps = reorderSteps(checked);
+    saveState();
+    startGuide();
+  });
+
+  function showAuditScreen() {
+    var summaryEl = document.getElementById('auditSummary');
+    var name = state.businessName || 'Your restaurant';
+    if (state.flaggedIds && state.flaggedIds.length) {
+      var labels = state.flaggedIds.map(function (id) {
+        var c = steps.filter(function (s) { return s.id === id; })[0];
+        return c ? c.title : id;
+      });
+      summaryEl.textContent = 'Based on what you told us, ' + name + ' is dealing with: ' + labels.join(', ') + '. A full Blueprint audit will show you exactly how to fix each one, with a real mockup and a fixed price.';
+    } else {
+      summaryEl.textContent = name + ', a full Blueprint audit will confirm what is working and uncover your next growth opportunity.';
+    }
+    var params = [];
+    if (state.businessName) params.push('businessName=' + encodeURIComponent(state.businessName));
+    if (state.city) params.push('city=' + encodeURIComponent(state.city));
+    if (state.contactName) params.push('contactName=' + encodeURIComponent(state.contactName));
+    if (state.contactEmail) params.push('contactEmail=' + encodeURIComponent(state.contactEmail));
+    params.push('vertical=vegan-restaurant');
+    document.getElementById('auditCta').href = 'https://lesaruss.ai/blueprint?' + params.join('&');
+    showScreen('screen-audit');
+    document.getElementById('progressLabel').textContent = 'Your Next Step';
+  }
+
+  var quizQuestions = [
+    { q: "What should you do before signing a long-term lease?", options: ["Sign immediately to lock in the space","Test your concept with a food truck or pop-up first","Ignore rent trends","Wait a year with no plan"], correct: 1 },
+    { q: "What does strong branding require most?", options: ["A different logo every month","A consistent brand story and experience","Ignoring customer feedback","Copying a competitor exactly"], correct: 1 },
+    { q: "How often should you check your online listings?", options: ["Never","Once a year","Every week","Only when a customer complains"], correct: 2 },
+    { q: "Where should you claim free listings?", options: ["Nowhere, it doesn't matter","Vegans Explore, Google, Yelp, and HappyCow","Only your own website","A single directory"], correct: 1 },
+    { q: "What's the minimum posting frequency recommended?", options: ["Once a year","Weekly","Only during holidays","Never post"], correct: 1 },
+    { q: "What should your photos show?", options: ["Only the logo","Food, interior, and ambiance","Nothing, visuals don't matter","Only exterior signage"], correct: 1 },
+    { q: "How should you handle a negative review?", options: ["Ignore it","Argue with the customer","Respond quickly and respectfully","Delete your account"], correct: 2 },
+    { q: "What's the recommended approach to your menu?", options: ["Never change anything","Change your bestsellers constantly","Keep bestsellers, add seasonal specials","Remove all vegan items"], correct: 2 },
+    { q: "How can you build community loyalty?", options: ["Only show up when you need help","Partner with local groups and join Vegan events","Avoid all local organizations","Never host events"], correct: 1 },
+    { q: "What helps prevent owner burnout?", options: ["Never delegating","Working alone with no breaks","Delegating tasks and building a support network","Ignoring staff training"], correct: 2 }
+  ];
+  var quizAnswers = {};
+
+  function showQuiz() {
+    renderQuizQuestions();
+    showScreen('screen-quiz');
+    document.getElementById('progressLabel').textContent = 'Final Assessment';
+  }
+
+  function renderQuizQuestions() {
+    var wrap = document.getElementById('quizQuestions');
+    wrap.innerHTML = '';
+    quizAnswers = {};
+    quizQuestions.forEach(function (item, qi) {
+      var qDiv = document.createElement('div');
+      qDiv.className = 'quiz-q';
+      var label = document.createElement('div');
+      label.className = 'quiz-q-label';
+      label.textContent = 'Question ' + (qi + 1) + ' of ' + quizQuestions.length;
+      var text = document.createElement('div');
+      text.className = 'quiz-q-text';
+      text.textContent = item.q;
+      var opts = document.createElement('div');
+      opts.className = 'quiz-options';
+      item.options.forEach(function (opt, oi) {
+        var optLabel = document.createElement('label');
+        optLabel.className = 'quiz-option';
+        optLabel.innerHTML = '<input type="radio" name="q' + qi + '" value="' + oi + '"> <span>' + opt + '</span>';
+        optLabel.querySelector('input').addEventListener('change', function () {
+          quizAnswers[qi] = oi;
+          Array.prototype.forEach.call(opts.querySelectorAll('.quiz-option'), function (el) { el.classList.remove('selected'); });
+          optLabel.classList.add('selected');
+        });
+        opts.appendChild(optLabel);
+      });
+      qDiv.appendChild(label);
+      qDiv.appendChild(text);
+      qDiv.appendChild(opts);
+      wrap.appendChild(qDiv);
+    });
+    document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizQuestions').style.display = 'block';
+    document.getElementById('quizSubmitBtn').style.display = 'block';
+    document.getElementById('quizRetryBtn').style.display = 'none';
+  }
+
+  function submitQuiz() {
+    var correct = 0;
+    quizQuestions.forEach(function (item, qi) {
+      if (quizAnswers[qi] === item.correct) correct++;
+    });
+    var pct = Math.round((correct / quizQuestions.length) * 100);
+    var passed = pct >= 80;
+    document.getElementById('quizQuestions').style.display = 'none';
+    document.getElementById('quizSubmitBtn').style.display = 'none';
+    var resultEl = document.getElementById('quizResult');
+    resultEl.style.display = 'block';
+    resultEl.innerHTML =
+      '<div class="quiz-result">' +
+      '<div class="quiz-score ' + (passed ? 'pass' : 'fail') + '">' + pct + '%</div>' +
+      '<div class="quiz-result-msg">' + (passed ? 'You passed. Your badge is unlocked.' : 'You need 80% to earn your badge. Review the guide and try again.') + '</div>' +
+      '</div>';
+    if (passed) {
+      state.quizPassed = true;
+      saveState();
+      setTimeout(function () {
+        renderComplete();
+        showScreen('screen-complete');
+        document.getElementById('progressLabel').textContent = 'Guide Complete';
+      }, 1400);
+    } else {
+      document.getElementById('quizRetryBtn').style.display = 'block';
+    }
+  }
+
+  function retryQuiz() {
+    renderQuizQuestions();
+  }
+
+  // Resume where the member left off
+  if (state.personalized) {
+    orderedSteps = reorderSteps(state.flaggedIds);
+    if (state.currentStep >= orderedSteps.length) {
+      if (state.quizPassed) {
+        renderComplete();
+        showScreen('screen-complete');
+        document.getElementById('progressLabel').textContent = 'Guide Complete';
+      } else {
+        showQuiz();
+      }
+    } else {
+      renderStep();
+      showScreen('screen-step');
+      document.getElementById('progressLabel').textContent = 'Your Progress';
+    }
+    renderProgress();
+  } else {
+    renderDots();
+  }
+</script>
+
+<script src="/guide-scripts/vegan-restaurant-survival-guide-gate.js"></script>
+
+<script src="/public/footer.js"></script>
+</body>
+</html>
