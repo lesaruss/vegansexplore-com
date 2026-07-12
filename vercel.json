@@ -3,16 +3,56 @@
   "trailingSlash": false,
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/directory/:slug", "destination": "/directory/listing" }
+    {
+      "source": "/directory/:slug",
+      "destination": "/directory/listing"
+    }
   ],
   "redirects": [
-    { "source": "/wp-admin", "destination": "/", "permanent": true },
-    { "source": "/wp-admin/(.*)", "destination": "/", "permanent": true },
-    { "source": "/wp-login.php", "destination": "/", "permanent": true },
-    { "source": "/wp-content/(.*)", "destination": "/", "permanent": true },
-    { "source": "/wp-includes/(.*)", "destination": "/", "permanent": true },
-    { "source": "/feed", "destination": "/", "permanent": true },
-    { "source": "/feed/(.*)", "destination": "/", "permanent": true },
-    { "source": "/xmlrpc.php", "destination": "/", "permanent": true }
+    {
+      "source": "/passport/join",
+      "destination": "/join",
+      "permanent": true
+    },
+    {
+      "source": "/wp-admin",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/wp-admin/(.*)",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/wp-login.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/wp-content/(.*)",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/wp-includes/(.*)",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/feed",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/feed/(.*)",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/xmlrpc.php",
+      "destination": "/",
+      "permanent": true
+    }
   ]
 }
