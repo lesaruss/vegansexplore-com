@@ -469,36 +469,30 @@
 
   loadLivePulseContent();
 
-  /* ==================== AD RAIL: ve_active_ads (reusable across VE pages) ==================== */
-  var VE_AD_SLOTS = [
-    { id: 'skyscraper', el: 'adSlotSkyscraper' },
-    { id: 'landscape-1', el: 'adSlotLandscape1' },
-    { id: 'landscape-2', el: 'adSlotLandscape2' }
-  ];
+  /* ==================== AD RAIL: LESARUSS ad console (ad_placements/ad_campaigns via ad-resolve function) ==================== */
+  var VE_AD_SLOT_ELS = {
+    'skyscraper': 'adSlotSkyscraper',
+    'landscape-1': 'adSlotLandscape1',
+    'landscape-2': 'adSlotLandscape2'
+  };
 
   function renderAdSlot(elId, ad) {
     var el = document.getElementById(elId);
     if (!el || !ad || !ad.image_url) return;
     el.innerHTML = '<a href="' + pulseEsc(ad.link_url || '#') + '" target="_blank" rel="noopener noreferrer sponsored">'
-      + '<img src="' + pulseEsc(ad.image_url) + '" alt="' + pulseEsc(ad.label || 'Advertisement') + '"></a>';
+      + '<img src="' + pulseEsc(ad.image_url) + '" alt="Advertisement"></a>';
   }
 
   function loadVEAds(pageSlug) {
     pageSlug = pageSlug || 'pulse';
-    fetch(PULSE_SUPABASE_URL + '/rest/v1/ve_active_ads?or=(page_slug.eq.' + encodeURIComponent(pageSlug) + ',page_slug.eq.global)&active=eq.true&select=slot_id,label,image_url,link_url,page_slug', {
+    fetch(PULSE_SUPABASE_URL + '/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=' + encodeURIComponent(pageSlug), {
       headers: { apikey: PULSE_ANON_KEY, Authorization: 'Bearer ' + PULSE_ANON_KEY }
-    }).then(function(r) { return r.json(); }).then(function(rows) {
-      if (!rows || !rows.length) return;
-      // page-specific rows override the global default for the same slot (same override pattern as GeekFon's ad system)
-      var bySlot = {};
-      rows.forEach(function(r) {
-        var existing = bySlot[r.slot_id];
-        if (!existing || (r.page_slug === pageSlug && existing.page_slug !== pageSlug)) {
-          bySlot[r.slot_id] = r;
-        }
-      });
-      VE_AD_SLOTS.forEach(function(s) {
-        if (bySlot[s.id]) renderAdSlot(s.el, bySlot[s.id]);
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      var slots = data && data.slots;
+      if (!slots || !slots.length) return;
+      slots.forEach(function(s) {
+        var elId = VE_AD_SLOT_ELS[s.slot_id];
+        if (elId) renderAdSlot(elId, s);
       });
     }).catch(function() { /* placeholder boxes still show if this fails */ });
   }
