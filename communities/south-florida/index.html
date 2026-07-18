@@ -556,8 +556,8 @@
   <section class="hub-section" id="tab-opportunities" role="tabpanel" aria-labelledby="tab-btn-opportunities">
     <div class="section-hdr">
       <div>
-        <h2 class="section-title">Volunteer &amp; Org Opportunities</h2>
-        <p class="section-sub">Real ways to get involved building the South Florida vegan community.</p>
+        <h2 class="section-title">Community Roles</h2>
+        <p class="section-sub">Two paths to help lead and grow VEGANS EXPLORE in South Florida.</p>
       </div>
     </div>
     <div id="sf-opportunities-list">
@@ -911,14 +911,14 @@
 
   function loadSFNews() {
     var grid = document.getElementById('sf-news-grid');
-    fetch(SF_SUPABASE_URL + '/rest/v1/ve_community_news?select=id,headline,summary,url,is_pinned,published_at,source_name&status=eq.approved&city_slug=eq.south-florida&order=is_pinned.desc,published_at.desc&limit=12', {
+    fetch(SF_SUPABASE_URL + '/rest/v1/ve_community_news?select=id,headline,summary,url,image_url,is_pinned,published_at,source_name&status=eq.approved&city_slug=eq.south-florida&order=is_pinned.desc,published_at.desc&limit=12', {
       headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
     }).then(function(r) { return r.json(); }).then(function(rows) {
       if (!rows || !rows.length) { grid.innerHTML = '<p class="hub-dir-empty">No local news yet. Check back soon, or submit a story below.</p>'; return; }
       grid.innerHTML = rows.map(function(n) {
         var d = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
         return '<article class="news-card">' +
-          '<div class="news-img"><div class="news-img-placeholder">' + (n.is_pinned ? 'Featured' : 'Photo') + '</div>' + (n.is_pinned ? '<span class="news-tag">Featured</span>' : '') + '</div>' +
+          '<div class="news-img">' + (n.image_url ? '<img src="' + sfEsc(n.image_url) + '" alt="' + sfEsc(n.headline) + '" style="width:100%;height:100%;object-fit:cover;">' : '<div class="news-img-placeholder">' + (n.is_pinned ? 'Featured' : 'Photo') + '</div>') + (n.is_pinned ? '<span class="news-tag">Featured</span>' : '') + '</div>' +
           '<div class="news-body">' +
             '<p class="news-date">' + sfEsc(d) + (n.source_name ? ' &middot; ' + sfEsc(n.source_name) : '') + '</p>' +
             '<h3 class="news-headline">' + sfEsc(n.headline) + '</h3>' +
@@ -1034,41 +1034,35 @@
     if (window.VEAuth) VEAuth.showAuthModal(promptMsg, onGranted);
   }
 
+  var SF_COMMUNITY_ROLES = [
+    {
+      slug: 'community-manager',
+      tier: 'Leadership Role',
+      title: 'Community Manager',
+      desc: 'The official face of VEGANS EXPLORE in your city. Build the local community, manage events, and grow from volunteer to $4,000/month salary when your city hits its milestone.',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_213628_278b3739-d852-4571-b0de-7b324f25f6be.png'
+    },
+    {
+      slug: 'vegan-explorer',
+      tier: 'Explorer Role',
+      title: 'Vegan Explorer',
+      desc: 'Know your city\'s Vegan scene? Turn that local knowledge into verified directory listings, community recognition, and a path to Community Manager.',
+      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_214438_cd4c0eec-2f37-4965-96be-eb562471b42d.png'
+    }
+  ];
+
   function loadSFOpportunities() {
     var wrap = document.getElementById('sf-opportunities-list');
-    fetch(SF_SUPABASE_URL + '/rest/v1/opportunities?select=id,title,description,opportunity_type,requirements,location,is_remote&is_active=eq.true&city_slug=eq.south-florida&order=created_at.asc', {
-      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
-    }).then(function(r) { return r.json(); }).then(function(rows) {
-      if (!rows || !rows.length) { wrap.innerHTML = '<p class="hub-dir-empty">No open opportunities right now. Check back soon.</p>'; return; }
-      wrap.innerHTML = rows.map(function(o) {
-        return '<div class="card" style="background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:20px;margin-bottom:14px;">' +
-          '<p style="font-size:9px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:8px;">' + sfEsc(o.opportunity_type) + (o.is_remote ? ' &middot; Flexible' : '') + '</p>' +
-          '<h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">' + sfEsc(o.title) + '</h3>' +
-          '<p style="font-size:13px;color:#444;line-height:1.5;margin-bottom:8px;">' + sfEsc(o.description) + '</p>' +
-          (o.requirements ? '<p style="font-size:12px;color:var(--ve-text-50);margin-bottom:14px;"><strong>Good fit if:</strong> ' + sfEsc(o.requirements) + '</p>' : '') +
-          '<button type="button" class="btn-join" data-opp-id="' + o.id + '">Apply</button>' +
-          '<span class="opp-msg" data-opp-msg="' + o.id + '" style="font-size:12px;margin-left:10px;"></span>' +
-        '</div>';
-      }).join('');
-      wrap.querySelectorAll('[data-opp-id]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var id = btn.getAttribute('data-opp-id');
-          sfRequireAuth('Sign in with your free Passport to apply.', function() {
-            btn.disabled = true; btn.textContent = 'Applying...';
-            fetch(SF_SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_opportunity_application', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SF_ANON_KEY },
-              body: JSON.stringify({ token: VEAuth.getToken(), opportunity_id: id })
-            }).then(function(r) { return r.json(); }).then(function(d) {
-              var msgEl = wrap.querySelector('[data-opp-msg="' + id + '"]');
-              if (d.error) { btn.disabled = false; btn.textContent = 'Apply'; if (msgEl) { msgEl.textContent = d.error; msgEl.style.color = '#dc2626'; } return; }
-              btn.textContent = d.already_applied ? 'Already applied' : 'Applied';
-              if (msgEl) { msgEl.textContent = 'Thanks - we\'ll follow up.'; msgEl.style.color = 'var(--ve-green)'; }
-            }).catch(function() { btn.disabled = false; btn.textContent = 'Apply'; });
-          });
-        });
-      });
-    }).catch(function() { wrap.innerHTML = '<p class="hub-dir-empty">Couldn\'t load opportunities right now.</p>'; });
+    wrap.innerHTML = '<div class="news-grid">' + SF_COMMUNITY_ROLES.map(function(o) {
+      return '<article class="news-card">' +
+        '<div class="news-img"><img src="' + sfEsc(o.img) + '" alt="' + sfEsc(o.title) + '" style="width:100%;height:100%;object-fit:cover;"></div>' +
+        '<div class="news-body">' +
+          '<p class="news-date" style="color:var(--ve-green-dark);font-weight:800;letter-spacing:0.1em;text-transform:uppercase;font-size:10px;">' + sfEsc(o.tier) + '</p>' +
+          '<h3 class="news-headline">' + sfEsc(o.title) + '</h3>' +
+          '<p class="news-excerpt">' + sfEsc(o.desc) + '</p>' +
+          '<a href="https://vegansexplore.com/welcome" class="news-read">Learn more</a>' +
+        '</div></article>';
+    }).join('') + '</div>';
   }
 
   /* ==================== REWARDS: STORE + NONPROFIT DONATION ==================== */
