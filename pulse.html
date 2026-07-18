@@ -147,11 +147,11 @@
     /* AD RAIL (reusable across VE pages - LESARUSS ad system, ve_active_ads table) */
     .pulse-content-row { display: flex; align-items: flex-start; gap: 24px; }
     .pulse-main { flex: 1; min-width: 0; }
-    .ad-rail { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 132px; }
+    .ad-rail { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; position: sticky; top: 132px; }
     .ad-rail-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-30); text-align: center; }
-    .ad-slot { position: relative; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid var(--ve-border); }
-    .ad-slot-tower { width: 300px; height: 600px; }
-    .ad-slot-landscape { width: 300px; height: 250px; }
+    .ad-slot { position: relative; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid var(--ve-border); width: 100%; max-width: 300px; flex-shrink: 0; }
+    .ad-slot-tower { aspect-ratio: 1 / 2; }
+    .ad-slot-landscape { aspect-ratio: 6 / 5; }
     .ad-slot a { display: block; width: 100%; height: 100%; }
     .ad-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .ad-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: var(--ve-green-light); color: var(--ve-green-dark); }
@@ -166,11 +166,13 @@
         width: 100%;
         flex-direction: row;
         flex-wrap: wrap;
+        align-items: center;
         justify-content: center;
         margin-top: 12px;
         padding-top: 20px;
         border-top: 1px solid var(--ve-border);
       }
+      .ad-slot { width: 100%; max-width: 320px; }
     }
   </style>
 </head>
