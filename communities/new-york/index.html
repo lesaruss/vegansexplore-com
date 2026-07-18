@@ -369,6 +369,7 @@
 
 <div class="page-frame" id="page-frame">
   <script src="/public/nav.js"></script>
+<script src="/public/ve-region-directory.js"></script>
 
   <!-- HERO -->
   <section class="hero" aria-labelledby="hub-heading">
@@ -613,38 +614,8 @@
         <h2 class="section-title">Local Directory</h2>
         <p class="section-sub">Vegan-friendly restaurants, shops, and services across the New York region.</p>
       </div>
-      <a href="/directory?region=new-york" class="section-action">Full directory</a>
     </div>
-
-    <!-- Filter bar — identical to VE /directory/, locked to New York -->
-    <div class="hub-dir-bar">
-      <div class="hub-dir-search" role="search">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="search" id="hub-dir-search" placeholder="Search by name..." aria-label="Search New York directory">
-      </div>
-      <div role="tablist" aria-label="Filter by type" style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button class="chip active" data-hubtype="All"        role="tab" aria-selected="true" >All</button>
-        <button class="chip"        data-hubtype="Restaurant" role="tab" aria-selected="false">Restaurants</button>
-        <button class="chip"        data-hubtype="Brand"      role="tab" aria-selected="false">Brands</button>
-        <button class="chip"        data-hubtype="Nonprofit"  role="tab" aria-selected="false">Nonprofits</button>
-        <button class="chip"        data-hubtype="Media"      role="tab" aria-selected="false">Media</button>
-      </div>
-    </div>
-
-    <div class="hub-dir-toolbar">
-      <p class="hub-result-bar" id="hub-result-bar" role="status" aria-live="polite"></p>
-      <div class="hub-dir-pagesize">
-        <span>Show</span>
-        <select id="hub-page-size" aria-label="Listings per page">
-          <option value="25" selected>25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="ve-grid" id="hub-grid" aria-label="New York directory listings"></div>
-    <div class="pagination" id="hub-pagination" role="navigation" aria-label="Page navigation"></div>
+    <div id="ve-region-directory"></div>
   </section>
 
   <!-- ========================= NEWSLETTER SECTION ========================= -->
@@ -842,116 +813,10 @@
     });
   });
 
-  /* ---- DIRECTORY — full VE DATA array, locked to New York (identical to /directory/) ---- */
-  var VE_DATA = [{"t":"Anixi","l":"https://vegansexplore.com/project/anixi/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-anixi-300x188.jpg","type":"Restaurant","region":"Manhattan, New York"},{"t":"Al-Andalus","l":"https://vegansexplore.com/project/al-andalus/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-al-andalus-300x188.jpg","type":"Restaurant","region":"Manhattan, New York"},{"t":"Sen Saigon","l":"https://vegansexplore.com/project/sen-saigon/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-sen-saigon-300x188.jpg","type":"Restaurant","region":"Manhattan, New York"},{"t":"Next Stop Vegan","l":"https://vegansexplore.com/project/next-stop-vegan/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-next-stop-vegan-02-300x188.jpg","type":"Restaurant","region":"New York"}];
-
-  var VE_ICONS = {Restaurant:'🍽',Brand:'🌿',Nonprofit:'❤',Media:'🎙'};
-  var VE_TC    = {Restaurant:'t-rest',Brand:'t-brand',Nonprofit:'t-npo',Media:'t-media'};
-
-  var hubType   = 'All';
-  var hubSearch = '';
-  var hubPage   = 1;
-  var hubPgSize = 25;
-
-  function veEsc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function renderVECards(list) {
-    var grid = document.getElementById('hub-grid');
-    if (!list.length) {
-      grid.innerHTML = '<div class="hub-dir-empty">No listings match your filters.</div>';
-      return;
-    }
-    grid.innerHTML = list.map(function(l) {
-      var img = l.i
-        ? '<img class="card-img" src="' + veEsc(l.i) + '" alt="' + veEsc(l.t) + '" loading="lazy">'
-        : '<div class="card-placeholder" aria-hidden="true">' + (VE_ICONS[l.type] || '🌱') + '</div>';
-      var tb  = '<span class="tag ' + (VE_TC[l.type] || '') + '">' + veEsc(l.type) + '</span>';
-      var body = img + '<div class="card-body"><div class="card-name">' + veEsc(l.t) + '</div><div class="card-tags">' + tb + '</div></div>';
-      var al   = veEsc(l.t) + ', ' + veEsc(l.type) + ', New York';
-      var inner = l.l
-        ? '<a href="' + veEsc(l.l) + '" target="_blank" rel="noopener noreferrer" aria-label="' + al + '">' + body + '</a>'
-        : '<div style="display:flex;flex-direction:column;flex:1">' + body + '</div>';
-      return '<article class="card">' + inner + '</article>';
-    }).join('');
-  }
-
-  function renderVEPagination(total) {
-    var pg = document.getElementById('hub-pagination');
-    var totalPages = Math.max(1, Math.ceil(total / hubPgSize));
-    if (totalPages <= 1) { pg.innerHTML = ''; return; }
-    var pages = [];
-    if (totalPages <= 7) {
-      for (var i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (hubPage > 3) pages.push('...');
-      for (var i = Math.max(2, hubPage - 1); i <= Math.min(totalPages - 1, hubPage + 1); i++) pages.push(i);
-      if (hubPage < totalPages - 2) pages.push('...');
-      pages.push(totalPages);
-    }
-    var btns = pages.map(function(p) {
-      if (p === '...') return '<span class="pg-btn pg-ellipsis" aria-hidden="true">…</span>';
-      var cur  = p === hubPage ? ' current' : '';
-      var aria = p === hubPage ? ' aria-current="page"' : '';
-      return '<button class="pg-btn' + cur + '" data-hubpg="' + p + '" aria-label="Page ' + p + '"' + aria + '>' + p + '</button>';
-    }).join('');
-    var prevD = hubPage === 1          ? ' disabled' : '';
-    var nextD = hubPage === totalPages ? ' disabled' : '';
-    pg.innerHTML =
-      '<button class="pg-btn"' + prevD + ' data-hubpg="' + (hubPage - 1) + '" aria-label="Previous page">← Prev</button>' +
-      btns +
-      '<button class="pg-btn"' + nextD + ' data-hubpg="' + (hubPage + 1) + '" aria-label="Next page">Next →</button>';
-    pg.querySelectorAll('[data-hubpg]').forEach(function(btn) {
-      if (btn.disabled) return;
-      btn.addEventListener('click', function() {
-        hubPage = parseInt(btn.getAttribute('data-hubpg'));
-        renderVEDir(true);
-      });
-    });
-  }
-
-  function renderVEDir(keepPage) {
-    if (!keepPage) hubPage = 1;
-    var q = hubSearch.toLowerCase().trim();
-    var filtered = VE_DATA.filter(function(l) {
-      if (hubType !== 'All' && l.type !== hubType) return false;
-      if (q && l.t.toLowerCase().indexOf(q) === -1) return false;
-      return true;
-    });
-    var total = filtered.length;
-    document.getElementById('hub-result-bar').textContent = total + ' listing' + (total === 1 ? '' : 's');
-    var start = (hubPage - 1) * hubPgSize;
-    renderVECards(filtered.slice(start, start + hubPgSize));
-    renderVEPagination(total);
-  }
-
-  /* Wire up type chips */
-  document.querySelectorAll('[data-hubtype]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('[data-hubtype]').forEach(function(b) {
-        b.classList.remove('active'); b.setAttribute('aria-selected', 'false');
-      });
-      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
-      hubType = btn.getAttribute('data-hubtype');
-      renderVEDir();
-    });
+  VERegionDirectory.init({
+    mount: 've-region-directory',
+    matchListing: function (l) { return !!(l.address_state === 'NY'); }
   });
-
-  /* Wire up search */
-  document.getElementById('hub-dir-search').addEventListener('input', function(e) {
-    hubSearch = e.target.value;
-    renderVEDir();
-  });
-
-  /* Wire up page size */
-  document.getElementById('hub-page-size').addEventListener('change', function(e) {
-    hubPgSize = parseInt(e.target.value);
-    renderVEDir();
-  });
-
-  renderVEDir();
 
 </script>
 
