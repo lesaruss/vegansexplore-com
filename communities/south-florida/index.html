@@ -417,6 +417,8 @@
       <option value="news">News</option>
       <option value="events">Events</option>
       <option value="directory">Directory</option>
+      <option value="opportunities">Opportunities</option>
+      <option value="rewards">Rewards</option>
       <option value="newsletter">Newsletter</option>
       <option value="partners">Partners</option>
       <option value="members">&#128274; Members</option>
@@ -437,6 +439,14 @@
     <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-directory" id="tab-btn-directory" onclick="switchTab('directory')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
       Directory
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-opportunities" id="tab-btn-opportunities" onclick="switchTab('opportunities')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L1 21h22L12 2zm0 4.5L18.5 19h-13L12 6.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
+      Opportunities
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-rewards" id="tab-btn-rewards" onclick="switchTab('rewards')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.65-.5-.65C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
+      Rewards
     </button>
     <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-newsletter" id="tab-btn-newsletter" onclick="switchTab('newsletter')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8zm-2 0-8 5-8-5 8-4.76L19.99 8zM4 18V9.87l8 5 8-5V18H4z"/></svg>
@@ -570,6 +580,38 @@
     <div class="pagination" id="hub-pagination" role="navigation" aria-label="Page navigation"></div>
   </section>
 
+  <!-- ========================= OPPORTUNITIES SECTION ========================= -->
+  <section class="hub-section" id="tab-opportunities" role="tabpanel" aria-labelledby="tab-btn-opportunities">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Volunteer &amp; Org Opportunities</h2>
+        <p class="section-sub">Real ways to get involved building the South Florida vegan community.</p>
+      </div>
+    </div>
+    <div id="sf-opportunities-list">
+      <p class="hub-dir-empty">Loading opportunities&hellip;</p>
+    </div>
+  </section>
+
+  <!-- ========================= REWARDS SECTION ========================= -->
+  <section class="hub-section" id="tab-rewards" role="tabpanel" aria-labelledby="tab-btn-rewards">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Rewards</h2>
+        <p class="section-sub">Use points you've earned toward rewards, or put them toward a nonprofit.</p>
+      </div>
+    </div>
+    <div id="sf-rewards-store">
+      <p class="hub-dir-empty">Loading rewards&hellip;</p>
+    </div>
+
+    <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--ve-border);">
+      <h3 class="section-title" style="font-size:16px;margin-bottom:6px;">Give Back</h3>
+      <p class="section-sub" style="margin-bottom:20px;">Donate your points to support a registered nonprofit.</p>
+      <div id="sf-nonprofit-list"></div>
+    </div>
+  </section>
+
   <!-- ========================= NEWSLETTER SECTION ========================= -->
   <section class="hub-section" id="tab-newsletter" role="tabpanel" aria-labelledby="tab-btn-newsletter">
     <div class="newsletter-wrap">
@@ -644,8 +686,25 @@
     <!-- PARTNER CTA -->
     <div class="partner-cta-row" role="complementary" aria-label="Partner with the community">
       <p class="partner-cta-text">Is your organization aligned with the SoFlo Vegans community? Partner visibility starts at $0 for qualifying nonprofits.</p>
-      <a href="#" class="btn-partner">Apply to Partner</a>
+      <button type="button" class="btn-partner" id="sf-partner-apply-open">Apply to Partner</button>
     </div>
+
+    <form id="sf-partner-apply-form" style="display:none;max-width:520px;margin-top:20px;padding-top:20px;border-top:1px solid var(--ve-border);">
+      <div style="margin-bottom:10px;">
+        <label for="sf-partner-name" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Business / Org Name</label>
+        <input type="text" id="sf-partner-name" required style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+      </div>
+      <div style="margin-bottom:10px;">
+        <label for="sf-partner-desc" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">What do you do?</label>
+        <textarea id="sf-partner-desc" rows="3" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;"></textarea>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="sf-partner-site" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Website</label>
+        <input type="url" id="sf-partner-site" placeholder="https://" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+      </div>
+      <button type="submit" class="btn-join" id="sf-partner-submit-btn">Submit application</button>
+      <p id="sf-partner-submit-msg" style="font-size:12px;margin-top:10px;"></p>
+    </form>
   </section>
 
 
@@ -1009,6 +1068,172 @@
       });
     });
   })();
+
+  /* ==================== OPPORTUNITIES ==================== */
+  function sfRequireAuth(promptMsg, onGranted) {
+    if (window.VEAuth && VEAuth.isLoggedIn()) { onGranted(); return; }
+    if (window.VEAuth) VEAuth.showAuthModal(promptMsg, onGranted);
+  }
+
+  function loadSFOpportunities() {
+    var wrap = document.getElementById('sf-opportunities-list');
+    fetch(SF_SUPABASE_URL + '/rest/v1/opportunities?select=id,title,description,opportunity_type,requirements,location,is_remote&is_active=eq.true&city_slug=eq.south-florida&order=created_at.asc', {
+      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      if (!rows || !rows.length) { wrap.innerHTML = '<p class="hub-dir-empty">No open opportunities right now. Check back soon.</p>'; return; }
+      wrap.innerHTML = rows.map(function(o) {
+        return '<div class="card" style="background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:20px;margin-bottom:14px;">' +
+          '<p style="font-size:9px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:8px;">' + sfEsc(o.opportunity_type) + (o.is_remote ? ' &middot; Flexible' : '') + '</p>' +
+          '<h3 style="font-size:16px;font-weight:800;margin-bottom:6px;">' + sfEsc(o.title) + '</h3>' +
+          '<p style="font-size:13px;color:#444;line-height:1.5;margin-bottom:8px;">' + sfEsc(o.description) + '</p>' +
+          (o.requirements ? '<p style="font-size:12px;color:var(--ve-text-50);margin-bottom:14px;"><strong>Good fit if:</strong> ' + sfEsc(o.requirements) + '</p>' : '') +
+          '<button type="button" class="btn-join" data-opp-id="' + o.id + '">Apply</button>' +
+          '<span class="opp-msg" data-opp-msg="' + o.id + '" style="font-size:12px;margin-left:10px;"></span>' +
+        '</div>';
+      }).join('');
+      wrap.querySelectorAll('[data-opp-id]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = btn.getAttribute('data-opp-id');
+          sfRequireAuth('Sign in with your free Passport to apply.', function() {
+            btn.disabled = true; btn.textContent = 'Applying...';
+            fetch(SF_SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_opportunity_application', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SF_ANON_KEY },
+              body: JSON.stringify({ token: VEAuth.getToken(), opportunity_id: id })
+            }).then(function(r) { return r.json(); }).then(function(d) {
+              var msgEl = wrap.querySelector('[data-opp-msg="' + id + '"]');
+              if (d.error) { btn.disabled = false; btn.textContent = 'Apply'; if (msgEl) { msgEl.textContent = d.error; msgEl.style.color = '#dc2626'; } return; }
+              btn.textContent = d.already_applied ? 'Already applied' : 'Applied';
+              if (msgEl) { msgEl.textContent = 'Thanks - we\'ll follow up.'; msgEl.style.color = 'var(--ve-green)'; }
+            }).catch(function() { btn.disabled = false; btn.textContent = 'Apply'; });
+          });
+        });
+      });
+    }).catch(function() { wrap.innerHTML = '<p class="hub-dir-empty">Couldn\'t load opportunities right now.</p>'; });
+  }
+
+  /* ==================== REWARDS: STORE + NONPROFIT DONATION ==================== */
+  function loadSFRewards() {
+    var wrap = document.getElementById('sf-rewards-store');
+    fetch(SF_SUPABASE_URL + '/rest/v1/store_products?select=id,name,description,points_price,image_url,stock_quantity&is_active=eq.true&or=(city_slug.eq.south-florida,city_slug.is.null)&order=sort_order.asc', {
+      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      if (!rows || !rows.length) { wrap.innerHTML = '<p class="hub-dir-empty">Rewards are launching soon. Keep earning points, first drops are coming.</p>'; return; }
+      wrap.innerHTML = '<div class="news-grid">' + rows.map(function(p) {
+        return '<article class="news-card"><div class="news-img">' + (p.image_url ? '<img src="' + sfEsc(p.image_url) + '" alt="' + sfEsc(p.name) + '" style="width:100%;height:100%;object-fit:cover;">' : '<div class="news-img-placeholder">Reward</div>') + '</div>' +
+          '<div class="news-body"><h3 class="news-headline">' + sfEsc(p.name) + '</h3>' +
+          (p.description ? '<p class="news-excerpt">' + sfEsc(p.description) + '</p>' : '') +
+          '<p class="news-date">' + p.points_price + ' points' + (p.stock_quantity != null ? ' &middot; ' + p.stock_quantity + ' left' : '') + '</p>' +
+          '<button type="button" class="btn-join" data-redeem-id="' + p.id + '" style="margin-top:8px;">Redeem</button>' +
+          '<span class="redeem-msg" data-redeem-msg="' + p.id + '" style="font-size:12px;display:block;margin-top:6px;"></span>' +
+        '</div></article>';
+      }).join('') + '</div>';
+
+      wrap.querySelectorAll('[data-redeem-id]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = btn.getAttribute('data-redeem-id');
+          sfRequireAuth('Sign in with your free Passport to redeem rewards.', function() {
+            btn.disabled = true; btn.textContent = 'Redeeming...';
+            fetch(SF_SUPABASE_URL + '/functions/v1/ve-rewards?action=redeem_product', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SF_ANON_KEY },
+              body: JSON.stringify({ token: VEAuth.getToken(), product_id: id })
+            }).then(function(r) { return r.json(); }).then(function(d) {
+              var msgEl = wrap.querySelector('[data-redeem-msg="' + id + '"]');
+              btn.disabled = false;
+              if (d.error) { btn.textContent = 'Redeem'; if (msgEl) { msgEl.textContent = d.error === 'insufficient_points' ? 'Not enough points yet.' : d.error; msgEl.style.color = '#dc2626'; } return; }
+              btn.textContent = 'Redeemed';
+              if (msgEl) { msgEl.textContent = 'Redeemed. New balance: ' + d.balance + ' points.'; msgEl.style.color = 'var(--ve-green)'; }
+            }).catch(function() { btn.disabled = false; btn.textContent = 'Redeem'; });
+          });
+        });
+      });
+    }).catch(function() { wrap.innerHTML = '<p class="hub-dir-empty">Couldn\'t load rewards right now.</p>'; });
+  }
+
+  function loadSFNonprofits() {
+    var wrap = document.getElementById('sf-nonprofit-list');
+    fetch(SF_SUPABASE_URL + '/rest/v1/registered_nonprofits?select=id,name,description,website&active=eq.true', {
+      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      if (!rows || !rows.length) { wrap.innerHTML = '<p class="hub-dir-empty">No registered nonprofits yet.</p>'; return; }
+      wrap.innerHTML = rows.map(function(n) {
+        return '<div class="card" style="background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:20px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;">' +
+          '<div><h3 style="font-size:15px;font-weight:800;margin-bottom:4px;">' + sfEsc(n.name) + '</h3>' +
+          (n.description ? '<p style="font-size:13px;color:#444;">' + sfEsc(n.description) + '</p>' : '') + '</div>' +
+          '<div style="display:flex;gap:8px;align-items:center;">' +
+          '<input type="number" min="1" step="1" placeholder="Points" data-donate-amount="' + n.id + '" style="width:90px;padding:9px 10px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:\'Montserrat\',sans-serif;font-size:13px;">' +
+          '<button type="button" class="btn-outline" data-donate-id="' + n.id + '" style="font-size:11px;padding:9px 16px;">Donate</button>' +
+          '</div>' +
+          '<span class="donate-msg" data-donate-msg="' + n.id + '" style="font-size:12px;width:100%;"></span>' +
+        '</div>';
+      }).join('');
+
+      wrap.querySelectorAll('[data-donate-id]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = btn.getAttribute('data-donate-id');
+          var amountEl = wrap.querySelector('[data-donate-amount="' + id + '"]');
+          var amount = parseInt(amountEl.value, 10);
+          var msgEl = wrap.querySelector('[data-donate-msg="' + id + '"]');
+          if (!amount || amount <= 0) { msgEl.textContent = 'Enter how many points to donate.'; msgEl.style.color = '#dc2626'; return; }
+          sfRequireAuth('Sign in with your free Passport to donate points.', function() {
+            btn.disabled = true; btn.textContent = 'Donating...';
+            fetch(SF_SUPABASE_URL + '/functions/v1/ve-rewards?action=donate_to_nonprofit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SF_ANON_KEY },
+              body: JSON.stringify({ token: VEAuth.getToken(), nonprofit_id: id, amount: amount })
+            }).then(function(r) { return r.json(); }).then(function(d) {
+              btn.disabled = false; btn.textContent = 'Donate';
+              if (d.error) { msgEl.textContent = d.error === 'insufficient_points' ? 'Not enough points yet.' : d.error; msgEl.style.color = '#dc2626'; return; }
+              msgEl.textContent = 'Thank you! New balance: ' + d.balance + ' points.'; msgEl.style.color = 'var(--ve-green)';
+            }).catch(function() { btn.disabled = false; btn.textContent = 'Donate'; });
+          });
+        });
+      });
+    }).catch(function() { wrap.innerHTML = '<p class="hub-dir-empty">Couldn\'t load nonprofits right now.</p>'; });
+  }
+
+  /* ==================== PARTNER APPLICATION ==================== */
+  (function() {
+    var openBtn = document.getElementById('sf-partner-apply-open');
+    var form = document.getElementById('sf-partner-apply-form');
+    if (!openBtn || !form) return;
+    openBtn.addEventListener('click', function() {
+      sfRequireAuth('Sign in with your free Passport to apply as a partner.', function() {
+        form.style.display = 'block';
+        openBtn.style.display = 'none';
+      });
+    });
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var msg = document.getElementById('sf-partner-submit-msg');
+      var name = document.getElementById('sf-partner-name').value.trim();
+      var desc = document.getElementById('sf-partner-desc').value.trim();
+      var site = document.getElementById('sf-partner-site').value.trim();
+      if (!name) { msg.textContent = 'Business or org name is required.'; msg.style.color = '#dc2626'; return; }
+      var btn = document.getElementById('sf-partner-submit-btn');
+      btn.disabled = true; btn.textContent = 'Submitting...';
+      fetch(SF_SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_partner_application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SF_ANON_KEY },
+        body: JSON.stringify({ token: VEAuth.getToken(), city_slug: 'south-florida', business_name: name, business_description: desc || null, business_website: site || null })
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        btn.disabled = false; btn.textContent = 'Submit application';
+        if (d.error) { msg.textContent = d.error; msg.style.color = '#dc2626'; return; }
+        form.reset();
+        msg.textContent = d.already_applied ? 'You already have an application on file (' + d.status + ').' : 'Thanks - we\'ll be in touch.';
+        msg.style.color = 'var(--ve-green)';
+      }).catch(function() {
+        btn.disabled = false; btn.textContent = 'Submit application';
+        msg.textContent = 'Something went wrong. Please try again.';
+        msg.style.color = '#dc2626';
+      });
+    });
+  })();
+
+  loadSFOpportunities();
+  loadSFRewards();
+  loadSFNonprofits();
 
 </script>
 
