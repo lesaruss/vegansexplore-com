@@ -195,15 +195,8 @@
         </select>
         <select class="pulse-select" id="categorySelect" aria-label="Filter by category" onchange="filterPulse()">
           <option value="all">All Categories</option>
-          <option value="Platform">Platform</option>
-          <option value="Beta">Beta</option>
-          <option value="Guides">Guides</option>
-          <option value="Regions">Regions</option>
           <option value="Community">Community</option>
-          <option value="Events">Events</option>
           <option value="Recipes">Recipes</option>
-          <option value="Points">Points</option>
-          <option value="Story">Story</option>
           <option value="Health & Nutrition">Health &amp; Nutrition</option>
           <option value="Food & Dining">Food &amp; Dining</option>
           <option value="Business Spotlight">Business Spotlight</option>
@@ -215,6 +208,8 @@
         </select>
         <select class="pulse-select" id="sortSelect" aria-label="Sort posts" onchange="filterPulse()">
           <option value="latest">Latest</option>
+          <option value="oldest">Oldest</option>
+          <option value="popular">Most Popular</option>
         </select>
       </div>
     </div>
@@ -269,7 +264,7 @@
 <script>
   var posts = [
     {
-      slug: 'directory', type: 'news', category: 'Platform', tagClass: '',
+      slug: 'directory', type: 'news', category: 'Community', tagClass: '',
       headline: "The Directory Is Growing: 2,800+ Businesses and Counting",
       excerpt: "We're actively cataloging Vegan businesses across all 9 launch regions. Here's what we're finding city by city.",
       date: 'Jun 8, 2026',
@@ -278,7 +273,7 @@
       body: '<div class="article-eyebrow">Platform</div><h2 class="article-h1">2,800+ Businesses. 9 Regions. And We\'re Just Getting Started.</h2><p class="article-lede">Before anyone could join, before the platform had a name anyone knew, the work had already been happening. Cataloging Vegan businesses city by city, block by block. Right now the directory sits at over 2,800 verified listings across 63 cities - and we\'re adding more every week leading up to July 13.</p><div class="article-section-head">What\'s in the Directory Right Now</div><p class="article-p">Restaurants, cafes, markets, health food stores, Vegan beauty brands, wellness spaces, community gardens, pop-up vendors - if it\'s Vegan and it\'s operating in one of our nine launch regions, our team has been working to find it, verify it, and document it. Every listing includes location, category, and enough detail to actually be useful.</p><p class="article-p">We\'ve been deliberate about quality over volume. Every listing in the directory has been manually reviewed. We\'re not scraping Yelp. We\'re building something you can actually trust.</p><div class="article-section-head">How We\'re Building It</div><p class="article-p">The cataloging work started long before the platform existed. In city after city, the approach has been the same: on-the-ground research, community sourcing, and verification. The Vegan Explorer program - which opens to Founding Members on July 13 - is the next phase of that work. You become the eyes and ears. Your city, your knowledge, your contribution to a directory that belongs to everyone.</p><div class="article-section-head">What Goes Live July 13</div><p class="article-p">On launch day, the full directory opens across all nine regions. Search by city, neighborhood, category, or dietary need. Filter for delivery, outdoor seating, Black-owned, women-owned, and more. Every listing links to a business profile page that can be claimed, updated, and expanded by the business owner. Founding Members will be among the first to explore it - and the first to contribute to it.</p>'
     },
     {
-      slug: 'beta', type: 'news', category: 'Beta', tagClass: 'orange',
+      slug: 'beta', type: 'news', category: 'Community', tagClass: 'orange',
       headline: "Beta Access Is Live for Founding Members",
       excerpt: "You're inside. Here's what you can explore right now and what features are still being built before July 13.",
       date: 'Jun 8, 2026',
@@ -287,7 +282,7 @@
       body: '<div class="article-eyebrow orange">Beta Access</div><h2 class="article-h1">You\'re Inside. Here\'s What That Means Right Now.</h2><p class="article-lede">Beta access is live for Founding Members. This isn\'t a waitlist confirmation or a holding page - you\'re in. The platform isn\'t complete, and that\'s intentional. Here\'s what\'s available to explore right now, and what\'s still being built before July 13.</p><div class="article-section-head">What\'s Live Right Now</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>This hub.</strong> The Founding Member welcome page is your pre-launch home. The Pulse updates here daily as things develop.</div></li><li><div class="article-dot"></div><div><strong>The directory preview.</strong> A growing view of what\'s been cataloged across our launch regions.</div></li><li><div class="article-dot"></div><div><strong>Opportunity registration.</strong> Community Manager and Vegan Explorer interest forms are live. If a role opens in your city, you\'ll be contacted first.</div></li></ul><div class="article-section-head">What\'s Coming Before July 13</div><ul class="article-list"><li><div class="article-dot orange"></div><div><strong>Login access.</strong> A link will be emailed to you when full platform login opens. One click, no password needed.</div></li><li><div class="article-dot orange"></div><div><strong>Full directory search.</strong> Filter by city, category, neighborhood, and more across all nine regions.</div></li><li><div class="article-dot orange"></div><div><strong>Guide track enrollment.</strong> Your 111-day path opens on July 13. You\'ll choose your starting point at first login.</div></li><li><div class="article-dot orange"></div><div><strong>Community events.</strong> RSVP opens for Founding Members before public tickets drop.</div></li></ul><p class="article-p">Beta isn\'t a lesser version - it\'s the version where Founding Members shape what ships. If something doesn\'t feel right, that\'s the point of this window.</p>'
     },
     {
-      slug: 'guide-tracks', type: 'news', category: 'Guides', tagClass: '',
+      slug: 'guide-tracks', type: 'news', category: 'Community', tagClass: '',
       headline: "Your 111-Day Guide Track: What to Expect When It Goes Live",
       excerpt: "The guide tracks unlock July 13. Here's a look at what the first 7 days look like for both paths.",
       date: 'Jun 7, 2026',
@@ -296,7 +291,7 @@
       body: '<div class="article-eyebrow">Guide Tracks</div><h2 class="article-h1">111 Days. Your Path. Two Starting Points.</h2><p class="article-lede">The guide tracks are VEGANS EXPLORE\'s answer to the question every person gets stuck on at the start: where do I even begin? The 111-day format is based on research around how long meaningful habit change actually takes. Here\'s how the system works and what it looks like from day one.</p><div class="article-section-head">Two Entry Points</div><p class="article-p">You choose your starting point at first login. The two core paths on launch day are the Pre-Vegan track and the Seasoned Vegan track. Pre-Vegan is for people who are curious, transitioning, or just starting to take plant-based eating seriously. Seasoned Vegan is for people who are already there and want to go deeper - community, advocacy, contribution, and leadership.</p><div class="article-section-head">What the First Seven Days Look Like</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>Day 1.</strong> Profile setup and your first city check-in. What\'s Vegan in your neighborhood right now.</div></li><li><div class="article-dot"></div><div><strong>Days 2-3.</strong> Your guide introduces the five pillars: Discover, Learn, Connect, Participate, Reward.</div></li><li><div class="article-dot"></div><div><strong>Days 4-5.</strong> First directory contribution. You find and submit a Vegan spot in your city.</div></li><li><div class="article-dot"></div><div><strong>Days 6-7.</strong> First community touchpoint. You connect with other members in your region and earn your first points.</div></li></ul><div class="article-section-head">After Day 111</div><p class="article-p">Completing a guide track unlocks the next level of the platform - expanded contribution tools, featured profile placement, and eligibility for Community Manager consideration in your city.</p>'
     },
     {
-      slug: 'regions', type: 'news', category: 'Regions', tagClass: '',
+      slug: 'regions', type: 'news', category: 'Community', tagClass: '',
       headline: "Meet the Nine Launch Regions Going Live on July 13",
       excerpt: "South Florida. London. New York. Atlanta. Here's the full map of day-one cities and what's already built in each.",
       date: 'Jun 6, 2026',
@@ -314,7 +309,7 @@
       body: '<div class="article-eyebrow">Community</div><h2 class="article-h1">Permanent. Visible. Gone After July 13.</h2><p class="article-lede">The Founder Badge is not a loyalty point. It\'s not a tier that resets annually. It\'s a permanent credential attached to your profile from the moment you joined - and it will never be available again after July 13, 2026.</p><div class="article-section-head">What the Badge Does</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>It\'s on your profile permanently.</strong> Every member who joins after July 13 will see it and know you were here first.</div></li><li><div class="article-dot"></div><div><strong>It routes you to the front of every line.</strong> Community Manager openings, Vegan Explorer featured slots, early event access - Founding Members are always contacted first.</div></li><li><div class="article-dot"></div><div><strong>It marks your contributions differently.</strong> Content, reviews, and listings submitted by Founding Members carry the badge in the directory and community feeds.</div></li><li><div class="article-dot"></div><div><strong>It\'s social proof inside the community.</strong> As the platform grows, the Founder Badge becomes rarer and more meaningful.</div></li></ul><div class="article-section-head">What Closes on July 13</div><p class="article-p">At midnight on July 13, the Founding Member program closes permanently. The $11 price goes away. The badge goes away. The early access window goes away. There is no version of this that comes back around later.</p>'
     },
     {
-      slug: 'events', type: 'news', category: 'Events', tagClass: 'orange',
+      slug: 'events', type: 'news', category: 'Community', tagClass: 'orange',
       headline: "First Community Events Drop on Launch Day",
       excerpt: "Founding Members get first access to RSVP for launch week events in their city before public tickets open.",
       date: 'Jun 4, 2026',
@@ -332,7 +327,7 @@
       body: '<div class="article-eyebrow">Recipe Ecosystem</div><h2 class="article-h1">The Recipe Ecosystem Is Bigger Than a Recipe Page.</h2><p class="article-lede">VEGANS EXPLORE was never going to be a recipe site. But it was always going to take recipes seriously. What\'s been built is an ecosystem - from submission to scoring to affiliate revenue to a Cooking Show pipeline.</p><div class="article-section-head">How Submission Works</div><p class="article-p">Any member can submit a recipe. Once submitted, it enters the Confidence Score pipeline - a composite rating built on community rating (40%), nutritional verification via USDA FoodData Central (40%), and editorial review (20%). A recipe earns its placement.</p><div class="article-section-head">The Affiliate Tier</div><p class="article-p">Recipes that perform generate affiliate value. Creators who build a following around their recipes earn through the platform\'s affiliate structure - initially tied to VEGANS EXPLORE membership signups that flow through their content.</p><div class="article-section-head">The Cooking Show Pipeline</div><p class="article-p">The Cooking Show is a Phase 2 program that unlocks at 1,000 members or 10 verified creators. Creators who have built an audience and a body of high-confidence recipes become candidates. Community-first, not celebrity-first.</p>'
     },
     {
-      slug: 'points', type: 'news', category: 'Points', tagClass: '',
+      slug: 'points', type: 'news', category: 'Community', tagClass: '',
       headline: "Earn Points for Every Action. Redeem Against Your Membership.",
       excerpt: "The cross-community points system goes live July 13. Service-earned only. Here's what you can do with them.",
       date: 'Jun 2, 2026',
@@ -341,7 +336,7 @@
       body: '<div class="article-eyebrow">Points System</div><h2 class="article-h1">Earn Points for Every Action. Redeem Against Your Membership.</h2><p class="article-lede">The VEGANS EXPLORE points system is service-earned only. You cannot buy them, trade for them, or receive them for signing up and doing nothing. You earn them by contributing to the community.</p><div class="article-section-head">How You Earn</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>Directory contributions.</strong> Submit, verify, or update a business listing and earn points for each verified addition.</div></li><li><div class="article-dot"></div><div><strong>Recipe submissions.</strong> Submit a recipe that passes the Confidence Score threshold and earn points based on its rating.</div></li><li><div class="article-dot"></div><div><strong>Community engagement.</strong> Event attendance, guide track milestones, and referred members all generate points.</div></li><li><div class="article-dot"></div><div><strong>Volunteer hours.</strong> Community Managers and Vegan Explorers earn points for documented platform-building activity.</div></li></ul><div class="article-section-head">How You Redeem</div><p class="article-p">Points redeem directly against your membership cost - up to 50% of the total through donated points to local businesses and community organizations. There\'s also a store of zero-cost digital goods that only points can unlock.</p><div class="article-section-head">The Leaderboard</div><p class="article-p">Every region has a live leaderboard. The top contributors in each city are featured on that city\'s directory page and community hub. Your points total is public. Your ranking is public. The community sees who\'s showing up.</p>'
     },
     {
-      slug: 'origin', type: 'news', category: 'Story', tagClass: '',
+      slug: 'origin', type: 'news', category: 'Community', tagClass: '',
       headline: "63 Cities. 2,800+ Listings. Before the Platform Even Existed.",
       excerpt: "How the team behind VEGANS EXPLORE spent years mapping the Vegan world before building the infrastructure it deserved.",
       date: 'Jun 1, 2026',
@@ -378,6 +373,18 @@
         || p.category.toLowerCase().indexOf(query) !== -1
         || p.excerpt.toLowerCase().indexOf(query) !== -1;
       return matchType && matchCat && matchQ;
+    });
+
+    var sortMode = document.getElementById('sortSelect').value;
+    filtered.sort(function(a, b) {
+      if (sortMode === 'popular') {
+        return (b.views || 0) - (a.views || 0);
+      }
+      var ta = a.date ? new Date(a.date).getTime() : 0;
+      var tb = b.date ? new Date(b.date).getTime() : 0;
+      if (isNaN(ta)) ta = 0;
+      if (isNaN(tb)) tb = 0;
+      return sortMode === 'oldest' ? ta - tb : tb - ta;
     });
 
     list.innerHTML = '';
@@ -420,6 +427,7 @@
   function openPost(slug) {
     var p = posts.filter(function(x) { return x.slug === slug; })[0];
     if (!p) return;
+    trackPulseView(slug);
     document.getElementById('pulse-list-view').style.display = 'none';
     document.getElementById('pulse-detail-view').style.display = 'block';
     document.getElementById('pulse-breadcrumb-name').textContent = p.category;
@@ -468,6 +476,36 @@
   }
 
   loadLivePulseContent();
+
+  /* ==================== VIEW TRACKING: ve_pulse_post_views (powers Most Popular sort) ==================== */
+  function trackPulseView(slug) {
+    fetch(PULSE_SUPABASE_URL + '/rest/v1/rpc/increment_pulse_post_view', {
+      method: 'POST',
+      headers: {
+        apikey: PULSE_ANON_KEY,
+        Authorization: 'Bearer ' + PULSE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ p_slug: slug })
+    }).then(function(r) { return r.json(); }).then(function(newCount) {
+      var p = posts.filter(function(x) { return x.slug === slug; })[0];
+      if (p && typeof newCount === 'number') p.views = newCount;
+    }).catch(function() { /* view tracking is best-effort, never blocks reading */ });
+  }
+
+  function loadPulseViewCounts() {
+    fetch(PULSE_SUPABASE_URL + '/rest/v1/ve_pulse_post_views?select=post_slug,view_count', {
+      headers: { apikey: PULSE_ANON_KEY, Authorization: 'Bearer ' + PULSE_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      if (!rows || !rows.length) return;
+      var counts = {};
+      rows.forEach(function(r) { counts[r.post_slug] = r.view_count; });
+      posts.forEach(function(p) { if (counts[p.slug] != null) p.views = counts[p.slug]; });
+      filterPulse();
+    }).catch(function() { /* Popular sort just falls back to 0 views if this fails */ });
+  }
+
+  loadPulseViewCounts();
 
   /* ==================== AD RAIL: LESARUSS ad console (ad_placements/ad_campaigns via ad-resolve function) ==================== */
   var VE_AD_SLOT_ELS = {
