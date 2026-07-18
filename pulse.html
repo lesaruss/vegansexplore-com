@@ -143,6 +143,22 @@
       .region-grid { grid-template-columns: 1fr; }
     }
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+
+    /* AD RAIL (reusable across VE pages - LESARUSS ad system, ve_active_ads table) */
+    .pulse-content-row { display: flex; align-items: flex-start; gap: 24px; }
+    .pulse-main { flex: 1; min-width: 0; }
+    .ad-rail { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 132px; }
+    .ad-rail-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-30); text-align: center; }
+    .ad-slot { position: relative; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid var(--ve-border); }
+    .ad-slot-tower { width: 300px; height: 600px; }
+    .ad-slot-landscape { width: 300px; height: 100px; }
+    .ad-slot a { display: block; width: 100%; height: 100%; }
+    .ad-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ad-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: var(--ve-green-light); color: var(--ve-green-dark); }
+    .ad-placeholder svg { width: 26px; height: 26px; opacity: 0.6; }
+    .ad-ph-text { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
+    .ad-ph-dim { font-size: 10px; font-weight: 600; color: var(--ve-text-30); }
+    @media (max-width: 1240px) { .ad-rail { display: none; } }
   </style>
 </head>
 <body>
@@ -204,18 +220,47 @@
     </div>
 
     <div class="pulse-list-wrap">
-      <div id="pulse-list-view">
-        <div class="pulse-grid" id="pulseList" role="list" aria-label="Pulse posts"></div>
-        <div class="pulse-empty" id="pulseEmpty" style="display:none;">No posts match your search.</div>
-      </div>
+      <div class="pulse-content-row">
+        <div class="pulse-main">
+          <div id="pulse-list-view">
+            <div class="pulse-grid" id="pulseList" role="list" aria-label="Pulse posts"></div>
+            <div class="pulse-empty" id="pulseEmpty" style="display:none;">No posts match your search.</div>
+          </div>
 
-      <div id="pulse-detail-view" style="display:none;" aria-live="polite">
-        <div class="panel-breadcrumb">
-          <button class="panel-trail-btn" onclick="backToPulse()">Pulse</button>
-          <span class="panel-breadcrumb-sep">/</span>
-          <span class="panel-breadcrumb-current" id="pulse-breadcrumb-name"></span>
+          <div id="pulse-detail-view" style="display:none;" aria-live="polite">
+            <div class="panel-breadcrumb">
+              <button class="panel-trail-btn" onclick="backToPulse()">Pulse</button>
+              <span class="panel-breadcrumb-sep">/</span>
+              <span class="panel-breadcrumb-current" id="pulse-breadcrumb-name"></span>
+            </div>
+            <div id="pulse-article-mount"></div>
+          </div>
         </div>
-        <div id="pulse-article-mount"></div>
+
+        <aside class="ad-rail" id="veAdRail" aria-label="Advertisement">
+          <div class="ad-rail-label">Advertisement</div>
+          <div class="ad-slot ad-slot-tower" id="adSlotSkyscraper">
+            <div class="ad-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              <div class="ad-ph-text">Advertisement</div>
+              <div class="ad-ph-dim">300 x 600</div>
+            </div>
+          </div>
+          <div class="ad-slot ad-slot-landscape" id="adSlotLandscape1">
+            <div class="ad-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              <div class="ad-ph-text">Advertisement</div>
+              <div class="ad-ph-dim">300 x 100</div>
+            </div>
+          </div>
+          <div class="ad-slot ad-slot-landscape" id="adSlotLandscape2">
+            <div class="ad-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              <div class="ad-ph-text">Advertisement</div>
+              <div class="ad-ph-dim">300 x 100</div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </div>
@@ -423,6 +468,42 @@
   }
 
   loadLivePulseContent();
+
+  /* ==================== AD RAIL: ve_active_ads (reusable across VE pages) ==================== */
+  var VE_AD_SLOTS = [
+    { id: 'skyscraper', el: 'adSlotSkyscraper' },
+    { id: 'landscape-1', el: 'adSlotLandscape1' },
+    { id: 'landscape-2', el: 'adSlotLandscape2' }
+  ];
+
+  function renderAdSlot(elId, ad) {
+    var el = document.getElementById(elId);
+    if (!el || !ad || !ad.image_url) return;
+    el.innerHTML = '<a href="' + pulseEsc(ad.link_url || '#') + '" target="_blank" rel="noopener noreferrer sponsored">'
+      + '<img src="' + pulseEsc(ad.image_url) + '" alt="' + pulseEsc(ad.label || 'Advertisement') + '"></a>';
+  }
+
+  function loadVEAds(pageSlug) {
+    pageSlug = pageSlug || 'pulse';
+    fetch(PULSE_SUPABASE_URL + '/rest/v1/ve_active_ads?or=(page_slug.eq.' + encodeURIComponent(pageSlug) + ',page_slug.eq.global)&active=eq.true&select=slot_id,label,image_url,link_url,page_slug', {
+      headers: { apikey: PULSE_ANON_KEY, Authorization: 'Bearer ' + PULSE_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      if (!rows || !rows.length) return;
+      // page-specific rows override the global default for the same slot (same override pattern as GeekFon's ad system)
+      var bySlot = {};
+      rows.forEach(function(r) {
+        var existing = bySlot[r.slot_id];
+        if (!existing || (r.page_slug === pageSlug && existing.page_slug !== pageSlug)) {
+          bySlot[r.slot_id] = r;
+        }
+      });
+      VE_AD_SLOTS.forEach(function(s) {
+        if (bySlot[s.id]) renderAdSlot(s.el, bySlot[s.id]);
+      });
+    }).catch(function() { /* placeholder boxes still show if this fails */ });
+  }
+
+  loadVEAds('pulse');
 </script>
 
 <script src="/public/footer.js"></script>
