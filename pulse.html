@@ -158,7 +158,20 @@
     .ad-placeholder svg { width: 26px; height: 26px; opacity: 0.6; }
     .ad-ph-text { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
     .ad-ph-dim { font-size: 10px; font-weight: 600; color: var(--ve-text-30); }
-    @media (max-width: 1240px) { .ad-rail { display: none; } }
+    @media (max-width: 1240px) {
+      .pulse-content-row { flex-direction: column; }
+      .ad-rail {
+        position: static;
+        top: auto;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 12px;
+        padding-top: 20px;
+        border-top: 1px solid var(--ve-border);
+      }
+    }
   </style>
 </head>
 <body>
