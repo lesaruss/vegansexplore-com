@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Review — Vegans Explore Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-50:rgba(26,26,26,0.5);}
+  body{background:#fafafa;color:var(--ve-text);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;padding:40px 24px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.02em;margin-bottom:6px;}
+  .sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .city-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .city-filter button{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;border-radius:100px;border:2px solid var(--ve-border);background:#fff;cursor:pointer;}
+  .city-filter button.active{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  .card{background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:20px;margin-bottom:14px;}
+  .card-meta{display:flex;gap:10px;align-items:center;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:8px;}
+  .src-tag{padding:3px 9px;border-radius:100px;background:rgba(58,155,62,0.1);color:var(--ve-green-dark);}
+  .src-tag.rss{background:rgba(246,152,32,0.12);color:#d4800f;}
+  .headline{font-size:16px;font-weight:800;margin-bottom:6px;}
+  .summary{font-size:13px;color:#444;line-height:1.5;margin-bottom:10px;}
+  .url{font-size:12px;color:var(--ve-green-dark);word-break:break-all;display:block;margin-bottom:14px;}
+  .actions{display:flex;gap:10px;}
+  button.approve,button.reject{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;border-radius:6px;border:none;cursor:pointer;}
+  button.approve{background:var(--ve-green);color:#fff;}
+  button.approve:hover{background:var(--ve-green-dark);}
+  button.reject{background:#fff;border:1.5px solid #dc2626;color:#dc2626;}
+  button.reject:hover{background:#FEF2F2;}
+  #gate{text-align:center;padding:80px 20px;}
+  #gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #empty{text-align:center;padding:60px 20px;color:var(--ve-text-50);font-size:14px;}
+  #list{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Community News Review</h1>
+  <p class="sub">Pending submissions from RSS feeds and member stories, across all VE city hubs. Superadmin only.</p>
+
+  <div id="gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="list">
+    <div class="city-filter" id="city-filter"></div>
+    <div id="cards"></div>
+    <div id="empty" style="display:none;">Nothing pending. Queue is clear.</div>
+  </div>
+</div>
+
+<script src="/public/ve-auth.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var activeCity = 'all';
+  var allItems = [];
+
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function init() {
+    var gate = document.getElementById('gate');
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) {
+      gate.innerHTML = '<p>Sign in with a superadmin account to review pending news.</p><button id="signin-btn">Sign In</button>';
+      document.getElementById('signin-btn').addEventListener('click', function(){ VEAuth.showAuthModal('Sign in to review community news.', init); });
+      return;
+    }
+    var member = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+    if (!member || !member.is_superadmin) {
+      gate.innerHTML = '<p>This account does not have access to news review.</p>';
+      return;
+    }
+    gate.style.display = 'none';
+    document.getElementById('list').style.display = 'block';
+    loadPending();
+  }
+
+  function loadPending() {
+    var token = VEAuth.getToken();
+    fetch(SUPABASE_URL + '/functions/v1/ve-community-news?action=list_pending', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if (d.error) { document.getElementById('cards').innerHTML = '<p>' + esc(d.error) + '</p>'; return; }
+      allItems = d.items || [];
+      renderFilters();
+      render();
+    });
+  }
+
+  function renderFilters() {
+    var cities = ['all'].concat(Array.from(new Set(allItems.map(function(i){ return i.city_slug; }))));
+    var wrap = document.getElementById('city-filter');
+    wrap.innerHTML = cities.map(function(c){
+      return '<button data-city="' + esc(c) + '" class="' + (c === activeCity ? 'active' : '') + '">' + esc(c === 'all' ? 'All cities' : c) + ' (' + (c==='all' ? allItems.length : allItems.filter(function(i){return i.city_slug===c;}).length) + ')</button>';
+    }).join('');
+    wrap.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){ activeCity = btn.getAttribute('data-city'); renderFilters(); render(); });
+    });
+  }
+
+  function render() {
+    var items = activeCity === 'all' ? allItems : allItems.filter(function(i){ return i.city_slug === activeCity; });
+    var cards = document.getElementById('cards');
+    var empty = document.getElementById('empty');
+    if (!items.length) { cards.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    cards.innerHTML = items.map(function(n){
+      return '<div class="card" data-id="' + n.id + '">' +
+        '<div class="card-meta"><span class="src-tag ' + (n.source_type === 'rss' ? 'rss' : '') + '">' + esc(n.source_type.replace('_',' ')) + '</span><span>' + esc(n.city_slug) + '</span><span>' + esc(n.source_name || n.submitted_by_name || '') + '</span></div>' +
+        '<div class="headline">' + esc(n.headline) + '</div>' +
+        (n.summary ? '<div class="summary">' + esc(n.summary) + '</div>' : '') +
+        (n.url ? '<a class="url" href="' + esc(n.url) + '" target="_blank" rel="noopener noreferrer">' + esc(n.url) + '</a>' : '') +
+        '<div class="actions">' +
+          '<button class="approve" data-action="approve" data-id="' + n.id + '">Approve</button>' +
+          '<button class="reject" data-action="reject" data-id="' + n.id + '">Reject</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    cards.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-id');
+        var action = btn.getAttribute('data-action');
+        var reason = null;
+        if (action === 'reject') reason = prompt('Reason (optional):') || null;
+        var token = VEAuth.getToken();
+        btn.closest('.card').style.opacity = '0.5';
+        fetch(SUPABASE_URL + '/functions/v1/ve-community-news?action=' + action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: token, id: id, rejection_reason: reason })
+        }).then(function(r){ return r.json(); }).then(function(){
+          allItems = allItems.filter(function(i){ return i.id !== id; });
+          renderFilters();
+          render();
+        });
+      });
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
