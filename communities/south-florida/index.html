@@ -369,6 +369,7 @@
 
 <div class="page-frame" id="page-frame">
   <script src="/public/nav.js"></script>
+  <script src="/public/ve-auth.js"></script>
 
   <!-- HERO -->
   <section class="hero" aria-labelledby="hub-heading">
@@ -467,47 +468,31 @@
       <a href="#" class="section-action">All stories</a>
     </div>
 
-    <div class="news-grid">
+    <div class="news-grid" id="sf-news-grid">
+      <p class="hub-dir-empty">Loading local news&hellip;</p>
+    </div>
 
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">Featured</span>
+    <div class="sf-news-submit" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--ve-border);">
+      <div id="sf-news-submit-closed">
+        <button type="button" class="btn-outline" id="sf-news-submit-open" style="font-size:11px;padding:11px 20px;">Submit news to this community</button>
+      </div>
+      <form id="sf-news-submit-form" style="display:none;max-width:520px;">
+        <p style="font-size:12px;color:var(--ve-text-50);margin-bottom:14px;">Share something happening in the South Florida vegan community. Submissions are reviewed before they go live.</p>
+        <div style="margin-bottom:10px;">
+          <label for="sf-news-headline" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Headline</label>
+          <input type="text" id="sf-news-headline" maxlength="200" required style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
         </div>
-        <div class="news-body">
-          <p class="news-date">June 12, 2026</p>
-          <h3 class="news-headline">New Vegan Food Hall Opening in Wynwood This Summer</h3>
-          <p class="news-excerpt">A sprawling plant-based food hall is set to open in Miami's Wynwood Arts District, featuring 20+ vendors from the SoFlo vegan community.</p>
-          <a href="#" class="news-read">Read story</a>
+        <div style="margin-bottom:10px;">
+          <label for="sf-news-summary" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">What's the story?</label>
+          <textarea id="sf-news-summary" rows="3" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;"></textarea>
         </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag update">Update</span>
+        <div style="margin-bottom:14px;">
+          <label for="sf-news-url" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Link (optional)</label>
+          <input type="url" id="sf-news-url" placeholder="https://" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
         </div>
-        <div class="news-body">
-          <p class="news-date">June 9, 2026</p>
-          <h3 class="news-headline">SoFlo Vegans Community Hits 1,000 Members</h3>
-          <p class="news-excerpt">The SoFlo Vegans Circle community crossed 1,000 members this week, making it the fastest-growing regional hub in the Vegans Explore network.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">News</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 5, 2026</p>
-          <h3 class="news-headline">Fort Lauderdale Farmers Market Adds Dedicated Vegan Section</h3>
-          <p class="news-excerpt">Las Olas Farmers Market launches a dedicated plant-based vendor section starting June 1, with eight local SoFlo sellers confirmed for opening day.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
+        <button type="submit" class="btn-join" id="sf-news-submit-btn">Submit for review</button>
+        <p id="sf-news-submit-msg" style="font-size:12px;margin-top:10px;"></p>
+      </form>
     </div>
   </section>
 
@@ -539,70 +524,8 @@
       </div>
     </div>
 
-    <div class="events-list" aria-label="Upcoming events">
-      <article class="event-row" aria-label="Miami Vegan Sunset Cruise - Jun 21">
-        <div class="event-date-col" aria-hidden="true"><span class="event-day">21</span><span class="event-mon">Jun</span></div>
-        <div class="event-body">
-          <p class="event-type-badge">Meetup</p>
-          <h3 class="event-name">Miami Vegan Sunset Cruise</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Bayside Marketplace Marina, Miami</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>7:00 PM EDT</span>
-            <span>42 attending</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp" aria-label="RSVP for Miami Vegan Sunset Cruise">RSVP</a>
-        </div>
-      </article>
-
-      <article class="event-row" aria-label="Fort Lauderdale Plant-Based Popup Market - Jun 28">
-        <div class="event-date-col orange" aria-hidden="true"><span class="event-day">28</span><span class="event-mon">Jun</span></div>
-        <div class="event-body">
-          <p class="event-type-badge orange">Pop-up</p>
-          <h3 class="event-name">Fort Lauderdale Plant-Based Popup Market</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Las Olas Riverfront, Fort Lauderdale</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>10:00 AM &ndash; 4:00 PM EDT</span>
-            <span>18 vendors</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp orange" aria-label="RSVP for Fort Lauderdale Plant-Based Popup Market">RSVP</a>
-        </div>
-      </article>
-
-      <article class="event-row" aria-label="Palm Beach Vegan Cooking Workshop - June 7">
-        <div class="event-date-col" aria-hidden="true"><span class="event-day">12</span><span class="event-mon">Jul</span></div>
-        <div class="event-body">
-          <p class="event-type-badge">Workshop</p>
-          <h3 class="event-name">Palm Beach Vegan Cooking Workshop</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Palm Beach Food Co-op, West Palm Beach</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>2:00 PM &ndash; 5:00 PM EDT</span>
-            <span>12 spots left</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp" aria-label="RSVP for Palm Beach Vegan Cooking Workshop">RSVP</a>
-        </div>
-      </article>
-
-      <article class="event-row" aria-label="SoFlo Vegans Monthly Meetup - Jul 19">
-        <div class="event-date-col" aria-hidden="true"><span class="event-day">19</span><span class="event-mon">Jul</span></div>
-        <div class="event-body">
-          <p class="event-type-badge">Meetup</p>
-          <h3 class="event-name">SoFlo Vegans Monthly Meetup</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Rotating venue - announced 3 days prior</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>6:30 PM EDT</span>
-            <span>Community staple</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp" aria-label="RSVP for SoFlo Vegans Monthly Meetup">RSVP</a>
-        </div>
-      </article>
+    <div class="events-list" id="sf-events-list" aria-label="Upcoming events">
+      <p class="hub-dir-empty">Loading events&hellip;</p>
     </div>
   </section>
 
@@ -843,7 +766,7 @@
   });
 
   /* ---- DIRECTORY — full VE DATA array, locked to South Florida (identical to /directory/) ---- */
-  var VE_DATA = [{"t":"Noshy","l":"https://vegansexplore.com/project/noshy/","i":"https://vegansexplore.com/wp-content/uploads/2026/02/noshy-01-300x188.jpg","type":"Brand","region":"South Florida"},{"t":"Aisha’s Plant‑Based Eatery","l":"https://vegansexplore.com/project/aishas-plant-based-eatery/","i":"https://vegansexplore.com/wp-content/uploads/2026/01/jajaja-mexicana-03-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Jajaja Mexicana","l":"https://vegansexplore.com/project/jajaja-mexicana/","i":"https://vegansexplore.com/wp-content/uploads/2026/01/jajaja-mexicana-02-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Be An Animal Hero","l":"https://vegansexplore.com/project/be-an-animal-hero/","i":"https://vegansexplore.com/wp-content/uploads/2026/01/logo-beananimalhero-300x188.jpg","type":"Nonprofit","region":"South Florida"},{"t":"Maizly","l":"https://vegansexplore.com/project/maizly/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-maizly-300x188.jpg","type":"Brand","region":"South Florida"},{"t":"Bunnie Cakes","l":"https://vegansexplore.com/project/bunnie-cakes/","i":"https://vegansexplore.com/wp-content/uploads/2025/12/logo-bunnie-cakes-v2-300x188.jpg","type":"Brand","region":"South Florida"},{"t":"Little Bear Sanctuary","l":"https://vegansexplore.com/project/little-bear-sanctuary/","i":"https://vegansexplore.com/wp-content/uploads/2025/11/logo-little-bear-sanctuary-300x188.jpg","type":"Nonprofit","region":"South Florida"},{"t":"V Collective","l":"https://vegansexplore.com/project/v-collective/","i":"https://vegansexplore.com/wp-content/uploads/2025/11/v-collective-300x188.jpg","type":"Brand","region":"South Florida"},{"t":"Greens and Grains Boca Raton","l":"https://vegansexplore.com/project/greens-and-grains-boca-raton/","i":"https://vegansexplore.com/wp-content/uploads/2025/11/logo-greens-and-grains-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"El Nopalito Vegan Taqueria","l":"https://vegansexplore.com/project/el-nopalito-vegan-taqueria/","i":"https://vegansexplore.com/wp-content/uploads/2025/11/logo-el-nopalito-vegan-taqueria-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Christopher's Kitchen","l":"https://vegansexplore.com/project/christophers-kitchen/","i":"https://vegansexplore.com/wp-content/uploads/2025/11/christophers-kitchen-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"The Vgan Corner","l":"https://vegansexplore.com/project/the-vgan-corner/","i":"https://vegansexplore.com/wp-content/uploads/2025/06/logo-the-vgan-corner-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Good ol Cookie","l":"https://vegansexplore.com/project/good-ol-cookie/","i":"https://vegansexplore.com/wp-content/uploads/2025/10/logo-good-ol-cookies-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Love Life Cafe","l":"https://vegansexplore.com/project/love-life-cafe/","i":"https://vegansexplore.com/wp-content/uploads/2025/05/logo-love-life-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Mama Chea Cafe","l":"https://vegansexplore.com/project/mama-chea-cafe/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-mama-chea-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Florida Animal Rescue Alliance","l":"https://vegansexplore.com/project/florida-animal-rescue-alliance/","i":"https://vegansexplore.com/wp-content/uploads/2024/04/logo-fara-01-1-300x188.jpg","type":"Nonprofit","region":"South Florida"},{"t":"Vegan Cuban Cuisine","l":"https://vegansexplore.com/project/vegan-cuban-cuisine/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-cuban-cuisine-02-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"The Plantisserie","l":"https://vegansexplore.com/project/the-plantisserie/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-theplantisserie-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Zen Mystery","l":"https://vegansexplore.com/project/zen-mystery/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-zen-mystery-02-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"On the Run Vegan","l":"https://vegansexplore.com/project/on-the-run-vegan/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-on-the-run-vegan-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Dina's Vegan Deli &amp; Desserts","l":"https://vegansexplore.com/project/dinas-vegan-deli-desserts/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-dina-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Dope Vegan","l":"https://vegansexplore.com/project/dope-vegan/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-dope-vegan-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"C4Eats","l":"https://vegansexplore.com/project/c4eats/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-c4eats-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"UNALTRD","l":"https://vegansexplore.com/project/unaltrd/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-unaltrd-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"The Cocinita Miami","l":"https://vegansexplore.com/project/the-cocinita-miami/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-cocinita-miami-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Blue Tree Vegan Cafe","l":"https://vegansexplore.com/project/blue-tree-vegan-cafe/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-blue-tree-cafe-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Darbster","l":"https://vegansexplore.com/project/darbster/","i":"https://vegansexplore.com/wp-content/uploads/2024/04/logo-darbster-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Utopia Juice Bar","l":"https://vegansexplore.com/project/utopia-juice-bar/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-utopia-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"The Rabbit Hole","l":"https://vegansexplore.com/project/the-rabbit-hole/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-rabbit-hole-02-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"MOOD","l":"https://vegansexplore.com/project/mood/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-mood-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Stephanie's Vegan Bakery","l":"https://vegansexplore.com/project/stephanies-vegan-bakery/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-stephanie-vegan-bakery-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Vegan Junkie","l":"https://vegansexplore.com/project/vegan-junkie/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-junkie-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Vegan Tierra","l":"https://vegansexplore.com/project/vegan-tierra/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-tierra-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Plant Based Mafia","l":"https://vegansexplore.com/project/plant-based-mafia/","i":"https://vegansexplore.com/wp-content/uploads/2024/04/logo-plant-based-mafia-03-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"La Chia Vegana","l":"https://vegansexplore.com/project/la-chia-vegana/","i":"https://vegansexplore.com/wp-content/uploads/2024/04/logo-la-chia-vegana-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Natuurlik","l":"https://vegansexplore.com/project/natuurlik/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-naturrlik-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Earth's Goddess Holistics and Juicebar","l":"https://vegansexplore.com/project/earths-goddess-holistics-and-juicebar/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-EarthsGoddess-02-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Vegan Delights","l":"https://vegansexplore.com/project/vegan-delights/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-delights-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Sobe Vegan","l":"https://vegansexplore.com/project/sobe-vegan/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logos-sobe-vegan-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Origamy Gelato","l":"https://vegansexplore.com/project/origamy-gelato/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-origamy-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Rootz Soul Cafe","l":"https://vegansexplore.com/project/rootz-soul-cafe/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-rootz-soul-cafe-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Under the Mango Tree","l":"https://vegansexplore.com/project/under-the-mango-tree/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-under-the-mango-tree-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Vegan Planet","l":"https://vegansexplore.com/project/vegan-planet/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-vegan-planet-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"The Vegan Marie","l":"https://vegansexplore.com/project/the-vegan-marie/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-the-vegan-marie-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Joseph's Organic Bakery","l":"https://vegansexplore.com/project/josephs-organic-bakery/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-josephs-organic-1-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Ittle Litaly","l":"https://vegansexplore.com/project/ittle-litaly/","i":"https://vegansexplore.com/wp-content/uploads/2025/04/logo-ittle-litaly-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Kava Garden","l":"https://vegansexplore.com/project/kava-garden/","i":"https://vegansexplore.com/wp-content/uploads/2025/05/logo-kava-garden-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"True Vegan","l":"https://vegansexplore.com/project/true-vegan/","i":"https://vegansexplore.com/wp-content/uploads/2025/11/logo-the-true-vegan-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Vegetarian Delight Juice Bar","l":"https://vegansexplore.com/project/vegetarian-delight-juice-bar/","i":"https://vegansexplore.com/wp-content/uploads/2025/11/logo-vegetarian-delight-juice-bar-01-300x188.jpg","type":"Restaurant","region":"South Florida"},{"t":"Green Haus Foods","l":"https://vegansexplore.com/project/green-haus-foods/","i":"https://vegansexplore.com/wp-content/uploads/2023/11/logo-green-haus-foods-01-300x188.jpg","type":"Brand","region":"South Florida"},{"t":"Calypso Bites","l":"https://vegansexplore.com/project/calypso-bites/","i":"https://vegansexplore.com/wp-content/uploads/2023/11/logo-calypso-01-300x188.jpg","type":"Brand","region":"South Florida"},{"t":"Vegans Explore Podcast","l":"https://vegansexplore.com/content/","i":"","type":"Media","region":"South Florida"},{"t":"SoFlo Vegans Podcast","l":"https://vegansexplore.com/content/","i":"","type":"Media","region":"South Florida"}];
+  var VE_DATA = [];
 
   var VE_ICONS = {Restaurant:'🍽',Brand:'🌿',Nonprofit:'❤',Media:'🎙'};
   var VE_TC    = {Restaurant:'t-rest',Brand:'t-brand',Nonprofit:'t-npo',Media:'t-media'};
@@ -951,7 +874,141 @@
     renderVEDir();
   });
 
-  renderVEDir();
+  /* ==================== LIVE DATA: NEWS / EVENTS / DIRECTORY ==================== */
+  var SF_SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var SF_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var SF_CITIES = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
+
+  function sfEsc(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function sfMapType(cat) {
+    var c = (cat || '').toLowerCase();
+    if (c.indexOf('restaurant') > -1 || c.indexOf('bakerie') > -1 || c.indexOf('cafe') > -1 || c.indexOf('meal prep') > -1 || c.indexOf('catering') > -1) return 'Restaurant';
+    if (c.indexOf('media') > -1) return 'Media';
+    if (c.indexOf('nonprofit') > -1) return 'Nonprofit';
+    return 'Brand';
+  }
+
+  function loadSFNews() {
+    var grid = document.getElementById('sf-news-grid');
+    fetch(SF_SUPABASE_URL + '/rest/v1/ve_community_news?select=id,headline,summary,url,is_pinned,published_at,source_name&status=eq.approved&city_slug=eq.south-florida&order=is_pinned.desc,published_at.desc&limit=12', {
+      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      if (!rows || !rows.length) { grid.innerHTML = '<p class="hub-dir-empty">No local news yet. Check back soon, or submit a story below.</p>'; return; }
+      grid.innerHTML = rows.map(function(n) {
+        var d = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
+        return '<article class="news-card">' +
+          '<div class="news-img"><div class="news-img-placeholder">' + (n.is_pinned ? 'Featured' : 'Photo') + '</div>' + (n.is_pinned ? '<span class="news-tag">Featured</span>' : '') + '</div>' +
+          '<div class="news-body">' +
+            '<p class="news-date">' + sfEsc(d) + (n.source_name ? ' &middot; ' + sfEsc(n.source_name) : '') + '</p>' +
+            '<h3 class="news-headline">' + sfEsc(n.headline) + '</h3>' +
+            (n.summary ? '<p class="news-excerpt">' + sfEsc(n.summary) + '</p>' : '') +
+            (n.url ? '<a href="' + sfEsc(n.url) + '" target="_blank" rel="noopener noreferrer" class="news-read">Read story</a>' : '') +
+          '</div></article>';
+      }).join('');
+    }).catch(function() { grid.innerHTML = '<p class="hub-dir-empty">Couldn\'t load news right now.</p>'; });
+  }
+
+  function loadSFEvents() {
+    var list = document.getElementById('sf-events-list');
+    fetch(SF_SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=100', {
+      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      var sf = (rows || []).filter(function(e) { return e.city && SF_CITIES.indexOf(e.city) > -1; });
+      if (!sf.length) { list.innerHTML = '<p class="hub-dir-empty">No upcoming events posted yet. Check back soon.</p>'; return; }
+      list.innerHTML = sf.map(function(e) {
+        var dt = new Date(e.starts_at);
+        var day = dt.getDate();
+        var mon = dt.toLocaleString('en-US', { month: 'short' });
+        var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+        return '<article class="event-row" aria-label="' + sfEsc(e.title) + '">' +
+          '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + sfEsc(mon) + '</span></div>' +
+          '<div class="event-body">' +
+            '<p class="event-type-badge">' + sfEsc(e.category || 'Event') + '</p>' +
+            '<h3 class="event-name">' + sfEsc(e.title) + '</h3>' +
+            '<div class="event-details" aria-label="Event details">' +
+              '<span>' + sfEsc(e.location_name || e.city) + (e.city ? ', ' + sfEsc(e.city) : '') + '</span>' +
+              '<span>' + sfEsc(time) + '</span>' +
+              (e.rsvp_count ? '<span>' + e.rsvp_count + ' attending</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="event-cta-col">' + (e.ticket_url ? '<a href="' + sfEsc(e.ticket_url) + '" class="btn-rsvp" target="_blank" rel="noopener noreferrer" aria-label="RSVP for ' + sfEsc(e.title) + '">RSVP</a>' : '<span class="btn-rsvp" style="opacity:.5;pointer-events:none;">Details soon</span>') +
+          '</div></article>';
+      }).join('');
+    }).catch(function() { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });
+  }
+
+  function loadSFDirectory() {
+    fetch(SF_SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,address_city&status=eq.approved&limit=2000', {
+      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      var sf = (rows || []).filter(function(l) { return l.address_city && SF_CITIES.indexOf(l.address_city) > -1; });
+      VE_DATA = sf.map(function(l) {
+        return { t: l.name, l: l.slug ? ('/directory/listing.html?slug=' + encodeURIComponent(l.slug)) : '', i: l.logo_url || '', type: sfMapType(l.category), region: 'South Florida' };
+      });
+      renderVEDir();
+    }).catch(function() {
+      var g = document.getElementById('hub-grid');
+      if (g) g.innerHTML = '<div class="hub-dir-empty">Couldn\'t load the directory right now.</div>';
+    });
+  }
+
+  loadSFNews();
+  loadSFEvents();
+  loadSFDirectory();
+
+  /* ==================== NEWS SUBMISSION FORM ==================== */
+  (function() {
+    var openBtn = document.getElementById('sf-news-submit-open');
+    var closedWrap = document.getElementById('sf-news-submit-closed');
+    var form = document.getElementById('sf-news-submit-form');
+    var msg = document.getElementById('sf-news-submit-msg');
+    if (!openBtn || !form) return;
+
+    openBtn.addEventListener('click', function() {
+      if (!window.VEAuth || !window.VEAuth.isLoggedIn()) {
+        if (window.VEAuth) window.VEAuth.showAuthModal('Sign in with your free Passport to submit news.', function() {
+          closedWrap.style.display = 'none';
+          form.style.display = 'block';
+        });
+        return;
+      }
+      closedWrap.style.display = 'none';
+      form.style.display = 'block';
+    });
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      msg.textContent = '';
+      var headline = document.getElementById('sf-news-headline').value.trim();
+      var summary = document.getElementById('sf-news-summary').value.trim();
+      var url = document.getElementById('sf-news-url').value.trim();
+      if (!headline) { msg.textContent = 'Please add a headline.'; msg.style.color = '#dc2626'; return; }
+      var token = window.VEAuth ? window.VEAuth.getToken() : null;
+      if (!token) { msg.textContent = 'Please sign in first.'; msg.style.color = '#dc2626'; return; }
+
+      var btn = document.getElementById('sf-news-submit-btn');
+      btn.disabled = true; btn.textContent = 'Submitting...';
+
+      fetch(SF_SUPABASE_URL + '/functions/v1/ve-community-news?action=submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SF_ANON_KEY },
+        body: JSON.stringify({ token: token, city_slug: 'south-florida', headline: headline, summary: summary || null, url: url || null })
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        btn.disabled = false; btn.textContent = 'Submit for review';
+        if (d.error) { msg.textContent = d.error; msg.style.color = '#dc2626'; return; }
+        form.reset();
+        msg.textContent = 'Thanks - your story is in for review.';
+        msg.style.color = 'var(--ve-green)';
+      }).catch(function() {
+        btn.disabled = false; btn.textContent = 'Submit for review';
+        msg.textContent = 'Something went wrong. Please try again.';
+        msg.style.color = '#dc2626';
+      });
+    });
+  })();
 
 </script>
 
