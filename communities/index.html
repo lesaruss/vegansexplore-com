@@ -88,7 +88,7 @@
     .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
 
     /* FRONT */
-    .flip-front { background: #1a1a1a; cursor: pointer; }
+    .flip-front { background: #1a1a1a; cursor: pointer; text-decoration: none; color: inherit; }
     .flip-front img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
     .card-wrapper:hover .flip-front img { transform: scale(1.03); }
     .front-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%); }
@@ -233,7 +233,6 @@
         <button class="filter-chip active" data-filter="all" aria-pressed="true">All</button>
         <button class="filter-chip" data-filter="region" aria-pressed="false">Regions</button>
         <button class="filter-chip" data-filter="partner" aria-pressed="false">Partner</button>
-        <button class="filter-chip" data-filter="featured" aria-pressed="false">Featured</button>
       </div>
     </div>
 
@@ -241,255 +240,104 @@
 
       <!-- SOUTH FLORIDA -->
       <div class="card-wrapper" data-type="region" data-slug="south-florida" role="listitem" aria-label="South Florida community">
-        <div class="flip-card">
-          <!-- FRONT -->
-          <div class="flip-front">
+        <a class="flip-card flip-front" href="/communities/south-florida" aria-label="View South Florida community">
             <img src="/communities/south-florida/banner.jpg" alt="South Florida anime-style cityscape illustration" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
               <p class="front-tag">Region</p>
               <h2 class="front-city">South Florida</h2>
               <p class="front-region">SoFlo Vegans &middot; Florida, USA</p>
-              <button class="flip-btn to-back" aria-label="View South Florida community details">
+              <span class="flip-btn to-back">
                 <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.96 20 13.54 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 9.04 4 10.46 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 Explore
-              </button>
+              </span>
             </div>
-          </div>
-          <!-- BACK -->
-          <div class="flip-back" aria-label="South Florida community details">
-            <div class="back-header">
-              <div class="back-tag-row">
-                <span class="card-tag region-tag">Region</span>
-              </div>
-              <button class="star-btn" aria-label="Feature South Florida community" title="Toggle featured">&#9733;</button>
-            </div>
-            <h2 class="back-city">South Florida</h2>
-            <p class="back-region">SoFlo Vegans &middot; Florida, USA</p>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features" aria-label="What's included">
-              <li class="card-feature">Local news and updates</li>
-              <li class="card-feature">Events calendar</li>
-              <li class="card-feature">Regional directory listings</li>
-              <li class="card-feature">Community newsletter</li>
-            </ul>
-            <div class="price-row" aria-label="Membership pricing">
-              <div class="price-item passport">
-                <span class="price-val">Free</span>
-                <span class="price-label">Passport</span>
-              </div>
-            </div>
-            <div class="back-footer">
-              <button class="flip-btn to-front" aria-label="Back to South Florida photo">&#8592; Back</button>
-              <a href="/communities/south-florida" class="btn-join" aria-label="Join South Florida community">Join Community</a>
-            </div>
-          </div>
-        </div>
+          </a>
       </div>
 
       <!-- CENTRAL FLORIDA -->
       <div class="card-wrapper" data-type="region" data-slug="central-florida" role="listitem" aria-label="Central Florida community">
-        <div class="flip-card">
-          <div class="flip-front">
+        <a class="flip-card flip-front" href="/communities/central-florida" aria-label="View Central Florida community">
             <img src="/communities/central-florida/banner.jpg" alt="Central Florida anime-style skyline illustration" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
               <p class="front-tag">Region</p>
               <h2 class="front-city">Central Florida</h2>
               <p class="front-region">Orlando &middot; Tampa &middot; St. Pete</p>
-              <button class="flip-btn to-back" aria-label="View Central Florida community details">
+              <span class="flip-btn to-back">
                 <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.96 20 13.54 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 9.04 4 10.46 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 Explore
-              </button>
+              </span>
             </div>
-          </div>
-          <div class="flip-back">
-            <div class="back-header">
-              <div class="back-tag-row"><span class="card-tag region-tag">Region</span></div>
-              <button class="star-btn" aria-label="Feature Central Florida community" title="Toggle featured">&#9733;</button>
-            </div>
-            <h2 class="back-city">Central Florida</h2>
-            <p class="back-region">Orlando &middot; Tampa &middot; St. Pete &middot; Florida, USA</p>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Local news and updates</li>
-              <li class="card-feature">Events calendar</li>
-              <li class="card-feature">Regional directory listings</li>
-              <li class="card-feature">Community newsletter</li>
-            </ul>
-            <div class="price-row" aria-label="Membership pricing">
-              <div class="price-item passport"><span class="price-val">Free</span><span class="price-label">Passport</span></div>
-            </div>
-            <div class="back-footer">
-              <button class="flip-btn to-front" aria-label="Back to Central Florida photo">&#8592; Back</button>
-              <a href="/communities/central-florida" class="btn-join">Join Community</a>
-            </div>
-          </div>
-        </div>
+          </a>
       </div>
 
       <!-- ATLANTA -->
       <div class="card-wrapper" data-type="region" data-slug="atlanta" role="listitem" aria-label="Atlanta community">
-        <div class="flip-card">
-          <div class="flip-front">
+        <a class="flip-card flip-front" href="/communities/atlanta" aria-label="View Atlanta community">
             <img src="/communities/atlanta/banner.jpg" alt="Atlanta anime-style skyline illustration" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
               <p class="front-tag">Region</p>
               <h2 class="front-city">Atlanta</h2>
               <p class="front-region">Georgia, USA</p>
-              <button class="flip-btn to-back" aria-label="View Atlanta community details">
+              <span class="flip-btn to-back">
                 <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.96 20 13.54 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 9.04 4 10.46 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 Explore
-              </button>
+              </span>
             </div>
-          </div>
-          <div class="flip-back">
-            <div class="back-header">
-              <div class="back-tag-row"><span class="card-tag region-tag">Region</span></div>
-              <button class="star-btn" aria-label="Feature Atlanta community" title="Toggle featured">&#9733;</button>
-            </div>
-            <h2 class="back-city">Atlanta</h2>
-            <p class="back-region">Georgia, USA</p>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Local news and updates</li>
-              <li class="card-feature">Events calendar</li>
-              <li class="card-feature">Regional directory listings</li>
-              <li class="card-feature">Community newsletter</li>
-            </ul>
-            <div class="price-row" aria-label="Membership pricing">
-              <div class="price-item passport"><span class="price-val">Free</span><span class="price-label">Passport</span></div>
-            </div>
-            <div class="back-footer">
-              <button class="flip-btn to-front" aria-label="Back to Atlanta photo">&#8592; Back</button>
-              <a href="/communities/atlanta" class="btn-join">Join Community</a>
-            </div>
-          </div>
-        </div>
+          </a>
       </div>
 
       <!-- NEW YORK -->
       <div class="card-wrapper" data-type="region" data-slug="new-york" role="listitem" aria-label="New York community">
-        <div class="flip-card">
-          <div class="flip-front">
+        <a class="flip-card flip-front" href="/communities/new-york" aria-label="View New York community">
             <img src="/communities/new-york/banner.jpg" alt="New York City anime skyline at sunset" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
               <p class="front-tag">Region</p>
               <h2 class="front-city">New York</h2>
               <p class="front-region">New York, USA</p>
-              <button class="flip-btn to-back" aria-label="View New York community details">
+              <span class="flip-btn to-back">
                 <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.96 20 13.54 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 9.04 4 10.46 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 Explore
-              </button>
+              </span>
             </div>
-          </div>
-          <div class="flip-back">
-            <div class="back-header">
-              <div class="back-tag-row"><span class="card-tag region-tag">Region</span></div>
-              <button class="star-btn" aria-label="Feature New York community" title="Toggle featured">&#9733;</button>
-            </div>
-            <h2 class="back-city">New York</h2>
-            <p class="back-region">New York, USA</p>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Local news and updates</li>
-              <li class="card-feature">Events calendar</li>
-              <li class="card-feature">Regional directory listings</li>
-              <li class="card-feature">Community newsletter</li>
-            </ul>
-            <div class="price-row" aria-label="Membership pricing">
-              <div class="price-item passport"><span class="price-val">Free</span><span class="price-label">Passport</span></div>
-            </div>
-            <div class="back-footer">
-              <button class="flip-btn to-front" aria-label="Back to New York photo">&#8592; Back</button>
-              <a href="/communities/new-york" class="btn-join">Join Community</a>
-            </div>
-          </div>
-        </div>
+          </a>
       </div>
 
       <!-- LOS ANGELES -->
       <div class="card-wrapper" data-type="region" data-slug="los-angeles" role="listitem" aria-label="Los Angeles community">
-        <div class="flip-card">
-          <div class="flip-front">
+        <a class="flip-card flip-front" href="/communities/los-angeles" aria-label="View Los Angeles community">
             <img src="/communities/los-angeles/banner.jpg" alt="Los Angeles anime-style skyline illustration with palm trees at sunset" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
               <p class="front-tag">Region</p>
               <h2 class="front-city">Los Angeles</h2>
               <p class="front-region">California, USA</p>
-              <button class="flip-btn to-back" aria-label="View Los Angeles community details">
+              <span class="flip-btn to-back">
                 <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.96 20 13.54 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 9.04 4 10.46 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 Explore
-              </button>
+              </span>
             </div>
-          </div>
-          <div class="flip-back">
-            <div class="back-header">
-              <div class="back-tag-row"><span class="card-tag region-tag">Region</span></div>
-              <button class="star-btn" aria-label="Feature Los Angeles community" title="Toggle featured">&#9733;</button>
-            </div>
-            <h2 class="back-city">Los Angeles</h2>
-            <p class="back-region">California, USA</p>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Local news and updates</li>
-              <li class="card-feature">Events calendar</li>
-              <li class="card-feature">Regional directory listings</li>
-              <li class="card-feature">Community newsletter</li>
-            </ul>
-            <div class="price-row" aria-label="Membership pricing">
-              <div class="price-item passport"><span class="price-val">Free</span><span class="price-label">Passport</span></div>
-            </div>
-            <div class="back-footer">
-              <button class="flip-btn to-front" aria-label="Back to Los Angeles photo">&#8592; Back</button>
-              <a href="/communities/los-angeles" class="btn-join">Join Community</a>
-            </div>
-          </div>
-        </div>
+          </a>
       </div>
 
       <!-- LONDON -->
       <div class="card-wrapper" data-type="region" data-slug="london" role="listitem" aria-label="London community">
-        <div class="flip-card">
-          <div class="flip-front">
+        <a class="flip-card flip-front" href="/communities/london" aria-label="View London community">
             <img src="/communities/london/banner.jpg" alt="London anime-style illustration of Tower Bridge and the Shard at night" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
               <p class="front-tag">Region</p>
               <h2 class="front-city">London</h2>
               <p class="front-region">England, UK</p>
-              <button class="flip-btn to-back" aria-label="View London community details">
+              <span class="flip-btn to-back">
                 <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 14.96 20 13.54 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 9.04 4 10.46 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                 Explore
-              </button>
+              </span>
             </div>
-          </div>
-          <div class="flip-back">
-            <div class="back-header">
-              <div class="back-tag-row"><span class="card-tag region-tag">Region</span></div>
-              <button class="star-btn" aria-label="Feature London community" title="Toggle featured">&#9733;</button>
-            </div>
-            <h2 class="back-city">London</h2>
-            <p class="back-region">England, UK</p>
-            <div class="card-divider" aria-hidden="true"></div>
-            <ul class="card-features">
-              <li class="card-feature">Local news and updates</li>
-              <li class="card-feature">Events calendar</li>
-              <li class="card-feature">Regional directory listings</li>
-              <li class="card-feature">Community newsletter</li>
-            </ul>
-            <div class="price-row" aria-label="Membership pricing">
-              <div class="price-item passport"><span class="price-val">Free</span><span class="price-label">Passport</span></div>
-            </div>
-            <div class="back-footer">
-              <button class="flip-btn to-front" aria-label="Back to London photo">&#8592; Back</button>
-              <a href="/communities/london" class="btn-join">Join Community</a>
-            </div>
-          </div>
-        </div>
+          </a>
       </div>
 
     </div><!-- /community-grid -->
@@ -513,63 +361,15 @@
 
 <script>
   (function () {
-    var STORAGE_KEY = 've-communities-featured';
     var wrappers   = document.querySelectorAll('.card-wrapper');
     var chips      = document.querySelectorAll('.filter-chip');
-    var grid       = document.getElementById('community-grid');
     var countEl    = document.getElementById('visible-count');
-    var activeFilter = 'all';
-
-    /* ---- localStorage helpers ---- */
-    function loadFeatured() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch (e) { return []; }
-    }
-    function saveFeatured(list) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
-    }
-
-    /* ---- Apply saved featured state on load ---- */
-    var featured = loadFeatured();
-    wrappers.forEach(function (wrap) {
-      if (featured.indexOf(wrap.getAttribute('data-slug')) > -1) {
-        wrap.classList.add('is-featured-wrapper');
-        addFeaturedBadge(wrap);
-      }
-    });
-
-    function addFeaturedBadge(wrap) {
-      wrap.querySelectorAll('.back-tag-row').forEach(function (row) {
-        if (!row.querySelector('.featured-badge')) {
-          var badge = document.createElement('span');
-          badge.className = 'featured-badge';
-          badge.setAttribute('aria-label', 'Featured');
-          badge.textContent = 'Featured';
-          row.appendChild(badge);
-        }
-      });
-    }
-    function removeFeaturedBadge(wrap) {
-      wrap.querySelectorAll('.featured-badge').forEach(function (b) { b.remove(); });
-    }
-
-    /* ---- Sort: featured to top ---- */
-    function sortGrid() {
-      var all = Array.prototype.slice.call(wrappers);
-      all.sort(function (a, b) {
-        return (b.classList.contains('is-featured-wrapper') ? 1 : 0)
-             - (a.classList.contains('is-featured-wrapper') ? 1 : 0);
-      });
-      all.forEach(function (w) { grid.appendChild(w); });
-    }
-    sortGrid();
 
     /* ---- Filter ---- */
     function applyFilter(filter) {
       var count = 0;
       wrappers.forEach(function (wrap) {
-        var match = filter === 'all'
-          || (filter === 'featured' && wrap.classList.contains('is-featured-wrapper'))
-          || wrap.getAttribute('data-type') === filter;
+        var match = filter === 'all' || wrap.getAttribute('data-type') === filter;
         wrap.style.display = match ? '' : 'none';
         if (match) count++;
       });
@@ -578,47 +378,16 @@
 
     chips.forEach(function (chip) {
       chip.addEventListener('click', function () {
-        activeFilter = this.getAttribute('data-filter');
+        var filter = this.getAttribute('data-filter');
         chips.forEach(function (c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
         this.classList.add('active');
         this.setAttribute('aria-pressed', 'true');
-        applyFilter(activeFilter);
+        applyFilter(filter);
       });
     });
 
-    /* ---- Flip: click anywhere on front face ---- */
-    document.querySelectorAll('.flip-front').forEach(function (front) {
-      front.addEventListener('click', function () {
-        this.closest('.card-wrapper').querySelector('.flip-card').classList.add('is-flipped');
-      });
-    });
-    document.querySelectorAll('.flip-btn.to-front').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        this.closest('.card-wrapper').querySelector('.flip-card').classList.remove('is-flipped');
-      });
-    });
-
-    /* ---- Star toggle ---- */
-    document.querySelectorAll('.star-btn').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var wrap = this.closest('.card-wrapper');
-        var slug = wrap.getAttribute('data-slug');
-        var isFeatured = wrap.classList.toggle('is-featured-wrapper');
-        var list = loadFeatured();
-        if (isFeatured) {
-          if (list.indexOf(slug) === -1) list.push(slug);
-          addFeaturedBadge(wrap);
-        } else {
-          list = list.filter(function (s) { return s !== slug; });
-          removeFeaturedBadge(wrap);
-        }
-        saveFeatured(list);
-        sortGrid();
-        applyFilter(activeFilter);
-      });
-    });
+    /* Cards are real links now (see .flip-card.flip-front <a> markup) -
+       clicking anywhere on a card goes straight to its community page, no flip. */
 
     /* Initial count */
     applyFilter('all');
