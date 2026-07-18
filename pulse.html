@@ -151,7 +151,7 @@
     .ad-rail-label { font-size: 9px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-30); text-align: center; }
     .ad-slot { position: relative; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid var(--ve-border); }
     .ad-slot-tower { width: 300px; height: 600px; }
-    .ad-slot-landscape { width: 300px; height: 100px; }
+    .ad-slot-landscape { width: 300px; height: 250px; }
     .ad-slot a { display: block; width: 100%; height: 100%; }
     .ad-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .ad-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: var(--ve-green-light); color: var(--ve-green-dark); }
@@ -245,14 +245,7 @@
             <div class="ad-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
               <div class="ad-ph-text">Advertisement</div>
-              <div class="ad-ph-dim">300 x 100</div>
-            </div>
-          </div>
-          <div class="ad-slot ad-slot-landscape" id="adSlotLandscape2">
-            <div class="ad-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-              <div class="ad-ph-text">Advertisement</div>
-              <div class="ad-ph-dim">300 x 100</div>
+              <div class="ad-ph-dim">300 x 250</div>
             </div>
           </div>
         </aside>
@@ -510,8 +503,7 @@
   /* ==================== AD RAIL: LESARUSS ad console (ad_placements/ad_campaigns via ad-resolve function) ==================== */
   var VE_AD_SLOT_ELS = {
     'skyscraper': 'adSlotSkyscraper',
-    'landscape-1': 'adSlotLandscape1',
-    'landscape-2': 'adSlotLandscape2'
+    'landscape-1': 'adSlotLandscape1'
   };
 
   function renderAdSlot(elId, ad) {
