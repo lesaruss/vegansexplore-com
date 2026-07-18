@@ -98,16 +98,6 @@
     .news-featured { display: flex; flex-direction: column; }
 
     /* EVENTS SECTION */
-    .events-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
-    .month-nav { display: flex; align-items: center; gap: 8px; }
-    .month-btn { width: 32px; height: 32px; border-radius: 4px; border: 1.5px solid var(--ve-border); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-    .month-btn:hover { border-color: var(--ve-green); }
-    .month-btn svg { width: 12px; height: 12px; fill: var(--ve-text-50); }
-    .month-label { font-size: 13px; font-weight: 800; letter-spacing: -0.01em; min-width: 130px; text-align: center; }
-    .event-filter { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-wrap: wrap; }
-    .ev-chip { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; }
-    .ev-chip:hover { border-color: var(--ve-green); color: var(--ve-green); }
-    .ev-chip.active { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
 
     .events-list { display: flex; flex-direction: column; gap: 12px; }
     .event-row { display: flex; align-items: stretch; gap: 0; border: 1.5px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
@@ -516,24 +506,6 @@
       <a href="#" class="section-action">Submit an event</a>
     </div>
 
-    <div class="events-toolbar" role="toolbar" aria-label="Event filters">
-      <div class="month-nav" aria-label="Navigate months">
-        <button class="month-btn" aria-label="Previous month">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
-        </button>
-        <span class="month-label" aria-live="polite">June &ndash; July 2026</span>
-        <button class="month-btn" aria-label="Next month">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
-        </button>
-      </div>
-      <div class="event-filter" role="group" aria-label="Filter by event type">
-        <button class="ev-chip active" aria-pressed="true">All</button>
-        <button class="ev-chip" aria-pressed="false">Meetup</button>
-        <button class="ev-chip" aria-pressed="false">Pop-up</button>
-        <button class="ev-chip" aria-pressed="false">Workshop</button>
-      </div>
-    </div>
-
     <div class="events-list" id="sf-events-list" aria-label="Upcoming events">
       <p class="hub-dir-empty">Loading events&hellip;</p>
     </div>
@@ -811,14 +783,6 @@
     note.style.color = 'var(--ve-green)';
     note.style.fontWeight = '700';
   }
-
-  /* ---- FILTER CHIPS (events) ---- */
-  document.querySelectorAll('.ev-chip').forEach(function(chip) {
-    chip.addEventListener('click', function() {
-      document.querySelectorAll('.ev-chip').forEach(function(c) {
-        c.classList.remove('active');
-        c.setAttribute('aria-pressed', 'false');
-      });
       this.classList.add('active');
       this.setAttribute('aria-pressed', 'true');
     });
