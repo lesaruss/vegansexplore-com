@@ -19,20 +19,28 @@
     html { scroll-behavior: smooth; }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100vh; }
     .page-frame { width: 100%; margin: 0 auto; background: #fff; display: flex; flex-direction: column; flex: 1; }
-    .ve-topnav {
-      position: absolute; top: 0; left: 0; right: 0; z-index: 30;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px; height: 70px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%);
+    .ve-announce {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(6px);
+      border-radius: 30px; padding: 8px 18px 8px 8px;
+      cursor: pointer; text-decoration: none; max-width: 420px;
+      margin-bottom: 22px;
+      transition: background 0.15s, border-color 0.15s;
     }
-    .ve-topnav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .ve-topnav-cta:hover { background: var(--ve-orange-dark); }
-    .hero { position: relative; flex: 1; min-height: 100vh; display: flex; align-items: center;
-      background-image: url('https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_203641_2c797843-9d66-4f48-9f2c-fbe6d59c7e38_min.webp');
-      background-size: cover; background-position: center top; background-repeat: no-repeat; overflow: hidden; }
+    .ve-announce:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); }
+    .ve-announce-icon {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      background: var(--ve-orange); display: flex; align-items: center; justify-content: center;
+    }
+    .ve-announce-text { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 1; transition: opacity 0.25s; }
+    .ve-announce-text.fading { opacity: 0; }
+    .hero { position: relative; flex: 1; min-height: 100vh; display: flex; align-items: center; background-position: 20% center;
+      background-image: url('https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_132350_7c519921-09a9-4254-afe2-8f560989871f_min.webp');
+      background-size: cover; background-repeat: no-repeat; overflow: hidden; }
     .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.88) 28%, rgba(0,0,0,0.60) 52%, rgba(0,0,0,0.20) 68%, transparent 84%); }
     .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%); }
-    .hero-inner { position: relative; z-index: 2; padding: 120px 56px 72px; max-width: 620px; }
+    .hero-inner { position: relative; z-index: 2; padding: 80px 56px 72px; max-width: 620px; }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
@@ -44,18 +52,6 @@
     .btn-hero-primary:hover { background: var(--ve-orange-dark); }
     .btn-hero-secondary { background: transparent; color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 24px; border-radius: 4px; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.3); cursor: pointer; transition: border-color 0.15s, color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
     .btn-hero-secondary:hover { border-color: rgba(255,255,255,0.7); color: #fff; }
-    .hero-fine { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.60); margin-top: 14px; }
-    .countdown { display: flex; gap: 4px; align-items: flex-start; margin-top: 32px; margin-bottom: 8px; }
-    .countdown-title { display: none; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.60); }
-    .countdown-block { text-align: center; min-width: 60px; }
-    .countdown-num { display: block; font-size: 40px; font-weight: 900; color: #fff; letter-spacing: -1px; line-height: 1; }
-    .countdown-unit { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 6px; }
-    .countdown-sep { font-size: 32px; font-weight: 900; color: var(--ve-green); line-height: 1; padding-top: 4px; padding-left: 2px; padding-right: 2px; }
-    .stats-bar { background: var(--ve-green-dark); padding: 22px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-    .stat-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .stat-num { font-size: 26px; font-weight: 900; letter-spacing: -0.03em; color: #fff; line-height: 1; }
-    .stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #ffffff; }
-    .stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); }
     .guide-overlay { display: none; position: fixed; inset: 0; z-index: 998; background: #fff; overflow-y: auto; }
     .guide-overlay.active { display: block; }
     .guide-panel { display: none; min-height: 100vh; padding: 80px 56px 80px; background: #fff; flex-direction: column; justify-content: flex-start; position: relative; }
@@ -120,24 +116,16 @@
     .panel-dot.active { background: var(--ve-green); transform: scale(1.3); }
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
     @media (max-width: 900px) {
-      .ve-topnav { padding: 0 24px; }
-      .ve-topnav-links a { display: none; }
-      .hero { background-position: center top; align-items: flex-end; background-image: url(https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/02a62013-ba24-4f32-8859-2befe9b9676b.png) !important; }
+      .ve-announce { max-width: 220px; padding: 7px 14px 7px 7px; margin-bottom: 18px; }
+      .ve-announce-text { font-size: 11px; }
+      .hero { background-position: center center; align-items: flex-end; background-image: url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_133247_da3128a5-3ef8-4012-b82b-a9d75f12f182_min.webp) !important; }
+      .hero::before { background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 22%, transparent 72%, rgba(0,0,0,0.5) 100%) !important; }
       .hero-inner { background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; border: 1px solid rgba(255,255,255,0.09); max-width: 100%; }
-      .countdown-title { display: block; margin-top: 30px; }
-      .countdown { margin-top: 10px; }
-      .hero-ctas { margin-top: 30px; }
       .panel-two-col { flex-direction: column; }
       .panel-portrait { width: 100%; max-width: 480px; max-width: none; }
-      .stats-bar { display: none; }
       .guide-panel { padding: 56px 28px; }
       .city-grid { grid-template-columns: repeat(2, 1fr); }
       #panel-6 { background-image: url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260611_013323_3685bbbb-9aa7-4cda-aa06-7eb222f82555.png) !important; }
-    }
-    @media (max-width: 480px) {
-      .stats-bar { padding: 16px 24px; gap: 32px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; justify-content: flex-start; }
-      .stat-item { flex: 0 0 auto; }
-      .stat-divider { display: none; }
     }
     .skip-nav {
       position: absolute;
@@ -177,30 +165,19 @@
   <a href="#main-content" class="skip-nav">Skip to main content</a>
   <div class="page-frame">
 
-  <header role="banner">
-  <nav class="ve-topnav" aria-label="Main navigation">
-    <a class="ve-topnav-logo" href="#">
-      <img src="https://vegansexplore-com.vercel.app/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE" style="height:36px;width:auto;display:block;filter:brightness(0) invert(1);">
-    </a>
-  </nav>
-
   <main id="main-content">
   <section class="hero" aria-labelledby="hero-heading">
     <div class="hero-inner">
+      <a class="ve-announce" id="veAnnounce" href="#" aria-label="Special announcements">
+        <span class="ve-announce-icon" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.9a2 2 0 1 1-3.2 0"/></svg>
+        </span>
+        <span class="ve-announce-text" id="veAnnounceText">Founding Membership: $11 once, forever - closes July 13</span>
+      </a>
       <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
       <h1 id="hero-heading">Help Us Build<br><em>Your City.</em></h1>
       <p class="hero-sub">We're building the Vegan world's home base, city by city.</p>
       <p class="hero-sub-line2">Take the guided tour and find out how to be part of it from day one.</p>
-      <p class="countdown-title" aria-hidden="true">Founding Membership Closes In</p>
-      <div class="countdown" id="countdown" aria-label="Countdown to July 13 launch">
-        <div class="countdown-block"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit">Days</span></div>
-        <div class="countdown-sep" aria-hidden="true">:</div>
-        <div class="countdown-block"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-unit">Hours</span></div>
-        <div class="countdown-sep" aria-hidden="true">:</div>
-        <div class="countdown-block"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-unit">Mins</span></div>
-        <div class="countdown-sep" aria-hidden="true">:</div>
-        <div class="countdown-block"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-unit">Secs</span></div>
-      </div>
       <div class="hero-ctas">
         <button class="btn-hero-primary" onclick="startGuide()" aria-label="Start the guided tour">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
@@ -208,21 +185,8 @@
         </button>
         <a class="btn-hero-secondary" href="/login">Log In</a>
       </div>
-      <p class="hero-fine">Founding membership closes July 13, 2026.</p>
     </div>
   </section>
-
-  <div class="stats-bar" role="list" aria-label="Platform statistics">
-    <div class="stat-item" role="listitem"><span class="stat-num">2,800+</span><span class="stat-label">Businesses Listed</span></div>
-    <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item" role="listitem"><span class="stat-num">9</span><span class="stat-label">Launch Regions</span></div>
-    <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item" role="listitem"><span class="stat-num">5</span><span class="stat-label">Guide Paths</span></div>
-    <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item" role="listitem"><span class="stat-num">Jul 13</span><span class="stat-label">Launch Date</span></div>
-    <div class="stat-divider" aria-hidden="true"></div>
-    <div class="stat-item" role="listitem"><span class="stat-num">$11</span><span class="stat-label">Founding Member</span></div>
-  </div>
 
   </main>
   <footer style="background:#1a1a1a; padding:28px 56px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
@@ -361,17 +325,22 @@
 
   <script>
     (function() {
-      const target = new Date('2026-07-13T00:00:00-04:00').getTime();
-      function tick() {
-        const diff = target - Date.now();
-        if (diff <= 0) { ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '00'; }); return; }
-        const fmt = n => String(Math.floor(n)).padStart(2,'0');
-        document.getElementById('cd-days').textContent  = fmt(diff / 86400000);
-        document.getElementById('cd-hours').textContent = fmt((diff % 86400000) / 3600000);
-        document.getElementById('cd-mins').textContent  = fmt((diff % 3600000) / 60000);
-        document.getElementById('cd-secs').textContent  = fmt((diff % 60000) / 1000);
-      }
-      tick(); setInterval(tick, 1000);
+      const messages = [
+        { text: 'Founding Membership: $11 once, forever - closes July 13', action: function(){ startGuide(); } },
+        { text: 'New: guided city launches rolling out through July', action: function(){ startGuide(); } }
+      ];
+      let idx = 0;
+      const el = document.getElementById('veAnnounceText');
+      const link = document.getElementById('veAnnounce');
+      link.addEventListener('click', function(e){ e.preventDefault(); messages[idx].action(); });
+      setInterval(function() {
+        el.classList.add('fading');
+        setTimeout(function() {
+          idx = (idx + 1) % messages.length;
+          el.textContent = messages[idx].text;
+          el.classList.remove('fading');
+        }, 250);
+      }, 6000);
     })();
     const PANEL_COUNT = 6;
     let currentPanel = 0;
