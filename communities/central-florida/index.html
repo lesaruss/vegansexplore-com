@@ -815,7 +815,14 @@
 
   VERegionDirectory.init({
     mount: 've-region-directory',
-    matchListing: function (l) { return !!(l.address_state === 'FL' && ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala'].indexOf(l.address_city) > -1); }
+    matchListing: function (l) { return !!(l.address_state === 'FL' && ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala'].indexOf(l.address_city) > -1); },
+    counties: {
+      'Orange': ['Orlando', 'Apopka'],
+      'Seminole': ['Altamonte Springs'],
+      'Polk': ['Lakeland', 'Winter Haven'],
+      'Sumter': ['The Villages'],
+      'Marion': ['Ocala']
+    }
   });
 
   // Deep-link support: ?tab=<id> opens directly on that hub tab (e.g. linked from a listing breadcrumb)
