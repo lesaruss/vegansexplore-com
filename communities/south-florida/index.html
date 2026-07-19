@@ -1004,7 +1004,12 @@
 
   VERegionDirectory.init({
     mount: 've-region-directory',
-    matchListing: function (l) { return !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1); }
+    matchListing: function (l) { return !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1); },
+    counties: {
+      'Miami-Dade': ['Miami', 'Miami Beach', 'North Miami', 'Aventura', 'Doral'],
+      'Broward': ['Fort Lauderdale', 'Hollywood', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate'],
+      'Palm Beach': ['West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Tequesta', 'Loxahatchee']
+    }
   });
 
   // Deep-link support: ?tab=<id> opens directly on that hub tab (e.g. linked from a listing breadcrumb)
