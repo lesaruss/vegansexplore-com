@@ -1,5 +1,5 @@
 /* VE Region Directory — shared, reusable component
-   Mimics the feel of /directory (category tabs, subcat pills, Featured/Top10/All Listings/Online
+   Mimics the feel of /directory (category tabs, subcat pills, Top10/All Listings/Online
    views, sort, real listing links, votes) but scoped to a single region's real listings.
    Used by each /communities/[city]/index.html page. Self-contained: injects its own CSS,
    fetches real data from public.listings, and never sends the visitor to the unscoped /directory.
@@ -105,48 +105,49 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function skeletonForCat(cat, config) {
-    var subcatBtns = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>' +
-      cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
-      (cat.hasVF ? '<button class="subcat-pill" data-vrd-subcat="__vf" style="border-color:#5EC47A;color:#2d7a4f">Vegan Friendly</button>' : '') +
-      '<button class="subcat-pill" data-vrd-subcat="__closed" style="border-color:#999;color:#666">Closed</button>';
-
-    var counties = config && config.counties;
-    var countyNames = counties ? Object.keys(counties) : [];
-
-    var sortBar = function (view) {
-      var geo = '';
-      if (countyNames.length) {
-        geo = '<span class="geo-label">Filter by</span>' +
-          '<select aria-label="Filter by county" class="sort-select" data-vrd-county="' + cat.key + '|' + view + '">' +
-          '<option value="">All Counties</option>' +
-          countyNames.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('') +
-          '</select>' +
-          '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '|' + view + '" style="display:none">' +
-          '<option value="">All Cities</option>' +
-          '</select>';
-      }
-      return '<div class="sort-bar"><span class="sort-label">Sort by</span>' +
+  function buildBar(cat, view, config, includeSort, includeGeo) {
+    var sortHtml = includeSort
+      ? ('<span class="sort-label">Sort by</span>' +
         '<select aria-label="Sort listings" class="sort-select" data-vrd-sort="' + cat.key + '|' + view + '">' +
         '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="recent">Most Recent</option><option value="added">First Added</option>' +
-        '</select>' + geo + '</div>';
-    };
+        '</select>')
+      : '';
+    var geoHtml = '';
+    if (includeGeo) {
+      if (config && config.counties) {
+        geoHtml = '<span class="geo-label">Filter by</span>' +
+          '<select aria-label="Filter by county" class="sort-select" data-vrd-county="' + cat.key + '|' + view + '">' +
+          '<option value="">All Counties</option></select>' +
+          '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '|' + view + '" style="display:none">' +
+          '<option value="">All Cities</option></select>';
+      } else {
+        geoHtml = '<span class="geo-label">Filter by</span>' +
+          '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '|' + view + '">' +
+          '<option value="">All Cities</option></select>';
+      }
+    }
+    var vfBtn = cat.hasVF ? '<button class="subcat-pill" data-vrd-subcat="__vf" style="border-color:#5EC47A;color:#2d7a4f">Vegan Friendly</button>' : '';
+    var closedBtn = '<button class="subcat-pill" data-vrd-subcat="__closed" style="border-color:#999;color:#666">Closed</button>';
+    return '<div class="sort-bar">' + sortHtml + geoHtml + vfBtn + closedBtn + '</div>';
+  }
+
+  function skeletonForCat(cat, config) {
+    var subcatBtns = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>' +
+      cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('');
 
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
       '<div class="subcat-pills">' + subcatBtns + '</div>' +
       '<div class="pill-row"><div class="pill-group">' +
-      '<button class="pill active" data-vrd-pill="' + cat.key + '|featured">Featured</button>' +
       '<button class="pill" data-vrd-pill="' + cat.key + '|top10">Top 10</button>' +
-      '<button class="pill" data-vrd-pill="' + cat.key + '|listings">All Listings</button>' +
+      '<button class="pill active" data-vrd-pill="' + cat.key + '|listings">All Listings</button>' +
       '<button class="pill" data-vrd-pill="' + cat.key + '|online">Online <span class="pill-count" id="' + cat.key + '-online-count">0</span></button>' +
       '</div><div class="pill-row-right">' +
       '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
       '<option value="24">Show 24</option><option value="48">Show 48</option><option value="111" selected>Show 111</option>' +
       '</select></div></div>' +
-      '<div class="sub-panel active" id="' + cat.key + '-featured">' + sortBar('featured') + '<div class="rank-grid" id="' + cat.key + '-featured-grid"></div></div>' +
-      '<div class="sub-panel" id="' + cat.key + '-top10"><div class="rank-grid" id="' + cat.key + '-top10-grid"></div></div>' +
-      '<div class="sub-panel" id="' + cat.key + '-listings">' + sortBar('listings') + '<div class="rank-grid" id="' + cat.key + '-listings-grid"></div></div>' +
-      '<div class="sub-panel" id="' + cat.key + '-online">' + sortBar('online') + '<div class="rank-grid" id="' + cat.key + '-online-grid"></div></div>' +
+      '<div class="sub-panel active" id="' + cat.key + '-listings">' + buildBar(cat, 'listings', config, true, true) + '<div class="rank-grid" id="' + cat.key + '-listings-grid"></div></div>' +
+      '<div class="sub-panel" id="' + cat.key + '-top10">' + buildBar(cat, 'top10', config, false, true) + '<div class="rank-grid" id="' + cat.key + '-top10-grid"></div></div>' +
+      '<div class="sub-panel" id="' + cat.key + '-online">' + buildBar(cat, 'online', config, true, false) + '<div class="rank-grid" id="' + cat.key + '-online-grid"></div></div>' +
       (cat.hasVF ? '<div class="sub-panel" id="' + cat.key + '-vf"><div class="rank-grid" id="' + cat.key + '-vf-grid"></div></div>' : '') +
       '<div class="sub-panel" id="' + cat.key + '-closed"><div class="rank-grid" id="' + cat.key + '-closed-grid"></div></div>' +
       '</div>';
@@ -249,7 +250,36 @@
     });
   }
 
-  function populateGrids(root, approved, closed) {
+  function populateGeoBar(barEl, config, listings) {
+    if (!barEl) return;
+    var countySel = barEl.querySelector('[data-vrd-county]');
+    var citySel = barEl.querySelector('[data-vrd-city]');
+    if (!countySel && !citySel) return;
+    var seen = {};
+    var distinctCities = [];
+    listings.forEach(function (l) {
+      if (l.address_city && !seen[l.address_city]) { seen[l.address_city] = true; distinctCities.push(l.address_city); }
+    });
+    distinctCities.sort();
+    if (countySel && config.counties) {
+      var pruned = {};
+      Object.keys(config.counties).forEach(function (cn) {
+        var cities = config.counties[cn].filter(function (c) { return seen[c]; });
+        if (cities.length) pruned[cn] = cities;
+      });
+      countySel.innerHTML = '<option value="">All Counties</option>' +
+        Object.keys(pruned).map(function (cn) { return '<option value="' + esc(cn) + '">' + esc(cn) + '</option>'; }).join('');
+      countySel.dataset.cities = JSON.stringify(pruned);
+      countySel.value = '';
+      if (citySel) { citySel.innerHTML = '<option value="">All Cities</option>'; citySel.style.display = 'none'; citySel.value = ''; }
+    } else if (citySel) {
+      citySel.innerHTML = '<option value="">All Cities</option>' +
+        distinctCities.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+      citySel.value = '';
+    }
+  }
+
+  function populateGrids(root, config, approved, closed) {
     closed = closed || [];
     var tabs = {}, closedTabs = {};
     CAT_CONFIG.forEach(function (c) { tabs[c.key] = []; closedTabs[c.key] = []; });
@@ -273,22 +303,20 @@
 
       var online = regular.filter(isOnline);
       var physical = regular.filter(function (l) { return !isOnline(l); });
-      var featured = regular.filter(function (l) { return l.is_featured; });
-      if (featured.length < 5) featured = regular.slice(0, Math.min(regular.length, 20));
-
-      var featuredGrid = root.querySelector('#' + tab + '-featured-grid');
-      if (featuredGrid) featuredGrid.innerHTML = featured.length ? featured.map(makeBrowseCard).join('') : '<p class="vrd-empty">No listings yet in this category.</p>';
 
       var listingsGrid = root.querySelector('#' + tab + '-listings-grid');
       if (listingsGrid) listingsGrid.innerHTML = physical.length ? physical.map(makeBrowseCard).join('') : '<p class="vrd-empty">No listings yet in this category.</p>';
+      populateGeoBar(root.querySelector('#' + tab + '-listings .sort-bar'), config, physical);
 
       var onlineGrid = root.querySelector('#' + tab + '-online-grid');
       if (onlineGrid) onlineGrid.innerHTML = online.length ? online.map(makeBrowseCard).join('') : '<p class="vrd-empty">No online-only listings for this region yet.</p>';
       var onlineCount = root.querySelector('#' + tab + '-online-count');
       if (onlineCount) onlineCount.textContent = online.length;
 
+      var top10Data = regular.slice(0, 10);
       var top10Grid = root.querySelector('#' + tab + '-top10-grid');
-      if (top10Grid) top10Grid.innerHTML = regular.slice(0, 10).map(function (l, i) { return makeTop10Card(l, i + 1); }).join('');
+      if (top10Grid) top10Grid.innerHTML = top10Data.map(function (l, i) { return makeTop10Card(l, i + 1); }).join('');
+      populateGeoBar(root.querySelector('#' + tab + '-top10 .sort-bar'), config, top10Data);
 
       if (cfg.hasVF) {
         var vfGrid = root.querySelector('#' + tab + '-vf-grid');
@@ -312,7 +340,7 @@
     var special = currentSubcat(panel);
     if (special === '__vf' || special === '__closed') return;
     var activePill = panel.querySelector('.pill.active');
-    var view = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'featured';
+    var view = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'listings';
     var catKey = panel.id.replace('board-', '');
     var subPanel = panel.querySelector('#' + catKey + '-' + view);
     if (!subPanel) return;
@@ -323,11 +351,13 @@
     var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
     var county = countySel ? countySel.value : '';
     var city = citySel ? citySel.value : '';
+    var countyMap = {};
+    if (countySel) { try { countyMap = JSON.parse(countySel.dataset.cities || '{}'); } catch (e) {} }
     grid.querySelectorAll('.rank-card').forEach(function (card) {
       var subOk = (special === 'All') || (card.dataset.subcat === special);
       var geoOk = true;
       if (city) { geoOk = card.dataset.city === city; }
-      else if (county && state.counties && state.counties[county]) { geoOk = state.counties[county].indexOf(card.dataset.city) > -1; }
+      else if (county && countyMap[county]) { geoOk = countyMap[county].indexOf(card.dataset.city) > -1; }
       card.style.display = (subOk && geoOk) ? '' : 'none';
     });
   }
@@ -377,7 +407,7 @@
         }
         if (pillRow) pillRow.style.display = '';
         var activePill = panel.querySelector('.pill.active');
-        var activeView = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'featured';
+        var activeView = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'listings';
         var activePanel = panel.querySelector('#' + catKey + '-' + activeView);
         if (activePanel) activePanel.style.display = '';
         applyPanelFilters(panel, state);
@@ -391,7 +421,9 @@
         var bar = sel.closest('.sort-bar');
         var citySel = bar ? bar.querySelector('[data-vrd-city="' + cat + '|' + view + '"]') : null;
         var county = sel.value;
-        var cities = (state.counties && state.counties[county]) || [];
+        var map = {};
+        try { map = JSON.parse(sel.dataset.cities || '{}'); } catch (e) {}
+        var cities = map[county] || [];
         if (citySel) {
           citySel.innerHTML = '<option value="">All Cities</option>' +
             cities.map(function (c) { return '<option value="' + c.replace(/"/g, '&quot;') + '">' + c + '</option>'; }).join('');
@@ -470,8 +502,8 @@
     var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,color&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
-      .then(function (data) { populateGrids(root, approved, (data || []).filter(config.matchListing)); })
-      .catch(function () { populateGrids(root, approved, []); });
+      .then(function (data) { populateGrids(root, config, approved, (data || []).filter(config.matchListing)); })
+      .catch(function () { populateGrids(root, config, approved, []); });
   }
 
   window.VERegionDirectory = {
