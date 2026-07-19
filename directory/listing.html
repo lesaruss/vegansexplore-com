@@ -48,6 +48,14 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .vote-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
 .vote-count-display{font-size:10px;font-weight:700;color:#888;text-align:center;letter-spacing:0.08em}
 
+/* SOUTH FLORIDA REGION HERO — city-background treatment, scoped so other regions keep the flat #111 hero */
+.listing-hero.city-bg{position:relative;background-color:#111;background-size:cover;background-position:center center}
+.listing-hero.city-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(6,14,10,0.82) 0%, rgba(6,14,10,0.68) 45%, rgba(6,14,10,0.88) 100%)}
+.listing-hero.city-bg .listing-hero-avatar,.listing-hero.city-bg .listing-hero-content{position:relative}
+.listing-hero.city-bg .listing-breadcrumb{color:rgba(255,255,255,0.72)}
+.listing-hero.city-bg .vote-count-display{color:rgba(255,255,255,0.75)}
+.listing-hero.city-bg .badge-verified{background:rgba(6,14,10,0.55);color:#8ff0ac;border-color:rgba(143,240,172,0.6)}
+
 /* QUICK INFO BAR */
 .info-bar{background:#f9f9f9;border-bottom:1px solid var(--ve-border);padding:12px 40px;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
 .info-chip{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--ve-text-75);letter-spacing:0.04em}
@@ -953,7 +961,10 @@ function menuTabContent(items){
   return html;
 }
 
+var SF_CITIES = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
+
 function renderListing(l){
+  var isSoFlo = !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1);
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
 
@@ -1056,7 +1067,7 @@ function renderListing(l){
 
   // Build page
   document.getElementById('listing-root').innerHTML =
-    '<div class="listing-hero">'+
+    '<div class="listing-hero'+(isSoFlo?' city-bg':'')+'"'+(isSoFlo?' style="background-image:url(\'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_144549_57bc2592-c910-4189-94d7-828e4af569a5_min.webp\')"':'')+'>'+
       '<div class="listing-hero-avatar" style="background:'+esc(avBg)+'">'+av+'</div>'+
       '<div class="listing-hero-content">'+
         '<div class="listing-hero-body">'+
@@ -1064,7 +1075,7 @@ function renderListing(l){
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
           '<div class="listing-badges">'+
             '<span class="badge-cat">'+esc(l.category)+'</span>'+
-            (l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?'color:#777;border-color:#999':'color:#5EC47A;border-color:#5EC47A')+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
+            (l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:#7fe0a0;border-color:#7fe0a0':'color:#5EC47A;border-color:#5EC47A'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
             verifiedBadge+
           '</div>'+
           (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
