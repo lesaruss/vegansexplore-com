@@ -37,11 +37,14 @@
     '.ve-mob-signout:hover{background:#fef2f2;}',
     '.ve-mob-lesars{display:inline-block;background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D;font-size:10px;font-weight:800;letter-spacing:0.06em;padding:3px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;}',
     '@media(max-width:480px){.ve-nav-inner{padding:0 16px;}}',
-    '.ve-desktop-links{display:flex;align-items:center;gap:0;margin-right:16px;}',
-    '.ve-desktop-links a{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#1a1a1a;text-decoration:none;padding:7px 11px;border-radius:4px;transition:background 0.1s,color 0.1s;white-space:nowrap;}',
-    '.ve-desktop-links a:hover{background:#f5f5f5;color:#22C55E;}',
-    '.ve-desktop-links a[aria-current="page"]{color:#22C55E;}',
-    '@media(max-width:900px){.ve-desktop-links{display:none;}}',
+    '.ve-announce-wrap{display:flex;align-items:center;min-width:0;margin-right:16px;}',
+    '.ve-announce{display:flex;align-items:center;gap:8px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:30px;padding:6px 14px 6px 6px;cursor:pointer;text-decoration:none;max-width:360px;min-width:0;transition:background 0.15s,border-color 0.15s;}',
+    '.ve-announce:hover{background:#e3f9e7;border-color:#9fe6ac;}',
+    '.ve-announce-icon{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:#F69820;display:flex;align-items:center;justify-content:center;}',
+    '.ve-announce-text{font-size:11px;font-weight:700;color:#15803D;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1;transition:opacity 0.25s;}',
+    '.ve-announce-text.fading{opacity:0;}',
+    '.ve-nav-right-wrap{display:flex;align-items:center;}',
+    '@media(max-width:900px){.ve-announce{max-width:200px;} .ve-nav-right-wrap{display:none;}}',
     '.ve-va-panel{padding:14px 20px 18px;position:relative;}',
     '.ve-va-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(0,0,0,0.4);margin-bottom:10px;}',
     '.ve-va-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:10px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:6px;background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;transition:border-color 0.1s;}',
@@ -172,6 +175,16 @@
   }
 
   /* ---- Nav HTML ---- */
+  var announceHtml =
+    '<div class="ve-announce-wrap">' +
+      '<a class="ve-announce" id="ve-announce" href="/join" aria-label="Special announcements">' +
+        '<span class="ve-announce-icon" aria-hidden="true">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.9a2 2 0 1 1-3.2 0"/></svg>' +
+        '</span>' +
+        '<span class="ve-announce-text" id="ve-announce-text">Founding Membership: $11 once, forever - closes July 13</span>' +
+      '</a>' +
+    '</div>';
+
   var html =
     '<nav class="ve-nav" role="navigation" aria-label="Main navigation">' +
       '<div class="ve-nav-inner">' +
@@ -179,14 +192,8 @@
           '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">' +
         '</a>' +
         '<div class="ve-nav-spacer"></div>' +
-        '<div class="ve-desktop-links">' +
-          '<a href="/welcome"' + cur('/welcome') + '>Welcome</a>' +
-          '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
-          '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
-          '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
-          '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
-        '</div>' +
-        desktopRight +
+        announceHtml +
+        '<div class="ve-nav-right-wrap">' + desktopRight + '</div>' +
         '<button class="ve-hamburger" id="ve-hamburger-btn" aria-label="Open navigation" aria-expanded="false" aria-controls="ve-mob-menu">' + iconMenu + '</button>' +
       '</div>' +
     '</nav>' +
@@ -204,6 +211,27 @@
     '</div>';
 
   document.currentScript.insertAdjacentHTML('beforebegin', html);
+
+  /* ---- Special Announcements pill: rotates messages, links to real pages (safe on every route) ---- */
+  (function() {
+    var messages = [
+      { text: 'Founding Membership: $11 once, forever - closes July 13', href: '/join' },
+      { text: 'New: guided city launches rolling out through July', href: '/welcome' }
+    ];
+    var idx = 0;
+    var textEl = document.getElementById('ve-announce-text');
+    var linkEl = document.getElementById('ve-announce');
+    if (!textEl || !linkEl) return;
+    setInterval(function() {
+      textEl.classList.add('fading');
+      setTimeout(function() {
+        idx = (idx + 1) % messages.length;
+        textEl.textContent = messages[idx].text;
+        linkEl.setAttribute('href', messages[idx].href);
+        textEl.classList.remove('fading');
+      }, 250);
+    }, 6000);
+  })();
 
   /* ---- Member menu toggle (desktop) ---- */
   if (loggedIn) {
