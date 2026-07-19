@@ -987,7 +987,7 @@ function renderListing(l){
 
   // Breadcrumb
   var breadcrumb = community
-    ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / '+esc(l.name)+'</div>'
+    ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a> / '+esc(l.name)+'</div>'
     : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+catType+'">'+esc(dirLabel)+'</a> / '+esc(l.name)+'</div>';
 
   // Avatar
