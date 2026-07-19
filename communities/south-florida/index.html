@@ -242,7 +242,12 @@
     .mb-toggle-caret { flex-shrink: 0; transition: transform 0.2s ease; }
     .member-bar.mb-collapsed .mb-toggle-caret { transform: rotate(180deg); }
     .mb-toggle-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
-    .member-bar-title { font-size: 13px; font-weight: 800; letter-spacing: 0.02em; color: #fff; white-space: nowrap; }
+    .member-bar-left { display: flex; align-items: center; gap: 16px; }
+    .mb-breadcrumb { display: flex; align-items: center; gap: 8px; }
+    .mb-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
+    .mb-breadcrumb a:hover { color: rgba(255,255,255,0.85); }
+    .mb-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.25); }
+    .mb-breadcrumb .current { color: rgba(255,255,255,0.85); }
     .hero { transition: max-height 0.32s ease, min-height 0.32s ease, opacity 0.25s ease; }
     .hero.hero-collapsed { min-height: 0; max-height: 0; opacity: 0; }
 
@@ -421,13 +426,19 @@
 
   <!-- MEMBER STATUS BAR -->
   <div class="member-bar" id="member-bar" role="complementary" aria-label="Community hub banner control">
-    <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="hero-section" onclick="toggleMemberBar()">
-      <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
-      <span class="mb-toggle-label" id="member-bar-toggle-label">Collapse</span>
-    </button>
+    <div class="member-bar-left">
+      <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="hero-section" onclick="toggleMemberBar()">
+        <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+        <span class="mb-toggle-label" id="member-bar-toggle-label">Collapse</span>
+      </button>
+      <nav class="mb-breadcrumb" aria-label="Breadcrumb">
+        <a href="/communities">Communities</a>
+        <span aria-hidden="true">/</span>
+        <span class="current" aria-current="page">South Florida</span>
+      </nav>
+    </div>
     <div class="member-bar-actions">
       <a href="/passport" class="btn-join" style="font-size:10px;padding:9px 18px;">Get Passport</a>
-      <span class="member-bar-title" id="member-bar-title">SoFlo Vegans</span>
     </div>
   </div>
 
