@@ -63,7 +63,8 @@
     + '.vrd-root .pill-row-right{display:flex;align-items:center;gap:8px;flex-shrink:0}'
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
-    + '.vrd-root .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px}'
+    + '.vrd-root .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}'
+    + '.vrd-root .geo-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-left:8px}'
     + '.vrd-root .sort-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa}'
     + '.vrd-root .sort-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:5px 26px 5px 12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}'
     + '.vrd-root .sort-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
@@ -104,17 +105,31 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function skeletonForCat(cat) {
+  function skeletonForCat(cat, config) {
     var subcatBtns = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>' +
       cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
       (cat.hasVF ? '<button class="subcat-pill" data-vrd-subcat="__vf" style="border-color:#5EC47A;color:#2d7a4f">Vegan Friendly</button>' : '') +
       '<button class="subcat-pill" data-vrd-subcat="__closed" style="border-color:#999;color:#666">Closed</button>';
 
+    var counties = config && config.counties;
+    var countyNames = counties ? Object.keys(counties) : [];
+
     var sortBar = function (view) {
+      var geo = '';
+      if (countyNames.length) {
+        geo = '<span class="geo-label">Filter by</span>' +
+          '<select aria-label="Filter by county" class="sort-select" data-vrd-county="' + cat.key + '|' + view + '">' +
+          '<option value="">All Counties</option>' +
+          countyNames.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('') +
+          '</select>' +
+          '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '|' + view + '" style="display:none">' +
+          '<option value="">All Cities</option>' +
+          '</select>';
+      }
       return '<div class="sort-bar"><span class="sort-label">Sort by</span>' +
         '<select aria-label="Sort listings" class="sort-select" data-vrd-sort="' + cat.key + '|' + view + '">' +
         '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="recent">Most Recent</option><option value="added">First Added</option>' +
-        '</select></div>';
+        '</select>' + geo + '</div>';
     };
 
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
@@ -137,12 +152,12 @@
       '</div>';
   }
 
-  function renderSkeleton() {
+  function renderSkeleton(config) {
     var tabs = '<div class="cat-tabs" role="tablist">' +
       CAT_CONFIG.map(function (c) {
         return '<button class="cat-tab' + (c.key === 'food' ? ' active' : '') + '" data-vrd-tab="' + c.key + '" role="tab">' + c.icon + ' ' + c.label + '</button>';
       }).join('') + '</div>';
-    var panels = CAT_CONFIG.map(skeletonForCat).join('');
+    var panels = CAT_CONFIG.map(function (c) { return skeletonForCat(c, config); }).join('');
     return '<div class="vrd-root">' + tabs + panels + '</div>';
   }
 
@@ -164,7 +179,7 @@
   function makeBrowseCard(l, idx) {
     var votes = (l.favorites_count || 0) + (l.likes_count || 0);
     var subcat = l.category || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
@@ -179,7 +194,7 @@
     var pts = Math.max(0, 111 - (rank - 1) * 5);
     var rankClass = rank <= 3 ? 'rank-num top3' : 'rank-num';
     var ptsColor = rank <= 3 ? '#5EC47A' : rank <= 7 ? '#888' : '#aaa';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + (rank - 1) + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + (rank - 1) + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '">' +
       '<div class="rank-num-col"><span class="' + rankClass + '">' + rank + '</span><span class="rank-pts" style="color:' + ptsColor + '">+' + pts + 'pts</span></div>' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
@@ -192,7 +207,7 @@
   function makeClosedCard(l, idx) {
     var votes = (l.favorites_count || 0) + (l.likes_count || 0);
     var subcat = l.category || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" style="opacity:.7">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" style="opacity:.7">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name" style="color:#888">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
@@ -288,6 +303,35 @@
     bindCardClicks(root);
   }
 
+  function currentSubcat(panel) {
+    var active = panel.querySelector('.subcat-pill.sc-active');
+    return active ? active.getAttribute('data-vrd-subcat') : 'All';
+  }
+
+  function applyPanelFilters(panel, state) {
+    var special = currentSubcat(panel);
+    if (special === '__vf' || special === '__closed') return;
+    var activePill = panel.querySelector('.pill.active');
+    var view = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'featured';
+    var catKey = panel.id.replace('board-', '');
+    var subPanel = panel.querySelector('#' + catKey + '-' + view);
+    if (!subPanel) return;
+    var grid = subPanel.querySelector('.rank-grid');
+    if (!grid) return;
+    var bar = subPanel.querySelector('.sort-bar');
+    var countySel = bar ? bar.querySelector('[data-vrd-county]') : null;
+    var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
+    var county = countySel ? countySel.value : '';
+    var city = citySel ? citySel.value : '';
+    grid.querySelectorAll('.rank-card').forEach(function (card) {
+      var subOk = (special === 'All') || (card.dataset.subcat === special);
+      var geoOk = true;
+      if (city) { geoOk = card.dataset.city === city; }
+      else if (county && state.counties && state.counties[county]) { geoOk = state.counties[county].indexOf(card.dataset.city) > -1; }
+      card.style.display = (subOk && geoOk) ? '' : 'none';
+    });
+  }
+
   function wireControls(root, state) {
     root.querySelectorAll('[data-vrd-tab]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -336,10 +380,33 @@
         var activeView = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'featured';
         var activePanel = panel.querySelector('#' + catKey + '-' + activeView);
         if (activePanel) activePanel.style.display = '';
-        panel.querySelectorAll('.rank-card').forEach(function (card) {
-          if (special === 'All') { card.style.display = ''; return; }
-          card.style.display = card.dataset.subcat === special ? '' : 'none';
-        });
+        applyPanelFilters(panel, state);
+      });
+    });
+
+    root.querySelectorAll('[data-vrd-county]').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        var parts = sel.getAttribute('data-vrd-county').split('|');
+        var cat = parts[0], view = parts[1];
+        var bar = sel.closest('.sort-bar');
+        var citySel = bar ? bar.querySelector('[data-vrd-city="' + cat + '|' + view + '"]') : null;
+        var county = sel.value;
+        var cities = (state.counties && state.counties[county]) || [];
+        if (citySel) {
+          citySel.innerHTML = '<option value="">All Cities</option>' +
+            cities.map(function (c) { return '<option value="' + c.replace(/"/g, '&quot;') + '">' + c + '</option>'; }).join('');
+          citySel.value = '';
+          citySel.style.display = county ? '' : 'none';
+        }
+        var panel = sel.closest('.board-panel');
+        applyPanelFilters(panel, state);
+      });
+    });
+
+    root.querySelectorAll('[data-vrd-city]').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        var panel = sel.closest('.board-panel');
+        applyPanelFilters(panel, state);
       });
     });
 
@@ -412,7 +479,7 @@
       var root = document.getElementById(config.mount);
       if (!root) return;
       injectStyleOnce();
-      root.innerHTML = renderSkeleton();
+      root.innerHTML = renderSkeleton(config);
       wireControls(root, config);
       fetchAll(root, config);
     }
