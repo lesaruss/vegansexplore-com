@@ -249,6 +249,10 @@
     .member-bar.mb-collapsed .mb-toggle-caret { transform: rotate(180deg); }
     .member-bar.mb-collapsed { padding-top: 8px; padding-bottom: 8px; }
     .member-bar.mb-collapsed .member-bar-text { display: none; }
+    .member-bar-title { display: none; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; color: #fff; white-space: nowrap; }
+    .member-bar.mb-collapsed .member-bar-title { display: inline; }
+    .hero { transition: max-height 0.32s ease, min-height 0.32s ease, opacity 0.25s ease; }
+    .hero.hero-collapsed { min-height: 0; max-height: 0; opacity: 0; }
 
     /* FOOTER */
     .footer { background: #1a1a1a; padding: 36px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
@@ -395,7 +399,7 @@
   <script src="/public/ve-auth.js"></script>
 
   <!-- HERO -->
-  <section class="hero" aria-labelledby="hub-heading">
+  <section class="hero" id="hero-section" aria-labelledby="hub-heading">
     <div class="hero-photo" aria-hidden="true">
       <img src="/communities/south-florida/banner.jpg" alt="South Florida skyline with palm trees and water">
     </div>
@@ -426,11 +430,12 @@
   <div class="member-bar" id="member-bar" role="complementary" aria-label="Community status">
     <div class="member-bar-left">
       <div class="member-bar-dot" aria-hidden="true"></div>
+      <span class="member-bar-title" id="member-bar-title">SoFlo Vegans</span>
       <p class="member-bar-text"><strong>Region.</strong> Free for Passport members. Full access with Standard membership.</p>
     </div>
     <div class="member-bar-actions">
       <a href="/passport" class="btn-join" style="font-size:10px;padding:9px 18px;">Get Passport</a>
-      <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="member-bar" aria-label="Collapse community status bar" onclick="toggleMemberBar()">
+      <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="member-bar" aria-label="Collapse community banner" onclick="toggleMemberBar()">
         <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
       </button>
     </div>
@@ -800,11 +805,13 @@
   function setMemberBarCollapsed(collapsed) {
     var bar = document.getElementById('member-bar');
     var btn = document.getElementById('member-bar-toggle');
+    var hero = document.getElementById('hero-section');
     if (!bar) return;
     bar.classList.toggle('mb-collapsed', collapsed);
+    if (hero) hero.classList.toggle('hero-collapsed', collapsed);
     if (btn) {
       btn.setAttribute('aria-expanded', String(!collapsed));
-      btn.setAttribute('aria-label', collapsed ? 'Expand community status bar' : 'Collapse community status bar');
+      btn.setAttribute('aria-label', collapsed ? 'Expand community banner' : 'Collapse community banner');
     }
   }
   function toggleMemberBar() {
