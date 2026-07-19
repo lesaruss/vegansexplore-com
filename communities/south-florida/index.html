@@ -350,6 +350,30 @@
     .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
     .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
     .footer-social .social-icon svg { display: block; }
+
+    /* BILLBOARD / AD INVENTORY — ported verbatim from directory/listing.html */
+    .bb-wrap{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:16px;margin-bottom:14px}
+    .bb-header{font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--ve-border)}
+    .bb-rotator{position:relative;min-height:80px}
+    .bb-slide{display:none}
+    .bb-slide.active{display:block}
+    .bb-placeholder{width:100%;background:#f5f5f5;border:1px dashed #ddd;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 16px}
+    .bb-tall{height:220px}
+    .bb-stacked{display:flex;flex-direction:column;gap:10px}
+    .bb-stacked .bb-placeholder{height:125px;padding:16px}
+    .bb-ph-icon{color:#ccc}
+    .bb-ph-text{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#ccc}
+    .bb-ph-dim{font-size:9px;font-weight:600;color:#ddd}
+    .bb-ad-img{width:100%;display:block;border-radius:8px}
+    .bb-ad-link{display:block}
+    .bb-dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
+    .bb-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);border:none;cursor:pointer;padding:0;transition:.15s}
+    .bb-dot.active{background:#5EC47A;width:18px;border-radius:3px}
+    .bb-tag{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);text-align:center;margin-top:10px}
+
+    /* NEWS TAB content/sidebar split so the Billboard has somewhere to live */
+    .hub-content-grid{display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start}
+    @media(max-width:900px){.hub-content-grid{grid-template-columns:1fr}.bb-wrap{order:999}}
   </style>
 </head>
 <body>
@@ -461,39 +485,69 @@
 
   <!-- ========================= NEWS SECTION ========================= -->
   <section class="hub-section active" id="tab-news" role="tabpanel" aria-labelledby="tab-btn-news">
-    <div class="section-hdr">
-      <div>
-        <h2 class="section-title">Local News &amp; Updates</h2>
-        <p class="section-sub">What's happening in the South Florida vegan community.</p>
-      </div>
-      <a href="#" class="section-action">All stories</a>
-    </div>
+    <div class="hub-content-grid">
+      <div class="hub-content-main">
+        <div class="section-hdr">
+          <div>
+            <h2 class="section-title">Local News &amp; Updates</h2>
+            <p class="section-sub">What's happening in the South Florida vegan community.</p>
+          </div>
+          <a href="#" class="section-action">All stories</a>
+        </div>
 
-    <div class="news-grid" id="sf-news-grid">
-      <p class="hub-dir-empty">Loading local news&hellip;</p>
-    </div>
+        <div class="news-grid" id="sf-news-grid">
+          <p class="hub-dir-empty">Loading local news&hellip;</p>
+        </div>
 
-    <div class="sf-news-submit" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--ve-border);">
-      <div id="sf-news-submit-closed">
-        <button type="button" class="btn-outline" id="sf-news-submit-open" style="font-size:11px;padding:11px 20px;">Submit news to this community</button>
+        <div class="sf-news-submit" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--ve-border);">
+          <div id="sf-news-submit-closed">
+            <button type="button" class="btn-outline" id="sf-news-submit-open" style="font-size:11px;padding:11px 20px;">Submit news to this community</button>
+          </div>
+          <form id="sf-news-submit-form" style="display:none;max-width:520px;">
+            <p style="font-size:12px;color:var(--ve-text-50);margin-bottom:14px;">Share something happening in the South Florida vegan community. Submissions are reviewed before they go live.</p>
+            <div style="margin-bottom:10px;">
+              <label for="sf-news-headline" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Headline</label>
+              <input type="text" id="sf-news-headline" maxlength="200" required style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+            </div>
+            <div style="margin-bottom:10px;">
+              <label for="sf-news-summary" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">What's the story?</label>
+              <textarea id="sf-news-summary" rows="3" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;"></textarea>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label for="sf-news-url" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Link (optional)</label>
+              <input type="url" id="sf-news-url" placeholder="https://" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+            </div>
+            <button type="submit" class="btn-join" id="sf-news-submit-btn">Submit for review</button>
+            <p id="sf-news-submit-msg" style="font-size:12px;margin-top:10px;"></p>
+          </form>
+        </div>
       </div>
-      <form id="sf-news-submit-form" style="display:none;max-width:520px;">
-        <p style="font-size:12px;color:var(--ve-text-50);margin-bottom:14px;">Share something happening in the South Florida vegan community. Submissions are reviewed before they go live.</p>
-        <div style="margin-bottom:10px;">
-          <label for="sf-news-headline" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Headline</label>
-          <input type="text" id="sf-news-headline" maxlength="200" required style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+
+      <div class="hub-content-sidebar">
+        <div class="bb-wrap" id="bb-inventory">
+          <div class="bb-header">Billboard</div>
+          <div class="bb-rotator">
+            <div class="bb-slide active" id="bb-slide-0">
+              <div class="bb-placeholder bb-tall">
+                <div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+                <div class="bb-ph-text">Skyscraper</div>
+                <div class="bb-ph-dim">300 x 600</div>
+              </div>
+            </div>
+            <div class="bb-slide" id="bb-slide-1">
+              <div class="bb-stacked">
+                <div class="bb-placeholder"><div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>
+                <div class="bb-placeholder"><div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="bb-dots">
+            <button class="bb-dot active" id="bb-dot-0" aria-label="Skyscraper ad"></button>
+            <button class="bb-dot" id="bb-dot-1" aria-label="Featured ads"></button>
+          </div>
+          <div class="bb-tag">Powered by LESARUSS Advertising</div>
         </div>
-        <div style="margin-bottom:10px;">
-          <label for="sf-news-summary" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">What's the story?</label>
-          <textarea id="sf-news-summary" rows="3" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;"></textarea>
-        </div>
-        <div style="margin-bottom:14px;">
-          <label for="sf-news-url" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Link (optional)</label>
-          <input type="url" id="sf-news-url" placeholder="https://" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
-        </div>
-        <button type="submit" class="btn-join" id="sf-news-submit-btn">Submit for review</button>
-        <p id="sf-news-submit-msg" style="font-size:12px;margin-top:10px;"></p>
-      </form>
+      </div>
     </div>
   </section>
 
@@ -822,6 +876,31 @@
 
   loadSFNews();
   loadSFEvents();
+
+  /* ---- BILLBOARD rotator, ported verbatim from directory/listing.html ---- */
+  function initBillboard(){
+    var bbSlot = 0;
+    var slides = [document.getElementById('bb-slide-0'), document.getElementById('bb-slide-1')];
+    var dots   = [document.getElementById('bb-dot-0'),   document.getElementById('bb-dot-1')];
+    if(!slides[0]) return;
+    function goTo(n){
+      slides.forEach(function(s){ if(s) s.classList.remove('active'); });
+      dots.forEach(function(d){ if(d) d.classList.remove('active'); });
+      bbSlot = n;
+      if(slides[n]) slides[n].classList.add('active');
+      if(dots[n]) dots[n].classList.add('active');
+    }
+    var timer = setInterval(function(){ goTo((bbSlot+1)%2); }, 6000);
+    dots.forEach(function(d, i){
+      if(d) d.addEventListener('click', function(){ goTo(i); clearInterval(timer); });
+    });
+    var wrap = document.getElementById('bb-inventory');
+    if(wrap){
+      wrap.addEventListener('mouseenter', function(){ clearInterval(timer); });
+      wrap.addEventListener('mouseleave', function(){ timer = setInterval(function(){ goTo((bbSlot+1)%2); }, 6000); });
+    }
+  }
+  initBillboard();
 
   VERegionDirectory.init({
     mount: 've-region-directory',
