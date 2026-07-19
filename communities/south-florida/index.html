@@ -31,11 +31,6 @@
     .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.08) 65%, transparent 82%); }
     .hero-content { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 600px; }
-    .hero-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
-    .hero-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
-    .hero-breadcrumb a:hover { color: rgba(255,255,255,0.7); }
-    .hero-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.2); }
-    .hero-breadcrumb .current { color: rgba(255,255,255,0.6); }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(36px, 5.5vw, 72px); font-weight: 900; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 16px; }
@@ -264,7 +259,6 @@
     .page-frame.vp-mobile .hero { min-height: 480px; align-items: flex-end; }
     .page-frame.vp-mobile .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
     .page-frame.vp-mobile .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
-    .page-frame.vp-mobile .hero-breadcrumb { justify-content: center; }
     .page-frame.vp-mobile .hero-eyebrow { justify-content: center; }
     .page-frame.vp-mobile .hero-meta { justify-content: center; }
     .page-frame.vp-mobile .hero-actions { justify-content: center; }
@@ -300,7 +294,6 @@
       .hero { min-height: 480px; align-items: flex-end; }
       .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
       .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
-      .hero-breadcrumb { justify-content: center; }
       .hero-eyebrow { justify-content: center; }
       .hero-meta { justify-content: center; }
       .hero-actions { justify-content: center; }
@@ -403,11 +396,6 @@
     </div>
     <div class="hero-overlay" aria-hidden="true"></div>
     <div class="hero-content">
-      <nav class="hero-breadcrumb" aria-label="Breadcrumb">
-        <a href="/communities">Communities</a>
-        <span aria-hidden="true">/</span>
-        <span class="current" aria-current="page">South Florida</span>
-      </nav>
       <p class="hero-eyebrow" aria-hidden="true">Community Hub</p>
       <h1 id="hub-heading">SoFlo<br><em>Vegans</em></h1>
       <div class="hero-meta" aria-label="Community details">
