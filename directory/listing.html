@@ -356,6 +356,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-ph-dim{font-size:9px;font-weight:600;color:#ddd}
 .bb-ad-img{width:100%;display:block;border-radius:8px}
 .bb-ad-link{display:block}
+.bb-placeholder.bb-filled{border:none;background:none;padding:0}
 .bb-dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
 .bb-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);border:none;cursor:pointer;padding:0;transition:.15s}
 .bb-dot.active{background:#5EC47A;width:18px;border-radius:3px}
@@ -847,7 +848,7 @@ function renderSidebar(l){
       '<div class="bb-header">Billboard</div>'+
       '<div class="bb-rotator">'+
         '<div class="bb-slide active" id="bb-slide-0">'+
-          '<div class="bb-placeholder bb-tall">'+
+          '<div class="bb-placeholder bb-tall" id="bb-ad-skyscraper">'+
             '<div class="bb-ph-icon">'+_bbAdSvg+'</div>'+
             '<div class="bb-ph-text">Skyscraper</div>'+
             '<div class="bb-ph-dim">300 x 600</div>'+
@@ -855,8 +856,8 @@ function renderSidebar(l){
         '</div>'+
         '<div class="bb-slide" id="bb-slide-1">'+
           '<div class="bb-stacked">'+
-            '<div class="bb-placeholder"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
-            '<div class="bb-placeholder"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
+            '<div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
+            '<div class="bb-placeholder" id="bb-ad-landscape-2"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
           '</div>'+
         '</div>'+
       '</div>'+
@@ -1286,6 +1287,40 @@ function renderInstagramContent(veBusinessId){
     .catch(function(e){ console.warn('Instagram fetch failed', e); });
 }
 
+var VE_BB_SLOT_ELS = {
+  've-directory-listing-skyscraper': 'bb-ad-skyscraper',
+  've-directory-listing-landscape-1': 'bb-ad-landscape-1',
+  've-directory-listing-landscape-2': 'bb-ad-landscape-2'
+};
+
+function veAdClick(placementId, campaignId){
+  try {
+    var payload = JSON.stringify({ placement_id: placementId, campaign_id: campaignId });
+    navigator.sendBeacon(SUPABASE_URL + '/functions/v1/ad-click', new Blob([payload], { type: 'application/json' }));
+  } catch(e) { /* click still resolves to the advertiser even if the beacon fails */ }
+}
+window.veAdClick = veAdClick;
+
+function renderBillboardSlot(elId, ad){
+  var el = document.getElementById(elId);
+  if(!el || !ad || !ad.image_url) return;
+  el.classList.add('bb-filled');
+  el.innerHTML = '<a class="bb-ad-link" href="'+esc(ad.link_url||'#')+'" target="_blank" rel="noopener noreferrer sponsored" onclick="veAdClick(\''+ad.placement_id+'\',\''+ad.campaign_id+'\')"><img class="bb-ad-img" src="'+esc(ad.image_url)+'" alt="Advertisement"></a>';
+}
+
+function loadBillboardAds(){
+  fetch(SUPABASE_URL + '/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=' + encodeURIComponent('/directory/[slug]'), {
+    headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
+  }).then(function(r){ return r.json(); }).then(function(data){
+    var slots = data && data.slots;
+    if(!slots || !slots.length) return;
+    slots.forEach(function(s){
+      var elId = VE_BB_SLOT_ELS[s.slot_id];
+      if(elId) renderBillboardSlot(elId, s);
+    });
+  }).catch(function(){ /* placeholder boxes still show if this fails */ });
+}
+
 function initBillboard(){
   var bbSlot = 0;
   var slides = [document.getElementById('bb-slide-0'), document.getElementById('bb-slide-1')];
@@ -1566,6 +1601,7 @@ if(!slug || slug === 'listing'){
       var l = data[0];
       renderListing(l);
       initBillboard();
+      loadBillboardAds();
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
         if(items && items.length){
