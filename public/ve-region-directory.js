@@ -32,13 +32,7 @@
       subcats: ['AI & Automation', 'Web & Development', 'Marketing & Growth', 'Health and Wellness', 'Business Operations', 'Branding & Creative Assets', 'Coaches and Consultants', 'Content Creation & Media'] },
     { key: 'community', label: 'Community', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
-      subcats: ['Community Partner', 'Nonprofits'] },
-    { key: 'events', label: 'Events', hasVF: false,
-      icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><rect height="18" rx="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>',
-      subcats: ['Events and Catering'] },
-    { key: 'media', label: 'Media', hasVF: false,
-      icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect height="14" rx="2" width="15" x="1" y="5"></rect></svg>',
-      subcats: ['Media', 'Uncategorized'] }
+      subcats: ['Community Partner', 'Nonprofits'] }
   ];
 
   var CSS = ''
