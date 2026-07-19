@@ -912,7 +912,7 @@
   function veAdClick(placementId, campaignId){
     try {
       var payload = JSON.stringify({ placement_id: placementId, campaign_id: campaignId });
-      navigator.sendBeacon(SF_SUPABASE_URL + '/functions/v1/ad-click', new Blob([payload], { type: 'application/json' }));
+      navigator.sendBeacon(SF_SUPABASE_URL + '/functions/v1/ad-click', new Blob([payload], { type: 'text/plain' }));
     } catch(e) { /* click still resolves to the advertiser even if the beacon fails */ }
   }
   window.veAdClick = veAdClick;
