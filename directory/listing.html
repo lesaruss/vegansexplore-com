@@ -962,14 +962,33 @@ function menuTabContent(items){
 }
 
 var SF_CITIES = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
+var CFL_CITIES = ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala'];
+var LA_CITIES = ['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park'];
+
+// Which community hub (if any) a listing belongs to, for breadcrumb routing.
+// Mirrors the matchListing() predicates already used by public/ve-region-directory.js
+// on each communities/[slug]/index.html page — keep these in sync if a region's
+// predicate changes there.
+function getCommunityForListing(l){
+  if(l.address_city && SF_CITIES.indexOf(l.address_city) > -1) return {slug:'south-florida', name:'South Florida'};
+  if(l.address_city && CFL_CITIES.indexOf(l.address_city) > -1) return {slug:'central-florida', name:'Central Florida'};
+  if(l.address_city && LA_CITIES.indexOf(l.address_city) > -1) return {slug:'los-angeles', name:'Los Angeles'};
+  if(l.address_state === 'GA') return {slug:'atlanta', name:'Atlanta'};
+  if(l.address_state === 'NY') return {slug:'new-york', name:'New York'};
+  if(l.address_city === 'London') return {slug:'london', name:'London'};
+  return null;
+}
 
 function renderListing(l){
   var isSoFlo = !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1);
+  var community = getCommunityForListing(l);
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
 
   // Breadcrumb
-  var breadcrumb = '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+catType+'">'+esc(dirLabel)+'</a> / '+esc(l.name)+'</div>';
+  var breadcrumb = community
+    ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / '+esc(l.name)+'</div>'
+    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+catType+'">'+esc(dirLabel)+'</a> / '+esc(l.name)+'</div>';
 
   // Avatar
   var av = l.logo_url
