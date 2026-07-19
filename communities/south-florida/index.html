@@ -360,9 +360,9 @@
     .bb-slide{display:none}
     .bb-slide.active{display:block}
     .bb-placeholder{width:100%;background:#f5f5f5;border:1px dashed #ddd;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 16px}
-    .bb-tall{height:220px}
+    .bb-tall{aspect-ratio:1/2}
     .bb-stacked{display:flex;flex-direction:column;gap:10px}
-    .bb-stacked .bb-placeholder{height:125px;padding:16px}
+    .bb-stacked .bb-placeholder{aspect-ratio:6/5;padding:16px}
     .bb-ph-icon{color:#ccc}
     .bb-ph-text{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#ccc}
     .bb-ph-dim{font-size:9px;font-weight:600;color:#ddd}
@@ -488,10 +488,11 @@
     </button>
   </nav>
 
+  <div class="hub-content-grid">
+  <div class="hub-content-main">
+
   <!-- ========================= NEWS SECTION ========================= -->
   <section class="hub-section active" id="tab-news" role="tabpanel" aria-labelledby="tab-btn-news">
-    <div class="hub-content-grid">
-      <div class="hub-content-main">
         <div class="section-hdr">
           <div>
             <h2 class="section-title">Local News &amp; Updates</h2>
@@ -528,32 +529,6 @@
         </div>
       </div>
 
-      <div class="hub-content-sidebar">
-        <div class="bb-wrap" id="bb-inventory">
-          <div class="bb-header">Billboard</div>
-          <div class="bb-rotator">
-            <div class="bb-slide active" id="bb-slide-0">
-              <div class="bb-placeholder bb-tall" id="bb-ad-skyscraper">
-                <div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
-                <div class="bb-ph-text">Skyscraper</div>
-                <div class="bb-ph-dim">300 x 600</div>
-              </div>
-            </div>
-            <div class="bb-slide" id="bb-slide-1">
-              <div class="bb-stacked">
-                <div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>
-                <div class="bb-placeholder" id="bb-ad-landscape-2"><div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>
-              </div>
-            </div>
-          </div>
-          <div class="bb-dots">
-            <button class="bb-dot active" id="bb-dot-0" aria-label="Skyscraper ad"></button>
-            <button class="bb-dot" id="bb-dot-1" aria-label="Featured ads"></button>
-          </div>
-          <div class="bb-tag">Powered by LESARUSS Advertising</div>
-        </div>
-      </div>
-    </div>
   </section>
 
   <!-- ========================= EVENTS SECTION ========================= -->
@@ -776,6 +751,36 @@
       </div>
     </div>
   </section>
+
+  </div><!-- /hub-content-main -->
+
+  <div class="hub-content-sidebar">
+    <div class="bb-wrap" id="bb-inventory">
+      <div class="bb-header">Billboard</div>
+      <div class="bb-rotator">
+        <div class="bb-slide active" id="bb-slide-0">
+          <div class="bb-placeholder bb-tall" id="bb-ad-skyscraper">
+            <div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+            <div class="bb-ph-text">Skyscraper</div>
+            <div class="bb-ph-dim">300 x 600</div>
+          </div>
+        </div>
+        <div class="bb-slide" id="bb-slide-1">
+          <div class="bb-stacked">
+            <div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>
+            <div class="bb-placeholder" id="bb-ad-landscape-2"><div class="bb-ph-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="bb-dots">
+        <button class="bb-dot active" id="bb-dot-0" aria-label="Skyscraper ad"></button>
+        <button class="bb-dot" id="bb-dot-1" aria-label="Featured ads"></button>
+      </div>
+      <div class="bb-tag">Powered by LESARUSS Advertising</div>
+    </div>
+  </div>
+
+  </div><!-- /hub-content-grid -->
 
   <!-- FOOTER -->
   <script src="/public/footer.js"></script>
