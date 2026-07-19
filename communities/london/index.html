@@ -818,6 +818,15 @@
     matchListing: function (l) { return !!(l.address_city === 'London'); }
   });
 
+  // Deep-link support: ?tab=<id> opens directly on that hub tab (e.g. linked from a listing breadcrumb)
+  (function(){
+    var params = new URLSearchParams(window.location.search);
+    var wantedTab = params.get('tab');
+    if (wantedTab && document.getElementById('tab-btn-' + wantedTab)) {
+      switchTab(wantedTab);
+    }
+  })();
+
 </script>
 
 </body>
