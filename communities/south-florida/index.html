@@ -235,22 +235,14 @@
 
     /* STICKY MEMBER BAR */
     .member-bar { background: #1a1a1a; padding: 14px 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-    .member-bar-left { display: flex; align-items: center; gap: 14px; }
-    .member-bar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    .member-bar-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); }
-    .member-bar-text strong { color: #fff; font-weight: 800; }
-    .member-bar-actions { display: flex; align-items: center; gap: 10px; }
-    .member-bar { transition: padding 0.22s ease; }
-    .member-bar-toggle { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; padding: 0; flex-shrink: 0; background: none; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; color: rgba(255,255,255,0.7); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .member-bar-actions { display: flex; align-items: center; gap: 14px; }
+    .member-bar-toggle { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; flex-shrink: 0; background: none; border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; color: rgba(255,255,255,0.85); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
     .member-bar-toggle:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
     .member-bar-toggle:focus-visible { outline: 2px solid var(--ve-green); outline-offset: 2px; }
-    .mb-toggle-caret { transition: transform 0.2s ease; }
+    .mb-toggle-caret { flex-shrink: 0; transition: transform 0.2s ease; }
     .member-bar.mb-collapsed .mb-toggle-caret { transform: rotate(180deg); }
-    .member-bar.mb-collapsed { padding-top: 8px; padding-bottom: 8px; }
-    .member-bar.mb-collapsed .member-bar-text { display: none; }
-    .member-bar-title { display: none; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; color: #fff; white-space: nowrap; }
-    .member-bar.mb-collapsed .member-bar-title { display: inline; }
+    .mb-toggle-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+    .member-bar-title { font-size: 13px; font-weight: 800; letter-spacing: 0.02em; color: #fff; white-space: nowrap; }
     .hero { transition: max-height 0.32s ease, min-height 0.32s ease, opacity 0.25s ease; }
     .hero.hero-collapsed { min-height: 0; max-height: 0; opacity: 0; }
 
@@ -427,17 +419,14 @@
   </section>
 
   <!-- MEMBER STATUS BAR -->
-  <div class="member-bar" id="member-bar" role="complementary" aria-label="Community status">
-    <div class="member-bar-left">
-      <div class="member-bar-dot" aria-hidden="true"></div>
-      <span class="member-bar-title" id="member-bar-title">SoFlo Vegans</span>
-      <p class="member-bar-text"><strong>Region.</strong> Free for Passport members. Full access with Standard membership.</p>
-    </div>
+  <div class="member-bar" id="member-bar" role="complementary" aria-label="Community hub banner control">
+    <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="hero-section" onclick="toggleMemberBar()">
+      <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="mb-toggle-label" id="member-bar-toggle-label">Collapse</span>
+    </button>
     <div class="member-bar-actions">
       <a href="/passport" class="btn-join" style="font-size:10px;padding:9px 18px;">Get Passport</a>
-      <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="member-bar" aria-label="Collapse community banner" onclick="toggleMemberBar()">
-        <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
-      </button>
+      <span class="member-bar-title" id="member-bar-title">SoFlo Vegans</span>
     </div>
   </div>
 
@@ -805,14 +794,13 @@
   function setMemberBarCollapsed(collapsed) {
     var bar = document.getElementById('member-bar');
     var btn = document.getElementById('member-bar-toggle');
+    var label = document.getElementById('member-bar-toggle-label');
     var hero = document.getElementById('hero-section');
     if (!bar) return;
     bar.classList.toggle('mb-collapsed', collapsed);
     if (hero) hero.classList.toggle('hero-collapsed', collapsed);
-    if (btn) {
-      btn.setAttribute('aria-expanded', String(!collapsed));
-      btn.setAttribute('aria-label', collapsed ? 'Expand community banner' : 'Collapse community banner');
-    }
+    if (btn) btn.setAttribute('aria-expanded', String(!collapsed));
+    if (label) label.textContent = collapsed ? 'Expand' : 'Collapse';
   }
   function toggleMemberBar() {
     var bar = document.getElementById('member-bar');
