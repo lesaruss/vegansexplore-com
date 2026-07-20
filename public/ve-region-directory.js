@@ -1,6 +1,6 @@
 /* VE Region Directory — shared, reusable component
-   Mimics the feel of /directory (category tabs, subcat pills, Top10/All Listings/Online
-   views, sort, real listing links, votes) but scoped to a single region's real listings.
+   Mimics the feel of /directory (category tabs, subcat pills, one unified sorted/filtered list
+   per category, real listing links, votes) but scoped to a single region's real listings.
    Used by each /communities/[city]/index.html page. Self-contained: injects its own CSS,
    fetches real data from public.listings, and never sends the visitor to the unscoped /directory.
 */
@@ -47,23 +47,13 @@
     + '.vrd-root .subcat-pill{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#888;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s}'
     + '.vrd-root .subcat-pill.sc-active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}'
     + '.vrd-root .subcat-pill:hover:not(.sc-active){border-color:#5EC47A;color:#2d7a4f}'
-    + '.vrd-root .pill-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}'
-    + '.vrd-root .pill-group{display:flex;gap:8px;flex-wrap:wrap}'
-    + '.vrd-root .pill{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 18px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#888;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px}'
-    + '.vrd-root .pill.active{background:#5EC47A;color:#000;border-color:#5EC47A}'
-    + '.vrd-root .pill:hover:not(.active){border-color:#5EC47A;color:#2d7a4f}'
-    + '.vrd-root .pill-count{font-size:10px;font-weight:900;padding:1px 6px;border-radius:10px;background:rgba(0,0,0,.08);line-height:1.4}'
-    + '.vrd-root .pill.active .pill-count{background:rgba(0,0,0,.15)}'
-    + '.vrd-root .pill-row-right{display:flex;align-items:center;gap:8px;flex-shrink:0}'
-    + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0}'
+    + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}'
     + '.vrd-root .geo-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-left:8px}'
     + '.vrd-root .sort-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa}'
     + '.vrd-root .sort-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:5px 26px 5px 12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}'
     + '.vrd-root .sort-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
-    + '.vrd-root .sub-panel{display:none}'
-    + '.vrd-root .sub-panel.active{display:block}'
     + '.vrd-root .rank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}'
     + '.vrd-root .rank-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}'
     + '.vrd-root .rank-card:hover{border-color:#5EC47A}'
@@ -84,7 +74,7 @@
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
     + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5EC47A}'
     + '.vrd-root .vrd-empty{grid-column:1/-1;padding:48px 24px;text-align:center;color:#aaa;font-size:13px;font-weight:600}'
-    + '@media(max-width:768px){.vrd-root .rank-grid{grid-template-columns:1fr}.vrd-root .cat-tab{font-size:10px;padding:10px 12px}.vrd-root .pill-row{flex-wrap:wrap}.vrd-root .pill-row-right{flex-wrap:wrap}}';
+    + '@media(max-width:768px){.vrd-root .rank-grid{grid-template-columns:1fr}.vrd-root .cat-tab{font-size:10px;padding:10px 12px}.vrd-root .perpage-select{margin-left:0}}';
 
   function injectStyleOnce() {
     if (document.getElementById('vrd-style')) return;
@@ -99,30 +89,33 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function buildBar(cat, view, config, includeSort, includeGeo) {
-    var sortHtml = includeSort
-      ? ('<span class="sort-label">Sort by</span>' +
-        '<select aria-label="Sort listings" class="sort-select" data-vrd-sort="' + cat.key + '|' + view + '">' +
-        '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="recent">Most Recent</option><option value="added">First Added</option>' +
-        '</select>')
-      : '';
+  function buildBar(cat, config) {
+    var sortHtml = '<span class="sort-label">Sort by</span>' +
+      '<select aria-label="Sort listings" class="sort-select" data-vrd-sort="' + cat.key + '">' +
+      '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="recent">Most Recent</option><option value="added">First Added</option>' +
+      '</select>';
     var geoHtml = '';
-    if (includeGeo) {
-      if (config && config.counties) {
-        geoHtml = '<span class="geo-label">Filter by</span>' +
-          '<select aria-label="Filter by county" class="sort-select" data-vrd-county="' + cat.key + '|' + view + '">' +
-          '<option value="">All Counties</option></select>' +
-          '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '|' + view + '" style="display:none">' +
-          '<option value="">All Cities</option></select>';
-      } else {
-        geoHtml = '<span class="geo-label">Filter by</span>' +
-          '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '|' + view + '">' +
-          '<option value="">All Cities</option></select>';
-      }
+    if (config && config.counties) {
+      geoHtml = '<span class="geo-label">Filter by</span>' +
+        '<select aria-label="Filter by county" class="sort-select" data-vrd-county="' + cat.key + '">' +
+        '<option value="">All Counties</option></select>' +
+        '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '" style="display:none">' +
+        '<option value="">All Cities</option></select>';
+    } else {
+      geoHtml = '<span class="geo-label">Filter by</span>' +
+        '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '">' +
+        '<option value="">All Cities</option></select>';
     }
-    var vfBtn = cat.hasVF ? '<button class="subcat-pill" data-vrd-subcat="__vf" style="border-color:#5EC47A;color:#2d7a4f">Vegan Friendly</button>' : '';
-    var closedBtn = '<button class="subcat-pill" data-vrd-subcat="__closed" style="border-color:#999;color:#666">Closed</button>';
-    return '<div class="sort-bar">' + sortHtml + geoHtml + vfBtn + closedBtn + '</div>';
+    var typeOptions = '<option value="">All</option>' +
+      (cat.hasVF ? '<option value="vf">Vegan Friendly</option>' : '') +
+      '<option value="online">Online</option>' +
+      '<option value="closed">Closed</option>';
+    var typeHtml = '<span class="geo-label">Type</span>' +
+      '<select aria-label="Filter by type" class="sort-select" data-vrd-type="' + cat.key + '">' + typeOptions + '</select>';
+    var perpageHtml = '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
+      '<option value="24">Show 24</option><option value="48">Show 48</option><option value="111" selected>Show 111</option>' +
+      '</select>';
+    return '<div class="sort-bar">' + sortHtml + geoHtml + typeHtml + perpageHtml + '</div>';
   }
 
   function skeletonForCat(cat, config) {
@@ -131,19 +124,8 @@
 
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
       '<div class="subcat-pills">' + subcatBtns + '</div>' +
-      '<div class="pill-row"><div class="pill-group">' +
-      '<button class="pill" data-vrd-pill="' + cat.key + '|top10">Top 10</button>' +
-      '<button class="pill active" data-vrd-pill="' + cat.key + '|listings">All Listings</button>' +
-      '<button class="pill" data-vrd-pill="' + cat.key + '|online">Online <span class="pill-count" id="' + cat.key + '-online-count">0</span></button>' +
-      '</div><div class="pill-row-right">' +
-      '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
-      '<option value="24">Show 24</option><option value="48">Show 48</option><option value="111" selected>Show 111</option>' +
-      '</select></div></div>' +
-      '<div class="sub-panel active" id="' + cat.key + '-listings">' + buildBar(cat, 'listings', config, true, true) + '<div class="rank-grid" id="' + cat.key + '-listings-grid"></div></div>' +
-      '<div class="sub-panel" id="' + cat.key + '-top10">' + buildBar(cat, 'top10', config, false, true) + '<div class="rank-grid" id="' + cat.key + '-top10-grid"></div></div>' +
-      '<div class="sub-panel" id="' + cat.key + '-online">' + buildBar(cat, 'online', config, true, false) + '<div class="rank-grid" id="' + cat.key + '-online-grid"></div></div>' +
-      (cat.hasVF ? '<div class="sub-panel" id="' + cat.key + '-vf"><div class="rank-grid" id="' + cat.key + '-vf-grid"></div></div>' : '') +
-      '<div class="sub-panel" id="' + cat.key + '-closed"><div class="rank-grid" id="' + cat.key + '-closed-grid"></div></div>' +
+      buildBar(cat, config) +
+      '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
       '</div>';
   }
 
@@ -171,26 +153,10 @@
     return esc(l.address_city || l.address_state || '');
   }
 
-  function makeBrowseCard(l, idx) {
+  function makeBrowseCard(l, idx, type) {
     var votes = (l.favorites_count || 0) + (l.likes_count || 0);
     var subcat = l.category || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '">' +
-      makeAvatar(l) +
-      '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
-      '<div class="rank-meta">' + cardMeta(l) + '</div>' +
-      '<div class="rank-subcat">' + esc(l.category || '') + '</div></div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn">+ Vote</button></div>' +
-      '</div>';
-  }
-
-  function makeTop10Card(l, rank) {
-    var votes = (l.favorites_count || 0) + (l.likes_count || 0);
-    var subcat = l.category || '';
-    var pts = Math.max(0, 111 - (rank - 1) * 5);
-    var rankClass = rank <= 3 ? 'rank-num top3' : 'rank-num';
-    var ptsColor = rank <= 3 ? '#5EC47A' : rank <= 7 ? '#888' : '#aaa';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + (rank - 1) + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '">' +
-      '<div class="rank-num-col"><span class="' + rankClass + '">' + rank + '</span><span class="rank-pts" style="color:' + ptsColor + '">+' + pts + 'pts</span></div>' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
@@ -202,7 +168,7 @@
   function makeClosedCard(l, idx) {
     var votes = (l.favorites_count || 0) + (l.likes_count || 0);
     var subcat = l.category || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" style="opacity:.7">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed" style="opacity:.7">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name" style="color:#888">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
@@ -292,37 +258,22 @@
       var all = tabs[tab];
       all.sort(function (a, b) { return ((b.favorites_count || 0) + (b.likes_count || 0)) - ((a.favorites_count || 0) + (a.likes_count || 0)); });
 
-      var veganFriendly = cfg.hasVF ? all.filter(function (l) { return l.vegan_status === 'vegan_friendly'; }) : [];
-      var regular = cfg.hasVF ? all.filter(function (l) { return l.vegan_status !== 'vegan_friendly'; }) : all;
+      var cards = all.map(function (l, idx) {
+        var type = (cfg.hasVF && l.vegan_status === 'vegan_friendly') ? 'vf' : (isOnline(l) ? 'online' : 'regular');
+        return makeBrowseCard(l, idx, type);
+      }).join('');
+      var closedCards = closedTabs[tab].map(function (l, idx) { return makeClosedCard(l, idx); }).join('');
 
-      var online = regular.filter(isOnline);
-      var physical = regular.filter(function (l) { return !isOnline(l); });
+      var grid = root.querySelector('#' + tab + '-grid');
+      if (grid) grid.innerHTML = (cards + closedCards) || '<p class="vrd-empty vrd-empty-static">No listings yet in this category.</p>';
 
-      var listingsGrid = root.querySelector('#' + tab + '-listings-grid');
-      if (listingsGrid) listingsGrid.innerHTML = physical.length ? physical.map(makeBrowseCard).join('') : '<p class="vrd-empty">No listings yet in this category.</p>';
-      populateGeoBar(root.querySelector('#' + tab + '-listings .sort-bar'), config, physical);
-
-      var onlineGrid = root.querySelector('#' + tab + '-online-grid');
-      if (onlineGrid) onlineGrid.innerHTML = online.length ? online.map(makeBrowseCard).join('') : '<p class="vrd-empty">No online-only listings for this region yet.</p>';
-      var onlineCount = root.querySelector('#' + tab + '-online-count');
-      if (onlineCount) onlineCount.textContent = online.length;
-
-      var top10Data = regular.slice(0, 10);
-      var top10Grid = root.querySelector('#' + tab + '-top10-grid');
-      if (top10Grid) top10Grid.innerHTML = top10Data.map(function (l, i) { return makeTop10Card(l, i + 1); }).join('');
-      populateGeoBar(root.querySelector('#' + tab + '-top10 .sort-bar'), config, top10Data);
-
-      if (cfg.hasVF) {
-        var vfGrid = root.querySelector('#' + tab + '-vf-grid');
-        if (vfGrid) vfGrid.innerHTML = veganFriendly.length ? veganFriendly.map(makeBrowseCard).join('') : '<p class="vrd-empty">No vegan-friendly listings yet.</p>';
-      }
-
-      var clGrid = root.querySelector('#' + tab + '-closed-grid');
-      if (clGrid) clGrid.innerHTML = closedTabs[tab].length ? closedTabs[tab].map(makeClosedCard).join('') : '<p class="vrd-empty">No closed listings recorded.</p>';
+      populateGeoBar(root.querySelector('#board-' + tab + ' .sort-bar'), config, all);
     });
 
     bindVoteButtons(root);
     bindCardClicks(root);
+
+    root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, config); });
   }
 
   function currentSubcat(panel) {
@@ -332,28 +283,41 @@
 
   function applyPanelFilters(panel, state) {
     var special = currentSubcat(panel);
-    if (special === '__vf' || special === '__closed') return;
-    var activePill = panel.querySelector('.pill.active');
-    var view = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'listings';
     var catKey = panel.id.replace('board-', '');
-    var subPanel = panel.querySelector('#' + catKey + '-' + view);
-    if (!subPanel) return;
-    var grid = subPanel.querySelector('.rank-grid');
+    var grid = panel.querySelector('#' + catKey + '-grid');
     if (!grid) return;
-    var bar = subPanel.querySelector('.sort-bar');
+    var bar = panel.querySelector('.sort-bar');
     var countySel = bar ? bar.querySelector('[data-vrd-county]') : null;
     var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
+    var typeSel = bar ? bar.querySelector('[data-vrd-type]') : null;
     var county = countySel ? countySel.value : '';
     var city = citySel ? citySel.value : '';
+    var type = typeSel ? typeSel.value : '';
     var countyMap = {};
     if (countySel) { try { countyMap = JSON.parse(countySel.dataset.cities || '{}'); } catch (e) {} }
-    grid.querySelectorAll('.rank-card').forEach(function (card) {
+    var cards = grid.querySelectorAll('.rank-card');
+    var visibleCount = 0;
+    cards.forEach(function (card) {
       var subOk = (special === 'All') || (card.dataset.subcat === special);
       var geoOk = true;
       if (city) { geoOk = card.dataset.city === city; }
       else if (county && countyMap[county]) { geoOk = countyMap[county].indexOf(card.dataset.city) > -1; }
-      card.style.display = (subOk && geoOk) ? '' : 'none';
+      var typeOk = type ? (card.dataset.listingType === type) : (card.dataset.listingType !== 'closed');
+      var ok = subOk && geoOk && typeOk;
+      card.style.display = ok ? '' : 'none';
+      if (ok) visibleCount++;
     });
+    if (cards.length) {
+      var emptyText = { vf: 'No vegan-friendly listings yet.', online: 'No online-only listings for this region yet.', closed: 'No closed listings recorded.' }[type] || 'No listings match this filter yet.';
+      var msg = grid.querySelector('.vrd-empty-dynamic');
+      if (visibleCount === 0) {
+        if (!msg) { msg = document.createElement('p'); msg.className = 'vrd-empty vrd-empty-dynamic'; grid.appendChild(msg); }
+        msg.textContent = emptyText;
+        msg.style.display = '';
+      } else if (msg) {
+        msg.style.display = 'none';
+      }
+    }
   }
 
   function wireControls(root, state) {
@@ -366,54 +330,19 @@
       });
     });
 
-    root.querySelectorAll('[data-vrd-pill]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var parts = btn.getAttribute('data-vrd-pill').split('|');
-        var cat = parts[0], view = parts[1];
-        var panel = root.querySelector('#board-' + cat);
-        panel.querySelectorAll('.pill').forEach(function (p) { p.classList.remove('active'); });
-        panel.querySelectorAll('.sub-panel').forEach(function (p) { p.classList.remove('active'); });
-        btn.classList.add('active');
-        panel.querySelector('#' + cat + '-' + view).classList.add('active');
-      });
-    });
-
     root.querySelectorAll('[data-vrd-subcat]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var panel = btn.closest('.board-panel');
         panel.querySelectorAll('.subcat-pill').forEach(function (p) { p.classList.remove('sc-active'); });
         btn.classList.add('sc-active');
-        var special = btn.getAttribute('data-vrd-subcat');
-        var pillRow = panel.querySelector('.pill-row');
-        panel.querySelectorAll('.sub-panel').forEach(function (sp) { sp.style.display = 'none'; });
-        var catKey = panel.id.replace('board-', '');
-        if (special === '__vf') {
-          if (pillRow) pillRow.style.display = 'none';
-          var vfPanel = panel.querySelector('#' + catKey + '-vf');
-          if (vfPanel) vfPanel.style.display = '';
-          return;
-        }
-        if (special === '__closed') {
-          if (pillRow) pillRow.style.display = 'none';
-          var clPanel = panel.querySelector('#' + catKey + '-closed');
-          if (clPanel) clPanel.style.display = '';
-          return;
-        }
-        if (pillRow) pillRow.style.display = '';
-        var activePill = panel.querySelector('.pill.active');
-        var activeView = activePill ? activePill.getAttribute('data-vrd-pill').split('|')[1] : 'listings';
-        var activePanel = panel.querySelector('#' + catKey + '-' + activeView);
-        if (activePanel) activePanel.style.display = '';
         applyPanelFilters(panel, state);
       });
     });
 
     root.querySelectorAll('[data-vrd-county]').forEach(function (sel) {
       sel.addEventListener('change', function () {
-        var parts = sel.getAttribute('data-vrd-county').split('|');
-        var cat = parts[0], view = parts[1];
         var bar = sel.closest('.sort-bar');
-        var citySel = bar ? bar.querySelector('[data-vrd-city="' + cat + '|' + view + '"]') : null;
+        var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
         var county = sel.value;
         var map = {};
         try { map = JSON.parse(sel.dataset.cities || '{}'); } catch (e) {}
@@ -436,15 +365,21 @@
       });
     });
 
+    root.querySelectorAll('[data-vrd-type]').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        var panel = sel.closest('.board-panel');
+        applyPanelFilters(panel, state);
+      });
+    });
+
     root.querySelectorAll('[data-vrd-perpage]').forEach(function (sel) {
       sel.addEventListener('change', function () {
         var cat = sel.getAttribute('data-vrd-perpage');
-        var panel = root.querySelector('#board-' + cat);
-        var activePanel = panel.querySelector('.sub-panel.active');
-        if (!activePanel) return;
+        var grid = root.querySelector('#' + cat + '-grid');
+        if (!grid) return;
         var n = parseInt(sel.value);
         var shown = 0;
-        activePanel.querySelectorAll('.rank-card').forEach(function (c) {
+        grid.querySelectorAll('.rank-card').forEach(function (c) {
           if (c.style.display === 'none') return;
           shown++;
           c.style.opacity = shown <= n ? '1' : '0.25';
@@ -455,9 +390,8 @@
 
     root.querySelectorAll('[data-vrd-sort]').forEach(function (sel) {
       sel.addEventListener('change', function () {
-        var parts = sel.getAttribute('data-vrd-sort').split('|');
-        var cat = parts[0], view = parts[1];
-        var grid = root.querySelector('#' + cat + '-' + view + '-grid');
+        var cat = sel.getAttribute('data-vrd-sort');
+        var grid = root.querySelector('#' + cat + '-grid');
         if (!grid) return;
         var order = sel.value;
         var cards = Array.prototype.slice.call(grid.querySelectorAll('.rank-card'));
