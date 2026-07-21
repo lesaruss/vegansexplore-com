@@ -6,6 +6,10 @@
     {
       "source": "/directory/:slug",
       "destination": "/directory/listing"
+    },
+    {
+      "source": "/pulse/:slug",
+      "destination": "/api/pulse-article?slug=:slug"
     }
   ],
   "redirects": [
