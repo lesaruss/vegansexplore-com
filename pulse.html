@@ -560,6 +560,11 @@
   function waitForVEAuth(cb, attempts) {
     attempts = attempts || 0;
     if (window.VEAuth) { cb(); return; }
+    if (!document.querySelector('script[src*="ve-auth"]')) {
+      var s = document.createElement('script');
+      s.src = '/public/ve-auth.js';
+      document.head.appendChild(s);
+    }
     if (attempts > 60) { cb(); return; }
     setTimeout(function() { waitForVEAuth(cb, attempts + 1); }, 100);
   }
