@@ -20,11 +20,13 @@
 
     /* HERO (reused hero pattern, updated copy for content-feed Pulse) */
     .pulse-hero {
-      position: relative; min-height: 460px;
+      position: relative; min-height: 460px; overflow: hidden;
       background-image: url('/public/pulse-ve-banner.png');
       background-size: cover; background-position: center;
       display: flex; align-items: flex-end;
+      transition: max-height 0.32s ease, min-height 0.32s ease, opacity 0.25s ease;
     }
+    .pulse-hero.hero-collapsed { min-height: 0; max-height: 0; opacity: 0; }
     .pulse-hero::before {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.72) 58%, rgba(0,0,0,0.28) 78%, transparent 94%);
@@ -63,6 +65,24 @@
         border: 1px solid rgba(255,255,255,0.09);
       }
     }
+
+    /* PULSE MEMBER BAR (collapsible hero control, ported from communities hub pattern) */
+    .btn-join { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-green); color: #fff; transition: background 0.15s; border: none; cursor: pointer; }
+    .btn-join:hover { background: var(--ve-green-dark); }
+    .member-bar { background: #1a1a1a; padding: 14px 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .member-bar-actions { display: flex; align-items: center; gap: 14px; }
+    .member-bar-toggle { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; flex-shrink: 0; background: none; border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; color: rgba(255,255,255,0.85); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .member-bar-toggle:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+    .member-bar-toggle:focus-visible { outline: 2px solid var(--ve-green); outline-offset: 2px; }
+    .mb-toggle-caret { flex-shrink: 0; transition: transform 0.2s ease; }
+    .member-bar.mb-collapsed .mb-toggle-caret { transform: rotate(180deg); }
+    .mb-toggle-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+    .member-bar-left { display: flex; align-items: center; gap: 16px; }
+    .mb-breadcrumb { display: flex; align-items: center; gap: 8px; }
+    .mb-breadcrumb a, .mb-breadcrumb-link { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; }
+    .mb-breadcrumb a:hover, .mb-breadcrumb-link:hover { color: rgba(255,255,255,0.85); }
+    .mb-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.25); }
+    .mb-breadcrumb .current { color: rgba(255,255,255,0.85); }
 
     /* STICKY FILTER BAR */
     .pulse-sticky-bar { position: sticky; top: 60px; z-index: 300; background: rgba(255,255,255,0.98); border-bottom: 1px solid var(--ve-border); padding: 16px 40px 14px; }
@@ -141,6 +161,7 @@
       .pulse-list-wrap { padding: 16px 16px 48px; }
       .pulse-grid { grid-template-columns: 1fr; }
       .region-grid { grid-template-columns: 1fr; }
+      .member-bar { padding: 14px 24px; flex-direction: column; align-items: flex-start; }
     }
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
 
@@ -227,7 +248,7 @@
   <div class="page-frame">
   <script src="/public/nav.js"></script>
 
-  <section class="pulse-hero" aria-labelledby="pulse-hero-h1">
+  <section class="pulse-hero" id="pulse-hero-section" aria-labelledby="pulse-hero-h1">
     <div class="hero-inner">
       <p class="hero-eyebrow">Vegans Explore</p>
       <h1 id="pulse-hero-h1">The Daily<br><em>Pulse.</em></h1>
@@ -237,6 +258,21 @@
       </div>
     </div>
   </section>
+
+  <div class="member-bar" id="pulse-member-bar" role="complementary" aria-label="Pulse banner control">
+    <div class="member-bar-left">
+      <button type="button" class="member-bar-toggle" id="pulse-bar-toggle" aria-expanded="true" aria-controls="pulse-hero-section" onclick="togglePulseBar()">
+        <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+        <span class="mb-toggle-label" id="pulse-bar-toggle-label">Collapse</span>
+      </button>
+      <nav class="mb-breadcrumb" id="pulse-bar-breadcrumb" aria-label="Breadcrumb">
+        <span class="current" aria-current="page">Pulse</span>
+      </nav>
+    </div>
+    <div class="member-bar-actions">
+      <a href="/passport" class="btn-join" id="pulse-bar-get-passport" style="font-size:10px;padding:9px 18px;">Get Passport</a>
+    </div>
+  </div>
 
   <div class="pulse-outer">
     <div class="pulse-sticky-bar">
@@ -278,11 +314,6 @@
           </div>
 
           <div id="pulse-detail-view" style="display:none;" aria-live="polite">
-            <div class="panel-breadcrumb">
-              <button class="panel-trail-btn" onclick="backToPulse()">Pulse</button>
-              <span class="panel-breadcrumb-sep">/</span>
-              <span class="panel-breadcrumb-current" id="pulse-breadcrumb-name"></span>
-            </div>
             <div id="pulse-article-mount"></div>
           </div>
         </div>
@@ -624,13 +655,48 @@
     loadPulseComments(slug);
   }
 
+  /* ---- PULSE MEMBER BAR (collapsible hero control) ---- */
+  function setPulseBarCollapsed(collapsed) {
+    var bar = document.getElementById('pulse-member-bar');
+    var btn = document.getElementById('pulse-bar-toggle');
+    var label = document.getElementById('pulse-bar-toggle-label');
+    var hero = document.getElementById('pulse-hero-section');
+    if (!bar) return;
+    bar.classList.toggle('mb-collapsed', collapsed);
+    if (hero) hero.classList.toggle('hero-collapsed', collapsed);
+    if (btn) btn.setAttribute('aria-expanded', String(!collapsed));
+    if (label) label.textContent = collapsed ? 'Expand' : 'Collapse';
+  }
+  function togglePulseBar() {
+    var bar = document.getElementById('pulse-member-bar');
+    if (!bar) return;
+    setPulseBarCollapsed(!bar.classList.contains('mb-collapsed'));
+  }
+  function updatePulseBarBreadcrumb(mode, category) {
+    var nav = document.getElementById('pulse-bar-breadcrumb');
+    if (!nav) return;
+    if (mode === 'article') {
+      nav.innerHTML = '<button type="button" class="mb-breadcrumb-link" onclick="backToPulse()">Pulse</button><span aria-hidden="true">/</span><span class="current" aria-current="page">' + pulseEsc(category || '') + '</span>';
+    } else {
+      nav.innerHTML = '<span class="current" aria-current="page">Pulse</span>';
+    }
+  }
+  function updatePulseBarPassportButton() {
+    waitForVEAuth(function() {
+      var el = document.getElementById('pulse-bar-get-passport');
+      if (!el) return;
+      el.style.display = (window.VEAuth && VEAuth.isLoggedIn()) ? 'none' : '';
+    });
+  }
+
   function openPost(slug, skipPushState) {
     var p = posts.filter(function(x) { return x.slug === slug; })[0];
     if (!p) return;
+    setPulseBarCollapsed(true);
+    updatePulseBarBreadcrumb('article', p.category);
     trackPulseView(slug);
     document.getElementById('pulse-list-view').style.display = 'none';
     document.getElementById('pulse-detail-view').style.display = 'block';
-    document.getElementById('pulse-breadcrumb-name').textContent = p.category;
     var embedHtml = p.youtubeId
       ? '<div style="position:relative;width:100%;aspect-ratio:16/9;margin-bottom:28px;border-radius:8px;overflow:hidden;background:#000;">'
         + '<iframe src="https://www.youtube.com/embed/' + p.youtubeId + '" title="' + p.headline.replace(/"/g,'&quot;') + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
@@ -649,6 +715,7 @@
   function backToPulse(skipPushState) {
     document.getElementById('pulse-detail-view').style.display = 'none';
     document.getElementById('pulse-list-view').style.display = 'block';
+    updatePulseBarBreadcrumb('list');
     if (!skipPushState && window.location.pathname !== '/pulse' && window.location.pathname !== '/pulse.html') {
       history.pushState({}, '', '/pulse');
     }
@@ -660,6 +727,7 @@
   });
 
   filterPulse();
+  updatePulseBarPassportButton();
 
   /* ==================== LIVE CONTENT: ve_pulse_content (podcast/video episodes) ==================== */
   var PULSE_SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
