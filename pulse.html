@@ -199,6 +199,28 @@
     @media (max-width: 640px) {
       .share-link-field { max-width: none; width: 100%; margin-left: 0; margin-top: 10px; }
     }
+
+    /* COMMENTS */
+    .pulse-comments { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--ve-border); }
+    .pulse-comment-composer { margin-bottom: 24px; }
+    .pulse-comment-composer textarea { width: 100%; max-width: 620px; border: 1px solid var(--ve-border); border-radius: 8px; padding: 12px 14px; font-family: 'Montserrat', sans-serif; font-size: 13px; color: var(--ve-text); resize: vertical; min-height: 70px; box-sizing: border-box; }
+    .pulse-comment-submit { margin-top: 10px; border: none; background: var(--ve-green-dark); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+    .pulse-comment-submit:hover { opacity: 0.9; }
+    .pulse-comment-submit:disabled { opacity: 0.6; cursor: default; }
+    .pulse-comment-error { margin-top: 8px; font-size: 12px; color: #C0392B; }
+    .pulse-comment-gate { border: 1px dashed var(--ve-border); border-radius: 8px; padding: 18px; max-width: 620px; }
+    .pulse-comment-signin-btn { border: none; background: var(--ve-text); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; padding: 12px 20px; border-radius: 6px; cursor: pointer; }
+    .pulse-comment-signin-btn:hover { background: #333; }
+    .pulse-comments-list { display: flex; flex-direction: column; gap: 18px; max-width: 620px; }
+    .pulse-comments-empty { font-size: 13px; color: var(--ve-text-50); padding: 8px 0; }
+    .pulse-comment { display: flex; gap: 12px; align-items: flex-start; }
+    .pulse-comment-avatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
+    .pulse-comment-avatar-fallback { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 800; }
+    .pulse-comment-body { flex: 1; min-width: 0; }
+    .pulse-comment-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .pulse-comment-name { font-size: 12px; font-weight: 700; color: var(--ve-text); }
+    .pulse-comment-time { font-size: 11px; color: var(--ve-text-50); }
+    .pulse-comment-text { font-size: 13px; color: var(--ve-text-75); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
   </style>
 </head>
 <body>
@@ -451,8 +473,7 @@
   function shareBarHtml(p, pageUrl) {
     var caption = 'Read this on VEGANS EXPLORE Pulse: ' + p.headline;
     return '<div class="share-bar">'
-      + '<div class="share-label">Default caption</div>'
-      + '<div class="caption-field"><textarea id="captionInput" rows="2" readonly>' + pulseEsc(caption) + '</textarea></div>'
+      + '<textarea id="captionInput" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;">' + pulseEsc(caption) + '</textarea>'
       + '<div class="share-label">Share this article</div>'
       + '<div class="share-row">'
       + '<a class="share-btn facebook" id="shareFb" title="Share on Facebook" aria-label="Share on Facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl) + '"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5h2.5V5.2c-.43-.06-1.9-.2-3.6-.2-3.57 0-6 2.24-6 6.35v2.9H3.6V18h3.3v9h4V18h3.17l.5-3.75H10.9v-2.5c0-1.08.3-1.83 1.86-1.83H14V8.5z"/></svg></a>'
@@ -481,6 +502,123 @@
     });
   }
 
+  function commentSectionHtml(slug) {
+    return '<div class="pulse-comments" id="pulseComments" data-slug="' + slug + '">'
+      + '<div class="share-label">Discussion</div>'
+      + '<div id="pulseCommentComposerMount"></div>'
+      + '<div id="pulseCommentsList" class="pulse-comments-list"><div class="pulse-comments-empty">Loading comments...</div></div>'
+      + '</div>';
+  }
+
+  function pulseAvatarHtml(m) {
+    m = m || {};
+    if (m.avatar_url) return '<img class="pulse-comment-avatar" src="' + pulseEsc(m.avatar_url) + '" alt="">';
+    var initials = m.initials || 'VE';
+    var color = m.color || '#22C55E';
+    return '<div class="pulse-comment-avatar pulse-comment-avatar-fallback" style="background:' + pulseEsc(color) + ';">' + pulseEsc(initials) + '</div>';
+  }
+
+  function pulseTimeAgo(iso) {
+    var diff = Date.now() - new Date(iso).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    var days = Math.floor(hrs / 24);
+    if (days < 30) return days + 'd ago';
+    return new Date(iso).toLocaleDateString();
+  }
+
+  function renderPulseCommentsList(comments) {
+    var wrap = document.getElementById('pulseCommentsList');
+    if (!wrap) return;
+    if (!comments.length) {
+      wrap.innerHTML = '<div class="pulse-comments-empty">No comments yet. Be the first to join the discussion.</div>';
+      return;
+    }
+    wrap.innerHTML = comments.map(function(c) {
+      return '<div class="pulse-comment">'
+        + pulseAvatarHtml(c.member)
+        + '<div class="pulse-comment-body">'
+        + '<div class="pulse-comment-meta"><span class="pulse-comment-name">' + pulseEsc((c.member && c.member.name) || 'VE Member') + '</span><span class="pulse-comment-time">' + pulseTimeAgo(c.created_at) + '</span></div>'
+        + '<div class="pulse-comment-text">' + pulseEsc(c.content) + '</div>'
+        + '</div></div>';
+    }).join('');
+  }
+
+  function loadPulseComments(slug) {
+    fetch('/api/pulse-comments?slug=' + encodeURIComponent(slug))
+      .then(function(r) { return r.json(); })
+      .then(function(d) { renderPulseCommentsList(d.comments || []); })
+      .catch(function() {
+        var wrap = document.getElementById('pulseCommentsList');
+        if (wrap) wrap.innerHTML = '<div class="pulse-comments-empty">Comments are unavailable right now.</div>';
+      });
+  }
+
+  function waitForVEAuth(cb, attempts) {
+    attempts = attempts || 0;
+    if (window.VEAuth) { cb(); return; }
+    if (attempts > 60) { cb(); return; }
+    setTimeout(function() { waitForVEAuth(cb, attempts + 1); }, 100);
+  }
+
+  function renderPulseComposer(slug) {
+    var mount = document.getElementById('pulseCommentComposerMount');
+    if (!mount) return;
+    waitForVEAuth(function() {
+      if (window.VEAuth && VEAuth.isLoggedIn()) {
+        mount.innerHTML = '<div class="pulse-comment-composer">'
+          + '<textarea id="pulseCommentInput" rows="3" placeholder="Join the discussion..." maxlength="2000"></textarea>'
+          + '<div><button class="pulse-comment-submit" id="pulseCommentSubmit" type="button">Post Comment</button></div>'
+          + '<div class="pulse-comment-error" id="pulseCommentError" style="display:none;"></div>'
+          + '</div>';
+        document.getElementById('pulseCommentSubmit').addEventListener('click', function() { submitPulseComment(slug); });
+      } else {
+        mount.innerHTML = '<div class="pulse-comment-gate">'
+          + '<button class="pulse-comment-signin-btn" id="pulseCommentSignIn" type="button">Sign in with your free Passport to join the discussion</button>'
+          + '</div>';
+        document.getElementById('pulseCommentSignIn').addEventListener('click', function() {
+          if (window.VEAuth) { VEAuth.requirePassport(function() { renderPulseComposer(slug); }, 'Sign in to comment on this article.'); }
+        });
+      }
+    });
+  }
+
+  function submitPulseComment(slug) {
+    var input = document.getElementById('pulseCommentInput');
+    var errEl = document.getElementById('pulseCommentError');
+    var btn = document.getElementById('pulseCommentSubmit');
+    if (!input) return;
+    var content = input.value.trim();
+    if (errEl) errEl.style.display = 'none';
+    if (!content) return;
+    if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
+    fetch('/api/pulse-comments?slug=' + encodeURIComponent(slug), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: content, token: VEAuth.getToken() })
+    }).then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+      .then(function(res) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Post Comment'; }
+        if (!res.ok) {
+          if (errEl) { errEl.textContent = (res.d && res.d.error) || 'Something went wrong.'; errEl.style.display = 'block'; }
+          return;
+        }
+        input.value = '';
+        loadPulseComments(slug);
+      }).catch(function() {
+        if (btn) { btn.disabled = false; btn.textContent = 'Post Comment'; }
+        if (errEl) { errEl.textContent = 'Something went wrong. Please try again.'; errEl.style.display = 'block'; }
+      });
+  }
+
+  function initPulseComments(slug) {
+    renderPulseComposer(slug);
+    loadPulseComments(slug);
+  }
+
   function openPost(slug, skipPushState) {
     var p = posts.filter(function(x) { return x.slug === slug; })[0];
     if (!p) return;
@@ -494,8 +632,9 @@
         + '</div>'
       : '';
     var pageUrl = window.location.origin + '/pulse/' + p.slug;
-    document.getElementById('pulse-article-mount').innerHTML = '<div class="article">' + embedHtml + p.body + shareBarHtml(p, pageUrl) + '</div>';
+    document.getElementById('pulse-article-mount').innerHTML = '<div class="article">' + embedHtml + p.body + shareBarHtml(p, pageUrl) + commentSectionHtml(p.slug) + '</div>';
     wireShareBarCopyButton(pageUrl);
+    initPulseComments(p.slug);
     if (!skipPushState && window.location.pathname !== '/pulse/' + p.slug) {
       history.pushState({ pulseSlug: p.slug }, '', '/pulse/' + p.slug);
     }
