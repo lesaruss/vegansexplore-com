@@ -207,6 +207,25 @@ module.exports = async (req, res) => {
     + '.share-copy-btn:hover{background:#333;} .share-copy-btn.copied{background:var(--ve-green-dark);}'
     + ':focus-visible{outline:3px solid var(--ve-orange);outline-offset:3px;}'
     + '@media (max-width:640px){.share-link-field{max-width:none;width:100%;margin-left:0;margin-top:10px;}}'
+    + '.pulse-comments{margin-top:36px;padding-top:28px;border-top:1px solid var(--ve-border);}'
+    + '.pulse-comment-composer{margin-bottom:24px;}'
+    + '.pulse-comment-composer textarea{width:100%;max-width:620px;border:1px solid var(--ve-border);border-radius:8px;padding:12px 14px;font-family:"Montserrat",sans-serif;font-size:13px;color:var(--ve-text);resize:vertical;min-height:70px;box-sizing:border-box;}'
+    + '.pulse-comment-submit{margin-top:10px;border:none;background:var(--ve-green-dark);color:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:10px 20px;border-radius:6px;cursor:pointer;}'
+    + '.pulse-comment-submit:hover{opacity:0.9;} .pulse-comment-submit:disabled{opacity:0.6;cursor:default;}'
+    + '.pulse-comment-error{margin-top:8px;font-size:12px;color:#C0392B;}'
+    + '.pulse-comment-gate{border:1px dashed var(--ve-border);border-radius:8px;padding:18px;max-width:620px;}'
+    + '.pulse-comment-signin-btn{border:none;background:var(--ve-text);color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;padding:12px 20px;border-radius:6px;cursor:pointer;}'
+    + '.pulse-comment-signin-btn:hover{background:#333;}'
+    + '.pulse-comments-list{display:flex;flex-direction:column;gap:18px;max-width:620px;}'
+    + '.pulse-comments-empty{font-size:13px;color:var(--ve-text-50);padding:8px 0;}'
+    + '.pulse-comment{display:flex;gap:12px;align-items:flex-start;}'
+    + '.pulse-comment-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;object-fit:cover;}'
+    + '.pulse-comment-avatar-fallback{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;}'
+    + '.pulse-comment-body{flex:1;min-width:0;}'
+    + '.pulse-comment-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}'
+    + '.pulse-comment-name{font-size:12px;font-weight:700;color:var(--ve-text);}'
+    + '.pulse-comment-time{font-size:11px;color:var(--ve-text-50);}'
+    + '.pulse-comment-text{font-size:13px;color:var(--ve-text-75);line-height:1.6;white-space:pre-wrap;word-break:break-word;}'
     + '</style></head><body>'
     + '<script src="/public/nav.js"></script>'
     + '<div class="pulse-list-wrap"><div class="pulse-content-row">'
@@ -214,8 +233,7 @@ module.exports = async (req, res) => {
     + '<div class="panel-breadcrumb"><a class="panel-trail-btn" href="/pulse">Pulse</a><span class="panel-breadcrumb-sep">/</span><span class="panel-breadcrumb-current">' + esc(post.category || '') + '</span></div>'
     + '<div class="article">' + embedHtml + post.body
     + '<div class="share-bar">'
-    + '<div class="share-label">Default caption</div>'
-    + '<div class="caption-field"><textarea id="captionInput" rows="2" readonly></textarea></div>'
+    + '<textarea id="captionInput" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;"></textarea>'
     + '<div class="share-label">Share this article</div>'
     + '<div class="share-row">'
     + '<a class="share-btn facebook" id="shareFb" title="Share on Facebook" aria-label="Share on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5h2.5V5.2c-.43-.06-1.9-.2-3.6-.2-3.57 0-6 2.24-6 6.35v2.9H3.6V18h3.3v9h4V18h3.17l.5-3.75H10.9v-2.5c0-1.08.3-1.83 1.86-1.83H14V8.5z"/></svg></a>'
@@ -225,7 +243,13 @@ module.exports = async (req, res) => {
     + '<a class="share-btn sms" id="shareSms" title="Text this article" aria-label="Text this article"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H7l-3 3V4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="12.5" x2="13" y2="12.5"/></svg></a>'
     + '<a class="share-btn email" id="shareEmail" title="Share by email" aria-label="Share by email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg></a>'
     + '<div class="share-link-field"><input id="shareUrlInput" type="text" readonly value="' + esc(pageUrl) + '"><button class="share-copy-btn" id="copyBtn">Copy</button></div>'
-    + '</div></div></div></div>'
+    + '</div></div>'
+    + '<div class="pulse-comments" id="pulseComments" data-slug="' + esc(post.slug) + '">'
+    + '<div class="share-label">Discussion</div>'
+    + '<div id="pulseCommentComposerMount"></div>'
+    + '<div id="pulseCommentsList" class="pulse-comments-list"><div class="pulse-comments-empty">Loading comments...</div></div>'
+    + '</div>'
+    + '</div></div>'
     + '<aside class="ad-rail" id="veAdRail" aria-label="Advertisement">'
     + '<div class="ad-rail-label">Advertisement</div>'
     + '<div class="ad-slot ad-slot-tower" id="adSlotSkyscraper"><div class="ad-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div class="ad-ph-text">Advertisement</div><div class="ad-ph-dim">300 x 600</div></div></div>'
@@ -253,6 +277,16 @@ module.exports = async (req, res) => {
     + "var VE_AD_SLOT_ELS={'skyscraper':'adSlotSkyscraper','landscape-1':'adSlotLandscape1'};"
     + "function renderAdSlot(elId,ad){var el=document.getElementById(elId);if(!el||!ad||!ad.image_url)return;el.innerHTML='<a href=\"'+pEsc(ad.link_url||'#')+'\" target=\"_blank\" rel=\"noopener noreferrer sponsored\"><img src=\"'+pEsc(ad.image_url)+'\" alt=\"Advertisement\"></a>';}"
     + "fetch(PULSE_SUPABASE_URL+'/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=pulse',{headers:{apikey:PULSE_ANON_KEY,Authorization:'Bearer '+PULSE_ANON_KEY}}).then(function(r){return r.json();}).then(function(data){var slots=data&&data.slots;if(!slots||!slots.length)return;slots.forEach(function(s){var elId=VE_AD_SLOT_ELS[s.slot_id];if(elId)renderAdSlot(elId,s);});}).catch(function(){});"
+    + "var pulseSlug=" + JSON.stringify(post.slug) + ";"
+    + "function pulseAvatarHtml(m){m=m||{};if(m.avatar_url)return '<img class=\"pulse-comment-avatar\" src=\"'+pEsc(m.avatar_url)+'\" alt=\"\">';var initials=m.initials||'VE';var color=m.color||'#22C55E';return '<div class=\"pulse-comment-avatar pulse-comment-avatar-fallback\" style=\"background:'+pEsc(color)+';\">'+pEsc(initials)+'</div>';}"
+    + "function pulseTimeAgo(iso){var diff=Date.now()-new Date(iso).getTime();var mins=Math.floor(diff/60000);if(mins<1)return 'just now';if(mins<60)return mins+'m ago';var hrs=Math.floor(mins/60);if(hrs<24)return hrs+'h ago';var days=Math.floor(hrs/24);if(days<30)return days+'d ago';return new Date(iso).toLocaleDateString();}"
+    + "function renderPulseCommentsList(comments){var wrap=document.getElementById('pulseCommentsList');if(!wrap)return;if(!comments.length){wrap.innerHTML='<div class=\"pulse-comments-empty\">No comments yet. Be the first to join the discussion.</div>';return;}wrap.innerHTML=comments.map(function(c){return '<div class=\"pulse-comment\">'+pulseAvatarHtml(c.member)+'<div class=\"pulse-comment-body\"><div class=\"pulse-comment-meta\"><span class=\"pulse-comment-name\">'+pEsc((c.member&&c.member.name)||'VE Member')+'</span><span class=\"pulse-comment-time\">'+pulseTimeAgo(c.created_at)+'</span></div><div class=\"pulse-comment-text\">'+pEsc(c.content)+'</div></div></div>';}).join('');}"
+    + "function loadPulseComments(slug){fetch('/api/pulse-comments?slug='+enc(slug)).then(function(r){return r.json();}).then(function(d){renderPulseCommentsList(d.comments||[]);}).catch(function(){var wrap=document.getElementById('pulseCommentsList');if(wrap)wrap.innerHTML='<div class=\"pulse-comments-empty\">Comments are unavailable right now.</div>';});}"
+    + "function waitForVEAuth(cb,attempts){attempts=attempts||0;if(window.VEAuth){cb();return;}if(attempts>60){cb();return;}setTimeout(function(){waitForVEAuth(cb,attempts+1);},100);}"
+    + "function renderPulseComposer(slug){var mount=document.getElementById('pulseCommentComposerMount');if(!mount)return;waitForVEAuth(function(){if(window.VEAuth&&VEAuth.isLoggedIn()){mount.innerHTML='<div class=\"pulse-comment-composer\"><textarea id=\"pulseCommentInput\" rows=\"3\" placeholder=\"Join the discussion...\" maxlength=\"2000\"></textarea><div><button class=\"pulse-comment-submit\" id=\"pulseCommentSubmit\" type=\"button\">Post Comment</button></div><div class=\"pulse-comment-error\" id=\"pulseCommentError\" style=\"display:none;\"></div></div>';document.getElementById('pulseCommentSubmit').addEventListener('click',function(){submitPulseComment(slug);});}else{mount.innerHTML='<div class=\"pulse-comment-gate\"><button class=\"pulse-comment-signin-btn\" id=\"pulseCommentSignIn\" type=\"button\">Sign in with your free Passport to join the discussion</button></div>';document.getElementById('pulseCommentSignIn').addEventListener('click',function(){if(window.VEAuth){VEAuth.requirePassport(function(){renderPulseComposer(slug);},'Sign in to comment on this article.');}});}});}"
+    + "function submitPulseComment(slug){var input=document.getElementById('pulseCommentInput');var errEl=document.getElementById('pulseCommentError');var btn=document.getElementById('pulseCommentSubmit');if(!input)return;var content=input.value.trim();if(errEl)errEl.style.display='none';if(!content)return;if(btn){btn.disabled=true;btn.textContent='Posting...';}fetch('/api/pulse-comments?slug='+enc(slug),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:content,token:VEAuth.getToken()})}).then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});}).then(function(res){if(btn){btn.disabled=false;btn.textContent='Post Comment';}if(!res.ok){if(errEl){errEl.textContent=(res.d&&res.d.error)||'Something went wrong.';errEl.style.display='block';}return;}input.value='';loadPulseComments(slug);}).catch(function(){if(btn){btn.disabled=false;btn.textContent='Post Comment';}if(errEl){errEl.textContent='Something went wrong. Please try again.';errEl.style.display='block';}});}"
+    + "renderPulseComposer(pulseSlug);"
+    + "loadPulseComments(pulseSlug);"
     + '})();</script>'
     + '</body></html>';
 
