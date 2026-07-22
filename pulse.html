@@ -226,13 +226,6 @@
         <input class="pulse-search" id="pulseSearch" type="search" placeholder="Search the Pulse..." aria-label="Search posts" oninput="filterPulse()">
       </div>
       <div class="pulse-filters" role="group" aria-label="Filter and sort posts">
-        <select class="pulse-select" id="typeSelect" aria-label="Filter by content type" onchange="filterPulse()">
-          <option value="all">All Types</option>
-          <option value="news">News</option>
-          <option value="opinion">Opinion</option>
-          <option value="photo">Photo</option>
-          <option value="video">Video</option>
-        </select>
         <select class="pulse-select" id="categorySelect" aria-label="Filter by category" onchange="filterPulse()">
           <option value="all">All Categories</option>
           <option value="Community">Community</option>
@@ -393,19 +386,17 @@
 
   function filterPulse() {
     var query = (document.getElementById('pulseSearch').value || '').toLowerCase().trim();
-    var type = document.getElementById('typeSelect').value;
     var cat = document.getElementById('categorySelect').value;
     var list = document.getElementById('pulseList');
     var empty = document.getElementById('pulseEmpty');
     var count = document.getElementById('pulseCount');
 
     var filtered = posts.filter(function(p) {
-      var matchType = type === 'all' || p.type === type;
       var matchCat = cat === 'all' || p.category === cat;
       var matchQ = !query || p.headline.toLowerCase().indexOf(query) !== -1
         || p.category.toLowerCase().indexOf(query) !== -1
         || p.excerpt.toLowerCase().indexOf(query) !== -1;
-      return matchType && matchCat && matchQ;
+      return matchCat && matchQ;
     });
 
     var sortMode = document.getElementById('sortSelect').value;
