@@ -240,7 +240,7 @@
 
       <!-- SOUTH FLORIDA -->
       <div class="card-wrapper" data-type="region" data-slug="south-florida" role="listitem" aria-label="South Florida community">
-        <a class="flip-card flip-front" href="/communities/south-florida" aria-label="View South Florida community">
+        <a class="flip-card flip-front" href="/communities/south-florida" onclick="veChooseCity('south-florida')" aria-label="View South Florida community">
             <img src="/communities/south-florida/banner.jpg" alt="South Florida anime-style cityscape illustration" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
@@ -257,7 +257,7 @@
 
       <!-- CENTRAL FLORIDA -->
       <div class="card-wrapper" data-type="region" data-slug="central-florida" role="listitem" aria-label="Central Florida community">
-        <a class="flip-card flip-front" href="/communities/central-florida" aria-label="View Central Florida community">
+        <a class="flip-card flip-front" href="/communities/central-florida" onclick="veChooseCity('central-florida')" aria-label="View Central Florida community">
             <img src="/communities/central-florida/banner.jpg" alt="Central Florida anime-style skyline illustration" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
@@ -274,7 +274,7 @@
 
       <!-- ATLANTA -->
       <div class="card-wrapper" data-type="region" data-slug="atlanta" role="listitem" aria-label="Atlanta community">
-        <a class="flip-card flip-front" href="/communities/atlanta" aria-label="View Atlanta community">
+        <a class="flip-card flip-front" href="/communities/atlanta" onclick="veChooseCity('atlanta')" aria-label="View Atlanta community">
             <img src="/communities/atlanta/banner.jpg" alt="Atlanta anime-style skyline illustration" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
@@ -291,7 +291,7 @@
 
       <!-- NEW YORK -->
       <div class="card-wrapper" data-type="region" data-slug="new-york" role="listitem" aria-label="New York community">
-        <a class="flip-card flip-front" href="/communities/new-york" aria-label="View New York community">
+        <a class="flip-card flip-front" href="/communities/new-york" onclick="veChooseCity('new-york')" aria-label="View New York community">
             <img src="/communities/new-york/banner.jpg" alt="New York City anime skyline at sunset" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
@@ -308,7 +308,7 @@
 
       <!-- LOS ANGELES -->
       <div class="card-wrapper" data-type="region" data-slug="los-angeles" role="listitem" aria-label="Los Angeles community">
-        <a class="flip-card flip-front" href="/communities/los-angeles" aria-label="View Los Angeles community">
+        <a class="flip-card flip-front" href="/communities/los-angeles" onclick="veChooseCity('los-angeles')" aria-label="View Los Angeles community">
             <img src="/communities/los-angeles/banner.jpg" alt="Los Angeles anime-style skyline illustration with palm trees at sunset" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
@@ -325,7 +325,7 @@
 
       <!-- LONDON -->
       <div class="card-wrapper" data-type="region" data-slug="london" role="listitem" aria-label="London community">
-        <a class="flip-card flip-front" href="/communities/london" aria-label="View London community">
+        <a class="flip-card flip-front" href="/communities/london" onclick="veChooseCity('london')" aria-label="View London community">
             <img src="/communities/london/banner.jpg" alt="London anime-style illustration of Tower Bridge and the Shard at night" loading="lazy">
             <div class="front-overlay" aria-hidden="true"></div>
             <div class="front-content">
@@ -360,6 +360,9 @@
 </div><!-- /page-frame -->
 
 <script>
+  function veChooseCity(slug) {
+    try { localStorage.setItem('ve_selected_city', slug); } catch (e) {}
+  }
   (function () {
     var wrappers   = document.querySelectorAll('.card-wrapper');
     var chips      = document.querySelectorAll('.filter-chip');
