@@ -431,8 +431,12 @@ body {
 </style>
 </head>
 <body>
-<div id="frame">
 <script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+<div id="dir-gate" style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 24px;font-family:'Montserrat',sans-serif;">
+  <p style="font-size:13px;color:#888;">Checking access&hellip;</p>
+</div>
+<div id="frame" style="display:none">
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1382,7 +1386,37 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
       .catch(function(e) { populateGrids(_approvedListings, []); });
   }
 
-  fetchAll();
+  window.__veDirFetchAll = fetchAll;
 })();
-</script></body>
+</script>
+<script>
+(function(){
+  function showSignIn(){
+    document.getElementById('dir-gate').innerHTML =
+      '<div><p style="font-size:14px;font-weight:800;color:#1a1a1a;margin-bottom:6px;">Admins Only</p>' +
+      '<p style="font-size:13px;color:#888;margin-bottom:18px;max-width:340px;">The full cross-region directory is restricted to LESARUSS admins. Looking for Vegan spots? Check your <a href="/communities" style="color:#3A9B3E;font-weight:700;">community</a> or a <a href="/guides" style="color:#3A9B3E;font-weight:700;">guide</a>.</p>' +
+      '<button id="dir-signin-btn" style="background:#5EC47A;color:#000;border:none;padding:12px 26px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:\'Montserrat\',sans-serif;">Admin Sign In</button></div>';
+    document.getElementById('dir-signin-btn').addEventListener('click', function(){
+      VEAuth.showAuthModal('Sign in with an admin account to view the full directory.', check);
+    });
+  }
+  function showDenied(){
+    document.getElementById('dir-gate').innerHTML =
+      '<div><p style="font-size:14px;font-weight:800;color:#1a1a1a;margin-bottom:6px;">Admins Only</p>' +
+      '<p style="font-size:13px;color:#888;max-width:340px;">This account does not have access to the full directory. Check your <a href="/communities" style="color:#3A9B3E;font-weight:700;">community</a> or a <a href="/guides" style="color:#3A9B3E;font-weight:700;">guide</a> instead.</p></div>';
+  }
+  function reveal(){
+    document.getElementById('dir-gate').style.display = 'none';
+    document.getElementById('frame').style.display = '';
+    if (window.__veDirFetchAll) window.__veDirFetchAll();
+  }
+  function check(){
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showSignIn(); return; }
+    if (!VEAuth.isRealSuperAdmin()) { showDenied(); return; }
+    reveal();
+  }
+  check();
+})();
+</script>
+</body>
 </html>
