@@ -107,6 +107,13 @@
     .pulse-outer { display: flex; flex-direction: column; min-height: calc(100vh - 60px); }
     .pulse-list-wrap { flex: 1; padding: 28px 40px 64px; }
     .pulse-empty { text-align: center; padding: 60px 24px; font-size: 13px; font-weight: 600; color: var(--ve-text-50); }
+    .pulse-pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 36px; flex-wrap: wrap; }
+    .pulse-page-btn { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; min-width: 34px; height: 34px; padding: 0 10px; border-radius: 7px; border: 1px solid var(--ve-border); background: #fff; color: var(--ve-text); cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; }
+    .pulse-page-btn:hover:not(:disabled) { border-color: var(--ve-green-dark); }
+    .pulse-page-btn:focus-visible { outline: 3px solid var(--ve-green-dark); outline-offset: 2px; }
+    .pulse-page-btn.active { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
+    .pulse-page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .pulse-page-ellipsis { font-size: 11px; font-weight: 700; color: var(--ve-text-50); padding: 0 4px; }
 
     /* POST CARDS - editorial feed, no chat / no reply counts */
     .pulse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -281,10 +288,10 @@
           <div class="pulse-board-title">Daily Pulse</div>
           <div class="pulse-board-count" id="pulseCount">9 posts</div>
         </div>
-        <input class="pulse-search" id="pulseSearch" type="search" placeholder="Search the Pulse..." aria-label="Search posts" oninput="filterPulse()">
+        <input class="pulse-search" id="pulseSearch" type="search" placeholder="Search the Pulse..." aria-label="Search posts" oninput="onPulseFilterInput()">
       </div>
       <div class="pulse-filters" role="group" aria-label="Filter and sort posts">
-        <select class="pulse-select" id="categorySelect" aria-label="Filter by category" onchange="filterPulse()">
+        <select class="pulse-select" id="categorySelect" aria-label="Filter by category" onchange="onPulseFilterInput()">
           <option value="all">All Categories</option>
           <option value="Community">Community</option>
           <option value="Recipes">Recipes</option>
@@ -295,9 +302,10 @@
           <option value="Policy & Advocacy">Policy &amp; Advocacy</option>
           <option value="Culture & Media">Culture &amp; Media</option>
           <option value="Community Spotlight">Community Spotlight</option>
+          <option value="Founders Report">Founders Report</option>
           <option value="Sustainability & Environment">Sustainability &amp; Environment</option>
         </select>
-        <select class="pulse-select" id="sortSelect" aria-label="Sort posts" onchange="filterPulse()">
+        <select class="pulse-select" id="sortSelect" aria-label="Sort posts" onchange="onPulseFilterInput()">
           <option value="latest">Latest</option>
           <option value="oldest">Oldest</option>
           <option value="popular">Most Popular</option>
@@ -311,6 +319,7 @@
           <div id="pulse-list-view">
             <div class="pulse-grid" id="pulseList" role="list" aria-label="Pulse posts"></div>
             <div class="pulse-empty" id="pulseEmpty" style="display:none;">No posts match your search.</div>
+            <div class="pulse-pagination" id="pulsePagination"></div>
           </div>
 
           <div id="pulse-detail-view" style="display:none;" aria-live="polite">
@@ -437,12 +446,52 @@
     return '<div class="pulse-card-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>';
   }
 
+  var PULSE_PAGE_SIZE = 36;
+  var pulseCurrentPage = 1;
+
+  function onPulseFilterInput() {
+    pulseCurrentPage = 1;
+    filterPulse();
+  }
+
+  function goToPulsePage(n) {
+    pulseCurrentPage = n;
+    filterPulse();
+    var list = document.getElementById('pulseList');
+    if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderPulsePagination(totalCount) {
+    var wrap = document.getElementById('pulsePagination');
+    if (!wrap) return;
+    var totalPages = Math.ceil(totalCount / PULSE_PAGE_SIZE);
+    if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+
+    var html = '';
+    html += '<button type="button" class="pulse-page-btn" ' + (pulseCurrentPage <= 1 ? 'disabled' : '') + ' aria-label="Previous page" onclick="goToPulsePage(' + (pulseCurrentPage - 1) + ')">&larr;</button>';
+
+    var pages = [];
+    for (var i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || Math.abs(i - pulseCurrentPage) <= 1) pages.push(i);
+    }
+    var last = 0;
+    pages.forEach(function(p) {
+      if (last && p - last > 1) html += '<span class="pulse-page-ellipsis">&hellip;</span>';
+      html += '<button type="button" class="pulse-page-btn' + (p === pulseCurrentPage ? ' active' : '') + '" aria-label="Page ' + p + '" aria-current="' + (p === pulseCurrentPage ? 'page' : 'false') + '" onclick="goToPulsePage(' + p + ')">' + p + '</button>';
+      last = p;
+    });
+
+    html += '<button type="button" class="pulse-page-btn" ' + (pulseCurrentPage >= totalPages ? 'disabled' : '') + ' aria-label="Next page" onclick="goToPulsePage(' + (pulseCurrentPage + 1) + ')">&rarr;</button>';
+    wrap.innerHTML = html;
+  }
+
   function filterPulse() {
     var query = (document.getElementById('pulseSearch').value || '').toLowerCase().trim();
     var cat = document.getElementById('categorySelect').value;
     var list = document.getElementById('pulseList');
     var empty = document.getElementById('pulseEmpty');
     var count = document.getElementById('pulseCount');
+    var pagination = document.getElementById('pulsePagination');
 
     var filtered = posts.filter(function(p) {
       var matchCat = cat === 'all' || p.category === cat;
@@ -469,13 +518,20 @@
       empty.style.display = 'block';
       list.style.display = 'none';
       count.textContent = '0 posts';
+      if (pagination) pagination.innerHTML = '';
       return;
     }
     empty.style.display = 'none';
     list.style.display = 'grid';
     count.textContent = filtered.length + ' post' + (filtered.length !== 1 ? 's' : '');
 
-    filtered.forEach(function(p) {
+    var totalPages = Math.ceil(filtered.length / PULSE_PAGE_SIZE);
+    if (pulseCurrentPage > totalPages) pulseCurrentPage = totalPages;
+    if (pulseCurrentPage < 1) pulseCurrentPage = 1;
+    var pageStart = (pulseCurrentPage - 1) * PULSE_PAGE_SIZE;
+    var pageItems = filtered.slice(pageStart, pageStart + PULSE_PAGE_SIZE);
+
+    pageItems.forEach(function(p) {
       var card = document.createElement('a');
       card.className = 'pulse-card';
       card.setAttribute('href', '/pulse/' + p.slug);
@@ -499,6 +555,8 @@
 
       list.appendChild(card);
     });
+
+    renderPulsePagination(filtered.length);
   }
 
   function shareBarHtml(p, pageUrl) {
