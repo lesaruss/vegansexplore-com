@@ -214,7 +214,7 @@
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
-        '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
+        (isRealSuperAdmin ? '<a href="/directory"' + cur('/directory') + '>Directory</a>' : '') +
       '</div>' +
       mobileBottom +
       adminPanel +
