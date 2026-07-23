@@ -3,9 +3,7 @@
   var css = [
     '.ve-footer{background:#1A1A1A;}',
     '.ve-footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:32px 56px;font-family:"Montserrat",sans-serif;}',
-    '.footer-wordmark{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.7);}',
-    '.footer-wordmark .ve-leaf{width:20px;height:20px;background:#3A9B3E;border-radius:50% 3px 50% 3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}',
-    '.footer-wordmark .ve-leaf svg{width:10px;height:10px;fill:#fff;display:block;}',
+    '.footer-logo{height:26px;width:auto;display:block;}',
     '.ve-footer .footer-links{display:flex;gap:24px;list-style:none;margin:0;padding:0;}',
     '.ve-footer .footer-links a{font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);text-decoration:none;transition:color 0.15s;}',
     '.ve-footer .footer-links a:hover{color:rgba(255,255,255,0.85);}',
@@ -26,12 +24,9 @@
   var html =
     '<footer class="ve-footer" role="contentinfo">' +
       '<div class="ve-footer-inner">' +
-      '<div class="footer-wordmark">' +
-        '<div class="ve-leaf" aria-hidden="true">' +
-          '<svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 19.34L5.71 21l1-1C8 18 10 17 12 17c3 0 5-2 5-5 0-1-.4-2-1-3z"/></svg>' +
-        '</div>' +
-        'Vegans Explore' +
-      '</div>' +
+      '<a href="/" aria-label="Vegans Explore home">' +
+        '<img class="footer-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt="Vegans Explore">' +
+      '</a>' +
       '<nav class="footer-links" aria-label="Footer navigation">' +
         '<a href="#">ABOUT</a>' +
         '<a href="/partner">PARTNER WITH US</a>' +
