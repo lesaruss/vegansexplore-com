@@ -104,6 +104,16 @@
   function isCurrent(href) { var h = href.replace(/\/$/, '') || '/'; return p === h; }
   function cur(href) { return isCurrent(href) ? ' aria-current="page"' : ''; }
 
+  /* ---- Personalized "Welcome" destination (2026-07-23) ----
+     Once a visitor picks a city on /communities (see veChooseCity there),
+     the Welcome link routes straight back to that community instead of the
+     generic /welcome page - so a traveling member can switch cities and
+     "Welcome" always means "my city," not a static page. */
+  var VE_CITY_SLUGS = ['south-florida', 'central-florida', 'atlanta', 'new-york', 'los-angeles', 'london'];
+  var savedCity = null;
+  try { savedCity = localStorage.getItem('ve_selected_city'); } catch (e) {}
+  var welcomeHref = (savedCity && VE_CITY_SLUGS.indexOf(savedCity) !== -1) ? ('/communities/' + savedCity) : '/welcome';
+
   /* ---- Icons ---- */
   var iconMenu  = '<svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><rect width="18" height="2" rx="1" fill="#1a1a1a"/><rect y="6" width="18" height="2" rx="1" fill="#1a1a1a"/><rect y="12" width="18" height="2" rx="1" fill="#1a1a1a"/></svg>';
   var iconClose = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><line x1="2" y1="2" x2="16" y2="16" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="2" x2="2" y2="16" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/></svg>';
@@ -200,7 +210,7 @@
     '<div class="ve-mob-overlay" id="ve-mob-overlay" aria-hidden="true"></div>' +
     '<div class="ve-mob-menu" id="ve-mob-menu" role="dialog" aria-label="Navigation" aria-modal="true">' +
       '<div class="ve-mob-section">' +
-        '<a href="/welcome"' + cur('/welcome') + '>Welcome</a>' +
+        '<a href="' + welcomeHref + '"' + cur(welcomeHref) + '>Welcome</a>' +
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
