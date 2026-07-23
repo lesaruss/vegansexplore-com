@@ -23,9 +23,9 @@
       min-height: 540px;
       display: flex;
       align-items: center;
-      background-image: url('/communities/hero.jpg');
+      background-image: url('/communities/new-york/banner.jpg');
       background-size: cover;
-      background-position: center 30%;
+      background-position: center 40%;
       background-repeat: no-repeat;
       overflow: hidden;
     }
@@ -63,6 +63,7 @@
     .hero h1 { font-size: clamp(34px, 5vw, 64px); font-weight: 900; line-height: 0.97; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 20px; }
     .hero h1 em { color: var(--ve-green); font-style: normal; }
     .hero-sub { font-size: 16px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.55); max-width: 520px; }
+    .hero-city-tag { position: absolute; z-index: 2; bottom: 24px; right: 28px; font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); padding: 9px 16px; border-radius: 4px; }
 
     /* GRID SECTION */
     .grid-section { padding: 52px 56px 80px; }
@@ -195,7 +196,8 @@
       .community-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 700px) {
-      .hero { background-position: 65% center; align-items: flex-end; min-height: 480px; }
+      .hero { background-image: url('/communities/new-york/hero-mobile.jpg'); background-position: center center; align-items: flex-end; min-height: 480px; }
+      .hero-city-tag { bottom: 16px; right: 20px; font-size: 10px; padding: 7px 13px; }
       .hero::before { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
       .hero::after { display: none; }
       .hero-inner { padding: 0 24px 44px; max-width: 100%; }
@@ -223,6 +225,7 @@
     <h1 id="find-heading">Find Your<br><em>Community</em></h1>
     <p class="hero-sub">8 regions. 3 partner orgs. All built around real vegan connection.</p>
     </div>
+    <span class="hero-city-tag" aria-hidden="true">New York City</span>
   </section>
 
   <!-- FILTER + GRID -->
