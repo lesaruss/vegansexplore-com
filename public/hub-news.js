@@ -93,5 +93,37 @@
     });
   }
 
-  window.VEHubNews = { render: render };
+  /* Live "Upcoming Events" renderer, reused by newer hub pages.
+     cityNames: array of real city-name strings to match against events.city (a metro area may span several). */
+  function renderEvents(listId, cityNames) {
+    var list = document.getElementById(listId);
+    if (!list) return;
+    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=100', { headers: headers() })
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        var matches = (rows || []).filter(function (e) { return e.city && cityNames.indexOf(e.city) > -1; });
+        if (!matches.length) { list.innerHTML = '<p class="hub-dir-empty">No upcoming events posted yet. Check back soon.</p>'; return; }
+        list.innerHTML = matches.map(function (e) {
+          var dt = new Date(e.starts_at);
+          var day = dt.getDate();
+          var mon = dt.toLocaleString('en-US', { month: 'short' });
+          var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+          return '<article class="event-row" aria-label="' + esc(e.title) + '">' +
+            '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + esc(mon) + '</span></div>' +
+            '<div class="event-body">' +
+              '<p class="event-type-badge">' + esc(e.category || 'Event') + '</p>' +
+              '<h3 class="event-name">' + esc(e.title) + '</h3>' +
+              '<div class="event-details" aria-label="Event details">' +
+                '<span>' + esc(e.location_name || e.city) + (e.city ? ', ' + esc(e.city) : '') + '</span>' +
+                '<span>' + esc(time) + '</span>' +
+                (e.rsvp_count ? '<span>' + e.rsvp_count + ' attending</span>' : '') +
+              '</div>' +
+            '</div>' +
+            '<div class="event-cta-col">' + (e.ticket_url ? '<a href="' + esc(e.ticket_url) + '" class="btn-rsvp" target="_blank" rel="noopener noreferrer" aria-label="RSVP for ' + esc(e.title) + '">RSVP</a>' : '<span class="btn-rsvp" style="opacity:.5;pointer-events:none;">Details soon</span>') +
+            '</div></article>';
+        }).join('');
+      }).catch(function () { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });
+  }
+
+  window.VEHubNews = { render: render, renderEvents: renderEvents };
 })();
