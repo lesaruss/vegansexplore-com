@@ -468,47 +468,8 @@
       <a href="#" class="section-action">All stories</a>
     </div>
 
-    <div class="news-grid">
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">Featured</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 12, 2026</p>
-          <h3 class="news-headline">LA's Biggest Plant-Based Market Returns to Grand Park This June</h3>
-          <p class="news-excerpt">The annual Grand Park Plant-Based Market is back, with over 30 vendors from across LA confirmed for the June weekend event.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag update">Update</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 9, 2026</p>
-          <h3 class="news-headline">Erewhon Expands Vegan-Only Prepared Foods Section Citywide</h3>
-          <p class="news-excerpt">Erewhon Market is rolling out a dedicated plant-based prepared foods section at all seven LA locations, citing record vegan product sales.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">News</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 5, 2026</p>
-          <h3 class="news-headline">New Vegan Ramen Spot Opens in Silver Lake</h3>
-          <p class="news-excerpt">Noodle Society, a fully plant-based ramen counter on Sunset Blvd, soft-opened last week to lines stretching around the block.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
+    <div class="news-grid" id="hub-news-grid">
+      <p class="hub-dir-empty">Loading local news&hellip;</p>
     </div>
   </section>
 
@@ -765,6 +726,8 @@
   </section>
 
   <!-- FOOTER -->
+  <script src="/public/hub-news.js"></script>
+  <script>VEHubNews.render('hub-news-grid', 'los-angeles');</script>
   <script src="/public/footer.js"></script>
 
 </div><!-- /page-frame -->
