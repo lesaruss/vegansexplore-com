@@ -339,6 +339,17 @@
     .locked-preview-wrap { position: relative; overflow: hidden; border-radius: 10px; border: 1px solid #f0ece8; margin: 0 0 32px; }
     .preview-content { filter: blur(5px); pointer-events: none; user-select: none; padding: 24px 28px; background: #fff; }
     .preview-gate { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.90); padding: 40px 24px; text-align: center; }
+    .locked-preview-wrap.hub-unlocked .preview-content { filter: none; pointer-events: auto; user-select: auto; }
+    .locked-preview-wrap.hub-unlocked .preview-gate { display: none; }
+    .lb-list { display: flex; flex-direction: column; gap: 8px; }
+    .lb-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1.5px solid var(--ve-border); border-radius: 8px; background: #fff; }
+    .lb-row.lb-you { border-color: var(--ve-green); background: #F0FDF4; }
+    .lb-rank { font-size: 13px; font-weight: 900; color: var(--ve-text-50); width: 26px; flex-shrink: 0; }
+    .lb-avatar, .lb-avatar-img { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; object-fit: cover; }
+    .lb-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+    .lb-name { font-size: 13px; font-weight: 800; color: var(--ve-text); }
+    .lb-loc { font-size: 11px; color: var(--ve-text-50); }
+    .lb-points { font-size: 12px; font-weight: 800; color: var(--ve-green); white-space: nowrap; flex-shrink: 0; }
     /* Member preview grid */
     .mp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
     .mp-card { display: flex; align-items: center; gap: 10px; padding: 11px 13px; background: #fafaf8; border-radius: 8px; border: 1px solid #eee; }
@@ -369,6 +380,7 @@
 
 <div class="page-frame" id="page-frame">
   <script src="/public/nav.js"></script>
+  <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 
   <!-- HERO -->
@@ -418,8 +430,10 @@
       <option value="events">Events</option>
       <option value="directory">Directory</option>
       <option value="newsletter">Newsletter</option>
+      <option value="opportunities">Opportunities</option>
       <option value="partners">Partners</option>
       <option value="members">&#128274; Members</option>
+      <option value="rewards">&#128274; Rewards</option>
       <option value="chat">&#128274; Chat</option>
     </select>
   </div>
@@ -442,6 +456,10 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8zm-2 0-8 5-8-5 8-4.76L19.99 8zM4 18V9.87l8 5 8-5V18H4z"/></svg>
       Newsletter
     </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-opportunities" id="tab-btn-opportunities" onclick="switchTab('opportunities')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L1 21h22L12 2zm0 4.5L18.5 19h-13L12 6.5zM11 10v4h2v-4h-2zm0 5v2h2v-2h-2z"/></svg>
+      Opportunities
+    </button>
     <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-partners" id="tab-btn-partners" onclick="switchTab('partners')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
       Partners
@@ -449,6 +467,11 @@
     <button class="hub-tab hub-tab-locked" role="tab" aria-selected="false" aria-controls="tab-members" id="tab-btn-members" onclick="switchTab('members')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
       Members
+      <svg class="tab-lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    </button>
+    <button class="hub-tab hub-tab-locked" role="tab" aria-selected="false" aria-controls="tab-rewards" id="tab-btn-rewards" onclick="switchTab('rewards')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.65-.5-.65C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
+      Rewards
       <svg class="tab-lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
     </button>
     <button class="hub-tab hub-tab-locked" role="tab" aria-selected="false" aria-controls="tab-chat" id="tab-btn-chat" onclick="switchTab('chat')">
@@ -471,6 +494,30 @@
     <div class="news-grid" id="hub-news-grid">
       <p class="hub-dir-empty">Loading local news&hellip;</p>
     </div>
+
+        <div class="hub-news-submit" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--ve-border);">
+          <div id="hub-news-submit-closed">
+            <button type="button" class="btn-outline" id="hub-news-submit-open" style="font-size:11px;padding:11px 20px;">Submit news to this community</button>
+          </div>
+          <form id="hub-news-submit-form" style="display:none;max-width:520px;">
+            <p style="font-size:12px;color:var(--ve-text-50);margin-bottom:14px;">Share something happening in the community. Submissions are reviewed before they go live.</p>
+            <div style="margin-bottom:10px;">
+              <label for="hub-news-headline" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Headline</label>
+              <input type="text" id="hub-news-headline" maxlength="200" required style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+            </div>
+            <div style="margin-bottom:10px;">
+              <label for="hub-news-summary" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">What's the story?</label>
+              <textarea id="hub-news-summary" rows="3" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;"></textarea>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label for="hub-news-url" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Link (optional)</label>
+              <input type="url" id="hub-news-url" placeholder="https://" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+            </div>
+            <button type="submit" class="btn-join" id="hub-news-submit-btn">Submit for review</button>
+            <p id="hub-news-submit-msg" style="font-size:12px;margin-top:10px;"></p>
+          </form>
+        </div>
+
   </section>
 
   <!-- ========================= EVENTS SECTION ========================= -->
@@ -501,70 +548,8 @@
       </div>
     </div>
 
-    <div class="events-list" aria-label="Upcoming events">
-      <article class="event-row" aria-label="Orlando Vegan Brunch Crawl - Jun 20">
-        <div class="event-date-col" aria-hidden="true"><span class="event-day">20</span><span class="event-mon">Jun</span></div>
-        <div class="event-body">
-          <p class="event-type-badge">Meetup</p>
-          <h3 class="event-name">Orlando Vegan Brunch Crawl</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Mills 50 District, Orlando</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>11:00 AM EDT</span>
-            <span>38 attending</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp" aria-label="RSVP for Miami Vegan Sunset Cruise">RSVP</a>
-        </div>
-      </article>
-
-      <article class="event-row" aria-label="Kissimmee Plant-Based Market - Jun 28">
-        <div class="event-date-col orange" aria-hidden="true"><span class="event-day">28</span><span class="event-mon">Jun</span></div>
-        <div class="event-body">
-          <p class="event-type-badge orange">Pop-up</p>
-          <h3 class="event-name">Kissimmee Plant-Based Market</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Kissimmee Lakefront Park, Kissimmee</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>9:00 AM &ndash; 3:00 PM EDT</span>
-            <span>22 vendors</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp orange" aria-label="RSVP for Fort Lauderdale Plant-Based Popup Market">RSVP</a>
-        </div>
-      </article>
-
-      <article class="event-row" aria-label="Daytona Beach Vegan Cooking Workshop - Jul 12">
-        <div class="event-date-col" aria-hidden="true"><span class="event-day">12</span><span class="event-mon">Jul</span></div>
-        <div class="event-body">
-          <p class="event-type-badge">Workshop</p>
-          <h3 class="event-name">Daytona Beach Vegan Cooking Workshop</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Palm Beach Food Co-op, West Palm Beach</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>2:00 PM &ndash; 5:00 PM EDT</span>
-            <span>12 spots left</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp" aria-label="RSVP for Daytona Beach Vegan Cooking Workshop">RSVP</a>
-        </div>
-      </article>
-
-      <article class="event-row" aria-label="CFlo Vegans Monthly Meetup - Jul 19">
-        <div class="event-date-col" aria-hidden="true"><span class="event-day">19</span><span class="event-mon">Jul</span></div>
-        <div class="event-body">
-          <p class="event-type-badge">Meetup</p>
-          <h3 class="event-name">CFlo Vegans Monthly Meetup</h3>
-          <div class="event-details" aria-label="Event details">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Rotating venue - announced 3 days prior</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>6:30 PM EDT</span>
-            <span>Community staple</span>
-          </div>
-        </div>
-        <div class="event-cta-col">
-          <a href="#" class="btn-rsvp" aria-label="RSVP for CFlo Vegans Monthly Meetup">RSVP</a>
-        </div>
-      </article>
+    <div class="events-list" id="hub-events-list" aria-label="Upcoming events">
+      <p class="hub-dir-empty">Loading events&hellip;</p>
     </div>
   </section>
 
@@ -614,6 +599,19 @@
     </div>
   </section>
 
+  <!-- ========================= OPPORTUNITIES SECTION ========================= -->
+  <section class="hub-section" id="tab-opportunities" role="tabpanel" aria-labelledby="tab-btn-opportunities">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Community Roles</h2>
+        <p class="section-sub">Two paths to help lead and grow VEGANS EXPLORE here.</p>
+      </div>
+    </div>
+    <div id="hub-opportunities-list">
+      <p class="hub-dir-empty">Loading opportunities&hellip;</p>
+    </div>
+  </section>
+
   <!-- ========================= PARTNERS SECTION ========================= -->
   <section class="hub-section" id="tab-partners" role="tabpanel" aria-labelledby="tab-btn-partners">
     <div class="section-hdr">
@@ -629,32 +627,33 @@
         <div class="partner-logo-area" aria-hidden="true">&#128054;</div>
         <p class="partner-type">Community Partner</p>
         <h3 class="partner-name">BEan Animal Hero</h3>
-        <p class="partner-desc">Animal advocacy platform connecting compassionate consumers with organizations fighting for animal rights across Central Florida.</p>
+        <p class="partner-desc">Animal advocacy platform connecting compassionate consumers with organizations fighting for animal rights nationwide.</p>
         <a href="https://beananimalhero.org" class="partner-url" target="_blank" rel="noopener noreferrer">beananimalhero.org</a>
-      </article>
-
-      <article class="partner-card" aria-label="FL Animal Rescue Alliance - Partner">
-        <div class="partner-logo-area" aria-hidden="true">&#128062;</div>
-        <p class="partner-type">Community Partner</p>
-        <h3 class="partner-name">FL Animal Rescue Alliance</h3>
-        <p class="partner-desc">Florida-wide rescue network coordinating adoptions, fosters, and community outreach events throughout Miami-Dade and Broward counties.</p>
-        <a href="#" class="partner-url">Florida, USA</a>
-      </article>
-
-      <article class="partner-card" aria-label="Vegan Social Club - Partner">
-        <div class="partner-logo-area" aria-hidden="true">&#127807;</div>
-        <p class="partner-type">Community Partner</p>
-        <h3 class="partner-name">Vegan Social Club</h3>
-        <p class="partner-desc">Social meetups and curated dining experiences for the vegan community. Monthly events in Miami and Fort Lauderdale for members at every level.</p>
-        <a href="#" class="partner-url">Partner Community</a>
       </article>
     </div>
 
     <!-- PARTNER CTA -->
     <div class="partner-cta-row" role="complementary" aria-label="Partner with the community">
       <p class="partner-cta-text">Is your organization aligned with the CFlo Vegans community? Partner visibility starts at $0 for qualifying nonprofits.</p>
-      <a href="#" class="btn-partner">Apply to Partner</a>
+      <button type="button" class="btn-partner" id="hub-partner-apply-open">Apply to Partner</button>
     </div>
+
+    <form id="hub-partner-apply-form" style="display:none;max-width:520px;margin-top:20px;padding-top:20px;border-top:1px solid var(--ve-border);">
+      <div style="margin-bottom:10px;">
+        <label for="hub-partner-name" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Business / Org Name</label>
+        <input type="text" id="hub-partner-name" required style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+      </div>
+      <div style="margin-bottom:10px;">
+        <label for="hub-partner-desc" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">What do you do?</label>
+        <textarea id="hub-partner-desc" rows="3" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;resize:vertical;"></textarea>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="hub-partner-site" style="display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;">Website</label>
+        <input type="url" id="hub-partner-site" placeholder="https://" style="width:100%;padding:11px 13px;border:1.5px solid var(--ve-border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:13px;">
+      </div>
+      <button type="submit" class="btn-join" id="hub-partner-submit-btn">Submit application</button>
+      <p id="hub-partner-submit-msg" style="font-size:12px;margin-top:10px;"></p>
+    </form>
   </section>
 
 
@@ -666,7 +665,7 @@
         <p class="section-sub">Central Florida Passport holders. Join to see who else is in your community.</p>
       </div>
     </div>
-    <div class="locked-preview-wrap">
+    <div class="locked-preview-wrap hub-gate">
       <div class="preview-content" aria-hidden="true">
         <div class="mp-grid">
           <div class="mp-card"><div class="mp-avatar" style="background:#4caf50">DM</div><div><div class="mp-name">Destiny M.</div><div class="mp-city">Orlando, FL</div><div class="mp-since">Member since 2024</div></div></div>
@@ -690,8 +689,53 @@
         </div>
       </div>
     </div>
+
+    <div class="section-hdr" style="margin-top:36px;padding-top:28px;border-top:1px solid var(--ve-border);">
+      <div>
+        <h3 class="section-title" style="font-size:16px;margin-bottom:6px;">Points Leaderboard</h3>
+        <p class="section-sub" style="margin-bottom:0;">Top Central Florida members, ranked by points earned.</p>
+      </div>
+    </div>
+    <div id="hub-leaderboard-wrap" style="display:none;margin-top:16px;">
+      <div id="hub-leaderboard-list" class="lb-list"><p class="hub-dir-empty">Loading leaderboard&hellip;</p></div>
+    </div>
   </section>
 
+
+
+  <!-- ========================= REWARDS SECTION (LOCKED) ========================= -->
+  <section class="hub-section" id="tab-rewards" role="tabpanel" aria-labelledby="tab-btn-rewards">
+    <div class="section-hdr" style="margin-bottom:20px;">
+      <div>
+        <h2 class="section-title">Rewards</h2>
+        <p class="section-sub">Use points you've earned toward rewards, or put them toward a nonprofit.</p>
+      </div>
+    </div>
+    <div class="locked-preview-wrap hub-gate">
+      <div class="preview-content">
+        <div id="hub-rewards-store">
+          <p class="hub-dir-empty">Loading rewards&hellip;</p>
+        </div>
+
+        <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--ve-border);">
+          <h3 class="section-title" style="font-size:16px;margin-bottom:6px;">Give Back</h3>
+          <p class="section-sub" style="margin-bottom:20px;">Donate your points to support a registered nonprofit.</p>
+          <div id="hub-nonprofit-list"></div>
+        </div>
+      </div>
+      <div class="preview-gate">
+        <div class="locked-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.65-.5-.65C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg></div>
+        <span class="locked-badge">Passport Required</span>
+        <p class="locked-title">Rewards</p>
+        <p class="locked-desc">Redeem points for real rewards, or donate them to a registered nonprofit. Free with your Passport.</p>
+        <a href="/passport" class="locked-cta">Get Passport - Free</a>
+        <div class="locked-perks">
+          <span class="locked-perk">Points store</span>
+          <span class="locked-perk">Nonprofit giving</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
     <!-- ========================= CHAT SECTION (LOCKED) ========================= -->
   <section id="tab-chat" class="hub-section" aria-labelledby="tab-btn-chat">
@@ -701,7 +745,7 @@
         <p class="section-sub">Active discussions in the Central Florida vegan community.</p>
       </div>
     </div>
-    <div class="locked-preview-wrap">
+    <div class="locked-preview-wrap hub-gate">
       <div class="preview-content" aria-hidden="true">
         <div class="ct-list">
           <div class="ct-row"><div class="ct-avatar" style="background:#4caf50">DM</div><div style="min-width:0;"><div class="ct-topic">Anyone hitting the farmers market off Colonial this weekend?</div><div class="ct-excerpt">I usually go early around 8 AM before it gets packed...</div><div class="ct-meta"><span>11 replies</span><span>3h ago</span></div></div></div>
@@ -727,7 +771,15 @@
 
   <!-- FOOTER -->
   <script src="/public/hub-news.js"></script>
+  <script src="/public/hub-community.js"></script>
   <script>VEHubNews.render('hub-news-grid', 'central-florida');</script>
+  <script>VEHubNews.renderEvents('hub-events-list', ['Orlando', 'Tampa', 'St. Petersburg', 'Kissimmee', 'Winter Park', 'Clearwater', 'Lakeland']);</script>
+  <script>VEHubCommunity.wireNewsSubmit('central-florida');</script>
+  <script>VEHubCommunity.renderOpportunities('hub-opportunities-list');</script>
+  <script>VEHubCommunity.wireRewards('central-florida');</script>
+  <script>VEHubCommunity.renderNonprofits('hub-nonprofit-list');</script>
+  <script>VEHubCommunity.wirePartnerApply('central-florida');</script>
+  <script>VEHubCommunity.applyGates('Central Florida', ['Orlando', 'Tampa', 'St. Petersburg', 'Kissimmee', 'Winter Park', 'Clearwater', 'Lakeland']);</script>
   <script src="/public/footer.js"></script>
 
 </div><!-- /page-frame -->
