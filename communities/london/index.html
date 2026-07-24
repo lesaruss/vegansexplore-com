@@ -468,47 +468,8 @@
       <a href="#" class="section-action">All stories</a>
     </div>
 
-    <div class="news-grid">
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">Featured</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 12, 2026</p>
-          <h3 class="news-headline">Borough Market Adds Permanent Vegan Street Food Wing</h3>
-          <p class="news-excerpt">Borough Market's new permanent plant-based wing officially opened this month, hosting 18 dedicated vegan vendors from across the capital.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag update">Update</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 9, 2026</p>
-          <h3 class="news-headline">Shoreditch Community Kitchen Launches Pay-What-You-Can Vegan Suppers</h3>
-          <p class="news-excerpt">A new pay-what-you-can vegan supper night in Shoreditch is drawing 100+ guests weekly, run entirely by community volunteers.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">News</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 5, 2026</p>
-          <h3 class="news-headline">East London Vegan Market Returns to Spitalfields for Summer</h3>
-          <p class="news-excerpt">The East London Vegan Market is back at Spitalfields for its summer run, with 40+ stalls confirmed across food, fashion, and wellness.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
+    <div class="news-grid" id="hub-news-grid">
+      <p class="hub-dir-empty">Loading local news&hellip;</p>
     </div>
   </section>
 
@@ -765,6 +726,8 @@
   </section>
 
   <!-- FOOTER -->
+  <script src="/public/hub-news.js"></script>
+  <script>VEHubNews.render('hub-news-grid', 'london');</script>
   <script src="/public/footer.js"></script>
 
 </div><!-- /page-frame -->
