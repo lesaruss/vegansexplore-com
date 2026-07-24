@@ -397,6 +397,7 @@
 
 <div class="page-frame" id="page-frame">
   <script src="/public/nav.js"></script>
+  <script src="/public/hub-news.js"></script>
 <script src="/public/ve-region-directory.js"></script>
   <script src="/public/ve-auth.js"></script>
 
@@ -891,23 +892,7 @@
   }
 
   function loadSFNews() {
-    var grid = document.getElementById('sf-news-grid');
-    fetch(SF_SUPABASE_URL + '/rest/v1/ve_community_news?select=id,headline,summary,url,image_url,is_pinned,published_at,source_name&status=eq.approved&city_slug=eq.south-florida&order=is_pinned.desc,published_at.desc&limit=12', {
-      headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
-    }).then(function(r) { return r.json(); }).then(function(rows) {
-      if (!rows || !rows.length) { grid.innerHTML = '<p class="hub-dir-empty">No local news yet. Check back soon, or submit a story below.</p>'; return; }
-      grid.innerHTML = rows.map(function(n) {
-        var d = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
-        return '<article class="news-card">' +
-          '<div class="news-img">' + (n.image_url ? '<img src="' + sfEsc(n.image_url) + '" alt="' + sfEsc(n.headline) + '" style="width:100%;height:100%;object-fit:cover;">' : '<div class="news-img-placeholder">' + (n.is_pinned ? 'Featured' : 'Photo') + '</div>') + (n.is_pinned ? '<span class="news-tag">Featured</span>' : '') + '</div>' +
-          '<div class="news-body">' +
-            '<p class="news-date">' + sfEsc(d) + (n.source_name ? ' &middot; ' + sfEsc(n.source_name) : '') + '</p>' +
-            '<h3 class="news-headline">' + sfEsc(n.headline) + '</h3>' +
-            (n.summary ? '<p class="news-excerpt">' + sfEsc(n.summary) + '</p>' : '') +
-            (n.url ? '<a href="' + sfEsc(n.url) + '" target="_blank" rel="noopener noreferrer" class="news-read">Read story</a>' : '') +
-          '</div></article>';
-      }).join('');
-    }).catch(function() { grid.innerHTML = '<p class="hub-dir-empty">Couldn\'t load news right now.</p>'; });
+    VEHubNews.render('sf-news-grid', 'south-florida');
   }
 
   function loadSFEvents() {
