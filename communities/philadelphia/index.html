@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Philadelphia — Philly Vegans | Vegans Explore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-green-mid: #b8ddb9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09);
+      --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75);
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-30: rgba(26,26,26,0.30);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; background: #fff; }
+
+
+    /* HERO */
+    .hero { position: relative; min-height: 520px; display: flex; align-items: center; overflow: hidden; }
+    .hero-photo { position: absolute; inset: 0; }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.08) 65%, transparent 82%); }
+    .hero-content { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 600px; }
+    .hero-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+    .hero-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
+    .hero-breadcrumb a:hover { color: rgba(255,255,255,0.7); }
+    .hero-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.2); }
+    .hero-breadcrumb .current { color: rgba(255,255,255,0.6); }
+    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    .hero h1 { font-size: clamp(36px, 5.5vw, 72px); font-weight: 900; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 16px; }
+    .hero h1 em { color: var(--ve-green); font-style: normal; }
+    .hero-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+    .hero-region { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.55); }
+    .hero-divider-v { width: 1px; height: 14px; background: rgba(255,255,255,0.2); }
+    .hero-access { display: flex; align-items: center; gap: 10px; }
+    .access-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 5px 10px; border-radius: 100px; }
+    .access-badge.passport { background: var(--ve-green); color: #1a1a1a; }
+    .access-badge.standard { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
+    .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .btn-join { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-green); color: #fff; transition: background 0.15s; border: none; cursor: pointer; }
+    .btn-join:hover { background: var(--ve-green-dark); }
+    .btn-outline-light { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; text-decoration: none; background: transparent; color: rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.25); transition: all 0.15s; }
+    .btn-outline-light:hover { border-color: rgba(255,255,255,0.55); color: #fff; }
+
+    /* HUB TABS */
+    .hub-tabs { border-bottom: 1px solid var(--ve-border); padding: 0 56px; display: flex; align-items: flex-end; gap: 0; overflow-x: auto; scrollbar-width: none; }
+    .hub-tabs::-webkit-scrollbar { display: none; }
+    .hub-tab { flex-shrink: 0; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 18px 20px 16px; border: none; border-bottom: 3px solid transparent; background: transparent; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 7px; white-space: nowrap; margin-bottom: -1px; }
+    .hub-tab svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+    .hub-tab:hover { color: var(--ve-text); }
+    .hub-tab.active { color: var(--ve-green); border-bottom-color: var(--ve-green); }
+
+    /* MOBILE TAB DROPDOWN */
+    .hub-tab-dropdown { display: none; padding: 14px 24px; border-bottom: 1px solid var(--ve-border); }
+    .hub-tab-dropdown select { width: 100%; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 16px; border: 1.5px solid var(--ve-green); border-radius: 6px; background: #fff; color: var(--ve-green); cursor: pointer; outline: none; appearance: auto; }
+    .hub-tab-dropdown select:focus { border-color: var(--ve-green-dark); }
+
+    /* SECTION BODY */
+    .hub-section { display: none; padding: 48px 56px 72px; }
+    .hub-section.active { display: block; }
+
+    /* SECTION HEADERS */
+    .section-hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 36px; flex-wrap: wrap; }
+    .section-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; }
+    .section-sub { font-size: 13px; font-weight: 400; color: var(--ve-text-75); margin-top: 4px; line-height: 1.5; }
+    .section-action { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green); text-decoration: none; display: flex; align-items: center; gap: 6px; white-space: nowrap; flex-shrink: 0; padding-top: 4px; transition: color 0.15s; }
+    .section-action:hover { color: var(--ve-green-dark); }
+    .section-action::after { content: '\2192'; }
+
+    /* NEWS GRID — 3 columns × 3 rows */
+    .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .news-card { border: 1.5px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+    .news-card:hover { border-color: var(--ve-green-mid); box-shadow: 0 4px 20px rgba(58,155,62,0.08); }
+    .news-img { aspect-ratio: 16/9; background: var(--ve-green-light); position: relative; overflow: hidden; }
+    .news-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green); background: linear-gradient(135deg, var(--ve-green-light) 0%, #d4edda 100%); }
+    .news-tag { position: absolute; top: 10px; left: 10px; font-size: 8px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 8px; border-radius: 100px; background: var(--ve-green); color: #1a1a1a; }
+    .news-tag.update { background: var(--ve-orange); color: #1a1a1a; }
+    .news-body { padding: 18px 20px 20px; }
+    .news-date { font-size: 10px; font-weight: 600; color: #767676; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .news-headline { font-size: 14px; font-weight: 800; line-height: 1.35; letter-spacing: -0.01em; margin-bottom: 8px; color: var(--ve-text); }
+    .news-excerpt { font-size: 12px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; margin-bottom: 14px; }
+    .news-read { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-green); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: color 0.15s; }
+    .news-read:hover { color: var(--ve-green-dark); }
+    .news-read::after { content: '\2192'; }
+
+    /* NEWS FEATURED — uniform card, no wide override */
+    .news-featured { display: flex; flex-direction: column; }
+
+    /* EVENTS SECTION */
+    .events-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+    .month-nav { display: flex; align-items: center; gap: 8px; }
+    .month-btn { width: 32px; height: 32px; border-radius: 4px; border: 1.5px solid var(--ve-border); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .month-btn:hover { border-color: var(--ve-green); }
+    .month-btn svg { width: 12px; height: 12px; fill: var(--ve-text-50); }
+    .month-label { font-size: 13px; font-weight: 800; letter-spacing: -0.01em; min-width: 130px; text-align: center; }
+    .event-filter { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+    .ev-chip { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; }
+    .ev-chip:hover { border-color: var(--ve-green); color: var(--ve-green); }
+    .ev-chip.active { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
+
+    .events-list { display: flex; flex-direction: column; gap: 12px; }
+    .event-row { display: flex; align-items: stretch; gap: 0; border: 1.5px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+    .event-row:hover { border-color: var(--ve-green-mid); box-shadow: 0 3px 14px rgba(58,155,62,0.07); }
+    .event-date-col { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 20px; background: var(--ve-green-light); min-width: 72px; text-align: center; flex-shrink: 0; }
+    .event-date-col.orange { background: #fff8ee; }
+    .event-day { font-size: 26px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--ve-green-dark); }
+    .event-date-col.orange .event-day { color: var(--ve-orange-dark); }
+    .event-mon { font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ve-green); margin-top: 2px; }
+    .event-date-col.orange .event-mon { color: var(--ve-orange); }
+    .event-body { flex: 1; padding: 16px 22px; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+    .event-type-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 8px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 5px; }
+    .event-type-badge.orange { color: #7a4800; }
+    .event-type-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .event-name { font-size: 14px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.3; color: var(--ve-text); }
+    .event-details { font-size: 11px; font-weight: 500; color: var(--ve-text-75); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 2px; }
+    .event-details span { display: flex; align-items: center; gap: 4px; }
+    .event-details svg { width: 11px; height: 11px; fill: var(--ve-text-30); flex-shrink: 0; }
+    .event-cta-col { display: flex; align-items: center; padding: 16px 20px; flex-shrink: 0; }
+    .btn-rsvp { font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px; background: var(--ve-green); color: #fff; border: none; cursor: pointer; text-decoration: none; transition: background 0.15s; white-space: nowrap; display: inline-block; }
+    .btn-rsvp:hover { background: var(--ve-green-dark); }
+    .btn-rsvp.orange { background: var(--ve-orange); }
+    .btn-rsvp.orange:hover { background: var(--ve-orange-dark); }
+
+    /* DIRECTORY SECTION */
+    .directory-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+    .dir-search { flex: 1; min-width: 200px; position: relative; }
+    .dir-search input { width: 100%; padding: 11px 16px 11px 40px; border: 1.5px solid var(--ve-border); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 500; color: var(--ve-text); background: #fafafa; transition: border-color 0.15s; outline: none; }
+    .dir-search input:focus { border-color: var(--ve-green); background: #fff; }
+    .dir-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; fill: var(--ve-text-30); pointer-events: none; }
+    .dir-cats { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .dir-cat { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 14px; border-radius: 100px; border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text-50); cursor: pointer; transition: all 0.15s; }
+    .dir-cat:hover { border-color: var(--ve-green); color: var(--ve-green); }
+    .dir-cat.active { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
+
+    .dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .dir-card { border: 1.5px solid var(--ve-border); border-radius: 10px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; }
+    .dir-card:hover { border-color: var(--ve-green-mid); box-shadow: 0 3px 14px rgba(58,155,62,0.07); }
+    .dir-card a, .dir-card span { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
+    .dir-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+    .dir-icon { width: 40px; height: 40px; border-radius: 8px; background: var(--ve-green-light); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .dir-cat-tag { font-size: 8px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 8px; border-radius: 100px; background: var(--ve-green-light); color: var(--ve-green-dark); }
+    .dir-name { font-size: 14px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 4px; }
+    .dir-address { font-size: 11px; font-weight: 500; color: var(--ve-text-50); display: flex; align-items: flex-start; gap: 4px; line-height: 1.45; }
+    .dir-address svg { width: 11px; height: 11px; fill: var(--ve-text-30); flex-shrink: 0; margin-top: 1px; }
+    .dir-card-img { width: 100%; height: 120px; object-fit: cover; display: block; border-bottom: 1px solid var(--ve-border); background: var(--ve-green-light); }
+    .dir-card-placeholder { width: 100%; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 2rem; background: linear-gradient(135deg, var(--ve-green-light) 0%, var(--ve-green-mid) 100%); border-bottom: 1px solid var(--ve-border); }
+    .dir-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--ve-border); }
+    .dir-rating { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--ve-text-75); }
+    .dir-rating span { color: var(--ve-orange); font-size: 12px; letter-spacing: -1px; }
+    .dir-link { font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green); text-decoration: none; display: flex; align-items: center; gap: 4px; transition: color 0.15s; }
+    .dir-link:hover { color: var(--ve-green-dark); }
+    .dir-link::after { content: '\2192'; }
+    /* VE Directory card — matches /directory/index.html exactly */
+    .card { background: #fff; border: 1px solid var(--ve-border); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .18s, transform .15s; position: relative; }
+    .card:hover { box-shadow: 0 4px 20px rgba(45,125,49,.12); transform: translateY(-2px); }
+    .card a { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
+    .card a:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 3px; border-radius: 6px; }
+    .card-img { width: 100%; height: 140px; object-fit: cover; background: var(--ve-green-light); display: block; border-bottom: 1px solid var(--ve-border); }
+    .card-placeholder { width: 100%; height: 140px; background: linear-gradient(135deg, var(--ve-green-light) 0%, var(--ve-green-mid) 100%); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; border-bottom: 1px solid var(--ve-border); }
+    .card-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .card-name { font-size: 12px; font-weight: 800; letter-spacing: 0.01em; color: var(--ve-text); line-height: 1.4; }
+    .card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: auto; }
+    .tag { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+    .t-rest  { background: var(--ve-green-light); color: #1e5c22; }
+    .t-brand { background: #fff3e0; color: #7d3800; }
+    .t-npo   { background: #ede7f6; color: #311b92; }
+    .t-media { background: #fce4ec; color: #880e4f; }
+    .t-reg   { background: #f0f4f0; color: #2c4a2e; border: 1px solid var(--ve-border); }
+
+    /* VE DIRECTORY COMPONENT — chip filters + pagination (matches /directory/ exactly) */
+    .chip { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: #f7faf7; border: 1px solid var(--ve-border); border-radius: 4px; padding: 6px 12px; cursor: pointer; color: var(--ve-text-75); transition: .15s; white-space: nowrap; }
+    .chip:hover { background: var(--ve-green-light); color: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+    .chip.active { background: var(--ve-green-dark); color: #fff; border-color: var(--ve-green-dark); }
+    .chip:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .hub-dir-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .hub-dir-search { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+    .hub-dir-search input { width: 100%; padding: 8px 12px 8px 34px; border: 1px solid var(--ve-border); border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; background: #f7faf7; color: var(--ve-text); outline: none; transition: border-color .15s; }
+    .hub-dir-search input:focus { border-color: var(--ve-green-dark); background: #fff; }
+    .hub-dir-search input:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .hub-dir-search input::placeholder { color: var(--ve-text-50); }
+    .hub-dir-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .hub-dir-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
+    .hub-result-bar { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-75); }
+    .hub-dir-pagesize { display: flex; align-items: center; gap: 6px; }
+    .hub-dir-pagesize span { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-text-75); }
+    .hub-dir-pagesize select { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; background: #f7faf7; border: 1px solid var(--ve-border); border-radius: 4px; padding: 5px 8px; color: var(--ve-text); cursor: pointer; outline: none; }
+    .ve-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 24px 0 8px; flex-wrap: wrap; }
+    .pg-btn { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #f7faf7; border: 1px solid var(--ve-border); border-radius: 4px; padding: 6px 12px; cursor: pointer; color: var(--ve-text-75); transition: .15s; }
+    .pg-btn:hover:not(:disabled) { background: var(--ve-green-light); color: var(--ve-green-dark); border-color: var(--ve-green-dark); }
+    .pg-btn.current { background: var(--ve-green-dark); color: #fff; border-color: var(--ve-green-dark); }
+    .pg-btn:disabled { opacity: 0.35; cursor: default; }
+    .pg-btn:focus-visible { outline: 2px solid var(--ve-green-dark); outline-offset: 2px; }
+    .pg-ellipsis { background: none; border-color: transparent; cursor: default; pointer-events: none; }
+    .hub-dir-empty { grid-column: 1/-1; padding: 64px 24px; text-align: center; color: var(--ve-text-50); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+    .page-frame.vp-mobile .ve-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; }
+    .page-frame.vp-mobile .card-img, .page-frame.vp-mobile .card-placeholder { height: 115px; }
+
+    /* NEWSLETTER SECTION */
+    .newsletter-wrap { max-width: 680px; margin: 0 auto; text-align: center; }
+    .newsletter-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ve-green); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 18px; }
+    .newsletter-eyebrow::before, .newsletter-eyebrow::after { content: ''; width: 24px; height: 2px; background: var(--ve-green); }
+    .newsletter-title { font-size: 34px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1.0; margin-bottom: 16px; }
+    .newsletter-title em { color: var(--ve-green); font-style: normal; }
+    .newsletter-body { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .newsletter-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto 20px; }
+    .newsletter-form input { flex: 1; padding: 13px 18px; border: 1.5px solid var(--ve-border); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 500; color: var(--ve-text); background: #fafafa; outline: none; transition: border-color 0.15s; }
+    .newsletter-form input:focus { border-color: var(--ve-green); background: #fff; }
+    .newsletter-form input::placeholder { color: var(--ve-text-30); }
+    .newsletter-form button { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 24px; border-radius: 6px; border: none; background: var(--ve-green); color: #fff; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+    .newsletter-form button:hover { background: var(--ve-green-dark); }
+    .newsletter-note { font-size: 11px; color: var(--ve-text-75); font-weight: 400; }
+    .newsletter-perks { display: flex; align-items: flex-start; justify-content: center; gap: 32px; margin-top: 44px; flex-wrap: wrap; }
+    .perk { display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 140px; text-align: center; }
+    .perk-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--ve-green-light); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .perk-label { font-size: 11px; font-weight: 700; line-height: 1.4; color: var(--ve-text-75); }
+
+    /* PARTNERS SECTION */
+    .partners-intro { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 560px; margin-bottom: 36px; }
+    .partners-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 44px; }
+    .partner-card { border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 24px; transition: border-color 0.15s, box-shadow 0.15s; }
+    .partner-card:hover { border-color: rgba(246,152,32,0.4); box-shadow: 0 3px 16px rgba(246,152,32,0.07); }
+    .partner-logo-area { width: 56px; height: 56px; border-radius: 12px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+    .partner-type { font-size: 8px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: #7a4800; display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+    .partner-type::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-orange); flex-shrink: 0; }
+    .partner-name { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .partner-desc { font-size: 12px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; margin-bottom: 16px; }
+    .partner-url { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--ve-text-75); text-decoration: none; transition: color 0.15s; }
+    .partner-url:hover { color: var(--ve-green); }
+    .partner-cta-row { border-top: 1.5px dashed rgba(0,0,0,0.08); padding-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .partner-cta-text { font-size: 12px; font-weight: 600; color: var(--ve-text-75); max-width: 340px; }
+    .btn-partner { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 22px; border-radius: 4px; text-decoration: none; background: transparent; color: var(--ve-orange-dark); border: 2px solid var(--ve-orange); transition: all 0.15s; white-space: nowrap; }
+    .btn-partner:hover { background: var(--ve-orange); color: #fff; }
+
+    /* STICKY MEMBER BAR */
+    .member-bar { background: #1a1a1a; padding: 14px 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .member-bar-left { display: flex; align-items: center; gap: 14px; }
+    .member-bar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .member-bar-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); }
+    .member-bar-text strong { color: #fff; font-weight: 800; }
+    .member-bar-actions { display: flex; align-items: center; gap: 10px; }
+
+    /* FOOTER */
+    .footer { background: #1a1a1a; padding: 36px 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; }
+    .footer-wordmark { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; text-decoration: none; }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.55); }
+    .footer-links { display: flex; align-items: center; gap: 20px; }
+    .footer-links a { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.7); }
+
+    /* VIEWPORT SWITCHER CLASSES — mirrors @media mobile rules for in-mock preview */
+    .page-frame.vp-mobile .hero { min-height: 480px; align-items: flex-end; }
+    .page-frame.vp-mobile .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+    .page-frame.vp-mobile .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
+    .page-frame.vp-mobile .hero-breadcrumb { justify-content: center; }
+    .page-frame.vp-mobile .hero-eyebrow { justify-content: center; }
+    .page-frame.vp-mobile .hero-meta { justify-content: center; }
+    .page-frame.vp-mobile .hero-actions { justify-content: center; }
+    .page-frame.vp-mobile .hub-tabs { display: none; }
+    .page-frame.vp-mobile .hub-tab-dropdown { display: block; }
+    .page-frame.vp-mobile .hub-section { padding: 36px 24px 56px; }
+    .page-frame.vp-mobile .news-grid { grid-template-columns: 1fr; }
+    .page-frame.vp-mobile .dir-grid { grid-template-columns: 1fr; }
+    .page-frame.vp-mobile .card-img, .page-frame.vp-mobile .card-placeholder { height: 115px; }
+    .page-frame.vp-mobile .partners-grid { grid-template-columns: 1fr; }
+    .page-frame.vp-mobile .member-bar { padding: 14px 24px; flex-direction: column; align-items: flex-start; }
+    .page-frame.vp-mobile .newsletter-form { flex-direction: column; }
+    .page-frame.vp-mobile .footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    .page-frame.vp-tablet .dir-grid { grid-template-columns: repeat(2, 1fr); }
+    .page-frame.vp-tablet .partners-grid { grid-template-columns: repeat(2, 1fr); }
+    .page-frame.vp-tablet .news-grid { grid-template-columns: repeat(2, 1fr); }
+
+    /* FOCUS */
+    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+
+    /* MOTION */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 960px) {
+      .news-grid { grid-template-columns: repeat(2, 1fr); }
+      .dir-grid { grid-template-columns: repeat(2, 1fr); }
+      .partners-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .hero { min-height: 480px; align-items: flex-end; }
+      .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
+      .hero-breadcrumb { justify-content: center; }
+      .hero-eyebrow { justify-content: center; }
+      .hero-meta { justify-content: center; }
+      .hero-actions { justify-content: center; }
+      .hub-tabs { display: none; }
+      .hub-tab-dropdown { display: block; }
+      .hub-section { padding: 36px 24px 56px; }
+      .news-grid { grid-template-columns: 1fr; }
+      .dir-grid { grid-template-columns: 1fr; }
+      .partners-grid { grid-template-columns: 1fr; }
+      .member-bar { padding: 14px 24px; }
+      .newsletter-form { flex-direction: column; }
+      .footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── Locked (Passport-only) tabs ── */
+    .hub-tab-locked { position: relative; }
+    .hub-tab-locked .tab-lock { width: 11px; height: 11px; margin-left: 2px; opacity: 0.5; flex-shrink: 0; }
+    .hub-tab-locked { color: var(--ve-text-30) !important; }
+    .hub-tab-locked:hover { color: var(--ve-text-50) !important; cursor: pointer; }
+    .hub-tab-locked.active { color: var(--ve-orange-dark) !important; border-bottom-color: var(--ve-orange) !important; }
+
+    /* ── Locked panel ── */
+    .locked-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 360px; padding: 64px 40px; text-align: center; }
+    .locked-icon { width: 56px; height: 56px; border-radius: 50%; background: #fff3e0; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+    .locked-icon svg { width: 28px; height: 28px; fill: var(--ve-orange); }
+    .locked-badge { font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ve-orange-dark); background: #fff3e0; border-radius: 100px; padding: 5px 14px; margin-bottom: 20px; display: inline-block; }
+    .locked-title { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; color: var(--ve-text); margin-bottom: 12px; }
+    .locked-desc { font-size: 14px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65; max-width: 380px; margin: 0 auto 32px; }
+    .locked-cta { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-orange); color: #fff; transition: background 0.15s; }
+    .locked-cta:hover { background: var(--ve-orange-dark); }
+    .locked-perks { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 28px; }
+    .locked-perk { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); display: flex; align-items: center; gap: 5px; }
+    .locked-perk::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; }
+    /* ── Locked preview layout ── */
+    .locked-preview-wrap { position: relative; overflow: hidden; border-radius: 10px; border: 1px solid #f0ece8; margin: 0 0 32px; }
+    .preview-content { filter: blur(5px); pointer-events: none; user-select: none; padding: 24px 28px; background: #fff; }
+    .preview-gate { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.90); padding: 40px 24px; text-align: center; }
+    /* Member preview grid */
+    .mp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .mp-card { display: flex; align-items: center; gap: 10px; padding: 11px 13px; background: #fafaf8; border-radius: 8px; border: 1px solid #eee; }
+    .mp-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+    .mp-name { font-size: 12px; font-weight: 700; color: #1a1a1a; line-height: 1.2; }
+    .mp-city { font-size: 10px; color: #999; margin-top: 2px; }
+    .mp-since { font-size: 9px; color: #ccc; margin-top: 2px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+    /* Chat preview list */
+    .ct-list { display: flex; flex-direction: column; gap: 10px; }
+    .ct-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: #fafaf8; border-radius: 8px; border: 1px solid #eee; }
+    .ct-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0; margin-top: 1px; }
+    .ct-topic { font-size: 13px; font-weight: 700; color: #1a1a1a; line-height: 1.35; }
+    .ct-excerpt { font-size: 11px; color: #aaa; margin-top: 3px; line-height: 1.5; }
+    .ct-meta { display: flex; gap: 14px; margin-top: 5px; }
+    .ct-meta span { font-size: 10px; color: #ccc; }
+    @media (max-width: 640px) { .mp-grid { grid-template-columns: repeat(2,1fr); } }
+  
+    .footer-social { display: flex; align-items: center; gap: 16px; }
+    .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
+    .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
+    .footer-social .social-icon svg { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- VIEWPORT SWITCHER -->
+</div>
+
+<div class="page-frame" id="page-frame">
+  <script src="/public/nav.js"></script>
+<script src="/public/ve-region-directory.js"></script>
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hub-heading">
+    <div class="hero-photo" aria-hidden="true">
+      <img src="/communities/philadelphia/banner.png" alt="Philadelphia skyline with City Hall, Comcast Center, and the Schuylkill Expressway">
+    </div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-content">
+      <nav class="hero-breadcrumb" aria-label="Breadcrumb">
+        <a href="/communities">Communities</a>
+        <span aria-hidden="true">/</span>
+        <span class="current" aria-current="page">Philadelphia</span>
+      </nav>
+      <p class="hero-eyebrow" aria-hidden="true">Community Hub</p>
+      <h1 id="hub-heading">ATL<br><em>Vegans</em></h1>
+      <div class="hero-meta" aria-label="Community details">
+        <span class="hero-region">Midtown &middot; Buckhead &middot; West End</span>
+        <div class="hero-divider-v" aria-hidden="true"></div>
+        <div class="hero-access" aria-label="Membership access">
+          <span class="access-badge passport">Free Passport</span>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a href="#join" class="btn-join">Join This Community</a>
+        <a href="#events" class="btn-outline-light" onclick="switchTab('events');return false;">Browse Events</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBER STATUS BAR -->
+  <div class="member-bar" role="complementary" aria-label="Community status">
+    <div class="member-bar-left">
+      <div class="member-bar-dot" aria-hidden="true"></div>
+      <p class="member-bar-text"><strong>Region.</strong> Free for Passport members. Full access with Standard membership.</p>
+    </div>
+    <div class="member-bar-actions">
+      <a href="/passport" class="btn-join" style="font-size:10px;padding:9px 18px;">Get Passport</a>
+    </div>
+  </div>
+
+  <!-- MOBILE TAB DROPDOWN (hidden on desktop) -->
+  <div class="hub-tab-dropdown">
+    <label for="hub-tab-select" class="visually-hidden">Navigate hub sections</label>
+    <select id="hub-tab-select" aria-label="Navigate hub sections" onchange="switchTab(this.value)">
+      <option value="news">News</option>
+      <option value="events">Events</option>
+      <option value="directory">Directory</option>
+      <option value="newsletter">Newsletter</option>
+      <option value="partners">Partners</option>
+      <option value="members">&#128274; Members</option>
+      <option value="chat">&#128274; Chat</option>
+    </select>
+  </div>
+
+  <!-- HUB TABS (desktop) -->
+  <nav class="hub-tabs" role="tablist" aria-label="Community hub sections">
+    <button class="hub-tab active" role="tab" aria-selected="true" aria-controls="tab-news" id="tab-btn-news" onclick="switchTab('news')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
+      News
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-events" id="tab-btn-events" onclick="switchTab('events')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+      Events
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-directory" id="tab-btn-directory" onclick="switchTab('directory')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      Directory
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-newsletter" id="tab-btn-newsletter" onclick="switchTab('newsletter')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.99 8c0-.72-.37-1.35-.94-1.7L12 1 2.95 6.3C2.38 6.65 2 7.28 2 8v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8zm-2 0-8 5-8-5 8-4.76L19.99 8zM4 18V9.87l8 5 8-5V18H4z"/></svg>
+      Newsletter
+    </button>
+    <button class="hub-tab" role="tab" aria-selected="false" aria-controls="tab-partners" id="tab-btn-partners" onclick="switchTab('partners')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Partners
+    </button>
+    <button class="hub-tab hub-tab-locked" role="tab" aria-selected="false" aria-controls="tab-members" id="tab-btn-members" onclick="switchTab('members')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Members
+      <svg class="tab-lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    </button>
+    <button class="hub-tab hub-tab-locked" role="tab" aria-selected="false" aria-controls="tab-chat" id="tab-btn-chat" onclick="switchTab('chat')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      Chat
+      <svg class="tab-lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    </button>
+  </nav>
+
+  <!-- ========================= NEWS SECTION ========================= -->
+  <section class="hub-section active" id="tab-news" role="tabpanel" aria-labelledby="tab-btn-news">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Local News &amp; Updates</h2>
+        <p class="section-sub">What's happening in the Philadelphia vegan community.</p>
+      </div>
+      <a href="#" class="section-action">All stories</a>
+    </div>
+
+    <div class="news-grid" id="hub-news-grid">
+      <p class="hub-dir-empty">Loading local news&hellip;</p>
+    </div>
+  </section>
+
+  <!-- ========================= EVENTS SECTION ========================= -->
+  <section class="hub-section" id="tab-events" role="tabpanel" aria-labelledby="tab-btn-events">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Events Calendar</h2>
+        <p class="section-sub">Meetups, pop-ups, and community gatherings across Miami, Fort Lauderdale, and Palm Beach.</p>
+      </div>
+      <a href="#" class="section-action">Submit an event</a>
+    </div>
+
+    <div class="events-toolbar" role="toolbar" aria-label="Event filters">
+      <div class="month-nav" aria-label="Navigate months">
+        <button class="month-btn" aria-label="Previous month">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+        </button>
+        <span class="month-label" aria-live="polite">June &ndash; July 2026</span>
+        <button class="month-btn" aria-label="Next month">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </button>
+      </div>
+      <div class="event-filter" role="group" aria-label="Filter by event type">
+        <button class="ev-chip active" aria-pressed="true">All</button>
+        <button class="ev-chip" aria-pressed="false">Meetup</button>
+        <button class="ev-chip" aria-pressed="false">Pop-up</button>
+        <button class="ev-chip" aria-pressed="false">Workshop</button>
+      </div>
+    </div>
+
+    <div class="events-list" id="hub-events-list" aria-label="Upcoming events">
+      <p class="hub-dir-empty">Loading events&hellip;</p>
+    </div>
+  </section>
+
+  <!-- ========================= DIRECTORY SECTION ========================= -->
+  <section class="hub-section" id="tab-directory" role="tabpanel" aria-labelledby="tab-btn-directory">
+    <div class="section-hdr" style="margin-bottom:20px;">
+      <div>
+        <h2 class="section-title">Local Directory</h2>
+        <p class="section-sub">Vegan-friendly restaurants, shops, and services across the Philadelphia area.</p>
+      </div>
+    </div>
+    <div id="ve-region-directory"></div>
+  </section>
+
+  <!-- ========================= NEWSLETTER SECTION ========================= -->
+  <section class="hub-section" id="tab-newsletter" role="tabpanel" aria-labelledby="tab-btn-newsletter">
+    <div class="newsletter-wrap">
+      <p class="newsletter-eyebrow" aria-hidden="true">Philly Vegans Newsletter</p>
+      <h2 class="newsletter-title">Stay in the<br><em>Loop</em></h2>
+      <p class="newsletter-body">Weekly updates from the Philadelphia vegan community. New spots, upcoming events, local news, and exclusive member deals. No noise. Just what matters to Philly Vegans.</p>
+
+      <form class="newsletter-form" aria-label="Newsletter signup form" onsubmit="handleSignup(event)">
+        <label for="nl-email" class="visually-hidden">Email address</label>
+        <input type="email" id="nl-email" name="email" placeholder="your@email.com" required autocomplete="email" aria-required="true">
+        <button type="submit">Subscribe</button>
+      </form>
+      <p class="newsletter-note" id="nl-note">No spam. Unsubscribe anytime. Free for all Passport members.</p>
+
+      <div class="newsletter-perks" aria-label="What you'll receive">
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#128240;</div>
+          <p class="perk-label">Weekly local recap, every Sunday</p>
+        </div>
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#127775;</div>
+          <p class="perk-label">New spot spotlights before they go public</p>
+        </div>
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#127881;</div>
+          <p class="perk-label">Exclusive member event early access</p>
+        </div>
+        <div class="perk">
+          <div class="perk-icon" aria-hidden="true">&#127860;</div>
+          <p class="perk-label">Seasonal deals from local partners</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= PARTNERS SECTION ========================= -->
+  <section class="hub-section" id="tab-partners" role="tabpanel" aria-labelledby="tab-btn-partners">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">Community Partners</h2>
+      </div>
+      <a href="#" class="section-action">Become a partner</a>
+    </div>
+    <p class="partners-intro">Organizations and businesses that support the Philly Vegans community. Partners get visibility across the hub, newsletter placement, and event co-hosting opportunities.</p>
+
+    <div class="partners-grid" aria-label="Community partners">
+    </div>
+
+    <!-- PARTNER CTA -->
+    <div class="partner-cta-row" role="complementary" aria-label="Partner with the community">
+      <p class="partner-cta-text">Is your organization aligned with the Philly Vegans community? Partner visibility starts at $0 for qualifying nonprofits.</p>
+      <a href="#" class="btn-partner">Apply to Partner</a>
+    </div>
+  </section>
+
+
+    <!-- ========================= MEMBERS SECTION (LOCKED) ========================= -->
+  <section id="tab-members" class="hub-section" aria-labelledby="tab-btn-members">
+    <div class="section-hdr" style="margin-bottom:20px;">
+      <div>
+        <h2 class="section-title">Community Members</h2>
+        <p class="section-sub">Philadelphia Passport holders. Join to see who else is in your community.</p>
+      </div>
+    </div>
+    <div class="locked-preview-wrap">
+      <div class="preview-content" aria-hidden="true">
+        <div class="mp-grid">
+          <div class="mp-card"><div class="mp-avatar" style="background:#4caf50">FR</div><div><div class="mp-name">Faith R.</div><div class="mp-city">Fishtown</div><div class="mp-since">Member since 2024</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#f69820">DM</div><div><div class="mp-name">Devon M.</div><div class="mp-city">West Philadelphia</div><div class="mp-since">Member since 2023</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#2196f3">BK</div><div><div class="mp-name">Brianna K.</div><div class="mp-city">Rittenhouse Square</div><div class="mp-since">Member since 2025</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#9c27b0">OJ</div><div><div class="mp-name">Omar J.</div><div class="mp-city">Northern Liberties</div><div class="mp-since">Member since 2025</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#e91e63">YL</div><div><div class="mp-name">Yasmin L.</div><div class="mp-city">Fairmount</div><div class="mp-since">Member since 2024</div></div></div>
+          <div class="mp-card"><div class="mp-avatar" style="background:#009688">KM</div><div><div class="mp-name">Kofi M.</div><div class="mp-city">Manayunk</div><div class="mp-since">Member since 2026</div></div></div>
+        </div>
+      </div>
+      <div class="preview-gate">
+        <div class="locked-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+        <span class="locked-badge">Passport Required</span>
+        <p class="locked-title">Community Members</p>
+        <p class="locked-desc">See who else is part of this community. Connect with local vegans, discover members running businesses, and grow your network.</p>
+        <a href="/passport" class="locked-cta">Get Passport - Free</a>
+        <div class="locked-perks">
+          <span class="locked-perk">Member directory</span>
+          <span class="locked-perk">Local connections</span>
+          <span class="locked-perk">Business profiles</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+    <!-- ========================= CHAT SECTION (LOCKED) ========================= -->
+  <section id="tab-chat" class="hub-section" aria-labelledby="tab-btn-chat">
+    <div class="section-hdr" style="margin-bottom:20px;">
+      <div>
+        <h2 class="section-title">Community Chat</h2>
+        <p class="section-sub">Active discussions in the Philadelphia vegan community.</p>
+      </div>
+    </div>
+    <div class="locked-preview-wrap">
+      <div class="preview-content" aria-hidden="true">
+        <div class="ct-list">
+          <div class="ct-row"><div class="ct-avatar" style="background:#f69820">DM</div><div style="min-width:0;"><div class="ct-topic">Best vegan cheesesteak in Philly - drop your picks</div><div class="ct-excerpt">I know the staples but looking for newer spots people are sleeping on...</div><div class="ct-meta"><span>31 replies</span><span>1h ago</span></div></div></div>
+          <div class="ct-row"><div class="ct-avatar" style="background:#4caf50">FR</div><div style="min-width:0;"><div class="ct-topic">Anyone at the Reading Terminal Market vegan pop-up last weekend?</div><div class="ct-excerpt">I missed it. Was it worth the trip? Heard the vendors were fire...</div><div class="ct-meta"><span>12 replies</span><span>4h ago</span></div></div></div>
+          <div class="ct-row"><div class="ct-avatar" style="background:#9c27b0">OJ</div><div style="min-width:0;"><div class="ct-topic">Fishtown recs - what are you eating?</div><div class="ct-excerpt">Moving to the area in June. Need a running list of go-tos...</div><div class="ct-meta"><span>18 replies</span><span>1d ago</span></div></div></div>
+          <div class="ct-row"><div class="ct-avatar" style="background:#e91e63">YL</div><div style="min-width:0;"><div class="ct-topic">Rittenhouse Square Sunday meetup - who is coming?</div><div class="ct-excerpt">We have 7 confirmed so far. Bringing homemade jerk tofu...</div><div class="ct-meta"><span>7 replies</span><span>2d ago</span></div></div></div>
+        </div>
+      </div>
+      <div class="preview-gate">
+        <div class="locked-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></div>
+        <span class="locked-badge">Passport Required</span>
+        <p class="locked-title">Community Chat</p>
+        <p class="locked-desc">A space for Passport holders to discuss local spots, share finds, plan meetups, and talk all things vegan in this region.</p>
+        <a href="/passport" class="locked-cta">Get Passport - Free</a>
+        <div class="locked-perks">
+          <span class="locked-perk">Regional discussions</span>
+          <span class="locked-perk">Event planning</span>
+          <span class="locked-perk">Local recommendations</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <script src="/public/hub-news.js"></script>
+  <script>VEHubNews.render('hub-news-grid', 'philadelphia');</script>
+  <script>VEHubNews.renderEvents('hub-events-list', ['Philadelphia','Camden','Cherry Hill','King of Prussia','Conshohocken','Ardmore']);</script>
+  <script src="/public/footer.js"></script>
+
+</div><!-- /page-frame -->
+
+<!-- VISUALLY HIDDEN UTILITY -->
+<style>
+  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
+
+<script>
+  /* ---- VIEWPORT SWITCHER ---- */
+
+  /* ---- TAB SWITCHER ---- */
+  function switchTab(id) {
+    document.querySelectorAll('.hub-tab').forEach(function(t) {
+      var active = t.id === 'tab-btn-' + id;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    document.querySelectorAll('.hub-section').forEach(function(s) {
+      s.classList.toggle('active', s.id === 'tab-' + id);
+    });
+    /* Keep mobile select in sync */
+    var sel = document.getElementById('hub-tab-select');
+    if (sel) sel.value = id;
+  }
+
+  /* ---- NEWSLETTER SUBMIT ---- */
+  function handleSignup(e) {
+    e.preventDefault();
+    var note = document.getElementById('nl-note');
+    note.textContent = "You're in. Welcome to Philly Vegans.";
+    note.style.color = 'var(--ve-green)';
+    note.style.fontWeight = '700';
+  }
+
+  /* ---- FILTER CHIPS (events) ---- */
+  document.querySelectorAll('.ev-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.ev-chip').forEach(function(c) {
+        c.classList.remove('active');
+        c.setAttribute('aria-pressed', 'false');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-pressed', 'true');
+    });
+  });
+
+  VERegionDirectory.init({
+    mount: 've-region-directory',
+    matchListing: function (l) { return (l.address_state === 'PA'); }
+  });
+
+  // Deep-link support: ?tab=<id> opens directly on that hub tab (e.g. linked from a listing breadcrumb)
+  (function(){
+    var params = new URLSearchParams(window.location.search);
+    var wantedTab = params.get('tab');
+    if (wantedTab && document.getElementById('tab-btn-' + wantedTab)) {
+      switchTab(wantedTab);
+    }
+  })();
+
+</script>
+
+</body>
+</html>
