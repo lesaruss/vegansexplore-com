@@ -109,7 +109,7 @@
      the Welcome link routes straight back to that community instead of the
      generic /welcome page - so a traveling member can switch cities and
      "Welcome" always means "my city," not a static page. */
-  var VE_CITY_SLUGS = ['south-florida', 'central-florida', 'atlanta', 'new-york', 'los-angeles', 'london'];
+  var VE_CITY_SLUGS = ['south-florida', 'central-florida', 'atlanta', 'new-york', 'los-angeles', 'london', 'philadelphia', 'dmv'];
   var savedCity = null;
   try { savedCity = localStorage.getItem('ve_selected_city'); } catch (e) {}
   var welcomeHref = (savedCity && VE_CITY_SLUGS.indexOf(savedCity) !== -1) ? ('/communities/' + savedCity) : '/welcome';
