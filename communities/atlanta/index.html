@@ -468,47 +468,8 @@
       <a href="#" class="section-action">All stories</a>
     </div>
 
-    <div class="news-grid">
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">Featured</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 12, 2026</p>
-          <h3 class="news-headline">New Vegan Food Hall Opening in Wynwood This Summer</h3>
-          <p class="news-excerpt">A new plant-based food hall is set to open in Atlanta's West End, featuring 15+ vendors from the Atlanta vegan community.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag update">Update</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 9, 2026</p>
-          <h3 class="news-headline">ATL Vegans Community Hits 1,000 Members</h3>
-          <p class="news-excerpt">The ATL Vegans community crossed 1,000 members this week, making it the fastest-growing regional hub in the Vegans Explore network.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
-      <article class="news-card">
-        <div class="news-img">
-          <div class="news-img-placeholder">Photo</div>
-          <span class="news-tag">News</span>
-        </div>
-        <div class="news-body">
-          <p class="news-date">June 5, 2026</p>
-          <h3 class="news-headline">Fort Lauderdale Farmers Market Adds Dedicated Vegan Section</h3>
-          <p class="news-excerpt">Ponce City Market launches a dedicated plant-based vendor section starting June 1, with eight local Atlanta sellers confirmed for opening day.</p>
-          <a href="#" class="news-read">Read story</a>
-        </div>
-      </article>
-
+    <div class="news-grid" id="hub-news-grid">
+      <p class="hub-dir-empty">Loading local news&hellip;</p>
     </div>
   </section>
 
@@ -742,6 +703,8 @@
   </section>
 
   <!-- FOOTER -->
+  <script src="/public/hub-news.js"></script>
+  <script>VEHubNews.render('hub-news-grid', 'atlanta');</script>
   <script src="/public/footer.js"></script>
 
 </div><!-- /page-frame -->
