@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse City Tags — Vegans Explore Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-50:rgba(26,26,26,0.5);}
+  body{background:#fafafa;color:var(--ve-text);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;padding:40px 24px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.02em;margin-bottom:6px;}
+  .sub{font-size:13px;color:var(--ve-text-50);margin-bottom:24px;}
+  .toolbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+  .toolbar input[type="search"]{flex:1;min-width:220px;font-family:inherit;font-size:13px;padding:11px 14px;border-radius:8px;border:1.5px solid var(--ve-border);background:#fff;}
+  .toolbar select{font-family:inherit;font-size:12px;font-weight:700;padding:11px 12px;border-radius:8px;border:1.5px solid var(--ve-border);background:#fff;}
+  .count{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:14px;}
+  .card{background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+  .card-meta{display:flex;gap:10px;align-items:center;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:6px;flex-wrap:wrap;}
+  .cat-tag{padding:3px 9px;border-radius:100px;background:rgba(58,155,62,0.1);color:var(--ve-green-dark);}
+  .headline{font-size:15px;font-weight:800;margin-bottom:12px;line-height:1.3;}
+  .city-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .city-chip{font-size:11px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:8px 14px;border-radius:100px;border:2px solid var(--ve-border);background:#fff;cursor:pointer;transition:all .12s ease;color:var(--ve-text);}
+  .city-chip:hover{border-color:var(--ve-green);}
+  .city-chip.active{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  .city-chip.saving{opacity:0.5;pointer-events:none;}
+  #gate{text-align:center;padding:80px 20px;}
+  #gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #empty{text-align:center;padding:60px 20px;color:var(--ve-text-50);font-size:14px;}
+  #list{display:none;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font-size:12px;font-weight:700;padding:10px 20px;border-radius:100px;opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:99;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Pulse City Tags</h1>
+  <p class="sub">Tag any published Pulse article into one or more city hubs. Tagged articles appear in that city's Local News &amp; Updates feed. Superadmin only.</p>
+
+  <div id="gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="list">
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Search by title&hellip;">
+      <select id="category-filter"><option value="">All categories</option></select>
+      <select id="city-filter">
+        <option value="">All articles</option>
+        <option value="__untagged">Untagged only</option>
+        <option value="south-florida">Tagged: South Florida</option>
+        <option value="central-florida">Tagged: Central Florida</option>
+        <option value="atlanta">Tagged: Atlanta</option>
+        <option value="new-york">Tagged: New York</option>
+        <option value="los-angeles">Tagged: Los Angeles</option>
+        <option value="london">Tagged: London</option>
+      </select>
+    </div>
+    <div class="count" id="count"></div>
+    <div id="cards"></div>
+    <div id="empty" style="display:none;">No articles match this filter.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/public/ve-auth.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var CITIES = [
+    { slug: 'south-florida', label: 'South Florida' },
+    { slug: 'central-florida', label: 'Central Florida' },
+    { slug: 'atlanta', label: 'Atlanta' },
+    { slug: 'new-york', label: 'New York' },
+    { slug: 'los-angeles', label: 'Los Angeles' },
+    { slug: 'london', label: 'London' }
+  ];
+
+  var allArticles = [];
+  var tagsByPulseId = {}; // pulse_id -> { city_slug: tag_row_id }
+  var searchTerm = '';
+  var categoryFilter = '';
+  var cityFilter = '';
+
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function sbHeaders() {
+    return { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY };
+  }
+
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 1600);
+  }
+
+  function init() {
+    var gate = document.getElementById('gate');
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) {
+      gate.innerHTML = '<p>Sign in with a superadmin account to manage Pulse city tags.</p><button id="signin-btn">Sign In</button>';
+      document.getElementById('signin-btn').addEventListener('click', function(){ VEAuth.showAuthModal('Sign in to manage Pulse city tags.', init); });
+      return;
+    }
+    var member = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+    if (!member || !member.is_superadmin) {
+      gate.innerHTML = '<p>This account does not have access to Pulse city tags.</p>';
+      return;
+    }
+    gate.style.display = 'none';
+    document.getElementById('list').style.display = 'block';
+    loadAll();
+  }
+
+  function loadAll() {
+    Promise.all([
+      fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=id,title,slug,category,published_at&status=eq.published&order=published_at.desc&limit=1000', { headers: sbHeaders() }).then(function(r){ return r.json(); }),
+      fetch(SUPABASE_URL + '/rest/v1/ve_pulse_city_tags?select=id,pulse_id,city_slug', { headers: sbHeaders() }).then(function(r){ return r.json(); })
+    ]).then(function(results){
+      allArticles = results[0] || [];
+      var tags = results[1] || [];
+      tagsByPulseId = {};
+      tags.forEach(function(t){
+        if (!tagsByPulseId[t.pulse_id]) tagsByPulseId[t.pulse_id] = {};
+        tagsByPulseId[t.pulse_id][t.city_slug] = t.id;
+      });
+      populateCategoryFilter();
+      render();
+    }).catch(function(err){
+      document.getElementById('cards').innerHTML = '<p>Failed to load: ' + esc(err.message || err) + '</p>';
+    });
+  }
+
+  function populateCategoryFilter() {
+    var cats = Array.from(new Set(allArticles.map(function(a){ return a.category; }).filter(Boolean))).sort();
+    var sel = document.getElementById('category-filter');
+    cats.forEach(function(c){
+      var opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  }
+
+  function matchesFilters(a) {
+    if (searchTerm && a.title.toLowerCase().indexOf(searchTerm) === -1) return false;
+    if (categoryFilter && a.category !== categoryFilter) return false;
+    if (cityFilter === '__untagged') {
+      var t = tagsByPulseId[a.id];
+      if (t && Object.keys(t).length > 0) return false;
+    } else if (cityFilter) {
+      var t2 = tagsByPulseId[a.id];
+      if (!t2 || !t2[cityFilter]) return false;
+    }
+    return true;
+  }
+
+  function render() {
+    var items = allArticles.filter(matchesFilters);
+    document.getElementById('count').textContent = items.length + ' of ' + allArticles.length + ' articles';
+    var cards = document.getElementById('cards');
+    var empty = document.getElementById('empty');
+    if (!items.length) { cards.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    cards.innerHTML = items.map(function(a){
+      var tagged = tagsByPulseId[a.id] || {};
+      var dateStr = a.published_at ? new Date(a.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+      return '<div class="card" data-pulse-id="' + esc(a.id) + '">' +
+        '<div class="card-meta"><span class="cat-tag">' + esc(a.category || 'Uncategorized') + '</span><span>' + esc(dateStr) + '</span></div>' +
+        '<div class="headline">' + esc(a.title) + '</div>' +
+        '<div class="city-row">' +
+          CITIES.map(function(c){
+            var isActive = !!tagged[c.slug];
+            return '<button class="city-chip' + (isActive ? ' active' : '') + '" data-city="' + c.slug + '">' + esc(c.label) + '</button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    cards.querySelectorAll('.city-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){ toggleTag(chip); });
+    });
+  }
+
+  function toggleTag(chip) {
+    var card = chip.closest('.card');
+    var pulseId = card.getAttribute('data-pulse-id');
+    var city = chip.getAttribute('data-city');
+    var isActive = chip.classList.contains('active');
+    chip.classList.add('saving');
+
+    if (isActive) {
+      var tagId = (tagsByPulseId[pulseId] || {})[city];
+      fetch(SUPABASE_URL + '/rest/v1/ve_pulse_city_tags?id=eq.' + tagId, {
+        method: 'DELETE', headers: sbHeaders()
+      }).then(function(){
+        delete tagsByPulseId[pulseId][city];
+        chip.classList.remove('active', 'saving');
+        toast('Removed from ' + city.replace('-', ' '));
+        if (cityFilter && cityFilter !== '__untagged') render();
+      });
+    } else {
+      fetch(SUPABASE_URL + '/rest/v1/ve_pulse_city_tags', {
+        method: 'POST',
+        headers: Object.assign(sbHeaders(), { Prefer: 'return=representation' }),
+        body: JSON.stringify({ pulse_id: pulseId, city_slug: city })
+      }).then(function(r){ return r.json(); }).then(function(rows){
+        var row = rows && rows[0];
+        if (!tagsByPulseId[pulseId]) tagsByPulseId[pulseId] = {};
+        tagsByPulseId[pulseId][city] = row ? row.id : true;
+        chip.classList.add('active');
+        chip.classList.remove('saving');
+        toast('Tagged into ' + city.replace('-', ' '));
+        if (cityFilter === '__untagged') render();
+      });
+    }
+  }
+
+  document.getElementById('search').addEventListener('input', function(e){
+    searchTerm = e.target.value.toLowerCase().trim();
+    render();
+  });
+  document.getElementById('category-filter').addEventListener('change', function(e){
+    categoryFilter = e.target.value;
+    render();
+  });
+  document.getElementById('city-filter').addEventListener('change', function(e){
+    cityFilter = e.target.value;
+    render();
+  });
+
+  init();
+</script>
+</body>
+</html>
