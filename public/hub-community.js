@@ -290,30 +290,12 @@
     });
   }
 
-  /* ==================== DIRECT-LINK DEEP LINK ====================
-     Lets Sean send a single URL per region straight to the Community
-     Manager / Vegan Explorer apply block, e.g.
-     https://vegansexplore.com/communities/philadelphia?apply=opportunities */
-  function applyDeepLink() {
-    var params = new URLSearchParams(window.location.search);
-    var target = params.get('apply');
-    if (!target) return;
-    if (typeof window.switchTab === 'function') {
-      window.switchTab('opportunities');
-    }
-    setTimeout(function () {
-      var el = document.getElementById('tab-opportunities');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 300);
-  }
-
   window.VEHubCommunity = {
     wireNewsSubmit: wireNewsSubmit,
     renderOpportunities: renderOpportunities,
     wireRewards: wireRewards,
     renderNonprofits: renderNonprofits,
     applyGates: applyGates,
-    wirePartnerApply: wirePartnerApply,
-    applyDeepLink: applyDeepLink
+    wirePartnerApply: wirePartnerApply
   };
 })();
