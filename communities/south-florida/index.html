@@ -400,6 +400,7 @@
   <script src="/public/hub-news.js"></script>
 <script src="/public/ve-region-directory.js"></script>
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/hub-community.js"></script>
 
   <!-- HERO -->
   <section class="hero" id="hero-section" aria-labelledby="hub-heading">
@@ -1063,36 +1064,8 @@
     if (window.VEAuth) VEAuth.showAuthModal(promptMsg, onGranted);
   }
 
-  var SF_COMMUNITY_ROLES = [
-    {
-      slug: 'community-manager',
-      tier: 'Leadership Role',
-      title: 'Community Manager',
-      desc: 'The official face of VEGANS EXPLORE in your city. Build the local community, manage events, and grow from volunteer to $4,000/month salary when your city hits its milestone.',
-      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_213628_278b3739-d852-4571-b0de-7b324f25f6be.png'
-    },
-    {
-      slug: 'vegan-explorer',
-      tier: 'Explorer Role',
-      title: 'Vegan Explorer',
-      desc: 'Know your city\'s Vegan scene? Turn that local knowledge into verified directory listings, community recognition, and a path to Community Manager.',
-      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_214438_cd4c0eec-2f37-4965-96be-eb562471b42d.png'
-    }
-  ];
-
-  function loadSFOpportunities() {
-    var wrap = document.getElementById('sf-opportunities-list');
-    wrap.innerHTML = '<div class="news-grid">' + SF_COMMUNITY_ROLES.map(function(o) {
-      return '<article class="news-card">' +
-        '<div class="news-img"><img src="' + sfEsc(o.img) + '" alt="' + sfEsc(o.title) + '" style="width:100%;height:100%;object-fit:cover;"></div>' +
-        '<div class="news-body">' +
-          '<p class="news-date" style="color:var(--ve-green-dark);font-weight:800;letter-spacing:0.1em;text-transform:uppercase;font-size:10px;">' + sfEsc(o.tier) + '</p>' +
-          '<h3 class="news-headline">' + sfEsc(o.title) + '</h3>' +
-          '<p class="news-excerpt">' + sfEsc(o.desc) + '</p>' +
-          '<a href="https://vegansexplore.com/welcome" class="news-read">Learn more</a>' +
-        '</div></article>';
-    }).join('') + '</div>';
-  }
+  /* Opportunities now render from the shared, live-wired VEHubCommunity.renderOpportunities
+     (real per-city rows from public.opportunities, applies via ve-rewards). See call site below. */
 
   /* ==================== REWARDS: STORE + NONPROFIT DONATION ==================== */
   function loadSFRewards() {
@@ -1250,7 +1223,8 @@
     });
   })();
 
-  loadSFOpportunities();
+  VEHubCommunity.renderOpportunities('sf-opportunities-list', 'south-florida');
+  VEHubCommunity.applyDeepLink();
   loadSFRewards();
   loadSFNonprofits();
   applySFGates();
