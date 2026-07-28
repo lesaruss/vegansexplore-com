@@ -2,7 +2,8 @@
    prototype (now the locked reference implementation) so every hub gets the same
    real, live-wired functionality instead of duplicated inline JS:
      - News submission form (writes to ve_community_news via ve-community-news edge fn)
-     - Community Roles / Opportunities (static, city-agnostic copy)
+     - Community Roles / Opportunities (real per-city rows from public.opportunities,
+       applications submitted through ve-rewards?action=submit_opportunity_application)
      - Rewards store + Nonprofit giving + Points Leaderboard (ve-rewards edge fn)
      - Passport-gated unlock for Members / Rewards / Chat previews
      - Partner application form (ve-rewards edge fn)
@@ -65,37 +66,70 @@
     });
   }
 
-  /* ==================== OPPORTUNITIES / COMMUNITY ROLES ==================== */
-  var COMMUNITY_ROLES = [
-    {
-      slug: 'community-manager',
-      tier: 'Leadership Role',
-      title: 'Community Manager',
-      desc: 'The official face of VEGANS EXPLORE in your city. Build the local community, manage events, and grow from volunteer to $4,000/month salary when your city hits its milestone.',
-      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_213628_278b3739-d852-4571-b0de-7b324f25f6be.png'
-    },
-    {
-      slug: 'vegan-explorer',
-      tier: 'Explorer Role',
-      title: 'Vegan Explorer',
-      desc: "Know your city's Vegan scene? Turn that local knowledge into verified directory listings, community recognition, and a path to Community Manager.",
-      img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_214438_cd4c0eec-2f37-4965-96be-eb562471b42d.png'
-    }
-  ];
-
-  function renderOpportunities(listId) {
+  /* ==================== OPPORTUNITIES / COMMUNITY ROLES ====================
+     Real per-city rows read from public.opportunities (is_active=true,
+     city_slug match). Applying requires a signed-in Passport and posts to
+     ve-rewards?action=submit_opportunity_application, which writes a real
+     row to opportunity_applications for Sean/V to review. */
+  function renderOpportunities(listId, citySlug) {
     var wrap = document.getElementById(listId);
     if (!wrap) return;
-    wrap.innerHTML = '<div class="news-grid">' + COMMUNITY_ROLES.map(function (o) {
-      return '<article class="news-card">' +
-        '<div class="news-img"><img src="' + esc(o.img) + '" alt="' + esc(o.title) + '" style="width:100%;height:100%;object-fit:cover;"></div>' +
-        '<div class="news-body">' +
-          '<p class="news-date" style="color:var(--ve-green-dark);font-weight:800;letter-spacing:0.1em;text-transform:uppercase;font-size:10px;">' + esc(o.tier) + '</p>' +
-          '<h3 class="news-headline">' + esc(o.title) + '</h3>' +
-          '<p class="news-excerpt">' + esc(o.desc) + '</p>' +
-          '<a href="https://vegansexplore.com/welcome" class="news-read">Learn more</a>' +
-        '</div></article>';
-    }).join('') + '</div>';
+    if (!citySlug) { wrap.innerHTML = '<p class="hub-dir-empty">Opportunities aren\'t configured for this hub yet.</p>'; return; }
+
+    fetch(SUPABASE_URL + '/rest/v1/opportunities?select=id,title,description,opportunity_type,requirements,location&is_active=eq.true&city_slug=eq.' + encodeURIComponent(citySlug) + '&order=opportunity_type.desc', {
+      headers: headers()
+    }).then(function (r) { return r.json(); }).then(function (rows) {
+      if (!rows || !rows.length) { wrap.innerHTML = '<p class="hub-dir-empty">No open roles here right now. Check back soon.</p>'; return; }
+      wrap.innerHTML = '<div class="news-grid">' + rows.map(function (o) {
+        var tier = o.opportunity_type === 'community_manager' ? 'Leadership Role' : 'Volunteer Role';
+        return '<article class="news-card opp-card" data-opp-id="' + esc(o.id) + '">' +
+          '<div class="news-body">' +
+            '<p class="news-date" style="color:var(--ve-green-dark);font-weight:800;letter-spacing:0.1em;text-transform:uppercase;font-size:10px;">' + esc(tier) + '</p>' +
+            '<h3 class="news-headline">' + esc(o.title) + '</h3>' +
+            '<p class="news-excerpt">' + esc(o.description) + '</p>' +
+            (o.requirements ? '<p class="news-excerpt" style="margin-top:6px;color:var(--ve-text-50);font-size:12px;"><strong>What it takes:</strong> ' + esc(o.requirements) + '</p>' : '') +
+            '<div class="opp-interest-section" id="opp-section-' + esc(o.id) + '" style="margin-top:14px;">' +
+              '<div id="opp-form-' + esc(o.id) + '" class="opp-interest-fields">' +
+                '<textarea class="opp-interest-input opp-cover-note" id="opp-note-' + esc(o.id) + '" placeholder="Tell us a bit about why you\'d be a good fit (optional)" rows="3" style="width:100%;font-family:inherit;"></textarea>' +
+                '<button type="button" class="btn-opp-submit" data-apply-id="' + esc(o.id) + '" style="margin-top:8px;">Apply Now</button>' +
+              '</div>' +
+              '<div id="opp-success-' + esc(o.id) + '" class="opp-interest-success" style="display:none;"><div class="opp-interest-success-title">Application received.</div><div class="opp-interest-success-sub">We review these by hand, we will reach out.</div></div>' +
+              '<span class="opp-apply-msg" data-opp-msg="' + esc(o.id) + '" style="font-size:12px;display:block;margin-top:6px;"></span>' +
+            '</div>' +
+          '</div></article>';
+      }).join('') + '</div>';
+
+      wrap.querySelectorAll('[data-apply-id]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = btn.getAttribute('data-apply-id');
+          requireAuth('Sign in with your free Passport to apply.', function () {
+            var noteEl = document.getElementById('opp-note-' + id);
+            var msgEl = wrap.querySelector('[data-opp-msg="' + id + '"]');
+            btn.disabled = true; btn.textContent = 'Submitting...';
+            fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_opportunity_application', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+              body: JSON.stringify({ token: VEAuth.getToken(), opportunity_id: id, cover_note: noteEl ? noteEl.value.trim() || null : null })
+            }).then(function (r) { return r.json(); }).then(function (d) {
+              btn.disabled = false; btn.textContent = 'Apply Now';
+              if (d.error) { if (msgEl) { msgEl.textContent = d.error; msgEl.style.color = '#dc2626'; } return; }
+              var formEl = document.getElementById('opp-form-' + id);
+              var successEl = document.getElementById('opp-success-' + id);
+              if (formEl) formEl.style.display = 'none';
+              if (successEl) {
+                successEl.style.display = 'block';
+                if (d.already_applied) {
+                  successEl.querySelector('.opp-interest-success-title').textContent = "You're already on file for this role.";
+                }
+              }
+            }).catch(function () {
+              btn.disabled = false; btn.textContent = 'Apply Now';
+              if (msgEl) { msgEl.textContent = 'Something went wrong. Please try again.'; msgEl.style.color = '#dc2626'; }
+            });
+          });
+        });
+      });
+    }).catch(function () { wrap.innerHTML = '<p class="hub-dir-empty">Couldn\'t load opportunities right now.</p>'; });
   }
 
   /* ==================== REWARDS: STORE + NONPROFIT DONATION ==================== */
@@ -256,12 +290,30 @@
     });
   }
 
+  /* ==================== DIRECT-LINK DEEP LINK ====================
+     Lets Sean send a single URL per region straight to the Community
+     Manager / Vegan Explorer apply block, e.g.
+     https://vegansexplore.com/communities/philadelphia?apply=opportunities */
+  function applyDeepLink() {
+    var params = new URLSearchParams(window.location.search);
+    var target = params.get('apply');
+    if (!target) return;
+    if (typeof window.switchTab === 'function') {
+      window.switchTab('opportunities');
+    }
+    setTimeout(function () {
+      var el = document.getElementById('tab-opportunities');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  }
+
   window.VEHubCommunity = {
     wireNewsSubmit: wireNewsSubmit,
     renderOpportunities: renderOpportunities,
     wireRewards: wireRewards,
     renderNonprofits: renderNonprofits,
     applyGates: applyGates,
-    wirePartnerApply: wirePartnerApply
+    wirePartnerApply: wirePartnerApply,
+    applyDeepLink: applyDeepLink
   };
 })();
