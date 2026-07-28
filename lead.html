@@ -4,169 +4,273 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lead Your City — Vegans Explore</title>
-<meta name="description" content="VEGANS EXPLORE is built city by city by the people already living it. Two paths to lead: Community Manager and Vegan Explorer. One application, pick your path.">
+<meta name="description" content="VEGANS EXPLORE is looking for the people who already live the Vegan scene in their city. Two paths in: Vegan Explorer and Community Manager. One application, pick your path.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ve-green: #22C55E;
-    --ve-green-dark: #15803D;
-    --ve-green-mid: #86EFAC;
-    --ve-green-light: #F0FDF4;
-    --ve-border: rgba(0,0,0,0.1);
-    --ve-text: #1a1a1a;
-    --ve-text-75: rgba(26,26,26,0.75);
-    --ve-text-50: rgba(26,26,26,0.5);
+  :root{
+    --bg:#ffffff;--surface:#ffffff;--panel:#f7f7f8;
+    --ink:#1a1a1a;--ink-75:#3d3d3d;--ink-55:#555555;--ink-muted:#767676;
+    --border:rgba(0,0,0,0.10);--ve-green:#22C55E;--ve-green-dark:#15803D;--ve-green-light:#F0FDF4;--ink-deep:#0e2418;
+    --radius:18px;--maxw:920px;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Montserrat', sans-serif; color: var(--ve-text); background: #fff; }
-  a { color: inherit; }
-  img { max-width: 100%; display: block; }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{margin:0;font-weight:900;line-height:1.15;letter-spacing:-0.01em;}
+  h1{font-size:clamp(32px,5.5vw,58px);text-transform:uppercase;}
+  h2{font-size:clamp(26px,4vw,40px);text-transform:uppercase;}
+  p{margin:0 0 14px;color:var(--ink-75);font-size:clamp(15px,2vw,17px);}
+  .lead{font-size:clamp(17px,2.2vw,20px);color:var(--ink-75);}
+  .eyebrow{display:inline-block;font-size:12px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:18px;}
 
-  .lead-hero { position: relative; background: linear-gradient(160deg, #0f2418 0%, #143824 55%, #1a4a2e 100%); color: #fff; padding: 100px 24px 90px; text-align: center; overflow: hidden; }
-  .lead-hero::before { content: ''; position: absolute; top: -20%; right: -10%; width: 60%; height: 140%; background: radial-gradient(circle, rgba(34,197,94,0.35), transparent 70%); pointer-events: none; }
-  .lead-eyebrow { position: relative; font-size: 11px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ve-green-mid); margin-bottom: 22px; }
-  .lead-h1 { position: relative; font-size: clamp(34px, 6vw, 68px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.02; margin: 0 0 24px; max-width: 920px; margin-left: auto; margin-right: auto; }
-  .lead-h1 em { font-style: normal; color: var(--ve-green-mid); }
-  .lead-sub { position: relative; font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.8); max-width: 560px; margin: 0 auto 36px; line-height: 1.7; }
-  .lead-hero-cta { position: relative; display: inline-flex; align-items: center; gap: 10px; background: var(--ve-green); color: #06210f; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 16px 34px; border-radius: 6px; text-decoration: none; transition: background 0.15s; }
-  .lead-hero-cta:hover { background: var(--ve-green-mid); }
-  .lead-hero-stats { position: relative; display: flex; justify-content: center; gap: 40px; margin-top: 56px; flex-wrap: wrap; }
-  .lead-stat-num { font-size: 28px; font-weight: 900; color: var(--ve-green-mid); }
-  .lead-stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-top: 4px; }
+  .topbar{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--border);}
+  .progress{height:4px;background:var(--panel);}
+  .progress .fill{height:100%;background:var(--ve-green);width:0;transition:width .35s ease;}
+  .topbar .row{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;}
+  .topbar .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;}
+  .topbar .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--ve-green);}
+  .topbar .count{font-size:13px;font-weight:800;color:var(--ink-55);letter-spacing:0.08em;}
 
-  .lead-section { max-width: 920px; margin: 0 auto; padding: 80px 24px; }
-  .lead-section-narrow { max-width: 760px; }
-  .lead-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 16px; text-align: center; }
-  .lead-h2 { font-size: clamp(24px, 4vw, 36px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 20px; text-align: center; }
-  .lead-p { font-size: 15px; line-height: 1.8; color: var(--ve-text-75); text-align: center; max-width: 640px; margin: 0 auto; }
-  .lead-p + .lead-p { margin-top: 14px; }
+  .stage{max-width:var(--maxw);margin:0 auto;padding:40px 24px 150px;min-height:72vh;display:flex;align-items:safe center;}
+  .step{display:none;width:100%;animation:fade .45s ease;}
+  .step.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .center{text-align:center;}
 
-  .lead-guide { background: var(--ve-green-light); }
-  .lead-guide-inner { max-width: 760px; margin: 0 auto; padding: 80px 24px; text-align: center; }
-  .lead-guide-quote { font-size: clamp(18px, 2.6vw, 24px); font-weight: 700; line-height: 1.45; color: var(--ve-text); margin: 0 0 18px; }
-  .lead-guide-attr { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); }
+  /* Cover slide breaks out of the max-width column, full-bleed gradient, per Iceberg Deck standard */
+  .step.cover{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;background:linear-gradient(160deg,#0f2418 0%,#143824 55%,#1a4a2e 100%);color:#fff;padding:90px 24px 70px;position:relative;overflow:hidden;}
+  .step.cover::before{content:'';position:absolute;top:-20%;right:-10%;width:60%;height:140%;background:radial-gradient(circle,rgba(34,197,94,0.35),transparent 70%);pointer-events:none;}
+  .step.cover .eyebrow{color:#86EFAC;position:relative;}
+  .step.cover h1{position:relative;max-width:820px;margin:0 auto 22px;}
+  .step.cover h1 em{font-style:normal;color:#86EFAC;}
+  .step.cover .lead{position:relative;color:rgba(255,255,255,0.82);max-width:540px;margin:0 auto;}
+  .step.cover .hint{position:relative;color:rgba(255,255,255,0.45);}
+  .step.cover .audio{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.18);}
+  .step.cover .audio-label{color:#fff;}
+  .step.cover .wave span.bar{background:rgba(255,255,255,0.25);}
+  .step.cover .wave span.bar.on{background:#86EFAC;}
+  .step.cover .audio-btn{background:#22C55E;}
 
-  .lead-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 44px; }
-  @media (max-width: 720px) { .lead-roles { grid-template-columns: 1fr; } }
-  .role-card { border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 32px 28px; background: #fff; display: flex; flex-direction: column; }
-  .role-card.featured { border-color: var(--ve-green); box-shadow: 0 8px 30px rgba(34,197,94,0.14); }
-  .role-tier { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 10px; }
-  .role-title { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin: 0 0 14px; }
-  .role-desc { font-size: 14px; line-height: 1.7; color: var(--ve-text-75); margin: 0 0 18px; flex-grow: 1; }
-  .role-path { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ve-text); background: var(--ve-green-light); border-radius: 8px; padding: 12px 14px; margin-bottom: 18px; flex-wrap: wrap; }
-  .role-path span.arrow { color: var(--ve-green-dark); }
-  .role-commit { font-size: 12px; color: var(--ve-text-50); font-weight: 600; }
+  .kit{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px;}
+  @media(max-width:760px){.kit{grid-template-columns:1fr;}}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px;}
+  @media(max-width:760px){.two{grid-template-columns:1fr;}}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .tile .ic{width:42px;height:42px;border-radius:11px;background:var(--ve-green-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .tile h3{font-size:16px;margin-bottom:7px;text-transform:none;}
+  .tile p{font-size:14px;color:var(--ink-55);margin:0;}
+  .tile.dark{background:var(--ink-deep);border-color:transparent;}
+  .tile.dark h3{color:#fff;}
+  .tile.dark p{color:rgba(255,255,255,0.82);}
+  .tile.featured{border-color:var(--ve-green);box-shadow:0 8px 26px rgba(34,197,94,0.14);}
+  .tile .pill{display:inline-block;font-size:10px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;margin-bottom:12px;}
+  .pill.soft{background:var(--panel);color:var(--ink-55);}
+  .pill.gold{background:var(--ve-green-light);color:var(--ve-green-dark);}
 
-  .lead-vision { background: #0f2418; color: #fff; }
-  .lead-vision-inner { max-width: 800px; margin: 0 auto; padding: 80px 24px; text-align: center; }
-  .lead-vision .lead-tag { color: var(--ve-green-mid); }
-  .lead-vision .lead-h2 { color: #fff; }
-  .vision-list { list-style: none; padding: 0; margin: 32px 0 0; display: grid; gap: 16px; text-align: left; max-width: 560px; margin-left: auto; margin-right: auto; }
-  .vision-list li { display: flex; gap: 12px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.85); }
-  .vision-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--ve-green); margin-top: 6px; }
+  .band{background:var(--ink-deep);color:#fff;border-radius:var(--radius);padding:34px;}
+  .band h2{color:#fff;}
+  .band .lead{color:rgba(255,255,255,0.85);}
+  .band-quote{font-size:clamp(17px,2.4vw,22px);font-weight:700;line-height:1.5;margin:0 0 14px;}
+  .band-attr{font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#86EFAC;}
 
-  .lead-apply { background: #fafafa; border-top: 1px solid var(--ve-border); }
-  .lead-apply-inner { max-width: 620px; margin: 0 auto; padding: 80px 24px; }
-  .apply-card { background: #fff; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 36px 32px; }
-  .apply-field-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text); display: block; margin-bottom: 10px; }
-  .apply-role-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-  .apply-role-opt { border: 1.5px solid var(--ve-border); border-radius: 8px; padding: 14px 12px; cursor: pointer; text-align: center; transition: border-color 0.15s, background 0.15s; }
-  .apply-role-opt.active { border-color: var(--ve-green); background: var(--ve-green-light); }
-  .apply-role-opt-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
-  .apply-role-opt-sub { font-size: 10.5px; color: var(--ve-text-50); font-weight: 600; }
-  .apply-input, .apply-select, .apply-textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--ve-border); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 14px; color: var(--ve-text); margin-bottom: 18px; background: #fff; }
-  .apply-textarea { resize: vertical; min-height: 80px; }
-  .apply-submit { width: 100%; padding: 16px; background: var(--ve-green-dark); color: #fff; font-family: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
-  .apply-submit:hover { background: #0f6b30; }
-  .apply-submit:disabled { opacity: 0.6; cursor: default; }
-  .apply-msg { font-size: 13px; margin-top: 14px; text-align: center; }
-  .apply-success { display: none; text-align: center; }
-  .apply-success-title { font-size: 18px; font-weight: 900; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 8px; }
-  .apply-success-sub { font-size: 13px; color: var(--ve-text-75); line-height: 1.6; }
+  .comp-path{display:flex;align-items:center;gap:10px;background:var(--ve-green-light);border-radius:10px;padding:14px 20px;margin:18px 0;flex-wrap:wrap;}
+  .comp-path span{font-size:12px;font-weight:800;color:var(--ve-green-dark);text-transform:uppercase;letter-spacing:0.02em;}
+  .comp-path .path-arrow{color:var(--ve-green);font-weight:900;}
+
+  .need{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+  @media(max-width:760px){.need{grid-template-columns:1fr;}}
+  .need li{display:flex;gap:13px;align-items:flex-start;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .need .mk{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--ve-green-light);display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .need .nt{font-weight:800;font-size:14.5px;color:var(--ink);}
+  .need .nd{font-size:13px;color:var(--ink-55);}
+
+  .role-tier{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:10px;}
+
+  .center-narrow{max-width:640px;margin:0 auto;}
+
+  /* apply form (final slide) */
+  .apply-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:32px 30px;text-align:left;max-width:560px;margin:30px auto 0;}
+  .apply-field-label{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:10px;}
+  .apply-role-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+  .apply-role-opt{border:1.5px solid var(--border);border-radius:8px;padding:14px 12px;cursor:pointer;text-align:center;transition:border-color .15s,background .15s;}
+  .apply-role-opt.active{border-color:var(--ve-green);background:var(--ve-green-light);}
+  .apply-role-opt-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px;}
+  .apply-role-opt-sub{font-size:10.5px;color:var(--ink-muted);font-weight:600;}
+  .apply-input,.apply-select,.apply-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:14px;color:var(--ink);margin-bottom:18px;background:#fff;}
+  .apply-textarea{resize:vertical;min-height:76px;}
+  .apply-submit{width:100%;padding:16px;background:var(--ve-green-dark);color:#fff;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background .15s;}
+  .apply-submit:hover{background:#0f6b30;}
+  .apply-submit:disabled{opacity:.6;cursor:default;}
+  .apply-msg{font-size:13px;margin-top:14px;text-align:center;}
+  .apply-success{display:none;text-align:center;}
+  .apply-success-title{font-size:18px;font-weight:900;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:8px;}
+  .apply-success-sub{font-size:13px;color:var(--ink-75);line-height:1.6;}
+
+  /* audio player - canonical, unchanged per narration-audio-player-module */
+  .audio{display:flex;align-items:center;gap:14px;max-width:460px;margin:28px auto 0;background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:9px 16px 9px 9px;text-align:left;}
+  .audio-btn{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:none;background:var(--ink-deep);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .audio-btn:hover{background:#000;}
+  .audio-btn .ic-pause{display:none;}
+  .audio.playing .audio-btn .ic-play{display:none;}
+  .audio.playing .audio-btn .ic-pause{display:block;}
+  .wave{flex:1;position:relative;display:flex;align-items:center;gap:2px;height:34px;cursor:pointer;touch-action:none;}
+  .wave span.bar{flex:1;min-width:2px;background:#d8d8d8;border-radius:2px;transition:background .12s;}
+  .wave span.bar.on{background:var(--ve-green);}
+  .wave .handle{position:absolute;top:-3px;bottom:-3px;width:3px;border-radius:2px;background:var(--ink-deep);left:0;transform:translateX(-1px);pointer-events:none;}
+  .audio-meta{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+  .audio-label{font-size:12px;font-weight:800;color:var(--ink);}
+  .audio-tag{font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-green-dark);background:var(--ve-green-light);padding:2px 7px;border-radius:999px;}
+
+  /* nav */
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);border-top:1px solid var(--border);}
+  .nav .row{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 24px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:inherit;font-weight:800;font-size:14px;padding:12px 20px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--ink);cursor:pointer;}
+  .btn:hover{border-color:var(--ink);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-primary{background:var(--ink-deep);color:#fff;border-color:transparent;}
+  .btn-primary:hover{background:#000;}
+  .dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;}
+  .dots button{width:9px;height:9px;border-radius:50%;border:none;background:#d6d6d6;cursor:pointer;padding:0;}
+  .dots button.on{background:var(--ve-green);transform:scale(1.25);}
+  @media(max-width:620px){.dots{display:none;}}
+  @media(min-width:769px){
+    html, body{ overflow:hidden; height:100dvh; }
+    .stage{ min-height:0; height:calc(100dvh - 45px - 75px); overflow-y:auto; }
+  }
+  .hint{font-size:13px;color:var(--ink-muted);margin-top:22px;}
 </style>
 </head>
 <body>
 
-<div class="lead-hero">
-  <p class="lead-eyebrow">Now Recruiting</p>
-  <h1 class="lead-h1">VEGANS EXPLORE IS BUILT<br>BY THE PEOPLE <em>ALREADY LIVING IT.</em></h1>
-  <p class="lead-sub">Not a job posting. Not a moderator gig. This is the ground floor of a real community, built city by city by people who already know their scene &mdash; and we need to know who you are before we start pushing hard into your city.</p>
-  <a href="#apply" class="lead-hero-cta">See the Two Paths &rarr;</a>
-  <div class="lead-hero-stats">
-    <div><div class="lead-stat-num">8</div><div class="lead-stat-label">Cities Live</div></div>
-    <div><div class="lead-stat-num">2</div><div class="lead-stat-label">Ways In</div></div>
-    <div><div class="lead-stat-num">$0</div><div class="lead-stat-label">To Start</div></div>
+<div class="topbar">
+  <div class="progress"><div class="fill" id="fill"></div></div>
+  <div class="row">
+    <div class="brand"><span class="dot"></span> Vegans Explore &middot; Lead Your City</div>
+    <div class="count" id="count">01 / 09</div>
   </div>
 </div>
 
-<section class="lead-section lead-section-narrow">
-  <p class="lead-tag">The Problem</p>
-  <h2 class="lead-h2">A website doesn't build a community. People do.</h2>
-  <p class="lead-p">Right now, VEGANS EXPLORE has 8 city hubs live &mdash; South Florida, Philadelphia, DMV, Atlanta, Central Florida, London, Los Angeles, and New York. Every one of them can hold a directory, an events calendar, a newsletter. None of them can walk into a restaurant, introduce themselves, and get a business to actually show up.</p>
-  <p class="lead-p">That takes a real person who already knows the city. Before we push hard into recruiting Vegan businesses and organizations city by city, we want to know who's already there and ready to help lead it.</p>
-</section>
+<div class="stage">
 
-<div class="lead-guide">
-  <div class="lead-guide-inner">
-    <p class="lead-guide-quote">"We're not pretending this is already built out. We're building it in real time, city by city, and we're looking for the people who want to build it with us &mdash; not for us."</p>
-    <p class="lead-guide-attr">Sean A. Russell &middot; Founder, LESARUSS</p>
-  </div>
-</div>
+  <!-- 1 COVER -->
+  <section class="step active cover center">
+    <span class="eyebrow">Now Recruiting &mdash; City Leadership</span>
+    <h1>YOUR CITY IS HUNGRY FOR THIS.<br>ARE YOU THE ONE <em>WHO BUILDS IT?</em></h1>
+    <p class="lead">Two ways to lead VEGANS EXPLORE where you live. Zero experience required to start &mdash; just tell us who you are before we start pushing hard into your city.</p>
+    <p class="hint">A guided walkthrough. Use Next, or your arrow keys, to move through.</p>
+  </section>
 
-<section class="lead-section">
-  <p class="lead-tag">The Plan</p>
-  <h2 class="lead-h2">Two paths. Pick the one that fits you right now.</h2>
-  <p class="lead-p">Same application either way. This isn't two separate hoops to jump through &mdash; it's one door, and you tell us which room you want to walk into.</p>
+  <!-- 2 THE OPPORTUNITY -->
+  <section class="step">
+    <span class="eyebrow">The Opportunity</span>
+    <h2>You Already Know Your City's Vegan Scene.<br><em>Nobody's Built the Platform For It Yet.</em></h2>
+    <p class="lead" style="margin-top:16px;">You know the best spots. You know who's doing incredible work and who's getting overlooked. You've probably thought, "why isn't this documented anywhere real?"</p>
+    <p>That's the gap. Not because no one cares &mdash; because no platform has put a real person in your city yet. VEGANS EXPLORE has 8 city hubs live right now. Every one of them can hold a directory, an events calendar, a newsletter. None of them can walk into a restaurant, introduce themselves, and get a business to actually show up. That takes a person. That's the role this page is about.</p>
+  </section>
 
-  <div class="lead-roles">
-    <div class="role-card featured">
-      <div class="role-tier">Leadership Role</div>
-      <h3 class="role-title">Community Manager</h3>
-      <p class="role-desc">The official face of VEGANS EXPLORE in your city. You find and onboard Vegan businesses, recruit and support Vegan Explorers, show up at events, and make sure your region is actually building. This is a leadership role, not a content role &mdash; the job is building something real that keeps growing after you leave the room.</p>
-      <div class="role-path">Volunteer + Affiliate <span class="arrow">&rarr;</span> $2,000/mo Stipend <span class="arrow">&rarr;</span> $4,000/mo Salaried</div>
-      <p class="role-commit">Starts as volunteer + affiliate commission. Pay activates automatically once your city hits its milestone &mdash; no renegotiation needed.</p>
+  <!-- 3 WHY US, WHY NOW -->
+  <section class="step">
+    <span class="eyebrow">Why Us, Why Now</span>
+    <h2>We're Not Pretending This Is<br>Already <em>Built Out.</em></h2>
+    <p class="lead" style="margin-top:16px;">We're building it in real time, city by city, and we're looking for the people who want to build it with us &mdash; not for us.</p>
+    <div class="kit">
+      <div class="tile">
+        <div class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3>Built inside LESARUSS AI</h3>
+        <p>Our team runs LESARUSS AI, the same marketing infrastructure already supporting Vegan-space businesses and organizations.</p>
+      </div>
+      <div class="tile">
+        <div class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg></div>
+        <h3>Real platform, not a slide deck</h3>
+        <p>8 live city hubs, a real Passport membership, a points and rewards system, a real directory. This is already running.</p>
+      </div>
+      <div class="tile">
+        <div class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h3>We can move fast</h3>
+        <p>We have the ability to launch in a thousand cities in a short amount of time. We can't do it without local people who already live it.</p>
+      </div>
     </div>
-    <div class="role-card">
-      <div class="role-tier">Contributor Role</div>
-      <h3 class="role-title">Vegan Explorer</h3>
-      <p class="role-desc">Already living the Vegan scene in your city? Keep doing exactly that &mdash; and get credit for it. Submit businesses, events, and spots. Every verified listing earns points. Write honest reviews. Build a real reputation in your city's directory, visible to the whole community.</p>
-      <div class="role-path">Contribute + Earn Points <span class="arrow">&rarr;</span> Featured Contributor <span class="arrow">&rarr;</span> First Look at Community Manager</div>
-      <p class="role-commit">Lower commitment, no interview process. This is about doing more of what you already do, with recognition and a real path up.</p>
+    <div class="band" style="margin-top:26px;">
+      <p class="band-quote">"We're not pretending this is already built out. We're building it in real time, city by city, and we're looking for the people who want to build it with us &mdash; not for us."</p>
+      <p class="band-attr">Sean A. Russell &middot; Founder, LESARUSS</p>
     </div>
-  </div>
-</section>
+  </section>
 
-<div class="lead-vision">
-  <div class="lead-vision-inner">
-    <p class="lead-tag">The Vision</p>
-    <h2 class="lead-h2">What a built city actually looks like</h2>
-    <ul class="vision-list">
-      <li><span class="vision-dot"></span><span>A directory people actually trust, because someone who lives there verified it &mdash; not an algorithm.</span></li>
-      <li><span class="vision-dot"></span><span>Real events happening on a real calendar, not a placeholder page waiting for content.</span></li>
-      <li><span class="vision-dot"></span><span>Local Vegan businesses showing up as partners, because someone asked them in person.</span></li>
-      <li><span class="vision-dot"></span><span>A Community Manager earning real income doing something they'd want to do anyway.</span></li>
+  <!-- 4 TWO PATHS OVERVIEW -->
+  <section class="step">
+    <span class="eyebrow">The Plan</span>
+    <h2>Two Ways In. <em>One Door.</em></h2>
+    <p class="lead" style="margin-top:16px;">This isn't two separate hoops to jump through. Same application either way &mdash; you just tell us which room you want to walk into.</p>
+    <div class="two">
+      <div class="tile">
+        <div class="role-tier">Contributor Role</div>
+        <h3 style="font-size:20px;text-transform:uppercase;">Vegan Explorer</h3>
+        <p>Low lift. Do what you already do &mdash; and get credit, points, and paid gigs for it.</p>
+      </div>
+      <div class="tile featured">
+        <div class="role-tier">Leadership Role</div>
+        <h3 style="font-size:20px;text-transform:uppercase;">Community Manager</h3>
+        <p>You're the mayor of your city inside VEGANS EXPLORE. Real responsibility, real upside.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 VEGAN EXPLORER DETAIL -->
+  <section class="step">
+    <span class="eyebrow">Path One &mdash; Vegan Explorer</span>
+    <h2>Do What You Already Do.<br><em>Get Credit For It.</em></h2>
+    <p class="lead" style="margin-top:16px;">This is a low lift. Contribute as much time as you have &mdash; going to restaurants, going to events, logging what you find. We'll have different gigs, competitions, and games along the way. Support us by grabbing content, representing us, doing secret shoppers.</p>
+    <p>As we land partnerships and sponsorships in your city, this grows into more: workshops, real events, reinvesting into the community that's building around you.</p>
+    <div class="comp-path"><span>Volunteer</span><span class="path-arrow">&rarr;</span><span>Points + Paid Gigs</span><span class="path-arrow">&rarr;</span><span>First Look at Paid Roles</span></div>
+    <p style="font-size:13.5px;color:var(--ink-muted);">This is a volunteer role with real paid opportunities along the way &mdash; content, secret shopper assignments, influencer campaigns. Vegan Explorers get first access to apply for paid roles, including Community Manager, before anyone else.</p>
+  </section>
+
+  <!-- 6 COMMUNITY MANAGER DETAIL -->
+  <section class="step">
+    <span class="eyebrow">Path Two &mdash; Community Manager</span>
+    <h2>The Mayor of Your City,<br><em>Inside Vegans Explore.</em></h2>
+    <p class="lead" style="margin-top:16px;">You're the official face of VEGANS EXPLORE where you live. You find and onboard Vegan businesses, recruit and support Vegan Explorers, show up at events, and make sure your region is actually building. This is a leadership role, not a content role &mdash; the job is building something real that keeps growing after you leave the room.</p>
+    <div class="comp-path"><span>Volunteer + Affiliate</span><span class="path-arrow">&rarr;</span><span>Commission</span><span class="path-arrow">&rarr;</span><span>Salaried, Once Proven</span></div>
+    <p style="font-size:13.5px;color:var(--ink-muted);">Right now, this is a commission opportunity. As your city grows, it can become salaried &mdash; that part isn't proven yet anywhere, and we're upfront about that. When there's enough happening in your city to need someone full time, that's what we're building toward, together.</p>
+  </section>
+
+  <!-- 7 WHAT HAPPENS AFTER YOU SIGN UP -->
+  <section class="step">
+    <span class="eyebrow">What It Looks Like After You Sign Up</span>
+    <h2>You're Not Waiting on Us.<br><em>You're Already Moving.</em></h2>
+    <ul class="need">
+      <li><span class="mk" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="nt">You get the tools and links</div><div class="nd">Almost everything is automated on our end, so sending an outreach link is one click, not a project.</div></div></li>
+      <li><span class="mk" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="nt">You start reaching out</div><div class="nd">Vegan businesses and organizations in your city, with real tools behind you, not a cold pitch.</div></div></li>
+      <li><span class="mk" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="nt">You beta test what's new</div><div class="nd">Community Managers see and shape new features before anyone else does.</div></div></li>
+      <li><span class="mk" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><div class="nt">You're the first call</div><div class="nd">When something's happening in your city, you hear about it first &mdash; and you're part of making it happen.</div></div></li>
     </ul>
-  </div>
-</div>
+  </section>
 
-<div class="lead-apply" id="apply">
-  <div class="lead-apply-inner">
-    <p class="lead-tag">The Ask</p>
-    <h2 class="lead-h2" style="margin-bottom:12px;">Get on the list</h2>
-    <p class="lead-p" style="margin-bottom:32px;">We're building the pipeline now so we have real people ready the moment a city is ready to activate. Applying doesn't mean you're hired today &mdash; it means we know you're there and we'll come to you first.</p>
+  <!-- 8 THE ASK -->
+  <section class="step center">
+    <span class="eyebrow">The Ask</span>
+    <h2>Get On the List Before<br>We <em>Push Into Your City.</em></h2>
+    <p class="lead center-narrow" style="margin:16px auto 0;">We're building the pipeline now so we have real people ready the moment a city is ready to activate. Applying doesn't mean you're hired today &mdash; it means we know you're there, and we'll come to you first.</p>
+  </section>
 
+  <!-- 9 APPLY -->
+  <section class="step center" id="apply-slide">
+    <span class="eyebrow">One Application, Two Paths</span>
+    <h2>Pick Your Path.</h2>
     <div class="apply-card">
       <div id="lead-apply-form">
         <label class="apply-field-label">I want to be a...</label>
         <div class="apply-role-toggle">
-          <div class="apply-role-opt active" id="role-opt-cm" data-role="community_manager">
-            <div class="apply-role-opt-title">Community Manager</div>
-            <div class="apply-role-opt-sub">Leadership role</div>
-          </div>
-          <div class="apply-role-opt" id="role-opt-ve" data-role="vegan_explorer">
+          <div class="apply-role-opt active" id="role-opt-ve" data-role="vegan_explorer">
             <div class="apply-role-opt-title">Vegan Explorer</div>
             <div class="apply-role-opt-sub">Contributor role</div>
+          </div>
+          <div class="apply-role-opt" id="role-opt-cm" data-role="community_manager">
+            <div class="apply-role-opt-title">Community Manager</div>
+            <div class="apply-role-opt-sub">Leadership role</div>
           </div>
         </div>
 
@@ -194,44 +298,152 @@
         <p class="apply-success-sub">We review every application by hand. When your city is ready to activate, you'll hear from us first.</p>
       </div>
     </div>
-  </div>
+  </section>
+
 </div>
+
+<nav class="nav">
+  <div class="row">
+    <button class="btn" id="back" aria-label="Previous step">Back</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn btn-primary" id="next" aria-label="Next step">Next</button>
+  </div>
+</nav>
 
 <script src="/public/nav.js"></script>
 <script src="/public/ve-auth.js"></script>
-<script src="/public/footer.js"></script>
 <script>
 (function () {
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var total = steps.length;
+  var i = 0;
+  var fill = document.getElementById('fill');
+  var count = document.getElementById('count');
+  var back = document.getElementById('back');
+  var next = document.getElementById('next');
+  var dotsWrap = document.getElementById('dots');
+
+  for (var d = 0; d < total; d++) {
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', 'Go to step ' + (d + 1));
+    (function (idx) { b.addEventListener('click', function () { go(idx); }); })(d);
+    dotsWrap.appendChild(b);
+  }
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function render() {
+    if (typeof stopAllAudio === 'function') { stopAllAudio(); }
+    steps.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+    dots.forEach(function (dot, idx) { dot.classList.toggle('on', idx === i); });
+    fill.style.width = (total === 1 ? 100 : (i / (total - 1)) * 100) + '%';
+    count.textContent = pad(i + 1) + ' / ' + pad(total);
+    back.disabled = (i === 0);
+    next.textContent = (i === total - 1) ? 'Start Over' : 'Next';
+    document.querySelector('.stage').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function go(n) { i = Math.max(0, Math.min(total - 1, n)); render(); }
+  next.addEventListener('click', function () { if (i === total - 1) { go(0); } else { go(i + 1); } });
+  back.addEventListener('click', function () { go(i - 1); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target && (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT')) return;
+    if (e.key === 'ArrowRight') { go(i + 1); }
+    else if (e.key === 'ArrowLeft') { go(i - 1); }
+  });
+
+  /* ---- Narration audio player (canonical pattern, unchanged) ---- */
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+  window.stopAllAudio = function () {
+    var pls = document.querySelectorAll('audio');
+    for (var k = 0; k < pls.length; k++) { pls[k].pause(); }
+    var ons = document.querySelectorAll('.audio.playing');
+    for (var j = 0; j < ons.length; j++) { ons[j].classList.remove('playing'); }
+  };
+  steps.forEach(function (sec, idx) {
+    var ap = document.createElement('div');
+    ap.className = 'audio';
+    ap.innerHTML =
+      '<button class="audio-btn" aria-label="Play narration">' +
+      '<svg class="ic-play" width="18" height="18" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>' +
+      '<svg class="ic-pause" width="16" height="16" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>' +
+      '</button>' +
+      '<div class="wave"><span class="handle"></span></div>' +
+      '<div class="audio-meta"><span class="audio-label">Prefer to listen?</span><span class="audio-tag">Narration</span></div>' +
+      '<audio preload="metadata" src="https://hq.lesaruss.ai/audio/lead/' + pad2(idx + 1) + '.mp3"></audio>';
+    var wv = ap.querySelector('.wave');
+    var handle = ap.querySelector('.handle');
+    var bars = [];
+    for (var w = 0; w < 34; w++) {
+      var s = document.createElement('span');
+      s.className = 'bar';
+      s.style.height = (35 + Math.round(55 * Math.abs(Math.sin(w * 0.9)))) + '%';
+      wv.appendChild(s); bars.push(s);
+    }
+    var btn = ap.querySelector('.audio-btn');
+    var au = ap.querySelector('audio');
+    function paint(frac) {
+      if (frac < 0) frac = 0; if (frac > 1) frac = 1;
+      for (var b = 0; b < bars.length; b++) { bars[b].classList.toggle('on', (b + 1) / bars.length <= frac); }
+      handle.style.left = (frac * 100) + '%';
+    }
+    au.addEventListener('timeupdate', function () { if (au.duration) paint(au.currentTime / au.duration); });
+    au.addEventListener('ended', function () { ap.classList.remove('playing'); paint(1); });
+    btn.addEventListener('click', function () {
+      var willPlay = !ap.classList.contains('playing');
+      stopAllAudio();
+      if (willPlay) {
+        if (au.ended || au.currentTime >= (au.duration || 1)) { au.currentTime = 0; }
+        ap.classList.add('playing'); au.play();
+      }
+    });
+    function seekAt(clientX) {
+      var r = wv.getBoundingClientRect();
+      var frac = (clientX - r.left) / r.width;
+      if (frac < 0) frac = 0; if (frac > 1) frac = 1;
+      if (au.duration) { au.currentTime = frac * au.duration; }
+      paint(frac);
+    }
+    var dragging = false;
+    wv.addEventListener('pointerdown', function (e) { dragging = true; seekAt(e.clientX); e.preventDefault(); });
+    window.addEventListener('pointermove', function (e) { if (dragging) seekAt(e.clientX); });
+    window.addEventListener('pointerup', function () { dragging = false; });
+    sec.appendChild(ap);
+  });
+
+  render();
+
+  /* ---- Application submit (role toggle + city + note -> ve-rewards) ---- */
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
-  var selectedRole = 'community_manager';
-  var optCm = document.getElementById('role-opt-cm');
+  var selectedRole = 'vegan_explorer';
   var optVe = document.getElementById('role-opt-ve');
+  var optCm = document.getElementById('role-opt-cm');
   function selectRole(role) {
     selectedRole = role;
-    optCm.classList.toggle('active', role === 'community_manager');
     optVe.classList.toggle('active', role === 'vegan_explorer');
+    optCm.classList.toggle('active', role === 'community_manager');
   }
-  optCm.addEventListener('click', function () { selectRole('community_manager'); });
   optVe.addEventListener('click', function () { selectRole('vegan_explorer'); });
+  optCm.addEventListener('click', function () { selectRole('community_manager'); });
 
   function requireAuth(promptMsg, onGranted) {
     if (window.VEAuth && VEAuth.isLoggedIn()) { onGranted(); return; }
     if (window.VEAuth) VEAuth.showAuthModal(promptMsg, onGranted);
   }
 
-  var btn = document.getElementById('lead-apply-btn');
+  var applyBtn = document.getElementById('lead-apply-btn');
   var msgEl = document.getElementById('lead-apply-msg');
 
-  btn.addEventListener('click', function () {
+  applyBtn.addEventListener('click', function () {
     var citySlug = document.getElementById('lead-city').value;
     var note = document.getElementById('lead-note').value.trim();
     msgEl.textContent = '';
     if (!citySlug) { msgEl.textContent = 'Please select your city.'; msgEl.style.color = '#dc2626'; return; }
 
     requireAuth('Sign in with your free Passport to apply.', function () {
-      btn.disabled = true; btn.textContent = 'Submitting...';
+      applyBtn.disabled = true; applyBtn.textContent = 'Submitting...';
 
       fetch(SUPABASE_URL + '/rest/v1/opportunities?select=id&city_slug=eq.' + encodeURIComponent(citySlug) + '&opportunity_type=eq.' + encodeURIComponent(selectedRole) + '&is_active=eq.true&limit=1', {
         headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
@@ -244,7 +456,7 @@
           body: JSON.stringify({ token: VEAuth.getToken(), opportunity_id: opportunityId, cover_note: note || null })
         });
       }).then(function (r) { return r.json(); }).then(function (d) {
-        btn.disabled = false; btn.textContent = 'Apply Now';
+        applyBtn.disabled = false; applyBtn.textContent = 'Apply Now';
         if (d.error) { msgEl.textContent = 'Something went wrong. Please try again.'; msgEl.style.color = '#dc2626'; return; }
         document.getElementById('lead-apply-form').style.display = 'none';
         var successEl = document.getElementById('lead-apply-success');
@@ -253,7 +465,7 @@
           successEl.querySelector('.apply-success-title').textContent = "You're already on file for this role.";
         }
       }).catch(function (e) {
-        btn.disabled = false; btn.textContent = 'Apply Now';
+        applyBtn.disabled = false; applyBtn.textContent = 'Apply Now';
         if (e && e.message === 'not_configured') {
           msgEl.textContent = "That role isn't open in your city yet. Check back soon.";
         } else {
@@ -265,6 +477,7 @@
   });
 })();
 </script>
+<script src="/public/footer.js"></script>
 
 </body>
 </html>
