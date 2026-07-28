@@ -214,6 +214,7 @@
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
+        '<a href="/lead"' + cur('/lead') + '>Lead Your City</a>' +
         (isRealSuperAdmin ? '<a href="/directory"' + cur('/directory') + '>Directory</a>' : '') +
       '</div>' +
       mobileBottom +
@@ -226,7 +227,8 @@
   (function() {
     var messages = [
       { text: 'Founding Membership: $11 once, forever - closes July 13', href: '/join' },
-      { text: 'New: guided city launches rolling out through July', href: '/welcome' }
+      { text: 'New: guided city launches rolling out through July', href: '/welcome' },
+      { text: 'Now recruiting: Community Managers + Vegan Explorers', href: '/lead' }
     ];
     var idx = 0;
     var textEl = document.getElementById('ve-announce-text');
