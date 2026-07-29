@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Manager Dashboard - VEGANS EXPLORE</title>
+<meta name="description" content="Your Community Manager dashboard.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:880px;margin:0 auto;padding:48px 24px 80px;}
+  #cm-gate{text-align:center;padding:100px 20px;}
+  #cm-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #cm-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #cm-content{display:none;}
+  .cm-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:28px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .cm-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:32px;}
+  .cm-city-banner{background:var(--ve-green-light);border:1px solid rgba(58,155,62,0.25);border-radius:10px;padding:18px 22px;margin-bottom:32px;font-size:14px;color:var(--ve-green-dark);font-weight:700;}
+  .cm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px;}
+  .cm-stat{border:1.5px solid var(--ve-border);border-radius:10px;padding:18px;}
+  .cm-stat-label{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:6px;}
+  .cm-stat-value{font-size:22px;font-weight:900;}
+  .cm-section{margin-bottom:32px;}
+  .cm-section h2{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:14px;}
+  .cm-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+  .cm-card-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+  .cm-card-desc{font-size:13px;color:var(--ve-text-75);line-height:1.6;}
+  .cm-card.coming{opacity:0.6;}
+  .cm-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;margin-left:8px;}
+  @media (max-width: 640px){ .cm-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="cm-gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="cm-content">
+    <p class="cm-eyebrow">Community Manager</p>
+    <h1 id="cm-welcome">Your Dashboard</h1>
+    <p class="cm-sub">This is the start of the real Community Manager tools. More lands here as each piece ships.</p>
+
+    <div class="cm-city-banner" id="cm-city-banner">Loading your city assignment&hellip;</div>
+
+    <div class="cm-grid">
+      <div class="cm-stat"><div class="cm-stat-label">Your City</div><div class="cm-stat-value" id="cm-stat-city">--</div></div>
+      <div class="cm-stat"><div class="cm-stat-label">Role Since</div><div class="cm-stat-value" id="cm-stat-since">--</div></div>
+      <div class="cm-stat"><div class="cm-stat-label">Status</div><div class="cm-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
+    </div>
+
+    <div class="cm-section">
+      <h2>Your Tools</h2>
+      <div class="cm-card">
+        <div class="cm-card-title">Vegan Explorer applications in your city</div>
+        <div class="cm-card-desc">Explorer applications for your city go to the same review queue Sean and V use today. A city-scoped view that lets you review these directly, without full admin access, is next.<span class="cm-tag">Coming next</span></div>
+      </div>
+      <div class="cm-card coming">
+        <div class="cm-card-title">Event management</div>
+        <div class="cm-card-desc">Post and manage events for your city's hub page directly from here.<span class="cm-tag">Coming soon</span></div>
+      </div>
+      <div class="cm-card coming">
+        <div class="cm-card-title">Directory review</div>
+        <div class="cm-card-desc">Approve or edit business and listing submissions for your city before they go live.<span class="cm-tag">Coming soon</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+
+  function monthYear(s) { if (!s) return '--'; try { return new Date(s).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } catch (e) { return '--'; } }
+
+  function showDashboard(member) {
+    document.getElementById('cm-gate').style.display = 'none';
+    document.getElementById('cm-content').style.display = 'block';
+    document.getElementById('cm-welcome').textContent = (member.name ? member.name.split(' ')[0] + ', your' : 'Your') + ' Dashboard';
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var apps = (d && d.applications) || [];
+      var accepted = apps.filter(function (a) { return a.status === 'accepted' && a.opportunities && a.opportunities.opportunity_type === 'community_manager'; });
+      var banner = document.getElementById('cm-city-banner');
+      if (accepted.length) {
+        var cityName = VE_CITY_NAMES[accepted[0].opportunities.city_slug] || accepted[0].opportunities.city_slug;
+        banner.textContent = 'You manage ' + cityName + '.';
+        document.getElementById('cm-stat-city').textContent = cityName;
+        document.getElementById('cm-stat-since').textContent = monthYear(accepted[0].reviewed_at);
+      } else if (member.is_superadmin) {
+        banner.textContent = 'Superadmin preview, no city assignment on file for this account.';
+      } else {
+        banner.textContent = 'Role active, city assignment record not found. Flag this to the team.';
+      }
+    }).catch(function () {
+      document.getElementById('cm-city-banner').textContent = 'Could not load your city assignment right now.';
+    });
+  }
+
+  function showDenied() {
+    document.getElementById('cm-gate').innerHTML = '<p>This dashboard is for approved Community Managers.</p><p>Interested in the role? <a href="/welcome" style="color:var(--ve-green-dark);font-weight:700;">See open cities</a>.</p>';
+  }
+
+  function init() {
+    var gate = document.getElementById('cm-gate');
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) {
+      gate.innerHTML = '<p>Sign in to view your Community Manager dashboard.</p><button id="cm-signin-btn">Sign In</button>';
+      document.getElementById('cm-signin-btn').addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view your dashboard.', init); });
+      return;
+    }
+    var token = VEAuth.getToken();
+    // Refresh from the server rather than trusting cached localStorage: ve_role can
+    // change the moment an application is approved, and this page needs that fresh.
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var member = d && d.member;
+      if (!member) { showDenied(); return; }
+      try { localStorage.setItem('ve_member', JSON.stringify(member)); } catch (e) {}
+      if (member.ve_role !== 'community_manager' && !member.is_superadmin) { showDenied(); return; }
+      showDashboard(member);
+    }).catch(function () {
+      var cached = VEAuth.getMember();
+      if (cached && (cached.ve_role === 'community_manager' || cached.is_superadmin)) { showDashboard(cached); }
+      else { showDenied(); }
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
