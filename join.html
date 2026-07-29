@@ -56,6 +56,7 @@
       </div>
       <h1>Get Your Passport</h1>
       <p class="join-sub">Free to join. Vote, save, and connect with the community.</p>
+      <p class="join-sub" id="join-community-note" style="display:none;color:#166534;font-weight:700;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:6px;padding:8px 12px;margin-top:-2px;"></p>
       <div class="join-perks">
         <div class="join-perks-title">What you unlock</div>
         <div class="join-perk">
@@ -113,6 +114,14 @@
   <script src="/public/ve-auth.js"></script>
   <script>
     if (VEAuth.isLoggedIn()) window.location.replace('/directory');
+    var VE_COMMUNITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+    var community = new URLSearchParams(window.location.search).get('community');
+    if (community && !VE_COMMUNITY_NAMES[community]) community = null;
+    if (community) {
+      var noteEl = document.getElementById('join-community-note');
+      noteEl.textContent = 'Joining as part of the ' + VE_COMMUNITY_NAMES[community] + ' community.';
+      noteEl.style.display = 'block';
+    }
     var form = document.getElementById('join-form');
     var submitBtn = document.getElementById('join-submit');
     var errorBox = document.getElementById('join-error');
@@ -135,7 +144,7 @@
       if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
       if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
       setLoading(true);
-      VEAuth.signup(email, password, name, refCode)
+      VEAuth.signup(email, password, name, refCode, community)
         .then(function(d) {
           if (d.error) { showError(d.error); setLoading(false); return; }
           window.location.replace('/welcome?joined=1');
@@ -146,7 +155,7 @@
       VEAuth.initGoogleSignIn(document.getElementById('join-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
         window.location.replace('/welcome?joined=1');
-      });
+      }, community);
     });
   </script>
 </body>
