@@ -409,14 +409,14 @@
 
       <div class="ve-stat-grid" role="list">
         <div class="ve-stat-card" role="listitem">
-          <p class="ve-stat-card-label">Passport</p>
-          <p class="ve-stat-card-value green">Free</p>
+          <p class="ve-stat-card-label">Membership</p>
+          <p class="ve-stat-card-value green" id="ve-stat-tier">Free</p>
           <p class="ve-stat-card-sub">Active</p>
         </div>
         <div class="ve-stat-card" role="listitem">
-          <p class="ve-stat-card-label">Points Balance</p>
-          <p class="ve-stat-card-value" id="ve-stat-lesars">--</p>
-          <p class="ve-stat-card-sub">Your balance</p>
+          <p class="ve-stat-card-label">Role</p>
+          <p class="ve-stat-card-value" id="ve-stat-role">Member</p>
+          <p class="ve-stat-card-sub">Your account type</p>
         </div>
         <div class="ve-stat-card" role="listitem">
           <p class="ve-stat-card-label">Communities</p>
@@ -430,44 +430,14 @@
         </div>
       </div>
 
-      <section class="ve-section" aria-labelledby="ve-lesars-title">
-        <h2 class="ve-section-title" id="ve-lesars-title">Points Balance</h2>
-        <div class="ve-lesars-rows">
-          <div class="ve-lesars-row">
-            <span class="ve-lesars-row-label">Total Balance</span>
-            <span class="ve-lesars-row-value" id="ve-bal-total">-- <span class="ve-lesars-unit">Points</span></span>
-          </div>
-          <div class="ve-lesars-row">
-            <span class="ve-lesars-row-label">Earned This Month</span>
-            <span class="ve-lesars-row-value earned" id="ve-bal-month">+--</span>
-          </div>
-          <div class="ve-lesars-row">
-            <span class="ve-lesars-row-label">Lifetime Earned</span>
-            <span class="ve-lesars-row-value" id="ve-bal-lifetime">-- <span class="ve-lesars-unit">Points</span></span>
-          </div>
-        </div>
-        <p class="ve-lesars-desc">
-          Earn Points by engaging with the Vegans Explore community. Spend them to unlock premium Guides and exclusive rewards.
-        </p>
-        <div class="ve-earn-ways" aria-label="Ways to earn Points">
-          <span class="ve-earn-chip">+5 Vote a listing</span>
-          <span class="ve-earn-chip">+3 Save a listing</span>
-          <span class="ve-earn-chip">+10 Comment on Pulse</span>
-          <span class="ve-earn-chip">+25 Join a community</span>
-          <span class="ve-earn-chip">+2 Daily login</span>
-          <span class="ve-earn-chip">+111 Refer a friend</span>
-        </div>
-      </section>
-
       <section class="ve-section" aria-labelledby="ve-passport-title">
-        <h2 class="ve-section-title" id="ve-passport-title">Free Passport - Active</h2>
+        <h2 class="ve-section-title" id="ve-passport-title">Passport - Active</h2>
         <ul class="ve-perks-list" aria-label="Passport perks">
           <li>Vote and save listings in the Directory</li>
           <li>Comment on Pulse discussions</li>
           <li>Join Communities and connect with others</li>
-          <li>Unlock premium Guides with Points</li>
-          <li>Earn Points with every action</li>
-          <li>+1111 Points welcome grant on signup</li>
+          <li>Access free premium Guides</li>
+          <li>Apply for Community Manager and Partner roles</li>
         </ul>
         <p class="ve-passport-meta" id="ve-member-since-line">Member since --</p>
       </section>
@@ -662,12 +632,15 @@
       return;
     }
 
+    var VE_TIER_LABEL = { free: 'Free', passport: 'Passport' };
+    var VE_ROLE_LABEL = { member: 'Member', community_manager: 'Community Manager', partner: 'Partner', admin: 'Admin' };
+
     function renderMember(m) {
       setText('ve-welcome-name', 'WELCOME BACK, ' + (m.name ? m.name.toUpperCase() : 'MEMBER'));
       setText('ve-passport-since', 'Passport holder since ' + monthYear(m.created_at));
       setText('ve-member-since-line', 'Member since ' + monthYear(m.created_at));
-      setText('ve-stat-lesars', fmt(m.lesars_balance));
-      setHTML('ve-bal-total', fmt(m.lesars_balance) + ' <span class="ve-lesars-unit">Points</span>');
+      setText('ve-stat-tier', VE_TIER_LABEL[m.ve_tier] || 'Free');
+      setText('ve-stat-role', VE_ROLE_LABEL[m.ve_role] || 'Member');
     }
 
     renderMember(member);
@@ -699,21 +672,6 @@
       .then(function (rows) { setText('ve-stat-saves', Array.isArray(rows) ? fmt(rows.length) : '0'); })
       .catch(function () { setText('ve-stat-saves', '0'); });
 
-    apiFetch('/rest/v1/lesars_ledger?member_id=eq.' + member.id + '&amount=gt.0&select=amount')
-      .then(function (rows) {
-        if (!Array.isArray(rows)) return;
-        var total = rows.reduce(function (a, r) { return a + (r.amount || 0); }, 0);
-        setHTML('ve-bal-lifetime', fmt(total) + ' <span class="ve-lesars-unit">Points</span>');
-      }).catch(function () {});
-
-    var ms = new Date(); ms.setDate(1); ms.setHours(0,0,0,0);
-    apiFetch('/rest/v1/lesars_ledger?member_id=eq.' + member.id + '&amount=gt.0&created_at=gte.' + ms.toISOString() + '&select=amount')
-      .then(function (rows) {
-        if (!Array.isArray(rows)) return;
-        var total = rows.reduce(function (a, r) { return a + (r.amount || 0); }, 0);
-        setText('ve-bal-month', '+' + fmt(total));
-      }).catch(function () {});
-
     apiFetch('/rest/v1/ve_guide_purchases?member_id=eq.' + member.id + '&select=id,purchased_at,lesars_spent,ve_guides(title,slug)')
       .then(function (rows) {
         if (!Array.isArray(rows) || rows.length === 0) return;
@@ -723,7 +681,7 @@
           var slug = row.ve_guides && row.ve_guides.slug ? '/guides/' + row.ve_guides.slug : '/guides';
           html += '<div class="ve-activity-row"><div class="ve-activity-dot"></div>' +
             '<span class="ve-activity-text"><a href="' + slug + '" style="color:#15803D;text-decoration:none;">' + escHtml(title) + '</a></span>' +
-            '<span class="ve-activity-time">' + fmt(row.lesars_spent) + ' Points</span></div>';
+            '<span class="ve-activity-time">' + relTime(row.purchased_at) + '</span></div>';
         });
         html += '</div>';
         setHTML('ve-guides-content', html);
