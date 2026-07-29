@@ -126,16 +126,16 @@
     var avatarSrc = member.avatar_url
       ? '<img src="' + member.avatar_url + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" alt="' + member.name + '">'
       : '<span>' + (member.initials || '?') + '</span>';
-    var lesarsBalance = (member.lesars_balance || 0).toLocaleString();
+    var VE_TIER_BADGE = { free: 'Free', passport: 'Passport' };
+    var tierBadge = VE_TIER_BADGE[member.ve_tier] || 'Free';
 
     desktopRight =
       '<div class="ve-nav-member" id="ve-nav-member-chip" aria-haspopup="true" aria-expanded="false">' +
         '<div class="ve-nav-avatar" style="' + avatarStyle + '">' + avatarSrc + '</div>' +
-        '<span class="ve-nav-lesars">' + lesarsBalance + ' Points</span>' +
+        '<span class="ve-nav-lesars">' + tierBadge + '</span>' +
         '<div class="ve-nav-member-menu" id="ve-member-menu" role="menu">' +
           '<a href="/account"' + cur('/account') + ' role="menuitem">My Account</a>' +
           '<a href="/account/my-list"' + cur('/account/my-list') + ' role="menuitem">My List</a>' +
-          '<a href="/account/lesars"' + cur('/account/lesars') + ' role="menuitem">Points Balance</a>' +
           '<hr>' +
           '<button id="ve-signout-desktop" role="menuitem">Sign Out</button>' +
         '</div>' +
@@ -146,7 +146,7 @@
       '<div class="ve-mob-section">' +
         '<a href="/account"' + cur('/account') + '>' +
           'Account' +
-          '<span class="ve-mob-lesars">' + lesarsBalance + ' Points</span>' +
+          '<span class="ve-mob-lesars">' + tierBadge + '</span>' +
         '</a>' +
         '<a href="/account/my-list"' + cur('/account/my-list') + '>My List</a>' +
       '</div>' +
