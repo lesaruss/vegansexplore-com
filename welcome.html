@@ -180,6 +180,7 @@
 </head>
 <body>
 <script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
 <div class="page-frame">
   
 
@@ -241,11 +242,11 @@
               <div class="opp-interest-head">I'm Interested in This Role</div>
               <p class="opp-interest-sub">Let us know you're interested and we'll reach out when a position opens in your city.</p>
               <div id="cm-form" class="opp-interest-fields">
-                <div class="opp-interest-row"><input class="opp-interest-input" type="text" id="cm-name" placeholder="Your name" /><input class="opp-interest-input" type="text" id="cm-city" placeholder="Your city" /></div>
+                <div class="opp-interest-row"><input class="opp-interest-input" type="text" id="cm-name" placeholder="Your name" /><select class="opp-interest-input" id="cm-city"><option value="">Choose your city</option><option value="atlanta">Atlanta</option><option value="central-florida">Central Florida</option><option value="dmv">DMV</option><option value="london">London</option><option value="los-angeles">Los Angeles</option><option value="new-york">New York</option><option value="philadelphia">Philadelphia</option><option value="south-florida">South Florida</option></select></div>
                 <input class="opp-interest-input" type="email" id="cm-email" placeholder="Your email address" />
                 <button class="btn-opp-submit" onclick="registerInterest('community-manager','cm')">Count Me In</button>
               </div>
-              <div id="cm-success" class="opp-interest-success" style="display:none;"><div class="opp-interest-success-title">You're on the list.</div><div class="opp-interest-success-sub">We'll reach out when a position opens in your city.</div></div>
+              <div id="cm-success" class="opp-interest-success" style="display:none;"><div class="opp-interest-success-title">Application submitted.</div><div class="opp-interest-success-sub">We review these directly. You'll see your status update on this page.</div></div>
             </div>
           </div>
           <div id="opp-detail-vegan-explorer" class="opp-detail-content article" style="display:none;">
@@ -264,11 +265,11 @@
               <div class="opp-interest-head orange">I Want to Be a Vegan Explorer</div>
               <p class="opp-interest-sub orange">Tell us your city and we'll reach out when we're ready to get you started.</p>
               <div id="ve-form" class="opp-interest-fields">
-                <div class="opp-interest-row"><input class="opp-interest-input" type="text" id="ve-name" placeholder="Your name" /><input class="opp-interest-input" type="text" id="ve-city" placeholder="Your city" /></div>
+                <div class="opp-interest-row"><input class="opp-interest-input" type="text" id="ve-name" placeholder="Your name" /><select class="opp-interest-input" id="ve-city"><option value="">Choose your city</option><option value="atlanta">Atlanta</option><option value="central-florida">Central Florida</option><option value="dmv">DMV</option><option value="london">London</option><option value="los-angeles">Los Angeles</option><option value="new-york">New York</option><option value="philadelphia">Philadelphia</option><option value="south-florida">South Florida</option></select></div>
                 <input class="opp-interest-input" type="email" id="ve-email" placeholder="Your email address" />
                 <button class="btn-opp-submit orange-btn" onclick="registerInterest('vegan-explorer','ve')">I'm In</button>
               </div>
-              <div id="ve-success" class="opp-interest-success" style="display:none;"><div class="opp-interest-success-title" style="color:#7a4f00;">Welcome to the Explorer crew.</div><div class="opp-interest-success-sub" style="color:#7a4f00;">We'll be in touch before launch day.</div></div>
+              <div id="ve-success" class="opp-interest-success" style="display:none;"><div class="opp-interest-success-title" style="color:#7a4f00;">Application submitted.</div><div class="opp-interest-success-sub" style="color:#7a4f00;">We review these directly. You'll see your status update on this page.</div></div>
             </div>
           </div>
         </div>
@@ -357,19 +358,42 @@
     if (dv) dv.style.display = 'none';
     document.querySelectorAll('.opp-detail-content').forEach(el => el.style.display='none');
   }
+  // Rewired 2026-07-29 (VE Phase 4): applications now go to the real opportunities /
+  // opportunity_applications tables via ve-rewards, matched to a real per-city
+  // opportunity row, instead of a free-text lead dump in member_interest with no
+  // status and no reviewer. Requires a real Passport (signed up on /join) since an
+  // application has to be tied to a member record to be reviewable.
+  const OPP_TYPE_BY_ROLE = { 'community-manager': 'community_manager', 'vegan-explorer': 'vegan_explorer' };
+
   function registerInterest(roleSlug, prefix) {
-    const email = document.getElementById(prefix+'-email').value.trim();
-    const city  = document.getElementById(prefix+'-city') ? document.getElementById(prefix+'-city').value.trim() : null;
-    const name  = document.getElementById(prefix+'-name') ? document.getElementById(prefix+'-name').value.trim() : null;
-    if (!email || !email.includes('@')) { document.getElementById(prefix+'-email').focus(); return; }
+    const citySelect = document.getElementById(prefix+'-city');
+    const city = citySelect ? citySelect.value : '';
+    if (!city) { if (citySelect) citySelect.focus(); return; }
     const btn = document.querySelector('#'+prefix+'-form .btn-opp-submit');
-    if (btn) { btn.textContent='Sending...'; btn.disabled=true; }
-    fetch(SUPA_URL+'/rest/v1/member_interest', {
-      method:'POST',
-      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body: JSON.stringify({email, role_slug:roleSlug, city:city||null, notes:name?('Name: '+name):null, source:'welcome-page'})
-    }).then((r)=>{ if(!r.ok){throw new Error('insert failed');} document.getElementById(prefix+'-form').style.display='none'; document.getElementById(prefix+'-success').style.display='block'; })
-    .catch(()=>{ if(btn){btn.textContent='Try Again';btn.disabled=false;} });
+
+    function afterAuth() {
+      if (btn) { btn.textContent='Submitting...'; btn.disabled=true; }
+      fetch(SUPA_URL+'/functions/v1/ve-rewards?action=list_opportunities', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPA_KEY},
+        body: JSON.stringify({ token: VEAuth.getToken(), city_slug: city })
+      }).then((r)=>r.json()).then((d)=>{
+        const opp = (d.opportunities || []).filter((o)=>o.opportunity_type === OPP_TYPE_BY_ROLE[roleSlug])[0];
+        if (!opp) { throw new Error('no opportunity for this city'); }
+        return fetch(SUPA_URL+'/functions/v1/ve-rewards?action=submit_opportunity_application', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPA_KEY},
+          body: JSON.stringify({ token: VEAuth.getToken(), opportunity_id: opp.id })
+        });
+      }).then((r)=>r.json()).then((d)=>{
+        if (d.error) { throw new Error(d.error); }
+        document.getElementById(prefix+'-form').style.display='none';
+        document.getElementById(prefix+'-success').style.display='block';
+      }).catch(()=>{ if(btn){btn.textContent='Try Again';btn.disabled=false;} });
+    }
+
+    if (window.VEAuth && VEAuth.isLoggedIn()) { afterAuth(); }
+    else if (window.VEAuth) { VEAuth.showAuthModal('Sign in with your free Passport to apply.', afterAuth); }
   }
 </script>
 </body>
