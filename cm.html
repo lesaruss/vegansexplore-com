@@ -124,7 +124,7 @@
     var token = VEAuth.getToken();
     // Refresh from the server rather than trusting cached localStorage: ve_role can
     // change the moment an application is approved, and this page needs that fresh.
-    fetch(SUPABASE_URL + '/functions/v1/ve-auth', {
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
       body: JSON.stringify({ action: 'me', token: token })
