@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campaigns - VEGANS EXPLORE Dashboard</title>
+<meta name="description" content="Live campaign briefs across every city.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);--ve-border:rgba(0,0,0,0.09);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:760px;margin:0 auto;padding:44px 24px 80px;}
+  #camp-gate{text-align:center;padding:100px 20px;}
+  #camp-gate p{font-size:14px;color:var(--ve-text-75);}
+  #camp-content{display:none;}
+  .camp-back{font-size:11px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;margin-bottom:14px;display:inline-block;}
+  .camp-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:24px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .camp-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .camp-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+  .camp-card-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+  .camp-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;margin-left:8px;}
+  .camp-card-desc{font-size:13px;color:var(--ve-text-75);line-height:1.6;}
+  .camp-meta{font-size:11px;color:var(--ve-text-50);margin-top:8px;}
+  .camp-meta a{color:var(--ve-green-dark);font-weight:700;text-decoration:none;}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="camp-gate"><p>Checking access&hellip;</p></div>
+  <div id="camp-content">
+    <a class="camp-back" href="/dashboard">&larr; Back to Dashboard</a>
+    <p class="camp-eyebrow">Superadmin</p>
+    <h1>Campaigns</h1>
+    <p class="camp-sub">Live campaign briefs across every city. Opens to Community Managers once onboarded.</p>
+    <div id="camp-list"><p style="font-size:13px;color:var(--ve-text-50);">Loading campaigns&hellip;</p></div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var CAMPAIGN_STATUS_LABELS = {'active_planning':'Active Planning','confirmed':'Confirmed','archived':'Archived'};
+  function fullDate(s) { if (!s) return null; try { return new Date(s).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); } catch (e) { return null; } }
+
+  function renderCampaigns(campaigns) {
+    var list = document.getElementById('camp-list');
+    if (!campaigns || !campaigns.length) { list.innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">No campaigns on file yet.</p>'; return; }
+    list.innerHTML = campaigns.map(function (c) {
+      var statusLabel = CAMPAIGN_STATUS_LABELS[c.status] || c.status;
+      var dateStr = fullDate(c.target_date);
+      var meta = dateStr ? 'Target date: ' + dateStr : 'Target date not yet set';
+      var link = c.brief_url ? ' &middot; <a href="' + c.brief_url + '" target="_blank" rel="noopener">View full brief</a>' : '';
+      return '<div class="camp-card">' +
+        '<div class="camp-card-title">' + c.title + '<span class="camp-tag">' + statusLabel + '</span></div>' +
+        '<div class="camp-card-desc">' + (c.summary || '') + '</div>' +
+        '<div class="camp-meta">' + meta + link + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function showDenied() {
+    document.getElementById('camp-gate').innerHTML = '<p>This page is for superadmins only, for now.</p><p><a href="/dashboard" style="color:var(--ve-green-dark);font-weight:700;">Back to Dashboard</a></p>';
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    var token = VEAuth.getToken();
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var member = d && d.member;
+      if (!member || !member.is_superadmin) { showDenied(); return; }
+      document.getElementById('camp-gate').style.display = 'none';
+      document.getElementById('camp-content').style.display = 'block';
+      fetch(SUPABASE_URL + '/functions/v1/ve-campaigns?action=list', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: token })
+      }).then(function (r) { return r.json(); }).then(function (d2) {
+        if (d2 && d2.error) { document.getElementById('camp-list').innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">' + d2.error + '</p>'; return; }
+        renderCampaigns(d2 && d2.campaigns);
+      }).catch(function () {
+        document.getElementById('camp-list').innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">Could not load campaigns right now.</p>';
+      });
+    }).catch(showDenied);
+  }
+
+  init();
+</script>
+</body>
+</html>
