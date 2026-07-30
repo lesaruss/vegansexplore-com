@@ -80,7 +80,7 @@
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_partner_applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: token, status: 'pending_review' })
+      body: JSON.stringify({ token: token, status: 'pending' })
     }).then(function(r){ return r.json(); }).then(function(d){
       if (d.error) { document.getElementById('cards').innerHTML = '<p>' + esc(d.error) + '</p>'; return; }
       allItems = d.items || [];
