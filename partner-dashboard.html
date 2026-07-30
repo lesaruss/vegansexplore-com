@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner Dashboard - VEGANS EXPLORE</title>
+<meta name="description" content="Your Community Partner dashboard.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:880px;margin:0 auto;padding:48px 24px 80px;}
+  #pd-gate{text-align:center;padding:100px 20px;}
+  #pd-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #pd-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #pd-content{display:none;}
+  .pd-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:28px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .pd-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:32px;}
+  .pd-banner{background:var(--ve-green-light);border:1px solid rgba(58,155,62,0.25);border-radius:10px;padding:18px 22px;margin-bottom:32px;font-size:14px;color:var(--ve-green-dark);font-weight:700;}
+  .pd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px;}
+  .pd-stat{border:1.5px solid var(--ve-border);border-radius:10px;padding:18px;}
+  .pd-stat-label{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:6px;}
+  .pd-stat-value{font-size:22px;font-weight:900;}
+  .pd-section{margin-bottom:32px;}
+  .pd-section h2{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:14px;}
+  .pd-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:18px 20px;margin-bottom:12px;}
+  .pd-card-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+  .pd-card-desc{font-size:13px;color:var(--ve-text-75);line-height:1.6;}
+  .pd-card.coming{opacity:0.6;}
+  .pd-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;margin-left:8px;}
+  @media (max-width: 640px){ .pd-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="pd-gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="pd-content">
+    <p class="pd-eyebrow">Community Partner</p>
+    <h1 id="pd-welcome">Your Dashboard</h1>
+    <p class="pd-sub">This is the start of the real Partner tools. More lands here as each piece ships.</p>
+
+    <div class="pd-banner" id="pd-banner">Loading your partnership&hellip;</div>
+
+    <div class="pd-grid">
+      <div class="pd-stat"><div class="pd-stat-label">Business</div><div class="pd-stat-value" id="pd-stat-business">--</div></div>
+      <div class="pd-stat"><div class="pd-stat-label">Tier</div><div class="pd-stat-value" id="pd-stat-tier">--</div></div>
+      <div class="pd-stat"><div class="pd-stat-label">Partner Since</div><div class="pd-stat-value" id="pd-stat-since">--</div></div>
+    </div>
+
+    <div class="pd-section">
+      <h2>Your Tools</h2>
+      <div class="pd-card coming">
+        <div class="pd-card-title">Event co-hosting</div>
+        <div class="pd-card-desc">Propose and manage co-hosted events with your city hub directly from here.<span class="pd-tag">Coming soon</span></div>
+      </div>
+      <div class="pd-card coming">
+        <div class="pd-card-title">Directory listing management</div>
+        <div class="pd-card-desc">Keep your business listing accurate across the hubs you partner with.<span class="pd-tag">Coming soon</span></div>
+      </div>
+      <div class="pd-card coming">
+        <div class="pd-card-title">Newsletter placement requests</div>
+        <div class="pd-card-desc">Submit promotions or announcements for inclusion in city newsletters.<span class="pd-tag">Coming soon</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+  function monthYear(s) { if (!s) return '--'; try { return new Date(s).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } catch (e) { return '--'; } }
+  function titleCase(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : '--'; }
+
+  function showDashboard(member) {
+    document.getElementById('pd-gate').style.display = 'none';
+    document.getElementById('pd-content').style.display = 'block';
+    document.getElementById('pd-welcome').textContent = (member.name ? member.name.split(' ')[0] + ', your' : 'Your') + ' Dashboard';
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_partner_applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var apps = (d && d.applications) || [];
+      var approved = apps.filter(function (a) { return a.status === 'approved'; });
+      var banner = document.getElementById('pd-banner');
+      if (approved.length) {
+        var a = approved[0];
+        banner.textContent = a.business_name + ' is a live Community Partner.';
+        document.getElementById('pd-stat-business').textContent = a.business_name;
+        document.getElementById('pd-stat-tier').textContent = titleCase(a.tier);
+        document.getElementById('pd-stat-since').textContent = monthYear(a.approved_at);
+      } else if (member.is_superadmin) {
+        banner.textContent = 'Superadmin preview, no partner record on file for this account.';
+      } else {
+        banner.textContent = 'Role active, partner record not found. Flag this to the team.';
+      }
+    }).catch(function () {
+      document.getElementById('pd-banner').textContent = 'Could not load your partnership right now.';
+    });
+  }
+
+  function showDenied() {
+    document.getElementById('pd-gate').innerHTML = '<p>This dashboard is for approved Community Partners.</p><p>Interested in partnering? <a href="/partner" style="color:var(--ve-green-dark);font-weight:700;">Learn more</a>.</p>';
+  }
+
+  function init() {
+    var gate = document.getElementById('pd-gate');
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) {
+      gate.innerHTML = '<p>Sign in to view your Partner dashboard.</p><button id="pd-signin-btn">Sign In</button>';
+      document.getElementById('pd-signin-btn').addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view your dashboard.', init); });
+      return;
+    }
+    var token = VEAuth.getToken();
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var member = d && d.member;
+      if (!member) { showDenied(); return; }
+      try { localStorage.setItem('ve_member', JSON.stringify(member)); } catch (e) {}
+      if (member.ve_role !== 'partner' && !member.is_superadmin) { showDenied(); return; }
+      showDashboard(member);
+    }).catch(function () {
+      var cached = VEAuth.getMember();
+      if (cached && (cached.ve_role === 'partner' || cached.is_superadmin)) { showDashboard(cached); }
+      else { showDenied(); }
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
