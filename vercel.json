@@ -14,6 +14,21 @@
   ],
   "redirects": [
     {
+      "source": "/cm",
+      "destination": "/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/academy/2026-initiatives",
+      "destination": "/dashboard/2026-initiatives",
+      "permanent": true
+    },
+    {
+      "source": "/academy/community-manager-handbook",
+      "destination": "/dashboard/handbook",
+      "permanent": true
+    },
+    {
       "source": "/passport/join",
       "destination": "/join",
       "permanent": true
