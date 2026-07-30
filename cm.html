@@ -32,6 +32,10 @@
   .cm-card-desc{font-size:13px;color:var(--ve-text-75);line-height:1.6;}
   .cm-card.coming{opacity:0.6;}
   .cm-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;margin-left:8px;}
+  .cm-tag.superadmin{background:#eef2ff;color:#3730a3;}
+  .cm-campaign-meta{font-size:11px;color:var(--ve-text-50);margin-top:8px;}
+  .cm-campaign-meta a{color:var(--ve-green-dark);font-weight:700;text-decoration:none;}
+  .cm-campaign-meta a:hover{text-decoration:underline;}
   @media (max-width: 640px){ .cm-grid{grid-template-columns:1fr;} }
 </style>
 </head>
@@ -57,6 +61,13 @@
       <div class="cm-stat"><div class="cm-stat-label">Status</div><div class="cm-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
     </div>
 
+    <div class="cm-section" id="cm-campaigns-section" style="display:none;">
+      <h2>Campaigns<span class="cm-tag superadmin">Superadmin only, for now</span></h2>
+      <div id="cm-campaigns-list">
+        <p style="font-size:13px;color:var(--ve-text-50);">Loading campaigns&hellip;</p>
+      </div>
+    </div>
+
     <div class="cm-section">
       <h2>Your Tools</h2>
       <div class="cm-card">
@@ -79,13 +90,53 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+  var CAMPAIGN_STATUS_LABELS = {'active_planning':'Active Planning','confirmed':'Confirmed','archived':'Archived'};
 
   function monthYear(s) { if (!s) return '--'; try { return new Date(s).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } catch (e) { return '--'; } }
+  function fullDate(s) { if (!s) return null; try { return new Date(s).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); } catch (e) { return null; } }
+
+  function renderCampaigns(campaigns) {
+    var list = document.getElementById('cm-campaigns-list');
+    if (!campaigns || !campaigns.length) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">No campaigns on file yet.</p>';
+      return;
+    }
+    list.innerHTML = campaigns.map(function (c) {
+      var statusLabel = CAMPAIGN_STATUS_LABELS[c.status] || c.status;
+      var dateStr = fullDate(c.target_date);
+      var meta = dateStr ? 'Target date: ' + dateStr : 'Target date not yet set';
+      var link = c.brief_url ? ' &middot; <a href="' + c.brief_url + '" target="_blank" rel="noopener">View full brief</a>' : '';
+      return '<div class="cm-card">' +
+        '<div class="cm-card-title">' + c.title + '<span class="cm-tag">' + statusLabel + '</span></div>' +
+        '<div class="cm-card-desc">' + (c.summary || '') + '</div>' +
+        '<div class="cm-campaign-meta">' + meta + link + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function loadCampaigns(token) {
+    var section = document.getElementById('cm-campaigns-section');
+    section.style.display = 'block';
+    fetch(SUPABASE_URL + '/functions/v1/ve-campaigns?action=list', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.error) { document.getElementById('cm-campaigns-list').innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">' + d.error + '</p>'; return; }
+      renderCampaigns(d && d.campaigns);
+    }).catch(function () {
+      document.getElementById('cm-campaigns-list').innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">Could not load campaigns right now.</p>';
+    });
+  }
 
   function showDashboard(member) {
     document.getElementById('cm-gate').style.display = 'none';
     document.getElementById('cm-content').style.display = 'block';
     document.getElementById('cm-welcome').textContent = (member.name ? member.name.split(' ')[0] + ', your' : 'Your') + ' Dashboard';
+
+    // Campaigns section: superadmin only for now (2026-07-29). Open to
+    // ve_role === 'community_manager' once Community Managers are onboarded.
+    if (member.is_superadmin) { loadCampaigns(VEAuth.getToken()); }
 
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
       method: 'POST',
