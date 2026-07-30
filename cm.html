@@ -33,9 +33,23 @@
   .cm-card.coming{opacity:0.6;}
   .cm-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;margin-left:8px;}
   .cm-tag.superadmin{background:#eef2ff;color:#3730a3;}
+  .cm-tag.live{background:var(--ve-green-light);color:var(--ve-green-dark);}
   .cm-campaign-meta{font-size:11px;color:var(--ve-text-50);margin-top:8px;}
   .cm-campaign-meta a{color:var(--ve-green-dark);font-weight:700;text-decoration:none;}
   .cm-campaign-meta a:hover{text-decoration:underline;}
+  .cm-app-list{margin-top:14px;}
+  .cm-app{border:1.5px solid var(--ve-border);border-radius:8px;padding:14px 16px;margin-bottom:10px;background:#fafafa;}
+  .cm-app-meta{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:6px;}
+  .cm-app-name{font-size:14px;font-weight:800;margin-bottom:2px;}
+  .cm-app-email{font-size:12px;color:var(--ve-text-50);margin-bottom:8px;}
+  .cm-app-note{font-size:12px;color:#444;line-height:1.5;background:#fff;border:1px solid var(--ve-border);border-radius:6px;padding:8px 10px;margin-bottom:10px;}
+  .cm-app-actions{display:flex;gap:8px;}
+  .cm-app-actions button{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:8px 14px;border-radius:6px;border:none;cursor:pointer;}
+  .cm-app-actions button.approve{background:var(--ve-green);color:#fff;}
+  .cm-app-actions button.approve:hover{background:var(--ve-green-dark);}
+  .cm-app-actions button.reject{background:#fff;border:1.5px solid #dc2626;color:#dc2626;}
+  .cm-app-actions button.reject:hover{background:#FEF2F2;}
+  .cm-app-empty{font-size:13px;color:var(--ve-text-50);}
   @media (max-width: 640px){ .cm-grid{grid-template-columns:1fr;} }
 </style>
 </head>
@@ -75,8 +89,11 @@
         <div class="cm-card-desc">The full training handbook, straight from Sean: what the role covers, how you're supported and paid, and what good performance looks like. <a href="/academy/community-manager-handbook" style="color:var(--ve-green-dark);font-weight:700;">Read it</a>.</div>
       </div>
       <div class="cm-card">
-        <div class="cm-card-title">Vegan Explorer applications in your city</div>
-        <div class="cm-card-desc">Explorer applications for your city go to the same review queue Sean and V use today. A city-scoped view that lets you review these directly, without full admin access, is next.<span class="cm-tag">Coming next</span></div>
+        <div class="cm-card-title">Vegan Explorer applications in your city<span class="cm-tag live">Live</span></div>
+        <div class="cm-card-desc">Review and decide Vegan Explorer applications for your city directly, no admin access needed. Community Manager applications still route to Sean and V.</div>
+        <div class="cm-app-list" id="cm-app-list">
+          <p class="cm-app-empty">Loading applications&hellip;</p>
+        </div>
       </div>
       <div class="cm-card coming">
         <div class="cm-card-title">Event management</div>
@@ -98,6 +115,7 @@
 
   function monthYear(s) { if (!s) return '--'; try { return new Date(s).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } catch (e) { return '--'; } }
   function fullDate(s) { if (!s) return null; try { return new Date(s).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); } catch (e) { return null; } }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   function renderCampaigns(campaigns) {
     var list = document.getElementById('cm-campaigns-list');
@@ -133,6 +151,68 @@
     });
   }
 
+  // ---- Explorer applications queue: city-scoped, wired to ve-rewards, no admin access needed ----
+  var explorerApps = [];
+
+  function renderExplorerApps() {
+    var list = document.getElementById('cm-app-list');
+    if (!explorerApps.length) {
+      list.innerHTML = '<p class="cm-app-empty">Nothing pending. Queue is clear.</p>';
+      return;
+    }
+    list.innerHTML = explorerApps.map(function (a) {
+      var applicant = a.members || {};
+      var when = a.created_at ? new Date(a.created_at).toLocaleDateString() : '';
+      return '<div class="cm-app" data-id="' + esc(a.id) + '">' +
+        '<div class="cm-app-meta">Applied ' + esc(when) + '</div>' +
+        '<div class="cm-app-name">' + esc(applicant.name || 'Unknown applicant') + '</div>' +
+        '<div class="cm-app-email">' + esc(applicant.email || '') + '</div>' +
+        (a.cover_note ? '<div class="cm-app-note">' + esc(a.cover_note) + '</div>' : '') +
+        '<div class="cm-app-actions">' +
+          '<button class="approve" data-action="accepted" data-id="' + esc(a.id) + '">Approve</button>' +
+          '<button class="reject" data-action="rejected" data-id="' + esc(a.id) + '">Reject</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    list.querySelectorAll('button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var decision = btn.getAttribute('data-action');
+        if (decision === 'rejected' && !confirm('Reject this application?')) return;
+        var card = btn.closest('.cm-app');
+        card.style.opacity = '0.5';
+        btn.disabled = true;
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=review_opportunity_application', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: VEAuth.getToken(), id: id, decision: decision })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.error) { card.style.opacity = '1'; btn.disabled = false; alert('Could not update this application: ' + d.error); return; }
+          explorerApps = explorerApps.filter(function (a) { return a.id !== id; });
+          renderExplorerApps();
+        }).catch(function () {
+          card.style.opacity = '1'; btn.disabled = false; alert('Could not reach the server, try again.');
+        });
+      });
+    });
+  }
+
+  function loadExplorerApps() {
+    var list = document.getElementById('cm-app-list');
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken(), status: 'pending', opportunity_type: 'vegan_explorer' })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.error) { list.innerHTML = '<p class="cm-app-empty">' + esc(d.error) + '</p>'; return; }
+      explorerApps = d.items || [];
+      renderExplorerApps();
+    }).catch(function () {
+      list.innerHTML = '<p class="cm-app-empty">Could not load applications right now.</p>';
+    });
+  }
+
   function showDashboard(member) {
     document.getElementById('cm-gate').style.display = 'none';
     document.getElementById('cm-content').style.display = 'block';
@@ -141,6 +221,8 @@
     // Campaigns section: superadmin only for now (2026-07-29). Open to
     // ve_role === 'community_manager' once Community Managers are onboarded.
     if (member.is_superadmin) { loadCampaigns(VEAuth.getToken()); }
+
+    loadExplorerApps();
 
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
       method: 'POST',
