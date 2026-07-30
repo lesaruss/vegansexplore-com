@@ -93,7 +93,9 @@
       body: JSON.stringify({ token: VEAuth.getToken() })
     }).then(function (r) { return r.json(); }).then(function (d) {
       var apps = (d && d.applications) || [];
-      var approved = apps.filter(function (a) { return a.status === 'approved'; });
+      // 'active' is the real DB status value for an approved partner (community_partners.status
+      // is DB-constrained to pending/active/suspended/cancelled -- there is no 'approved' value).
+      var approved = apps.filter(function (a) { return a.status === 'active'; });
       var banner = document.getElementById('pd-banner');
       if (approved.length) {
         var a = approved[0];
