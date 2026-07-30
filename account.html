@@ -653,7 +653,7 @@
       }).then(function (r) { return r.json(); });
     }
 
-    fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth', {
+    fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON },
       body: JSON.stringify({ action: 'me', token: token })
