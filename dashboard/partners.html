@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Interest - VEGANS EXPLORE Dashboard</title>
+<meta name="description" content="Follow up with members who've registered as a business.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:760px;margin:0 auto;padding:44px 24px 80px;}
+  #pt-gate{text-align:center;padding:100px 20px;}
+  #pt-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #pt-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #pt-content{display:none;}
+  .pt-back{font-size:11px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;margin-bottom:14px;display:inline-block;}
+  .pt-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:24px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .pt-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .pt-item{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px 18px;margin-bottom:10px;background:#fafafa;}
+  .pt-meta{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:6px;}
+  .pt-name{font-size:14px;font-weight:800;margin-bottom:2px;}
+  .pt-contact{font-size:12px;color:var(--ve-text-50);margin-bottom:8px;}
+  .pt-desc{font-size:12px;color:#444;line-height:1.5;background:#fff;border:1px solid var(--ve-border);border-radius:6px;padding:8px 10px;margin-bottom:10px;}
+  .pt-actions{display:flex;gap:8px;}
+  .pt-actions button{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:8px 14px;border-radius:6px;border:none;cursor:pointer;}
+  .pt-actions button.approve{background:var(--ve-green);color:#fff;}
+  .pt-actions button.approve:hover{background:var(--ve-green-dark);}
+  .pt-actions button.reject{background:#fff;border:1.5px solid #dc2626;color:#dc2626;}
+  .pt-actions button.reject:hover{background:#FEF2F2;}
+  .pt-empty{font-size:13px;color:var(--ve-text-50);}
+  .pt-hero{height:130px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:20px;background:linear-gradient(135deg,#9333ea,#6b21a8);}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="pt-gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="pt-content">
+    <a class="pt-back" href="/dashboard/opportunities">&larr; Back to Opportunities</a>
+    <div class="pt-hero">&#128241;</div>
+    <p class="pt-eyebrow">Community Manager</p>
+    <h1>Business Interest</h1>
+    <p class="pt-sub">Members who've registered as a business and want in. Follow up directly, this is where that process starts.</p>
+    <div id="pt-list">
+      <p class="pt-empty">Loading&hellip;</p>
+    </div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  var partnerApps = [];
+
+  function renderPartnerApps() {
+    var list = document.getElementById('pt-list');
+    if (!partnerApps.length) {
+      list.innerHTML = '<p class="pt-empty">Nothing pending. Queue is clear.</p>';
+      return;
+    }
+    list.innerHTML = partnerApps.map(function (a) {
+      var applicant = a.members || {};
+      var when = a.created_at ? new Date(a.created_at).toLocaleDateString() : '';
+      return '<div class="pt-item" data-id="' + esc(a.id) + '">' +
+        '<div class="pt-meta">Registered ' + esc(when) + '</div>' +
+        '<div class="pt-name">' + esc(a.business_name || 'Unnamed business') + '</div>' +
+        '<div class="pt-contact">' + esc(applicant.name || 'Unknown member') + (applicant.email ? ' &middot; ' + esc(applicant.email) : '') + '</div>' +
+        (a.business_description ? '<div class="pt-desc">' + esc(a.business_description) + '</div>' : '') +
+        (a.business_website ? '<div class="pt-desc">' + esc(a.business_website) + '</div>' : '') +
+        '<div class="pt-actions">' +
+          '<button class="approve" data-action="approved" data-id="' + esc(a.id) + '">Approve</button>' +
+          '<button class="reject" data-action="rejected" data-id="' + esc(a.id) + '">Reject</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    list.querySelectorAll('button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var decision = btn.getAttribute('data-action');
+        if (decision === 'rejected' && !confirm('Reject this business?')) return;
+        var card = btn.closest('.pt-item');
+        card.style.opacity = '0.5';
+        btn.disabled = true;
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=review_partner_application', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: VEAuth.getToken(), id: id, decision: decision })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.error) { card.style.opacity = '1'; btn.disabled = false; alert('Could not update this business: ' + d.error); return; }
+          partnerApps = partnerApps.filter(function (a) { return a.id !== id; });
+          renderPartnerApps();
+        }).catch(function () {
+          card.style.opacity = '1'; btn.disabled = false; alert('Could not reach the server, try again.');
+        });
+      });
+    });
+  }
+
+  function loadPartnerApps() {
+    var list = document.getElementById('pt-list');
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_partner_applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken(), status: 'pending' })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.error) { list.innerHTML = '<p class="pt-empty">' + esc(d.error) + '</p>'; return; }
+      partnerApps = d.items || [];
+      renderPartnerApps();
+    }).catch(function () {
+      list.innerHTML = '<p class="pt-empty">Could not load right now.</p>';
+    });
+  }
+
+  function showDenied() {
+    document.getElementById('pt-gate').innerHTML = '<p>This page is for Community Managers and superadmins.</p>';
+  }
+
+  function showContent() {
+    document.getElementById('pt-gate').style.display = 'none';
+    document.getElementById('pt-content').style.display = 'block';
+    loadPartnerApps();
+  }
+
+  function init() {
+    var gate = document.getElementById('pt-gate');
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) {
+      gate.innerHTML = '<p>Sign in to view business interest.</p><button id="pt-signin-btn">Sign In</button>';
+      document.getElementById('pt-signin-btn').addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view this page.', init); });
+      return;
+    }
+    var token = VEAuth.getToken();
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var member = d && d.member;
+      if (!member) { showDenied(); return; }
+      try { localStorage.setItem('ve_member', JSON.stringify(member)); } catch (e) {}
+      if (member.ve_role !== 'community_manager' && !member.is_superadmin) { showDenied(); return; }
+      showContent();
+    }).catch(function () {
+      var cached = VEAuth.getMember();
+      if (cached && (cached.ve_role === 'community_manager' || cached.is_superadmin)) { showContent(); }
+      else { showDenied(); }
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
