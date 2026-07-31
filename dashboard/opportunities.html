@@ -36,12 +36,6 @@
   .opp-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;white-space:nowrap;}
   .opp-tag.superadmin{background:#eef2ff;color:#3730a3;}
   .opp-tag.business{background:#fce7f3;color:#9d174d;}
-  .opp-biz-prompt{border:1.5px dashed rgba(157,23,77,0.35);border-radius:12px;padding:20px 22px;background:#fdf2f8;}
-  .opp-biz-prompt h3{font-size:14px;font-weight:800;margin-bottom:6px;color:#9d174d;}
-  .opp-biz-prompt p{font-size:12.5px;color:var(--ve-text-75);line-height:1.55;margin-bottom:12px;}
-  .opp-biz-prompt input{width:100%;max-width:320px;border:1.5px solid var(--ve-border);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:13px;margin-bottom:10px;display:block;}
-  .opp-biz-prompt button{background:#9d174d;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-weight:800;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
-  .opp-biz-prompt button:hover{background:#831843;}
 </style>
 </head>
 <body>
@@ -73,7 +67,7 @@
     '</a>';
   }
 
-  function render(member, hasDesignatedBusiness) {
+  function render(member) {
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
     var html = '';
 
@@ -84,53 +78,18 @@
     if (isStaff) {
       html += '<p class="opp-section-title">Manage</p><div class="opp-grid">';
       html += tile('/dashboard/applications', '&#9989;', 'linear-gradient(135deg,var(--ve-orange),#c9720f)', 'Explorer Applications', 'Review and decide Vegan Explorer applications for your city.', { label: 'Live' }, false);
+      html += tile('/dashboard/partners', '&#128241;', 'linear-gradient(135deg,#9333ea,#6b21a8)', 'Business Interest', 'Follow up with members who’ve registered as a business and want in.', { label: 'Live' }, false);
       if (member.is_superadmin) {
         html += tile('/dashboard/campaigns', '&#128227;', 'linear-gradient(135deg,#6366f1,#3730a3)', 'Campaigns', 'Live campaign briefs across every city, budget, and sponsorship status.', { label: 'Superadmin', cls: 'superadmin' }, false);
       }
       html += '</div>';
     }
 
-    html += '<p class="opp-section-title">Business</p>';
-    if (hasDesignatedBusiness) {
-      html += '<div class="opp-grid">';
-      html += tile('/dashboard/advertising', '&#128241;', 'linear-gradient(135deg,#ec4899,#9d174d)', 'Advertising', 'TV ads, restaurant display options, and pilot-program opportunities for VE business partners.', { label: 'Business', cls: 'business' }, false);
-      html += '</div>';
-    } else {
-      html += '<div class="opp-biz-prompt">' +
-        '<h3>Are you a business?</h3>' +
-        '<p>Tell us, and we\'ll show you advertising and partnership opportunities built for businesses, TV ads, restaurant display options, and a chance to pilot new campaigns at a discount.</p>' +
-        '<input id="opp-biz-name" placeholder="Your business name">' +
-        '<button id="opp-biz-btn">I\'m a Business</button>' +
-      '</div>';
-    }
+    html += '<p class="opp-section-title">Business</p><div class="opp-grid">';
+    html += tile('/dashboard/advertising', '&#128241;', 'linear-gradient(135deg,#ec4899,#9d174d)', 'Advertising &amp; Business', 'See what’s available: Community Partnership, TV ads, restaurant display options, and pilot-program opportunities.', { label: 'Business', cls: 'business' }, false);
+    html += '</div>';
 
     document.getElementById('opp-sections').innerHTML = html;
-
-    var bizBtn = document.getElementById('opp-biz-btn');
-    if (bizBtn) {
-      bizBtn.addEventListener('click', function () {
-        var name = document.getElementById('opp-biz-name').value.trim();
-        if (!name) { alert('Add your business name first.'); return; }
-        bizBtn.disabled = true; bizBtn.textContent = 'Submitting...';
-        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_partner_application', {
-          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-          body: JSON.stringify({ token: VEAuth.getToken(), business_name: name })
-        }).then(function (r) { return r.json(); }).then(function (d) {
-          if (d && d.error) { bizBtn.disabled = false; bizBtn.textContent = "I'm a Business"; alert('Could not submit: ' + d.error); return; }
-          render(member, true);
-        }).catch(function () { bizBtn.disabled = false; bizBtn.textContent = "I'm a Business"; alert('Could not reach the server, try again.'); });
-      });
-    }
-  }
-
-  function checkBusinessPartner(token, cb) {
-    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_partner_applications', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: token })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      var apps = (d && d.applications) || [];
-      cb(apps.length > 0);
-    }).catch(function () { cb(false); });
   }
 
   function showDenied() {
@@ -150,12 +109,11 @@
       if (!member) { showDenied(); return; }
       document.getElementById('opp-gate').style.display = 'none';
       document.getElementById('opp-content').style.display = 'block';
-      checkBusinessPartner(token, function (isBiz) { render(member, isBiz); });
+      render(member);
     }).catch(showDenied);
   }
 
   init();
 </script>
 </body>
-<!-- redeploy-force-1785486063 -->
 </html>
