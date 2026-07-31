@@ -14,6 +14,7 @@
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
   main{max-width:900px;margin:0 auto;padding:44px 24px 80px;}
   #ad-gate{text-align:center;padding:100px 20px;}
+  #ad-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
   #ad-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
   #ad-content{display:none;}
   .ad-back{font-size:11px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;margin-bottom:14px;display:inline-block;}
@@ -32,6 +33,15 @@
   .ad-card-desc{font-size:13px;color:var(--ve-text-75);line-height:1.6;}
   .ad-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;white-space:nowrap;}
   .ad-tag.pilot{background:#fce7f3;color:#9d174d;}
+  .ad-interest{border:1.5px dashed rgba(157,23,77,0.35);border-radius:12px;padding:22px 24px;background:#fdf2f8;margin-top:8px;}
+  .ad-interest h3{font-size:14px;font-weight:800;margin-bottom:6px;color:#9d174d;}
+  .ad-interest p{font-size:12.5px;color:var(--ve-text-75);line-height:1.6;margin-bottom:14px;}
+  .ad-interest input{width:100%;max-width:320px;border:1.5px solid var(--ve-border);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:13px;margin-bottom:10px;display:block;}
+  .ad-interest button{background:#9d174d;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-weight:800;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
+  .ad-interest button:hover{background:#831843;}
+  .ad-interest-done{border:1.5px solid rgba(58,155,62,0.3);border-radius:12px;padding:20px 22px;background:var(--ve-green-light);margin-top:8px;}
+  .ad-interest-done h3{font-size:14px;font-weight:800;margin-bottom:6px;color:var(--ve-green-dark);}
+  .ad-interest-done p{font-size:12.5px;color:var(--ve-text-75);line-height:1.6;}
 </style>
 </head>
 <body>
@@ -45,7 +55,7 @@
     <div class="ad-hero">&#128241;</div>
     <p class="ad-eyebrow">Business &amp; Advertising</p>
     <h1>Advertising &amp; Business Opportunities</h1>
-    <p class="ad-sub">Real campaigns and pilots, growing all the time. This page fills in as each one goes live.</p>
+    <p class="ad-sub">Here's what we're building for VE business partners. Some campaigns require registering as a business as the first step, so we can follow up directly.</p>
 
     <div class="ad-anchor">
       <h2>Start With Community Partnership</h2>
@@ -69,6 +79,9 @@
       <div class="ad-card-title">Pilot Our Newest Idea <span class="ad-tag pilot">~50% Off, Be the Case Study</span></div>
       <div class="ad-card-desc">We're always rolling out new campaign formats. Be the first business to pilot the newest one, pay roughly half the eventual full price, and in exchange you help us build a real, working case study. This is a standing offer, it applies to whatever we roll out next, not a one-time program.</div>
     </div>
+
+    <p class="ad-section-title">Ready to Move on Any of This?</p>
+    <div id="ad-interest-area"></div>
   </div>
 </main>
 
@@ -77,22 +90,55 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
+  function renderInterestArea(alreadyInterested) {
+    var area = document.getElementById('ad-interest-area');
+    if (alreadyInterested) {
+      area.innerHTML = '<div class="ad-interest-done">' +
+        '<h3>You\'re on our radar</h3>' +
+        '<p>We have your business on file. A Community Manager will follow up with you directly to talk next steps.</p>' +
+      '</div>';
+      return;
+    }
+    area.innerHTML = '<div class="ad-interest">' +
+      '<h3>Tell Us You\'re Interested</h3>' +
+      '<p>Register your business and let us know you want in, on Community Partnership or any of the campaigns above. That\'s the first step, a Community Manager picks it up from there.</p>' +
+      '<input id="ad-biz-name" placeholder="Your business name">' +
+      '<button id="ad-biz-btn">I\'m Interested</button>' +
+    '</div>';
+
+    var bizBtn = document.getElementById('ad-biz-btn');
+    bizBtn.addEventListener('click', function () {
+      var name = document.getElementById('ad-biz-name').value.trim();
+      if (!name) { alert('Add your business name first.'); return; }
+      bizBtn.disabled = true; bizBtn.textContent = 'Submitting...';
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_partner_application', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: VEAuth.getToken(), business_name: name })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (d && d.error) { bizBtn.disabled = false; bizBtn.textContent = "I'm Interested"; alert('Could not submit: ' + d.error); return; }
+        renderInterestArea(true);
+      }).catch(function () { bizBtn.disabled = false; bizBtn.textContent = "I'm Interested"; alert('Could not reach the server, try again.'); });
+    });
+  }
+
   function showDenied() {
-    document.getElementById('ad-gate').innerHTML = '<p>Sign in, and let us know you\'re a business, to see advertising opportunities.</p><p><a href="/dashboard/opportunities" style="color:var(--ve-green-dark);font-weight:700;">Back to Opportunities</a></p>';
+    document.getElementById('ad-gate').innerHTML = '<p>Sign in to see advertising and business opportunities.</p><button id="ad-signin-btn">Sign In</button>';
+    var btn = document.getElementById('ad-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to see advertising opportunities.', init); });
   }
 
   function init() {
     if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
     var token = VEAuth.getToken();
+    document.getElementById('ad-gate').style.display = 'none';
+    document.getElementById('ad-content').style.display = 'block';
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_partner_applications', {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
       body: JSON.stringify({ token: token })
     }).then(function (r) { return r.json(); }).then(function (d) {
       var apps = (d && d.applications) || [];
-      if (!apps.length) { showDenied(); return; }
-      document.getElementById('ad-gate').style.display = 'none';
-      document.getElementById('ad-content').style.display = 'block';
-    }).catch(showDenied);
+      renderInterestArea(apps.length > 0);
+    }).catch(function () { renderInterestArea(false); });
   }
 
   init();
