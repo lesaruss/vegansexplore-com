@@ -60,52 +60,24 @@
 
   <div id="dash-content">
     <div class="dash-welcome">
-      <p class="dash-eyebrow">Community Manager</p>
+      <p class="dash-eyebrow" id="dash-eyebrow">Member</p>
       <h1 id="dash-welcome-name">Your Dashboard</h1>
-      <p class="dash-welcome-sub" id="dash-welcome-sub">Loading your city assignment&hellip;</p>
+      <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
     </div>
 
-    <div class="dash-stats">
+    <div class="dash-stats" id="dash-stats-row" style="display:none;">
       <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
-      <a class="dash-stat" href="/dashboard/applications"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:var(--ve-orange);">--</div></a>
+      <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:var(--ve-orange);">--</div></a>
       <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
     </div>
 
     <p class="dash-section-title">Your Tools</p>
     <div class="dash-grid" id="dash-tile-grid">
-      <a class="dash-tile" href="/dashboard/2026-initiatives">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127758;</div>
+      <a class="dash-tile" href="/dashboard/opportunities">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127775;</div>
         <div class="dash-tile-body">
-          <div class="dash-tile-title">2026 Initiatives Portfolio</div>
-          <div class="dash-tile-desc">The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/dashboard/handbook">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green),var(--ve-green-dark));">&#128214;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Community Manager Handbook</div>
-          <div class="dash-tile-desc">The full training handbook, straight from Sean: what the role covers, how you're supported and paid.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/dashboard/applications">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),#c9720f);">&#9989;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Vegan Explorer Applications <span class="dash-tag live">Live</span></div>
-          <div class="dash-tile-desc">Review and decide Vegan Explorer applications for your city directly, no admin access needed.</div>
-        </div>
-      </a>
-      <a class="dash-tile coming" href="#">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128197;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Event Management <span class="dash-tag">Coming Soon</span></div>
-          <div class="dash-tile-desc">Post and manage events for your city's hub page directly from here.</div>
-        </div>
-      </a>
-      <a class="dash-tile coming" href="#">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128193;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Directory Review <span class="dash-tag">Coming Soon</span></div>
-          <div class="dash-tile-desc">Approve or edit business and listing submissions for your city before they go live.</div>
+          <div class="dash-tile-title">Opportunities</div>
+          <div class="dash-tile-desc" id="dash-opps-desc">Volunteer, become a Vegan Explorer, and more.</div>
         </div>
       </a>
     </div>
@@ -121,16 +93,31 @@
   var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
 
   function showDenied() {
-    document.getElementById('dash-gate').innerHTML = '<p>This dashboard is for approved Community Managers.</p><p>Interested in the role? <a href="/welcome" style="color:var(--ve-green-dark);font-weight:700;">See open cities</a>.</p>';
+    document.getElementById('dash-gate').innerHTML = '<p>Sign in to view your dashboard.</p><button id="dash-signin-btn">Sign In</button>';
+    var btn = document.getElementById('dash-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view your dashboard.', init); });
   }
 
-  function addSuperadminTile() {
+  function addTile(html, prepend) {
     var grid = document.getElementById('dash-tile-grid');
     var tile = document.createElement('a');
     tile.className = 'dash-tile';
-    tile.href = '/dashboard/campaigns';
-    tile.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#6366f1,#3730a3);">&#128227;</div><div class="dash-tile-body"><div class="dash-tile-title">Campaigns <span class="dash-tag superadmin">Superadmin</span></div><div class="dash-tile-desc">Live campaign briefs across every city, budget, and sponsorship status.</div></div>';
-    grid.insertBefore(tile, grid.firstChild);
+    tile.innerHTML = html;
+    var href = tile.querySelector('[data-href]');
+    if (href) { tile.href = href.getAttribute('data-href'); href.remove(); }
+    if (prepend) grid.insertBefore(tile, grid.firstChild); else grid.appendChild(tile);
+  }
+
+  function addCmTiles() {
+    addTile('<span data-href="/dashboard/2026-initiatives"></span><div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127758;</div><div class="dash-tile-body"><div class="dash-tile-title">2026 Initiatives Portfolio</div><div class="dash-tile-desc">The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.</div></div>');
+    addTile('<span data-href="/dashboard/handbook"></span><div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green),var(--ve-green-dark));">&#128214;</div><div class="dash-tile-body"><div class="dash-tile-title">Community Manager Handbook</div><div class="dash-tile-desc">The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.</div></div>');
+    var grid = document.getElementById('dash-tile-grid');
+    var coming1 = document.createElement('a'); coming1.className = 'dash-tile coming'; coming1.href = '#';
+    coming1.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128197;</div><div class="dash-tile-body"><div class="dash-tile-title">Event Management <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Post and manage events for your city\'s hub page directly from here.</div></div>';
+    grid.appendChild(coming1);
+    var coming2 = document.createElement('a'); coming2.className = 'dash-tile coming'; coming2.href = '#';
+    coming2.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128193;</div><div class="dash-tile-body"><div class="dash-tile-title">Directory Review <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Approve or edit business and listing submissions for your city before they go live.</div></div>';
+    grid.appendChild(coming2);
   }
 
   function loadPendingCount(token) {
@@ -146,46 +133,50 @@
     });
   }
 
-  function monthYear(s) { if (!s) return '--'; try { return new Date(s).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } catch (e) { return '--'; } }
-
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
-    document.getElementById('dash-welcome-name').textContent = (member.name ? member.name.split(' ')[0] + ', your' : 'Your') + ' Dashboard';
+    var firstName = member.name ? member.name.split(' ')[0] : 'there';
+    var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
-    if (member.is_superadmin) { addSuperadminTile(); }
-    loadPendingCount(VEAuth.getToken());
+    document.getElementById('dash-welcome-name').textContent = 'Welcome back, ' + firstName;
+    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : (member.ve_tier === 'passport' ? 'Passport Member' : 'Member'));
 
-    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: VEAuth.getToken() })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      var apps = (d && d.applications) || [];
-      var accepted = apps.filter(function (a) { return a.status === 'accepted' && a.opportunities && a.opportunities.opportunity_type === 'community_manager'; });
-      var sub = document.getElementById('dash-welcome-sub');
-      if (accepted.length) {
-        var cityName = VE_CITY_NAMES[accepted[0].opportunities.city_slug] || accepted[0].opportunities.city_slug;
-        sub.textContent = 'You manage ' + cityName + '.';
-        document.getElementById('dash-stat-city').textContent = cityName;
-      } else if (member.is_superadmin) {
-        sub.textContent = 'Superadmin preview, no city assignment on file for this account.';
-        document.getElementById('dash-stat-city').textContent = 'All Cities';
-      } else {
-        sub.textContent = 'Role active, city assignment record not found. Flag this to the team.';
-      }
-    }).catch(function () {
-      document.getElementById('dash-welcome-sub').textContent = 'Could not load your city assignment right now.';
-    });
+    if (isStaff) {
+      addCmTiles();
+      document.getElementById('dash-stats-row').style.display = 'grid';
+      document.getElementById('dash-opps-desc').textContent = 'Review applications, manage campaigns, and more.';
+      loadPendingCount(VEAuth.getToken());
+
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: VEAuth.getToken() })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        var apps = (d && d.applications) || [];
+        var accepted = apps.filter(function (a) { return a.status === 'accepted' && a.opportunities && a.opportunities.opportunity_type === 'community_manager'; });
+        var sub = document.getElementById('dash-welcome-sub');
+        if (accepted.length) {
+          var cityName = VE_CITY_NAMES[accepted[0].opportunities.city_slug] || accepted[0].opportunities.city_slug;
+          sub.textContent = 'You manage ' + cityName + '.';
+          document.getElementById('dash-stat-city').textContent = cityName;
+        } else if (member.is_superadmin) {
+          sub.textContent = 'Superadmin preview, no city assignment on file for this account.';
+          document.getElementById('dash-stat-city').textContent = 'All Cities';
+        } else {
+          sub.textContent = 'Role active, city assignment record not found. Flag this to the team.';
+        }
+      }).catch(function () {
+        document.getElementById('dash-welcome-sub').textContent = 'Could not load your city assignment right now.';
+      });
+    } else {
+      document.getElementById('dash-welcome-sub').textContent = member.ve_tier === 'passport' ? 'Passport member.' : 'Free member.';
+    }
   }
 
   function init() {
     var gate = document.getElementById('dash-gate');
-    if (!window.VEAuth || !VEAuth.isLoggedIn()) {
-      gate.innerHTML = '<p>Sign in to view your dashboard.</p><button id="dash-signin-btn">Sign In</button>';
-      document.getElementById('dash-signin-btn').addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view your dashboard.', init); });
-      return;
-    }
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
     var token = VEAuth.getToken();
     fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
       method: 'POST',
@@ -195,11 +186,10 @@
       var member = d && d.member;
       if (!member) { showDenied(); return; }
       try { localStorage.setItem('ve_member', JSON.stringify(member)); } catch (e) {}
-      if (member.ve_role !== 'community_manager' && !member.is_superadmin) { showDenied(); return; }
       showDashboard(member);
     }).catch(function () {
       var cached = VEAuth.getMember();
-      if (cached && (cached.ve_role === 'community_manager' || cached.is_superadmin)) { showDashboard(cached); }
+      if (cached) { showDashboard(cached); }
       else { showDenied(); }
     });
   }
