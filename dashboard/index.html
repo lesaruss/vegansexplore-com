@@ -39,9 +39,7 @@
   .dash-tile{border:1.5px solid var(--ve-border);border-radius:14px;text-decoration:none;color:var(--ve-text);display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s,box-shadow .15s,transform .15s;background:#fff;}
   .dash-tile:hover{border-color:var(--ve-green);box-shadow:0 6px 18px rgba(58,155,62,0.12);transform:translateY(-2px);}
   .dash-tile.coming{opacity:0.55;pointer-events:none;}
-  .dash-tile.span-2{grid-column:span 2;}
-  @media (max-width:520px){ .dash-tile.span-2{grid-column:span 1;} }
-  .dash-thumb{height:110px;display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;}
+  .dash-thumb{aspect-ratio:8/5;width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;background-size:cover;background-position:center;}
   .dash-tile-body{padding:16px 18px;flex:1;}
   .dash-tile-title{font-size:14px;font-weight:800;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .dash-tile-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.55;}
@@ -75,7 +73,7 @@
 
     <p class="dash-section-title">Your Tools</p>
     <div class="dash-grid" id="dash-tile-grid">
-      <a class="dash-tile span-2" href="/dashboard/2026-initiatives">
+      <a class="dash-tile" href="/dashboard/2026-initiatives">
         <div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127758;</div>
         <div class="dash-tile-body">
           <div class="dash-tile-title">2026 Initiatives Portfolio</div>
