@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volunteer &amp; Explorer Opportunities - VEGANS EXPLORE Dashboard</title>
+<meta name="description" content="Apply to volunteer, become a Vegan Explorer, or step up as a Community Manager.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:760px;margin:0 auto;padding:44px 24px 80px;}
+  #gi-gate{text-align:center;padding:100px 20px;}
+  #gi-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #gi-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #gi-content{display:none;}
+  .gi-back{font-size:11px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;margin-bottom:14px;display:inline-block;}
+  .gi-hero{height:130px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:20px;background:linear-gradient(135deg,#3A9B3E,#2d7d31);}
+  .gi-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:24px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .gi-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .gi-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px 18px;margin-bottom:12px;}
+  .gi-card-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+  .gi-card-city{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:8px;}
+  .gi-card-desc{font-size:13px;color:var(--ve-text-75);line-height:1.55;margin-bottom:10px;}
+  .gi-note{width:100%;border:1.5px solid var(--ve-border);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12.5px;margin-bottom:8px;resize:vertical;min-height:50px;}
+  .gi-apply-btn{background:var(--ve-green);color:#fff;border:none;padding:9px 18px;border-radius:6px;font-weight:800;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
+  .gi-apply-btn:hover{background:var(--ve-green-dark);}
+  .gi-status{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:100px;}
+  .gi-status.pending{background:#fff3e0;color:#7d4a00;}
+  .gi-status.accepted{background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .gi-status.rejected{background:#fef2f2;color:#dc2626;}
+  .gi-empty{font-size:13px;color:var(--ve-text-50);}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="gi-gate"><p>Checking access&hellip;</p></div>
+  <div id="gi-content">
+    <a class="gi-back" href="/dashboard/opportunities">&larr; Back to Opportunities</a>
+    <div class="gi-hero">&#127793;</div>
+    <p class="gi-eyebrow">Get Involved</p>
+    <h1>Volunteer &amp; Explorer Opportunities</h1>
+    <p class="gi-sub">Open roles across every VE city. Apply directly, no admin needed.</p>
+    <div id="gi-list"><p class="gi-empty">Loading opportunities&hellip;</p></div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var TYPE_LABEL = { vegan_explorer: 'Vegan Explorer', volunteer: 'Volunteer', community_manager: 'Community Manager' };
+  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function renderList(items, token) {
+    var list = document.getElementById('gi-list');
+    if (!items.length) { list.innerHTML = '<p class="gi-empty">No open opportunities right now. Check back soon.</p>'; return; }
+    list.innerHTML = items.map(function (o) {
+      var cityName = VE_CITY_NAMES[o.city_slug] || o.city_slug || 'All Cities';
+      var typeLabel = TYPE_LABEL[o.opportunity_type] || o.opportunity_type;
+      if (o.my_status) {
+        return '<div class="gi-card"><div class="gi-card-city">' + esc(cityName) + ' &middot; ' + esc(typeLabel) + '</div>' +
+          '<div class="gi-card-title">' + esc(o.title) + '</div>' +
+          '<div class="gi-card-desc">' + esc(o.description || '') + '</div>' +
+          '<span class="gi-status ' + esc(o.my_status) + '">' + esc(o.my_status) + '</span></div>';
+      }
+      return '<div class="gi-card" data-oid="' + esc(o.id) + '"><div class="gi-card-city">' + esc(cityName) + ' &middot; ' + esc(typeLabel) + '</div>' +
+        '<div class="gi-card-title">' + esc(o.title) + '</div>' +
+        '<div class="gi-card-desc">' + esc(o.description || '') + '</div>' +
+        '<textarea class="gi-note" placeholder="Say a little about why you\'re interested (optional)"></textarea>' +
+        '<button class="gi-apply-btn" data-id="' + esc(o.id) + '">Apply</button></div>';
+    }).join('');
+
+    list.querySelectorAll('.gi-apply-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var card = btn.closest('.gi-card');
+        var note = card.querySelector('.gi-note').value;
+        btn.disabled = true; btn.textContent = 'Applying...';
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_opportunity_application', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: token, opportunity_id: btn.getAttribute('data-id'), cover_note: note })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.error) { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not submit: ' + d.error); return; }
+          card.innerHTML = card.innerHTML.split('<textarea')[0] + '<span class="gi-status pending">pending</span>';
+        }).catch(function () { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not reach the server, try again.'); });
+      });
+    });
+  }
+
+  function showDenied() {
+    document.getElementById('gi-gate').innerHTML = '<p>Sign in to see open opportunities.</p><button id="gi-signin-btn">Sign In</button>';
+    var btn = document.getElementById('gi-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to see opportunities.', init); });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    var token = VEAuth.getToken();
+    document.getElementById('gi-gate').style.display = 'none';
+    document.getElementById('gi-content').style.display = 'block';
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunities', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.error) { document.getElementById('gi-list').innerHTML = '<p class="gi-empty">' + esc(d.error) + '</p>'; return; }
+      renderList(d.opportunities || [], token);
+    }).catch(function () {
+      document.getElementById('gi-list').innerHTML = '<p class="gi-empty">Could not load opportunities right now.</p>';
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
