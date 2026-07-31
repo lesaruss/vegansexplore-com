@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opportunities - VEGANS EXPLORE Dashboard</title>
+<meta name="description" content="Volunteer, apply, review, and manage, all in one place.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:1400px;margin:0 auto;padding:44px 32px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+  #opp-gate{text-align:center;padding:100px 20px;}
+  #opp-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #opp-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #opp-content{display:none;}
+  .opp-back{font-size:11px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;margin-bottom:14px;display:inline-block;}
+  .opp-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .opp-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .opp-section-title{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-text-50);margin:28px 0 12px;}
+  .opp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:1100px){ .opp-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .opp-grid{grid-template-columns:1fr; } }
+  .opp-tile{border:1.5px solid var(--ve-border);border-radius:14px;text-decoration:none;color:var(--ve-text);display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s,box-shadow .15s,transform .15s;background:#fff;}
+  .opp-tile:hover{border-color:var(--ve-green);box-shadow:0 6px 18px rgba(58,155,62,0.12);transform:translateY(-2px);}
+  .opp-tile.coming{opacity:0.55;pointer-events:none;}
+  .opp-thumb{aspect-ratio:8/5;width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;}
+  .opp-tile-body{padding:16px 18px;flex:1;}
+  .opp-tile-title{font-size:14px;font-weight:800;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .opp-tile-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.55;}
+  .opp-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;white-space:nowrap;}
+  .opp-tag.superadmin{background:#eef2ff;color:#3730a3;}
+  .opp-tag.business{background:#fce7f3;color:#9d174d;}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="opp-gate"><p>Checking access&hellip;</p></div>
+  <div id="opp-content">
+    <a class="opp-back" href="/dashboard">&larr; Back to Dashboard</a>
+    <p class="opp-eyebrow">Opportunities</p>
+    <h1>Opportunities</h1>
+    <p class="opp-sub">Everything you can plug into, and everything you manage, in one place.</p>
+    <div id="opp-sections"></div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+  function tile(href, icon, gradient, title, desc, tag, coming) {
+    var cls = 'opp-tile' + (coming ? ' coming' : '');
+    var tagHtml = tag ? '<span class="opp-tag' + (tag.cls ? ' ' + tag.cls : '') + '">' + tag.label + '</span>' : '';
+    return '<a class="' + cls + '" href="' + (coming ? '#' : href) + '">' +
+      '<div class="opp-thumb" style="background:' + gradient + ';">' + icon + '</div>' +
+      '<div class="opp-tile-body"><div class="opp-tile-title">' + title + tagHtml + '</div><div class="opp-tile-desc">' + desc + '</div></div>' +
+    '</a>';
+  }
+
+  function render(member, isBusinessPartner) {
+    var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
+    var html = '';
+
+    html += '<p class="opp-section-title">Get Involved</p><div class="opp-grid">';
+    html += tile('/dashboard/get-involved', '&#127793;', 'linear-gradient(135deg,#3A9B3E,#2d7d31)', 'Volunteer &amp; Explorer Opportunities', 'Apply to volunteer, become a Vegan Explorer, or step up as a Community Manager in your city.', null, false);
+    html += '</div>';
+
+    if (isStaff) {
+      html += '<p class="opp-section-title">Manage</p><div class="opp-grid">';
+      html += tile('/dashboard/applications', '&#9989;', 'linear-gradient(135deg,var(--ve-orange),#c9720f)', 'Explorer Applications', 'Review and decide Vegan Explorer applications for your city.', { label: 'Live' }, false);
+      if (member.is_superadmin) {
+        html += tile('/dashboard/campaigns', '&#128227;', 'linear-gradient(135deg,#6366f1,#3730a3)', 'Campaigns', 'Live campaign briefs across every city, budget, and sponsorship status.', { label: 'Superadmin', cls: 'superadmin' }, false);
+      }
+      html += '</div>';
+    }
+
+    if (isBusinessPartner) {
+      html += '<p class="opp-section-title">Business</p><div class="opp-grid">';
+      html += tile('#', '&#128241;', 'linear-gradient(135deg,#ec4899,#9d174d)', 'Advertising', 'Sponsor placements and ad opportunities across VE. Real inventory and pricing coming soon.', { label: 'Coming Soon', cls: 'business' }, true);
+      html += '</div>';
+    }
+
+    document.getElementById('opp-sections').innerHTML = html;
+  }
+
+  function checkBusinessPartner(token, cb) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_partner_applications', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var apps = (d && d.applications) || [];
+      cb(apps.some(function (a) { return a.status === 'active'; }));
+    }).catch(function () { cb(false); });
+  }
+
+  function showDenied() {
+    document.getElementById('opp-gate').innerHTML = '<p>Sign in to view Opportunities.</p><button id="opp-signin-btn">Sign In</button>';
+    var btn = document.getElementById('opp-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view Opportunities.', init); });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    var token = VEAuth.getToken();
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var member = d && d.member;
+      if (!member) { showDenied(); return; }
+      document.getElementById('opp-gate').style.display = 'none';
+      document.getElementById('opp-content').style.display = 'block';
+      checkBusinessPartner(token, function (isBiz) { render(member, isBiz); });
+    }).catch(showDenied);
+  }
+
+  init();
+</script>
+</body>
+</html>
