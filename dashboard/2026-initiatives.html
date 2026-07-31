@@ -11,7 +11,7 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;}
-  main{max-width:880px;margin:0 auto;padding:48px 24px 80px;}
+  main{max-width:1200px;margin:0 auto;padding:48px 24px 80px;}
   #academy-gate{text-align:center;padding:100px 20px;}
   #academy-gate button{margin-top:16px;background:#3A9B3E;color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
   #academy-gate p{font-size:14px;color:rgba(26,26,26,0.75);margin-bottom:8px;}
@@ -29,13 +29,18 @@
   .academy-doc .nav-jump { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px; }
   .academy-doc .nav-jump a { font-size:11px; font-weight:700; text-decoration:none; color:#2d7d31; background:#EAF7EA; border-radius:100px; padding:6px 12px; }
   .academy-doc .callout { background:#fafafa; border:1px solid rgba(0,0,0,0.09); border-radius:10px; padding:16px 18px; margin:16px 0; }
-  .ve-doc-card { border:1.5px solid rgba(0,0,0,0.09); border-radius:10px; padding:16px 18px; margin-bottom:10px; }
-  .ve-doc-card-title { font-size:14px; font-weight:800; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
-  .ve-doc-card-desc { font-size:13px; color:rgba(26,26,26,0.7); line-height:1.5; margin-top:6px; }
+  .academy-hero{height:130px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:20px;background:linear-gradient(135deg,#F69820,#3A9B3E);}
+  .ve-doc-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:700px){ .ve-doc-grid{grid-template-columns:1fr;} }
+  .ve-doc-card { border:1.5px solid rgba(0,0,0,0.09); border-radius:12px; overflow:hidden; }
+  .ve-doc-thumb { height:80px; display:flex; align-items:center; justify-content:center; font-size:32px; }
+  .ve-doc-card-body-outer { padding:14px 16px; }
+  .ve-doc-card-title { font-size:14px; font-weight:800; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .ve-doc-card-desc { font-size:12.5px; color:rgba(26,26,26,0.7); line-height:1.5; margin-top:6px; }
   .ve-doc-card-body { display:none; margin-top:14px; border-top:1px solid rgba(0,0,0,0.08); padding-top:14px; }
   .ve-doc-card-body.open { display:block; }
   .ve-doc-card-body.loading { color:rgba(26,26,26,0.5); font-size:13px; }
-  .ve-doc-toggle { font-size:11px; font-weight:700; color:#2d7d31; }
+  .ve-doc-toggle { font-size:11px; font-weight:700; color:#2d7d31; white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -51,6 +56,7 @@
 
   <div id="academy-content" class="academy-doc">
     <a href="/dashboard" style="font-size:11px;font-weight:700;color:#2d7d31;text-decoration:none;display:inline-block;margin-bottom:10px;">&larr; Back to Dashboard</a>
+    <div class="academy-hero">&#127758;</div>
     <p class="eyebrow">The Academy &middot; Community Manager Track</p>
     <h1>2026 Initiatives Portfolio</h1>
     <p class="subtitle">The 13 programs Sean laid out for 2026, straight from him, this is the real answer to "what does the year look like." Not all 13 activate at once, and several are still being workshopped, not locked. Each one below is read live from its Campaign Bible, so this list always matches the source, click any card to expand the full detail: budget, run of show, stakeholders, timeline, and open items.</p>
@@ -98,6 +104,23 @@
     });
   }
 
+  var DOC_VISUAL = {
+    'vegans-explore-initiative-vegan-tailgate': ['&#127944;', 'linear-gradient(135deg,#3A9B3E,#F69820)'],
+    'vegans-explore-initiative-supermarket-campaigns': ['&#128722;', 'linear-gradient(135deg,#F69820,#c9720f)'],
+    'vegans-explore-initiative-badge-challenge': ['&#127941;', 'linear-gradient(135deg,#f5b93f,#c9720f)'],
+    'vegans-explore-initiative-year-end-gala': ['&#127942;', 'linear-gradient(135deg,#8b5cf6,#5b21b6)'],
+    'vegans-explore-initiative-world-vegan-expo': ['&#127760;', 'linear-gradient(135deg,#3b82f6,#1d4ed8)'],
+    'vegans-explore-initiative-community-night': ['&#127793;', 'linear-gradient(135deg,#3A9B3E,#2d7d31)'],
+    'vegans-explore-initiative-plant-based-showcase': ['&#127859;', 'linear-gradient(135deg,#F69820,#e07b00)'],
+    'vegans-explore-initiative-movie-night': ['&#127916;', 'linear-gradient(135deg,#6366f1,#3730a3)'],
+    'vegans-explore-initiative-partner-communities': ['&#129309;', 'linear-gradient(135deg,#14b8a6,#0f766e)'],
+    'vegans-explore-initiative-business-certification': ['&#128737;', 'linear-gradient(135deg,#334155,#0f172a)'],
+    'vegans-explore-initiative-b2b-sourcing-directory': ['&#128230;', 'linear-gradient(135deg,#c9720f,#7c4a03)'],
+    'vegans-explore-initiative-vegan-tours': ['&#128656;', 'linear-gradient(135deg,#3A9B3E,#22577a)'],
+    'vegans-explore-initiative-guided-marketing-consultation': ['&#128188;', 'linear-gradient(135deg,#64748b,#334155)'],
+    'vegans-explore-initiatives-overview': ['&#128202;', 'linear-gradient(135deg,#F69820,#3A9B3E)']
+  };
+
   function loadDocList() {
     var token = VEAuth.getToken();
     var listEl = document.getElementById('ve-doc-list');
@@ -108,16 +131,20 @@
     }).then(function (r) { return r.json(); }).then(function (d) {
       var items = (d && d.items) || [];
       if (!items.length) { listEl.innerHTML = '<p style="font-size:13px;color:rgba(26,26,26,0.5);">Nothing in the feed yet.</p>'; return; }
-      listEl.innerHTML = items.map(function (it) {
+      listEl.innerHTML = '<div class="ve-doc-grid">' + items.map(function (it) {
         var safeSlug = it.slug.replace(/[^a-z0-9-]/g, '');
+        var visual = DOC_VISUAL[it.slug] || ['&#128196;', 'linear-gradient(135deg,#9a9a9a,#6b6b6b)'];
         return '<div class="ve-doc-card">' +
-          '<div class="ve-doc-card-title" onclick="toggleDoc(\'' + safeSlug + '\', \'' + token.replace(/'/g, '') + '\')">' +
-            '<span>' + it.title + '</span><span class="ve-doc-toggle">View &darr;</span>' +
+          '<div class="ve-doc-thumb" style="background:' + visual[1] + ';">' + visual[0] + '</div>' +
+          '<div class="ve-doc-card-body-outer">' +
+            '<div class="ve-doc-card-title" onclick="toggleDoc(\'' + safeSlug + '\', \'' + token.replace(/'/g, '') + '\')">' +
+              '<span>' + it.title + '</span><span class="ve-doc-toggle">View &darr;</span>' +
+            '</div>' +
+            '<div class="ve-doc-card-desc">' + it.description + '</div>' +
+            '<div class="ve-doc-card-body" id="body-' + safeSlug + '"></div>' +
           '</div>' +
-          '<div class="ve-doc-card-desc">' + it.description + '</div>' +
-          '<div class="ve-doc-card-body" id="body-' + safeSlug + '"></div>' +
         '</div>';
-      }).join('');
+      }).join('') + '</div>';
     }).catch(function () {
       listEl.innerHTML = '<p style="font-size:13px;color:#a33;">Could not load the initiatives feed right now.</p>';
     });
