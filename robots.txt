@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /account/
+Disallow: /dashboard/
+Disallow: /login.html
+Disallow: /cart/
+Disallow: /checkout/
+
+Sitemap: https://vegansexplore.com/sitemap.xml
