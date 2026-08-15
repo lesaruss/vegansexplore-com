@@ -905,7 +905,7 @@
     },
     {
       "source": "/project/bunnie-cakes",
-      "destination": "https://archive.vegansexplore.com/project/bunnie-cakes/"
+      "destination": "/directory/listing"
     },
     {
       "source": "/project/c4eats",
@@ -913,7 +913,7 @@
     },
     {
       "source": "/project/calypso-bites",
-      "destination": "https://archive.vegansexplore.com/project/calypso-bites/"
+      "destination": "/directory/listing"
     },
     {
       "source": "/project/christophers-kitchen",
@@ -957,11 +957,11 @@
     },
     {
       "source": "/project/good-ol-cookie",
-      "destination": "https://archive.vegansexplore.com/project/good-ol-cookie/"
+      "destination": "/directory/listing"
     },
     {
       "source": "/project/green-haus-foods",
-      "destination": "https://archive.vegansexplore.com/project/green-haus-foods/"
+      "destination": "/directory/listing"
     },
     {
       "source": "/project/greens-and-grains-boca-raton",
@@ -1161,7 +1161,7 @@
     },
     {
       "source": "/project/vegetarian-delight-juice-bar",
-      "destination": "https://archive.vegansexplore.com/project/vegetarian-delight-juice-bar/"
+      "destination": "/directory/listing"
     },
     {
       "source": "/project/winter-park-biscuit-company",
