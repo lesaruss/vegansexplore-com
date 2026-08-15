@@ -68,7 +68,7 @@
 
     <div class="dash-stats" id="dash-stats-row" style="display:none;">
       <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
-      <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:var(--ve-orange);">--</div></a>
+      <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
       <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
     </div>
 
@@ -109,6 +109,24 @@
     if (prepend) grid.insertBefore(tile, grid.firstChild); else grid.appendChild(tile);
   }
 
+  // Superadmin only. The roster carries every member email across every brand and
+  // reads Supabase Auth, so it is deliberately NOT a Community Manager tile.
+  // Added 2026-08-15 after an audit found member signups had no surface at all.
+  function addSuperadminTiles() {
+    addTile('<span data-href="/dashboard/members"></span>' +
+      '<div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green-dark),var(--ve-green));">' +
+      '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
+      '<circle cx="9" cy="7" r="4"/>' +
+      '<path d="M22 21v-2a4 4 0 0 0-3-3.87"/>' +
+      '<path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>' +
+      '<div class="dash-tile-body"><div class="dash-tile-title">Members ' +
+      '<span class="dash-tag superadmin">Superadmin</span></div>' +
+      '<div class="dash-tile-desc">Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, ' +
+      'with tier, points, and who has never come back.</div></div>', true);
+  }
+
   function addCmTiles() {
     addTile('<span data-href="/dashboard/2026-initiatives"></span><div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127758;</div><div class="dash-tile-body"><div class="dash-tile-title">2026 Initiatives Portfolio</div><div class="dash-tile-desc">The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.</div></div>');
     addTile('<span data-href="/dashboard/handbook"></span><div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green),var(--ve-green-dark));">&#128214;</div><div class="dash-tile-body"><div class="dash-tile-title">Community Manager Handbook</div><div class="dash-tile-desc">The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.</div></div>');
@@ -142,6 +160,8 @@
 
     document.getElementById('dash-welcome-name').textContent = 'Welcome back, ' + firstName;
     document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : (member.ve_tier === 'passport' ? 'Passport Member' : 'Member'));
+
+    if (member.is_superadmin) addSuperadminTiles();
 
     if (isStaff) {
       addCmTiles();
