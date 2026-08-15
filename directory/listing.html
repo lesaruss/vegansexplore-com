@@ -465,7 +465,7 @@ function getSlug(){
 }
 
 function fetchListing(slug){
-  var url = SUPABASE_URL + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&select=*&limit=1';
+  var url = SUPABASE_URL + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=*&limit=1';
   return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.json(); });
 }
