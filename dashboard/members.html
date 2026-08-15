@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Members - VEGANS EXPLORE</title>
+<meta name="description" content="The member roster across every LESARUSS brand.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;
+    --ve-border:rgba(0,0,0,0.09);
+    --ve-text:#1a1a1a;--ve-text-75:#4a4a4a;--ve-text-50:#595959;
+    /* #F69820 on white is 2.22:1 and fails WCAG AA, so alert TEXT uses this
+       darker amber (7.4:1) and the brand orange is reserved for fills. */
+    --ve-alert-text:#7d4a00;--ve-alert-bg:#fff3e0;
+  }
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:1400px;margin:0 auto;padding:44px 32px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{
+    outline:3px solid var(--ve-green-dark);outline-offset:2px;}
+
+  #m-gate{text-align:center;padding:100px 20px;}
+  #m-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #m-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;
+    border-radius:6px;font-family:inherit;font-weight:800;font-size:12px;letter-spacing:0.1em;
+    text-transform:uppercase;cursor:pointer;}
+  #m-content{display:none;}
+
+  .m-head{padding-bottom:24px;border-bottom:1px solid var(--ve-border);margin-bottom:24px;}
+  .m-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--ve-green-dark);margin-bottom:6px;}
+  .m-head h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
+  .m-head-sub{font-size:13px;color:var(--ve-text-50);}
+  .m-back{display:inline-block;margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;}
+  .m-back:hover{text-decoration:underline;}
+
+  .m-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+  @media (max-width:900px){ .m-stats{grid-template-columns:repeat(2,1fr);} }
+  .m-stat{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px;}
+  .m-stat-label{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--ve-text-50);margin-bottom:6px;}
+  .m-stat-value{font-size:22px;font-weight:900;}
+  .m-stat.flag{border-color:#f0c896;background:var(--ve-alert-bg);}
+  .m-stat.flag .m-stat-value,.m-stat.flag .m-stat-label{color:var(--ve-alert-text);}
+
+  .m-note{font-size:12.5px;line-height:1.6;color:var(--ve-text-75);background:#fafafa;
+    border:1px solid var(--ve-border);border-left:3px solid var(--ve-green);border-radius:6px;
+    padding:12px 16px;margin-bottom:26px;}
+
+  .m-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;}
+  .m-controls label{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--ve-text-50);display:block;margin-bottom:4px;}
+  .m-controls input,.m-controls select{font-family:inherit;font-size:13px;padding:9px 12px;
+    border:1.5px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+  .m-controls input{min-width:240px;}
+  .m-count{margin-left:auto;font-size:12px;color:var(--ve-text-50);font-weight:700;align-self:flex-end;
+    padding-bottom:9px;}
+  @media (max-width:700px){ .m-controls input{min-width:0;width:100%;} .m-count{margin-left:0;} }
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{text-align:left;font-size:9px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;
+    color:var(--ve-text-50);padding:10px 12px;border-bottom:1.5px solid var(--ve-border);white-space:nowrap;}
+  tbody td{padding:12px;border-bottom:1px solid var(--ve-border);vertical-align:middle;}
+  tbody tr:hover{background:var(--ve-green-light);}
+  .m-name{font-weight:700;}
+  .m-email{font-size:12px;color:var(--ve-text-50);word-break:break-all;}
+
+  .pill{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;
+    padding:3px 9px;border-radius:100px;white-space:nowrap;}
+  .pill.ve{background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .pill.gfs{background:#eef2ff;color:#3730a3;}
+  .pill.unatt{background:var(--ve-alert-bg);color:var(--ve-alert-text);}
+  .pill.paid{background:#fef3c7;color:#78350f;}
+  .pill.free{background:#f1f1f1;color:#4a4a4a;}
+  .pill.staff{background:#e0f2fe;color:#075985;}
+  .pill.warn{background:#fee2e2;color:#991b1b;}
+
+  .m-cards{display:none;}
+  .m-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+  .m-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px;}
+  .m-card-row{font-size:12px;color:var(--ve-text-75);display:flex;justify-content:space-between;
+    gap:12px;padding:3px 0;}
+  .m-card-row span:first-child{color:var(--ve-text-50);font-weight:700;font-size:10px;
+    letter-spacing:0.08em;text-transform:uppercase;}
+  /* Wide tables are unreadable on a phone, so below 860px the roster renders as
+     stacked cards instead of a horizontally scrolling table. */
+  @media (max-width:860px){ .m-table-wrap{display:none;} .m-cards{display:block;} }
+
+  .m-empty{padding:40px 20px;text-align:center;color:var(--ve-text-50);font-size:13px;}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="m-gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="m-content">
+    <a class="m-back" href="/dashboard">&larr; Back to dashboard</a>
+
+    <div class="m-head">
+      <p class="m-eyebrow">Superadmin</p>
+      <h1>Members</h1>
+      <p class="m-head-sub" id="m-sub">Loading the roster&hellip;</p>
+    </div>
+
+    <h2 class="m-eyebrow" style="margin-bottom:12px;">At a glance</h2>
+    <div class="m-stats" id="m-stats"></div>
+
+    <p class="m-note" id="m-note"></p>
+
+    <div class="m-controls">
+      <div>
+        <label for="m-search">Search</label>
+        <input type="search" id="m-search" placeholder="Name or email" autocomplete="off">
+      </div>
+      <div>
+        <label for="m-brand">Brand</label>
+        <select id="m-brand">
+          <option value="">All brands</option>
+          <option value="vegans-explore">VEGANS EXPLORE</option>
+          <option value="geekfon-society">GeekFon Society</option>
+          <option value="unattributed">Unattributed</option>
+        </select>
+      </div>
+      <div>
+        <label for="m-sort">Sort</label>
+        <select id="m-sort">
+          <option value="joined">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="points">Most points</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+      <p class="m-count" id="m-count"></p>
+    </div>
+
+    <div class="m-table-wrap">
+      <table>
+        <caption class="m-eyebrow" style="text-align:left;padding:0 12px 8px;">
+          Every member identity across the LESARUSS ecosystem
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Member</th>
+            <th scope="col">Brand</th>
+            <th scope="col">Tier</th>
+            <th scope="col">Points</th>
+            <th scope="col">Community</th>
+            <th scope="col">Joined</th>
+            <th scope="col">Last active</th>
+            <th scope="col">Wallet</th>
+          </tr>
+        </thead>
+        <tbody id="m-tbody"></tbody>
+      </table>
+    </div>
+    <div class="m-cards" id="m-cards"></div>
+    <p class="m-empty" id="m-empty" style="display:none;">No members match that filter.</p>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+  var BRAND_LABEL = {
+    'vegans-explore': ['VEGANS EXPLORE', 've'],
+    'geekfon-society': ['GeekFon Society', 'gfs'],
+    'unattributed': ['Unattributed', 'unatt']
+  };
+  var ALL = [];
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function fmtDate(d) {
+    if (!d) return 'Never';
+    var dt = new Date(d);
+    if (isNaN(dt)) return 'Never';
+    return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function brandPill(b) {
+    var meta = BRAND_LABEL[b] || [b, 'free'];
+    return '<span class="pill ' + meta[1] + '">' + esc(meta[0]) + '</span>';
+  }
+
+  function tierPill(t, staff) {
+    var out = '<span class="pill ' + (t && t !== 'free' ? 'paid' : 'free') + '">' + esc(t || 'free') + '</span>';
+    if (staff) out += ' <span class="pill staff">Staff</span>';
+    return out;
+  }
+
+  function showGate(msg, withButton) {
+    var gate = document.getElementById('m-gate');
+    gate.innerHTML = '<p>' + esc(msg) + '</p>';
+    if (withButton) {
+      var b = document.createElement('button');
+      b.textContent = 'Sign In';
+      b.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view the roster.', init); });
+      gate.appendChild(b);
+    }
+  }
+
+  function renderStats(s) {
+    var tiles = [
+      ['Total members', s.total, false],
+      ['New, last 7 days', s.new_7d, false],
+      ['New, last 30 days', s.new_30d, false],
+      ['Paid tier', s.paid, false],
+      ['VEGANS EXPLORE', s.vegans_explore, false],
+      ['GeekFon Society', s.geekfon_society, false],
+      ['Unattributed', s.unattributed, s.unattributed > 0],
+      ['Never returned', s.never_returned, s.never_returned > 0]
+    ];
+    document.getElementById('m-stats').innerHTML = tiles.map(function (t) {
+      return '<div class="m-stat' + (t[2] ? ' flag' : '') + '">' +
+        '<div class="m-stat-label">' + esc(t[0]) + '</div>' +
+        '<div class="m-stat-value">' + esc(t[1]) + '</div></div>';
+    }).join('');
+
+    document.getElementById('m-note').innerHTML =
+      '<strong>Read this before acting on the numbers.</strong> VEGANS EXPLORE members sign in with their own ' +
+      'password and live in the <code>members</code> table. GeekFon Society and LESARUSS AI members live in ' +
+      'Supabase Auth. The two are not linked, so the same person joining two brands counts twice here. ' +
+      '<strong>Unattributed</strong> means an account exists with no brand record attached, so there is no way ' +
+      'to tell which front door it came through. Unifying the two identity systems is a pending decision, not a bug in this page.';
+  }
+
+  function rowHtml(m) {
+    return '<tr>' +
+      '<td><div class="m-name">' + esc(m.display_name || 'No name given') + '</div>' +
+      '<div class="m-email">' + esc(m.email) + '</div></td>' +
+      '<td>' + brandPill(m.brand) + '</td>' +
+      '<td>' + tierPill(m.tier, m.is_staff) + '</td>' +
+      '<td>' + esc((m.available_points || 0).toLocaleString()) + '</td>' +
+      '<td>' + esc(m.home_community || '--') + '</td>' +
+      '<td>' + esc(fmtDate(m.joined_at)) + '</td>' +
+      '<td>' + esc(fmtDate(m.last_activity_at)) + '</td>' +
+      '<td>' + (m.wallet_present ? '<span class="pill ve">Yes</span>' : '<span class="pill warn">Missing</span>') + '</td>' +
+      '</tr>';
+  }
+
+  function cardHtml(m) {
+    function row(l, v) { return '<div class="m-card-row"><span>' + esc(l) + '</span><span>' + v + '</span></div>'; }
+    return '<div class="m-card">' +
+      '<div class="m-card-top"><div><div class="m-name">' + esc(m.display_name || 'No name given') + '</div>' +
+      '<div class="m-email">' + esc(m.email) + '</div></div>' + brandPill(m.brand) + '</div>' +
+      row('Tier', tierPill(m.tier, m.is_staff)) +
+      row('Points', esc((m.available_points || 0).toLocaleString())) +
+      row('Community', esc(m.home_community || '--')) +
+      row('Joined', esc(fmtDate(m.joined_at))) +
+      row('Last active', esc(fmtDate(m.last_activity_at))) +
+      row('Wallet', m.wallet_present ? '<span class="pill ve">Yes</span>' : '<span class="pill warn">Missing</span>') +
+      '</div>';
+  }
+
+  function applyFilters() {
+    var q = document.getElementById('m-search').value.trim().toLowerCase();
+    var brand = document.getElementById('m-brand').value;
+    var sort = document.getElementById('m-sort').value;
+
+    var rows = ALL.filter(function (m) {
+      if (brand && m.brand !== brand) return false;
+      if (!q) return true;
+      return (m.email || '').toLowerCase().indexOf(q) > -1 ||
+             (m.display_name || '').toLowerCase().indexOf(q) > -1;
+    });
+
+    rows.sort(function (a, b) {
+      if (sort === 'points') return (b.available_points || 0) - (a.available_points || 0);
+      if (sort === 'name') return (a.display_name || a.email || '').localeCompare(b.display_name || b.email || '');
+      var da = new Date(a.joined_at || 0), db = new Date(b.joined_at || 0);
+      return sort === 'oldest' ? da - db : db - da;
+    });
+
+    document.getElementById('m-tbody').innerHTML = rows.map(rowHtml).join('');
+    document.getElementById('m-cards').innerHTML = rows.map(cardHtml).join('');
+    document.getElementById('m-count').textContent = rows.length + ' of ' + ALL.length + ' shown';
+    document.getElementById('m-empty').style.display = rows.length ? 'none' : 'block';
+  }
+
+  function loadRoster(token) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-members-admin?action=list_all_members', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.error === 'forbidden') { showGate('The member roster is superadmin only. Your account does not have that role yet.', false); return; }
+      if (!d.ok) { showGate('Could not load the roster right now. Try again shortly.', false); return; }
+
+      ALL = d.members || [];
+      document.getElementById('m-gate').style.display = 'none';
+      document.getElementById('m-content').style.display = 'block';
+      document.getElementById('m-sub').textContent =
+        d.summary.total + ' member identities across the ecosystem, ' + d.summary.new_7d + ' new in the last 7 days.';
+      renderStats(d.summary);
+      applyFilters();
+
+      ['m-search', 'm-brand', 'm-sort'].forEach(function (id) {
+        document.getElementById(id).addEventListener('input', applyFilters);
+        document.getElementById(id).addEventListener('change', applyFilters);
+      });
+    }).catch(function () {
+      showGate('Could not reach the roster service. Check your connection and reload.', false);
+    });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showGate('Sign in to view the member roster.', true); return; }
+    loadRoster(VEAuth.getToken());
+  }
+
+  init();
+</script>
+</body>
+</html>
