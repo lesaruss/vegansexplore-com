@@ -152,6 +152,22 @@
 
     /* Footer */
     .footer { padding: 32px 48px; border-top: 1px solid var(--ve-border); text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ve-text-50); }
+
+    /* Show tiles */
+    .show-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 20px; }
+    .show-card { text-decoration: none; color: var(--ve-text); border-radius: 12px; overflow: hidden; border: 1px solid var(--ve-border); display: block; transition: box-shadow 0.15s, transform 0.15s; }
+    .show-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .show-thumb { height: 160px; background-size: cover; background-position: center; background-color: #e8f5e9; }
+    .show-body { padding: 18px; }
+    .show-title { font-size: 16px; font-weight: 900; margin-bottom: 8px; }
+    .show-desc { font-size: 13px; color: var(--ve-text-70); line-height: 1.5; margin-bottom: 12px; min-height: 40px; }
+    .show-count { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); }
+
+    .show-section { margin-bottom: 56px; }
+    .show-section:last-child { margin-bottom: 0; }
+    .show-section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--ve-border); }
+    .show-section-head h2 { font-size: 22px; font-weight: 900; }
+    .show-section-count { font-size: 12px; font-weight: 700; color: var(--ve-text-50); text-transform: uppercase; letter-spacing: 0.06em; }
   </style>
 </head>
 <body>
@@ -185,12 +201,55 @@
 
   <section class="section" id="episodes">
     <div class="section-head">
-      <div class="section-eyebrow">Listen</div>
-      <h2>The Vegans Explore Podcast</h2>
-      <p>Our own daily and weekly conversations with vegan founders, advocates, and community builders -- straight from the Pulse content network.</p>
+      <div class="section-eyebrow">Our Shows</div>
+      <h2>Four Shows, One Network</h2>
+      <p>Every show under the Vegans Explore umbrella, all in one place.</p>
     </div>
-    <div class="ep-grid">
+    <div class="show-grid">
       
+      <a class="show-card" href="#show-vegans-explore-podcast">
+        <div class="show-thumb" style="background-image:url('https://i.ytimg.com/vi/zEJx7ACo_J0/hqdefault.jpg')"></div>
+        <div class="show-body">
+          <h3 class="show-title">Vegans Explore Podcast</h3>
+          <p class="show-desc">Our flagship daily show, spotlighting vegan topics, changemakers, nonprofits, and brands from around the world.</p>
+          <span class="show-count">169 episodes</span>
+        </div>
+      </a>
+      <a class="show-card" href="#show-soflo-vegans-podcast">
+        <div class="show-thumb" style="background-image:url('https://img.youtube.com/vi/JrcavV6UzG0/maxresdefault.jpg')"></div>
+        <div class="show-body">
+          <h3 class="show-title">SoFlo Vegans Podcast</h3>
+          <p class="show-desc">South Florida-focused episodes covering the local vegan restaurant, nonprofit, and events scene.</p>
+          <span class="show-count">5 episodes</span>
+        </div>
+      </a>
+      <a class="show-card" href="#show-pre-vegans-podcast">
+        <div class="show-thumb" style="background-image:url('https://i.ytimg.com/vi/uAkkvBpxzLw/hqdefault.jpg')"></div>
+        <div class="show-body">
+          <h3 class="show-title">Pre-Vegans Podcast</h3>
+          <p class="show-desc">A beginner-friendly on-ramp series answering the questions people ask before they go vegan.</p>
+          <span class="show-count">19 episodes</span>
+        </div>
+      </a>
+      <a class="show-card" href="#show-vegans-who-lift-podcast">
+        <div class="show-thumb" style="background-image:url('https://img.youtube.com/vi/0G4rVMdA99I/maxresdefault.jpg')"></div>
+        <div class="show-body">
+          <h3 class="show-title">Vegans Who Lift Podcast</h3>
+          <p class="show-desc">Vegan bodybuilding, fitness, and coaching conversations hosted by Brooke Sellers and John Thomas.</p>
+          <span class="show-count">31 episodes</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    
+    <div class="show-section" id="show-vegans-explore-podcast">
+      <div class="show-section-head">
+        <h2>Vegans Explore Podcast</h2>
+        <span class="show-section-count">169 episodes</span>
+      </div>
+      <div class="ep-grid">
       <a class="ep-card" href="/pulse/top-10-recent-wins-for-animals-that-show-real-momentum">
         <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/zEJx7ACo_J0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
@@ -254,31 +313,61 @@
           <h3 class="ep-title">The Energy Shift: How Food Influences How You Feel</h3>
           <p class="ep-summary">Food is information for the body, not just fuel. Sean A. Russell continues the Pre-Vegan Path with how plant-based meals affect en…</p>
         </div>
-      </a>
-      <a class="ep-card" href="/pulse/simple-plant-based-swaps-that-make-life-easier">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/2FWlcic4b-Y/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
-        <div class="ep-body">
-          <span class="ep-cat">Health &amp; Nutrition</span>
-          <h3 class="ep-title">Simple Plant-Based Swaps That Make Life Easier</h3>
-          <p class="ep-summary">Going plant-based does not require a full overhaul. Sean A. Russell continues the Pre-Vegan Path with the specific, low-effort swa…</p>
-        </div>
-      </a>
-      <a class="ep-card" href="/pulse/why-so-many-people-are-re-thinking-their-food">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/7xHYKibN86Y/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
-        <div class="ep-body">
-          <span class="ep-cat">Culture &amp; Media</span>
-          <h3 class="ep-title">Why So Many People Are Re-Thinking Their Food</h3>
-          <p class="ep-summary">The word vegan can feel like an all-or-nothing identity shift. Sean A. Russell opens the Pre-Vegan Path series with a pressure-fre…</p>
-        </div>
-      </a>
-      <a class="ep-card" href="/pulse/building-legacy-and-strengthening-the-vegan-movement-seasoned">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/5uw0oYbx5xo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      </a></div>
+    </div>
+    <div class="show-section" id="show-soflo-vegans-podcast">
+      <div class="show-section-head">
+        <h2>SoFlo Vegans Podcast</h2>
+        <span class="show-section-count">5 episodes</span>
+      </div>
+      <div class="ep-grid">
+      <a class="ep-card" href="/pulse/compassion-in-action-from-food-insecurity-to-animal-rescue-e109-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/JrcavV6UzG0/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
           <span class="ep-cat">Community Spotlight</span>
-          <h3 class="ep-title">Building Legacy and Strengthening the Vegan Movement</h3>
-          <p class="ep-summary">The movement we see today was built over decades by people navigating it with almost no support. Sean A. Russell closes the Season…</p>
+          <h3 class="ep-title">Compassion in Action: From Food Insecurity to Animal Rescue | E109 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">In this episode of the SoFlo Vegans Podcast , host Sean A. Russell takes listeners on a journey through South Florida’s compassion…</p>
         </div>
       </a>
+      <a class="ep-card" href="/pulse/conscious-business-and-compassion-with-veronica-menin-e108-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/04bnAOTWL64/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Conscious Business and Compassion with Veronica Menin | E108 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">This week on the SoFlo Vegans Podcast, host Sean A. Russell sits down with Love Life Café founder Veronica Menin to talk conscious…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-vegan-restaurants-in-broward-e107-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/PyEo79YaXlo/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Top Vegan Restaurants in Broward | E107 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">In this episode of the SoFlo Vegans Podcast , host Sean A. Russell spotlights the best Vegan and Vegan-friendly restaurants in Bro…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/billie-eilishs-top-5-vegan-picks-seaquariums-closure-e106-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/3Frmm4lBM0E/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Billie Eilish’s Top 5 Vegan Picks + Seaquarium’s Closure | E106 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">This week on the SoFlo Vegans Podcast, we’re spotlighting Billie Eilish’s top 5 Vegan restaurant picks in Miami, the closure of th…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/relaunching-the-south-florida-vegan-movement-e105-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/3Frmm4lBM0E/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Relaunching the South Florida Vegan Movement | E105 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">The SoFlo Vegans Podcast returns with weekly news, events, and stories fueling the South Florida Vegan movement. Subscribe today. …</p>
+        </div>
+      </a></div>
+    </div>
+    <div class="show-section" id="show-pre-vegans-podcast">
+      <div class="show-section-head">
+        <h2>Pre-Vegans Podcast</h2>
+        <span class="show-section-count">19 episodes</span>
+      </div>
+      <div class="ep-grid">
       <a class="ep-card" href="/pulse/supporting-pre-vegans-without-pressure">
         <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/uAkkvBpxzLw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
@@ -287,102 +376,133 @@
           <p class="ep-summary">Perfection culture pushes people away rather than pulling them in. Sean A. Russell continues the Seasoned Vegan series with how ex…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/nutrition-for-long-term-vegan-health">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Ff3qjo9w8oM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/pre-vegans-why-the-movement-needs-a-better-on-ramp">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ZB8QS6m4KZI/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Policy &amp; Advocacy</span>
+          <h3 class="ep-title">Pre-Vegans: Why the Movement Needs a Better On-Ramp</h3>
+          <p class="ep-summary">Most people aren&#x27;t afraid of vegetables, they&#x27;re afraid of being judged. Sean A. Russell explains the Pre-Vegans framework, an exp…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/cruelty-free-products-e16-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/Umz3yX4D0VU/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Animal Rights</span>
+          <h3 class="ep-title">Cruelty-Free Products | E16 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">What does it really mean to live cruelty-free ? 🤔 Is it just about makeup and skincare , or does it go beyond that? In this episod…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-truth-about-soy-e15-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/oB845lIGIog/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
           <span class="ep-cat">Health &amp; Nutrition</span>
-          <h3 class="ep-title">Nutrition for Long-Term Vegan Health</h3>
-          <p class="ep-summary">What works in your 20s may need adjusting by your 50s. Sean A. Russell continues the Seasoned Vegan series with a practical rundow…</p>
+          <h3 class="ep-title">The Truth About Soy | E15 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">You’ve heard the rumors— “Soy messes with hormones,” “It’s bad for men,” or “It causes cancer” —but is there any truth to these cl…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/aging-well-as-a-seasoned-vegan">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/_gTBubr8U2A/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/exploring-a-fruitarian-diet-e14-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/oB845lIGIog/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
           <span class="ep-cat">Health &amp; Nutrition</span>
-          <h3 class="ep-title">Aging Well as a Seasoned Vegan</h3>
-          <p class="ep-summary">Seasoned vegans already have a strong foundation for long-term health. Sean A. Russell continues the Seasoned Vegan series with he…</p>
+          <h3 class="ep-title">Exploring a Fruitarian Diet | E14 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">Ever wondered what it’s like to thrive on nothing but fruit? 🍎🍉 Or how a top gastroenterologist went from conventional medicine to…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/the-evolution-of-a-seasoned-vegan">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/BPbJrRlQWlA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/the-difference-between-plant-based-and-vegan-e13-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/qPTOVTx0MB4/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
           <span class="ep-cat">Community Spotlight</span>
-          <h3 class="ep-title">The Evolution of a Seasoned Vegan</h3>
-          <p class="ep-summary">Being vegan stops feeling like an identity and starts feeling like a normal way of life. Sean A. Russell opens the Seasoned Vegan …</p>
+          <h3 class="ep-title">The Difference Between Plant-based and Vegan | E13 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In Episode 0013 of the Pre-Vegans Podcast , host Sean A. Russell tackles a topic that often confuses newcomers— the difference bet…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/building-infrastructure-that-lasts">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/W1fsWQg38Rs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/the-gut-microbiome-and-plant-based-nutrition-e12-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/uSBNVBUefsA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Community Spotlight</span>
-          <h3 class="ep-title">Building Infrastructure That Lasts</h3>
-          <p class="ep-summary">If a nonprofit only moves forward when its founder is energized, it&#x27;s fragile. Sean A. Russell closes the five-part nonprofit seri…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">The Gut Microbiome and Plant-based Nutrition | E12 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">🌱 Your gut is home to trillions of tiny microbes—what you eat determines their strength, diversity, and impact on your health. In …</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/from-volunteers-to-leaders">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/w88CYhtKn0A/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/unlocking-restful-sleep-e11-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/23Taig48mVE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Community Spotlight</span>
-          <h3 class="ep-title">From Volunteers to Leaders</h3>
-          <p class="ep-summary">If everything in your nonprofit depends on one or two exhausted leaders, burnout is inevitable. Sean A. Russell breaks down how de…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Unlocking Restful Sleep | E11 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">Struggling with sleepless nights? The latest episode of the Pre-Vegans Podcast dives into the power of restful sleep and how it pl…</p>
         </div>
-      </a>
-      <a class="ep-card" href="/pulse/fundraising-systems-for-stability">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/lkGeCQHmcZk/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      </a></div>
+    </div>
+    <div class="show-section" id="show-vegans-who-lift-podcast">
+      <div class="show-section-head">
+        <h2>Vegans Who Lift Podcast</h2>
+        <span class="show-section-count">31 episodes</span>
+      </div>
+      <div class="ep-grid">
+      <a class="ep-card" href="/pulse/why-vegan-fitness-coaches-struggle-and-how-to-fix-it-s5e7-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/0G4rVMdA99I/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Community Spotlight</span>
-          <h3 class="ep-title">Fundraising Systems for Stability</h3>
-          <p class="ep-summary">Events are spikes, not systems. Sean A. Russell breaks down how small nonprofits can move from event-only donations to recurring m…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Why Vegan Fitness Coaches Struggle (And How to Fix It!) | S5E7 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">💪 “What if everything you thought you needed to start a business was just holding you back?…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/marketing-that-converts-without-a-big-budget">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/QaTvklNQido/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/mental-health-muscle-gains-inside-vegan-bodybuilding-life-s5e6-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/RS3-bcf2W7s/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Community Spotlight</span>
-          <h3 class="ep-title">Marketing That Converts Without a Big Budget</h3>
-          <p class="ep-summary">For small grassroots nonprofits the real problem usually isn&#x27;t reach, it&#x27;s conversion. Sean A. Russell breaks down storytelling, c…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Mental Health &amp; Muscle Gains: Inside Vegan Bodybuilding Life | S5E6 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Ever wondered what it’s like to juggle bodybuilding, business, and life on the road—all while staying Vegan?…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/why-vegan-nonprofits-burn-out-and-what-to-do-instead">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/xYF6ssCY4jA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/how-feldi-uses-music-to-fight-for-animal-rights-veganism-s5e5-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/b7eSSMpP6lc/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Community Spotlight</span>
-          <h3 class="ep-title">Why Vegan Nonprofits Burn Out and What to Do Instead</h3>
-          <p class="ep-summary">Passion alone does not create sustainability. Sean A. Russell opens a five-part series on small grassroots vegan nonprofits with t…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">How Feldi Uses Music to Fight for Animal Rights &amp; Veganism | S5E5 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">What happens when Vegan activism, fitness, and music collide? 🎤💪 In this episode of Vegans Who Lift Podcast, hosts John Thomas (Th…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/from-personal-brand-to-digital-asset">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/WyFCatuOdtU/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/from-meat-to-plants-omar-glaspys-vegan-bodybuilding-success-s5e4-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/4-GzY7JuIY8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Culture &amp; Media</span>
-          <h3 class="ep-title">From Personal Brand to Digital Asset</h3>
-          <p class="ep-summary">Is your personal brand an asset, or just attention tied to your personality? Sean A. Russell traces the path from personal brand t…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">From Meat to Plants: Omar Glaspy’s Vegan Bodybuilding Success | S5E4 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">🔥 What if everything you thought you knew about strength and nutrition was wrong? 💪 Season 5, Episode 4 of the Vegans Who Lift Pod…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/why-most-creators-burn-out-after-3-years">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ZO1j0bAc8Io/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/how-to-build-strength-and-community-in-vegan-fitness-e3-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/xXbGfYki_LQ/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Culture &amp; Media</span>
-          <h3 class="ep-title">Why Most Creators Burn Out After 3 Years</h3>
-          <p class="ep-summary">Burnout around year three isn&#x27;t random, it&#x27;s structural. Sean A. Russell breaks down five causes, from identity fused to metrics t…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">How to Build Strength and Community in Vegan Fitness | S5E3 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Season 05, Episode 03 of the Vegans Who Lift Podcast brings together John Thomas, the Bodybuilding Vegan, and Brooke Sellers, also…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/the-90-day-creator-operating-system">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/YPVB_jgGyaw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/brooke-johns-favorite-clips-vegans-who-lift-s-1-4-recap">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/-HxtCEkaotY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Culture &amp; Media</span>
-          <h3 class="ep-title">The 90-Day Creator Operating System</h3>
-          <p class="ep-summary">Inspiration is emotional management, not operational management. Sean A. Russell breaks down the five components of a 90-day creat…</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Brooke &amp; John’s Favorite Clips | Vegans Who Lift S 1-4 Recap</h3>
+          <p class="ep-summary">John Thomas (The Bodybuilding Vegan) and Brooke Sellers (Ms. Meatless Muscle) close out the year with a heartfelt reflection on th…</p>
         </div>
       </a>
-      <a class="ep-card" href="/pulse/the-community-flywheel-how-to-turn-listeners-into-contributors">
-        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/GbM0hS1TLKg/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+      <a class="ep-card" href="/pulse/2025-vegan-bodybuilding-goals-insights-from-miss-meatless-muscle-and-the-bodybuilding-vegan">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/eClXodP_DMY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
         <div class="ep-body">
-          <span class="ep-cat">Culture &amp; Media</span>
-          <h3 class="ep-title">The Community Flywheel: How to Turn Listeners Into Contributors</h3>
-          <p class="ep-summary">Virality is unpredictable, belonging is engineered. Sean A. Russell explains how giving an audience a real role, not just a place …</p>
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">2025 Vegan Bodybuilding Goals: Insights from Miss Meatless Muscle and The Bodybuilding Vegan</h3>
+          <p class="ep-summary">Hosts John Thomas and Brooke Sellers kick off Season 4, Episode 9 with a humorous yet insightful discussion about their fitness st…</p>
         </div>
       </a>
+      <a class="ep-card" href="/pulse/must-have-gym-essentials-for-vegan-fitness-enthusiasts-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/J4OCojrF2pw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Must-Have Gym Essentials for Vegan Fitness Enthusiasts | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In Season 04, Episode 08 of the Vegans Who Lift Podcast , co-hosts John Thomas, aka the BodybuildingVegan, and Brooke Sellers, aka…</p>
+        </div>
+      </a></div>
     </div>
     <div class="see-all-row">
       <a href="/pulse" class="btn-secondary">See All 224 Episodes on Pulse</a>
