@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-Vegans Podcast - Listen to Every Episode | Vegans Explore</title>
+  <meta name="description" content="For people who aren&#x27;t vegan yet: honest, judgment-free conversations for anyone curious about plant-based living. Listen to all 19 episodes and subscribe on Spotify, Apple Podcasts, Amazon Music, or YouTube.">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-text: #1a1a1a;
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-70: rgba(26,26,26,0.70);
+      --ve-border: rgba(0,0,0,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: #fff;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .nav {
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--ve-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .nav-links a { text-decoration: none; color: var(--ve-text-70); }
+    .nav-links a:hover { color: var(--ve-green); }
+    @media (max-width: 720px) { .nav-links { display: none; } }
+
+    .show-hero {
+      padding: 64px 48px 56px;
+      background: linear-gradient(180deg, var(--ve-green-light) 0%, #fff 100%);
+      display: flex; gap: 36px; align-items: center; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
+    }
+    .show-hero-art { width: 180px; height: 180px; border-radius: 16px; background-size: cover; background-position: center; background-color: #eee; flex-shrink: 0; box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
+    .show-hero-body { flex: 1; min-width: 260px; }
+    .breadcrumb { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); text-decoration: none; display: inline-block; margin-bottom: 14px; }
+    .breadcrumb:hover { color: var(--ve-green-dark); }
+    .show-hero h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 900; line-height: 1.1; margin-bottom: 14px; }
+    .show-hero p { font-size: 15px; color: var(--ve-text-70); line-height: 1.6; max-width: 560px; margin-bottom: 18px; }
+    .show-hero-count { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 18px; }
+
+    .subscribe-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .subscribe-btn {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.04em; padding: 11px 18px; border-radius: 6px; text-decoration: none;
+      border: 1.5px solid var(--ve-border); color: var(--ve-text);
+    }
+    .subscribe-btn:hover { border-color: rgba(0,0,0,0.35); }
+    .subscribe-btn.spotify { border-color: #1DB95440; }
+    .subscribe-btn.apple { border-color: #FA57C140; }
+    .subscribe-btn.amazon { border-color: #00A8E140; }
+    .subscribe-btn.youtube { border-color: #FF000040; }
+
+    .section { padding: 56px 48px 90px; max-width: 1180px; margin: 0 auto; }
+    .section-head { margin-bottom: 32px; }
+    .section-head h2 { font-size: 22px; font-weight: 900; }
+
+    .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    .ep-card { text-decoration: none; color: var(--ve-text); display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--ve-border); transition: box-shadow 0.15s, transform 0.15s; }
+    .ep-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .ep-thumb { position: relative; height: 150px; background-size: cover; background-position: center; background-color: #eee; }
+    .ep-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; padding-left: 3px;
+    }
+    .ep-body { padding: 16px; }
+    .ep-cat { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .ep-date { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-50); }
+    .ep-title { font-size: 15px; font-weight: 800; line-height: 1.35; margin: 8px 0 8px; }
+    .ep-summary { font-size: 13px; color: var(--ve-text-70); line-height: 1.5; }
+
+    .btn-secondary {
+      background: transparent; color: var(--ve-text); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px;
+      text-decoration: none; border: 1.5px solid rgba(0,0,0,0.15); display: inline-flex; align-items: center;
+    }
+    .btn-secondary:hover { border-color: rgba(0,0,0,0.4); }
+
+    .footer { padding: 32px 48px; border-top: 1px solid var(--ve-border); text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ve-text-50); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
+      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
+    </a>
+    <div class="nav-links">
+      <a href="/pulse">Pulse</a>
+      <a href="/directory">Directory</a>
+      <a href="/partners">Partners</a>
+      <a href="/podcast">Podcast Network</a>
+    </div>
+  </nav>
+
+  <header class="show-hero">
+    <div class="show-hero-art" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/53/d9/56/53d95636-6d45-1b44-6274-201548f57873/mza_1682445160343010984.jpg/600x600bb.jpg')"></div>
+    <div class="show-hero-body">
+      <a href="/podcast" class="breadcrumb">&larr; Podcast Network</a>
+      <h1>Pre-Vegans Podcast</h1>
+      <p>For people who aren&#x27;t vegan yet: honest, judgment-free conversations for anyone curious about plant-based living.</p>
+      <div class="show-hero-count">19 Episodes</div>
+      
+    <div class="subscribe-row">
+      <a class="subscribe-btn spotify" href="https://open.spotify.com/show/1lttNCqQ6zBrilhrKLogs7" target="_blank" rel="noopener">&#9834; Spotify</a>
+      <a class="subscribe-btn apple" href="https://podcasts.apple.com/us/podcast/pre-vegans-podcast/id1780250627" target="_blank" rel="noopener">&#63743; Apple Podcasts</a>
+      <a class="subscribe-btn amazon" href="https://music.amazon.com/podcasts/8d1a230b-31f2-4b78-807a-d6f8d5bd7d74/pre-vegans-podcast" target="_blank" rel="noopener">&#9658; Amazon Music</a>
+      <a class="subscribe-btn youtube" href="https://www.youtube.com/playlist?list=PLpfk6e8BPu-w7ZD29pIckUldp_XC1AIOr" target="_blank" rel="noopener">&#9658; YouTube</a>
+    </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>All Episodes</h2>
+    </div>
+    <div class="ep-grid">
+      <a class="ep-card" href="/pulse/supporting-pre-vegans-without-pressure">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/uAkkvBpxzLw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 12, 2026</span>
+          <h3 class="ep-title">Supporting Pre-Vegans Without Pressure</h3>
+          <p class="ep-summary">Perfection culture pushes people away rather than pulling them in. Sean A. Russell continues the Seasoned Vegan series with how experienced </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/pre-vegans-why-the-movement-needs-a-better-on-ramp">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ZB8QS6m4KZI/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 22, 2026</span>
+          <h3 class="ep-title">Pre-Vegans: Why the Movement Needs a Better On-Ramp</h3>
+          <p class="ep-summary">Most people aren&#x27;t afraid of vegetables, they&#x27;re afraid of being judged. Sean A. Russell explains the Pre-Vegans framework, an experience-fi</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/cruelty-free-products-e16-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/Umz3yX4D0VU/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 20, 2025</span>
+          <h3 class="ep-title">Cruelty-Free Products | E16 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">What does it really mean to live cruelty-free ? 🤔 Is it just about makeup and skincare , or does it go beyond that? In this episode of the P</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-truth-about-soy-e15-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/oB845lIGIog/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 15, 2025</span>
+          <h3 class="ep-title">The Truth About Soy | E15 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">You’ve heard the rumors— “Soy messes with hormones,” “It’s bad for men,” or “It causes cancer” —but is there any truth to these claims? In t</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/exploring-a-fruitarian-diet-e14-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/oB845lIGIog/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 13, 2025</span>
+          <h3 class="ep-title">Exploring a Fruitarian Diet | E14 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">Ever wondered what it’s like to thrive on nothing but fruit? 🍎🍉 Or how a top gastroenterologist went from conventional medicine to a plant-b</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-difference-between-plant-based-and-vegan-e13-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/qPTOVTx0MB4/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 10, 2025</span>
+          <h3 class="ep-title">The Difference Between Plant-based and Vegan | E13 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In Episode 0013 of the Pre-Vegans Podcast , host Sean A. Russell tackles a topic that often confuses newcomers— the difference between being</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-gut-microbiome-and-plant-based-nutrition-e12-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/uSBNVBUefsA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 8, 2025</span>
+          <h3 class="ep-title">The Gut Microbiome and Plant-based Nutrition | E12 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">🌱 Your gut is home to trillions of tiny microbes—what you eat determines their strength, diversity, and impact on your health. In this debut</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/unlocking-restful-sleep-e11-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/23Taig48mVE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 5, 2025</span>
+          <h3 class="ep-title">Unlocking Restful Sleep | E11 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">Struggling with sleepless nights? The latest episode of the Pre-Vegans Podcast dives into the power of restful sleep and how it plays a cruc</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-truth-about-processed-meat-e10-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/Bva4E1XQXCw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 4, 2025</span>
+          <h3 class="ep-title">The Truth About Processed Meat | E10 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">🔥 Are plant-based meats really worse than processed animal products? In this eye-opening episode of the Pre-Vegans Podcast, host Sean A.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-connection-between-diet-and-energy-e8-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/o4vASOfBY8g/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 31, 2025</span>
+          <h3 class="ep-title">The Connection Between Diet and Energy | E9 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">If you’re feeling sluggish, struggling with fatigue, or looking for a natural way to boost your energy, this episode is for you! We explore </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/compassionate-activism-how-to-inspire-and-be-the-change-e8-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/eBF7CfUs8C8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 29, 2025</span>
+          <h3 class="ep-title">Compassionate Activism: How to Inspire and Be the Change | E8 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In this episode of the Pre-Vegans Podcast, we explore compassionate activism, a powerful approach to Vegan advocacy that focuses on leading </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/whats-the-deal-with-eggs-ep-7-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/lXdtrSkdRd8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 28, 2025</span>
+          <h3 class="ep-title">What’s the Deal with Eggs? | Ep 7 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In this episode of the Pre-Vegans Podcast , host Sean A. Russell dives into the rising cost of eggs and why it might be the perfect time to </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-history-of-veganism-ep-6-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/KuKK6YVXw0U/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 24, 2025</span>
+          <h3 class="ep-title">The History of Veganism | Ep 6 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In this episode, listeners embark on a journey through the history of Veganism, from ancient civilizations practicing compassion to the offi</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-ditching-dairy-is-so-hard-ep-5-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/23yWy0vgftA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 23, 2025</span>
+          <h3 class="ep-title">Why Ditching Dairy is So Hard | Ep 5 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In this insightful episode of the Pre-Vegans Podcast, host V tackles one of the biggest challenges for those transitioning to a plant-based </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-vegan-objections-debunked-ep-4-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/-oBgA8JwXzY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 20, 2025</span>
+          <h3 class="ep-title">Top Vegan Objections Debunked | Ep 4 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">Thinking about going Vegan but feeling stuck on common objections? Don’t worry—you’re not alone!</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/how-vitamin-b12-boosts-energy-and-protects-your-body-ep-3-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/XUwT4M8u69A/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 17, 2025</span>
+          <h3 class="ep-title">How Vitamin B12 Boosts Energy and Protects Your Body | Ep 3 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In this episode of the Pre-Vegans Podcast, host V dives into the essential role Vitamin B12 plays in maintaining energy, mental clarity, and</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/faith-food-and-fame-the-story-of-tabitha-brown-ep-2-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/ZhNGnXq0760/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 15, 2025</span>
+          <h3 class="ep-title">Faith, Food, and Fame: The Story of Tabitha Brown | Ep 2 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In this episode, the Pre-Vegans Podcast takes a deep dive into the inspiring story of Tabitha Brown. Discover how her health challenges led </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/protein-packed-and-plant-powered-meat-alternatives-ep-1-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/EdCEbQ-bmzg/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 14, 2025</span>
+          <h3 class="ep-title">Protein-Packed and Plant-Powered: Meat Alternatives | Ep 1 | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In this inaugural episode of the Pre-Vegans Podcast , host V explores protein-packed, plant-powered alternatives to meat, perfect for anyone</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-or-vegetarian-whats-the-real-difference-pre-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/uD07StUUHz4/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 18, 2024</span>
+          <h3 class="ep-title">Vegan or Vegetarian: What’s the Real Difference? | Pre-Vegans Podcast</h3>
+          <p class="ep-summary">In the debut episode of the Pre-Vegans Podcast, listeners are taken on an inspiring and thought-provoking journey into plant-based living.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Vegans Explore: Plant-based travel, worldwide.</span>
+  </footer>
+
+</body>
+</html>
