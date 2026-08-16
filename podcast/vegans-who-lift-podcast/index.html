@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegans Who Lift Podcast - Listen to Every Episode | Vegans Explore</title>
+  <meta name="description" content="Plant-based strength, muscle, and performance: athletes, coaches, and everyday lifters proving vegan and strong go together. Listen to all 31 episodes and subscribe on Spotify, Apple Podcasts, Amazon Music, or YouTube.">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-text: #1a1a1a;
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-70: rgba(26,26,26,0.70);
+      --ve-border: rgba(0,0,0,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: #fff;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .nav {
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--ve-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .nav-links a { text-decoration: none; color: var(--ve-text-70); }
+    .nav-links a:hover { color: var(--ve-green); }
+    @media (max-width: 720px) { .nav-links { display: none; } }
+
+    .show-hero {
+      padding: 64px 48px 56px;
+      background: linear-gradient(180deg, var(--ve-green-light) 0%, #fff 100%);
+      display: flex; gap: 36px; align-items: center; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
+    }
+    .show-hero-art { width: 180px; height: 180px; border-radius: 16px; background-size: cover; background-position: center; background-color: #eee; flex-shrink: 0; box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
+    .show-hero-body { flex: 1; min-width: 260px; }
+    .breadcrumb { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); text-decoration: none; display: inline-block; margin-bottom: 14px; }
+    .breadcrumb:hover { color: var(--ve-green-dark); }
+    .show-hero h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 900; line-height: 1.1; margin-bottom: 14px; }
+    .show-hero p { font-size: 15px; color: var(--ve-text-70); line-height: 1.6; max-width: 560px; margin-bottom: 18px; }
+    .show-hero-count { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 18px; }
+
+    .subscribe-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .subscribe-btn {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.04em; padding: 11px 18px; border-radius: 6px; text-decoration: none;
+      border: 1.5px solid var(--ve-border); color: var(--ve-text);
+    }
+    .subscribe-btn:hover { border-color: rgba(0,0,0,0.35); }
+    .subscribe-btn.spotify { border-color: #1DB95440; }
+    .subscribe-btn.apple { border-color: #FA57C140; }
+    .subscribe-btn.amazon { border-color: #00A8E140; }
+    .subscribe-btn.youtube { border-color: #FF000040; }
+
+    .section { padding: 56px 48px 90px; max-width: 1180px; margin: 0 auto; }
+    .section-head { margin-bottom: 32px; }
+    .section-head h2 { font-size: 22px; font-weight: 900; }
+
+    .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    .ep-card { text-decoration: none; color: var(--ve-text); display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--ve-border); transition: box-shadow 0.15s, transform 0.15s; }
+    .ep-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .ep-thumb { position: relative; height: 150px; background-size: cover; background-position: center; background-color: #eee; }
+    .ep-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; padding-left: 3px;
+    }
+    .ep-body { padding: 16px; }
+    .ep-cat { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .ep-date { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-50); }
+    .ep-title { font-size: 15px; font-weight: 800; line-height: 1.35; margin: 8px 0 8px; }
+    .ep-summary { font-size: 13px; color: var(--ve-text-70); line-height: 1.5; }
+
+    .btn-secondary {
+      background: transparent; color: var(--ve-text); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px;
+      text-decoration: none; border: 1.5px solid rgba(0,0,0,0.15); display: inline-flex; align-items: center;
+    }
+    .btn-secondary:hover { border-color: rgba(0,0,0,0.4); }
+
+    .footer { padding: 32px 48px; border-top: 1px solid var(--ve-border); text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ve-text-50); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
+      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
+    </a>
+    <div class="nav-links">
+      <a href="/pulse">Pulse</a>
+      <a href="/directory">Directory</a>
+      <a href="/partners">Partners</a>
+      <a href="/podcast">Podcast Network</a>
+    </div>
+  </nav>
+
+  <header class="show-hero">
+    <div class="show-hero-art" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/a0/99/53/a099536e-ce80-ef47-ff90-c9cf600fc2e8/mza_11962273234771203853.jpg/600x600bb.jpg')"></div>
+    <div class="show-hero-body">
+      <a href="/podcast" class="breadcrumb">&larr; Podcast Network</a>
+      <h1>Vegans Who Lift Podcast</h1>
+      <p>Plant-based strength, muscle, and performance: athletes, coaches, and everyday lifters proving vegan and strong go together.</p>
+      <div class="show-hero-count">31 Episodes</div>
+      
+    <div class="subscribe-row">
+      <a class="subscribe-btn spotify" href="https://open.spotify.com/show/5Pr82Chfg3dYfoHHFizyAQ" target="_blank" rel="noopener">&#9834; Spotify</a>
+      <a class="subscribe-btn apple" href="https://podcasts.apple.com/us/podcast/vegans-who-lift-podcast/id1727178761" target="_blank" rel="noopener">&#63743; Apple Podcasts</a>
+      <a class="subscribe-btn amazon" href="https://music.amazon.com/podcasts/00369107-b712-4428-8b2f-11eae52ecd5c/vegans-who-lift-podcast" target="_blank" rel="noopener">&#9658; Amazon Music</a>
+      <a class="subscribe-btn youtube" href="https://www.youtube.com/playlist?list=PLpfk6e8BPu-yGPRsXO_dkasruqeYbNQQt" target="_blank" rel="noopener">&#9658; YouTube</a>
+    </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>All Episodes</h2>
+    </div>
+    <div class="ep-grid">
+      <a class="ep-card" href="/pulse/why-vegan-fitness-coaches-struggle-and-how-to-fix-it-s5e7-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/0G4rVMdA99I/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 28, 2025</span>
+          <h3 class="ep-title">Why Vegan Fitness Coaches Struggle (And How to Fix It!) | S5E7 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">💪 “What if everything you thought you needed to start a business was just holding you back?</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/mental-health-muscle-gains-inside-vegan-bodybuilding-life-s5e6-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/RS3-bcf2W7s/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 22, 2025</span>
+          <h3 class="ep-title">Mental Health &amp; Muscle Gains: Inside Vegan Bodybuilding Life | S5E6 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Ever wondered what it’s like to juggle bodybuilding, business, and life on the road—all while staying Vegan?</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/how-feldi-uses-music-to-fight-for-animal-rights-veganism-s5e5-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/b7eSSMpP6lc/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 14, 2025</span>
+          <h3 class="ep-title">How Feldi Uses Music to Fight for Animal Rights &amp; Veganism | S5E5 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">What happens when Vegan activism, fitness, and music collide? 🎤💪 In this episode of Vegans Who Lift Podcast, hosts John Thomas (The Bodybuil</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-meat-to-plants-omar-glaspys-vegan-bodybuilding-success-s5e4-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/4-GzY7JuIY8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 6, 2025</span>
+          <h3 class="ep-title">From Meat to Plants: Omar Glaspy’s Vegan Bodybuilding Success | S5E4 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">🔥 What if everything you thought you knew about strength and nutrition was wrong? 💪 Season 5, Episode 4 of the Vegans Who Lift Podcast featu</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/how-to-build-strength-and-community-in-vegan-fitness-e3-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/xXbGfYki_LQ/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 28, 2025</span>
+          <h3 class="ep-title">How to Build Strength and Community in Vegan Fitness | S5E3 | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Season 05, Episode 03 of the Vegans Who Lift Podcast brings together John Thomas, the Bodybuilding Vegan, and Brooke Sellers, also known as </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/brooke-johns-favorite-clips-vegans-who-lift-s-1-4-recap">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/-HxtCEkaotY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 26, 2024</span>
+          <h3 class="ep-title">Brooke &amp; John’s Favorite Clips | Vegans Who Lift S 1-4 Recap</h3>
+          <p class="ep-summary">John Thomas (The Bodybuilding Vegan) and Brooke Sellers (Ms. Meatless Muscle) close out the year with a heartfelt reflection on the most pow</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/2025-vegan-bodybuilding-goals-insights-from-miss-meatless-muscle-and-the-bodybuilding-vegan">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/eClXodP_DMY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 6, 2024</span>
+          <h3 class="ep-title">2025 Vegan Bodybuilding Goals: Insights from Miss Meatless Muscle and The Bodybuilding Vegan</h3>
+          <p class="ep-summary">Hosts John Thomas and Brooke Sellers kick off Season 4, Episode 9 with a humorous yet insightful discussion about their fitness struggles, l</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/must-have-gym-essentials-for-vegan-fitness-enthusiasts-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/J4OCojrF2pw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 29, 2024</span>
+          <h3 class="ep-title">Must-Have Gym Essentials for Vegan Fitness Enthusiasts | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In Season 04, Episode 08 of the Vegans Who Lift Podcast , co-hosts John Thomas, aka the BodybuildingVegan, and Brooke Sellers, aka Miss Meat</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-vegan-alternatives-for-eggs-cheese-more-vegans-who-lift-podcast-season-3-finale">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/S_IeLDvr9h0/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 3, 2024</span>
+          <h3 class="ep-title">Top Vegan Alternatives for Eggs, Cheese &amp; More! | Vegans Who Lift Podcast Season 3 Finale</h3>
+          <p class="ep-summary">In this season finale, John and Brooke dive into the intricacies of maintaining a vegan lifestyle while excelling in the fitness world.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-zero-to-youtube-star-alex-yabonks-path-in-veganism-and-animal-advocacy-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/FmVOb32SZPQ/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Sep 4, 2024</span>
+          <h3 class="ep-title">From Zero to YouTube Star: Alex Yabonks Path in Veganism and Animal Advocacy | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In this heartfelt episode of Vegans Who Lift , John Thomas and Brooke Sellers sit down with Alex YaBonks, a passionate animal advocate and f</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/qa-sessions-muscle-engagement-hydration-hacks-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/2uaw5UWThFE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Aug 27, 2024</span>
+          <h3 class="ep-title">Q&amp;A Sessions: Muscle Engagement &amp; Hydration Hacks | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Join John and Brooke in this candid Q&amp;A session where they tackle some of the most common challenges faced by both new and seasoned athletes</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/mental-health-tips-for-vegan-athletes-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/Fpl13gO-6Es/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Aug 20, 2024</span>
+          <h3 class="ep-title">Mental Health Tips for Vegan Athletes | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In this eye-opening episode of the &quot;Vegans Who Lift&quot; podcast, hosts John Thomas and Brooke Sellers return to share their latest personal and</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/how-to-overcome-gym-burnout-vegan-experts-share-tips-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/6poP6Wvcstw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Aug 13, 2024</span>
+          <h3 class="ep-title">How to Overcome Gym Burnout: Vegan Experts Share Tips | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In this episode, John and Brooke tackle the pervasive issue of burnout in the fitness community, offering personal anecdotes and practical a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/grow-your-social-media-expert-advice-from-vegan-fitness-coaches-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/xWUVvosTfQw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Aug 6, 2024</span>
+          <h3 class="ep-title">Grow Your Social Media: Expert Advice from Vegan Fitness Coaches | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Discover the secrets to social media success with John Thomas, Vegan Fitness Coache , the Bodybuilding Vegan, and Brooke Sellers, Miss Meatl</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-10-vegan-supplements-for-bodybuilders-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/xWUVvosTfQw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 31, 2024</span>
+          <h3 class="ep-title">Top 10 Vegan Supplements for Bodybuilders | Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In Season 03, Episode 03 of the Vegans Who Lift Podcast, John Thomas, the Bodybuilding Vegan, and Brooke Sellers, Ms. Meatless Muscle, dive </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/join-the-vegans-who-lift-academy">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/paCoNqFuYiw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">May 17, 2024</span>
+          <h3 class="ep-title">Join The Vegans Who Lift Coaching Academy!</h3>
+          <p class="ep-summary">Are you a vegan fitness enthusiast looking to elevate your game? The Vegans Who Lift Coaching Academy, hosted by Brooke Sellers (Miss Meatle</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/taking-the-leap-leaving-9-to-5-for-9-to-9">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/K-2Cf0jCP3U/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Apr 30, 2024</span>
+          <h3 class="ep-title">Taking the Leap: Leaving 9-to-5 for 9-to-9 – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">This episode of the &quot;Vegans Who Lift&quot; podcast on the Vegans Explore Network provides valuable insights into the challenges and rewards of le</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-with-giacomo-marchese-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/pKoj9glYNvY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Apr 23, 2024</span>
+          <h3 class="ep-title">Getting Real with Giacomo Marchese – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In this episode of the &quot;Vegans Who Lift&quot; podcast, hosts Brooke Sellers and John Thomas welcome back listeners to Season 2. They start with a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-with-sean-russell-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/2waI2bn98Qs/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Apr 16, 2024</span>
+          <h3 class="ep-title">Getting Real with Sean Russell – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In the season finale of the Vegans Who Lift Podcast, John Thomas, the BodybuildingVegan, and Brooke Sellers, Miss Meatless Muscle, are joine</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/qa-session-part-2-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/ePcYcf3jAog/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Apr 9, 2024</span>
+          <h3 class="ep-title">Q&amp;A Session Part 2 – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Brooke Sellers Miss Meatless Muscle and John Thomas The BodybuildingVegan continue their second round of Q&amp;A where they cover various topics</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-with-natalie-matthews-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/86p2GkbbMb8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Apr 2, 2024</span>
+          <h3 class="ep-title">Getting Real with Natalie Matthews – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Natalie Matthews joins hosts John Thomas The BodybuildingVegan and Brooke Sellers Miss Meatless Muscle on the Vegans Who Lift Podcast.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/qa-session-part-1-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/1Qa6kxex6zM/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 26, 2024</span>
+          <h3 class="ep-title">Q&amp;A Session Part 1 – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Brooke Sellers Miss Meatless Muscle and John Thomas The BodybuildingVegan devote the entire episode to answering listener questions. This ep</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-about-coaching-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/XZrOmIx6_FM/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 19, 2024</span>
+          <h3 class="ep-title">Getting Real About Coaching – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In this episode, Brooke Sellers Miss Meatless Muscle, and John Thomas The BodybuildingVegan take a deep dive into coaching.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-about-relationships-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/to8k-enm6SM/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 12, 2024</span>
+          <h3 class="ep-title">Getting Real About Relationships – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In this emotionally charged and thought-provoking episode of the Vegans Who Lift Podcast, hosts Brooke Sellers and John Thomas delve into th</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-with-dani-taylor-from-vegan-proteins-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/n7sayevS_8E/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 5, 2024</span>
+          <h3 class="ep-title">Getting Real with Dani Taylor from Vegan Proteins – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Dani Taylor, co-founder of Vegan Proteins and a prominent figure in Team Plantbuilt, graces the Vegans Who Lift Podcast, hosted by John Thom</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-about-giving-back-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/wuvnOFXQY7I/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 27, 2024</span>
+          <h3 class="ep-title">Getting Real About Giving Back – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In this exciting episode, we&#x27;re thrilled to welcome Brent Hagood from the renowned nonprofit, One to Save Many.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/20-of-the-biggest-fitness-myths-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/Qyhl-lCa-v4/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 20, 2024</span>
+          <h3 class="ep-title">20 of the Biggest Fitness Myths – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Join John Thomas, The Bodybuilding Vegan, and Brooke Sellers, Miss Meatless Muscle, as they tackle and debunk 20 of the most pervasive fitne</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-with-robert-cheeke-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/Sd4vxfSg5Og/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 13, 2024</span>
+          <h3 class="ep-title">Getting Real with Robert Cheeke – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Robert Cheeke, the Godfather of Vegan Bodybuilding joins John Thomas and Brooke Sellers on the Vegans Who Lift Podcast.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-about-bodybuilding-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/ViIyJBzzw4M/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 6, 2024</span>
+          <h3 class="ep-title">Getting Real About Bodybuilding – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">Listen to the latest episode of the Vegans Who Lift Podcast with John Thomas and Brooke Sellers where they get real about Bodybuilding.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/getting-real-about-veganism-vegans-who-lift-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/78Fpa8wDYBc/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 30, 2024</span>
+          <h3 class="ep-title">Getting Real About Veganism – Vegans Who Lift Podcast</h3>
+          <p class="ep-summary">In the first official episode of the Vegans Who Lift Podcast, hosts Brooke Sellers (Miss Meatless Muscle) and John Thomas (The Bodybuilding </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-who-lift-podcast-preview-episode">
+        <div class="ep-thumb" style="background-image:url('')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 24, 2024</span>
+          <h3 class="ep-title">Vegans Who Lift Podcast – Preview Episode</h3>
+          <p class="ep-summary">Hosts John Thomas The Bodybuilding Vegan and Brooke Sellers Miss Meatless Muscle share their Vegan Origin stories and motivations for starti</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Vegans Explore: Plant-based travel, worldwide.</span>
+  </footer>
+
+</body>
+</html>
