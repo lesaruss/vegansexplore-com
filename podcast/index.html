@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegans Explore Podcast Network - Listen &amp; Partner With Us</title>
+  <meta name="description" content="Explore every Vegans Explore Podcast episode, and join our Podcast Network as a partner show: get promoted through our ad network, join outreach campaigns, and grow your audience.">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-text: #1a1a1a;
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-70: rgba(26,26,26,0.70);
+      --ve-border: rgba(0,0,0,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: #fff;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    /* Nav */
+    .nav {
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--ve-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .nav-links a { text-decoration: none; color: var(--ve-text-70); }
+    .nav-links a:hover { color: var(--ve-green); }
+    @media (max-width: 720px) { .nav-links { display: none; } }
+
+    /* Hero */
+    .hero {
+      padding: 90px 48px 70px;
+      text-align: center;
+      background: linear-gradient(180deg, var(--ve-green-light) 0%, #fff 100%);
+    }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ve-green-dark); margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900;
+      line-height: 1.1;
+      max-width: 820px;
+      margin: 0 auto 20px;
+    }
+    .hero p {
+      font-size: 17px;
+      color: var(--ve-text-70);
+      max-width: 620px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+    .hero-stats {
+      display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; margin-top: 8px;
+    }
+    .hero-stat-num { font-size: 30px; font-weight: 900; color: var(--ve-green); }
+    .hero-stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-50); margin-top: 4px; }
+
+    .btn-primary {
+      background: var(--ve-green); color: #fff; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 16px 36px; border-radius: 4px;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--ve-green-dark); }
+    .btn-secondary {
+      background: transparent; color: var(--ve-text); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px;
+      text-decoration: none; border: 1.5px solid rgba(0,0,0,0.15); display: inline-flex; align-items: center;
+    }
+    .btn-secondary:hover { border-color: rgba(0,0,0,0.4); }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 44px; }
+
+    /* Episode grid */
+    .section { padding: 70px 48px; max-width: 1180px; margin: 0 auto; }
+    .section-head { text-align: center; margin-bottom: 44px; }
+    .section-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-orange-dark); margin-bottom: 10px; }
+    .section-head h2 { font-size: clamp(26px, 3.5vw, 36px); font-weight: 900; margin-bottom: 12px; }
+    .section-head p { color: var(--ve-text-70); max-width: 560px; margin: 0 auto; }
+
+    .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    .ep-card { text-decoration: none; color: var(--ve-text); display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--ve-border); transition: box-shadow 0.15s, transform 0.15s; }
+    .ep-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .ep-thumb { position: relative; height: 150px; background-size: cover; background-position: center; background-color: #eee; }
+    .ep-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; padding-left: 3px;
+    }
+    .ep-body { padding: 16px; }
+    .ep-cat { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .ep-title { font-size: 15px; font-weight: 800; line-height: 1.35; margin: 8px 0 8px; }
+    .ep-summary { font-size: 13px; color: var(--ve-text-70); line-height: 1.5; }
+
+    .see-all-row { text-align: center; margin-top: 40px; }
+
+    /* Network pitch */
+    .network-section { background: #101514; color: #fff; padding: 80px 48px; }
+    .network-inner { max-width: 1000px; margin: 0 auto; }
+    .network-section .section-eyebrow { color: var(--ve-orange); }
+    .network-section .section-head h2 { color: #fff; }
+    .network-section .section-head p { color: rgba(255,255,255,0.72); }
+
+    .how-it-works { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin: 48px 0 56px; }
+    .how-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; padding: 28px 24px; }
+    .how-num { font-size: 12px; font-weight: 800; color: var(--ve-orange); letter-spacing: 0.1em; margin-bottom: 12px; }
+    .how-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 10px; }
+    .how-card p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.72); }
+
+    .no-risk-banner {
+      display: flex; align-items: center; gap: 14px; background: rgba(58,155,62,0.15);
+      border: 1px solid rgba(58,155,62,0.35); border-radius: 8px; padding: 18px 24px; margin-bottom: 56px;
+      font-size: 14px; color: #d9f2da; line-height: 1.6;
+    }
+    .no-risk-banner b { color: #fff; }
+
+    /* Form */
+    .form-card { background: #fff; color: var(--ve-text); border-radius: 12px; padding: 40px; max-width: 680px; margin: 0 auto; }
+    .form-card h3 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+    .form-card > p { color: var(--ve-text-70); font-size: 14px; margin-bottom: 28px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--ve-border); border-radius: 6px;
+      font-family: inherit; font-size: 14px; color: var(--ve-text);
+    }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--ve-green); }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .form-submit { width: 100%; margin-top: 8px; }
+    .form-note { font-size: 12px; color: var(--ve-text-50); margin-top: 14px; text-align: center; }
+    #form-status { margin-top: 16px; font-size: 14px; font-weight: 700; text-align: center; display: none; }
+    #form-status.success { color: var(--ve-green-dark); }
+    #form-status.error { color: #8a1f1f; }
+
+    /* Footer */
+    .footer { padding: 32px 48px; border-top: 1px solid var(--ve-border); text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ve-text-50); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
+      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
+    </a>
+    <div class="nav-links">
+      <a href="/pulse">Pulse</a>
+      <a href="/directory">Directory</a>
+      <a href="/partners">Partners</a>
+      <a href="#join-network">Join the Network</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-eyebrow">Vegans Explore Podcast Network</div>
+    <h1>Every episode we've made. Every show we want to help grow.</h1>
+    <p>224 episodes and counting, covering the people, businesses, and ideas shaping the vegan movement. If you host a podcast too, this is where you plug into our audience, our ad network, and our campaigns.</p>
+    <div class="hero-ctas">
+      <a href="#episodes" class="btn-primary">Browse Episodes</a>
+      <a href="#join-network" class="btn-secondary">Join the Network</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">224</div><div class="hero-stat-label">Episodes Published</div></div>
+      <div><div class="hero-stat-num">9</div><div class="hero-stat-label">Topic Categories</div></div>
+      <div><div class="hero-stat-num">6</div><div class="hero-stat-label">City Communities Reached</div></div>
+    </div>
+  </header>
+
+  <section class="section" id="episodes">
+    <div class="section-head">
+      <div class="section-eyebrow">Listen</div>
+      <h2>The Vegans Explore Podcast</h2>
+      <p>Our own daily and weekly conversations with vegan founders, advocates, and community builders -- straight from the Pulse content network.</p>
+    </div>
+    <div class="ep-grid">
+      
+      <a class="ep-card" href="/pulse/top-10-recent-wins-for-animals-that-show-real-momentum">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/zEJx7ACo_J0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Animal Rights</span>
+          <h3 class="ep-title">Top 10 Recent Wins for Animals That Show Real Momentum</h3>
+          <p class="ep-summary">Stepping back from the heavy headlines to count down 10 real animal-welfare wins from the past year, spanning fashion, entertainme…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-weight-loss-to-vegan-living-and-back-again">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/iN_CVlfrGrE/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">From Weight Loss to Vegan Living… and Back Again</h3>
+          <p class="ep-summary">Transformation isn&#x27;t a straight line. Sean A. Russell traces his own path through weight loss, a first pass at performance-driven …</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-31-vegan-food-names-are-being-targeted">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/QCocSdRVvZo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Policy &amp; Advocacy</span>
+          <h3 class="ep-title">Why 31 Vegan Food Names Are Being Targeted</h3>
+          <p class="ep-summary">The EU has provisionally agreed to restrict 31 meat-related terms, beef, bacon, steak, ribs, from plant-based labels. Sean A. Russ…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/founders-report-building-the-engine">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/eGWwWiDV1Ks/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Founders Report</span>
+          <h3 class="ep-title">Founder&#x27;s Report: Building the Engine</h3>
+          <p class="ep-summary">An unscripted check-in on where Vegans Explore actually stands. Sean A. Russell talks through the LESARUSS Blueprint, the systems-…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/what-id-actually-buy-starting-a-healthy-plant-based-diet">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/kurvi2oehxM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">What I&#x27;d Actually Buy Starting a Healthy Plant-Based Diet</h3>
+          <p class="ep-summary">If your kitchen isn&#x27;t set up right, you&#x27;ll struggle before you even start. Sean A. Russell walks through the exact foods he&#x27;d buy …</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-bigger-picture-how-food-choices-shape-the-world">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/JRHiytTzhDw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Sustainability &amp; Environment</span>
+          <h3 class="ep-title">The Bigger Picture: How Food Choices Shape the World</h3>
+          <p class="ep-summary">Most people start plant-based eating for personal reasons, then discover it connects to something much larger. Sean A. Russell clo…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/navigating-the-world-eating-plant-based-in-real-life">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/uTNMclV6xBA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Culture &amp; Media</span>
+          <h3 class="ep-title">Navigating the World: Eating Plant-Based in Real Life</h3>
+          <p class="ep-summary">The biggest worry about eating plant-based usually isn&#x27;t the food, it&#x27;s the social situations. Sean A. Russell continues the Pre-V…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-energy-shift-how-food-influences-how-you-feel">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/kj643jmAoJ0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">The Energy Shift: How Food Influences How You Feel</h3>
+          <p class="ep-summary">Food is information for the body, not just fuel. Sean A. Russell continues the Pre-Vegan Path with how plant-based meals affect en…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/simple-plant-based-swaps-that-make-life-easier">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/2FWlcic4b-Y/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Simple Plant-Based Swaps That Make Life Easier</h3>
+          <p class="ep-summary">Going plant-based does not require a full overhaul. Sean A. Russell continues the Pre-Vegan Path with the specific, low-effort swa…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-so-many-people-are-re-thinking-their-food">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/7xHYKibN86Y/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Culture &amp; Media</span>
+          <h3 class="ep-title">Why So Many People Are Re-Thinking Their Food</h3>
+          <p class="ep-summary">The word vegan can feel like an all-or-nothing identity shift. Sean A. Russell opens the Pre-Vegan Path series with a pressure-fre…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/building-legacy-and-strengthening-the-vegan-movement-seasoned">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/5uw0oYbx5xo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Building Legacy and Strengthening the Vegan Movement</h3>
+          <p class="ep-summary">The movement we see today was built over decades by people navigating it with almost no support. Sean A. Russell closes the Season…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/supporting-pre-vegans-without-pressure">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/uAkkvBpxzLw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Supporting Pre-Vegans Without Pressure</h3>
+          <p class="ep-summary">Perfection culture pushes people away rather than pulling them in. Sean A. Russell continues the Seasoned Vegan series with how ex…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/nutrition-for-long-term-vegan-health">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Ff3qjo9w8oM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Nutrition for Long-Term Vegan Health</h3>
+          <p class="ep-summary">What works in your 20s may need adjusting by your 50s. Sean A. Russell continues the Seasoned Vegan series with a practical rundow…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/aging-well-as-a-seasoned-vegan">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/_gTBubr8U2A/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Health &amp; Nutrition</span>
+          <h3 class="ep-title">Aging Well as a Seasoned Vegan</h3>
+          <p class="ep-summary">Seasoned vegans already have a strong foundation for long-term health. Sean A. Russell continues the Seasoned Vegan series with he…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-evolution-of-a-seasoned-vegan">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/BPbJrRlQWlA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">The Evolution of a Seasoned Vegan</h3>
+          <p class="ep-summary">Being vegan stops feeling like an identity and starts feeling like a normal way of life. Sean A. Russell opens the Seasoned Vegan …</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/building-infrastructure-that-lasts">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/W1fsWQg38Rs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Building Infrastructure That Lasts</h3>
+          <p class="ep-summary">If a nonprofit only moves forward when its founder is energized, it&#x27;s fragile. Sean A. Russell closes the five-part nonprofit seri…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-volunteers-to-leaders">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/w88CYhtKn0A/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">From Volunteers to Leaders</h3>
+          <p class="ep-summary">If everything in your nonprofit depends on one or two exhausted leaders, burnout is inevitable. Sean A. Russell breaks down how de…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/fundraising-systems-for-stability">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/lkGeCQHmcZk/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Fundraising Systems for Stability</h3>
+          <p class="ep-summary">Events are spikes, not systems. Sean A. Russell breaks down how small nonprofits can move from event-only donations to recurring m…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/marketing-that-converts-without-a-big-budget">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/QaTvklNQido/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Marketing That Converts Without a Big Budget</h3>
+          <p class="ep-summary">For small grassroots nonprofits the real problem usually isn&#x27;t reach, it&#x27;s conversion. Sean A. Russell breaks down storytelling, c…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-vegan-nonprofits-burn-out-and-what-to-do-instead">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/xYF6ssCY4jA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Community Spotlight</span>
+          <h3 class="ep-title">Why Vegan Nonprofits Burn Out and What to Do Instead</h3>
+          <p class="ep-summary">Passion alone does not create sustainability. Sean A. Russell opens a five-part series on small grassroots vegan nonprofits with t…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-personal-brand-to-digital-asset">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/WyFCatuOdtU/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Culture &amp; Media</span>
+          <h3 class="ep-title">From Personal Brand to Digital Asset</h3>
+          <p class="ep-summary">Is your personal brand an asset, or just attention tied to your personality? Sean A. Russell traces the path from personal brand t…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-most-creators-burn-out-after-3-years">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ZO1j0bAc8Io/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Culture &amp; Media</span>
+          <h3 class="ep-title">Why Most Creators Burn Out After 3 Years</h3>
+          <p class="ep-summary">Burnout around year three isn&#x27;t random, it&#x27;s structural. Sean A. Russell breaks down five causes, from identity fused to metrics t…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-90-day-creator-operating-system">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/YPVB_jgGyaw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Culture &amp; Media</span>
+          <h3 class="ep-title">The 90-Day Creator Operating System</h3>
+          <p class="ep-summary">Inspiration is emotional management, not operational management. Sean A. Russell breaks down the five components of a 90-day creat…</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-community-flywheel-how-to-turn-listeners-into-contributors">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/GbM0hS1TLKg/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-cat">Culture &amp; Media</span>
+          <h3 class="ep-title">The Community Flywheel: How to Turn Listeners Into Contributors</h3>
+          <p class="ep-summary">Virality is unpredictable, belonging is engineered. Sean A. Russell explains how giving an audience a real role, not just a place …</p>
+        </div>
+      </a>
+    </div>
+    <div class="see-all-row">
+      <a href="/pulse" class="btn-secondary">See All 224 Episodes on Pulse</a>
+    </div>
+  </section>
+
+  <section class="network-section" id="join-network">
+    <div class="network-inner">
+      <div class="section-head">
+        <div class="section-eyebrow">For Podcast Hosts</div>
+        <h2>Bring your show into the network</h2>
+        <p>We're opening the Vegans Explore Podcast Network to other vegan and plant-based shows. The pitch is simple: we promote you, you get exposure to our audience and campaigns, and you stay only as long as it's working for you.</p>
+      </div>
+
+      <div class="how-it-works">
+        <div class="how-card">
+          <div class="how-num">01</div>
+          <h3>We promote your show</h3>
+          <p>Your podcast gets featured across our ad network and outreach campaigns -- the same channels we use to grow our own audience.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">02</div>
+          <h3>You share your numbers</h3>
+          <p>Give us visibility into your downloads and audience so we can track real impact and match you with the right campaigns.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">03</div>
+          <h3>You join active campaigns</h3>
+          <p>As sponsorship and partner campaigns come through Vegans Explore, network shows get first access to participate.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">04</div>
+          <h3>Stay as long as it works</h3>
+          <p>We run it as a trial. If you're not seeing a benefit, you're free to step back -- no contracts, no hard feelings.</p>
+        </div>
+      </div>
+
+      <div class="no-risk-banner">
+        <span>&#128736;</span>
+        <span><b>No-risk trial:</b> worst case, you're giving us access to your numbers and staying open to campaigns for a period of time. If it's not delivering value, we part ways -- no harm, no foul.</span>
+      </div>
+
+      <div class="form-card" id="signup-form-card">
+        <h3>Apply to join the network</h3>
+        <p>Tell us about your show. We'll review and follow up by email.</p>
+        <form id="podcast-network-form">
+          <div class="form-row">
+            <div class="field">
+              <label for="podcast_name">Podcast Name *</label>
+              <input type="text" id="podcast_name" name="podcast_name" required>
+            </div>
+            <div class="field">
+              <label for="host_names">Host Name(s) *</label>
+              <input type="text" id="host_names" name="host_names" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="contact_name">Your Name *</label>
+              <input type="text" id="contact_name" name="contact_name" required>
+            </div>
+            <div class="field">
+              <label for="contact_email">Email *</label>
+              <input type="email" id="contact_email" name="contact_email" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="website">Website / RSS Link</label>
+              <input type="url" id="website" name="website" placeholder="https://">
+            </div>
+            <div class="field">
+              <label for="audience_size_estimate">Audience / Downloads (est.)</label>
+              <input type="text" id="audience_size_estimate" name="audience_size_estimate" placeholder="e.g. 2,000 downloads/episode">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="youtube_url">YouTube</label>
+              <input type="url" id="youtube_url" name="youtube_url" placeholder="https://">
+            </div>
+            <div class="field">
+              <label for="spotify_url">Spotify / Apple Podcasts</label>
+              <input type="url" id="spotify_url" name="spotify_url" placeholder="https://">
+            </div>
+          </div>
+          <div class="field">
+            <label for="message">Tell us about your show</label>
+            <textarea id="message" name="message" placeholder="What's your show about, and why do you want to join the network?"></textarea>
+          </div>
+          <button type="submit" class="btn-primary form-submit">Submit Application</button>
+          <div id="form-status"></div>
+          <p class="form-note">We review every application and follow up personally -- usually within a few days.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Vegans Explore: Plant-based travel, worldwide.</span>
+  </footer>
+
+  <script>
+    var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+    document.getElementById('podcast-network-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var statusEl = document.getElementById('form-status');
+      var submitBtn = e.target.querySelector('button[type="submit"]');
+      var payload = {
+        podcast_name: document.getElementById('podcast_name').value,
+        host_names: document.getElementById('host_names').value,
+        contact_name: document.getElementById('contact_name').value,
+        contact_email: document.getElementById('contact_email').value,
+        website: document.getElementById('website').value || null,
+        audience_size_estimate: document.getElementById('audience_size_estimate').value || null,
+        youtube_url: document.getElementById('youtube_url').value || null,
+        spotify_url: document.getElementById('spotify_url').value || null,
+        message: document.getElementById('message').value || null,
+        source: 'podcast_network_page'
+      };
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+      fetch(SUPABASE_URL + '/rest/v1/podcast_network_partners', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      }).then(function(res) {
+        if (res.ok) {
+          statusEl.textContent = "Thanks! We've received your application and will follow up soon.";
+          statusEl.className = 'success';
+          statusEl.style.display = 'block';
+          e.target.reset();
+        } else {
+          throw new Error('Request failed');
+        }
+      }).catch(function() {
+        statusEl.textContent = 'Something went wrong. Please try again or email us directly.';
+        statusEl.className = 'error';
+        statusEl.style.display = 'block';
+      }).finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+      });
+    });
+  </script>
+
+</body>
+</html>
