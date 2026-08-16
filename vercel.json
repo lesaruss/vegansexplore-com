@@ -108,10 +108,6 @@
       "destination": "https://archive.vegansexplore.com/body-building-vegan-showcase-on-vegans-explore/"
     },
     {
-      "source": "/bodybuildingvegan",
-      "destination": "https://archive.vegansexplore.com/bodybuildingvegan/"
-    },
-    {
       "source": "/brooke-johns-favorite-clips-vegans-who-lift-s-1-4-recap",
       "destination": "https://archive.vegansexplore.com/brooke-johns-favorite-clips-vegans-who-lift-s-1-4-recap/"
     },
@@ -1388,10 +1384,6 @@
       "destination": "https://archive.vegansexplore.com/the-truth-about-soy-e15-pre-vegans-podcast/"
     },
     {
-      "source": "/the-vegan-foodie-fest-miami",
-      "destination": "https://archive.vegansexplore.com/the-vegan-foodie-fest-miami/"
-    },
-    {
       "source": "/the-vegan-halal-cart-showcase-on-vegans-explore-squad",
       "destination": "https://archive.vegansexplore.com/the-vegan-halal-cart-showcase-on-vegans-explore-squad/"
     },
@@ -1600,16 +1592,8 @@
       "destination": "https://archive.vegansexplore.com/vegans-of-the-world-showcase-on-vegans-explore/"
     },
     {
-      "source": "/vegans-who-lift-academy",
-      "destination": "https://archive.vegansexplore.com/vegans-who-lift-academy/"
-    },
-    {
       "source": "/vegans-who-lift-podcast-preview-episode",
       "destination": "https://archive.vegansexplore.com/vegans-who-lift-podcast-preview-episode/"
-    },
-    {
-      "source": "/vegans-who-lift-thank-you",
-      "destination": "https://archive.vegansexplore.com/vegans-who-lift-thank-you/"
     },
     {
       "source": "/vegans-who-lift",
@@ -2943,6 +2927,26 @@
     {
       "source": "/regions/new-york/events",
       "destination": "/communities/new-york?tab=events",
+      "permanent": true
+    },
+    {
+      "source": "/vegans-who-lift-academy",
+      "destination": "/archive/vegans-who-lift-academy",
+      "permanent": true
+    },
+    {
+      "source": "/vegans-who-lift-thank-you",
+      "destination": "/archive/vegans-who-lift-thank-you",
+      "permanent": true
+    },
+    {
+      "source": "/bodybuildingvegan",
+      "destination": "/archive/bodybuildingvegan",
+      "permanent": true
+    },
+    {
+      "source": "/the-vegan-foodie-fest-miami",
+      "destination": "/archive/the-vegan-foodie-fest-miami",
       "permanent": true
     }
   ]
