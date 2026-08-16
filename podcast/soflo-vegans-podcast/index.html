@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoFlo Vegans Podcast - Listen to Every Episode | Vegans Explore</title>
+  <meta name="description" content="South Florida&#x27;s vegan community show: local restaurant spotlights, guest interviews, and the people building the SoFlo vegan movement since 2018. Listen to all 29 episodes and subscribe on Spotify, Apple Podcasts, Amazon Music, or YouTube.">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-text: #1a1a1a;
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-70: rgba(26,26,26,0.70);
+      --ve-border: rgba(0,0,0,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: #fff;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .nav {
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--ve-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .nav-links a { text-decoration: none; color: var(--ve-text-70); }
+    .nav-links a:hover { color: var(--ve-green); }
+    @media (max-width: 720px) { .nav-links { display: none; } }
+
+    .show-hero {
+      padding: 64px 48px 56px;
+      background: linear-gradient(180deg, var(--ve-green-light) 0%, #fff 100%);
+      display: flex; gap: 36px; align-items: center; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
+    }
+    .show-hero-art { width: 180px; height: 180px; border-radius: 16px; background-size: cover; background-position: center; background-color: #eee; flex-shrink: 0; box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
+    .show-hero-body { flex: 1; min-width: 260px; }
+    .breadcrumb { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); text-decoration: none; display: inline-block; margin-bottom: 14px; }
+    .breadcrumb:hover { color: var(--ve-green-dark); }
+    .show-hero h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 900; line-height: 1.1; margin-bottom: 14px; }
+    .show-hero p { font-size: 15px; color: var(--ve-text-70); line-height: 1.6; max-width: 560px; margin-bottom: 18px; }
+    .show-hero-count { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 18px; }
+
+    .subscribe-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .subscribe-btn {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.04em; padding: 11px 18px; border-radius: 6px; text-decoration: none;
+      border: 1.5px solid var(--ve-border); color: var(--ve-text);
+    }
+    .subscribe-btn:hover { border-color: rgba(0,0,0,0.35); }
+    .subscribe-btn.spotify { border-color: #1DB95440; }
+    .subscribe-btn.apple { border-color: #FA57C140; }
+    .subscribe-btn.amazon { border-color: #00A8E140; }
+    .subscribe-btn.youtube { border-color: #FF000040; }
+
+    .section { padding: 56px 48px 90px; max-width: 1180px; margin: 0 auto; }
+    .section-head { margin-bottom: 32px; }
+    .section-head h2 { font-size: 22px; font-weight: 900; }
+
+    .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    .ep-card { text-decoration: none; color: var(--ve-text); display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--ve-border); transition: box-shadow 0.15s, transform 0.15s; }
+    .ep-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .ep-thumb { position: relative; height: 150px; background-size: cover; background-position: center; background-color: #eee; }
+    .ep-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; padding-left: 3px;
+    }
+    .ep-body { padding: 16px; }
+    .ep-cat { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .ep-date { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-50); }
+    .ep-title { font-size: 15px; font-weight: 800; line-height: 1.35; margin: 8px 0 8px; }
+    .ep-summary { font-size: 13px; color: var(--ve-text-70); line-height: 1.5; }
+
+    .btn-secondary {
+      background: transparent; color: var(--ve-text); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px;
+      text-decoration: none; border: 1.5px solid rgba(0,0,0,0.15); display: inline-flex; align-items: center;
+    }
+    .btn-secondary:hover { border-color: rgba(0,0,0,0.4); }
+
+    .footer { padding: 32px 48px; border-top: 1px solid var(--ve-border); text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ve-text-50); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
+      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
+    </a>
+    <div class="nav-links">
+      <a href="/pulse">Pulse</a>
+      <a href="/directory">Directory</a>
+      <a href="/partners">Partners</a>
+      <a href="/podcast">Podcast Network</a>
+    </div>
+  </nav>
+
+  <header class="show-hero">
+    <div class="show-hero-art" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"></div>
+    <div class="show-hero-body">
+      <a href="/podcast" class="breadcrumb">&larr; Podcast Network</a>
+      <h1>SoFlo Vegans Podcast</h1>
+      <p>South Florida&#x27;s vegan community show: local restaurant spotlights, guest interviews, and the people building the SoFlo vegan movement since 2018.</p>
+      <div class="show-hero-count">29 Episodes</div>
+      
+    <div class="subscribe-row">
+      <a class="subscribe-btn spotify" href="https://open.spotify.com/show/0AjEvjgjAWPWr8GsuyCkcz" target="_blank" rel="noopener">&#9834; Spotify</a>
+      <a class="subscribe-btn apple" href="https://podcasts.apple.com/us/podcast/soflo-vegans-podcast/id1368665222" target="_blank" rel="noopener">&#63743; Apple Podcasts</a>
+      <a class="subscribe-btn amazon" href="https://music.amazon.com/podcasts/36a26496-7ed5-455e-94d3-00ed1c14b5b5/soflo-vegans-podcast" target="_blank" rel="noopener">&#9658; Amazon Music</a>
+      <a class="subscribe-btn youtube" href="https://youtube.com/playlist?list=PL-UI3zSy3hJk0g1fs_SMO-Nwgu9WTzBu_" target="_blank" rel="noopener">&#9658; YouTube</a>
+    </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>All Episodes</h2>
+    </div>
+    <div class="ep-grid">
+      <a class="ep-card" href="/pulse/supporting-the-south-florida-vegan-community-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 17, 2025</span>
+          <h3 class="ep-title">Supporting the South Florida Vegan Community</h3>
+          <p class="ep-summary">Community facing challenges; restaurants and nonprofits show up with good food and compassion.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/south-florida-vegan-thanksgiving-guide-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 10, 2025</span>
+          <h3 class="ep-title">South Florida Vegan Thanksgiving Guide</h3>
+          <p class="ep-summary">The first-ever South Florida Vegan Thanksgiving Guide from Vegans Explore.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/compassion-in-action-from-food-insecurity-to-animal-rescue-e109-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/JrcavV6UzG0/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 3, 2025</span>
+          <h3 class="ep-title">Compassion in Action: From Food Insecurity to Animal Rescue | E109 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">In this episode of the SoFlo Vegans Podcast , host Sean A. Russell takes listeners on a journey through South Florida’s compassionate Vegan </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/conscious-business-and-compassion-with-veronica-menin-e108-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/04bnAOTWL64/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 27, 2025</span>
+          <h3 class="ep-title">Conscious Business and Compassion with Veronica Menin | E108 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">This week on the SoFlo Vegans Podcast, host Sean A. Russell sits down with Love Life Café founder Veronica Menin to talk conscious business,</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-vegan-restaurants-in-broward-e107-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/PyEo79YaXlo/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 19, 2025</span>
+          <h3 class="ep-title">Top Vegan Restaurants in Broward | E107 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">In this episode of the SoFlo Vegans Podcast , host Sean A. Russell spotlights the best Vegan and Vegan-friendly restaurants in Broward Count</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/billie-eilishs-top-5-vegan-picks-seaquariums-closure-e106-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/3Frmm4lBM0E/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 12, 2025</span>
+          <h3 class="ep-title">Billie Eilish’s Top 5 Vegan Picks + Seaquarium’s Closure | E106 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">This week on the SoFlo Vegans Podcast, we’re spotlighting Billie Eilish’s top 5 Vegan restaurant picks in Miami, the closure of the Miami Se</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/relaunching-the-south-florida-vegan-movement-e105-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/3Frmm4lBM0E/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 5, 2025</span>
+          <h3 class="ep-title">Relaunching the South Florida Vegan Movement | E105 | SoFlo Vegans Podcast</h3>
+          <p class="ep-summary">The SoFlo Vegans Podcast returns with weekly news, events, and stories fueling the South Florida Vegan movement. Subscribe today. The SoFlo </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dotsie-bausch-riding-towards-a-plant-based-revolution-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 9, 2023</span>
+          <h3 class="ep-title">Dotsie Bausch: Riding Towards a Plant-Based Revolution</h3>
+          <p class="ep-summary">Olympian and vegan activist Dotsie Bausch on her plant-based journey.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vicky-bond-leading-the-charge-for-animal-welfare-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 18, 2023</span>
+          <h3 class="ep-title">Vicky Bond: Leading the Charge for Animal Welfare</h3>
+          <p class="ep-summary">The Humane League&#x27;s president on factory farming reform.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/maxime-sigouin-exploring-plant-based-fitness-and-conscious-living-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Aug 31, 2023</span>
+          <h3 class="ep-title">Maxime Sigouin: Exploring Plant-Based Fitness and Conscious Living</h3>
+          <p class="ep-summary">A plant-based fitness expert on training, nutrition, and conscious living.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/chef-babette-igniting-vitality-through-compassionate-cooking-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 19, 2023</span>
+          <h3 class="ep-title">Chef Babette: Igniting Vitality through Compassionate Cooking</h3>
+          <p class="ep-summary">Chef Babette Davis on culinary philosophy and compassionate cooking.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/shabnam-islam-unleashing-health-fitness-secrets-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 22, 2023</span>
+          <h3 class="ep-title">Shabnam Islam: Unleashing Health &amp; Fitness Secrets</h3>
+          <p class="ep-summary">A clinical exercise physiologist on plant-based athletic performance.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/allen-zelden-changing-the-game-for-vegan-entrepreneurs-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 14, 2023</span>
+          <h3 class="ep-title">Allen Zelden: Changing the Game for Vegan Entrepreneurs</h3>
+          <p class="ep-summary">A serial investor discusses vegan business opportunities.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-strong-plantbuilt-team-plant-based-power-panel-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">May 25, 2023</span>
+          <h3 class="ep-title">Vegan Strong Plantbuilt Team: Plant-based Power Panel</h3>
+          <p class="ep-summary">Fitness experts Katya Gorbacheva, Brittany Billings, and Daniel Austin on training, nutrition, and supplementation.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/john-lewis-badass-vegan-returns-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">May 5, 2023</span>
+          <h3 class="ep-title">John Lewis: Badass Vegan Returns</h3>
+          <p class="ep-summary">Cookbook and documentary updates from Badass Vegan John Lewis.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/gwenna-hunter-the-first-vegan-food-bank-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Apr 25, 2023</span>
+          <h3 class="ep-title">Gwenna Hunter: The First Vegan Food Bank</h3>
+          <p class="ep-summary">The founder of Vegans of LA on building the first vegan food bank.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/plantbased-in-the-burbs-with-sherri-and-paige-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 25, 2023</span>
+          <h3 class="ep-title">Plantbased in the Burbs: With Sherri and Paige</h3>
+          <p class="ep-summary">Sherri Johnson and Paige Parsons Roache on vegan origin stories and the Unchained TV platform.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/sarina-farb-the-vegan-van-tour-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 18, 2023</span>
+          <h3 class="ep-title">Sarina Farb: The Vegan Van Tour</h3>
+          <p class="ep-summary">Van tour activism and climate march participation.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dr-sailesh-rao-climate-change-and-veganism-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 29, 2022</span>
+          <h3 class="ep-title">Dr. Sailesh Rao: Climate Change and Veganism</h3>
+          <p class="ep-summary">Climate Healers founder discusses environmental solutions.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/sandra-nomoto-making-a-social-impact-through-marketing-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 2, 2022</span>
+          <h3 class="ep-title">Sandra Nomoto: Making a Social Impact Through Marketing</h3>
+          <p class="ep-summary">A PR expert covers vegan marketing, content writing, and social platforms.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/tabay-atkins-youngest-certified-yoga-instructor-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 16, 2022</span>
+          <h3 class="ep-title">Tabay Atkins: Youngest Certified Yoga Instructor</h3>
+          <p class="ep-summary">A yoga instructor, food truck operator, Nike athlete, and Reiki master.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dr-lakshman-lucky-mulpuri-plant-based-medical-curriculum-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 5, 2022</span>
+          <h3 class="ep-title">Dr. Lakshman (Lucky) Mulpuri: Plant-based Medical Curriculum</h3>
+          <p class="ep-summary">The developer of the first mandatory plant-based medical curriculum.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/brighde-reed-the-world-vegan-travel-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Sep 30, 2022</span>
+          <h3 class="ep-title">Brighde Reed: The World Vegan Travel</h3>
+          <p class="ep-summary">A vegan travel podcast pioneer on trip organization.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/desiree-nielsen-good-for-your-gut-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Sep 21, 2022</span>
+          <h3 class="ep-title">Desiree Nielsen: Good for your Gut</h3>
+          <p class="ep-summary">A registered dietitian and cookbook author on gut health.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/jenny-stojkovic-vegan-women-summit-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Sep 13, 2022</span>
+          <h3 class="ep-title">Jenny Stojkovic: Vegan Women Summit</h3>
+          <p class="ep-summary">The founder of the Vegan Women Summit and author of The Future of Food is Female.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/tim-james-chemical-free-body-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 20, 2022</span>
+          <h3 class="ep-title">Tim James: Chemical Free Body</h3>
+          <p class="ep-summary">Detox nutrition products, health coaching, and dietary management.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dr-will-bulsiewicz-the-fiber-fueled-cookbook-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 6, 2022</span>
+          <h3 class="ep-title">Dr. Will Bulsiewicz: The Fiber Fueled Cookbook</h3>
+          <p class="ep-summary">A nutritionist and best-selling author on digestive health.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/chef-robyn-corporate-chef-of-future-foods-paow-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 30, 2022</span>
+          <h3 class="ep-title">Chef Robyn: Corporate Chef of Future Foods (PAOW)</h3>
+          <p class="ep-summary">Plant-based culinary expansion and locally-produced cuisine.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/alex-lenghel-massive-vegan-and-making-the-ethical-choice-soflo-vegans-podcast">
+        <div class="ep-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 14, 2022</span>
+          <h3 class="ep-title">Alex Lenghel: Massive Vegan and Making the Ethical Choice</h3>
+          <p class="ep-summary">A vegan chef and athlete on recipe sharing and movement advocacy.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Vegans Explore: Plant-based travel, worldwide.</span>
+  </footer>
+
+</body>
+</html>
