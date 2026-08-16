@@ -213,6 +213,7 @@
         '<a href="' + welcomeHref + '"' + cur(welcomeHref) + '>Welcome</a>' +
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
+        '<a href="/podcast"' + (isCurrent('/podcast') || p.indexOf('/podcast/') === 0 ? ' aria-current="page"' : '') + '>Podcasts</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
         '<a href="/lead"' + cur('/lead') + '>Lead Your City</a>' +
         (isRealSuperAdmin ? '<a href="/directory"' + cur('/directory') + '>Directory</a>' : '') +
