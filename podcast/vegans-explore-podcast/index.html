@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegans Explore Podcast - Listen to Every Episode | Vegans Explore</title>
+  <meta name="description" content="The flagship show: honest conversations on building a sustainable vegan life, vegan business owners, and the community behind the movement. Listen to all 169 episodes and subscribe on Spotify, Apple Podcasts, Amazon Music, or YouTube.">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E;
+      --ve-green-dark: #2d7d31;
+      --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820;
+      --ve-orange-dark: #d4800f;
+      --ve-text: #1a1a1a;
+      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-70: rgba(26,26,26,0.70);
+      --ve-border: rgba(0,0,0,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: #fff;
+      color: var(--ve-text);
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .nav {
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--ve-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .nav-links a { text-decoration: none; color: var(--ve-text-70); }
+    .nav-links a:hover { color: var(--ve-green); }
+    @media (max-width: 720px) { .nav-links { display: none; } }
+
+    .show-hero {
+      padding: 64px 48px 56px;
+      background: linear-gradient(180deg, var(--ve-green-light) 0%, #fff 100%);
+      display: flex; gap: 36px; align-items: center; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
+    }
+    .show-hero-art { width: 180px; height: 180px; border-radius: 16px; background-size: cover; background-position: center; background-color: #eee; flex-shrink: 0; box-shadow: 0 12px 32px rgba(0,0,0,0.14); }
+    .show-hero-body { flex: 1; min-width: 260px; }
+    .breadcrumb { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); text-decoration: none; display: inline-block; margin-bottom: 14px; }
+    .breadcrumb:hover { color: var(--ve-green-dark); }
+    .show-hero h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 900; line-height: 1.1; margin-bottom: 14px; }
+    .show-hero p { font-size: 15px; color: var(--ve-text-70); line-height: 1.6; max-width: 560px; margin-bottom: 18px; }
+    .show-hero-count { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 18px; }
+
+    .subscribe-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .subscribe-btn {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.04em; padding: 11px 18px; border-radius: 6px; text-decoration: none;
+      border: 1.5px solid var(--ve-border); color: var(--ve-text);
+    }
+    .subscribe-btn:hover { border-color: rgba(0,0,0,0.35); }
+    .subscribe-btn.spotify { border-color: #1DB95440; }
+    .subscribe-btn.apple { border-color: #FA57C140; }
+    .subscribe-btn.amazon { border-color: #00A8E140; }
+    .subscribe-btn.youtube { border-color: #FF000040; }
+
+    .section { padding: 56px 48px 90px; max-width: 1180px; margin: 0 auto; }
+    .section-head { margin-bottom: 32px; }
+    .section-head h2 { font-size: 22px; font-weight: 900; }
+
+    .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    .ep-card { text-decoration: none; color: var(--ve-text); display: block; border-radius: 10px; overflow: hidden; border: 1px solid var(--ve-border); transition: box-shadow 0.15s, transform 0.15s; }
+    .ep-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .ep-thumb { position: relative; height: 150px; background-size: cover; background-position: center; background-color: #eee; }
+    .ep-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; padding-left: 3px;
+    }
+    .ep-body { padding: 16px; }
+    .ep-cat { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .ep-date { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-50); }
+    .ep-title { font-size: 15px; font-weight: 800; line-height: 1.35; margin: 8px 0 8px; }
+    .ep-summary { font-size: 13px; color: var(--ve-text-70); line-height: 1.5; }
+
+    .btn-secondary {
+      background: transparent; color: var(--ve-text); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px;
+      text-decoration: none; border: 1.5px solid rgba(0,0,0,0.15); display: inline-flex; align-items: center;
+    }
+    .btn-secondary:hover { border-color: rgba(0,0,0,0.4); }
+
+    .footer { padding: 32px 48px; border-top: 1px solid var(--ve-border); text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ve-text-50); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Site navigation">
+    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
+      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
+    </a>
+    <div class="nav-links">
+      <a href="/pulse">Pulse</a>
+      <a href="/directory">Directory</a>
+      <a href="/partners">Partners</a>
+      <a href="/podcast">Podcast Network</a>
+    </div>
+  </nav>
+
+  <header class="show-hero">
+    <div class="show-hero-art" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/78/e8/15/78e815be-972b-683e-53eb-a56c001e9969/mza_10373735271438816480.jpg/600x600bb.jpg')"></div>
+    <div class="show-hero-body">
+      <a href="/podcast" class="breadcrumb">&larr; Podcast Network</a>
+      <h1>Vegans Explore Podcast</h1>
+      <p>The flagship show: honest conversations on building a sustainable vegan life, vegan business owners, and the community behind the movement.</p>
+      <div class="show-hero-count">169 Episodes</div>
+      
+    <div class="subscribe-row">
+      <a class="subscribe-btn spotify" href="https://open.spotify.com/show/19GDaPV2SIwybt3HpMurHu" target="_blank" rel="noopener">&#9834; Spotify</a>
+      <a class="subscribe-btn apple" href="https://podcasts.apple.com/us/podcast/vegans-explore-podcast/id1818708745" target="_blank" rel="noopener">&#63743; Apple Podcasts</a>
+      <a class="subscribe-btn amazon" href="https://music.amazon.com/podcasts/810d06e3-3676-40c9-9d3c-2b0ae5c30ff1/vegans-explore-podcast" target="_blank" rel="noopener">&#9658; Amazon Music</a>
+      <a class="subscribe-btn youtube" href="https://www.youtube.com/playlist?list=PLpfk6e8BPu-xgyomQzXdkA_InnpCVHHC3" target="_blank" rel="noopener">&#9658; YouTube</a>
+    </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>All Episodes</h2>
+    </div>
+    <div class="ep-grid">
+      <a class="ep-card" href="/pulse/top-10-recent-wins-for-animals-that-show-real-momentum">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/zEJx7ACo_J0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 23, 2026</span>
+          <h3 class="ep-title">Top 10 Recent Wins for Animals That Show Real Momentum</h3>
+          <p class="ep-summary">Stepping back from the heavy headlines to count down 10 real animal-welfare wins from the past year, spanning fashion, entertainment, touris</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-weight-loss-to-vegan-living-and-back-again">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/iN_CVlfrGrE/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 22, 2026</span>
+          <h3 class="ep-title">From Weight Loss to Vegan Living… and Back Again</h3>
+          <p class="ep-summary">Transformation isn&#x27;t a straight line. Sean A. Russell traces his own path through weight loss, a first pass at performance-driven veganism, </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-31-vegan-food-names-are-being-targeted">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/QCocSdRVvZo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 21, 2026</span>
+          <h3 class="ep-title">Why 31 Vegan Food Names Are Being Targeted</h3>
+          <p class="ep-summary">The EU has provisionally agreed to restrict 31 meat-related terms, beef, bacon, steak, ribs, from plant-based labels. Sean A. Russell breaks</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/founders-report-building-the-engine">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/eGWwWiDV1Ks/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 20, 2026</span>
+          <h3 class="ep-title">Founder&#x27;s Report: Building the Engine</h3>
+          <p class="ep-summary">An unscripted check-in on where Vegans Explore actually stands. Sean A. Russell talks through the LESARUSS Blueprint, the systems-architect </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/what-id-actually-buy-starting-a-healthy-plant-based-diet">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/kurvi2oehxM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 20, 2026</span>
+          <h3 class="ep-title">What I&#x27;d Actually Buy Starting a Healthy Plant-Based Diet</h3>
+          <p class="ep-summary">If your kitchen isn&#x27;t set up right, you&#x27;ll struggle before you even start. Sean A. Russell walks through the exact foods he&#x27;d buy to build a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-bigger-picture-how-food-choices-shape-the-world">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/JRHiytTzhDw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 19, 2026</span>
+          <h3 class="ep-title">The Bigger Picture: How Food Choices Shape the World</h3>
+          <p class="ep-summary">Most people start plant-based eating for personal reasons, then discover it connects to something much larger. Sean A. Russell closes the Pr</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/navigating-the-world-eating-plant-based-in-real-life">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/uTNMclV6xBA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 17, 2026</span>
+          <h3 class="ep-title">Navigating the World: Eating Plant-Based in Real Life</h3>
+          <p class="ep-summary">The biggest worry about eating plant-based usually isn&#x27;t the food, it&#x27;s the social situations. Sean A. Russell continues the Pre-Vegan Path </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-energy-shift-how-food-influences-how-you-feel">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/kj643jmAoJ0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 16, 2026</span>
+          <h3 class="ep-title">The Energy Shift: How Food Influences How You Feel</h3>
+          <p class="ep-summary">Food is information for the body, not just fuel. Sean A. Russell continues the Pre-Vegan Path with how plant-based meals affect energy, dige</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/simple-plant-based-swaps-that-make-life-easier">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/2FWlcic4b-Y/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 15, 2026</span>
+          <h3 class="ep-title">Simple Plant-Based Swaps That Make Life Easier</h3>
+          <p class="ep-summary">Going plant-based does not require a full overhaul. Sean A. Russell continues the Pre-Vegan Path with the specific, low-effort swaps, milk, </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-so-many-people-are-re-thinking-their-food">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/7xHYKibN86Y/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 14, 2026</span>
+          <h3 class="ep-title">Why So Many People Are Re-Thinking Their Food</h3>
+          <p class="ep-summary">The word vegan can feel like an all-or-nothing identity shift. Sean A. Russell opens the Pre-Vegan Path series with a pressure-free way to e</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/building-legacy-and-strengthening-the-vegan-movement-seasoned">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/5uw0oYbx5xo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 13, 2026</span>
+          <h3 class="ep-title">Building Legacy and Strengthening the Vegan Movement</h3>
+          <p class="ep-summary">The movement we see today was built over decades by people navigating it with almost no support. Sean A. Russell closes the Seasoned Vegan s</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/nutrition-for-long-term-vegan-health">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Ff3qjo9w8oM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 11, 2026</span>
+          <h3 class="ep-title">Nutrition for Long-Term Vegan Health</h3>
+          <p class="ep-summary">What works in your 20s may need adjusting by your 50s. Sean A. Russell continues the Seasoned Vegan series with a practical rundown of prote</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/aging-well-as-a-seasoned-vegan">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/_gTBubr8U2A/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 11, 2026</span>
+          <h3 class="ep-title">Aging Well as a Seasoned Vegan</h3>
+          <p class="ep-summary">Seasoned vegans already have a strong foundation for long-term health. Sean A. Russell continues the Seasoned Vegan series with heart health</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-evolution-of-a-seasoned-vegan">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/BPbJrRlQWlA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 9, 2026</span>
+          <h3 class="ep-title">The Evolution of a Seasoned Vegan</h3>
+          <p class="ep-summary">Being vegan stops feeling like an identity and starts feeling like a normal way of life. Sean A. Russell opens the Seasoned Vegan series wit</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/building-infrastructure-that-lasts">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/W1fsWQg38Rs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 8, 2026</span>
+          <h3 class="ep-title">Building Infrastructure That Lasts</h3>
+          <p class="ep-summary">If a nonprofit only moves forward when its founder is energized, it&#x27;s fragile. Sean A. Russell closes the five-part nonprofit series with th</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-volunteers-to-leaders">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/w88CYhtKn0A/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 7, 2026</span>
+          <h3 class="ep-title">From Volunteers to Leaders</h3>
+          <p class="ep-summary">If everything in your nonprofit depends on one or two exhausted leaders, burnout is inevitable. Sean A. Russell breaks down how defined role</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/fundraising-systems-for-stability">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/lkGeCQHmcZk/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 6, 2026</span>
+          <h3 class="ep-title">Fundraising Systems for Stability</h3>
+          <p class="ep-summary">Events are spikes, not systems. Sean A. Russell breaks down how small nonprofits can move from event-only donations to recurring monthly giv</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/marketing-that-converts-without-a-big-budget">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/QaTvklNQido/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 5, 2026</span>
+          <h3 class="ep-title">Marketing That Converts Without a Big Budget</h3>
+          <p class="ep-summary">For small grassroots nonprofits the real problem usually isn&#x27;t reach, it&#x27;s conversion. Sean A. Russell breaks down storytelling, clarity, an</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-vegan-nonprofits-burn-out-and-what-to-do-instead">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/xYF6ssCY4jA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 4, 2026</span>
+          <h3 class="ep-title">Why Vegan Nonprofits Burn Out and What to Do Instead</h3>
+          <p class="ep-summary">Passion alone does not create sustainability. Sean A. Russell opens a five-part series on small grassroots vegan nonprofits with the three s</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-personal-brand-to-digital-asset">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/WyFCatuOdtU/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 3, 2026</span>
+          <h3 class="ep-title">From Personal Brand to Digital Asset</h3>
+          <p class="ep-summary">Is your personal brand an asset, or just attention tied to your personality? Sean A. Russell traces the path from personal brand to media br</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-most-creators-burn-out-after-3-years">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ZO1j0bAc8Io/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 2, 2026</span>
+          <h3 class="ep-title">Why Most Creators Burn Out After 3 Years</h3>
+          <p class="ep-summary">Burnout around year three isn&#x27;t random, it&#x27;s structural. Sean A. Russell breaks down five causes, from identity fused to metrics to income w</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-90-day-creator-operating-system">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/YPVB_jgGyaw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Mar 1, 2026</span>
+          <h3 class="ep-title">The 90-Day Creator Operating System</h3>
+          <p class="ep-summary">Inspiration is emotional management, not operational management. Sean A. Russell breaks down the five components of a 90-day creator operati</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-community-flywheel-how-to-turn-listeners-into-contributors">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/GbM0hS1TLKg/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 28, 2026</span>
+          <h3 class="ep-title">The Community Flywheel: How to Turn Listeners Into Contributors</h3>
+          <p class="ep-summary">Virality is unpredictable, belonging is engineered. Sean A. Russell explains how giving an audience a real role, not just a place to scroll,</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/content-without-a-funnel-is-a-hobby">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/hwVq4LAk0DE/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 27, 2026</span>
+          <h3 class="ep-title">Content Without a Funnel Is a Hobby</h3>
+          <p class="ep-summary">Attention without direction disappears. Sean A. Russell breaks down what a funnel actually is, how lead magnets and entry offers work, and w</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-creator-trap-why-creators-stay-busy-but-never-build-an-ecosystem">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ePEfZZ2el94/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 26, 2026</span>
+          <h3 class="ep-title">The Creator Trap: Why Most Content Creators Stay Busy But Never Build an Ecosystem</h3>
+          <p class="ep-summary">Visibility is not infrastructure. Sean A. Russell breaks down the four levels of creators and why posting consistently without a funnel just</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-some-vegan-businesses-struggle-while-others-thrive">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/QJbjs8CQPeA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 25, 2026</span>
+          <h3 class="ep-title">Why Some Vegan Businesses Struggle While Others Thrive</h3>
+          <p class="ep-summary">Mission alone does not pay rent. Drawing on 28 years in marketing and communications, Sean A. Russell breaks down the structural gaps that s</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/what-is-vegans-explore-building-infrastructure-for-a-global-community">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/w9tPEzgKnzc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 24, 2026</span>
+          <h3 class="ep-title">What Is Vegans Explore? Building Infrastructure for a Global Vegan Community</h3>
+          <p class="ep-summary">Vegan communities pop up and disappear without infrastructure to hold them together. Sean A. Russell lays out why Vegans Explore exists, who</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/kwame-terra-behr-health-black-wellness-bearathon">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/8SDVH11WJ9A/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 23, 2026</span>
+          <h3 class="ep-title">From Mindfulness to the Moon: Kwame Terra on bEHR Health, Black Wellness, and the bEHRathon</h3>
+          <p class="ep-summary">Kwame Terra, founder and CEO of bEHR Health, joins Sean A. Russell to trace his path from a UCLA mindfulness research lab to building a heal</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/seasoned-vegans-we-need-you-why-your-experience-matters">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/TeE_Liyl-3g/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 21, 2026</span>
+          <h3 class="ep-title">Seasoned Vegans, We Need You: Why Your Experience Is the Movement&#x27;s Greatest Asset</h3>
+          <p class="ep-summary">If you have been vegan for years, your lived wisdom is exactly what a wave of newly curious pre-vegans needs right now. Sean A. Russell make</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/animal-cruelty-is-now-a-federal-felony-what-it-means">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/VrHYVIIDXNM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 20, 2026</span>
+          <h3 class="ep-title">Animal Cruelty Is Now a Federal Felony… So What Does That Actually Mean?</h3>
+          <p class="ep-summary">Animal cruelty is now a federal felony punishable by up to 7 years, but the law exempts &quot;customary agricultural practices.&quot; Sean A. Russell </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-nonprofit-survival-guide-marketing-and-communication">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Zf0yBp0JSuM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 19, 2026</span>
+          <h3 class="ep-title">The Nonprofit Survival Guide: Marketing and Communication That Actually Works</h3>
+          <p class="ep-summary">Most nonprofits aren&#x27;t struggling because their mission is weak, they&#x27;re struggling because their communication systems are unclear. Sean A.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/whats-happening-with-beyond-meat-and-the-vegan-movement">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/qVdAUmeDlxw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 18, 2026</span>
+          <h3 class="ep-title">What&#x27;s Happening With Beyond Meat and What It Means for the Vegan Movement</h3>
+          <p class="ep-summary">Class-action lawsuits allege Beyond Meat misrepresented asset values to investors. Sean A. Russell breaks down what&#x27;s alleged and why the mo</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-psychology-of-meat-cravings">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/EJGKi4RnU1c/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 17, 2026</span>
+          <h3 class="ep-title">The Psychology of Meat Cravings</h3>
+          <p class="ep-summary">Cravings are not a moral failure, they are neurology. Sean A. Russell breaks down the habit loops, dopamine triggers, and cultural nostalgia</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/what-happens-if-veganism-wins">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/gTRcrT7rKcU/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 16, 2026</span>
+          <h3 class="ep-title">What Happens If Veganism Wins? (20 Years Ahead)</h3>
+          <p class="ep-summary">A systems thought experiment: Sean A. Russell imagines 20 years out if plant-based food became the default, and walks through the five domin</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/masculinity-and-veganism-why-is-it-still-controversial">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ycttLQ-INYo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 15, 2026</span>
+          <h3 class="ep-title">Masculinity and Veganism: Why Is It Still Controversial?</h3>
+          <p class="ep-summary">Why can a grown man skipping meat still register as a political statement in 2026? Sean A. Russell unpacks a century of marketing, the stren</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-pre-vegan-to-advocate-what-makes-someone-stick">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/B1iRZzrOcSI/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 14, 2026</span>
+          <h3 class="ep-title">From Pre-Vegan to Advocate: What Actually Makes Someone Stick?</h3>
+          <p class="ep-summary">There&#x27;s a real difference between someone who tries veganism and someone who becomes an advocate. Sean A. Russell breaks down the five facto</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-business-of-being-vegan-who-actually-profits">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/X1kfaWpWtd8/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 13, 2026</span>
+          <h3 class="ep-title">The Business of Being Vegan: Who Actually Profits From the Movement?</h3>
+          <p class="ep-summary">Veganism started as an ethical movement and is now a multibillion-dollar industry. Sean A. Russell asks who actually profits, and what that </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/building-a-vegan-city-what-would-it-actually-take">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/6q2O_dMCZ58/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 13, 2026</span>
+          <h3 class="ep-title">Building a Vegan City: What Would It Actually Take?</h3>
+          <p class="ep-summary">Vegans Explore&#x27;s vision of 1,000 Cities by 2030 turns from theory into strategy. Sean A. Russell lays out the ingredients any city needs to </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/is-the-word-vegan-helping-or-hurting-the-movement">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/uHacQWPaAkI/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 11, 2026</span>
+          <h3 class="ep-title">Is the Word &quot;Vegan&quot; Helping or Hurting the Movement?</h3>
+          <p class="ep-summary">A branding question worth sitting with: does the word &quot;vegan&quot; open doors or close them, and what does the answer mean for a movement trying </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vitamin-a5-the-nutrient-youve-probably-never-heard-of">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/mpNV7ZCkb4E/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 10, 2026</span>
+          <h3 class="ep-title">Vitamin A5: The Nutrient You&#x27;ve Probably Never Heard Of</h3>
+          <p class="ep-summary">A newly identified vitamin-like compound is giving science a fresh reason to explain something plant-based eaters already know: leafy greens</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/finding-love-as-a-single-vegan">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Q1Pcbl1XRVI/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 9, 2026</span>
+          <h3 class="ep-title">Finding Love as a Single Vegan | Dating, Values, and Real Connection</h3>
+          <p class="ep-summary">Dating as a vegan narrows the pool, but Sean A. Russell breaks down why that is a filter, not a limitation, and how to date with intention i</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vep-100-episodes-vegan-origin-story">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/xM2YdGtgER4/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 8, 2026</span>
+          <h3 class="ep-title">100 Episodes: Our Vegan Origin Story</h3>
+          <p class="ep-summary">Sean A. Russell marks 100 straight days of the Vegans Explore Podcast, launched November 1, 2025, with his own vegan origin story, from a fi</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/juicy-marbles-familiar-food-mickovic">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/FIjkO7MiFbc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 7, 2026</span>
+          <h3 class="ep-title">Juicy Marbles and the Art of Familiar Food, With Vladimir Mićković</h3>
+          <p class="ep-summary">Vladimir Mićković, co-founder and chief brand officer of Juicy Marbles, on why the plant-based whole-cuts brand launched with a marbled fill</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/klaper-ai-chatgpt-food-pyramid">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/bhchtY9fqK0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 6, 2026</span>
+          <h3 class="ep-title">Can AI Be Your Health Ally? Dr. Klaper on ChatGPT, Research, and the New Food Pyramid</h3>
+          <p class="ep-summary">In the final part of a three-part conversation, Dr. Michael Klaper takes on the federal food pyramid&#x27;s new push toward more meat and dairy, </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/founders-report-narrowing-focus-feb5">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/8y11dZVzxso/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 5, 2026</span>
+          <h3 class="ep-title">Founders Report: Narrowing the Focus, Strengthening the Mission</h3>
+          <p class="ep-summary">Sean A. Russell&#x27;s latest Founders Report, recorded from South Florida as the daily podcast closes in on 100 straight episodes, on doubling d</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/brett-christoffel-all-yalls-foods">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/x7RbLUBeglQ/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 4, 2026</span>
+          <h3 class="ep-title">Brett Christoffel and the Rise of All Y&#x27;all&#x27;s Foods</h3>
+          <p class="ep-summary">Brett Christoffel, founder of All Y&#x27;all&#x27;s Foods, on quitting antidepressants through diet, a zoo trip that made him swear off meat overnight</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/jason-kartalian-vegan-hacks-content">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/roqIT86xdXs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 3, 2026</span>
+          <h3 class="ep-title">Jason Kartalian on Vegan Hacks, Authenticity, and Making Plant-Based Content That Sticks</h3>
+          <p class="ep-summary">Jason Kartalian, the creator behind Vegan Hacks Pod, on 14 years of veganism, why he&#x27;d rather be &quot;the clown&quot; than a guru, and how staying me</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/angela-crawford-vegan-transformation">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/t-B26viZ-CU/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Feb 2, 2026</span>
+          <h3 class="ep-title">Dr. Angela Crawford on The Vegan Transformation: The Emotional Side of Going Vegan</h3>
+          <p class="ep-summary">Psychologist and author Dr. Angela Crawford on the seven emotional and spiritual transformations she found after surveying and interviewing </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vgan-corner-jacobo-garcia-wynwood">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/m_fuQd01YWc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 31, 2026</span>
+          <h3 class="ep-title">Inside Vgan Corner: Jacobo Garcia&#x27;s Vegan Market Bringing Wynwood Together</h3>
+          <p class="ep-summary">Jacobo Garcia on building Vgan Corner, a Wynwood vegan market and sandwich bar, through Too Good To Go food-waste partnerships and a shelf d</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/maxime-sigouin-forever-fit-blueprint">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/hxRR1GewrVc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 30, 2026</span>
+          <h3 class="ep-title">Maxime Sigouin on Forever Fit: A Sustainable Blueprint for Plant-Based Fitness</h3>
+          <p class="ep-summary">Fitness coach Maxime Sigouin, founder of Mavy Wellness, on why he rebranded away from the word &quot;vegan&quot; to reach more people, and the five-ph</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/gail-eisnitz-out-of-sight-slaughterhouses">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/aIr5qGweohs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 29, 2026</span>
+          <h3 class="ep-title">Out of Sight: The Reality of Slaughterhouses with Gail Eisnitz</h3>
+          <p class="ep-summary">Undercover investigator Gail Eisnitz, author of Out of Sight, details decades of factory farm and slaughterhouse investigations, and the win</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/creatine-vegan-explained">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/dbci8JHy1q4/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 28, 2026</span>
+          <h3 class="ep-title">What Is Creatine, Really? Breaking Down the World&#x27;s Most Researched Supplement</h3>
+          <p class="ep-summary">Creatine is naturally found almost exclusively in animal products, but the synthetic supplement form is vegan, well-studied, and useful beyo</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-restaurants-adding-meat-death-spiral">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/nhcdC3v9QTQ/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 27, 2026</span>
+          <h3 class="ep-title">Is Adding Meat a Death Spiral for Vegan Restaurants?</h3>
+          <p class="ep-summary">After PLANTA&#x27;s customer survey sparked backlash, an honest look at why vegan restaurants consider adding meat, and why the pivot rarely save</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-blue-zones-became-global-health-movement">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/GUIbyvon2ic/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 26, 2026</span>
+          <h3 class="ep-title">Why Blue Zones Became a Global Health Movement</h3>
+          <p class="ep-summary">How Dan Buettner&#x27;s research into five long-lived regions turned into books, Netflix series, and citywide redesign projects, and why it reson</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/intersectionality-veganism-debate">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/zW2hwux4mxc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 25, 2026</span>
+          <h3 class="ep-title">Intersectionality and Veganism: Why This Debate Keeps Coming Back</h3>
+          <p class="ep-summary">Should veganism stay singularly focused on animals, or is there room for vegans to speak on human rights and social issues too? A look at bo</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/plant-based-performance-elite-athletes">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/wEtxrQW19Gc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 24, 2026</span>
+          <h3 class="ep-title">Plant-Based Performance: Proof from the World&#x27;s Best Athletes</h3>
+          <p class="ep-summary">From Lewis Hamilton to Tom Brady, elite athletes across F1, tennis, soccer, football, and ultrarunning are competing at the top of their spo</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/noshy-protein-vegan-treats">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/aSFRuju3Rwc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 23, 2026</span>
+          <h3 class="ep-title">Noshy, Protein-Packed Vegan Treats Built for Real Life</h3>
+          <p class="ep-summary">Founder Lindsay on building Noshy, a vegan protein popper line born from a fitness and nutrition background, recorded live at Fort Lauderdal</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/kwaya-wines-vegan-biodynamic">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/h15ms2jCzMo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 22, 2026</span>
+          <h3 class="ep-title">Inside Kwaya Wines: Vegan Wine, Biodynamic Farming, and African Heritage</h3>
+          <p class="ep-summary">Recorded live at Fort Lauderdale&#x27;s Flowin&#x27; Feast, a conversation with the mother-daughter founders of Kwaya Wines on clean, vegan, biodynami</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/nutrition-blind-spot-modern-medicine">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Gmbk1zkKtSc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 21, 2026</span>
+          <h3 class="ep-title">The Nutrition Blind Spot in Modern Medicine</h3>
+          <p class="ep-summary">Dr. Michael Klaper returns for part two of his Vegans Explore conversation, on why nutrition gets almost no real estate in medical school an</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/yoga-and-veganism-shared-path">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/HqclLpq-w_I/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 20, 2026</span>
+          <h3 class="ep-title">Yoga and Veganism, A Shared Path of Compassion</h3>
+          <p class="ep-summary">Yoga and veganism look like separate practices, one about movement, one about food. Both are actually rooted in the same principle: ahimsa, </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/michael-dorfman-thriving-84-longevity">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/oIAbRsiWyg4/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 19, 2026</span>
+          <h3 class="ep-title">Thriving at 84: A Vegan Blueprint for Longevity and Purpose</h3>
+          <p class="ep-summary">Michael Dorfman, vegetarian since 1976 and plant-based for 17 years, shares the Blue Zones-inspired habits behind his thriving life at 84.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/founders-report-week-jan18">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/iIQudVUR0js/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 18, 2026</span>
+          <h3 class="ep-title">Vegans Explore Founders Report: The Week That Was</h3>
+          <p class="ep-summary">Sean A. Russell recaps a week of new guides, a shift to shorter standalone episodes, and a confirmed February return to New York City.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/microplastics-ocean-innovations">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/GODwlLYzMxM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 17, 2026</span>
+          <h3 class="ep-title">Microplastics in the Ocean: The Hidden Threat and the Innovations Fighting Back</h3>
+          <p class="ep-summary">From plant-based cellulose plastics to plastic-eating fungi, this episode covers the global policy patchwork and innovations addressing ocea</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/klaper-moving-medicine-forward-nutrition">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/c8aX891jWmw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 16, 2026</span>
+          <h3 class="ep-title">Moving Medicine Forward: Why Nutrition Belongs at the Center of Healthcare</h3>
+          <p class="ep-summary">Dr. Michael Klaper returns to discuss his new book, Moving Medicine Forward, and why chronic diseases like hypertension and type 2 diabetes </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dr-michael-klaper-moving-medicine-forward">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/c8aX891jWmw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 16, 2026</span>
+          <h3 class="ep-title">Dr. Michael Klaper on Moving Medicine Forward</h3>
+          <p class="ep-summary">Physician Dr. Michael Klaper explains why nutrition still barely registers in medical school, and what his Moving Medicine Forward initiativ</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/feeding-cats-dogs-plant-based">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/WxU4lESyx2I/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 15, 2026</span>
+          <h3 class="ep-title">Vegans Feeding Cats and Dogs Plant-Based Diets</h3>
+          <p class="ep-summary">Cats are obligate carnivores, dogs are more flexible. This episode lays out the strongest arguments on both sides of feeding pets plant-base</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/sea-moss-botulism-recall">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/WI47eZVpc1o/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 14, 2026</span>
+          <h3 class="ep-title">Sea Moss, Botulism, and the Truth About Sourcing Your Supplements</h3>
+          <p class="ep-summary">Diva Farms recalled all 14 varieties of its True Sea Moss gel over undocumented food safety processing. What the recall reveals about supple</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-fashion-fur-free-designers">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/XhlyMF_g154/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 13, 2026</span>
+          <h3 class="ep-title">High Fashion, Higher Values: Why Designers Are Going Fur-Free</h3>
+          <p class="ep-summary">From Gucci&#x27;s 2017 fur-free announcement to mushroom leather, this episode traces how vegan values are reshaping the definition of luxury fas</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/why-veganism-feels-quieter">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ONhdxzEB1j8/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 12, 2026</span>
+          <h3 class="ep-title">Why Veganism Feels Quieter Right Now</h3>
+          <p class="ep-summary">Restaurants are closing and headlines say veganism has lost momentum. This episode argues the real story is an interrupted growth wave, not </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-explore-passport-launch">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/kvrrd8aMxdg/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 11, 2026</span>
+          <h3 class="ep-title">The Community I Have Been Building for 30 Years: Vegans Explore Passport</h3>
+          <p class="ep-summary">Sean A. Russell launches the Vegans Explore Passport, a $11-a-month membership community built around five groups: pre-vegans, seasoned vega</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/are-mushrooms-vegan-ethics">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ECFkK2fX-1U/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 10, 2026</span>
+          <h3 class="ep-title">Are Mushrooms Vegan? Ethics, Benefits, and Boundaries</h3>
+          <p class="ep-summary">Mushrooms are not animals and not plants either. This episode walks through the ethical case some vegans make against them, and why most sti</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/plant-based-diets-longevity-live-to-100">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/oY1Pp_CbwLs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 9, 2026</span>
+          <h3 class="ep-title">Are Plant-Based Diets Bad for Longevity? Let&#x27;s Look at the Evidence</h3>
+          <p class="ep-summary">A viral study on centenarians in China is being read as proof meat is required for longevity. A closer look at the data tells a different, m</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/new-dietary-guidelines-2025-2030">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/UxxR_q849IY/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 8, 2026</span>
+          <h3 class="ep-title">A Simple Take on the New Dietary Guidelines</h3>
+          <p class="ep-summary">The 2025-2030 Dietary Guidelines simplify nutrition language but stop short of naming meat and dairy as the leading sources of saturated fat</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/veganuary-explained">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/qUpEgoh7Ei8/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 7, 2026</span>
+          <h3 class="ep-title">Veganuary Explained: How a January Challenge Became a Global Vegan Movement</h3>
+          <p class="ep-summary">From 3,300 UK sign-ups in 2014 to an estimated 25.8 million participants in 2025, this episode traces how Veganuary became a global movement</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-trends-2026">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/ORO37u-3IG8/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 6, 2026</span>
+          <h3 class="ep-title">Vegan Trends 2026: Less Hype, More Longevity</h3>
+          <p class="ep-summary">Nine trends shaping vegan culture in 2026, from wider outreach to pre-vegans to local ecosystems replacing global viral hype.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/sugar-and-vegan-values">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/7_8ho67Dtw0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 5, 2026</span>
+          <h3 class="ep-title">Sugar and Vegan Values: Where Do You Stand?</h3>
+          <p class="ep-summary">Sugar comes from plants, but bone char refining complicates the vegan question. This episode walks through the different lines vegans draw a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vep-65-founder-report-just-the-beginning">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/aTdq82eZhNQ/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 4, 2026</span>
+          <h3 class="ep-title">This Is Just the Beginning: A Vegans Explore Founder Report</h3>
+          <p class="ep-summary">Sean A. Russell explains the mission behind Vegans Explore&#x27;s daily podcast, its global tour, and the upcoming membership community launch.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/ingrid-newkirk-peta-founder-interview">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/soAmukWlQng/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 3, 2026</span>
+          <h3 class="ep-title">Ingrid Newkirk: The Stories That Sparked PETA and a Lifetime of Advocacy</h3>
+          <p class="ep-summary">Recorded around PETA&#x27;s 40th anniversary, co-founder Ingrid Newkirk traces the personal encounters with animals that led her to found PETA in</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-kween-keya-philly-guide">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/C5NgR_OYorQ/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 2, 2026</span>
+          <h3 class="ep-title">Meet Keya, VeganKween: Philly&#x27;s Go-To Guide for Vegan Food and Events</h3>
+          <p class="ep-summary">Philadelphia content creator Keya, known as VeganKween, shares how she became a go-to guide for vegan food, events, and nonprofits across th</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/sen-saigon-vegan-vietnamese-nyc">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/OTeEVHgE8L8/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 1, 2026</span>
+          <h3 class="ep-title">Sen Saigon: The Story Behind NYC&#x27;s Only Fully Vegan Vietnamese Restaurant</h3>
+          <p class="ep-summary">Co-founder An explains how a personal craving for vegan Vietnamese food in New York City became Sen Saigon, the city&#x27;s only fully vegan Viet</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vep-61-year-end-update-2026">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/yhXVk69-VLI/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 31, 2025</span>
+          <h3 class="ep-title">Vegans Explore Year-End Update: What&#x27;s Coming in 2026</h3>
+          <p class="ep-summary">Founder Sean A. Russell reflects on a year of scaling back to scale forward, and lays out the global tour, city directories, and daily conte</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/earthling-ed-veganism-empathy-speaking-truth">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/-fae-n7xRUI/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 30, 2025</span>
+          <h3 class="ep-title">Earthling Ed on Veganism, Empathy, and Speaking Truth Without Shouting</h3>
+          <p class="ep-summary">UK activist Earthling Ed, recorded in 2018, breaks down why calm, well-researched conversation has grown his platform and the Official Anima</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/klaper-family-conversations-health-equity">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/i4frdphrCUc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 29, 2025</span>
+          <h3 class="ep-title">Dr. Michael Klaper on Talking to Family About Food and Closing the Health Equity Gap</h3>
+          <p class="ep-summary">Dr. Michael Klaper on how to gently raise plant-based nutrition with older relatives already managing chronic illness on medication, and pra</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/what-we-wish-we-knew-first-went-vegan-panel">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/JmwOJL6iRH0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 28, 2025</span>
+          <h3 class="ep-title">What We Wish We Knew When We First Went Vegan</h3>
+          <p class="ep-summary">Rowdy Girl Sanctuary&#x27;s Renee King-Sonnen, Animal Hero Kids&#x27; Susan Hargrave, and Main Street Vegan&#x27;s Victoria Moran compare notes on family p</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-documentary-directors-panel-films-change-world">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/H5TQpLq0xD4/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 27, 2025</span>
+          <h3 class="ep-title">Vegan Documentary Directors on How Films Change Food, Ethics, and the World</h3>
+          <p class="ep-summary">The directors behind Earthlings, The Cove, The Game Changers, and What the Health compare notes on funding, audience testing, and whether th</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/love-life-cafe-and-the-long-game-of-vegan-community">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/P6fDT84GYG4/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 26, 2025</span>
+          <h3 class="ep-title">Love Life Cafe and the Long Game of Vegan Community</h3>
+          <p class="ep-summary">In this episode of the Vegans Explore Podcast, we sit down with Veronica Menin and Diego Tosoni, the co-founders of Love Life Cafe , to talk</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/gwena-hunter-vegan-food-bank-la">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/y1-u1EL42us/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 25, 2025</span>
+          <h3 class="ep-title">The Power of Food, Faith, and Manifestation with Gwena Hunter</h3>
+          <p class="ep-summary">Gwena Hunter, the first Black woman to open a brick-and-mortar vegan food bank in the country, shares the dream that pointed her toward it a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-speed-dating-date-night-peta-partnership">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/CamHx8_QdA4/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 24, 2025</span>
+          <h3 class="ep-title">Vegan Speed Dating Is Here: Inside the Date Night x PETA Partnership</h3>
+          <p class="ep-summary">Date Night&#x27;s virtual speed dating events for vegans, run in partnership with PETA, have already funded 19 backyard dog houses while helping </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/john-lewis-badass-vegan-book-natureaid">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/SbgxVjYbzaA/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 23, 2025</span>
+          <h3 class="ep-title">From Butcher to Badass Vegan: John Lewis on His New Book, NatureAid, and Staying the Course</h3>
+          <p class="ep-summary">Badass Vegan founder John Lewis talks about his upcoming book, his protein shake brand NatureAid, hosting the Vegan Street Fair&#x27;s nine-city </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dotsie-bausch-switch4good-adsoy-act">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/2izAjl74esw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 22, 2025</span>
+          <h3 class="ep-title">Dotsie Bausch on Olympic Silver, Quitting Dairy, and the Fight for the AdSoy Act</h3>
+          <p class="ep-summary">Olympic silver medalist Dotsie Bausch traces her path from a dairy-soaked Team USA training table to founding Switch4Good, and explains the </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dr-sebi-alkaline-diet-foods-explained">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/JlOoLOVs7X0/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 21, 2025</span>
+          <h3 class="ep-title">Dr. Sebi, The Alkaline Diet, and the Foods He Believed Heal the Body</h3>
+          <p class="ep-summary">A look at Dr. Sebi&#x27;s alkaline diet philosophy, the specific foods it embraces and excludes, and why his teachings keep resurfacing decades a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/plant-based-progress-missed-this-week-december">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/VjfGM5nyL60/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 20, 2025</span>
+          <h3 class="ep-title">Plant-Based Progress You Might Have Missed This Week</h3>
+          <p class="ep-summary">From Poland&#x27;s plant-based school meal guidelines to expanding vegan menus on Lufthansa and Virgin Voyages, this week&#x27;s roundup tracks the qu</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/dr-will-bulsiewicz-fiber-fueled-cookbook-microbiome">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/JImuR-DlYpY/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 19, 2025</span>
+          <h3 class="ep-title">Dr. Will Bulsiewicz on Fiber, the Microbiome, and the Future of Human Health</h3>
+          <p class="ep-summary">Gastroenterologist Dr. Will Bulsiewicz returns to talk about his new Fiber-Fueled Cookbook, why fiber is the key to a healthy gut microbiome</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/101-reasons-go-vegan-james-wildman-arf">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/W5esV8NUFgk/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 18, 2025</span>
+          <h3 class="ep-title">101 Reasons to Go Vegan: How James Wildman Reaches 100,000 Students a Year</h3>
+          <p class="ep-summary">Animal Rights Foundation of Florida educator James Wildman has delivered his 101 Reasons to Go Vegan presentation to over 100,000 students i</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegpreneur-vegan-cuts-noah-hyams-ecosystem">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/nPVbalxEeNs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 17, 2025</span>
+          <h3 class="ep-title">From Vegpreneur to Vegan Cuts: Noah Hyams on Building a Plant-Based Business Ecosystem</h3>
+          <p class="ep-summary">Noah Hyams, founder of Vegapreneur and new owner of Vegan Cuts, talks with Sean A. Russell about why community, not content, is the unfair a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/what-it-really-takes-build-global-vegan-community">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/efabgvBFWqo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 16, 2025</span>
+          <h3 class="ep-title">What It Really Takes to Build a Global Vegan Community</h3>
+          <p class="ep-summary">In a candid solo episode recorded after the NYC tour, Vegans Explore founder Sean A. Russell gives an honest status update on burnout, a new</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/type-2-diabetes-insulin-resistance-not-sugar">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/lBBmPRW5FOk/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 15, 2025</span>
+          <h3 class="ep-title">Type 2 Diabetes Explained: Why Insulin Resistance, Not Sugar, Is the Real Culprit</h3>
+          <p class="ep-summary">A deep dive into the biology of type 2 diabetes argues the condition begins with fat-driven insulin resistance, not sugar, and explains why </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/neal-barnard-plant-based-questions-answered">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/9c0Wk4AqmyE/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 14, 2025</span>
+          <h3 class="ep-title">Dr. Neal Barnard Answers the Questions Every Plant-Based Beginner Asks</h3>
+          <p class="ep-summary">Physician and researcher Dr. Neal Barnard runs through rapid-fire answers on reversing type 2 diabetes, blood pressure, soy myths, cholester</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/jane-velez-mitchell-unchained-broadcast-animal-activism">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/zxSP7wfVF7c/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 13, 2025</span>
+          <h3 class="ep-title">Jane Velez-Mitchell on Four Decades in Broadcast and Building the Animal Rights Movement</h3>
+          <p class="ep-summary">Veteran journalist Jane Velez-Mitchell traces her path from local news anchor to founder of Jane Unchained, and makes the case for using wha</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegfest-expos-health-focused-vegan-festivals-helene">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/rZgmrsk6xVo/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 12, 2025</span>
+          <h3 class="ep-title">Inside VegFest Expos: Building Health-Focused Vegan Festivals Across the Southeast</h3>
+          <p class="ep-summary">Festival organizer Helene of VegFest Expos talks with Sean A. Russell about running vegan festivals across the southeast, a 2026 pivot towar</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/maizly-worlds-first-corn-milk-tim-leclercq">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/2Kfn_fNxO2I/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 11, 2025</span>
+          <h3 class="ep-title">Meet Maizly: The Startup Behind the World&#x27;s First Corn Milk</h3>
+          <p class="ep-summary">At Plant Based World Expo, Sean A. Russell talks with Maizly co-founder Tim Leclercq about turning corn, an ingredient with a bad reputation</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/bunny-cakes-home-kitchen-national-vegan-brand">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/gDyejQRrjlM/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 10, 2025</span>
+          <h3 class="ep-title">From Home Kitchen to National Brand: The Bunny Cakes Story</h3>
+          <p class="ep-summary">Mariana of Bunny Cakes talks with Sean A. Russell about turning a home vegan bakery into a national brand shipping ready-to-bake cupcakes ac</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/eu-ban-vegan-words-burger-milk-labeling">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/zwYrF4iAqxw/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 9, 2025</span>
+          <h3 class="ep-title">Why the EU Wants to Ban Words Like Burger and Milk</h3>
+          <p class="ep-summary">The European Union is again debating whether plant-based brands can use terms like burger, milk, and cheese, reviving a labeling fight that </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/confessions-meat-industry-insider-reenactment">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Xh9nWbpwRfc/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 8, 2025</span>
+          <h3 class="ep-title">Confessions of a Claimed Meat Industry Insider: A Reenactment Worth Questioning</h3>
+          <p class="ep-summary">A viral Reddit AMA claiming to expose meat industry misinformation tactics gets a reenactment on the Vegans Explore Podcast, alongside a rem</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/chef-babette-stuff-i-eat-healing-purpose">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/Fepx1EOim9Q/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 7, 2025</span>
+          <h3 class="ep-title">Chef Babette on Healing, Purpose, and the Power of Plant-Based Food</h3>
+          <p class="ep-summary">Chef Babette of Stuff I Eat in Inglewood, California talks with Sean A. Russell about food as medicine, life philosophy, and building a rest</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/virginia-vegan-scene-the-southern-vegan-richmond">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/7OgqAqLi33g/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 6, 2025</span>
+          <h3 class="ep-title">Inside Virginia&#x27;s Vegan Scene with The Southern Vegan</h3>
+          <p class="ep-summary">Sean A. Russell catches up with Dante, known online as The Southern Vegan, at VegFest Expo to talk about Richmond, Virginia&#x27;s growing vegan </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/v-collective-cruelty-free-shopping-madai-rodriguez">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/1fG6pUl5mGs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 5, 2025</span>
+          <h3 class="ep-title">How V Collective Is Redefining Cruelty-Free Shopping, One Vegan at a Time</h3>
+          <p class="ep-summary">At Plant Based World Expo, Sean A. Russell sits down with Madai Rodriguez, founder of V Collective, a cruelty-free lifestyle shop and Vegans</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/state-of-the-vegan-nation-vegans-explore-passport-pricing">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/61uz7hio_p8/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 4, 2025</span>
+          <h3 class="ep-title">State of the Vegan Nation: Sean Russell&#x27;s Unfiltered Vision for the Vegans Explore Passport</h3>
+          <p class="ep-summary">Recorded during the NYC tour, Sean A. Russell breaks down the business model behind the Vegans Explore Passport, from a free founding-member</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-explore-moment-of-clarity-nyc-mission">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/xARI4R9jR-E/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 3, 2025</span>
+          <h3 class="ep-title">A Moment of Clarity: Rethinking What Vegans Explore Is Really Building</h3>
+          <p class="ep-summary">A dinner at Al Andalus in New York with the Southern Vegan sparks a clearer picture of who Vegans Explore is really built for, from pre-vega</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-explore-nyc-tour-day-two-kindness-queens">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/X8fqvXmJyGs/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 2, 2025</span>
+          <h3 class="ep-title">Random Acts of Kindness in Queens: Inside Day Two of the Vegans Explore NYC Tour</h3>
+          <p class="ep-summary">A stranger&#x27;s paid-forward meal at Veggie Castle in Queens sets the tone for day two of the Vegans Explore NYC tour, recorded live from Plant</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-explore-nyc-tour-day-one-building-momentum">
+        <div class="ep-thumb" style="background-image:url('https://i.ytimg.com/vi/HpIpWqcUOos/hqdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 1, 2025</span>
+          <h3 class="ep-title">On the Road to NYC: Sean Russell Kicks Off the Vegans Explore Tour</h3>
+          <p class="ep-summary">Sean A. Russell packs up from Orlando and heads to New York City to kick off the first official Vegans Explore tour stop, previewing Plant B</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-explore-passport-community-launch">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/ACCNTnmN5sA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 30, 2025</span>
+          <h3 class="ep-title">Vegans Explore Is Launching a Global Community, and It Starts Invite-Only</h3>
+          <p class="ep-summary">Vegans Explore is launching the Passport, a global community for vegan explorers, on January 11. Until then, it is invite-only and free for </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/ten-vegan-cookbooks-home-cooking">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/ZtxMFcrunNE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 29, 2025</span>
+          <h3 class="ep-title">Ten Vegan Cookbooks to Upgrade Your Home Cooking</h3>
+          <p class="ep-summary">From soulful comfort food to gut-friendly high-fiber meals, ten cookbooks worth adding to your kitchen if you are tired of the same three pl</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/torre-washington-vegan-bodybuilder-mr-olympia-2026">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/zjV61GIFVIo/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 28, 2025</span>
+          <h3 class="ep-title">Torre Washington Is Set to Make History as the First Natural Vegan Bodybuilder at Mr. Olympia</h3>
+          <p class="ep-summary">Torre Washington is set to become the first natural vegan bodybuilder to qualify for the Mr. Olympia stage in September 2026, a milestone ne</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-explore-mission-daily-podcast-city-tours">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/COHPL3A3GyI/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 27, 2025</span>
+          <h3 class="ep-title">What Vegans Explore Is Building, One City at a Time</h3>
+          <p class="ep-summary">A daily podcast running through World Vegan Day 2026, city tours that started in South Florida and are headed to New York next, and an open </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/gut-microbiome-fiber-plant-diversity-guide">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/JFrB58CLfQg/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 26, 2025</span>
+          <h3 class="ep-title">Your Gut Microbiome Is Running the Show, Here&#x27;s How to Feed It</h3>
+          <p class="ep-summary">Around 39 trillion microbes live in your gut, shaping digestion, immunity, mood, and metabolism. The single biggest lever you control is fib</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-celebrities-long-term-advocates-vs-departures">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/CXROWTPLMms/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 25, 2025</span>
+          <h3 class="ep-title">The Celebrities Who Stayed Vegan, and the Ones Who Walked Away</h3>
+          <p class="ep-summary">For every high-profile vegan who steps back and reinforces the myth that the lifestyle is unsustainable, there are long-term advocates who h</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-10-vegan-cities-us-ranked">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/TkoQa9mkrpc/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 24, 2025</span>
+          <h3 class="ep-title">The Top 10 Vegan Cities in the U.S., Ranked</h3>
+          <p class="ep-summary">Cross-checking Happy Cow, PETA, and WalletHub&#x27;s annual rankings to find where vegan life is actually flourishing in America, from Denver to </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-alcohol-fining-agents-wine-beer-guide">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/VLJCef6U41g/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 23, 2025</span>
+          <h3 class="ep-title">Is Your Wine Actually Vegan? The Fining Process Most Drinkers Never Hear About</h3>
+          <p class="ep-summary">Many wines, beers, and spirits use animal-derived ingredients during a clarifying process called fining. Here is what to watch for, and whic</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/plant-based-milk-schools-dairy-monopoly-bill">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/M7r-bWIZOWI/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 22, 2025</span>
+          <h3 class="ep-title">Big Dairy&#x27;s 80-Year School Milk Monopoly Just Cracked</h3>
+          <p class="ep-summary">For nearly 80 years, federal law forced schools to serve cow&#x27;s milk. A newly passed Senate bill would finally let districts offer fortified </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/michelin-stars-vegan-fine-dining-rise">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/U925lh5SuCU/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 21, 2025</span>
+          <h3 class="ep-title">Michelin Stars and the Rise of Vegan Fine Dining</h3>
+          <p class="ep-summary">A tour through the Michelin-starred and Michelin-recognized restaurants proving plant-based cuisine belongs at the highest level of fine din</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/clean-15-dirty-dozen-2025-pesticide-guide">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/9MZ_MERGS3Y/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 20, 2025</span>
+          <h3 class="ep-title">The 2025 Clean 15 and Dirty Dozen: What&#x27;s Actually on Your Produce</h3>
+          <p class="ep-summary">More than 75 percent of non-organic produce carries detectable pesticide residue. The newest Clean 15 and Dirty Dozen lists show shoppers ex</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-10-anti-vegan-arguments-calm-responses">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/uMgsXX4j9EE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 19, 2025</span>
+          <h3 class="ep-title">The Top 10 Anti-Vegan Arguments, and How to Respond Without the Rage Bait</h3>
+          <p class="ep-summary">Nutrient deficiency, cost, taste, convenience: the ten objections come up in almost every vegan conversation. Here are grounded, non-defensi</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/ital-living-jamaica-plant-based-culture">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/ARvVqZh-Jgk/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 18, 2025</span>
+          <h3 class="ep-title">Ital Living: Jamaica&#x27;s Deep Roots in the Global Plant-Based Movement</h3>
+          <p class="ep-summary">Long before vegan trends and documentaries, Jamaica had its own plant-powered culture, shaped by Rastafari ital cooking, a large Seventh-day</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/south-florida-vegans-call-to-action">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/Cdps0zPM4FA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 17, 2025</span>
+          <h3 class="ep-title">South Florida Vegans Call to Action</h3>
+          <p class="ep-summary">In this episode, host Sean A. Russell dives into the real challenges facing local Vegan restaurants and nonprofits. Many of these community </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-10-plant-based-superfoods-ranked">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/wYAwgqNPPuY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 17, 2025</span>
+          <h3 class="ep-title">The Top 10 Plant-Based Superfoods, Ranked</h3>
+          <p class="ep-summary">From hemp seeds to sea moss, a countdown of the ten most respected superfoods in the plant-based world, where they come from, what they do, </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/black-seed-oil-ancient-wellness-secret-comeback">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/-eSCt9UUToU/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 16, 2025</span>
+          <h3 class="ep-title">Black Seed Oil: The 3,000 Year Old Wellness Secret Making a Comeback</h3>
+          <p class="ep-summary">Found in King Tut&#x27;s tomb, treasured by Cleopatra, praised in traditional Islamic medicine as the seed of blessing: black seed oil has travel</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-osteoporosis-bone-health-nutrition-plan">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/osQ6ED7knV8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 15, 2025</span>
+          <h3 class="ep-title">Vegan With Osteoporosis: A Real Nutrition Plan for Stronger Bones</h3>
+          <p class="ep-summary">A listener asked how to strengthen her bones on a vegan diet after an osteoporosis diagnosis. Here is the nutrient by nutrient breakdown, sa</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-brand-acquisitions-lessons-happy-cow-miyokos">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/aozBylY6TJ8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 14, 2025</span>
+          <h3 class="ep-title">When Vegan Brands Get Bought: What Happy Cow, Miyoko&#x27;s, and Six Other Acquisitions Teach Us</h3>
+          <p class="ep-summary">Happy Cow&#x27;s recent acquisition has the vegan community asking hard questions about who controls the platforms we rely on. A look at eight br</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-frustrating-thing-about-being-vegan">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/qcIUtzp-H1c/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 13, 2025</span>
+          <h3 class="ep-title">The Frustrating Thing About Being Vegan</h3>
+          <p class="ep-summary">What’s the most frustrating thing about being Vegan? For this episode, Sean A. Russell set out to find out. What listeners didn’t know at fi</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/veganism-and-your-carbon-footprint">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/D4NdICba73I/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 12, 2025</span>
+          <h3 class="ep-title">Veganism and Your Carbon Footprint</h3>
+          <p class="ep-summary">In this episode, host Sean A. Russell explores how what’s on your plate affects the planet, your health, and even the communities around fac</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegans-explore-community-manifesto">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/AstrIxRxWto/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 11, 2025</span>
+          <h3 class="ep-title">Vegans Explore Community Manifesto</h3>
+          <p class="ep-summary">In this heartfelt episode, Vegans Explore founder Sean A. Russell unveils the vision behind the Vegans Explore Community Manifesto.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/future-of-farming-veganism-innovation-sustainable-agriculture">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/NViecdd8c18/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 10, 2025</span>
+          <h3 class="ep-title">The Future of Farming: How Veganism &amp; Innovation Are Shaping Sustainable Agriculture</h3>
+          <p class="ep-summary">From Miami&#x27;s Overtown to rooftop farms in Brooklyn, a tour of the urban agriculture projects redefining what farming looks like, plus the ho</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/south-florida-vegans-thanksgiving-guide">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/YulGegFFGaw/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 10, 2025</span>
+          <h3 class="ep-title">South Florida Vegans Thanksgiving Guide</h3>
+          <p class="ep-summary">Host Sean A. Russell launches the first-ever South Florida Vegan Thanksgiving Guide from Vegans Explore. Discover plant-based holiday menus,</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/ending-world-hunger-with-legislation">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/qYiZpbxkW_o/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 9, 2025</span>
+          <h3 class="ep-title">Ending World Hunger with Legislation: How Food Waste Laws Are Reshaping Food Security</h3>
+          <p class="ep-summary">California&#x27;s SB 1383 and France&#x27;s Loi Garot both mandate food waste donation. A comparison of what&#x27;s working, what isn&#x27;t, and what it means </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/hip-hop-and-the-vegan-movement">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/-hl_fX6gJyY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 8, 2025</span>
+          <h3 class="ep-title">Hip Hop &amp; Veganism: How Artists Are Shaping the Future of Plant-Based Living</h3>
+          <p class="ep-summary">From RZA to NLE Choppa, the hip-hop artists and organizations who&#x27;ve been quietly leading plant-based living for decades &amp;mdash; and turning</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/nyc-vegan-scene-vlog-plant-based-expo">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/cGZlCyfNF5w/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 7, 2025</span>
+          <h3 class="ep-title">Discover the NYC Vegan Scene: Plant Based World Expo &amp; Community Connections</h3>
+          <p class="ep-summary">Heading to New York City this December for the Plant Based World Expo, an animal sanctuary visit, and the launch of a brand-new Vegans Explo</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-10-most-influential-vegan-documentaries">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/XFzwFTJfYiI/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 6, 2025</span>
+          <h3 class="ep-title">Top 10 Most Influential Vegan Documentaries of All Time</h3>
+          <p class="ep-summary">A countdown of the films that opened millions of eyes to the truth about food, the environment, and compassion, ranked by cultural impact an</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/plant-powered-school-meals-pilot-act">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/UMTLNn173H4/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 5, 2025</span>
+          <h3 class="ep-title">10 Million Dollar Grant Program for Plant-Based School Lunches</h3>
+          <p class="ep-summary">A new federal bill, the Plant-Powered School Meals Pilot Act, would fund a $10 million grant program letting schools add vegan entrees and n</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-sanctuaries-transforming-lives-in-florida">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/MLKE-hUhUs8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 4, 2025</span>
+          <h3 class="ep-title">The Vegan Sanctuaries Transforming Lives in Florida</h3>
+          <p class="ep-summary">From Miami to Punta Gorda, the animal sanctuaries and rescues giving rescued animals a second chance and building a statewide movement for c</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/rise-of-vegan-makeup">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/3Ovo6IfdyHA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 3, 2025</span>
+          <h3 class="ep-title">The Rise of Vegan Makeup</h3>
+          <p class="ep-summary">The vegan cosmetics industry was valued at $3.6 billion in 2024 and is projected to hit $6 billion by 2030. A look at the cruelty-free brand</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-friendly-fast-food-chains-for-travelers">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/3Gqtvlt8mtE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 2, 2025</span>
+          <h3 class="ep-title">Vegan-Friendly Fast Food Chains for Travelers</h3>
+          <p class="ep-summary">Reliable vegan orders at the fast food chains you&#x27;ll actually find at airports, rest stops, and small towns when a dedicated vegan restauran</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-protein-powder-heavy-metals">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/t-HUb_BQ9BU/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 1, 2025</span>
+          <h3 class="ep-title">The Truth About Vegan Protein Powders and Heavy Metals</h3>
+          <p class="ep-summary">A Consumer Reports investigation found lead and other heavy metals in most tested protein powders. Here&#x27;s what it means for vegan athletes, </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/meal-prep-hacks-to-build-muscle-stay-lean">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/s6ZFFYQGp3I/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 22, 2025</span>
+          <h3 class="ep-title">Meal Prep Hacks to Build Muscle &amp; Stay Lean</h3>
+          <p class="ep-summary">In this episode of the Vegans Who Lift Podcast, John and Brooke tackle the #1 challenge for plant-based athletes—meal prep! They break down </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/self-coaching-101-vegan-bodybuilding-secrets">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/jImg-Js0ezQ/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jan 14, 2025</span>
+          <h3 class="ep-title">Self-Coaching 101: Vegan Bodybuilding Secrets</h3>
+          <p class="ep-summary">🎙️ Ready to level up your fitness and Vegan lifestyle? Season 5, Episode 1 of the Vegans Who Lift Podcast is here!</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-travel-hacks-staying-plant-based-anywhere-in-the-world">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/CliiKU_VnBg/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 19, 2024</span>
+          <h3 class="ep-title">Vegan Travel Hacks: Staying Plant-Based Anywhere in the World</h3>
+          <p class="ep-summary">Season 04, Episode 11 of the Vegans Who Lift Podcast dives into the challenges and hacks of traveling as a vegan, featuring hosts John Thoma</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/navigating-food-fitness-family-holiday-survival-guide-for-vegans">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/K8VVAk9qWCQ/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Dec 15, 2024</span>
+          <h3 class="ep-title">Navigating Food, Fitness &amp; Family: Holiday Survival Guide for Vegans</h3>
+          <p class="ep-summary">The holidays can be a challenging time for maintaining fitness goals, staying mindful about food choices, and balancing indulgence with disc</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/46-million-turkeys-a-year-why-were-going-vegan-this-thanksgiving">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/2FaTHA5D-Ps/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 19, 2024</span>
+          <h3 class="ep-title">46 Million Turkeys a Year? Why We’re Going Vegan This Thanksgiving</h3>
+          <p class="ep-summary">In this lively episode of Vegans Who Lift (Season 4, Episode 7), co-hosts John Thomas, the Bodybuilding Vegan, and Brooke Sellers, aka Miss </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/how-skateboarding-and-bodybuilding-help-this-vegan-athlete-stay-strong">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/hoM0lQaxfJc/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Nov 13, 2024</span>
+          <h3 class="ep-title">How Skateboarding and Bodybuilding Help This Vegan Athlete Stay Strong</h3>
+          <p class="ep-summary">Welcome to Season 04, Episode 06 of the Vegans Who Lift Podcast ! Join the conversation with hosts John Thomas, a.k.a.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/online-vs-in-person-coaching">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/kjPqQVCAlqA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 29, 2024</span>
+          <h3 class="ep-title">Online vs. In-Person Coaching</h3>
+          <p class="ep-summary">Want to know the real difference between online and in-person coaching? Join John Thomas, The Bodybuilding Vegan, and Brooke Sellers, Miss M</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/ella-majors-on-vegan-bodybuilding-cravings-and-holiday-treats">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/rc8OflIhuw8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 29, 2024</span>
+          <h3 class="ep-title">Ella Magers  on Vegan Bodybuilding, Cravings, and Holiday Treats</h3>
+          <p class="ep-summary">Join the Vegans Who Lift Podcast for an unscripted, fun, and insightful dive into veganism and fitness!</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/how-to-prevent-and-recover-from-gym-injuries-vegan-fitness-advice">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/8oerR3y59mk/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 22, 2024</span>
+          <h3 class="ep-title">How to Prevent and Recover from Gym Injuries | Vegan Fitness Advice</h3>
+          <p class="ep-summary">In the Season 04, Episode 03 of the “Vegans Who Lift” podcast, hosts John Thomas, aka The Bodybuilding Vegan, and Brooke Sellers, aka Miss M</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/overcoming-medical-system-failures-gut-health-hormones-and-veganism">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/SLBBD0FEoyM/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 16, 2024</span>
+          <h3 class="ep-title">Overcoming Medical System Failures: Gut Health, Hormones, and Veganism</h3>
+          <p class="ep-summary">In Season 04, Episode 02 of the Vegans Who Lift Podcast , co-hosts John Thomas (The BodybuildingVegan) and Brooke Sellers (Miss Meatless Mus</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-struggle-to-strength-ashley-kings-vegan-bodybuilding-story">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/8xrcykgswTA/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Oct 8, 2024</span>
+          <h3 class="ep-title">From Struggle to Strength: Ashley King’s Vegan Bodybuilding Story</h3>
+          <p class="ep-summary">Dive into the Season 4 premiere of the Vegans Who Lift Podcast, where fitness, veganism, and inspiring stories collide!</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/how-tommy-jessen-transformed-his-life-and-physique-with-a-vegan-diet-with-brooke-sellers-john-thomas">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/uDehVoju0Dc/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Sep 26, 2024</span>
+          <h3 class="ep-title">How Tomi Jessen Transformed His Life and Physique with a Vegan Diet with Brooke Sellers &amp; John Thomas</h3>
+          <p class="ep-summary">In Season 03, Episode 11 of the Vegans Who Lift Podcast , hosts John Thomas, the BodybuildingVegan, and Brooke Sellers, aka Miss Meatless Mu</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/thoughts-on-the-future-of-bodybuilding">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/292oGZj2Tbk/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Sep 18, 2024</span>
+          <h3 class="ep-title">Thoughts on the Future of Bodybuilding</h3>
+          <p class="ep-summary">In Season 03, Episode 10 of the Vegans Who Lift podcast, John Thomas (The Bodybuilding Vegan) and Brooke Sellers (Miss Meatless Muscle) dive</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-fitness-hacks-reduce-cortisol-for-better-results-with-brooke-sellers-john-thomas">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/BvVbubkbI2I/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Sep 11, 2024</span>
+          <h3 class="ep-title">Vegan Fitness Hacks: Reduce Cortisol for Better Results with Brooke Sellers &amp; John Thomas</h3>
+          <p class="ep-summary">In this episode of the Vegans Who Lift Podcast (Season 03, Episode 09), co-hosts John Thomas (The Bodybuilding Vegan) and Brooke Sellers (Mi</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/the-power-of-juicing-holistic-health-tips-with-evie-kevish">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/CeNUA307DjI/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 24, 2024</span>
+          <h3 class="ep-title">The Power of Juicing: Holistic Health Tips with Evie Kevish</h3>
+          <p class="ep-summary">In Season 3, Episode 2 of the Vegans Who Lift Podcast, hosts John Thomas (The BodybuildingVegan) and Brooke Sellers (Miss Meatless Muscle) a</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/start-strong-the-importance-of-measuring-your-fitness-progress">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/TJkLGUAIJFc/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 16, 2024</span>
+          <h3 class="ep-title">Start Strong: The Importance of Measuring Your Fitness Progress</h3>
+          <p class="ep-summary">Welcome back to the Vegans Who Lift Podcast! As we kick off Season 03, Episode 01, join your favorite hosts, John Thomas, The Bodybuilding V</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/building-a-global-vegan-movement">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/MyNDeHAEUD0/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 9, 2024</span>
+          <h3 class="ep-title">Building a Global Vegan Movement</h3>
+          <p class="ep-summary">Welcome to the thrilling season finale of the Vegans Who Lift Podcast! In this special episode about Global Vegan Movement, hosts John Thoma</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-bodybuilding-secrets-off-season-and-bulking">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/gutJMbA1fsI/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jul 2, 2024</span>
+          <h3 class="ep-title">Vegan Bodybuilding Secrets: Off-Season and Bulking</h3>
+          <p class="ep-summary">In this episode of the Vegans Who Lift podcast, John Thomas and Brooke Sellers provide invaluable insights and practical advice on how to bu</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/embrace-the-suck-prep-hacks-for-bodybuilders">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/xdarLuI4f9E/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 25, 2024</span>
+          <h3 class="ep-title">Embrace the Suck: Prep Hacks for Bodybuilders</h3>
+          <p class="ep-summary">In Season 2, Episode 10 of the Vegans Who Lift Podcast, hosts John Thomas, aka The BodybuildingVegan, and Brooke Sellers, aka Miss Meatless </p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-military-service-to-vegan-advocacy-korin-suttons-journey">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/wic3FDw5gvM/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 18, 2024</span>
+          <h3 class="ep-title">From Military Service to Vegan Advocacy: Korin Sutton’s Journey</h3>
+          <p class="ep-summary">In Season 2, Episode 9 of the &quot;Vegans Who Lift&quot; podcast, hosts John Thomas, aka the Bodybuilding Vegan, and Brooke Sellers, known as Miss Me</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/competing-with-confidence-ben-mitchells-vegan-bodybuilding-insights">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/iFj4rvw0PIM/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 11, 2024</span>
+          <h3 class="ep-title">Competing with Confidence: Ben Mitchell’s Vegan Bodybuilding Insights</h3>
+          <p class="ep-summary">In this episode of the Vegans Who Lift Podcast, hosts John Thomas (BodybuildingVegan) and Brooke Sellers (Miss Meatless Muscle) chat with ve</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/balancing-act-bodybuilding-vs-activism-our-honest-take">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/05b0gWPWmuE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">Jun 4, 2024</span>
+          <h3 class="ep-title">Balancing Act: Bodybuilding vs. Activism – Our Honest Take</h3>
+          <p class="ep-summary">In Season 2, Episode 7 of the &quot;Vegans Who Lift Podcast,&quot; hosts Brooke Sellers (Miss Meatless Muscle) and John Thomas (Bodybuilding Vegan) di</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/confidence-and-conditioning-secrets-to-winning-your-first-show-and-going-pro">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/05b0gWPWmuE/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">May 28, 2024</span>
+          <h3 class="ep-title">Confidence and Conditioning: Secrets to Winning Your First Show and Going Pro</h3>
+          <p class="ep-summary">In this engaging episode, hosts John Thomas and Brooke Sellers chat with Greta, an OCB figure competitor who has recently turned pro.</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/from-trauma-to-triumph-the-journey-of-buff-vegan-barbie">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/U0lVBSK-vNM/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">May 21, 2024</span>
+          <h3 class="ep-title">From Trauma to Triumph: The Journey of Buff Vegan Barbie</h3>
+          <p class="ep-summary">In this heartfelt and inspiring episode, Brooke Sellers and John Thomas are joined by Kaitlin, known as Buff Vegan Barbie, an NPC bikini com</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/top-10-fitness-tips-for-vegans-start-strong-and-stay-consistent">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/GQ3suIuxtuY/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">May 15, 2024</span>
+          <h3 class="ep-title">Top 10 Fitness Tips for Vegans: Start Strong and Stay Consistent</h3>
+          <p class="ep-summary">In Season 2, Episode 4 of the &quot;Vegans Who Lift Podcast,&quot; hosts Brooke Sellers (Miss Meatless Muscle) and John Thomas (the Bodybuilding Vegan</p>
+        </div>
+      </a>
+      <a class="ep-card" href="/pulse/vegan-father-powerlifter-nick-squire-redefines-strength">
+        <div class="ep-thumb" style="background-image:url('https://img.youtube.com/vi/tAU_vg6zYr8/maxresdefault.jpg')"><span class="ep-play">&#9658;</span></div>
+        <div class="ep-body">
+          <span class="ep-date">May 7, 2024</span>
+          <h3 class="ep-title">Vegan, Father, Powerlifter: Nick Squire Redefines Strength</h3>
+          <p class="ep-summary">This episode dives deep into the world of vegan strength sports with Nick Squire, sharing insights from his journey as a powerlifter and a v</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Vegans Explore: Plant-based travel, worldwide.</span>
+  </footer>
+
+</body>
+</html>
