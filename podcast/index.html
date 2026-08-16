@@ -29,21 +29,7 @@
     }
     a { color: inherit; }
 
-    /* Nav */
-    .nav {
-      padding: 24px 48px;
-      border-bottom: 1px solid var(--ve-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-    .nav-links a { text-decoration: none; color: var(--ve-text-70); }
-    .nav-links a:hover { color: var(--ve-green); }
-    @media (max-width: 720px) { .nav-links { display: none; } }
-
-    /* Hero */
+/* Hero */
     .hero {
       padding: 90px 48px 70px;
       text-align: center;
@@ -191,20 +177,8 @@
   </style>
 </head>
 <body>
-
-  <nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
-      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
-    </a>
-    <div class="nav-links">
-      <a href="/pulse">Pulse</a>
-      <a href="/directory">Directory</a>
-      <a href="/partners">Partners</a>
-      <a href="#join-network">Join the Network</a>
-    </div>
-  </nav>
-
-  <header class="hero">
+  <script src="/public/nav.js"></script>
+<header class="hero">
     <div class="hero-eyebrow">Vegans Explore Podcast Network</div>
     <h1>Every episode we've made. Every show we want to help grow.</h1>
     <p>257 episodes and counting, across four shows, covering the people, businesses, and ideas shaping the vegan movement. If you host a podcast too, this is where you plug into our audience, our ad network, and our campaigns.</p>
@@ -468,5 +442,6 @@
       }
     })();
   </script>
+  <script src="/public/footer.js"></script>
 </body>
 </html>
