@@ -168,6 +168,26 @@
     .show-section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--ve-border); }
     .show-section-head h2 { font-size: 22px; font-weight: 900; }
     .show-section-count { font-size: 12px; font-weight: 700; color: var(--ve-text-50); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* Episode search */
+    .search-section { padding: 0 48px 56px; max-width: 1180px; margin: 0 auto; }
+    .search-box { position: relative; max-width: 640px; margin: 0 auto; }
+    .search-box input {
+      width: 100%; padding: 16px 20px 16px 48px; border: 1.5px solid var(--ve-border); border-radius: 8px;
+      font-family: inherit; font-size: 15px; color: var(--ve-text); background: #fff;
+    }
+    .search-box input:focus { outline: none; border-color: var(--ve-green); }
+    .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--ve-text-50); font-size: 15px; }
+    .search-hint { text-align: center; font-size: 12px; color: var(--ve-text-50); margin-top: 10px; }
+    .search-results { max-width: 780px; margin: 20px auto 0; display: none; }
+    .search-results.active { display: block; }
+    .search-result { display: flex; gap: 14px; padding: 14px; border-radius: 8px; text-decoration: none; color: var(--ve-text); align-items: center; }
+    .search-result:hover { background: var(--ve-green-light); }
+    .search-result-thumb { width: 64px; height: 64px; border-radius: 6px; background-size: cover; background-position: center; background-color: #eee; flex-shrink: 0; }
+    .search-result-show { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .search-result-title { font-size: 14px; font-weight: 800; margin: 3px 0; }
+    .search-result-summary { font-size: 12px; color: var(--ve-text-70); }
+    .search-empty { text-align: center; font-size: 13px; color: var(--ve-text-50); padding: 20px 0; }
   </style>
 </head>
 <body>
@@ -198,6 +218,15 @@
       <div><div class="hero-stat-num">6</div><div class="hero-stat-label">City Communities Reached</div></div>
     </div>
   </header>
+
+  <section class="search-section">
+    <div class="search-box">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="episode-search" placeholder="Search all episodes by topic, guest, or keyword...">
+    </div>
+    <div class="search-hint" id="search-hint">Search across every episode we've published -- titles, summaries, and full transcripts as they're added.</div>
+    <div class="search-results" id="search-results"></div>
+  </section>
 
   <section class="section" id="episodes">
     <div class="section-head">
@@ -388,5 +417,56 @@
     });
   </script>
 
+  <script>
+    (function() {
+      var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var input = document.getElementById('episode-search');
+      var resultsEl = document.getElementById('search-results');
+      var hintEl = document.getElementById('search-hint');
+      var debounceTimer = null;
+
+      input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        var q = input.value.trim();
+        if (!q) {
+          resultsEl.classList.remove('active');
+          resultsEl.innerHTML = '';
+          hintEl.style.display = 'block';
+          return;
+        }
+        debounceTimer = setTimeout(function() { runSearch(q); }, 300);
+      });
+
+      function runSearch(q) {
+        hintEl.style.display = 'none';
+        var url = SUPABASE_URL + '/rest/v1/ve_pulse_content?content_type=eq.podcast&status=eq.published' +
+          '&search_vector=wfts.' + encodeURIComponent(q) +
+          '&select=title,slug,summary,thumbnail_url,podcast_show&order=published_at.desc&limit=12';
+        fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY } })
+          .then(function(res) { return res.json(); })
+          .then(function(rows) {
+            resultsEl.classList.add('active');
+            if (!rows || !rows.length) {
+              resultsEl.innerHTML = '<div class="search-empty">No episodes found for "' + q.replace(/</g,'&lt;') + '".</div>';
+              return;
+            }
+            resultsEl.innerHTML = rows.map(function(r) {
+              var thumb = r.thumbnail_url || '';
+              var summary = (r.summary || '').slice(0, 110);
+              return '<a class="search-result" href="/pulse/' + r.slug + '">' +
+                '<div class="search-result-thumb" style="background-image:url(\'' + thumb + '\')"></div>' +
+                '<div><div class="search-result-show">' + (r.podcast_show || '') + '</div>' +
+                '<div class="search-result-title">' + r.title + '</div>' +
+                '<div class="search-result-summary">' + summary + '</div></div></a>';
+            }).join('');
+          })
+          .catch(function() {
+            resultsEl.classList.add('active');
+            resultsEl.innerHTML = '<div class="search-empty">Search is temporarily unavailable.</div>';
+          });
+      }
+    })();
+  </script>
 </body>
 </html>
