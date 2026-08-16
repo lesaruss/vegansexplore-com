@@ -1256,18 +1256,6 @@
       "destination": "https://archive.vegansexplore.com/regions/north-america/florida/"
     },
     {
-      "source": "/regions/south-florida",
-      "destination": "https://archive.vegansexplore.com/regions/south-florida/"
-    },
-    {
-      "source": "/regions/south-florida/events",
-      "destination": "https://archive.vegansexplore.com/regions/south-florida/events/"
-    },
-    {
-      "source": "/regions/south-florida/partners",
-      "destination": "https://archive.vegansexplore.com/regions/south-florida/partners/"
-    },
-    {
       "source": "/register",
       "destination": "https://archive.vegansexplore.com/register/"
     },
@@ -1717,6 +1705,21 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/regions/south-florida",
+      "destination": "/communities/south-florida",
+      "permanent": true
+    },
+    {
+      "source": "/regions/south-florida/events",
+      "destination": "/communities/south-florida?tab=events",
+      "permanent": true
+    },
+    {
+      "source": "/regions/south-florida/partners",
+      "destination": "/communities/south-florida?tab=partners",
+      "permanent": true
+    },
     {
       "source": "/cm",
       "destination": "/dashboard",
