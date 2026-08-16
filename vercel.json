@@ -1208,46 +1208,6 @@
       "destination": "https://archive.vegansexplore.com/regions/"
     },
     {
-      "source": "/regions/atlanta",
-      "destination": "https://archive.vegansexplore.com/regions/atlanta/"
-    },
-    {
-      "source": "/regions/atlanta/events",
-      "destination": "https://archive.vegansexplore.com/regions/atlanta/events/"
-    },
-    {
-      "source": "/regions/central-florida",
-      "destination": "https://archive.vegansexplore.com/regions/central-florida/"
-    },
-    {
-      "source": "/regions/central-florida/events",
-      "destination": "https://archive.vegansexplore.com/regions/central-florida/events/"
-    },
-    {
-      "source": "/regions/central-florida/partners",
-      "destination": "https://archive.vegansexplore.com/regions/central-florida/partners/"
-    },
-    {
-      "source": "/regions/london",
-      "destination": "https://archive.vegansexplore.com/regions/london/"
-    },
-    {
-      "source": "/regions/los-angeles",
-      "destination": "https://archive.vegansexplore.com/regions/los-angeles/"
-    },
-    {
-      "source": "/regions/new-york-city",
-      "destination": "https://archive.vegansexplore.com/regions/new-york-city/"
-    },
-    {
-      "source": "/regions/new-york",
-      "destination": "https://archive.vegansexplore.com/regions/new-york/"
-    },
-    {
-      "source": "/regions/new-york/events",
-      "destination": "https://archive.vegansexplore.com/regions/new-york/events/"
-    },
-    {
       "source": "/regions/north-america",
       "destination": "https://archive.vegansexplore.com/regions/north-america/"
     },
@@ -2933,6 +2893,56 @@
     {
       "source": "/tag/who-lift-podcast",
       "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/regions/atlanta",
+      "destination": "/communities/atlanta",
+      "permanent": true
+    },
+    {
+      "source": "/regions/atlanta/events",
+      "destination": "/communities/atlanta?tab=events",
+      "permanent": true
+    },
+    {
+      "source": "/regions/central-florida",
+      "destination": "/communities/central-florida",
+      "permanent": true
+    },
+    {
+      "source": "/regions/central-florida/events",
+      "destination": "/communities/central-florida?tab=events",
+      "permanent": true
+    },
+    {
+      "source": "/regions/central-florida/partners",
+      "destination": "/communities/central-florida?tab=partners",
+      "permanent": true
+    },
+    {
+      "source": "/regions/london",
+      "destination": "/communities/london",
+      "permanent": true
+    },
+    {
+      "source": "/regions/los-angeles",
+      "destination": "/communities/los-angeles",
+      "permanent": true
+    },
+    {
+      "source": "/regions/new-york",
+      "destination": "/communities/new-york",
+      "permanent": true
+    },
+    {
+      "source": "/regions/new-york-city",
+      "destination": "/communities/new-york",
+      "permanent": true
+    },
+    {
+      "source": "/regions/new-york/events",
+      "destination": "/communities/new-york?tab=events",
       "permanent": true
     }
   ]
