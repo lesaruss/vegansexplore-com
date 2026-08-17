@@ -20,22 +20,38 @@
     html { scroll-behavior: smooth; }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100vh; }
     .page-frame { width: 100%; margin: 0 auto; background: #fff; display: flex; flex-direction: column; flex: 1; }
-    .hero { position: relative; flex: 1; min-height: 100vh; display: flex; align-items: center; background-position: 32% center;
-      background-image: url('https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_132350_7c519921-09a9-4254-afe2-8f560989871f_min.webp');
-      background-size: cover; background-repeat: no-repeat; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.88) 28%, rgba(0,0,0,0.60) 52%, rgba(0,0,0,0.20) 68%, transparent 84%); }
-    .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%); }
-    .hero-inner { position: relative; z-index: 2; padding: 80px 56px 72px; max-width: 620px; }
+    .hero { position: relative; flex: 1; min-height: 100vh; display: flex; align-items: center; background: #0d0d0d; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; z-index: 0; }
+    .hero-bg .slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.6s ease-in-out; }
+    .hero-bg .slide.active { opacity: 1; }
+    .hero::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.88) 28%, rgba(0,0,0,0.60) 52%, rgba(0,0,0,0.20) 68%, transparent 84%); }
+    .hero::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%); }
+    .hero-inner { position: relative; z-index: 2; padding: 34px 40px; margin: 0 0 0 56px; max-width: 620px; background: rgba(0,0,0,0.72); border-radius: 12px; }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(40px, 6.5vw, 80px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 24px; }
     .hero h1 em { color: var(--ve-green); font-style: normal; display: block; }
-    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.82); margin-bottom: 0; max-width: 400px; }
+    .hero-sub { font-size: 17px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.92); margin-bottom: 0; max-width: 400px; }
+    .city-tag { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 999px; backdrop-filter: blur(6px); }
+    .city-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ve-orange); animation: ve-pulse 1.8s ease-in-out infinite; }
+    @keyframes ve-pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.4); } }
+    .city-tag-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; min-width: 120px; }
     .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 32px; }
     .btn-hero-primary { background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 32px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-flex; align-items: center; gap: 10px; border: none; cursor: pointer; }
     .btn-hero-primary:hover { background: var(--ve-orange-dark); }
-    .btn-hero-secondary { background: transparent; color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 24px; border-radius: 4px; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.3); cursor: pointer; transition: border-color 0.15s, color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-hero-secondary:hover { border-color: rgba(255,255,255,0.7); color: #fff; }
+    .btn-hero-secondary { background: rgba(0,0,0,0.65); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 15px 24px; border-radius: 4px; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.5); cursor: pointer; transition: border-color 0.15s, color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-hero-secondary:hover { border-color: rgba(255,255,255,0.9); color: #fff; }
+    .rotation-dots { position: absolute; z-index: 3; bottom: 28px; left: 56px; display: flex; gap: 6px; }
+    .rotation-dots span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.55); transition: background 0.3s, transform 0.3s; }
+    .rotation-dots span.active { background: var(--ve-green); transform: scale(1.4); }
+    .hero-pause { position: absolute; z-index: 3; top: 28px; right: 28px; display: inline-flex; align-items: center; gap: 7px; background: rgba(0,0,0,0.45); border: 1.5px solid rgba(255,255,255,0.4); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 16px; border-radius: 999px; cursor: pointer; backdrop-filter: blur(6px); }
+    .hero-pause:hover { background: rgba(0,0,0,0.6); }
+    .hero-pause svg { display: block; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-bg .slide { transition: none; }
+      .city-tag-dot { animation: none; }
+    }
     .guide-overlay { display: none; position: fixed; inset: 0; z-index: 998; background: #fff; overflow-y: auto; }
     .guide-overlay.active { display: block; }
     .guide-panel { display: none; min-height: 100vh; padding: 80px 56px 80px; background: #fff; flex-direction: column; justify-content: flex-start; position: relative; }
@@ -100,10 +116,17 @@
     .panel-dot.active { background: var(--ve-green); transform: scale(1.3); }
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
     @media (max-width: 900px) {
-      .hero { background-position: center center; align-items: flex-end; background-image: url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_133247_da3128a5-3ef8-4012-b82b-a9d75f12f182_min.webp) !important; }
-      .hero::before { background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 22%, transparent 72%, rgba(0,0,0,0.5) 100%) !important; }
-      .hero-inner { background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; border: 1px solid rgba(255,255,255,0.09); max-width: 100%; }
-      .hero h1 { font-size: clamp(35px, 6vw, 75px); }
+      .hero { align-items: flex-end; min-height: 0; }
+      .hero::before { background: linear-gradient(to bottom, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.12) 25%, rgba(0,0,0,0.24) 55%, rgba(0,0,0,0.68) 100%) !important; }
+      .hero-inner { background: rgba(0,0,0,0.90); backdrop-filter: blur(8px); border-radius: 8px; margin: 0 20px 24px; padding: 24px 24px; border: 1px solid rgba(255,255,255,0.09); max-width: 100%; }
+      .hero h1 { font-size: clamp(30px, 8vw, 56px); margin-bottom: 14px; }
+      .hero-eyebrow { margin-bottom: 12px; }
+      .hero-sub { font-size: 14px; }
+      .city-tag { margin-top: 14px; padding: 6px 13px; }
+      .hero-ctas { margin-top: 20px; }
+      .btn-hero-primary, .btn-hero-secondary { padding: 13px 22px; }
+      .rotation-dots { bottom: 18px; left: 20px; }
+      .hero-pause { top: 16px; right: 16px; }
       .panel-two-col { flex-direction: column; }
       .panel-portrait { width: 100%; max-width: 480px; max-width: none; }
       .guide-panel { padding: 56px 28px; }
@@ -149,11 +172,18 @@
   <div class="page-frame">
 
   <main id="main-content">
-  <section class="hero" aria-labelledby="hero-heading">
+  <section class="hero" aria-labelledby="hero-heading" aria-roledescription="carousel" aria-label="Cities we're building for">
+    <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+    <p class="visually-hidden" id="heroCityList"></p>
     <div class="hero-inner">
       <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
       <h1 id="hero-heading">Help Us Build<br><em>Your City.</em></h1>
       <p class="hero-sub">We're building the Vegan world's home base, city by city.</p>
+      <div class="city-tag">
+        <span class="city-tag-dot" aria-hidden="true"></span>
+        <span class="city-tag-label" id="heroCityLabel" aria-hidden="true">Loading</span>
+        <span class="visually-hidden" id="heroCityLabelLive" aria-live="polite"></span>
+      </div>
       <div class="hero-ctas">
         <a class="btn-hero-primary" href="/communities" aria-label="Choose your city">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
@@ -162,9 +192,87 @@
         <a class="btn-hero-secondary" href="/login">Log In</a>
       </div>
     </div>
+    <div class="rotation-dots" id="heroRotationDots" aria-hidden="true"></div>
+    <button type="button" class="hero-pause" id="heroPauseBtn" aria-pressed="false">
+      <svg id="heroPauseIcon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+      <span id="heroPauseLabel">Pause</span>
+    </button>
   </section>
 
   </main>
+  <script>
+    (function () {
+      var HERO_CITIES = [
+        { img: '/communities/new-york/banner.jpg', label: 'New York City' },
+        { img: '/communities/los-angeles/banner.jpg', label: 'Los Angeles' },
+        { img: '/communities/london/banner.jpg', label: 'London' },
+        { img: '/communities/atlanta/banner.jpg', label: 'Atlanta' },
+        { img: '/communities/south-florida/banner.jpg', label: 'South Florida' },
+        { img: '/communities/central-florida/banner.jpg', label: 'Central Florida' },
+        { img: '/communities/philadelphia/banner.png', label: 'Philadelphia' },
+        { img: '/communities/dmv/banner.png', label: 'Washington D.C.' }
+      ];
+
+      var bg = document.getElementById('heroBg');
+      var label = document.getElementById('heroCityLabel');
+      var liveLabel = document.getElementById('heroCityLabelLive');
+      var dotsWrap = document.getElementById('heroRotationDots');
+      var pauseBtn = document.getElementById('heroPauseBtn');
+      var pauseLabel = document.getElementById('heroPauseLabel');
+      var cityListEl = document.getElementById('heroCityList');
+      if (!bg || !pauseBtn) return;
+
+      cityListEl.textContent = 'Cities featured in this rotation: ' + HERO_CITIES.map(function (c) { return c.label; }).join(', ') + '.';
+
+      HERO_CITIES.forEach(function (c, i) {
+        var slide = document.createElement('div');
+        slide.className = 'slide' + (i === 0 ? ' active' : '');
+        slide.style.backgroundImage = "url('" + c.img + "')";
+        bg.appendChild(slide);
+        var dot = document.createElement('span');
+        if (i === 0) dot.className = 'active';
+        dotsWrap.appendChild(dot);
+      });
+      label.textContent = HERO_CITIES[0].label;
+
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var idx = 0;
+      var timer = null;
+      var isPlaying = false;
+      var PLAY_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6,4 20,12 6,20"></polygon></svg>';
+      var PAUSE_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+
+      function advance() {
+        var slides = bg.querySelectorAll('.slide');
+        var dots = dotsWrap.querySelectorAll('span');
+        slides[idx].classList.remove('active');
+        dots[idx].classList.remove('active');
+        idx = (idx + 1) % HERO_CITIES.length;
+        slides[idx].classList.add('active');
+        dots[idx].classList.add('active');
+        label.textContent = HERO_CITIES[idx].label;
+        liveLabel.textContent = 'Now showing ' + HERO_CITIES[idx].label;
+      }
+
+      function setPlaying(playing) {
+        isPlaying = playing;
+        pauseBtn.setAttribute('aria-pressed', String(playing));
+        pauseBtn.setAttribute('aria-label', playing ? 'Pause city rotation' : 'Play city rotation');
+        pauseLabel.textContent = playing ? 'Pause' : 'Play';
+        var icon = document.getElementById('heroPauseIcon');
+        if (icon) icon.outerHTML = (playing ? PAUSE_ICON : PLAY_ICON).replace('<svg ', '<svg id="heroPauseIcon" ');
+        if (playing) {
+          timer = setInterval(advance, 5000);
+        } else if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      pauseBtn.addEventListener('click', function () { setPlaying(!isPlaying); });
+      setPlaying(!prefersReducedMotion);
+    })();
+  </script>
   <script src="/public/footer.js"></script>
   </div>
 
