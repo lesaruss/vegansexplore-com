@@ -203,15 +203,19 @@
   <script>
     (function () {
       var HERO_CITIES = [
-        { img: '/communities/new-york/banner.jpg', label: 'New York City' },
+        { img: '/communities/new-york/banner.jpg', imgMobile: '/communities/new-york/hero-mobile.jpg', label: 'New York City' },
         { img: '/communities/los-angeles/banner.jpg', label: 'Los Angeles' },
-        { img: '/communities/london/banner.jpg', label: 'London' },
+        { img: '/communities/london/banner.jpg', imgMobile: '/communities/london/hero-mobile.jpg', label: 'London' },
         { img: '/communities/atlanta/banner.jpg', label: 'Atlanta' },
         { img: '/communities/south-florida/banner.jpg', label: 'South Florida' },
         { img: '/communities/central-florida/banner.jpg', label: 'Central Florida' },
         { img: '/communities/philadelphia/banner.png', label: 'Philadelphia' },
         { img: '/communities/dmv/banner.png', label: 'Washington D.C.' }
       ];
+      // The six cities without imgMobile already use natively portrait banner art,
+      // so the same file serves both desktop (center-cropped) and mobile (full frame).
+      var mobileHero = window.matchMedia('(max-width: 900px)');
+      function cityImage(c) { return (mobileHero.matches && c.imgMobile) ? c.imgMobile : c.img; }
 
       var bg = document.getElementById('heroBg');
       var label = document.getElementById('heroCityLabel');
@@ -227,13 +231,22 @@
       HERO_CITIES.forEach(function (c, i) {
         var slide = document.createElement('div');
         slide.className = 'slide' + (i === 0 ? ' active' : '');
-        slide.style.backgroundImage = "url('" + c.img + "')";
+        slide.style.backgroundImage = "url('" + cityImage(c) + "')";
         bg.appendChild(slide);
         var dot = document.createElement('span');
         if (i === 0) dot.className = 'active';
         dotsWrap.appendChild(dot);
       });
       label.textContent = HERO_CITIES[0].label;
+
+      function refreshSlideImages() {
+        var slides = bg.querySelectorAll('.slide');
+        HERO_CITIES.forEach(function (c, i) {
+          if (slides[i]) slides[i].style.backgroundImage = "url('" + cityImage(c) + "')";
+        });
+      }
+      if (mobileHero.addEventListener) mobileHero.addEventListener('change', refreshSlideImages);
+      else if (mobileHero.addListener) mobileHero.addListener(refreshSlideImages);
 
       var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var idx = 0;
