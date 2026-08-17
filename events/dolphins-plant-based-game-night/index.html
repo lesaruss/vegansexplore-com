@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plant-Based Game Night: Vegans Explore x Miami Dolphins | SoFlo Vegans</title>
+<meta name="description" content="Vegans Explore is bringing a plant-based day to a Miami Dolphins home game. In development now, join free to be first to know the date.">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #b8ddb9;
+    --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+    --ve-border: rgba(0,0,0,0.09); --ve-surface: #f7faf7;
+    --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+  .page-frame { width: 100%; background: #fff; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 28px; }
+
+  .status-banner { background: var(--ve-green-light); border-bottom: 1px solid var(--ve-green-mid); padding: 12px 28px; text-align: center; }
+  .status-banner span { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green-dark); }
+
+  .hero-band { padding: 64px 0 48px; text-align: center; }
+  .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 16px; display: inline-flex; align-items: center; gap: 10px; }
+  .eyebrow::before, .eyebrow::after { content: ''; width: 20px; height: 2px; background: var(--ve-green-dark); }
+  .hero-band h1 { font-size: clamp(30px,5vw,52px); font-weight: 900; letter-spacing: -0.01em; line-height: 1.1; margin-bottom: 18px; }
+  .lede { font-size: 16px; color: var(--ve-text-75); line-height: 1.7; max-width: 620px; margin: 0 auto 28px; }
+  .region-tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); background: var(--ve-green-light); border: 1px solid var(--ve-green-mid); border-radius: 100px; padding: 6px 16px; margin-bottom: 20px; }
+
+  .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-join { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; background: var(--ve-green-dark); padding: 14px 28px; border-radius: 100px; border: 2px solid var(--ve-green-dark); text-decoration: none; display: inline-block; }
+  .btn-outline { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ve-green-dark); background: #fff; padding: 12px 26px; border-radius: 100px; border: 2px solid var(--ve-green-dark); text-decoration: none; display: inline-block; }
+
+  .section { padding: 44px 0; border-top: 1px solid var(--ve-border); }
+  .section h2 { font-size: 22px; font-weight: 900; margin-bottom: 14px; }
+  .section p { font-size: 15px; color: var(--ve-text-75); line-height: 1.75; margin-bottom: 14px; max-width: 680px; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 20px 0; }
+  .card { background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 12px; padding: 24px; }
+  .card h3 { font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+  .card p { font-size: 13.5px; margin-bottom: 0; }
+  @media(max-width:820px){ .card-grid{grid-template-columns:1fr;} }
+
+  .join-box { background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 14px; padding: 32px; text-align: center; margin: 8px 0; }
+  .join-box h3 { font-size: 18px; font-weight: 900; margin-bottom: 10px; }
+  .join-box p { font-size: 14px; color: var(--ve-text-75); margin-bottom: 20px; }
+  ul.plain { margin: 8px 0 0 20px; text-align: left; max-width: 420px; display: inline-block; }
+  ul.plain li { font-size: 14px; color: var(--ve-text-75); line-height: 1.8; margin-bottom: 6px; }
+
+  .faq-item { border-bottom: 1px solid var(--ve-border); padding: 18px 0; }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-item h4 { font-size: 14.5px; font-weight: 800; margin-bottom: 6px; }
+  .faq-item p { font-size: 14px; margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <div class="status-banner"><span>In Development &middot; South Florida Community Event &middot; Date Coming Soon</span></div>
+
+  <div class="wrap">
+    <div class="hero-band">
+      <div class="region-tag">Miami &middot; Fort Lauderdale &middot; Palm Beach</div>
+      <div class="eyebrow">SoFlo Vegans</div>
+      <h1>Vegans Explore Is Going to a Dolphins Game.</h1>
+      <p class="lede">The first plant-based day at a Miami Dolphins home game at Hard Rock Stadium. Vendors, sampling, and community, all free to walk through. We're finalizing the exact date with the Dolphins now, the plan is locked, this is happening.</p>
+      <div class="cta-row">
+        <a href="/join?community=south-florida" class="btn-join">Join Free, Get Notified First</a>
+        <a href="/communities/south-florida" class="btn-outline">Back to SoFlo Vegans Hub</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>What This Is</h2>
+      <p>A plant-based day built into a Dolphins home game, ten years of South Florida plant-based community work landing in one of the biggest rooms in the state. No tickets required to walk through, meet the vendors, and sample what's new, part of what we've been building toward since our first activation at Hard Rock Stadium in 2021.</p>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Vendor Village</h3>
+          <p>Curated plant-based food, wellness, and lifestyle vendors from our South Florida network. Come taste, sample, and meet the people behind the brands.</p>
+        </div>
+        <div class="card">
+          <h3>Free Community Members</h3>
+          <p>Vegans Explore members get first access to the group ticket link once it's live, at member pricing, before it opens to the general public.</p>
+        </div>
+        <div class="card">
+          <h3>Built for a Purpose</h3>
+          <p>A portion of ticket proceeds supports Vegans Explore's nonprofit work, keeping South Florida's plant-based community growing for the next ten years.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Why We're Doing This</h2>
+      <p>We ran the first Dolphins plant-based tailgate in 2021 and it sold out. That same year our Miami Heat activation sold out too, and a year later the Heat brought on their first permanent plant-based vendor as a direct result. One night becomes a lasting relationship, that's the pattern, and this is the next one.</p>
+      <p>Ten years, hundreds of activations, nine cities and counting. This is the biggest room South Florida's plant-based community has stepped into yet.</p>
+    </div>
+
+    <div class="section">
+      <div class="join-box">
+        <h3>Get on the List</h3>
+        <p>The date isn't locked yet, join free and be first to know the moment it is.</p>
+        <ul class="plain">
+          <li>Be first to know the confirmed date</li>
+          <li>Early access to group ticket pricing</li>
+          <li>Vendor booth applications open first to our list</li>
+        </ul>
+        <div class="cta-row" style="margin-top:20px;">
+          <a href="/join?community=south-florida" class="btn-join">Join Free</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Questions</h2>
+      <div class="faq-item">
+        <h4>When exactly is this happening?</h4>
+        <p>We're finalizing the date with the Dolphins now, targeting a November 2026 home game. Join free to be first to know the moment it's locked.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Do I need a ticket to attend the vendor village?</h4>
+        <p>No. The vendor activation is free and open to all fans. A separate group ticket link, at member pricing, gets you into the game itself.</p>
+      </div>
+      <div class="faq-item">
+        <h4>I run a plant-based business, how do I get a vendor spot?</h4>
+        <p>Join the list above, vendor booth applications open first to our South Florida community before anywhere else.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/public/footer.js"></script>
+</div>
+
+</body>
+</html>
