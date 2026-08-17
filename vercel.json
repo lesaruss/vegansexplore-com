@@ -2948,6 +2948,16 @@
       "source": "/the-vegan-foodie-fest-miami",
       "destination": "/archive/the-vegan-foodie-fest-miami",
       "permanent": true
+    },
+    {
+      "source": "/directory",
+      "destination": "/communities",
+      "permanent": true
+    },
+    {
+      "source": "/directory/:path*",
+      "destination": "/communities",
+      "permanent": true
     }
   ]
 }
