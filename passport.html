@@ -66,7 +66,7 @@
     .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .pricing-section h2 { font-size: clamp(26px, 3.5vw, 42px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.08; margin-bottom: 10px; }
     .pricing-section .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65;  margin-bottom: 48px; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 64px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 64px; }
     .pricing-card { border-radius: 12px; padding: 32px 28px; display: flex; flex-direction: column; border: 2px solid var(--ve-border); background: #fff; position: relative; }
     .pricing-card.featured { background: #1A1A1A; border-color: #1A1A1A; }
     .pricing-badge { position: absolute; top: -12px; left: 24px; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 3px 14px; border-radius: 20px; background: var(--ve-orange); color: #fff; }
@@ -241,7 +241,7 @@
   <section class="pricing-section" aria-labelledby="pricing-heading">
     <div class="section-eyebrow" aria-hidden="true">Pricing</div>
     <h2 id="pricing-heading">Free To Join.<br>Points To Unlock.</h2>
-    <p class="section-sub">Passport membership and full community access are free for everyone. Points are the only thing you ever spend, and you can earn them or buy them.</p>
+    <p class="section-sub">Passport membership and full community access are free for everyone. Points are the only thing you ever spend, and you can earn them, buy them, or subscribe monthly so they show up automatically.</p>
     <div class="pricing-grid" role="list">
       <div class="pricing-card" role="listitem">
         <div class="pricing-tier-label">Free Passport</div>
@@ -292,6 +292,23 @@
           <li>Combine with earned Points anytime</li>
         </ul>
         <a href="/account/lesars" class="btn-pricing" aria-label="Buy points to unlock guides instantly">Buy Points</a>
+      </div>
+      <div class="pricing-card featured" role="listitem" style="background: #1A1A1A; border-color: #1A1A1A;">
+        <div class="pricing-badge" style="background: var(--ve-green);">Best Value</div>
+        <div class="pricing-tier-label">Passport</div>
+        <div class="pricing-price-row"><span class="pricing-amount">$11</span><span class="pricing-period">/month</span></div>
+        <div class="pricing-note" style="color: var(--ve-orange);">1,100 Points every month</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-title">Never Think About It Again</div>
+        <p class="pricing-desc">Subscribe once and 1,100 Points land in your account automatically every month, the lowest cost per Point of any option. Cancel anytime.</p>
+        <ul class="pricing-features" aria-label="Features included">
+          <li>Everything in Free Passport</li>
+          <li>1,100 Points credited monthly</li>
+          <li>Lowest cost per Point</li>
+          <li>Points never expire</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <button type="button" class="btn-pricing primary" id="ve-passport-subscribe-btn" aria-label="Subscribe to the Passport for 11 dollars a month">Subscribe - $11/mo</button>
       </div>
     </div>
     </section>
@@ -462,5 +479,66 @@
 
   <script src="/public/footer.js"></script>
 </div>
+
+<script>
+(function () {
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+
+  var btn = document.getElementById('ve-passport-subscribe-btn');
+  if (!btn) return;
+
+  function startCheckout() {
+    var token = localStorage.getItem('ve_token');
+    var member = null;
+    try { member = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) {}
+
+    if (!token || !member) {
+      if (window.VEAuth && typeof window.VEAuth.showAuthModal === 'function') {
+        window.VEAuth.showAuthModal('Sign in to your Passport to subscribe.', startCheckout);
+      } else {
+        window.location.href = '/join';
+      }
+      return;
+    }
+
+    btn.disabled = true;
+    var originalText = btn.textContent;
+    btn.textContent = 'Redirecting to checkout...';
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-passport-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        success_url: window.location.origin + '/passport?subscribe=success',
+        cancel_url: window.location.origin + '/passport?subscribe=cancelled'
+      })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.url) {
+        window.location.href = d.url;
+      } else {
+        alert('Something went wrong starting checkout. Please try again.');
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }).catch(function () {
+      alert('Something went wrong starting checkout. Please try again.');
+      btn.disabled = false;
+      btn.textContent = originalText;
+    });
+  }
+
+  btn.addEventListener('click', startCheckout);
+
+  var params = new URLSearchParams(window.location.search);
+  var subscribe = params.get('subscribe');
+  if (subscribe === 'success') {
+    btn.textContent = 'Passport Active - Points Added';
+    btn.disabled = true;
+  } else if (subscribe === 'cancelled') {
+    // no-op, button remains as-is
+  }
+})();
+</script>
+
 </body>
 </html>
