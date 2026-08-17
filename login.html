@@ -75,7 +75,7 @@
   <script src="/public/ve-auth.js"></script>
   <script>
     if (VEAuth.isLoggedIn()) {
-      var next = new URLSearchParams(window.location.search).get('next') || '/directory';
+      var next = new URLSearchParams(window.location.search).get('next') || '/dashboard';
       window.location.replace(next);
     }
     var form = document.getElementById('login-form');
@@ -94,7 +94,7 @@
       VEAuth.login(email, password)
         .then(function(d) {
           if (d.error) { showError(d.error); setLoading(false); return; }
-          var next = new URLSearchParams(window.location.search).get('next') || '/directory';
+          var next = new URLSearchParams(window.location.search).get('next') || '/dashboard';
           window.location.replace(next);
         })
         .catch(function() { showError('Something went wrong. Please try again.'); setLoading(false); });
@@ -102,7 +102,7 @@
     window.addEventListener('load', function() {
       VEAuth.initGoogleSignIn(document.getElementById('login-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
-        var next = new URLSearchParams(window.location.search).get('next') || '/directory';
+        var next = new URLSearchParams(window.location.search).get('next') || '/dashboard';
         window.location.replace(next);
       });
     });
