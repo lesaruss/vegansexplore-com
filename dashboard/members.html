@@ -96,6 +96,27 @@
   @media (max-width:860px){ .m-table-wrap{display:none;} .m-cards{display:block;} }
 
   .m-empty{padding:40px 20px;text-align:center;color:var(--ve-text-50);font-size:13px;}
+
+  .m-tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1.5px solid var(--ve-border);margin-bottom:20px;}
+  .m-tab{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;
+    background:none;border:none;border-bottom:3px solid transparent;padding:11px 16px;cursor:pointer;
+    color:var(--ve-text-50);margin-bottom:-1.5px;}
+  .m-tab:hover{color:var(--ve-text);}
+  .m-tab[aria-selected="true"]{color:var(--ve-green-dark);border-bottom-color:var(--ve-green);}
+  .m-tab-n{display:inline-block;margin-left:6px;background:#f1f1f1;color:#4a4a4a;border-radius:100px;
+    padding:1px 7px;font-size:10px;}
+  .m-tab[aria-selected="true"] .m-tab-n{background:var(--ve-green-light);color:var(--ve-green-dark);}
+
+  .pill.cls-member{background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .pill.cls-agent{background:#eef2ff;color:#3730a3;}
+  .pill.cls-internal{background:#e0f2fe;color:#075985;}
+  .pill.cls-quarantined{background:#fee2e2;color:#991b1b;}
+  .pill.derived{background:#f1f1f1;color:#595959;}
+
+  .m-move{font-family:inherit;font-size:11px;font-weight:700;padding:6px 10px;border-radius:6px;
+    border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);cursor:pointer;}
+  .m-move:hover{border-color:var(--ve-green);background:var(--ve-green-light);}
+  .m-move:disabled{opacity:0.5;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -120,6 +141,16 @@
     <div class="m-stats" id="m-stats"></div>
 
     <p class="m-note" id="m-note"></p>
+
+    <div class="m-tabs" role="tablist" aria-label="Member classification">
+      <button class="m-tab" role="tab" id="tab-member"      data-class="member"      aria-selected="true">Members <span class="m-tab-n" id="n-member">0</span></button>
+      <button class="m-tab" role="tab" id="tab-agent"       data-class="agent"       aria-selected="false">Agents <span class="m-tab-n" id="n-agent">0</span></button>
+      <button class="m-tab" role="tab" id="tab-internal"    data-class="internal"    aria-selected="false">Internal <span class="m-tab-n" id="n-internal">0</span></button>
+      <button class="m-tab" role="tab" id="tab-quarantined" data-class="quarantined" aria-selected="false">Quarantine <span class="m-tab-n" id="n-quarantined">0</span></button>
+      <button class="m-tab" role="tab" id="tab-all"         data-class=""            aria-selected="false">All <span class="m-tab-n" id="n-all">0</span></button>
+    </div>
+
+    <p class="m-note" id="m-tabnote"></p>
 
     <div class="m-controls">
       <div>
@@ -155,6 +186,7 @@
         <thead>
           <tr>
             <th scope="col">Member</th>
+            <th scope="col">Class</th>
             <th scope="col">Brand</th>
             <th scope="col">Tier</th>
             <th scope="col">Points</th>
@@ -162,6 +194,7 @@
             <th scope="col">Joined</th>
             <th scope="col">Last active</th>
             <th scope="col">Wallet</th>
+            <th scope="col">Move to</th>
           </tr>
         </thead>
         <tbody id="m-tbody"></tbody>
@@ -184,6 +217,14 @@
     'unattributed': ['Unattributed', 'unatt']
   };
   var ALL = [];
+  var CURRENT_CLASS = 'member';
+  var CLASS_LABEL = { member: 'Member', agent: 'Agent', internal: 'Internal', quarantined: 'Quarantined' };
+  var TAB_NOTE = {
+    member: 'People who actually registered themselves. For VEGANS EXPLORE this is proven, not guessed: only the signup form mints a VE- referral code, so a row without one never came through the front door. Rows marked Derived are Supabase Auth signups where brand-auth-email did not record which brand they joined.',
+    agent: 'LESARUSS agent personas. Not public registrants and never counted as members.',
+    internal: 'Real people who did not register on the site: LESARUSS staff accounts and client contacts who arrived through client work. Kept out of the member count and out of the quarantine bin.',
+    quarantined: 'Held for a deletion decision. Nothing here has been deleted and nothing will be automatically. Seed rows on the placeholder @email.com domain, and test accounts from development. Move anything back with one click.'
+  };
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -201,6 +242,25 @@
   function brandPill(b) {
     var meta = BRAND_LABEL[b] || [b, 'free'];
     return '<span class="pill ' + meta[1] + '">' + esc(meta[0]) + '</span>';
+  }
+
+  function classPill(c, src) {
+    var out = '<span class="pill cls-' + esc(c) + '">' + esc(CLASS_LABEL[c] || c) + '</span>';
+    if (src === 'derived') out += ' <span class="pill derived" title="Inferred from the email, not a stored decision">Derived</span>';
+    return out;
+  }
+
+  // Only members-table rows carry a stored class, so only those can be moved.
+  // auth.users rows are derived on read and have nowhere to persist a decision yet.
+  function moveCell(m) {
+    if (m.identity_source !== 'members') {
+      return '<span class="m-email" title="Supabase Auth identity, class is derived on read">Not movable yet</span>';
+    }
+    var opts = ['member', 'agent', 'internal', 'quarantined']
+      .filter(function (c) { return c !== m.member_class; })
+      .map(function (c) { return '<option value="' + c + '">' + CLASS_LABEL[c] + '</option>'; }).join('');
+    return '<select class="m-move" data-id="' + esc(m.identity_id) + '" aria-label="Move ' + esc(m.email) + ' to another class">' +
+           '<option value="">Move to...</option>' + opts + '</select>';
   }
 
   function tierPill(t, staff) {
@@ -222,14 +282,14 @@
 
   function renderStats(s) {
     var tiles = [
-      ['Total members', s.total, false],
+      ['Registered members', s.members, false],
+      ['VEGANS EXPLORE', s.ve_registrants, false],
       ['New, last 7 days', s.new_7d, false],
       ['New, last 30 days', s.new_30d, false],
       ['Paid tier', s.paid, false],
-      ['VEGANS EXPLORE', s.vegans_explore, false],
-      ['GeekFon Society', s.geekfon_society, false],
-      ['Unattributed', s.unattributed, s.unattributed > 0],
-      ['Never returned', s.never_returned, s.never_returned > 0]
+      ['Never returned', s.never_returned, s.never_returned > 0],
+      ['Brand unknown', s.unattributed, s.unattributed > 0],
+      ['In quarantine', s.quarantined, s.quarantined > 0]
     ];
     document.getElementById('m-stats').innerHTML = tiles.map(function (t) {
       return '<div class="m-stat' + (t[2] ? ' flag' : '') + '">' +
@@ -238,17 +298,26 @@
     }).join('');
 
     document.getElementById('m-note').innerHTML =
-      '<strong>Read this before acting on the numbers.</strong> VEGANS EXPLORE members sign in with their own ' +
-      'password and live in the <code>members</code> table. GeekFon Society and LESARUSS AI members live in ' +
-      'Supabase Auth. The two are not linked, so the same person joining two brands counts twice here. ' +
-      '<strong>Unattributed</strong> means an account exists with no brand record attached, so there is no way ' +
-      'to tell which front door it came through. Unifying the two identity systems is a pending decision, not a bug in this page.';
+      '<strong>Every number above counts registered members only.</strong> Agents, internal staff and ' +
+      'quarantined rows are excluded, so the member count cannot be inflated by seed data. ' +
+      '<strong>Brand unknown</strong> means a real person signed up through a Supabase Auth front door but ' +
+      'nothing recorded which brand, so we cannot say what they joined. That needs attribution at signup, not deletion. ' +
+      'One more caveat: VEGANS EXPLORE identities and GeekFon or LESARUSS AI identities are still separate systems, ' +
+      'so one person on two brands counts twice.';
+  }
+
+  function renderTabCounts() {
+    ['member', 'agent', 'internal', 'quarantined'].forEach(function (c) {
+      document.getElementById('n-' + c).textContent = ALL.filter(function (m) { return m.member_class === c; }).length;
+    });
+    document.getElementById('n-all').textContent = ALL.length;
   }
 
   function rowHtml(m) {
     return '<tr>' +
       '<td><div class="m-name">' + esc(m.display_name || 'No name given') + '</div>' +
       '<div class="m-email">' + esc(m.email) + '</div></td>' +
+      '<td>' + classPill(m.member_class, m.class_source) + '</td>' +
       '<td>' + brandPill(m.brand) + '</td>' +
       '<td>' + tierPill(m.tier, m.is_staff) + '</td>' +
       '<td>' + esc((m.available_points || 0).toLocaleString()) + '</td>' +
@@ -256,6 +325,7 @@
       '<td>' + esc(fmtDate(m.joined_at)) + '</td>' +
       '<td>' + esc(fmtDate(m.last_activity_at)) + '</td>' +
       '<td>' + (m.wallet_present ? '<span class="pill ve">Yes</span>' : '<span class="pill warn">Missing</span>') + '</td>' +
+      '<td>' + moveCell(m) + '</td>' +
       '</tr>';
   }
 
@@ -270,6 +340,7 @@
       row('Joined', esc(fmtDate(m.joined_at))) +
       row('Last active', esc(fmtDate(m.last_activity_at))) +
       row('Wallet', m.wallet_present ? '<span class="pill ve">Yes</span>' : '<span class="pill warn">Missing</span>') +
+      row('Move to', moveCell(m)) +
       '</div>';
   }
 
@@ -279,6 +350,7 @@
     var sort = document.getElementById('m-sort').value;
 
     var rows = ALL.filter(function (m) {
+      if (CURRENT_CLASS && m.member_class !== CURRENT_CLASS) return false;
       if (brand && m.brand !== brand) return false;
       if (!q) return true;
       return (m.email || '').toLowerCase().indexOf(q) > -1 ||
@@ -294,8 +366,61 @@
 
     document.getElementById('m-tbody').innerHTML = rows.map(rowHtml).join('');
     document.getElementById('m-cards').innerHTML = rows.map(cardHtml).join('');
-    document.getElementById('m-count').textContent = rows.length + ' of ' + ALL.length + ' shown';
+    document.getElementById('m-count').textContent = rows.length + ' shown';
+    document.getElementById('m-tabnote').textContent = CURRENT_CLASS ? TAB_NOTE[CURRENT_CLASS] :
+      'Every identity across every LESARUSS brand, in every class.';
+    bindMoveHandlers();
     document.getElementById('m-empty').style.display = rows.length ? 'none' : 'block';
+  }
+
+  function bindMoveHandlers() {
+    Array.prototype.forEach.call(document.querySelectorAll('select.m-move'), function (sel) {
+      if (sel.dataset.bound) return;
+      sel.dataset.bound = '1';
+      sel.addEventListener('change', function () {
+        var target = sel.value;
+        if (!target) return;
+        var id = sel.dataset.id;
+        var row = ALL.filter(function (m) { return m.identity_id === id; })[0];
+        var who = row ? (row.display_name || row.email) : 'this account';
+        if (!window.confirm('Move ' + who + ' to ' + CLASS_LABEL[target] + '?\n\nNothing is deleted. You can move it back at any time.')) {
+          sel.value = '';
+          return;
+        }
+        sel.disabled = true;
+        fetch(SUPABASE_URL + '/functions/v1/ve-members-admin?action=set_member_class', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({
+            token: VEAuth.getToken(),
+            member_id: id,
+            member_class: target,
+            reason: 'Moved from the member roster by a superadmin.'
+          })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (!d.ok) { window.alert('Could not move that account: ' + (d.error || 'unknown error')); sel.disabled = false; sel.value = ''; return; }
+          row.member_class = target;
+          renderTabCounts();
+          applyFilters();
+        }).catch(function () {
+          window.alert('Could not reach the server. Nothing was changed.');
+          sel.disabled = false;
+          sel.value = '';
+        });
+      });
+    });
+  }
+
+  function bindTabs() {
+    Array.prototype.forEach.call(document.querySelectorAll('.m-tab'), function (tab) {
+      tab.addEventListener('click', function () {
+        CURRENT_CLASS = tab.dataset.class;
+        Array.prototype.forEach.call(document.querySelectorAll('.m-tab'), function (t) {
+          t.setAttribute('aria-selected', String(t === tab));
+        });
+        applyFilters();
+      });
+    });
   }
 
   function loadRoster(token) {
@@ -311,8 +436,11 @@
       document.getElementById('m-gate').style.display = 'none';
       document.getElementById('m-content').style.display = 'block';
       document.getElementById('m-sub').textContent =
-        d.summary.total + ' member identities across the ecosystem, ' + d.summary.new_7d + ' new in the last 7 days.';
+        d.summary.members + ' registered members, ' + d.summary.new_7d + ' in the last 7 days. ' +
+        d.summary.agents + ' agents and ' + d.summary.quarantined + ' quarantined rows are held separately.';
       renderStats(d.summary);
+      renderTabCounts();
+      bindTabs();
       applyFilters();
 
       ['m-search', 'm-brand', 'm-sort'].forEach(function (id) {
