@@ -37,6 +37,8 @@
   .wiz-step.active { display: block; }
 
   .wiz-layout { display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: start; }
+  .wiz-layout.wiz-layout-full { grid-template-columns: 1fr; }
+  .wiz-layout.wiz-layout-full .wiz-body p { max-width: 760px; }
   .wiz-body h1 { font-size: clamp(24px,3.4vw,38px); font-weight: 900; letter-spacing: -0.01em; line-height: 1.1; text-transform: uppercase; margin-bottom: 14px; }
   .wiz-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--path-color); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
   .wiz-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--path-color); }
@@ -104,9 +106,8 @@
     <div class="wiz-dot" data-dot="1"></div>
     <div class="wiz-dot" data-dot="2"></div>
     <div class="wiz-dot" data-dot="3"></div>
-    <div class="wiz-dot" data-dot="4"></div>
   </div>
-  <div class="wiz-step-label" id="wizStepLabel">Step 1 of 5</div>
+  <div class="wiz-step-label" id="wizStepLabel">Step 1 of 4</div>
 
   <!-- STEP 1: TITLE / INTRO -->
   <section class="wiz-step active" data-step="0">
@@ -115,7 +116,7 @@
         <div class="wiz-eyebrow">Plant-Based Game Night</div>
         <h1>The Biggest Kickoff South Florida's Plant-Based Community Has Ever Had.</h1>
         <p><strong>A November 2026 Dolphins home game at Hard Rock Stadium.</strong> Vegans Explore proposes November 29 vs. the Jets as the lead date, chosen deliberately for the extra runway to promote the event and secure exhibitors properly, with two earlier November windows offered as fallback options.</p>
-        <p>Built with Vegans Explore's vendor network and ten years in the South Florida plant-based community. This proposal walks through where things stand, the plan, the track record behind it, and what we're asking of the Dolphins.</p>
+        <p>Built with Vegans Explore's vendor network and ten years in the South Florida plant-based community. This proposal walks through where things stand, the plan, and what we're asking of the Dolphins to lock it in.</p>
       </div>
       <div class="guide-rail">
         <div class="guide-card">
@@ -132,7 +133,7 @@
 
   <!-- STEP 2: WHERE THIS STANDS -->
   <section class="wiz-step" data-step="1">
-    <div class="wiz-layout">
+    <div class="wiz-layout wiz-layout-full">
       <div class="wiz-body">
         <div class="wiz-eyebrow">Where This Stands</div>
         <h1>The Plan, As Confirmed.</h1>
@@ -153,22 +154,12 @@
           <li>Every vendor submitted to Dolphins partnerships for category approval before confirming</li>
         </ul>
       </div>
-      <div class="guide-rail">
-        <div class="guide-card">
-          <div class="guide-avatar"><div class="guide-monogram">SAR</div></div>
-          <div class="guide-body">
-            <div class="guide-name">Sean A. Russell</div>
-            <div class="guide-role">Founder, Vegans Explore</div>
-            <div class="guide-quote">"The garage is the sure thing. The Overlook is the upgrade we earn by showing real demand."</div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
   <!-- STEP 3: TICKETS AND REVENUE -->
   <section class="wiz-step" data-step="2">
-    <div class="wiz-layout">
+    <div class="wiz-layout wiz-layout-full">
       <div class="wiz-body">
         <div class="wiz-eyebrow">Tickets and Revenue</div>
         <h1>Group Tickets and the Nonprofit Share.</h1>
@@ -185,47 +176,11 @@
         <p>Vegans Explore is a 501(c)(3) in process. If it is not finalized by game day, the revenue share routes through one of our existing partner nonprofits instead.</p>
         <div class="wiz-note">Next up once the November date is confirmed: we'll send over a price point and section decision so your team can build the seating map and get the group link live.</div>
       </div>
-      <div class="guide-rail">
-        <div class="guide-card">
-          <div class="guide-avatar"><div class="guide-monogram">SAR</div></div>
-          <div class="guide-body">
-            <div class="guide-name">Sean A. Russell</div>
-            <div class="guide-role">Founder, Vegans Explore</div>
-            <div class="guide-quote">"The markup is invisible to the buyer and it's the whole mechanism that makes the nonprofit share real."</div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- STEP 4: TRACK RECORD -->
+  <!-- STEP 4: THE ASK -->
   <section class="wiz-step" data-step="3">
-    <div class="wiz-layout">
-      <div class="wiz-body">
-        <div class="wiz-eyebrow">Track Record</div>
-        <h1>We've Done This Before.</h1>
-        <div class="wiz-stat-row">
-          <div class="wiz-stat"><span class="num" style="color:var(--path-color);">Sold Out</span><span class="lbl">2021 Heat Tailgate</span></div>
-          <div class="wiz-stat"><span class="num" style="color:var(--path-color);">Sold Out</span><span class="lbl">2021 Dolphins Pilot</span></div>
-          <div class="wiz-stat"><span class="num" style="color:var(--path-color);">10 Yrs / 9 Cities</span><span class="lbl">Track Record</span></div>
-        </div>
-        <p>The 2021 Heat tailgate sold its full allotment and led directly to Full Bloom becoming the Heat's first permanent Vegan vendor a year later. The 2021 Dolphins pilot also sold out, with a deposit still on file from that event. Ten years leading the South Florida plant-based community, over 500 activations, now active in nine cities.</p>
-      </div>
-      <div class="guide-rail">
-        <div class="guide-card">
-          <div class="guide-avatar"><div class="guide-monogram">SAR</div></div>
-          <div class="guide-body">
-            <div class="guide-name">Sean A. Russell</div>
-            <div class="guide-role">Founder, Vegans Explore</div>
-            <div class="guide-quote">"One night becomes a lasting relationship. That's the pattern, and we've run it before with the Heat and with the Dolphins."</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STEP 5: THE ASK -->
-  <section class="wiz-step" data-step="4">
     <div class="wiz-layout">
       <div class="wiz-body">
         <div class="wiz-eyebrow">The Ask</div>
