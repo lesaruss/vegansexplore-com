@@ -4,346 +4,275 @@
 <script src="/analytics.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vegans Explore x Miami Dolphins: The Plant Based Showcase Partnership Proposal</title>
+<title>Vegans Explore x Miami Dolphins: Plant-Based Game Night Partnership</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="/public/favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-green-mid:#b8ddb9;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);--pad:80px;}
-  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;overflow-x:hidden;}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ve-green: #2d7d31; --ve-green-dark: #1e5c21;
+    --path-color: #2d7d31; --path-light: #e8f5e9; --path-mid: #c8e6c9; --path-dark: #1e5c21;
+    --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+    --ve-border: rgba(0,0,0,0.09); --ve-surface: #f7faf7;
+    --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75);
+    --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
 
-  @media (max-width:900px){ :root{--pad:24px;} }
+  #wizardFrame { width: 100%; max-width: 1100px; margin: 0 auto; min-height: 100vh; background: #fff; }
 
-  .pbs-banner{background:var(--ve-green-light);border-bottom:1px solid var(--ve-green-mid);padding:12px var(--pad);text-align:center;}
-  .pbs-banner span{font-size:10.5px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-green-dark);}
+  /* WIZARD SHELL */
+  .wiz-banner { background: var(--path-light); border-bottom: 1px solid var(--path-mid); padding: 14px 48px; text-align: center; }
+  .wiz-banner span { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--path-dark); }
+  .wiz-progress { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 28px 48px 0; }
+  .wiz-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ve-border); transition: background 0.2s, transform 0.2s; }
+  .wiz-dot.done { background: var(--path-mid); }
+  .wiz-dot.active { background: var(--path-color); transform: scale(1.3); }
+  .wiz-step-label { text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); padding: 12px 48px 0; }
 
-  /* single-view slides */
-  .pbs-slide{display:none;min-height:calc(100vh - 200px);opacity:0;transition:opacity .3s ease;}
-  .pbs-slide.active{display:block;opacity:1;}
-  .pbs-slide-inner{max-width:1040px;margin:0 auto;padding:56px var(--pad) 130px;}
+  .wiz-step { display: none; padding: 36px 48px 56px; }
+  .wiz-step.active { display: block; }
 
-  /* hero slide */
-  .pbs-hero{position:relative;min-height:calc(100vh - 200px);display:flex;align-items:flex-end;padding:0 var(--pad) 56px;overflow:hidden;background:#0a0a0a;margin:0 calc(-1 * var(--pad));}
-  .pbs-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;}
-  .pbs-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.68) 42%,rgba(0,0,0,0.22) 78%,transparent 100%);z-index:1;}
-  .pbs-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 40%);z-index:1;}
-  .pbs-hero-text{position:relative;z-index:2;max-width:640px;}
-  .pbs-hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-green);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
-  .pbs-hero-eyebrow::before{content:'';display:block;width:26px;height:2px;background:var(--ve-green);}
-  .pbs-hero h1{font-size:clamp(32px,5.2vw,56px);font-weight:900;line-height:0.98;text-transform:uppercase;letter-spacing:-0.02em;color:#fff;margin-bottom:16px;}
-  .pbs-hero h1 em{font-style:normal;color:var(--ve-green);}
-  .pbs-hero-sub{font-size:14.5px;font-weight:400;color:rgba(255,255,255,0.82);max-width:520px;line-height:1.7;margin-bottom:26px;}
-  .pbs-hero-cta{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:var(--ve-green);border:2px solid var(--ve-green);padding:13px 24px;border-radius:4px;cursor:pointer;}
-  .pbs-hero-cta:hover{background:var(--ve-green-dark);border-color:var(--ve-green-dark);}
+  .wiz-layout { display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: start; }
+  .wiz-layout.wiz-layout-full { grid-template-columns: 1fr; }
+  .wiz-layout.wiz-layout-full .wiz-body p { max-width: 760px; }
+  .wiz-body h1 { font-size: clamp(24px,3.4vw,38px); font-weight: 900; letter-spacing: -0.01em; line-height: 1.1; text-transform: uppercase; margin-bottom: 14px; }
+  .wiz-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--path-color); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .wiz-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--path-color); }
+  .wiz-body p { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.7; margin-bottom: 14px; max-width: 620px; }
+  .wiz-body p strong { color: var(--ve-text); font-weight: 700; }
+  .wiz-body h3 { font-size: 14px; font-weight: 800; color: var(--ve-text); margin: 20px 0 8px; }
 
-  .pbs-section-label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
-  .pbs-section-label::before{content:'\25A0';font-size:7px;}
-  .pbs-section-headline{font-size:clamp(24px,3.4vw,40px);font-weight:900;line-height:0.98;text-transform:uppercase;letter-spacing:-0.02em;margin-bottom:22px;}
-  .pbs-section-headline em{font-style:normal;color:var(--ve-green);}
-  .pbs-section-body{font-size:14.5px;color:var(--ve-text-75);line-height:1.8;max-width:660px;}
+  /* GUIDE SIDEBAR */
+  .guide-rail { position: sticky; top: 24px; }
+  .guide-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .guide-avatar { width: 100%; height: 130px; background: linear-gradient(160deg, var(--path-color), var(--path-dark)); display: flex; align-items: center; justify-content: center; }
+  .guide-monogram { width: 68px; height: 68px; border-radius: 50%; background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #fff; letter-spacing: 0.02em; }
+  .guide-body { padding: 16px 18px; }
+  .guide-name { font-size: 15px; font-weight: 900; margin-bottom: 2px; }
+  .guide-role { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--path-color); margin-bottom: 12px; }
+  .guide-quote { font-size: 12.5px; font-style: italic; color: var(--ve-text-75); line-height: 1.6; }
 
-  .pbs-panel{display:grid;grid-template-columns:38% 1fr;gap:44px;align-items:center;}
-  @media (max-width:820px){ .pbs-panel{grid-template-columns:1fr;} .pbs-panel img{order:-1;} }
-  .pbs-panel img{width:100%;border-radius:10px;display:block;object-fit:cover;aspect-ratio:3/4;}
+  /* CARDS / STATS reused from base system */
+  .wiz-card-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin: 16px 0; }
+  .wiz-card { background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 10px; padding: 18px 20px; }
+  .wiz-card h4 { font-size: 13px; font-weight: 800; margin-bottom: 6px; color: var(--ve-text); }
+  .wiz-card p { font-size: 13px; margin-bottom: 0; }
+  .wiz-card.lead { border: 2px solid var(--path-color); background: var(--path-light); }
+  @media(max-width:820px){ .wiz-card-grid{grid-template-columns:1fr;} .wiz-layout{grid-template-columns:1fr;} .guide-rail{position:static;} }
 
-  .pbs-stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;margin-top:40px;}
-  @media (max-width:700px){ .pbs-stats{grid-template-columns:1fr 1fr;} }
-  .pbs-stat{padding:26px 20px;border-right:1px solid var(--ve-border);}
-  .pbs-stat:last-child{border-right:none;}
-  .pbs-stat-num{font-size:clamp(22px,2.6vw,34px);font-weight:900;color:var(--ve-green);letter-spacing:-0.02em;line-height:1;margin-bottom:8px;}
-  .pbs-stat-label{font-size:9.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);}
+  .wiz-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 16px 0; }
+  .wiz-stat { background: #fff; border: 1px solid var(--ve-border); border-radius: 10px; padding: 16px; text-align: center; }
+  .wiz-stat .num { font-size: 18px; font-weight: 900; display: block; margin-bottom: 2px; }
+  .wiz-stat .lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-50); }
+  @media(max-width:600px){ .wiz-stat-row{grid-template-columns:1fr;} }
 
-  .pbs-flip-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:36px;}
-  @media (max-width:700px){ .pbs-flip-grid{grid-template-columns:1fr;} }
-  .pbs-flip-card{aspect-ratio:16/10;cursor:pointer;perspective:1200px;user-select:none;}
-  .pbs-flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1);}
-  .pbs-flip-card.flipped .pbs-flip-inner{transform:rotateY(180deg);}
-  .pbs-flip-front,.pbs-flip-back{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:26px;display:flex;flex-direction:column;justify-content:flex-end;}
-  .pbs-flip-front{background:var(--ve-text);}
-  .pbs-flip-back{background:var(--ve-green);transform:rotateY(180deg);justify-content:center;}
-  .pbs-flip-hint{position:absolute;top:16px;right:18px;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
-  .pbs-flip-year{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:8px;}
-  .pbs-flip-title{font-size:clamp(18px,2.2vw,26px);font-weight:900;text-transform:uppercase;letter-spacing:-0.01em;line-height:1.05;color:#fff;}
-  .pbs-flip-back-body{font-size:13.5px;color:rgba(255,255,255,0.95);line-height:1.65;}
+  .wiz-tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .wiz-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text-50); background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 100px; padding: 5px 12px; }
+  .wiz-note { background: #fff4e0; border: 1px solid rgba(246,152,32,0.35); border-radius: 8px; padding: 12px 16px; font-size: 12.5px; color: var(--ve-orange-dark); font-weight: 700; margin: 14px 0 0; }
+  .wiz-steps-list { margin: 10px 0 0 20px; }
+  .wiz-steps-list li { font-size: 13.5px; color: var(--ve-text-75); line-height: 1.7; margin-bottom: 8px; }
 
-  .pbs-dark-block{background:var(--ve-text);color:#fff;border-radius:10px;padding:56px 44px;text-align:center;}
-  .pbs-quote{font-size:clamp(18px,2.4vw,28px);font-weight:800;line-height:1.35;text-transform:uppercase;letter-spacing:-0.01em;}
-  .pbs-quote em{font-style:normal;color:var(--ve-green);}
-
-  /* sponsorship tier list */
-  .pbs-tier-list{display:flex;flex-direction:column;gap:12px;margin-top:32px;}
-  .pbs-tier{border:1.5px solid var(--ve-border);border-radius:10px;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
-  .pbs-tier-info{flex:1;}
-  .pbs-tier-title{font-size:14.5px;font-weight:900;text-transform:uppercase;letter-spacing:-0.005em;margin-bottom:4px;}
-  .pbs-tier-price{font-size:12.5px;font-weight:800;color:var(--ve-green-dark);margin-bottom:8px;}
-  .pbs-tier-blurb{font-size:12.5px;color:var(--ve-text-75);line-height:1.6;max-width:560px;}
-  .pbs-tier-slots{font-size:9.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);background:var(--ve-green-light);color:var(--ve-green-dark);border-radius:100px;padding:6px 14px;white-space:nowrap;flex-shrink:0;}
-  @media (max-width:640px){ .pbs-tier{flex-direction:column;} }
-
-  /* logistics / ask */
-  .pbs-tag-row{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0;}
-  .pbs-tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--ve-green-dark);background:var(--ve-green-light);border:1px solid var(--ve-green-mid);border-radius:100px;padding:7px 16px;}
-  .pbs-date-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px;}
-  @media (max-width:820px){ .pbs-date-grid{grid-template-columns:1fr;} }
-  .pbs-date-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:20px;}
-  .pbs-date-card.lead{border-color:var(--ve-green);background:var(--ve-green-light);}
-  .pbs-date-card h4{font-size:13px;font-weight:900;margin-bottom:8px;}
-  .pbs-date-card p{font-size:12.5px;color:var(--ve-text-75);line-height:1.6;}
-  .pbs-steps{margin:24px 0 0 20px;}
-  .pbs-steps li{font-size:13.5px;color:var(--ve-text-75);line-height:1.75;margin-bottom:10px;}
-  .pbs-steps li strong{color:var(--ve-text);}
-
-  .pbs-print-cta{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text);background:#fff;border:2px solid #fff;padding:13px 24px;border-radius:4px;cursor:pointer;margin-top:28px;}
-  .pbs-print-cta:hover{background:transparent;color:#fff;}
-
-  /* next/prev controls */
-  .pbs-controls{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:600;display:flex;align-items:center;gap:10px;background:rgba(10,10,10,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:40px;padding:8px 10px;box-shadow:0 8px 30px rgba(0,0,0,0.25);}
-  .pbs-controls button{background:none;border:none;color:#fff;cursor:pointer;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .15s;}
-  .pbs-controls button:hover:not(:disabled){background:rgba(255,255,255,0.18);}
-  .pbs-controls button:disabled{opacity:0.3;cursor:default;}
-  .pbs-slide-count{color:rgba(255,255,255,0.85);font-size:11.5px;font-weight:700;min-width:46px;text-align:center;letter-spacing:0.02em;}
-  .pbs-dots{display:flex;gap:6px;padding:0 6px;}
-  .pbs-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:background .15s;}
-  .pbs-dot.active{background:var(--ve-green);}
+  /* NAV CONTROLS */
+  .wiz-controls { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--ve-border); padding: 20px 48px; background: #fff; position: sticky; bottom: 0; }
+  .wiz-btn { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; border: none; cursor: pointer; transition: background 0.15s, opacity 0.15s; }
+  .wiz-btn-back { background: transparent; color: var(--ve-text-75); border: 1.5px solid var(--ve-border); }
+  .wiz-btn-back:hover { border-color: var(--path-color); color: var(--path-color); }
+  .wiz-btn-back:disabled { opacity: 0.35; cursor: default; }
+  .wiz-btn-back:disabled:hover { border-color: var(--ve-border); color: var(--ve-text-75); }
+  .wiz-btn-next { background: var(--path-color); color: #fff; }
+  .wiz-btn-next:hover { background: var(--path-dark); }
+  .wiz-btn-cta { background: var(--ve-orange); color: #fff; }
+  .wiz-btn-cta:hover { background: var(--ve-orange-dark); }
 
   @media print {
-    .pbs-controls, .pbs-banner{display:none !important;}
-    .pbs-slide{display:block !important;opacity:1 !important;page-break-after:always;min-height:0;}
+    .wiz-controls, .wiz-progress, .wiz-step-label, .wiz-banner { display: none !important; }
+    .wiz-step { display: block !important; page-break-after: always; }
   }
 </style>
 </head>
 <body>
-<div class="page-frame">
 
-<script src="/public/nav.js"></script>
+<div id="wizardFrame">
+  <script src="/public/nav.js"></script>
 
-<div class="pbs-banner"><span>Vegans Explore x Miami Dolphins &middot; Partnership Proposal &middot; Confidential &middot; August 2026</span></div>
+  <div class="wiz-banner"><span>Vegans Explore x Miami Dolphins &middot; Partnership Proposal &middot; Confidential &middot; August 2026</span></div>
 
-<div id="pbs-content">
-
-  <div class="pbs-slide active" data-slide="0">
-    <div class="pbs-hero">
-      <picture>
-        <img class="pbs-hero-bg" src="/public/events/vegan-foodie-fest-2025.jpg" alt="">
-      </picture>
-      <div class="pbs-hero-text">
-        <div class="pbs-hero-eyebrow">Vegans Explore x Miami Dolphins</div>
-        <h1>The Plant Based<br><em>Showcase</em></h1>
-        <p class="pbs-hero-sub">A proposal to bring Vegans Explore's flagship activation into the Dolphins Garage at Hard Rock Stadium this November: local chefs and sponsors showcasing what plant-based living looks like, inside a live home game.</p>
-        <button class="pbs-hero-cta" id="pbs-hero-next">See The Plan &rarr;</button>
-      </div>
-    </div>
+  <div class="wiz-progress" role="tablist" aria-label="Pitch steps">
+    <div class="wiz-dot active" data-dot="0"></div>
+    <div class="wiz-dot" data-dot="1"></div>
+    <div class="wiz-dot" data-dot="2"></div>
+    <div class="wiz-dot" data-dot="3"></div>
   </div>
+  <div class="wiz-step-label" id="wizStepLabel">Step 1 of 4</div>
 
-  <div class="pbs-slide" data-slide="1">
-    <div class="pbs-slide-inner">
-      <div class="pbs-panel">
-        <img src="/public/images/ve-panel2.png" alt="">
-        <div>
-          <div class="pbs-section-label">What This Is</div>
-          <h2 class="pbs-section-headline">A Real Showcase,<br><em>Not A Pitch.</em></h2>
-          <p class="pbs-section-body">We put this event together to showcase what's possible with plant-based cuisine, and to hand out real samples to fans in the stadium who have never tried plant-based food before. No separate ticket required, free-flowing foot traffic on a normal game-day, no on-site sales. That's the whole goal: show how great vegan food can genuinely be, inside a room that would never otherwise walk into a vegan event.</p>
-        </div>
+  <!-- STEP 1: TITLE / INTRO -->
+  <section class="wiz-step active" data-step="0">
+    <div class="wiz-layout">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">Plant-Based Game Night</div>
+        <h1>The Biggest Kickoff South Florida's Plant-Based Community Has Ever Had.</h1>
+        <p><strong>A November 2026 Dolphins home game at Hard Rock Stadium.</strong> Vegans Explore proposes November 29 vs. the Jets as the lead date, chosen deliberately for the extra runway to promote the event and secure exhibitors properly, with two earlier November windows offered as fallback options.</p>
+        <p>Built with Vegans Explore's vendor network and ten years in the South Florida plant-based community. This proposal walks through where things stand, the plan, and what we're asking of the Dolphins to lock it in.</p>
       </div>
-      <div class="pbs-stats">
-        <div class="pbs-stat"><div class="pbs-stat-num">5</div><div class="pbs-stat-label">Local Chef Sponsors</div></div>
-        <div class="pbs-stat"><div class="pbs-stat-num">10</div><div class="pbs-stat-label">Booths On Site</div></div>
-        <div class="pbs-stat"><div class="pbs-stat-num">500</div><div class="pbs-stat-label">Goodie Bags Given Out</div></div>
-        <div class="pbs-stat"><div class="pbs-stat-num">Free</div><div class="pbs-stat-label">With Your Game Ticket</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="pbs-slide" data-slide="2">
-    <div class="pbs-slide-inner">
-      <div class="pbs-section-label">Why Us</div>
-      <h2 class="pbs-section-headline">We've Done<br><em>This Before.</em></h2>
-      <p class="pbs-section-body">Tap either card for the story. This is not a first attempt, and it's built on ten years in the South Florida plant-based community.</p>
-      <div class="pbs-flip-grid">
-        <div class="pbs-flip-card">
-          <div class="pbs-flip-inner">
-            <div class="pbs-flip-front">
-              <div class="pbs-flip-hint">Tap to flip</div>
-              <div class="pbs-flip-year">2021</div>
-              <div class="pbs-flip-title">Where It<br><em style="color:var(--ve-green-mid);">Started.</em></div>
-            </div>
-            <div class="pbs-flip-back">
-              <div class="pbs-flip-back-body">We did this once already, back in 2021. We pop up at big events all over the country to bring talented vegan chefs into rooms full of people who would never otherwise try their food, and give that food a real showcase.</div>
-            </div>
-          </div>
-        </div>
-        <div class="pbs-flip-card">
-          <div class="pbs-flip-inner">
-            <div class="pbs-flip-front">
-              <div class="pbs-flip-hint">Tap to flip</div>
-              <div class="pbs-flip-year">2026</div>
-              <div class="pbs-flip-title">Bringing It<br><em style="color:var(--ve-green-mid);">Back Bigger.</em></div>
-            </div>
-            <div class="pbs-flip-back">
-              <div class="pbs-flip-back-body">This time we're bringing it back bigger, and the piece that was missing before was the community. Ten years of vendor relationships and an active member base are what this partnership puts to work for the Dolphins.</div>
-            </div>
+      <div class="guide-rail">
+        <div class="guide-card">
+          <div class="guide-avatar"><div class="guide-monogram">SAR</div></div>
+          <div class="guide-body">
+            <div class="guide-name">Sean A. Russell</div>
+            <div class="guide-role">Founder, Vegans Explore</div>
+            <div class="guide-quote">"I'll walk you through this one step at a time. Nothing here is aspirational, every term reflects our actual working call."</div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="pbs-slide" data-slide="3">
-    <div class="pbs-slide-inner">
-      <div class="pbs-dark-block">
-        <div class="pbs-quote">"The missing piece last time was <em>the community.</em> That's what makes this partnership bigger than the last one."</div>
+  <!-- STEP 2: WHERE THIS STANDS -->
+  <section class="wiz-step" data-step="1">
+    <div class="wiz-layout wiz-layout-full">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">Where This Stands</div>
+        <h1>The Plan, As Confirmed.</h1>
+        <div class="wiz-card-grid">
+          <div class="wiz-card lead">
+            <h4>Venue: The Garage (locked)</h4>
+            <p>No ticket required, free-flowing foot traffic. Vendors sample and give away, no on-site sales. Our guaranteed home base, we are not waiting on the Overlook.</p>
+          </div>
+          <div class="wiz-card">
+            <h4>The Overlook (upgrade option)</h4>
+            <p>We'll revisit this together if pre-committed signups reach 600+ three weeks before the confirmed date, availability permitting on the Dolphins' game-day calendar.</p>
+          </div>
+        </div>
+        <h3>Vendors</h3>
+        <ul class="wiz-steps-list">
+          <li>10 booths targeted, $200 in tickets each (2-3 tickets per booth)</li>
+          <li>Curated mix: food sampling (Sodexo required for any sale), wellness, general plant-based lifestyle, not food-only</li>
+          <li>Every vendor submitted to Dolphins partnerships for category approval before confirming</li>
+        </ul>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="pbs-slide" data-slide="4">
-    <div class="pbs-slide-inner">
-      <div class="pbs-section-label">The Ask</div>
-      <h2 class="pbs-section-headline">Sponsorship,<br><em>Laid Out Plainly.</em></h2>
-      <p class="pbs-section-body">Four tiers, each priced against real costs and real reach. Nothing aspirational, every number here reflects our actual working budget.</p>
-      <div class="pbs-tier-list">
-        <div class="pbs-tier">
-          <div class="pbs-tier-info">
-            <div class="pbs-tier-title">Presenting Sponsor</div>
-            <div class="pbs-tier-price">$22,000</div>
-            <div class="pbs-tier-blurb">Name across all marketing, a branded video with a Vegans Explore influencer, your own 100%-vegan activation table, tote bag placement, a CEO podcast interview, multiple Pulse articles, and sponsor credit on the Adventure Series.</div>
+  <!-- STEP 3: TICKETS AND REVENUE -->
+  <section class="wiz-step" data-step="2">
+    <div class="wiz-layout wiz-layout-full">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">Tickets and Revenue</div>
+        <h1>Group Tickets and the Nonprofit Share.</h1>
+        <div class="wiz-card-grid">
+          <div class="wiz-card">
+            <h4>Fevo Group Link</h4>
+            <p>Custom branded link, gated to logged-in Vegans Explore members only. Built-in markup funds the revenue share, for example a $100 ticket at $70 base plus $30 back to Vegans Explore.</p>
           </div>
-          <div class="pbs-tier-slots">1 slot</div>
+          <div class="wiz-card">
+            <h4>Sean's Section</h4>
+            <p>Locked separately using an existing deposit, so a team and content plan can build around a confirmed home base ahead of the group link going live.</p>
+          </div>
         </div>
-        <div class="pbs-tier">
-          <div class="pbs-tier-info">
-            <div class="pbs-tier-title">Chef Sponsor</div>
-            <div class="pbs-tier-price">$10,500 each</div>
-            <div class="pbs-tier-blurb">A dedicated local chef paired to your brand, up to 250 samples, 4 branded video reels plus 8 story posts, an on-site video crew, and a Vegans Explore team member on-site handling logistics.</div>
+        <p>Vegans Explore is a 501(c)(3) in process. If it is not finalized by game day, the revenue share routes through one of our existing partner nonprofits instead.</p>
+        <div class="wiz-note">Next up once the November date is confirmed: we'll send over a price point and section decision so your team can build the seating map and get the group link live.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: THE ASK -->
+  <section class="wiz-step" data-step="3">
+    <div class="wiz-layout">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">The Ask</div>
+        <h1>What We Need, What Happens Next.</h1>
+        <h3>Date Options, November Window (recommended)</h3>
+        <div class="wiz-card-grid">
+          <div class="wiz-card lead">
+            <h4>Nov 29, vs. Jets (lead option)</h4>
+            <p>AFC East rivalry, Black Friday weekend draw. Roughly 15 weeks of prep, the most runway of the three for lining up vendors, sponsors, and approvals properly.</p>
           </div>
-          <div class="pbs-tier-slots">5 slots</div>
+          <div class="wiz-card">
+            <h4>Nov 8, vs. Lions</h4>
+            <p>Roughly 12 weeks of prep. Cross-conference matchup with a nationally popular opponent, no holiday-weekend competition for attention.</p>
+          </div>
         </div>
-        <div class="pbs-tier">
-          <div class="pbs-tier-info">
-            <div class="pbs-tier-title">Sampling Sponsor</div>
-            <div class="pbs-tier-price">$2,500 &middot; $1,500 nonprofit rate</div>
-            <div class="pbs-tier-blurb">Beverage or product giveaways, a minimum of 1,000 units distributed, plus 2 game tickets built into the sponsorship. One of the five slots is reserved at a discounted nonprofit rate.</div>
-          </div>
-          <div class="pbs-tier-slots">5 slots</div>
+        <p style="font-size:13px;color:var(--ve-text-50);">A third option, November 1 vs. the Patriots (roughly 11 weeks out), is available if a shorter runway works better for the Dolphins.</p>
+        <h3>What We Need</h3>
+        <div class="wiz-tag-row">
+          <span class="wiz-tag">Confirmed Date</span>
+          <span class="wiz-tag">Dolphins Sign-Off on Branded Marketing</span>
+          <span class="wiz-tag">Vendor List Approval</span>
+          <span class="wiz-tag">50% Deposit on The Garage</span>
         </div>
-        <div class="pbs-tier">
-          <div class="pbs-tier-info">
-            <div class="pbs-tier-title">Local / Bag Sponsor</div>
-            <div class="pbs-tier-price">$500 each</div>
-            <div class="pbs-tier-blurb">Your product placed in 500 goodie bags handed to attendees, community members, and ambassadors, plus a featured mention in a Pulse article.</div>
+        <ol class="wiz-steps-list">
+          <li><strong>This week:</strong> confirm which November date works for the Dolphins, then we'll send over a price point and section for the Fevo link and Sean's seats, so your team can return pricing and the seating map.</li>
+          <li><strong>From confirmation through three weeks out:</strong> vendor recruitment, sponsorship sales, soft ticket pre-commitments to demonstrate demand.</li>
+          <li><strong>Three weeks out:</strong> confirm garage deposit; decide whether demand supports pursuing the Overlook.</li>
+          <li><strong>Game day:</strong> positioned as the centerpiece of the Vegans Explore platform relaunch, whichever date is confirmed.</li>
+        </ol>
+      </div>
+      <div class="guide-rail">
+        <div class="guide-card">
+          <div class="guide-avatar"><div class="guide-monogram">SAR</div></div>
+          <div class="guide-body">
+            <div class="guide-name">Sean A. Russell</div>
+            <div class="guide-role">Founder, Vegans Explore</div>
+            <div class="guide-quote">"Give us a date and we'll go build it. That's the only thing standing between this and moving."</div>
           </div>
-          <div class="pbs-tier-slots">~20 slots</div>
         </div>
       </div>
     </div>
+  </section>
+
+  <div class="wiz-controls">
+    <button class="wiz-btn wiz-btn-back" id="wizBack" disabled>Back</button>
+    <button class="wiz-btn wiz-btn-next" id="wizNext">Next</button>
   </div>
 
-  <div class="pbs-slide" data-slide="5">
-    <div class="pbs-slide-inner">
-      <div class="pbs-section-label">Where This Stands</div>
-      <h2 class="pbs-section-headline">The Plan,<br><em>As Confirmed.</em></h2>
-      <p class="pbs-section-body">The Garage is our guaranteed home base, we are not waiting on the Overlook to build this. We'll revisit the Overlook together if pre-committed signups reach 600+ three weeks before the confirmed date, availability permitting on the Dolphins' game-day calendar.</p>
-      <div class="pbs-date-grid">
-        <div class="pbs-date-card lead">
-          <h4>Nov 29, vs. Jets (lead option)</h4>
-          <p>AFC East rivalry, Black Friday weekend draw. Roughly 15 weeks of prep, the most runway of the three for lining up vendors, sponsors, and approvals properly.</p>
-        </div>
-        <div class="pbs-date-card">
-          <h4>Nov 8, vs. Lions</h4>
-          <p>Roughly 12 weeks of prep. Cross-conference matchup with a nationally popular opponent, no holiday-weekend competition for attention.</p>
-        </div>
-        <div class="pbs-date-card">
-          <h4>Nov 1, vs. Patriots</h4>
-          <p>Roughly 11 weeks of prep. Available if a shorter runway works better for the Dolphins' calendar.</p>
-        </div>
-      </div>
-      <div class="pbs-tag-row">
-        <span class="pbs-tag">Confirmed Date</span>
-        <span class="pbs-tag">Dolphins Sign-Off On Branded Marketing</span>
-        <span class="pbs-tag">Vendor List Approval</span>
-        <span class="pbs-tag">50% Deposit On The Garage</span>
-      </div>
-      <ol class="pbs-steps">
-        <li><strong>This week:</strong> confirm which November date works for the Dolphins, then we'll send over pricing so your team can return sign-off on the seating and marketing plan.</li>
-        <li><strong>From confirmation through three weeks out:</strong> chef and sponsor recruitment, vendor category approvals, soft commitments to demonstrate demand.</li>
-        <li><strong>Three weeks out:</strong> confirm the Garage deposit, decide whether demand supports pursuing the Overlook.</li>
-        <li><strong>Game day:</strong> positioned as the centerpiece of the Vegans Explore platform relaunch, whichever date is confirmed.</li>
-      </ol>
-    </div>
-  </div>
-
-  <div class="pbs-slide" data-slide="6">
-    <div class="pbs-slide-inner">
-      <div class="pbs-dark-block">
-        <div class="pbs-quote" style="margin-bottom:20px;">"Give us a date and we'll go build it. That's the only thing standing between this and moving."</div>
-        <p style="font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:4px;">Sean A. Russell, Founder, Vegans Explore</p>
-        <button class="pbs-print-cta" id="pbs-print-btn">Print / Save As PDF</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="pbs-controls">
-    <button id="pbs-prev" title="Previous">&#8592;</button>
-    <div class="pbs-dots" id="pbs-dots"></div>
-    <span class="pbs-slide-count" id="pbs-slide-count">1 / 7</span>
-    <button id="pbs-next" title="Next">&#8594;</button>
-  </div>
-
-</div>
-
-<script src="/public/footer.js"></script>
+  <script src="/public/footer.js"></script>
 </div>
 
 <script>
-  var slides = [];
-  var currentSlide = 0;
+  (function(){
+    var steps = Array.prototype.slice.call(document.querySelectorAll('.wiz-step'));
+    var dots = Array.prototype.slice.call(document.querySelectorAll('.wiz-dot'));
+    var backBtn = document.getElementById('wizBack');
+    var nextBtn = document.getElementById('wizNext');
+    var label = document.getElementById('wizStepLabel');
+    var total = steps.length;
+    var current = 0;
 
-  function goToSlide(n) {
-    if (n < 0 || n >= slides.length) return;
-    slides[currentSlide].classList.remove('active');
-    currentSlide = n;
-    slides[currentSlide].classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    updateControls();
-  }
+    function render(){
+      steps.forEach(function(s, i){ s.classList.toggle('active', i === current); });
+      dots.forEach(function(d, i){
+        d.classList.toggle('active', i === current);
+        d.classList.toggle('done', i < current);
+      });
+      label.textContent = 'Step ' + (current + 1) + ' of ' + total;
+      backBtn.disabled = current === 0;
+      if (current === total - 1) {
+        nextBtn.textContent = 'Print / Save as PDF';
+        nextBtn.classList.remove('wiz-btn-next');
+        nextBtn.classList.add('wiz-btn-cta');
+      } else {
+        nextBtn.textContent = 'Next';
+        nextBtn.classList.remove('wiz-btn-cta');
+        nextBtn.classList.add('wiz-btn-next');
+      }
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
 
-  function updateControls() {
-    document.getElementById('pbs-slide-count').textContent = (currentSlide + 1) + ' / ' + slides.length;
-    document.getElementById('pbs-prev').disabled = currentSlide === 0;
-    document.getElementById('pbs-next').disabled = currentSlide === slides.length - 1;
-    document.querySelectorAll('.pbs-dot').forEach(function (dot, i) {
-      dot.classList.toggle('active', i === currentSlide);
+    backBtn.addEventListener('click', function(){
+      if (current > 0) { current -= 1; render(); }
     });
-  }
-
-  function initSlides() {
-    slides = Array.prototype.slice.call(document.querySelectorAll('.pbs-slide'));
-    var dots = document.getElementById('pbs-dots');
-    dots.innerHTML = slides.map(function (_, i) { return '<span class="pbs-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '"></span>'; }).join('');
-    dots.querySelectorAll('.pbs-dot').forEach(function (dot) {
-      dot.addEventListener('click', function () { goToSlide(parseInt(dot.getAttribute('data-i'), 10)); });
-    });
-    document.getElementById('pbs-prev').addEventListener('click', function () { goToSlide(currentSlide - 1); });
-    document.getElementById('pbs-next').addEventListener('click', function () { goToSlide(currentSlide + 1); });
-    document.getElementById('pbs-hero-next').addEventListener('click', function () { goToSlide(1); });
-    document.getElementById('pbs-print-btn').addEventListener('click', function () { window.print(); });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
-      if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
-    });
-
-    document.addEventListener('click', function (e) {
-      var card = e.target.closest('.pbs-flip-card');
-      if (card) card.classList.toggle('flipped');
+    nextBtn.addEventListener('click', function(){
+      if (current < total - 1) { current += 1; render(); }
+      else { window.print(); }
     });
 
-    updateControls();
-  }
-
-  initSlides();
+    render();
+  })();
 </script>
+
 </body>
 </html>
