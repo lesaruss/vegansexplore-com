@@ -81,10 +81,18 @@
   @media(max-width:600px){ .wiz-stat-row{grid-template-columns:1fr;} }
 
   .wiz-tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-  .wiz-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-text-50); background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 100px; padding: 5px 12px; }
+  .wiz-tag { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--path-dark); background: var(--path-light); border: 1px solid var(--path-mid); border-radius: 100px; padding: 6px 14px; }
   .wiz-note { background: #fff4e0; border: 1px solid rgba(246,152,32,0.35); border-radius: 8px; padding: 12px 16px; font-size: 12.5px; color: var(--ve-orange-dark); font-weight: 700; margin: 14px 0 0; }
   .wiz-steps-list { margin: 10px 0 0 20px; }
   .wiz-steps-list li { font-size: 13.5px; color: var(--ve-text-75); line-height: 1.7; margin-bottom: 8px; }
+
+  /* PATH BUTTONS (step 4) and PATH DETAIL PANELS (step 5) */
+  button.wiz-card { width: 100%; text-align: left; font-family: inherit; cursor: pointer; }
+  .wiz-path-panel[hidden] { display: none; }
+  .wiz-tier-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+  .wiz-tier-row .wiz-tier-price { font-weight: 700; color: var(--ve-orange-dark); margin-bottom: 6px; font-size: 13px; }
+  .wiz-vol-note { width: 100%; border: 1.5px solid var(--ve-border); border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; margin: 10px 0; resize: vertical; min-height: 50px; }
+  .wiz-detail-toggle { background: none; border: none; cursor: pointer; padding: 0; color: var(--path-dark); }
 
   /* NAV CONTROLS + FOOTER - pinned together at the bottom of the viewport, no whitespace ever shows beneath them */
   .wiz-controls { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--ve-border); padding: 16px 48px; background: #fff; position: fixed; left: 0; right: 0; bottom: 96px; z-index: 411; }
@@ -124,8 +132,9 @@
     <div class="wiz-dot" data-dot="1"></div>
     <div class="wiz-dot" data-dot="2"></div>
     <div class="wiz-dot" data-dot="3"></div>
+    <div class="wiz-dot" data-dot="4"></div>
   </div>
-  <div class="wiz-step-label" id="wizStepLabel">Step 1 of 4</div>
+  <div class="wiz-step-label" id="wizStepLabel">Step 1 of 5</div>
 
   <!-- STEP 1: TITLE / INTRO -->
   <section class="wiz-step active" data-step="0">
@@ -195,30 +204,63 @@
   </section>
 
   <!-- STEP 4: PICK YOUR PATH -->
-  <section class="wiz-step" data-step="3">
+  <section class="wiz-step" data-step="3" data-requires-choice="1">
     <div class="wiz-layout wiz-layout-full">
       <div class="wiz-body">
         <div class="wiz-eyebrow">Who Are You?</div>
         <h1>Pick Your Path.</h1>
         <p>Each one only shows you what matters for you, learn at your own pace.</p>
         <div class="wiz-card-grid wiz-card-grid-3">
-          <a class="wiz-card lead" href="/campaigns/plant-based-showcase-dolphins-attend">
+          <button type="button" class="wiz-card lead" data-path="attend">
             <h4>I'm Planning To Attend</h4>
             <p>See what's happening, why it's worth showing up for, and how to get on the list.</p>
-            <div class="wiz-card-cta">Learn More &rarr;</div>
-          </a>
-          <a class="wiz-card" href="/campaigns/plant-based-showcase-dolphins-sponsor">
+            <div class="wiz-card-cta">Continue &rarr;</div>
+          </button>
+          <button type="button" class="wiz-card" data-path="sponsor">
             <h4>I'm A Business Or Sponsor</h4>
             <p>What's in it for you: reach, placement, and every sponsor tier laid out to decide on your own.</p>
-            <div class="wiz-card-cta">Learn More &rarr;</div>
-          </a>
-          <a class="wiz-card" href="/campaigns/plant-based-showcase-dolphins-volunteer">
+            <div class="wiz-card-cta">Continue &rarr;</div>
+          </button>
+          <button type="button" class="wiz-card" data-path="volunteer">
             <h4>I Want To Volunteer</h4>
             <p>Open roles, what each one involves, and how to apply.</p>
-            <div class="wiz-card-cta">Learn More &rarr;</div>
-          </a>
+            <div class="wiz-card-cta">Continue &rarr;</div>
+          </button>
         </div>
         <div class="wiz-note">These are not automatic approvals. A real person on the team reviews every submission and reaches out directly.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 5: PATH DETAIL - same container, whichever panel matches the chosen path -->
+  <section class="wiz-step" data-step="4">
+    <div class="wiz-layout wiz-layout-full">
+      <div class="wiz-body">
+
+        <div class="wiz-path-panel" data-path="attend" hidden>
+          <div class="wiz-eyebrow">Attending</div>
+          <h1>Come Experience It.</h1>
+          <ul class="wiz-steps-list" id="wiz-attend-highlights"></ul>
+          <div class="wiz-card lead" style="margin-top:20px;">
+            <h4>Join The Waitlist</h4>
+            <p id="wiz-attend-note"></p>
+            <button class="wiz-btn wiz-btn-next" id="wiz-attend-btn" style="margin-top:12px;">Join The Waitlist</button>
+          </div>
+        </div>
+
+        <div class="wiz-path-panel" data-path="sponsor" hidden>
+          <div class="wiz-eyebrow">Sponsor</div>
+          <h1>Put Your Brand In Front Of This Crowd.</h1>
+          <div id="wiz-sponsor-tiers"></div>
+          <p id="wiz-sponsor-note" style="font-size:12px;color:var(--ve-text-50);margin-top:14px;line-height:1.6;"></p>
+        </div>
+
+        <div class="wiz-path-panel" data-path="volunteer" hidden>
+          <div class="wiz-eyebrow">Volunteer</div>
+          <h1>Help Bring It To Life.</h1>
+          <div id="wiz-volunteer-list"></div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -237,6 +279,123 @@
 </div>
 
 <script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var INITIATIVE_SLUG = 'vegans-explore-initiative-plant-based-showcase';
+  var TOKEN = null;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function callAPI(action, payload) {
+    return fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=' + action, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify(Object.assign({ token: TOKEN }, payload || {}))
+    }).then(function (r) { return r.json(); });
+  }
+
+  function renderAttendPanel(d) {
+    var door = d.door || {};
+    var attend = door.attend || {};
+    document.getElementById('wiz-attend-highlights').innerHTML = (attend.highlights || []).map(function (h) {
+      return '<li>' + esc(h) + '</li>';
+    }).join('');
+    document.getElementById('wiz-attend-note').textContent = attend.cta_note || '';
+    var already = (d.my_interest || []).some(function (i) { return i.action_type === 'ticket'; });
+    var btn = document.getElementById('wiz-attend-btn');
+    if (already) { btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>'; return; }
+    btn.addEventListener('click', function () {
+      btn.disabled = true; btn.textContent = 'Submitting...';
+      callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'ticket' }).then(function (r) {
+        if (r && r.error) { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not submit: ' + r.error); return; }
+        btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>';
+      }).catch(function () { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not reach the server, try again.'); });
+    });
+  }
+
+  function renderSponsorPanel(d) {
+    var door = d.door || {};
+    var tiers = door.sponsorship_tiers || [];
+    var doneTiers = {};
+    (d.my_interest || []).forEach(function (i) {
+      if (i.action_type === 'sponsor_tier' || i.action_type === 'vendor_tier') doneTiers[i.tier_label] = true;
+    });
+    var list = document.getElementById('wiz-sponsor-tiers');
+    list.innerHTML = tiers.map(function (t) {
+      var already = !!doneTiers[t.label];
+      return '<div class="wiz-card' + (already ? ' lead' : '') + '"><div class="wiz-tier-row">' +
+        '<div><h4>' + esc(t.label) + '</h4><div class="wiz-tier-price">' + esc(t.price) + '</div><p>' + esc(t.blurb) + '</p></div>' +
+        '<button class="wiz-btn' + (already ? ' wiz-btn-back' : ' wiz-btn-next') + '" data-tier="' + esc(t.label) + '"' + (already ? ' disabled' : '') + ' style="white-space:nowrap;flex-shrink:0;">' +
+        (already ? 'Interest Sent' : 'Select Interest') + '</button>' +
+        '</div></div>';
+    }).join('');
+    document.getElementById('wiz-sponsor-note').textContent = door.interest_followup_note || '';
+
+    list.querySelectorAll('button[data-tier]:not([disabled])').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tierLabel = btn.getAttribute('data-tier');
+        btn.disabled = true; btn.textContent = 'Submitting...';
+        callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'sponsor_tier', tier_label: tierLabel }).then(function (r) {
+          if (r && r.error) { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not submit: ' + r.error); return; }
+          btn.classList.remove('wiz-btn-next'); btn.classList.add('wiz-btn-back'); btn.textContent = 'Interest Sent';
+        }).catch(function () { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not reach the server, try again.'); });
+      });
+    });
+  }
+
+  function renderVolunteerPanel(d) {
+    var opps = d.opportunities || [];
+    var TYPE_LABEL = { vegan_explorer: 'Vegan Explorer', volunteer: 'Volunteer', community_manager: 'Community Manager', community_coordinator: 'Community Coordinator' };
+    var list = document.getElementById('wiz-volunteer-list');
+    if (!opps.length) { list.innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">No open roles posted yet for this event. Check back soon.</p>'; return; }
+    list.innerHTML = opps.map(function (o, i) {
+      var typeLabel = TYPE_LABEL[o.opportunity_type] || o.opportunity_type;
+      var reqHtml = o.requirements ? '<p style="font-size:12px;color:var(--ve-text-50);margin-top:8px;">' + esc(o.requirements) + '</p>' : '';
+      if (o.my_status) {
+        return '<div class="wiz-card" style="margin-bottom:12px;"><h4>' + esc(o.title) + ' &middot; ' + esc(typeLabel) + '</h4><p>' + esc(o.description || '') + '</p>' + reqHtml +
+          '<div class="wiz-tag" style="margin-top:10px;">' + esc(o.my_status) + '</div></div>';
+      }
+      return '<div class="wiz-card" style="margin-bottom:12px;" data-oid="' + esc(o.id) + '">' +
+        '<h4>' + esc(o.title) + ' &middot; ' + esc(typeLabel) + '</h4>' +
+        '<button class="wiz-detail-toggle" data-toggle="' + i + '">See Full Details</button>' +
+        '<div id="wiz-vol-detail-' + i + '" style="display:none;font-size:12.5px;color:var(--ve-text-75);line-height:1.6;margin:10px 0;">' + esc(o.description || '') + reqHtml + '</div>' +
+        '<textarea class="wiz-vol-note" placeholder="Say a little about why you\'re interested (optional)"></textarea>' +
+        '<button class="wiz-btn wiz-btn-next" data-id="' + esc(o.id) + '">Apply</button>' +
+        '</div>';
+    }).join('');
+
+    list.querySelectorAll('button[data-toggle]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = btn.getAttribute('data-toggle');
+        var detail = document.getElementById('wiz-vol-detail-' + idx);
+        var open = detail.style.display === 'block';
+        detail.style.display = open ? 'none' : 'block';
+        btn.textContent = open ? 'See Full Details' : 'Hide Details';
+      });
+    });
+
+    list.querySelectorAll('button[data-id]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var card = btn.closest('.wiz-card');
+        var note = card.querySelector('.wiz-vol-note').value;
+        btn.disabled = true; btn.textContent = 'Applying...';
+        callAPI('submit_opportunity_application', { opportunity_id: btn.getAttribute('data-id'), cover_note: note }).then(function (d) {
+          if (d && d.error) { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not submit: ' + d.error); return; }
+          card.querySelector('.wiz-vol-note').remove();
+          btn.outerHTML = '<div class="wiz-tag">pending</div>';
+        }).catch(function () { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not reach the server, try again.'); });
+      });
+    });
+  }
+
+  function loadPathData() {
+    return callAPI('get_initiative_front_door', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
+      if (d && d.error) return;
+      renderAttendPanel(d);
+      renderSponsorPanel(d);
+      renderVolunteerPanel(d);
+    }).catch(function () { /* path panels just stay empty if this fails; the rest of the wizard still works */ });
+  }
+
   function layoutFixedBottom() {
     var footer = document.querySelector('.ve-footer');
     var controls = document.querySelector('.wiz-controls');
@@ -271,10 +430,23 @@
       });
       label.textContent = 'Step ' + (current + 1) + ' of ' + total;
       backBtn.disabled = current === 0;
-      nextBtn.hidden = current === total - 1;
+      nextBtn.hidden = current === total - 1 || steps[current].hasAttribute('data-requires-choice');
       window.scrollTo({top: 0, behavior: 'smooth'});
       layoutFixedBottom();
     }
+
+    function selectPath(path) {
+      document.querySelectorAll('.wiz-path-panel').forEach(function (p) {
+        p.hidden = p.getAttribute('data-path') !== path;
+      });
+      current = steps.length - 1;
+      render();
+    }
+
+    document.querySelectorAll('[data-path]').forEach(function (btn) {
+      if (btn.closest('.wiz-path-panel')) return;
+      btn.addEventListener('click', function () { selectPath(btn.getAttribute('data-path')); });
+    });
 
     backBtn.addEventListener('click', function(){
       if (current > 0) { current -= 1; render(); }
@@ -288,10 +460,12 @@
 
   function init() {
     if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    TOKEN = VEAuth.getToken();
     document.getElementById('pbs-gate').style.display = 'none';
     document.getElementById('pbs-content').style.display = 'block';
     initWizard();
     layoutFixedBottom();
+    loadPathData();
   }
 
   window.addEventListener('resize', layoutFixedBottom);
