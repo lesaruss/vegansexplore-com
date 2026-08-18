@@ -208,7 +208,7 @@
     '<div class="ve-mob-overlay" id="ve-mob-overlay" aria-hidden="true"></div>' +
     '<div class="ve-mob-menu" id="ve-mob-menu" role="dialog" aria-label="Navigation" aria-modal="true">' +
       '<div class="ve-mob-section">' +
-        '<a href="' + welcomeHref + '"' + cur(welcomeHref) + '>Dashboard</a>' +
+        dashboardLinkHtml +
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/podcast"' + (isCurrent('/podcast') || p.indexOf('/podcast/') === 0 ? ' aria-current="page"' : '') + '>Podcasts</a>' +
