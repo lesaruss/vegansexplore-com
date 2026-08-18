@@ -155,7 +155,7 @@
     window.addEventListener('load', function() {
       VEAuth.initGoogleSignIn(document.getElementById('join-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
-        window.location.replace('/welcome?joined=1');
+        window.location.replace('/onboarding');
       }, community);
     });
   </script>
