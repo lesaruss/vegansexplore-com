@@ -88,7 +88,7 @@
     document.getElementById('camp-gate').innerHTML = '<p>This page is for superadmins only, for now.</p><p><a href="/dashboard" style="color:var(--ve-green-dark);font-weight:700;">Back to Dashboard</a></p>';
   }
 
-  var ACTION_TYPE_LABELS = {pledge:'Pledge',ticket:'Ticket / Spot Reserved',vendor_tier:'Vendor Tier Interest',sponsor_tier:'Sponsor Tier Interest'};
+  var ACTION_TYPE_LABELS = {pledge:'Pledge',ticket:'Waitlist Signup',vendor_tier:'Vendor Tier Interest',sponsor_tier:'Sponsor Tier Interest'};
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function fullDateTime(s) { if (!s) return ''; try { return new Date(s).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } }
 
