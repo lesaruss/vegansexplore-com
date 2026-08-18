@@ -2,7 +2,7 @@
 (function(global){'use strict';
 var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 var FN_URL='https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
-var GOOGLE_ID='450477549015-ioh43e9qi7m89qknkoo318b2geejja4t.apps.googleusercontent.com';
+var GOOGLE_ID='554053879127-o0vp4rrjp5qgeoq4fbje3qtbrvlupt59.apps.googleusercontent.com';
 function getToken(){try{return localStorage.getItem('ve_token')||null;}catch(e){return null;}}
 function getRealMember(){try{return JSON.parse(localStorage.getItem('ve_member')||'null');}catch(e){return null;}}
 function setSession(t,m){try{localStorage.setItem('ve_token',t);localStorage.setItem('ve_member',JSON.stringify(m));}catch(e){}}
