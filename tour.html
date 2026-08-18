@@ -5,157 +5,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Take the Tour - VEGANS EXPLORE</title>
-  <meta name="description" content="A quick walkthrough of everything VEGANS EXPLORE offers: the Directory, Daily Pulse, Communities, Guides, Points, and how to get involved.">
+  <meta name="description" content="A live, interactive walkthrough of Vegans Explore: your Community Hub, the Daily Pulse, Guides, Points, and how to get involved.">
   <link rel="icon" href="/public/favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Montserrat", sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; }
-    .ob-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 32px 20px 80px; }
-    .ob-card { width: 100%; max-width: 480px; background: #fff; border-radius: 16px; box-shadow: 0 2px 20px rgba(0,0,0,0.06); padding: 32px 28px; }
-    .ob-progress-track { height: 5px; background: #EEE; border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
-    .ob-progress-fill { height: 100%; background: #22C55E; border-radius: 3px; transition: width 0.3s ease; width: 0%; }
-    .ob-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-    .ob-step-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #999; }
-    .ob-skip-top { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #999; text-decoration: underline; background: none; border: none; cursor: pointer; font-family: "Montserrat", sans-serif; }
-    .ob-skip-top:hover { color: #22C55E; }
-    .ob-tour-icon { width: 72px; height: 72px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 34px; margin-bottom: 18px; }
-    h1 { font-size: 22px; font-weight: 900; color: #1a1a1a; margin-bottom: 10px; line-height: 1.25; }
-    .ob-sub { font-size: 13.5px; color: #555; margin-bottom: 4px; line-height: 1.6; }
-    .ob-tour-list { margin: 16px 0 4px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .ob-tour-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #333; line-height: 1.5; font-weight: 600; }
-    .ob-tour-list li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22C55E; margin-top: 6px; flex-shrink: 0; }
-    .ob-actions { display: flex; gap: 10px; margin-top: 26px; }
-    .ob-btn { flex: 1; padding: 14px; border-radius: 8px; font-family: "Montserrat", sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; border: none; cursor: pointer; transition: background 0.15s; }
-    .ob-btn-primary { background: #22C55E; color: #fff; }
-    .ob-btn-primary:hover { background: #16A34A; }
-    .ob-btn-back { background: #F3F4F6; color: #555; flex: 0 0 90px; }
-    .ob-btn-back:hover { background: #E5E7EB; }
-    .ob-dots { display: flex; gap: 6px; justify-content: center; margin-top: 20px; }
-    .ob-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.15); transition: background 0.15s, width 0.15s; }
-    .ob-dot.active { background: #22C55E; width: 16px; border-radius: 3px; }
-    @media (max-width: 480px) { .ob-card { padding: 24px 20px; } }
+    body { font-family: "Montserrat", sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .ve-tour-boot { font-size: 13px; color: #999; }
   </style>
 </head>
 <body>
-  <script src="/public/nav.js"></script>
-  <div class="ob-wrap">
-    <div class="ob-card">
-      <div class="ob-progress-track"><div class="ob-progress-fill" id="ob-progress"></div></div>
-      <div class="ob-top-row">
-        <div class="ob-step-label" id="ob-step-label">Step 1 of 7</div>
-        <button type="button" class="ob-skip-top" id="ob-skip-top">Skip tour</button>
-      </div>
-      <div id="ob-steps"></div>
-      <div class="ob-actions" id="ob-actions"></div>
-      <div class="ob-dots" id="ob-dots"></div>
-    </div>
-  </div>
+  <!-- UPDATED (2026-08-18, Logan, V direction): /tour is no longer its own
+       card-based wizard. The tour now runs ON the real pages (dashboard,
+       a live Community Hub, Daily Pulse, Guides, Get Involved) via
+       /public/ve-tour.js, which highlights actual page sections instead of
+       describing them in the abstract. This page's only job is to start
+       that tour and forward to its first real stop. -->
+  <p class="ve-tour-boot">Starting your tour&hellip;</p>
   <script src="/public/ve-auth.js"></script>
-  <script>
-    // ---- Member onboarding tour (2026-08-18, V direction): a short, skippable
-    // walkthrough of how VEGANS EXPLORE works, reached from the "Take the Tour"
-    // dashboard tile. Purely informational -- no data is collected or saved,
-    // unlike /onboarding (guide assignment + points, gated to new signups).
-    // Open to anyone (logged in or not) since it's just an explainer; the exit
-    // CTA sends logged-in members to /dashboard and logged-out visitors to /join.
-    var TOUR_STEPS = [
-      {
-        icon: '&#128075;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)',
-        title: 'Welcome to Vegans Explore',
-        sub: "Here's a 60-second look at how everything fits together, so you can jump in knowing exactly where to go.",
-        list: []
-      },
-      {
-        icon: '&#128269;', bg: 'linear-gradient(135deg,#3A9B3E,#2d7d31)',
-        title: 'The Directory',
-        sub: 'Find Vegan-friendly restaurants and businesses wherever you are.',
-        list: ['Vote for your favorites to help them rank higher', 'Save spots to your own List for later', 'Leave reviews to help other members']
-      },
-      {
-        icon: '&#128240;', bg: 'linear-gradient(135deg,#F69820,#e07b00)',
-        title: 'The Daily Pulse',
-        sub: 'Fresh stories from the Vegan world, curated every day.',
-        list: ['Comment and join the discussion', 'Get news relevant to your interests', 'See what the community is talking about']
-      },
-      {
-        icon: '&#127758;', bg: 'linear-gradient(135deg,#0ea5e9,#0369a1)',
-        title: 'Communities',
-        sub: 'Every city has its own hub, run by a local Community Manager.',
-        list: ['Connect with Vegans near you', 'Find local events and meetups', "Don't see your city yet? Apply to Lead Your City"]
-      },
-      {
-        icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)',
-        title: 'Your Guide',
-        sub: 'When you set up your Passport, you were matched with a guide suited to where you are in your journey.',
-        list: ['Maya, Theo, Nori, Dani, River, or Liz - each with their own path', 'Revisit the Guides page anytime for more from your guide']
-      },
-      {
-        icon: '&#11088;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)',
-        title: 'Points & Your Passport',
-        sub: 'Everything you do earns points toward your Passport.',
-        list: ['Complete missions and daily activities', 'Invite friends for bonus points', 'Use points in the store or toward business support']
-      },
-      {
-        icon: '&#127942;', bg: 'linear-gradient(135deg,#dc2626,#991b1b)',
-        title: "You're ready to explore",
-        sub: 'Want to do more than browse? There are ways to get more involved.',
-        list: ['Check Opportunities to volunteer or become a Vegan Explorer', 'Apply to Lead Your City as a Community Manager']
-      }
-    ];
-
-    var stepIdx = 0;
-    var stepsEl = document.getElementById('ob-steps');
-    var actionsEl = document.getElementById('ob-actions');
-    var progressEl = document.getElementById('ob-progress');
-    var stepLabelEl = document.getElementById('ob-step-label');
-    var dotsEl = document.getElementById('ob-dots');
-
-    function exitHref() {
-      return (window.VEAuth && VEAuth.isLoggedIn()) ? '/dashboard' : '/join';
-    }
-
-    function render() {
-      progressEl.style.width = Math.round((stepIdx / (TOUR_STEPS.length - 1)) * 100) + '%';
-      stepLabelEl.textContent = 'Step ' + (stepIdx + 1) + ' of ' + TOUR_STEPS.length;
-      var s = TOUR_STEPS[stepIdx];
-      var listHtml = s.list.length ? ('<ul class="ob-tour-list">' + s.list.map(function(x) { return '<li>' + x + '</li>'; }).join('') + '</ul>') : '';
-      stepsEl.innerHTML = '<div class="ob-tour-icon" style="background:' + s.bg + '">' + s.icon + '</div>' +
-        '<h1>' + s.title + '</h1><p class="ob-sub">' + s.sub + '</p>' + listHtml;
-
-      dotsEl.innerHTML = '';
-      TOUR_STEPS.forEach(function(_, i) {
-        var d = document.createElement('div');
-        d.className = 'ob-dot' + (i === stepIdx ? ' active' : '');
-        dotsEl.appendChild(d);
-      });
-
-      var canGoBack = stepIdx > 0;
-      var isLast = stepIdx === TOUR_STEPS.length - 1;
-      actionsEl.innerHTML = '';
-      if (canGoBack) {
-        var backBtn = document.createElement('button');
-        backBtn.className = 'ob-btn ob-btn-back'; backBtn.textContent = 'Back'; backBtn.type = 'button';
-        backBtn.addEventListener('click', function() { stepIdx--; render(); });
-        actionsEl.appendChild(backBtn);
-      }
-      var nextBtn = document.createElement('button');
-      nextBtn.className = 'ob-btn ob-btn-primary'; nextBtn.type = 'button';
-      nextBtn.textContent = isLast ? 'Start Exploring' : 'Next';
-      nextBtn.addEventListener('click', function() {
-        if (isLast) { window.location.href = exitHref(); return; }
-        stepIdx++; render();
-      });
-      actionsEl.appendChild(nextBtn);
-    }
-
-    document.getElementById('ob-skip-top').addEventListener('click', function() {
-      window.location.href = exitHref();
-    });
-
-    render();
-  </script>
-  <script src="/public/footer.js"></script>
+  <script src="/public/ve-tour.js"></script>
+  <script>VETour.start();</script>
 </body>
 </html>
