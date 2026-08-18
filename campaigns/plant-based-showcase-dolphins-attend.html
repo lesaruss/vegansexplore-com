@@ -22,7 +22,7 @@
   .pbs-back:hover{color:var(--ve-text);}
 
   .pbs-hero{margin-bottom:22px;height:150px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;background:linear-gradient(135deg,#F69820,#e07b00);color:#fff;}
-  .pbs-hero-emoji{font-size:40px;margin-bottom:8px;}
+  .pbs-hero-avatar{width:52px;height:52px;border-radius:100%;object-fit:cover;border:2.5px solid rgba(255,255,255,0.85);margin-bottom:8px;background:#fff;}
   .pbs-hero h1{font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em;margin-bottom:4px;}
   .pbs-hero-sub{font-size:12.5px;opacity:0.92;font-weight:600;}
 
@@ -52,7 +52,7 @@
   <div id="pbs-content">
     <a class="pbs-back" href="/campaigns/plant-based-showcase-dolphins">&larr; Back</a>
     <div class="pbs-hero">
-      <div class="pbs-hero-emoji">&#127881;</div>
+      <img class="pbs-hero-avatar" id="pbs-hero-avatar" src="" alt="">
       <h1 id="pbs-title">Attend The Plant Based Showcase</h1>
       <div class="pbs-hero-sub" id="pbs-subtitle">Loading&hellip;</div>
     </div>
@@ -76,6 +76,7 @@
   var INITIATIVE_SLUG = 'vegans-explore-initiative-plant-based-showcase';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function guideImg(name) { return '/public/guides/' + esc(name || 'pascal') + '.png'; }
 
   function call(action, payload, token) {
     return fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=' + action, {
@@ -105,6 +106,7 @@
       var attend = door.attend || {};
       document.title = 'Attend ' + door.title + ' - VEGANS EXPLORE';
       document.getElementById('pbs-subtitle').textContent = attend.subtitle || door.subtitle;
+      document.getElementById('pbs-hero-avatar').src = guideImg(attend.avatar || door.avatar);
       document.getElementById('pbs-cta-note').textContent = attend.cta_note || '';
       document.getElementById('pbs-highlights').innerHTML = (attend.highlights || []).map(function (h) {
         return '<li>' + esc(h) + '</li>';
