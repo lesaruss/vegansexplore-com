@@ -228,26 +228,45 @@
 
   document.currentScript.insertAdjacentHTML('beforebegin', html);
 
-  /* ---- Special Announcements pill: rotates messages, links to real pages (safe on every route) ---- */
+  /* ---- Special Announcements pill: rotates messages, links to real pages (safe on every route) ----
+     2026-08-18 (V direction): messages used to be hardcoded here, which meant a
+     code push every time the copy needed to change - and it went stale for
+     weeks (still advertising a $11 founding offer that never existed and a
+     July city launch, months after both were dead). Now fetched from
+     ve_nav_announcements (public-readable, is_active=true rows only), so
+     updating the rotation is a database edit, not a deploy. Falls back to a
+     single safe default if the fetch fails so the pill never breaks. */
   (function() {
-    var messages = [
-      { text: 'Founding Membership: $11 once, forever - closes July 13', href: '/join' },
-      { text: 'New: guided city launches rolling out through July', href: '/welcome' },
-      { text: 'Now recruiting: Community Managers + Vegan Explorers', href: '/lead' }
-    ];
+    var FALLBACK = [{ text: 'Free to join. Vote, save, and connect with your city.', href: '/join' }];
     var idx = 0;
+    var messages = FALLBACK;
     var textEl = document.getElementById('ve-announce-text');
     var linkEl = document.getElementById('ve-announce');
     if (!textEl || !linkEl) return;
-    setInterval(function() {
-      textEl.classList.add('fading');
-      setTimeout(function() {
-        idx = (idx + 1) % messages.length;
-        textEl.textContent = messages[idx].text;
-        linkEl.setAttribute('href', messages[idx].href);
-        textEl.classList.remove('fading');
-      }, 250);
-    }, 6000);
+
+    function rotate() {
+      setInterval(function() {
+        textEl.classList.add('fading');
+        setTimeout(function() {
+          idx = (idx + 1) % messages.length;
+          textEl.textContent = messages[idx].text;
+          linkEl.setAttribute('href', messages[idx].href);
+          textEl.classList.remove('fading');
+        }, 250);
+      }, 6000);
+    }
+
+    var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    fetch(SUPABASE_URL + '/rest/v1/ve_nav_announcements?select=message,href,sort_order&is_active=eq.true&order=sort_order.asc', {
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
+    }).then(function(r) { return r.ok ? r.json() : null; }).then(function(rows) {
+      if (rows && rows.length) {
+        messages = rows.map(function(r) { return { text: r.message, href: r.href }; });
+        textEl.textContent = messages[0].text;
+        linkEl.setAttribute('href', messages[0].href);
+      }
+    }).catch(function() {}).then(rotate);
   })();
 
   /* ---- Member menu toggle (desktop) ---- */
