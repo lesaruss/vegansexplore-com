@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Plant Based Showcase - VEGANS EXPLORE</title>
-<meta name="description" content="Pledge your support, reserve a spot, apply to volunteer, or claim a sponsor tier for the Plant Based Showcase at the Dolphins Garage.">
+<meta name="description" content="The Plant Based Showcase at the Dolphins Garage. See how to be part of it, whether you're attending, sponsoring, or volunteering.">
 <link rel="icon" href="/public/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
-  main{max-width:900px;margin:0 auto;padding:0 24px 80px;}
+  main{max-width:760px;margin:0 auto;padding:0 24px 80px;}
   #pbs-gate{text-align:center;padding:100px 20px;}
   #pbs-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
   #pbs-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
@@ -23,43 +23,15 @@
   .pbs-hero-emoji{font-size:44px;margin-bottom:8px;}
   .pbs-hero h1{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em;margin-bottom:4px;}
   .pbs-hero-sub{font-size:12.5px;opacity:0.92;font-weight:600;}
-  .pbs-summary{font-size:14px;color:var(--ve-text-75);line-height:1.6;margin-bottom:16px;}
-  .pbs-followup-note{font-size:12px;color:var(--ve-text-50);line-height:1.55;background:#fafafa;border:1px solid var(--ve-border);border-radius:8px;padding:12px 14px;margin-bottom:32px;}
+  .pbs-summary{font-size:14px;color:var(--ve-text-75);line-height:1.6;margin-bottom:32px;text-align:center;}
 
-  .pbs-section-title{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-text-50);margin:36px 0 14px;}
-  .pbs-section-title:first-of-type{margin-top:0;}
-
-  .pbs-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  @media (max-width:640px){ .pbs-action-grid{grid-template-columns:1fr;} }
-  .pbs-card{border:1.5px solid var(--ve-border);border-radius:12px;padding:18px 20px;}
-  .pbs-card-title{font-size:14px;font-weight:800;margin-bottom:6px;}
-  .pbs-card-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.55;margin-bottom:12px;}
-  .pbs-input{width:100%;border:1.5px solid var(--ve-border);border-radius:8px;padding:9px 10px;font-family:inherit;font-size:13px;margin-bottom:10px;}
-  .pbs-btn{background:var(--ve-green);color:#fff;border:none;padding:10px 18px;border-radius:6px;font-weight:800;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;width:100%;}
-  .pbs-btn:hover{background:var(--ve-green-dark);}
-  .pbs-btn:disabled{opacity:0.6;cursor:default;}
-  .pbs-done{display:block;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:8px 14px;border-radius:6px;background:var(--ve-green-light);color:var(--ve-green-dark);text-align:center;width:100%;}
-  .pbs-done-sub{display:block;font-size:11px;font-weight:600;text-transform:none;letter-spacing:normal;color:var(--ve-text-50);text-align:center;margin-top:6px;}
-
-  .pbs-tier-list{display:flex;flex-direction:column;gap:12px;}
-  .pbs-tier{border:1.5px solid var(--ve-border);border-radius:12px;padding:16px 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
-  .pbs-tier-info{flex:1;}
-  .pbs-tier-title{font-size:13.5px;font-weight:800;margin-bottom:2px;}
-  .pbs-tier-price{font-size:12px;font-weight:700;color:var(--ve-orange);margin-bottom:6px;}
-  .pbs-tier-blurb{font-size:12.5px;color:var(--ve-text-75);line-height:1.5;}
-  .pbs-tier-btn{background:#fff;border:1.5px solid var(--ve-green);color:var(--ve-green-dark);padding:9px 16px;border-radius:6px;font-weight:800;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-  .pbs-tier-btn:hover{background:var(--ve-green-light);}
-  .pbs-tier-btn.done{background:var(--ve-green-light);border-color:var(--ve-green-light);color:var(--ve-green-dark);cursor:default;}
-
-  .pbs-opp-card{border:1.5px solid var(--ve-border);border-radius:12px;padding:16px 18px;margin-bottom:12px;}
-  .pbs-opp-title{font-size:13.5px;font-weight:800;margin-bottom:4px;}
-  .pbs-opp-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.55;margin-bottom:10px;}
-  .pbs-note{width:100%;border:1.5px solid var(--ve-border);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12.5px;margin-bottom:8px;resize:vertical;min-height:50px;}
-  .pbs-status{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:100px;}
-  .pbs-status.pending{background:#fff3e0;color:#7d4a00;}
-  .pbs-status.accepted{background:var(--ve-green-light);color:var(--ve-green-dark);}
-  .pbs-status.rejected{background:#fef2f2;color:#dc2626;}
-  .pbs-empty{font-size:13px;color:var(--ve-text-50);}
+  .pbs-pick-grid{display:flex;flex-direction:column;gap:14px;}
+  .pbs-pick{display:block;border:1.5px solid var(--ve-border);border-radius:14px;padding:22px 22px;text-decoration:none;color:inherit;transition:border-color .15s;}
+  .pbs-pick:hover{border-color:var(--ve-green);}
+  .pbs-pick-emoji{font-size:26px;margin-bottom:8px;}
+  .pbs-pick-title{font-size:15.5px;font-weight:800;margin-bottom:5px;}
+  .pbs-pick-desc{font-size:13px;color:var(--ve-text-75);line-height:1.55;margin-bottom:10px;}
+  .pbs-pick-cta{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-dark);}
 </style>
 </head>
 <body>
@@ -78,28 +50,27 @@
       <div class="pbs-hero-sub" id="pbs-subtitle">Loading&hellip;</div>
     </div>
     <p class="pbs-summary" id="pbs-summary"></p>
-    <p class="pbs-followup-note" id="pbs-followup-note"></p>
 
-    <p class="pbs-section-title">Pledge Your Support</p>
-    <div class="pbs-action-grid">
-      <div class="pbs-card">
-        <div class="pbs-card-title">Back This Pilot</div>
-        <div class="pbs-card-desc" id="pbs-pledge-note"></div>
-        <input class="pbs-input" id="pbs-pledge-amount" type="number" min="1" placeholder="Amount you'd pledge ($)">
-        <button class="pbs-btn" id="pbs-pledge-btn" data-action="pledge">Pledge Support</button>
-      </div>
-      <div class="pbs-card">
-        <div class="pbs-card-title">Reserve Your Spot</div>
-        <div class="pbs-card-desc" id="pbs-ticket-note"></div>
-        <button class="pbs-btn" id="pbs-ticket-btn" data-action="ticket">Reserve a Spot</button>
-      </div>
+    <div class="pbs-pick-grid">
+      <a class="pbs-pick" href="/campaigns/plant-based-showcase-dolphins-attend">
+        <div class="pbs-pick-emoji">&#127881;</div>
+        <div class="pbs-pick-title">I'm Planning To Attend</div>
+        <div class="pbs-pick-desc">See what's happening, why it's worth showing up for, and how to get on the list.</div>
+        <div class="pbs-pick-cta">Learn More &rarr;</div>
+      </a>
+      <a class="pbs-pick" href="/campaigns/plant-based-showcase-dolphins-sponsor">
+        <div class="pbs-pick-emoji">&#128188;</div>
+        <div class="pbs-pick-title">I'm A Business Or Potential Sponsor</div>
+        <div class="pbs-pick-desc">What's in it for you: reach, placement, and every sponsor tier laid out to decide on your own.</div>
+        <div class="pbs-pick-cta">Learn More &rarr;</div>
+      </a>
+      <a class="pbs-pick" href="/campaigns/plant-based-showcase-dolphins-volunteer">
+        <div class="pbs-pick-emoji">&#129309;</div>
+        <div class="pbs-pick-title">I Want To Volunteer Or Work This Event</div>
+        <div class="pbs-pick-desc">Open roles, what each one involves, and how to apply.</div>
+        <div class="pbs-pick-cta">Learn More &rarr;</div>
+      </a>
     </div>
-
-    <p class="pbs-section-title">Become a Sponsor or Vendor</p>
-    <div class="pbs-tier-list" id="pbs-tier-list"></div>
-
-    <p class="pbs-section-title">Volunteer &amp; Staffing</p>
-    <div id="pbs-opp-list"><p class="pbs-empty">Loading open roles&hellip;</p></div>
   </div>
 </main>
 
@@ -110,7 +81,6 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var INITIATIVE_SLUG = 'vegans-explore-initiative-plant-based-showcase';
-  var TYPE_LABEL = { vegan_explorer: 'Vegan Explorer', volunteer: 'Volunteer', community_manager: 'Community Manager' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
@@ -119,85 +89,6 @@
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
       body: JSON.stringify(Object.assign({ token: token }, payload || {}))
     }).then(function (r) { return r.json(); });
-  }
-
-  function renderTiers(tiers, myInterest, token) {
-    var doneTiers = {};
-    (myInterest || []).forEach(function (i) {
-      if (i.action_type === 'vendor_tier' || i.action_type === 'sponsor_tier') doneTiers[i.tier_label] = true;
-    });
-    var list = document.getElementById('pbs-tier-list');
-    list.innerHTML = tiers.map(function (t) {
-      var already = !!doneTiers[t.label];
-      return '<div class="pbs-tier">' +
-        '<div class="pbs-tier-info">' +
-          '<div class="pbs-tier-title">' + esc(t.label) + '</div>' +
-          '<div class="pbs-tier-price">' + esc(t.price) + '</div>' +
-          '<div class="pbs-tier-blurb">' + esc(t.blurb) + '</div>' +
-        '</div>' +
-        '<button class="pbs-tier-btn' + (already ? ' done' : '') + '" data-tier="' + esc(t.label) + '"' + (already ? ' disabled' : '') + '>' +
-          (already ? "Interest Sent" : "I'm Interested") +
-        '</button>' +
-      '</div>';
-    }).join('');
-
-    list.querySelectorAll('.pbs-tier-btn:not(.done)').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var tierLabel = btn.getAttribute('data-tier');
-        btn.disabled = true; btn.textContent = 'Submitting...';
-        call('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'sponsor_tier', tier_label: tierLabel }, token)
-          .then(function (d) {
-            if (d && d.error) { btn.disabled = false; btn.textContent = "I'm Interested"; alert('Could not submit: ' + d.error); return; }
-            btn.classList.add('done'); btn.disabled = true; btn.textContent = 'Interest Sent';
-          }).catch(function () { btn.disabled = false; btn.textContent = "I'm Interested"; alert('Could not reach the server, try again.'); });
-      });
-    });
-  }
-
-  function renderOpportunities(opps) {
-    var list = document.getElementById('pbs-opp-list');
-    if (!opps.length) { list.innerHTML = '<p class="pbs-empty">No open roles posted yet for this event. Check back soon.</p>'; return; }
-    list.innerHTML = opps.map(function (o) {
-      var typeLabel = TYPE_LABEL[o.opportunity_type] || o.opportunity_type;
-      if (o.my_status) {
-        return '<div class="pbs-opp-card"><div class="pbs-opp-title">' + esc(o.title) + ' &middot; ' + esc(typeLabel) + '</div>' +
-          '<div class="pbs-opp-desc">' + esc(o.description || '') + '</div>' +
-          '<span class="pbs-status ' + esc(o.my_status) + '">' + esc(o.my_status) + '</span></div>';
-      }
-      return '<div class="pbs-opp-card" data-oid="' + esc(o.id) + '"><div class="pbs-opp-title">' + esc(o.title) + ' &middot; ' + esc(typeLabel) + '</div>' +
-        '<div class="pbs-opp-desc">' + esc(o.description || '') + '</div>' +
-        '<textarea class="pbs-note" placeholder="Say a little about why you\'re interested (optional)"></textarea>' +
-        '<button class="pbs-btn" data-id="' + esc(o.id) + '" style="width:auto;">Apply</button></div>';
-    }).join('');
-
-    var token = VEAuth.getToken();
-    list.querySelectorAll('.pbs-opp-card button[data-id]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var card = btn.closest('.pbs-opp-card');
-        var note = card.querySelector('.pbs-note').value;
-        btn.disabled = true; btn.textContent = 'Applying...';
-        call('submit_opportunity_application', { opportunity_id: btn.getAttribute('data-id'), cover_note: note }, token)
-          .then(function (d) {
-            if (d && d.error) { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not submit: ' + d.error); return; }
-            card.innerHTML = card.innerHTML.split('<textarea')[0] + '<span class="pbs-status pending">pending</span>';
-          }).catch(function () { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not reach the server, try again.'); });
-      });
-    });
-  }
-
-  function wireSimpleAction(btnId, actionType, myInterest, token, extraPayload) {
-    var already = (myInterest || []).some(function (i) { return i.action_type === actionType; });
-    var btn = document.getElementById(btnId);
-    var doneMarkup = '<span class="pbs-done">Interest Sent</span><span class="pbs-done-sub">Someone from the team will follow up with you directly.</span>';
-    if (already) { btn.outerHTML = doneMarkup; return; }
-    btn.addEventListener('click', function () {
-      var payload = Object.assign({ initiative_slug: INITIATIVE_SLUG, action_type: actionType }, extraPayload ? extraPayload() : {});
-      btn.disabled = true; btn.textContent = 'Submitting...';
-      call('submit_initiative_interest', payload, token).then(function (d) {
-        if (d && d.error) { btn.disabled = false; alert('Could not submit: ' + d.error); return; }
-        btn.outerHTML = doneMarkup;
-      }).catch(function () { btn.disabled = false; alert('Could not reach the server, try again.'); });
-    });
   }
 
   function showDenied() {
@@ -214,7 +105,7 @@
 
     call('get_initiative_front_door', { initiative_slug: INITIATIVE_SLUG }, token).then(function (d) {
       if (d && d.error) {
-        document.getElementById('pbs-content').innerHTML = '<p class="pbs-empty">Could not load this page right now (' + esc(d.error) + ').</p>';
+        document.getElementById('pbs-content').innerHTML = '<p>Could not load this page right now (' + esc(d.error) + ').</p>';
         return;
       }
       var door = d.door;
@@ -222,20 +113,8 @@
       document.getElementById('pbs-title').textContent = door.title;
       document.getElementById('pbs-subtitle').textContent = door.subtitle;
       document.getElementById('pbs-summary').textContent = door.summary;
-      document.getElementById('pbs-followup-note').textContent = door.interest_followup_note || '';
-      document.getElementById('pbs-pledge-note').textContent = door.pledge_note;
-      document.getElementById('pbs-ticket-note').textContent = door.ticket_note;
-
-      renderTiers(door.sponsorship_tiers, d.my_interest, token);
-      renderOpportunities(d.opportunities || []);
-
-      wireSimpleAction('pbs-ticket-btn', 'ticket', d.my_interest, token);
-      wireSimpleAction('pbs-pledge-btn', 'pledge', d.my_interest, token, function () {
-        var amt = document.getElementById('pbs-pledge-amount').value;
-        return { amount: amt };
-      });
     }).catch(function () {
-      document.getElementById('pbs-content').innerHTML = '<p class="pbs-empty">Could not load this page right now.</p>';
+      document.getElementById('pbs-content').innerHTML = '<p>Could not load this page right now.</p>';
     });
   }
 
