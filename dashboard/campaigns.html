@@ -28,6 +28,17 @@
   .camp-meta{font-size:11px;color:var(--ve-text-50);margin-top:8px;}
   .camp-meta a{color:var(--ve-green-dark);font-weight:700;text-decoration:none;}
   .camp-hero{height:130px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:20px;background:linear-gradient(135deg,#6366f1,#3730a3);}
+  .camp-section-title{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-text-50);margin:36px 0 14px;}
+  .int-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+  .int-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
+  .int-who{font-size:13px;font-weight:800;}
+  .int-email{font-size:11.5px;color:var(--ve-text-50);font-weight:600;}
+  .int-what{font-size:12.5px;color:var(--ve-text-75);margin-bottom:8px;}
+  .int-select{font-size:11px;font-weight:700;padding:5px 8px;border-radius:6px;border:1.5px solid var(--ve-border);}
+  .int-select.new{border-color:#f5cf8f;background:#fff3e0;}
+  .int-select.contacted{border-color:#93c5fd;background:#eff6ff;}
+  .int-select.confirmed{border-color:#8fcf9d;background:var(--ve-green-light);}
+  .int-select.declined{border-color:#fca5a5;background:#fef2f2;}
 </style>
 </head>
 <body>
@@ -43,6 +54,10 @@
     <h1>Campaigns</h1>
     <p class="camp-sub">Live campaign briefs across every city. Opens to Community Managers once onboarded.</p>
     <div id="camp-list"><p style="font-size:13px;color:var(--ve-text-50);">Loading campaigns&hellip;</p></div>
+
+    <p class="camp-section-title">Front-Door Interest (Pledges, Tickets, Sponsor Tiers)</p>
+    <p class="camp-sub" style="margin-bottom:16px;">Every submission from a member "front door" page (like the Plant Based Showcase). Nothing here is auto-approved, this is where you see who to actually reach out to.</p>
+    <div id="int-list"><p style="font-size:13px;color:var(--ve-text-50);">Loading interest&hellip;</p></div>
   </div>
 </main>
 
@@ -73,6 +88,47 @@
     document.getElementById('camp-gate').innerHTML = '<p>This page is for superadmins only, for now.</p><p><a href="/dashboard" style="color:var(--ve-green-dark);font-weight:700;">Back to Dashboard</a></p>';
   }
 
+  var ACTION_TYPE_LABELS = {pledge:'Pledge',ticket:'Ticket / Spot Reserved',vendor_tier:'Vendor Tier Interest',sponsor_tier:'Sponsor Tier Interest'};
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function fullDateTime(s) { if (!s) return ''; try { return new Date(s).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } }
+
+  function renderInterest(items, token) {
+    var list = document.getElementById('int-list');
+    if (!items || !items.length) { list.innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">No interest submitted yet.</p>'; return; }
+    list.innerHTML = items.map(function (it) {
+      var who = (it.members && it.members.name) || 'Unknown member';
+      var email = (it.members && it.members.email) || '';
+      var what = ACTION_TYPE_LABELS[it.action_type] || it.action_type;
+      if (it.tier_label) what += ': ' + it.tier_label;
+      if (it.amount) what += ' ($' + it.amount + ')';
+      if (it.note) what += ' &middot; "' + esc(it.note) + '"';
+      return '<div class="int-card" data-id="' + esc(it.id) + '">' +
+        '<div class="int-top"><div><div class="int-who">' + esc(who) + '</div><div class="int-email">' + esc(email) + '</div></div>' +
+        '<select class="int-select ' + esc(it.status) + '" data-id="' + esc(it.id) + '">' +
+          '<option value="new"' + (it.status === 'new' ? ' selected' : '') + '>New</option>' +
+          '<option value="contacted"' + (it.status === 'contacted' ? ' selected' : '') + '>Contacted</option>' +
+          '<option value="confirmed"' + (it.status === 'confirmed' ? ' selected' : '') + '>Confirmed</option>' +
+          '<option value="declined"' + (it.status === 'declined' ? ' selected' : '') + '>Declined</option>' +
+        '</select></div>' +
+        '<div class="int-what">' + what + ' &middot; ' + esc(it.initiative_slug) + ' &middot; ' + fullDateTime(it.created_at) + '</div>' +
+        '</div>';
+    }).join('');
+
+    list.querySelectorAll('.int-select').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        var id = sel.getAttribute('data-id');
+        var newStatus = sel.value;
+        sel.className = 'int-select ' + newStatus;
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=update_initiative_interest_status', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: token, id: id, status: newStatus })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.error) alert('Could not update: ' + d.error);
+        }).catch(function () { alert('Could not reach the server, try again.'); });
+      });
+    });
+  }
+
   function init() {
     if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
     var token = VEAuth.getToken();
@@ -92,6 +148,16 @@
         renderCampaigns(d2 && d2.campaigns);
       }).catch(function () {
         document.getElementById('camp-list').innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">Could not load campaigns right now.</p>';
+      });
+
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiative_interest', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: token })
+      }).then(function (r) { return r.json(); }).then(function (d3) {
+        if (d3 && d3.error) { document.getElementById('int-list').innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">' + d3.error + '</p>'; return; }
+        renderInterest(d3 && d3.items, token);
+      }).catch(function () {
+        document.getElementById('int-list').innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">Could not load interest right now.</p>';
       });
     }).catch(showDenied);
   }
