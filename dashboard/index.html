@@ -48,6 +48,18 @@
   .dash-tag.superadmin{background:#eef2ff;color:#3730a3;}
   .dash-tag.live{background:var(--ve-green-light);color:var(--ve-green-dark);}
   .dash-badge-count{background:var(--ve-orange);color:#fff;border-radius:100px;font-size:11px;font-weight:900;padding:2px 9px;}
+
+  .dash-community-row{display:flex;gap:16px;flex-wrap:wrap;}
+  .dash-community-card{position:relative;flex:1 1 320px;max-width:420px;min-height:130px;border-radius:14px;overflow:hidden;text-decoration:none;color:#fff;display:flex;align-items:flex-end;padding:18px 20px;background-size:cover;background-position:center;background-color:var(--ve-green-dark);border:1.5px solid var(--ve-border);transition:transform .15s,box-shadow .15s;}
+  .dash-community-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.14);}
+  .dash-community-card::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.65) 100%);}
+  .dash-community-card-body{position:relative;z-index:1;}
+  .dash-community-card-eyebrow{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.9);margin-bottom:4px;}
+  .dash-community-card-title{font-size:18px;font-weight:900;}
+  .dash-community-card.dash-community-empty{background-image:none !important;background-color:var(--ve-green-light);color:var(--ve-text);align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:6px;}
+  .dash-community-card.dash-community-empty::before{content:none;}
+  .dash-community-card.dash-community-empty .dash-community-card-title{color:var(--ve-text);}
+  .dash-community-card.dash-community-empty .dash-community-card-sub{position:relative;font-size:12px;color:var(--ve-text-75);font-weight:600;}
 </style>
 </head>
 <body>
@@ -72,8 +84,20 @@
       <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
     </div>
 
+    <div id="dash-community-section" style="display:none;margin-bottom:28px;">
+      <p class="dash-section-title">Your Communities</p>
+      <div class="dash-community-row" id="dash-community-row"></div>
+    </div>
+
     <p class="dash-section-title">Your Tools</p>
     <div class="dash-grid" id="dash-tile-grid">
+      <a class="dash-tile" href="/tour">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,#22C55E,#F69820);">&#128075;</div>
+        <div class="dash-tile-body">
+          <div class="dash-tile-title">Take the Tour</div>
+          <div class="dash-tile-desc">New here? A 60-second walkthrough of everything Vegans Explore offers.</div>
+        </div>
+      </a>
       <a class="dash-tile" href="/dashboard/opportunities">
         <div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127775;</div>
         <div class="dash-tile-body">
@@ -88,6 +112,48 @@
           <div class="dash-tile-desc">Dolphins Garage pilot, November. Pledge support, reserve a spot, apply to volunteer, or claim a sponsor tier.</div>
         </div>
       </a>
+      <a class="dash-tile" href="/directory">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,#3A9B3E,#2d7d31);">&#128269;</div>
+        <div class="dash-tile-body">
+          <div class="dash-tile-title">Directory</div>
+          <div class="dash-tile-desc">Discover and vote for Vegan-friendly restaurants and businesses near you.</div>
+        </div>
+      </a>
+      <a class="dash-tile" href="/pulse">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#128240;</div>
+        <div class="dash-tile-body">
+          <div class="dash-tile-title">Daily Pulse</div>
+          <div class="dash-tile-desc">Fresh stories from the community. Read, comment, and join the conversation.</div>
+        </div>
+      </a>
+      <a class="dash-tile" href="/guides">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,#22C55E,#16A34A);">&#129497;</div>
+        <div class="dash-tile-body">
+          <div class="dash-tile-title">Guides</div>
+          <div class="dash-tile-desc">Meet your guide and explore paths for every stage of the Vegan journey.</div>
+        </div>
+      </a>
+      <a class="dash-tile" href="/podcast">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);">&#127911;</div>
+        <div class="dash-tile-body">
+          <div class="dash-tile-title">Podcasts</div>
+          <div class="dash-tile-desc">Listen to shows from across the Vegans Explore network.</div>
+        </div>
+      </a>
+      <a class="dash-tile" href="/communities">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,#0ea5e9,#0369a1);">&#127758;</div>
+        <div class="dash-tile-body">
+          <div class="dash-tile-title">Browse Communities</div>
+          <div class="dash-tile-desc">See every city hub, not just your own, and find one to join.</div>
+        </div>
+      </a>
+      <a class="dash-tile" href="/lead">
+        <div class="dash-thumb" style="background:linear-gradient(135deg,#dc2626,#991b1b);">&#127942;</div>
+        <div class="dash-tile-body">
+          <div class="dash-tile-title">Lead Your City</div>
+          <div class="dash-tile-desc">Apply to become a Community Manager and help grow your local Vegan scene.</div>
+        </div>
+      </a>
     </div>
     <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Thumbnails are placeholders. Real illustrated artwork, in the GeekFon style, is next.</p>
   </div>
@@ -99,6 +165,7 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','dmv':'/communities/dmv/banner.png','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
 
   function showDenied() {
     document.getElementById('dash-gate').innerHTML = '<p>Sign in to view your dashboard.</p><button id="dash-signin-btn">Sign In</button>';
@@ -159,9 +226,39 @@
     });
   }
 
+  // "Your Communities" row (2026-08-18, V direction): every member picks a
+  // home_community at signup (public.members.home_community); surface it as
+  // its own row on the dashboard rather than burying it inside the nav-page
+  // tile grid. Falls back to a "Find Your Community" prompt for members who
+  // signed up before this field existed or skipped it.
+  function renderCommunitySection(member) {
+    var section = document.getElementById('dash-community-section');
+    var row = document.getElementById('dash-community-row');
+    if (!section || !row) return;
+    row.innerHTML = '';
+    var slug = member.home_community;
+    if (slug && VE_CITY_NAMES[slug]) {
+      var card = document.createElement('a');
+      card.className = 'dash-community-card';
+      card.href = '/communities/' + slug;
+      var banner = VE_CITY_BANNER[slug];
+      if (banner) card.style.backgroundImage = "url('" + banner + "')";
+      card.innerHTML = '<div class="dash-community-card-body"><div class="dash-community-card-eyebrow">Your Community</div><div class="dash-community-card-title">' + VE_CITY_NAMES[slug] + '</div></div>';
+      row.appendChild(card);
+    } else {
+      var empty = document.createElement('a');
+      empty.className = 'dash-community-card dash-community-empty';
+      empty.href = '/communities/find';
+      empty.innerHTML = '<div class="dash-community-card-title">Find Your Community</div><div class="dash-community-card-sub">Pick your city to connect with local Vegans.</div>';
+      row.appendChild(empty);
+    }
+    section.style.display = 'block';
+  }
+
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
+    renderCommunitySection(member);
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
