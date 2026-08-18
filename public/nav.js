@@ -105,11 +105,12 @@
   function cur(href) { return isCurrent(href) ? ' aria-current="page"' : ''; }
 
   /* ---- "Dashboard" nav link (2026-08-18, V direction) ----
-     Previously a personalized "Welcome" link that routed to the member's
-     saved city community page. Replaced: members had no way to reach
-     /dashboard from nav at all. City-personalization removed; the link
-     now always points to /dashboard, which gates on its own login check. */
-  var welcomeHref = '/dashboard';
+     Only shown to logged-in members. A logged-out visitor has not
+     registered, so Dashboard has no meaning for them -- confirmed via the
+     Super Admin "View As: Public - Logged Out" simulator incorrectly
+     showing it. Logged-out visitors get a Login link instead (below),
+     placed directly above Get Passport. */
+  var dashboardLinkHtml = loggedIn ? ('<a href="/dashboard"' + cur('/dashboard') + '>Dashboard</a>') : '';
 
   /* ---- Icons ---- */
   var iconMenu  = '<svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><rect width="18" height="2" rx="1" fill="#1a1a1a"/><rect y="6" width="18" height="2" rx="1" fill="#1a1a1a"/><rect y="12" width="18" height="2" rx="1" fill="#1a1a1a"/></svg>';
