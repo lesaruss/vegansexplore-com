@@ -24,6 +24,7 @@ function signup(email,password,name,ref,community){return call('signup',{email:e
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function loginWithGoogle(idToken,community){return call('google',{id_token:idToken,home_community:community||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function completeOnboarding(payload){var body=Object.assign({},payload,{token:getToken()});return call('complete_onboarding',body).then(function(d){if(d.member){var m=Object.assign({},getRealMember()||{},d.member);setSession(getToken(),m);}return d;});}
+function setHomeCommunity(slug){return call('set_home_community',{token:getToken(),home_community:slug}).then(function(d){if(d.member){var m=Object.assign({},getRealMember()||{},d.member);setSession(getToken(),m);}return d;});}
 function signOut(){clearSession();window.location.href='/';}
 function initGoogleSignIn(buttonEl,callback,community){if(!window.google||!window.google.accounts)return;window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){loginWithGoogle(r.credential,community).then(callback);}});if(buttonEl)window.google.accounts.id.renderButton(buttonEl,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:buttonEl.offsetWidth||360});}
 function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a free Passport to do that.');}
@@ -98,5 +99,5 @@ if(d.error){_showErr(d.error);return;}
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}
-global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
+global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
 })(window);
