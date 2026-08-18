@@ -177,10 +177,10 @@
 <div class="dash-modal-overlay" id="dash-community-modal">
   <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Choose your community">
     <div class="dash-modal-header">
-      <div class="dash-modal-title">Choose Your Community</div>
+      <div class="dash-modal-title">Choose Your Communities</div>
       <button type="button" class="dash-modal-close" id="dash-community-modal-close" aria-label="Close">&times;</button>
     </div>
-    <p class="dash-modal-sub">Pick the city closest to you. You can change this anytime.</p>
+    <p class="dash-modal-sub">Join as many cities as you want. Tap a joined city again to leave it.</p>
     <div class="dash-modal-grid" id="dash-community-modal-grid"></div>
   </div>
 </div>
@@ -262,35 +262,49 @@
   // (ve-auth 'set_home_community', added 2026-08-18) and re-renders in place,
   // no page reload. The populated tile still opens the city hub on click, with
   // a small "Change" link underneath that reopens the same picker.
+  // UPDATED (2026-08-18, Logan, V direction): communities are now multi-select.
+  // "Somebody wants to add them all, let them add them all... if they remove
+  // themselves, they can easily remove themselves." The modal no longer closes
+  // on pick -- each option toggles add/remove via join_community/leave_community
+  // and stays open so a member can add several cities in one pass. The row
+  // renders one tile per joined community plus a trailing "+ Add Community"
+  // tile, matching the same white-box tile look as Your Tools.
   var currentMember = null;
 
   function openCommunityModal() {
     var overlay = document.getElementById('dash-community-modal');
+    renderModalGrid();
+    overlay.classList.add('open');
+  }
+
+  function renderModalGrid() {
     var grid = document.getElementById('dash-community-modal-grid');
     grid.innerHTML = '';
+    var joined = (currentMember && currentMember.communities) || [];
     Object.keys(VE_CITY_NAMES).forEach(function(slug) {
+      var isJoined = joined.indexOf(slug) !== -1;
       var opt = document.createElement('button');
       opt.type = 'button';
-      opt.className = 'dash-modal-opt' + (currentMember && currentMember.home_community === slug ? ' selected' : '');
+      opt.className = 'dash-modal-opt' + (isJoined ? ' selected' : '');
       var banner = VE_CITY_BANNER[slug];
-      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + banner + '\')"></div><div class="dash-modal-opt-name">' + VE_CITY_NAMES[slug] + '</div>';
-      opt.addEventListener('click', function() { selectCommunity(slug); });
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + banner + '\')"></div><div class="dash-modal-opt-name">' + VE_CITY_NAMES[slug] + (isJoined ? ' &#10003;' : '') + '</div>';
+      opt.addEventListener('click', function() { toggleCommunity(slug, isJoined); });
       grid.appendChild(opt);
     });
-    overlay.classList.add('open');
   }
 
   function closeCommunityModal() {
     document.getElementById('dash-community-modal').classList.remove('open');
   }
 
-  function selectCommunity(slug) {
-    VEAuth.setHomeCommunity(slug).then(function(d) {
-      if (d && d.error) { closeCommunityModal(); return; }
-      currentMember = (d && d.member) || Object.assign({}, currentMember, { home_community: slug });
+  function toggleCommunity(slug, isJoined) {
+    var action = isJoined ? VEAuth.leaveCommunity(slug) : VEAuth.joinCommunity(slug);
+    action.then(function(d) {
+      if (d && d.error) return;
+      currentMember = Object.assign({}, currentMember, { communities: (d && d.communities) || [] });
       renderCommunitySection(currentMember);
-      closeCommunityModal();
-    }).catch(function() { closeCommunityModal(); });
+      renderModalGrid();
+    });
   }
 
   document.getElementById('dash-community-modal-close').addEventListener('click', closeCommunityModal);
@@ -304,11 +318,12 @@
     var row = document.getElementById('dash-community-row');
     if (!section || !row) return;
     row.innerHTML = '';
-    var slug = member.home_community;
-    var wrap = document.createElement('div');
-    wrap.className = 'dash-community-tile';
+    var joined = (member.communities && member.communities.length ? member.communities : (member.home_community ? [member.home_community] : []));
 
-    if (slug && VE_CITY_NAMES[slug]) {
+    joined.forEach(function(slug) {
+      if (!VE_CITY_NAMES[slug]) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-community-tile';
       var tile = document.createElement('a');
       tile.className = 'dash-tile';
       tile.href = '/communities/' + slug;
@@ -316,33 +331,37 @@
       tile.innerHTML =
         '<div class="dash-thumb" style="background-image:url(\'' + banner + '\');"></div>' +
         '<div class="dash-tile-body">' +
-          '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] + ' <span class="dash-tag live">Your Community</span></div>' +
+          '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] + ' <span class="dash-tag live">Joined</span></div>' +
         '</div>';
       wrap.appendChild(tile);
 
-      var change = document.createElement('button');
-      change.type = 'button';
-      change.className = 'dash-community-change';
-      change.textContent = 'Change community';
-      change.addEventListener('click', function(e) { e.preventDefault(); openCommunityModal(); });
-      wrap.appendChild(change);
-    } else {
-      var addTile = document.createElement('div');
-      addTile.className = 'dash-tile dash-add-tile';
-      addTile.setAttribute('role', 'button');
-      addTile.setAttribute('tabindex', '0');
-      addTile.innerHTML =
-        '<div class="dash-thumb">+</div>' +
-        '<div class="dash-tile-body">' +
-          '<div class="dash-tile-title">Add Your Community</div>' +
-          '<div class="dash-tile-desc">Pick your city to connect with local Vegans.</div>' +
-        '</div>';
-      addTile.addEventListener('click', openCommunityModal);
-      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCommunityModal(); } });
-      wrap.appendChild(addTile);
-    }
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'dash-community-change';
+      remove.textContent = 'Leave community';
+      remove.addEventListener('click', function(e) { e.preventDefault(); toggleCommunity(slug, true); });
+      wrap.appendChild(remove);
 
-    row.appendChild(wrap);
+      row.appendChild(wrap);
+    });
+
+    var addWrap = document.createElement('div');
+    addWrap.className = 'dash-community-tile';
+    var addTile = document.createElement('div');
+    addTile.className = 'dash-tile dash-add-tile';
+    addTile.setAttribute('role', 'button');
+    addTile.setAttribute('tabindex', '0');
+    addTile.innerHTML =
+      '<div class="dash-thumb">+</div>' +
+      '<div class="dash-tile-body">' +
+        '<div class="dash-tile-title">' + (joined.length ? 'Add Another Community' : 'Add Your Community') + '</div>' +
+        '<div class="dash-tile-desc">Pick as many cities as you want to connect with.</div>' +
+      '</div>';
+    addTile.addEventListener('click', openCommunityModal);
+    addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCommunityModal(); } });
+    addWrap.appendChild(addTile);
+    row.appendChild(addWrap);
+
     section.style.display = 'block';
   }
 
