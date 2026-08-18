@@ -104,15 +104,12 @@
   function isCurrent(href) { var h = href.replace(/\/$/, '') || '/'; return p === h; }
   function cur(href) { return isCurrent(href) ? ' aria-current="page"' : ''; }
 
-  /* ---- Personalized "Welcome" destination (2026-07-23) ----
-     Once a visitor picks a city on /communities (see veChooseCity there),
-     the Welcome link routes straight back to that community instead of the
-     generic /welcome page - so a traveling member can switch cities and
-     "Welcome" always means "my city," not a static page. */
-  var VE_CITY_SLUGS = ['south-florida', 'central-florida', 'atlanta', 'new-york', 'los-angeles', 'london', 'philadelphia', 'dmv'];
-  var savedCity = null;
-  try { savedCity = localStorage.getItem('ve_selected_city'); } catch (e) {}
-  var welcomeHref = (savedCity && VE_CITY_SLUGS.indexOf(savedCity) !== -1) ? ('/communities/' + savedCity) : '/welcome';
+  /* ---- "Dashboard" nav link (2026-08-18, V direction) ----
+     Previously a personalized "Welcome" link that routed to the member's
+     saved city community page. Replaced: members had no way to reach
+     /dashboard from nav at all. City-personalization removed; the link
+     now always points to /dashboard, which gates on its own login check. */
+  var welcomeHref = '/dashboard';
 
   /* ---- Icons ---- */
   var iconMenu  = '<svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><rect width="18" height="2" rx="1" fill="#1a1a1a"/><rect y="6" width="18" height="2" rx="1" fill="#1a1a1a"/><rect y="12" width="18" height="2" rx="1" fill="#1a1a1a"/></svg>';
