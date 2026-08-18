@@ -142,10 +142,16 @@
     location.href = exitHref();
   }
 
-  var els = {};
-
   function teardown() {
-    ['overlay-backdrop', 'overlay-spotlight', 'overlay-card'].forEach(function (id) {
+    // FIXED (2026-08-18, Logan, V correction): this used to check for an id
+    // ('ve-tour-overlay-backdrop') that was never actually created -- the
+    // real elements are 've-tour-overlay-spotlight' and 've-tour-overlay-card'.
+    // Because the check never matched, ensureDom() below recreated a brand
+    // new spotlight box-shadow on every single Next click instead of reusing
+    // the existing one. Each fresh box-shadow layer stacks its own dimming on
+    // top of the last, which is why it visibly got darker and darker with
+    // every step -- confirmed as the root cause of V's report.
+    ['overlay-spotlight', 'overlay-card', 'tab-highlight'].forEach(function (id) {
       var el = document.getElementById('ve-tour-' + id);
       if (el) el.parentNode.removeChild(el);
     });
@@ -155,17 +161,30 @@
 
   var currentTarget = null;
   var currentPlacement = 'bottom';
+  var currentTabButton = null;
 
   function ensureDom() {
-    if (document.getElementById('ve-tour-overlay-backdrop')) return;
+    // FIXED: correct id check, so a same-page step change (e.g. the two
+    // hub-tab steps) reuses the one existing overlay instead of stacking a
+    // new one on top. Cross-page navigations get a fresh DOM anyway (new
+    // page load), so this is also safe there.
+    if (document.getElementById('ve-tour-overlay-card')) return;
 
     var style = document.createElement('style');
     style.id = 've-tour-style';
     style.textContent =
+      // LIGHTENED (2026-08-18, V correction): was rgba(0,0,0,0.55); "not so
+      // dark" -- dropped to 0.32 so the page stays legible behind the dim.
       '#ve-tour-overlay-spotlight{position:absolute;pointer-events:none;border-radius:10px;' +
-      'box-shadow:0 0 0 9999px rgba(0,0,0,0.55);transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;z-index:' + Z + ';}' +
+      'box-shadow:0 0 0 9999px rgba(0,0,0,0.32);transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;z-index:' + Z + ';}' +
+      // NEW: a distinct ring (no dimming, no cutout) around the active hub
+      // tab button itself, so it's clear which tab the tour is on even
+      // though the tab bar sits outside the spotlighted section below it.
+      '#ve-tour-tab-highlight{position:absolute;pointer-events:none;border-radius:8px;' +
+      'border:2.5px solid #22C55E;box-shadow:0 0 0 3px rgba(34,197,94,0.25);' +
+      'transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;z-index:' + (Z + 1) + ';}' +
       '#ve-tour-overlay-card{position:absolute;max-width:340px;background:#fff;border-radius:14px;' +
-      'box-shadow:0 12px 40px rgba(0,0,0,0.3);padding:20px 22px;font-family:"Montserrat",sans-serif;z-index:' + (Z + 1) + ';' +
+      'box-shadow:0 12px 40px rgba(0,0,0,0.3);padding:20px 22px;font-family:"Montserrat",sans-serif;z-index:' + (Z + 2) + ';' +
       'transition:top .25s ease,left .25s ease;}' +
       '#ve-tour-overlay-card.centered{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);}' +
       '.ve-tour-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#22C55E;margin-bottom:6px;}' +
@@ -192,6 +211,11 @@
     spotlight.id = 've-tour-overlay-spotlight';
     document.body.appendChild(spotlight);
 
+    var tabHighlight = document.createElement('div');
+    tabHighlight.id = 've-tour-tab-highlight';
+    tabHighlight.style.display = 'none';
+    document.body.appendChild(tabHighlight);
+
     var card = document.createElement('div');
     card.id = 've-tour-overlay-card';
     document.body.appendChild(card);
@@ -210,7 +234,26 @@
   function reposition() {
     var card = document.getElementById('ve-tour-overlay-card');
     var spotlight = document.getElementById('ve-tour-overlay-spotlight');
+    var tabHighlight = document.getElementById('ve-tour-tab-highlight');
     if (!card || !spotlight) return;
+
+    // NEW (V correction): ring-highlight the active hub tab button itself,
+    // separately from the dimmed spotlight cutout below it, so it's always
+    // clear which tab the tour is pointing at even when the tab bar sits
+    // outside the spotlighted section.
+    if (tabHighlight) {
+      if (currentTabButton && document.body.contains(currentTabButton)) {
+        var btnRect = currentTabButton.getBoundingClientRect();
+        var btnPad = 4;
+        tabHighlight.style.display = 'block';
+        tabHighlight.style.top = (btnRect.top + window.scrollY - btnPad) + 'px';
+        tabHighlight.style.left = (btnRect.left + window.scrollX - btnPad) + 'px';
+        tabHighlight.style.width = (btnRect.width + btnPad * 2) + 'px';
+        tabHighlight.style.height = (btnRect.height + btnPad * 2) + 'px';
+      } else {
+        tabHighlight.style.display = 'none';
+      }
+    }
 
     if (!currentTarget || !document.body.contains(currentTarget)) {
       spotlight.style.display = 'none';
@@ -267,6 +310,9 @@
       if (step.tab && typeof window.switchTab === 'function') {
         try { window.switchTab(step.tab); } catch (e) {}
       }
+      // NEW (V correction): track the real tab button (id="tab-btn-<tab>",
+      // matching the hub markup) so reposition() can ring-highlight it.
+      currentTabButton = step.tab ? document.getElementById('tab-btn-' + step.tab) : null;
       currentTarget = findEl(step);
       currentPlacement = step.placement || 'bottom';
       if (currentTarget && currentTarget.scrollIntoView) {
