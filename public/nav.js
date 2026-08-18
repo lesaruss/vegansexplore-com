@@ -9,6 +9,8 @@
     '.ve-nav-links{display:none;}',
     '.ve-nav-cta{background:#22C55E;color:#fff !important;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:9px 18px;border-radius:4px;text-decoration:none;transition:background 0.15s;white-space:nowrap;}',
     '.ve-nav-cta:hover{background:#16A34A !important;}',
+    '.ve-nav-login{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#1a1a1a;text-decoration:none;padding:9px 12px;white-space:nowrap;}',
+    '.ve-nav-login:hover{color:#22C55E;}',
     '.ve-nav-member{display:flex;align-items:center;gap:8px;cursor:pointer;position:relative;}',
     '.ve-nav-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;font-family:"Montserrat",sans-serif;letter-spacing:0.04em;}',
     '.ve-nav-lesars{background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D;font-size:10px;font-weight:800;letter-spacing:0.08em;padding:4px 8px;border-radius:20px;white-space:nowrap;}',
