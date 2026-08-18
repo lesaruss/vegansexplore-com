@@ -135,7 +135,7 @@
       arr.push(val);
     }
 
-    function renderChoiceStep(title, sub, opts, selectedArr, max) {
+    function renderChoiceStep(title, sub, opts, selectedArr, max, onSingleSelect) {
       var html = '<h1>' + title + '</h1><p class="ob-sub">' + sub + '</p><div class="ob-opts">';
       opts.forEach(function(o, i) {
         var sel = selectedArr.indexOf(i) !== -1;
@@ -146,7 +146,13 @@
       Array.prototype.forEach.call(stepsEl.querySelectorAll('.ob-opt'), function(el) {
         el.addEventListener('click', function() {
           var i = parseInt(el.getAttribute('data-i'), 10);
-          if (max === 1) { selectedArr.length = 0; selectedArr.push(i); }
+          // NOTE: selectedArr here is a real reference into state (state.brings /
+          // state.focus) for multi-select steps, so mutating it in place is safe.
+          // Single-select steps (journey, business) pass a freshly-computed
+          // throwaway array instead (it can't be a live reference to a scalar
+          // field), so max===1 clicks are handled via onSingleSelect below,
+          // which writes straight to the real state field.
+          if (max === 1) { if (onSingleSelect) onSingleSelect(i); }
           else toggleInArray(selectedArr, i, max);
           render();
         });
@@ -162,13 +168,13 @@
       var canGoBack = stepIdx > 0;
 
       if (step === 'journey') {
-        renderChoiceStep("Where are you with plant-based eating?", "Be honest - there's no wrong answer.", JOURNEY_OPTS, state.journeyStage === null ? [] : [state.journeyStage], 1);
+        renderChoiceStep("Where are you with plant-based eating?", "Be honest - there's no wrong answer.", JOURNEY_OPTS, state.journeyStage === null ? [] : [state.journeyStage], 1, function(i) { state.journeyStage = i; });
       } else if (step === 'brings') {
         renderChoiceStep('What brings you to VEGANS EXPLORE?', 'Pick up to 2.', BRINGS_OPTS, state.brings, 2);
       } else if (step === 'focus') {
         renderChoiceStep("What's your biggest focus right now?", 'Pick up to 2.', FOCUS_OPTS, state.focus, 2);
       } else if (step === 'business') {
-        renderChoiceStep('Do you have a Vegan business or project - even just an idea?', ' ', ['Yes, I do', 'Not yet'], state.hasBusiness === null ? [] : [state.hasBusiness === true ? 0 : 1], 1);
+        renderChoiceStep('Do you have a Vegan business or project - even just an idea?', ' ', ['Yes, I do', 'Not yet'], state.hasBusiness === null ? [] : [state.hasBusiness === true ? 0 : 1], 1, function(i) { state.hasBusiness = (i === 0); });
       } else if (step === 'location') {
         stepsEl.innerHTML = '<h1>Where are you based?</h1><p class="ob-sub">Helps us connect you to local events, businesses, and community.</p>' +
           '<div class="ob-field"><label class="ob-label">City</label><input type="text" id="ob-city" placeholder="Your city" value="' + (state.city || '').replace(/"/g,'&quot;') + '"></div>' +
@@ -254,15 +260,6 @@
 
     function onNext() {
       clearError();
-      var step = STEPS[stepIdx];
-      if (step === 'journey') {
-        var opt = document.querySelector('.ob-opt.selected');
-        if (opt) state.journeyStage = parseInt(opt.getAttribute('data-i'), 10);
-      }
-      if (step === 'business') {
-        var opt2 = document.querySelector('.ob-opt.selected');
-        if (opt2) state.hasBusiness = parseInt(opt2.getAttribute('data-i'), 10) === 0;
-      }
       var err = validateStep();
       if (err) { showError(err); return; }
       if (stepIdx < STEPS.length - 1) { stepIdx++; render(); window.scrollTo(0,0); return; }
