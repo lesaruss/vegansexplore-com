@@ -50,16 +50,31 @@
   .dash-badge-count{background:var(--ve-orange);color:#fff;border-radius:100px;font-size:11px;font-weight:900;padding:2px 9px;}
 
   .dash-community-row{display:flex;gap:16px;flex-wrap:wrap;}
-  .dash-community-card{position:relative;flex:1 1 320px;max-width:420px;min-height:130px;border-radius:14px;overflow:hidden;text-decoration:none;color:#fff;display:flex;align-items:flex-end;padding:18px 20px;background-size:cover;background-position:center;background-color:var(--ve-green-dark);border:1.5px solid var(--ve-border);transition:transform .15s,box-shadow .15s;}
-  .dash-community-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.14);}
-  .dash-community-card::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.65) 100%);}
-  .dash-community-card-body{position:relative;z-index:1;}
-  .dash-community-card-eyebrow{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.9);margin-bottom:4px;}
-  .dash-community-card-title{font-size:18px;font-weight:900;}
-  .dash-community-card.dash-community-empty{background-image:none !important;background-color:var(--ve-green-light);color:var(--ve-text);align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:6px;}
-  .dash-community-card.dash-community-empty::before{content:none;}
-  .dash-community-card.dash-community-empty .dash-community-card-title{color:var(--ve-text);}
-  .dash-community-card.dash-community-empty .dash-community-card-sub{position:relative;font-size:12px;color:var(--ve-text-75);font-weight:600;}
+  .dash-community-tile{width:100%;max-width:280px;}
+  @media (max-width:520px){ .dash-community-tile{max-width:100%;} }
+  .dash-tile.dash-add-tile{border-style:dashed;cursor:pointer;background:var(--ve-green-light);}
+  .dash-tile.dash-add-tile:hover{border-color:var(--ve-green);}
+  .dash-tile.dash-add-tile .dash-thumb{background:none;color:var(--ve-green-dark);font-size:30px;font-weight:900;}
+  .dash-community-change{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;font-family:"Montserrat",sans-serif;}
+  .dash-community-change:hover{color:var(--ve-green-dark);}
+
+  /* Community picker modal */
+  .dash-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:900;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto;}
+  .dash-modal-overlay.open{display:flex;}
+  .dash-modal{background:#fff;border-radius:16px;width:100%;max-width:760px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+  .dash-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .dash-modal-title{font-size:18px;font-weight:900;}
+  .dash-modal-close{background:none;border:none;font-size:22px;line-height:1;cursor:pointer;color:var(--ve-text-50);padding:4px 8px;}
+  .dash-modal-close:hover{color:var(--ve-text);}
+  .dash-modal-sub{font-size:13px;color:var(--ve-text-75);margin-bottom:20px;}
+  .dash-modal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media (max-width:640px){ .dash-modal-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:420px){ .dash-modal-grid{grid-template-columns:1fr;} }
+  .dash-modal-opt{border:1.5px solid var(--ve-border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;text-align:left;font-family:"Montserrat",sans-serif;transition:border-color .15s,box-shadow .15s,transform .15s;}
+  .dash-modal-opt:hover{border-color:var(--ve-green);box-shadow:0 6px 18px rgba(58,155,62,0.12);transform:translateY(-2px);}
+  .dash-modal-opt-thumb{aspect-ratio:8/5;width:100%;background-size:cover;background-position:center;}
+  .dash-modal-opt-name{padding:10px 12px;font-size:12.5px;font-weight:800;}
+  .dash-modal-opt.selected{border-color:var(--ve-green);background:var(--ve-green-light);}
 </style>
 </head>
 <body>
@@ -159,6 +174,17 @@
   </div>
 </main>
 
+<div class="dash-modal-overlay" id="dash-community-modal">
+  <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Choose your community">
+    <div class="dash-modal-header">
+      <div class="dash-modal-title">Choose Your Community</div>
+      <button type="button" class="dash-modal-close" id="dash-community-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <p class="dash-modal-sub">Pick the city closest to you. You can change this anytime.</p>
+    <div class="dash-modal-grid" id="dash-community-modal-grid"></div>
+  </div>
+</div>
+
 <script src="/public/footer.js"></script>
 
 <script>
@@ -229,29 +255,94 @@
   // "Your Communities" row (2026-08-18, V direction): every member picks a
   // home_community at signup (public.members.home_community); surface it as
   // its own row on the dashboard rather than burying it inside the nav-page
-  // tile grid. Falls back to a "Find Your Community" prompt for members who
-  // signed up before this field existed or skipped it.
+  // tile grid, styled like the "Your Tools" tiles rather than a full-bleed
+  // banner card. A member without one set gets a click-to-add tile instead
+  // of a dead link -- clicking it opens a modal listing every community as
+  // a selectable tile (banner + name); picking one calls VEAuth.setHomeCommunity
+  // (ve-auth 'set_home_community', added 2026-08-18) and re-renders in place,
+  // no page reload. The populated tile still opens the city hub on click, with
+  // a small "Change" link underneath that reopens the same picker.
+  var currentMember = null;
+
+  function openCommunityModal() {
+    var overlay = document.getElementById('dash-community-modal');
+    var grid = document.getElementById('dash-community-modal-grid');
+    grid.innerHTML = '';
+    Object.keys(VE_CITY_NAMES).forEach(function(slug) {
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'dash-modal-opt' + (currentMember && currentMember.home_community === slug ? ' selected' : '');
+      var banner = VE_CITY_BANNER[slug];
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + banner + '\')"></div><div class="dash-modal-opt-name">' + VE_CITY_NAMES[slug] + '</div>';
+      opt.addEventListener('click', function() { selectCommunity(slug); });
+      grid.appendChild(opt);
+    });
+    overlay.classList.add('open');
+  }
+
+  function closeCommunityModal() {
+    document.getElementById('dash-community-modal').classList.remove('open');
+  }
+
+  function selectCommunity(slug) {
+    VEAuth.setHomeCommunity(slug).then(function(d) {
+      if (d && d.error) { closeCommunityModal(); return; }
+      currentMember = (d && d.member) || Object.assign({}, currentMember, { home_community: slug });
+      renderCommunitySection(currentMember);
+      closeCommunityModal();
+    }).catch(function() { closeCommunityModal(); });
+  }
+
+  document.getElementById('dash-community-modal-close').addEventListener('click', closeCommunityModal);
+  document.getElementById('dash-community-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-community-modal') closeCommunityModal();
+  });
+
   function renderCommunitySection(member) {
+    currentMember = member;
     var section = document.getElementById('dash-community-section');
     var row = document.getElementById('dash-community-row');
     if (!section || !row) return;
     row.innerHTML = '';
     var slug = member.home_community;
+    var wrap = document.createElement('div');
+    wrap.className = 'dash-community-tile';
+
     if (slug && VE_CITY_NAMES[slug]) {
-      var card = document.createElement('a');
-      card.className = 'dash-community-card';
-      card.href = '/communities/' + slug;
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = '/communities/' + slug;
       var banner = VE_CITY_BANNER[slug];
-      if (banner) card.style.backgroundImage = "url('" + banner + "')";
-      card.innerHTML = '<div class="dash-community-card-body"><div class="dash-community-card-eyebrow">Your Community</div><div class="dash-community-card-title">' + VE_CITY_NAMES[slug] + '</div></div>';
-      row.appendChild(card);
+      tile.innerHTML =
+        '<div class="dash-thumb" style="background-image:url(\'' + banner + '\');"></div>' +
+        '<div class="dash-tile-body">' +
+          '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] + ' <span class="dash-tag live">Your Community</span></div>' +
+        '</div>';
+      wrap.appendChild(tile);
+
+      var change = document.createElement('button');
+      change.type = 'button';
+      change.className = 'dash-community-change';
+      change.textContent = 'Change community';
+      change.addEventListener('click', function(e) { e.preventDefault(); openCommunityModal(); });
+      wrap.appendChild(change);
     } else {
-      var empty = document.createElement('a');
-      empty.className = 'dash-community-card dash-community-empty';
-      empty.href = '/communities/find';
-      empty.innerHTML = '<div class="dash-community-card-title">Find Your Community</div><div class="dash-community-card-sub">Pick your city to connect with local Vegans.</div>';
-      row.appendChild(empty);
+      var addTile = document.createElement('div');
+      addTile.className = 'dash-tile dash-add-tile';
+      addTile.setAttribute('role', 'button');
+      addTile.setAttribute('tabindex', '0');
+      addTile.innerHTML =
+        '<div class="dash-thumb">+</div>' +
+        '<div class="dash-tile-body">' +
+          '<div class="dash-tile-title">Add Your Community</div>' +
+          '<div class="dash-tile-desc">Pick your city to connect with local Vegans.</div>' +
+        '</div>';
+      addTile.addEventListener('click', openCommunityModal);
+      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCommunityModal(); } });
+      wrap.appendChild(addTile);
     }
+
+    row.appendChild(wrap);
     section.style.display = 'block';
   }
 
