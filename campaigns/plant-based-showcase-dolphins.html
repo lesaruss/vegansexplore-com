@@ -86,8 +86,9 @@
   .wiz-steps-list { margin: 10px 0 0 20px; }
   .wiz-steps-list li { font-size: 13.5px; color: var(--ve-text-75); line-height: 1.7; margin-bottom: 8px; }
 
-  /* NAV CONTROLS - static flow, sits directly above the footer, no gap */
-  .wiz-controls { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--ve-border); padding: 20px 48px; background: #fff; max-width: 1240px; margin: 0 auto; }
+  /* NAV CONTROLS + FOOTER - pinned together at the bottom of the viewport, no whitespace ever shows beneath them */
+  .wiz-controls { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--ve-border); padding: 16px 48px; background: #fff; position: fixed; left: 0; right: 0; bottom: 96px; z-index: 411; }
+  .wiz-controls-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1240px; margin: 0 auto; width: 100%; }
   .wiz-btn { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; border: none; cursor: pointer; transition: background 0.15s, opacity 0.15s; }
   .wiz-btn-back { background: transparent; color: var(--ve-text-75); border: 1.5px solid var(--ve-border); }
   .wiz-btn-back:hover { border-color: var(--path-color); color: var(--path-color); }
@@ -97,8 +98,10 @@
   .wiz-btn-next:hover { background: var(--path-dark); }
   .wiz-btn-next[hidden] { display: none; }
 
+  .ve-footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 410; }
+
   @media print {
-    .wiz-controls, .wiz-progress, .wiz-step-label, .wiz-banner { display: none !important; }
+    .wiz-controls, .wiz-progress, .wiz-step-label, .wiz-banner, .ve-footer { display: none !important; }
     .wiz-step { display: block !important; page-break-after: always; }
   }
 </style>
@@ -221,8 +224,10 @@
   </section>
 
   <div class="wiz-controls">
-    <button class="wiz-btn wiz-btn-back" id="wizBack" disabled>Back</button>
-    <button class="wiz-btn wiz-btn-next" id="wizNext">Next</button>
+    <div class="wiz-controls-inner">
+      <button class="wiz-btn wiz-btn-back" id="wizBack" disabled>Back</button>
+      <button class="wiz-btn wiz-btn-next" id="wizNext">Next</button>
+    </div>
   </div>
 
 </div>
@@ -232,6 +237,17 @@
 </div>
 
 <script>
+  function layoutFixedBottom() {
+    var footer = document.querySelector('.ve-footer');
+    var controls = document.querySelector('.wiz-controls');
+    var frame = document.getElementById('wizardFrame');
+    if (!footer || !controls || !frame) return;
+    var footerH = footer.offsetHeight;
+    controls.style.bottom = footerH + 'px';
+    var controlsH = controls.offsetHeight;
+    frame.style.paddingBottom = (footerH + controlsH + 24) + 'px';
+  }
+
   function showDenied() {
     document.getElementById('pbs-gate').innerHTML = '<p>Sign in to see how to get involved with the Plant Based Showcase.</p><button id="pbs-signin-btn">Sign In</button>';
     var btn = document.getElementById('pbs-signin-btn');
@@ -257,6 +273,7 @@
       backBtn.disabled = current === 0;
       nextBtn.hidden = current === total - 1;
       window.scrollTo({top: 0, behavior: 'smooth'});
+      layoutFixedBottom();
     }
 
     backBtn.addEventListener('click', function(){
@@ -274,8 +291,10 @@
     document.getElementById('pbs-gate').style.display = 'none';
     document.getElementById('pbs-content').style.display = 'block';
     initWizard();
+    layoutFixedBottom();
   }
 
+  window.addEventListener('resize', layoutFixedBottom);
   init();
 </script>
 </body>
