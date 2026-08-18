@@ -150,9 +150,12 @@
       '</div>' +
       '<button class="ve-mob-signout" id="ve-signout-mobile">Sign Out</button>';
   } else {
-    desktopRight = '<a href="/join" class="ve-nav-cta">Get Passport - Free</a>';
+    desktopRight =
+      '<a href="/login" class="ve-nav-login"' + cur('/login') + '>Log In</a>' +
+      '<a href="/join" class="ve-nav-cta">Get Passport - Free</a>';
     mobileBottom =
       '<div class="ve-mob-cta-wrap">' +
+        '<a href="/login" class="ve-mob-login"' + cur('/login') + '>Log In</a>' +
         '<a href="/join" class="ve-mob-cta">Get Passport - Free</a>' +
       '</div>';
   }
