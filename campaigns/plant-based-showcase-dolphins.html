@@ -18,32 +18,27 @@
   #pbs-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
   #pbs-content{display:none;}
 
-  /* ── scroll reveal ── */
-  .animate{opacity:0;transition:opacity .75s ease, transform .75s ease;}
-  .animate.fade-up{transform:translateY(36px);}
-  .animate.fade-left{transform:translateX(-36px);}
-  .animate.fade-right{transform:translateX(36px);}
-  .animate.visible{opacity:1;transform:translate(0,0);}
-  .delay-1{transition-delay:.1s;} .delay-2{transition-delay:.2s;}
+  @media (max-width:900px){ :root{--pad:24px;} }
 
-  /* ── hero ── */
-  .pbs-hero{position:relative;min-height:56vh;display:flex;align-items:flex-end;padding:0 var(--pad) 56px;overflow:hidden;background:#0a0a0a;}
+  /* ── single-view slides ── */
+  .pbs-slide{display:none;min-height:calc(100vh - 160px);opacity:0;transition:opacity .3s ease;}
+  .pbs-slide.active{display:block;opacity:1;}
+  .pbs-slide-inner{max-width:1040px;margin:0 auto;padding:56px var(--pad) 130px;}
+
+  /* ── hero slide ── */
+  .pbs-hero{position:relative;min-height:calc(100vh - 160px);display:flex;align-items:flex-end;padding:0 var(--pad) 56px;overflow:hidden;background:#0a0a0a;margin:0 calc(-1 * var(--pad));}
   .pbs-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;}
   .pbs-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.68) 42%,rgba(0,0,0,0.22) 78%,transparent 100%);z-index:1;}
   .pbs-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 40%);z-index:1;}
-  .pbs-hero-text{position:relative;z-index:2;max-width:620px;padding-top:120px;}
+  .pbs-hero-text{position:relative;z-index:2;max-width:620px;}
   .pbs-hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-green);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
   .pbs-hero-eyebrow::before{content:'';display:block;width:26px;height:2px;background:var(--ve-green);}
   .pbs-hero h1{font-size:clamp(34px,5.5vw,60px);font-weight:900;line-height:0.95;text-transform:uppercase;letter-spacing:-0.02em;color:#fff;margin-bottom:16px;}
   .pbs-hero h1 em{font-style:normal;color:var(--ve-green);}
   .pbs-hero-sub{font-size:14.5px;font-weight:400;color:rgba(255,255,255,0.82);max-width:480px;line-height:1.7;margin-bottom:26px;}
-  .pbs-scroll-cta{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#fff;text-decoration:none;background:var(--ve-green);border:2px solid var(--ve-green);padding:13px 24px;border-radius:4px;cursor:pointer;}
-  .pbs-scroll-cta:hover{background:var(--ve-green-dark);border-color:var(--ve-green-dark);}
+  .pbs-hero-cta{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:var(--ve-green);border:2px solid var(--ve-green);padding:13px 24px;border-radius:4px;cursor:pointer;}
+  .pbs-hero-cta:hover{background:var(--ve-green-dark);border-color:var(--ve-green-dark);}
 
-  main{max-width:1040px;margin:0 auto;padding:0 var(--pad) 100px;}
-  @media (max-width:900px){ :root{--pad:24px;} }
-
-  .pbs-section{padding:76px 0;border-bottom:1px solid var(--ve-border);}
   .pbs-section-label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
   .pbs-section-label::before{content:'\25A0';font-size:7px;}
   .pbs-section-headline{font-size:clamp(26px,3.6vw,42px);font-weight:900;line-height:0.98;text-transform:uppercase;letter-spacing:-0.02em;margin-bottom:22px;}
@@ -74,8 +69,8 @@
   .pbs-flip-title{font-size:clamp(18px,2.2vw,26px);font-weight:900;text-transform:uppercase;letter-spacing:-0.01em;line-height:1.05;color:#fff;}
   .pbs-flip-back-body{font-size:13.5px;color:rgba(255,255,255,0.95);line-height:1.65;}
 
-  .pbs-dark-block{background:var(--ve-text);color:#fff;border-radius:10px;padding:44px 40px;text-align:center;margin-top:8px;}
-  .pbs-quote{font-size:clamp(17px,2.2vw,26px);font-weight:800;line-height:1.35;text-transform:uppercase;letter-spacing:-0.01em;}
+  .pbs-dark-block{background:var(--ve-text);color:#fff;border-radius:10px;padding:56px 44px;text-align:center;}
+  .pbs-quote{font-size:clamp(19px,2.6vw,30px);font-weight:800;line-height:1.35;text-transform:uppercase;letter-spacing:-0.01em;}
   .pbs-quote em{font-style:normal;color:var(--ve-green);}
 
   .pbs-pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px;}
@@ -87,6 +82,16 @@
   .pbs-pillar h3{font-size:15.5px;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em;margin-bottom:10px;line-height:1.2;}
   .pbs-pillar p{font-size:12.5px;color:var(--ve-text-75);line-height:1.6;margin-bottom:14px;}
   .pbs-pillar-cta{font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-dark);}
+
+  /* ── next/prev controls ── */
+  .pbs-controls{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:600;display:flex;align-items:center;gap:10px;background:rgba(10,10,10,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:40px;padding:8px 10px;box-shadow:0 8px 30px rgba(0,0,0,0.25);}
+  .pbs-controls button{background:none;border:none;color:#fff;cursor:pointer;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .15s;}
+  .pbs-controls button:hover:not(:disabled){background:rgba(255,255,255,0.18);}
+  .pbs-controls button:disabled{opacity:0.3;cursor:default;}
+  .pbs-slide-count{color:rgba(255,255,255,0.85);font-size:11.5px;font-weight:700;min-width:46px;text-align:center;letter-spacing:0.02em;}
+  .pbs-dots{display:flex;gap:6px;padding:0 6px;}
+  .pbs-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:background .15s;}
+  .pbs-dot.active{background:var(--ve-green);}
 </style>
 </head>
 <body>
@@ -99,45 +104,46 @@
 
 <div id="pbs-content">
 
-  <div class="pbs-hero">
-    <picture>
-      <img class="pbs-hero-bg" src="/public/events/vegan-foodie-fest-2025.jpg" alt="">
-    </picture>
-    <div class="pbs-hero-text animate fade-up">
-      <div class="pbs-hero-eyebrow" id="pbs-eyebrow">Vegans Explore Initiative</div>
-      <h1 id="pbs-title">The Plant Based<br><em>Showcase</em></h1>
-      <p class="pbs-hero-sub" id="pbs-summary">Loading&hellip;</p>
-      <a class="pbs-scroll-cta" href="#pbs-picker">See How To Get Involved</a>
+  <div class="pbs-slide active" data-slide="0">
+    <div class="pbs-hero">
+      <picture>
+        <img class="pbs-hero-bg" src="/public/events/vegan-foodie-fest-2025.jpg" alt="">
+      </picture>
+      <div class="pbs-hero-text">
+        <div class="pbs-hero-eyebrow" id="pbs-eyebrow">Vegans Explore Initiative</div>
+        <h1 id="pbs-title">The Plant Based<br><em>Showcase</em></h1>
+        <p class="pbs-hero-sub" id="pbs-summary">Loading&hellip;</p>
+        <button class="pbs-hero-cta" id="pbs-hero-next">Begin &rarr;</button>
+      </div>
     </div>
   </div>
 
-  <main>
-
-    <div class="pbs-section" id="pbs-what">
+  <div class="pbs-slide" data-slide="1">
+    <div class="pbs-slide-inner">
       <div class="pbs-panel">
-        <img class="animate fade-right" src="/public/images/ve-panel2.png" alt="">
-        <div class="animate fade-left">
+        <img src="/public/images/ve-panel2.png" alt="">
+        <div>
           <div class="pbs-section-label">What This Is</div>
-          <h2 class="pbs-section-headline" id="pbs-what-title">A Real Showcase,<br><em>Not A Pitch</em></h2>
+          <h2 class="pbs-section-headline">A Real Showcase,<br><em>Not A Pitch</em></h2>
           <p class="pbs-section-body" id="pbs-what-body"></p>
         </div>
       </div>
-      <div class="pbs-stats animate fade-up delay-1">
+      <div class="pbs-stats">
         <div class="pbs-stat"><div class="pbs-stat-num">5</div><div class="pbs-stat-label">Local Chef Sponsors</div></div>
         <div class="pbs-stat"><div class="pbs-stat-num">10</div><div class="pbs-stat-label">Booths On Site</div></div>
         <div class="pbs-stat"><div class="pbs-stat-num">500</div><div class="pbs-stat-label">Goodie Bags Given Out</div></div>
         <div class="pbs-stat"><div class="pbs-stat-num">Free</div><div class="pbs-stat-label">With Your Game Ticket</div></div>
       </div>
     </div>
+  </div>
 
-    <div class="pbs-section" id="pbs-why">
-      <div class="animate fade-up">
-        <div class="pbs-section-label">Why Us</div>
-        <h2 class="pbs-section-headline" id="pbs-why-title">We've Done<br><em>This Before.</em></h2>
-        <p class="pbs-section-body">Tap either card for the story. This is not a first attempt.</p>
-      </div>
+  <div class="pbs-slide" data-slide="2">
+    <div class="pbs-slide-inner">
+      <div class="pbs-section-label">Why Us</div>
+      <h2 class="pbs-section-headline">We've Done<br><em>This Before.</em></h2>
+      <p class="pbs-section-body">Tap either card for the story. This is not a first attempt.</p>
       <div class="pbs-flip-grid">
-        <div class="pbs-flip-card animate fade-up delay-1">
+        <div class="pbs-flip-card">
           <div class="pbs-flip-inner">
             <div class="pbs-flip-front">
               <div class="pbs-flip-hint">Tap to flip</div>
@@ -149,7 +155,7 @@
             </div>
           </div>
         </div>
-        <div class="pbs-flip-card animate fade-up delay-2">
+        <div class="pbs-flip-card">
           <div class="pbs-flip-inner">
             <div class="pbs-flip-front">
               <div class="pbs-flip-hint">Tap to flip</div>
@@ -163,20 +169,22 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="pbs-section" style="border-bottom:none;">
-      <div class="pbs-dark-block animate fade-up">
+  <div class="pbs-slide" data-slide="3">
+    <div class="pbs-slide-inner">
+      <div class="pbs-dark-block">
         <div class="pbs-quote" id="pbs-quote"></div>
       </div>
     </div>
+  </div>
 
-    <div class="pbs-section" id="pbs-picker" style="border-bottom:none;padding-top:0;">
-      <div class="animate fade-up">
-        <div class="pbs-section-label">Who Are You?</div>
-        <h2 class="pbs-section-headline">Pick Your Path.</h2>
-        <p class="pbs-section-body">Each one only shows you what matters for you, learn at your own pace.</p>
-      </div>
-      <div class="pbs-pillar-grid animate fade-up delay-1">
+  <div class="pbs-slide" data-slide="4">
+    <div class="pbs-slide-inner">
+      <div class="pbs-section-label">Who Are You?</div>
+      <h2 class="pbs-section-headline">Pick Your Path.</h2>
+      <p class="pbs-section-body">Each one only shows you what matters for you, learn at your own pace.</p>
+      <div class="pbs-pillar-grid">
         <a class="pbs-pillar" href="/campaigns/plant-based-showcase-dolphins-attend">
           <div class="pbs-pillar-icon">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="24" height="16" rx="2"/><path d="M4 16h24"/><path d="M11 10V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3"/></svg>
@@ -206,8 +214,15 @@
         </a>
       </div>
     </div>
+  </div>
 
-  </main>
+  <div class="pbs-controls">
+    <button id="pbs-prev" title="Previous">&#8592;</button>
+    <div class="pbs-dots" id="pbs-dots"></div>
+    <span class="pbs-slide-count" id="pbs-slide-count">1 / 5</span>
+    <button id="pbs-next" title="Next">&#8594;</button>
+  </div>
+
 </div>
 
 <script src="/public/footer.js"></script>
@@ -218,6 +233,9 @@
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var INITIATIVE_SLUG = 'vegans-explore-initiative-plant-based-showcase';
 
+  var slides = [];
+  var currentSlide = 0;
+
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   function call(action, payload, token) {
@@ -227,18 +245,46 @@
     }).then(function (r) { return r.json(); });
   }
 
-  function initScrollAndFlip() {
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-    document.querySelectorAll('.animate').forEach(function (el) { observer.observe(el); });
+  function goToSlide(n) {
+    if (n < 0 || n >= slides.length) return;
+    slides[currentSlide].classList.remove('active');
+    currentSlide = n;
+    slides[currentSlide].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateControls();
+  }
+
+  function updateControls() {
+    document.getElementById('pbs-slide-count').textContent = (currentSlide + 1) + ' / ' + slides.length;
+    document.getElementById('pbs-prev').disabled = currentSlide === 0;
+    document.getElementById('pbs-next').disabled = currentSlide === slides.length - 1;
+    document.querySelectorAll('.pbs-dot').forEach(function (dot, i) {
+      dot.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  function initSlides() {
+    slides = Array.prototype.slice.call(document.querySelectorAll('.pbs-slide'));
+    var dots = document.getElementById('pbs-dots');
+    dots.innerHTML = slides.map(function (_, i) { return '<span class="pbs-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '"></span>'; }).join('');
+    dots.querySelectorAll('.pbs-dot').forEach(function (dot) {
+      dot.addEventListener('click', function () { goToSlide(parseInt(dot.getAttribute('data-i'), 10)); });
+    });
+    document.getElementById('pbs-prev').addEventListener('click', function () { goToSlide(currentSlide - 1); });
+    document.getElementById('pbs-next').addEventListener('click', function () { goToSlide(currentSlide + 1); });
+    document.getElementById('pbs-hero-next').addEventListener('click', function () { goToSlide(1); });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+      if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+    });
 
     document.addEventListener('click', function (e) {
       var card = e.target.closest('.pbs-flip-card');
       if (card) card.classList.toggle('flipped');
     });
+
+    updateControls();
   }
 
   function showDenied() {
@@ -276,7 +322,7 @@
         document.getElementById('pbs-quote').textContent = '"' + story[2].body + '"';
       }
 
-      initScrollAndFlip();
+      initSlides();
     }).catch(function () {
       document.getElementById('pbs-content').innerHTML = '<p style="padding:80px 24px;text-align:center;">Could not load this page right now.</p>';
     });
