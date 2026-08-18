@@ -42,6 +42,22 @@
   .wiz-step { display: none; padding: 36px 48px 56px; }
   .wiz-step.active { display: block; }
 
+  /* COVER (step 0) - full-bleed illustration, scrim + headline overlaid left */
+  .wiz-step.wiz-cover { padding: 0; }
+  .wiz-cover { position: relative; min-height: 560px; height: calc(100vh - 210px); overflow: hidden; }
+  .wiz-cover-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  .wiz-cover-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,16,12,0.94) 0%, rgba(10,16,12,0.8) 32%, rgba(10,16,12,0.2) 64%, rgba(10,16,12,0) 80%); }
+  .wiz-cover-text { position: relative; z-index: 1; max-width: 560px; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 48px; }
+  .wiz-cover-text .wiz-eyebrow, .wiz-cover-text .wiz-eyebrow::before { color: #8fd39a; background: #8fd39a; }
+  .wiz-cover-text h1 { color: #fff; font-size: clamp(26px,3.6vw,42px); margin-bottom: 16px; }
+  .wiz-cover-text p { color: rgba(255,255,255,0.88); max-width: 480px; }
+  .wiz-cover-text #wizCoverCta { align-self: flex-start; margin-top: 22px; }
+  @media (max-width: 820px) {
+    .wiz-cover { height: auto; min-height: 520px; }
+    .wiz-cover-scrim { background: linear-gradient(180deg, rgba(10,16,12,0.35) 0%, rgba(10,16,12,0.88) 55%, rgba(10,16,12,0.96) 100%); }
+    .wiz-cover-text { max-width: 100%; padding: 28px 24px; justify-content: flex-end; }
+  }
+
   .wiz-layout { display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: start; max-width: 1240px; margin: 0 auto; }
   .wiz-layout.wiz-layout-full { grid-template-columns: 1fr; }
   .wiz-layout.wiz-layout-full .wiz-body p { max-width: 760px; }
@@ -133,11 +149,26 @@
     <div class="wiz-dot" data-dot="2"></div>
     <div class="wiz-dot" data-dot="3"></div>
     <div class="wiz-dot" data-dot="4"></div>
+    <div class="wiz-dot" data-dot="5"></div>
   </div>
-  <div class="wiz-step-label" id="wizStepLabel">Step 1 of 5</div>
+  <div class="wiz-step-label" id="wizStepLabel">Step 1 of 6</div>
+
+  <!-- STEP 0: COVER -->
+  <section class="wiz-step active wiz-cover" data-step="0" data-requires-choice="1">
+    <div class="wiz-cover">
+      <img class="wiz-cover-bg" src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_235743_4d19dc52-da85-4e33-ad68-76850bd6b030.png" alt="Vegans Explore guides cheering in Miami Dolphins jerseys outside Hard Rock Stadium, illustrated style">
+      <div class="wiz-cover-scrim"></div>
+      <div class="wiz-cover-text">
+        <div class="wiz-eyebrow">Vegans Explore &times; Miami Dolphins</div>
+        <h1>A Real Showcase For What Plant-Based Living Can Be.</h1>
+        <p>A November 2026 Dolphins home game at Hard Rock Stadium, inside the Garage. Free to attend with your normal game ticket.</p>
+        <button type="button" class="wiz-btn wiz-btn-next" id="wizCoverCta">Take The Guided Tour</button>
+      </div>
+    </div>
+  </section>
 
   <!-- STEP 1: TITLE / INTRO -->
-  <section class="wiz-step active" data-step="0">
+  <section class="wiz-step" data-step="1">
     <div class="wiz-layout">
       <div class="wiz-body">
         <div class="wiz-eyebrow">Vegans Explore Initiative</div>
@@ -159,7 +190,7 @@
   </section>
 
   <!-- STEP 2: WHAT THIS IS -->
-  <section class="wiz-step" data-step="1">
+  <section class="wiz-step" data-step="2">
     <div class="wiz-layout wiz-layout-full">
       <div class="wiz-body">
         <div class="wiz-eyebrow">What This Is</div>
@@ -184,7 +215,7 @@
   </section>
 
   <!-- STEP 3: WHY US -->
-  <section class="wiz-step" data-step="2">
+  <section class="wiz-step" data-step="3">
     <div class="wiz-layout wiz-layout-full">
       <div class="wiz-body">
         <div class="wiz-eyebrow">Why Us</div>
@@ -204,7 +235,7 @@
   </section>
 
   <!-- STEP 4: PICK YOUR PATH -->
-  <section class="wiz-step" data-step="3" data-requires-choice="1">
+  <section class="wiz-step" data-step="4" data-requires-choice="1">
     <div class="wiz-layout wiz-layout-full">
       <div class="wiz-body">
         <div class="wiz-eyebrow">Who Are You?</div>
@@ -233,7 +264,7 @@
   </section>
 
   <!-- STEP 5: PATH DETAIL - same container, whichever panel matches the chosen path -->
-  <section class="wiz-step" data-step="4">
+  <section class="wiz-step" data-step="5">
     <div class="wiz-layout wiz-layout-full">
       <div class="wiz-body">
 
@@ -452,6 +483,11 @@
       if (current > 0) { current -= 1; render(); }
     });
     nextBtn.addEventListener('click', function(){
+      if (current < total - 1) { current += 1; render(); }
+    });
+
+    var coverCta = document.getElementById('wizCoverCta');
+    if (coverCta) coverCta.addEventListener('click', function(){
       if (current < total - 1) { current += 1; render(); }
     });
 
