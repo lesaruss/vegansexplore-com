@@ -148,7 +148,7 @@
       VEAuth.signup(email, password, name, refCode, community)
         .then(function(d) {
           if (d.error) { showError(d.error); setLoading(false); return; }
-          window.location.replace('/welcome?joined=1');
+          window.location.replace('/onboarding');
         })
         .catch(function() { showError('Something went wrong. Please try again.'); setLoading(false); });
     });
