@@ -57,6 +57,8 @@
   .dash-tile.dash-add-tile .dash-thumb{background:none;color:var(--ve-green-dark);font-size:30px;font-weight:900;}
   .dash-community-change{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;font-family:"Montserrat",sans-serif;}
   .dash-community-change:hover{color:var(--ve-green-dark);}
+  .dash-tile-wrap{display:flex;flex-direction:column;}
+  .dash-tile-wrap .dash-tile{flex:1;}
 
   /* Community picker modal */
   .dash-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:900;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto;}
@@ -105,71 +107,7 @@
     </div>
 
     <p class="dash-section-title">Your Tools</p>
-    <div class="dash-grid" id="dash-tile-grid">
-      <a class="dash-tile" href="/tour">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#22C55E,#F69820);">&#128075;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Take the Tour</div>
-          <div class="dash-tile-desc">New here? A 60-second walkthrough of everything Vegans Explore offers.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/dashboard/opportunities">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127775;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Opportunities</div>
-          <div class="dash-tile-desc" id="dash-opps-desc">Volunteer, become a Vegan Explorer, and more.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/campaigns/plant-based-showcase-dolphins">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#127859;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Plant Based Showcase <span class="dash-tag live">Get Involved</span></div>
-          <div class="dash-tile-desc">Dolphins Garage pilot, November. Pledge support, reserve a spot, apply to volunteer, or claim a sponsor tier.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/directory">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#3A9B3E,#2d7d31);">&#128269;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Directory</div>
-          <div class="dash-tile-desc">Discover and vote for Vegan-friendly restaurants and businesses near you.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/pulse">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#128240;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Daily Pulse</div>
-          <div class="dash-tile-desc">Fresh stories from the community. Read, comment, and join the conversation.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/guides">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#22C55E,#16A34A);">&#129497;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Guides</div>
-          <div class="dash-tile-desc">Meet your guide and explore paths for every stage of the Vegan journey.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/podcast">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);">&#127911;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Podcasts</div>
-          <div class="dash-tile-desc">Listen to shows from across the Vegans Explore network.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/communities">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#0ea5e9,#0369a1);">&#127758;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Browse Communities</div>
-          <div class="dash-tile-desc">See every city hub, not just your own, and find one to join.</div>
-        </div>
-      </a>
-      <a class="dash-tile" href="/lead">
-        <div class="dash-thumb" style="background:linear-gradient(135deg,#dc2626,#991b1b);">&#127942;</div>
-        <div class="dash-tile-body">
-          <div class="dash-tile-title">Lead Your City</div>
-          <div class="dash-tile-desc">Apply to become a Community Manager and help grow your local Vegan scene.</div>
-        </div>
-      </a>
-    </div>
+    <div class="dash-grid" id="dash-tile-grid"></div>
     <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Thumbnails are placeholders. Real illustrated artwork, in the GeekFon style, is next.</p>
   </div>
 </main>
@@ -182,6 +120,17 @@
     </div>
     <p class="dash-modal-sub">Join as many cities as you want. Tap a joined city again to leave it.</p>
     <div class="dash-modal-grid" id="dash-community-modal-grid"></div>
+  </div>
+</div>
+
+<div class="dash-modal-overlay" id="dash-tools-modal">
+  <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Customize your tools">
+    <div class="dash-modal-header">
+      <div class="dash-modal-title">Customize Your Tools</div>
+      <button type="button" class="dash-modal-close" id="dash-tools-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <p class="dash-modal-sub">Tap a tool to add it back, or remove it from the grid.</p>
+    <div class="dash-modal-grid" id="dash-tools-modal-grid"></div>
   </div>
 </div>
 
@@ -366,10 +315,116 @@
     section.style.display = 'block';
   }
 
+  // "Your Tools" customizable add/remove grid (2026-08-19, Logan, V direction):
+  // same pick-and-choose pattern as Your Communities above, applied to the
+  // dashboard tile grid instead of city membership. Default is every module
+  // visible; hiding one records an exception via ve-auth's hide_module /
+  // show_module (member_hidden_modules table) rather than an allow-list, so a
+  // module added to this catalog later shows up for everyone automatically.
+  // "My List" (saved Directory listings, backed by ve_listing_saves) is folded
+  // in here as just another tile rather than living as a separate section.
+  var MODULES = [
+    { key: 'tour', href: '/tour', icon: '&#128075;', bg: 'linear-gradient(135deg,#22C55E,#F69820)', title: 'Take the Tour', desc: "New here? A 60-second walkthrough of everything Vegans Explore offers." },
+    { key: 'opportunities', href: '/dashboard/opportunities', icon: '&#127775;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: 'Opportunities', desc: 'Volunteer, become a Vegan Explorer, and more.' },
+    { key: 'showcase', href: '/campaigns/plant-based-showcase-dolphins', icon: '&#127859;', bg: 'linear-gradient(135deg,#F69820,#e07b00)', title: 'Plant Based Showcase', tag: 'Get Involved', desc: 'Dolphins Garage pilot, November. Pledge support, reserve a spot, apply to volunteer, or claim a sponsor tier.' },
+    { key: 'directory', href: '/directory', icon: '&#128269;', bg: 'linear-gradient(135deg,#3A9B3E,#2d7d31)', title: 'Directory', desc: 'Discover and vote for Vegan-friendly restaurants and businesses near you.' },
+    { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
+    { key: 'pulse', href: '/pulse', icon: '&#128240;', bg: 'linear-gradient(135deg,#F69820,#e07b00)', title: 'Daily Pulse', desc: 'Fresh stories from the community. Read, comment, and join the conversation.' },
+    { key: 'guides', href: '/guides', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Guides', desc: 'Meet your guide and explore paths for every stage of the Vegan journey.' },
+    { key: 'podcasts', href: '/podcast', icon: '&#127911;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Podcasts', desc: 'Listen to shows from across the Vegans Explore network.' },
+    { key: 'communities', href: '/communities', icon: '&#127758;', bg: 'linear-gradient(135deg,#0ea5e9,#0369a1)', title: 'Browse Communities', desc: 'See every city hub, not just your own, and find one to join.' },
+    { key: 'lead', href: '/lead', icon: '&#127942;', bg: 'linear-gradient(135deg,#dc2626,#991b1b)', title: 'Lead Your City', desc: 'Apply to become a Community Manager and help grow your local Vegan scene.' }
+  ];
+  var MODULES_BY_KEY = {};
+  MODULES.forEach(function(m) { MODULES_BY_KEY[m.key] = m; });
+
+  function toggleModule(key, isHidden) {
+    var action = isHidden ? VEAuth.showModule(key) : VEAuth.hideModule(key);
+    action.then(function(d) {
+      if (d && d.error) return;
+      currentMember = Object.assign({}, currentMember, { hidden_modules: (d && d.hidden_modules) || [] });
+      renderToolsGrid(currentMember);
+      renderToolsModalGrid();
+    });
+  }
+
+  function openToolsModal() {
+    renderToolsModalGrid();
+    document.getElementById('dash-tools-modal').classList.add('open');
+  }
+  function closeToolsModal() {
+    document.getElementById('dash-tools-modal').classList.remove('open');
+  }
+
+  function renderToolsModalGrid() {
+    var grid = document.getElementById('dash-tools-modal-grid');
+    grid.innerHTML = '';
+    var hidden = (currentMember && currentMember.hidden_modules) || [];
+    MODULES.forEach(function(m) {
+      var isHidden = hidden.indexOf(m.key) !== -1;
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'dash-modal-opt' + (!isHidden ? ' selected' : '');
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background:' + m.bg + ';display:flex;align-items:center;justify-content:center;font-size:28px;">' + m.icon + '</div>' +
+        '<div class="dash-modal-opt-name">' + m.title + (!isHidden ? ' &#10003;' : '') + '</div>';
+      opt.addEventListener('click', function() { toggleModule(m.key, isHidden); });
+      grid.appendChild(opt);
+    });
+  }
+
+  function renderToolsGrid(member) {
+    var grid = document.getElementById('dash-tile-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    var hidden = (member.hidden_modules) || [];
+    MODULES.forEach(function(m) {
+      if (hidden.indexOf(m.key) !== -1) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-tile-wrap';
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = m.href;
+      tile.innerHTML = '<div class="dash-thumb" style="background:' + m.bg + ';">' + m.icon + '</div>' +
+        '<div class="dash-tile-body"><div class="dash-tile-title">' + m.title + (m.tag ? ' <span class="dash-tag live">' + m.tag + '</span>' : '') + '</div>' +
+        '<div class="dash-tile-desc"' + (m.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + m.desc + '</div></div>';
+      wrap.appendChild(tile);
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'dash-community-change';
+      remove.textContent = 'Remove from Your Tools';
+      remove.addEventListener('click', function(e) { e.preventDefault(); toggleModule(m.key, false); });
+      wrap.appendChild(remove);
+      grid.appendChild(wrap);
+    });
+
+    var addWrap = document.createElement('div');
+    addWrap.className = 'dash-tile-wrap';
+    var addTile = document.createElement('div');
+    addTile.className = 'dash-tile dash-add-tile';
+    addTile.setAttribute('role', 'button');
+    addTile.setAttribute('tabindex', '0');
+    addTile.innerHTML =
+      '<div class="dash-thumb">+</div>' +
+      '<div class="dash-tile-body">' +
+        '<div class="dash-tile-title">Add a Tool</div>' +
+        '<div class="dash-tile-desc">Bring back any tool you\'ve removed.</div>' +
+      '</div>';
+    addTile.addEventListener('click', openToolsModal);
+    addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openToolsModal(); } });
+    addWrap.appendChild(addTile);
+    grid.appendChild(addWrap);
+  }
+
+  document.getElementById('dash-tools-modal-close').addEventListener('click', closeToolsModal);
+  document.getElementById('dash-tools-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-tools-modal') closeToolsModal();
+  });
+
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     renderCommunitySection(member);
+    renderToolsGrid(member);
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
