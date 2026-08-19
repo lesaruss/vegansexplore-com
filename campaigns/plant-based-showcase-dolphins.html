@@ -104,10 +104,29 @@
      top." The full-bleed #coverBg + scrim + white text treatment is now shared
      by mobile and desktop -- only the side padding and the image's vertical
      crop point differ on narrow screens, so more of the illustration's upper
-     portion (buildings/people) stays visible instead of a centered crop. */
+     portion (buildings/people) stays visible instead of a centered crop.
+     ROUND 9 (2026-08-19, same day): V reported the image no longer showed on
+     mobile and asked for a stronger dark overlay so text is ADA-compliant.
+     Root cause: desktop's scrim is a 90deg LEFT-TO-RIGHT gradient tuned for a
+     wide desktop hero (dark where the text column sits on the left, fading to
+     fully transparent by 78% width so the image reads clearly on the right).
+     On a narrow mobile viewport, that same gradient collapses almost entirely
+     within the first ~300px, so most of a phone screen actually gets little
+     to no darkening -- exactly backwards from what mobile needs, since the
+     text now spans nearly the full width. Replaced with a dedicated mobile
+     scrim: a top-to-bottom gradient at 82-92% opacity (computed to keep >=4.5:1
+     contrast for white body text even against the brightest parts of this
+     image), so the illustration still reads as a dim background texture but
+     never competes with the text. Also nudged the crop from "center top" to
+     "center 30%" so the illustration's people/buildings group -- not a blank
+     sky strip -- stays in frame on very narrow/tall phones where the crop is
+     width-bound rather than height-bound. */
   @media (max-width: 820px) {
-    #coverBg img { object-position: center top; }
+    #coverBg img { object-position: center 30%; }
     .wiz-step.wiz-cover { padding: 0 24px; }
+    #coverBg .cover-bg-scrim {
+      background: linear-gradient(180deg, rgba(10,16,12,0.82) 0%, rgba(10,16,12,0.86) 50%, rgba(10,16,12,0.92) 100%);
+    }
   }
 
   .wiz-layout { display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: start; max-width: 1240px; margin: 0 auto; }
