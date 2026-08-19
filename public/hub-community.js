@@ -291,12 +291,96 @@
     });
   }
 
+  /* ==================== EVENT SUBMISSION (popup modal) ==================== */
+  function wireEventSubmit(citySlug) {
+    var openBtn = document.getElementById('hub-event-submit-open');
+    var overlay = document.getElementById('hub-event-submit-overlay');
+    var closeBtn = document.getElementById('hub-event-submit-close');
+    var form = document.getElementById('hub-event-submit-form');
+    var msg = document.getElementById('hub-event-submit-msg');
+    if (!openBtn || !overlay || !form) return;
+
+    function openModal() { overlay.style.display = 'flex'; }
+    function closeModal() {
+      overlay.style.display = 'none';
+      if (msg) { msg.textContent = ''; }
+    }
+
+    openBtn.addEventListener('click', function () {
+      requireAuth('Sign in with your free Passport to submit an event.', openModal);
+    });
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.style.display === 'flex') closeModal();
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (msg) { msg.textContent = ''; }
+      var title = document.getElementById('hub-ev-title').value.trim();
+      var datetime = document.getElementById('hub-ev-datetime').value;
+      var location = document.getElementById('hub-ev-location').value.trim();
+      var city = document.getElementById('hub-ev-city').value.trim();
+      var category = document.getElementById('hub-ev-category').value;
+      var desc = document.getElementById('hub-ev-desc').value.trim();
+      var ticketUrl = document.getElementById('hub-ev-url').value.trim();
+
+      if (!title || !datetime || !location || !city) {
+        if (msg) { msg.textContent = 'Please fill in the required fields.'; msg.style.color = '#dc2626'; }
+        return;
+      }
+      var startsAt = new Date(datetime);
+      if (isNaN(startsAt.getTime())) {
+        if (msg) { msg.textContent = 'Please pick a valid date and time.'; msg.style.color = '#dc2626'; }
+        return;
+      }
+      var token = window.VEAuth ? window.VEAuth.getToken() : null;
+      if (!token) {
+        if (msg) { msg.textContent = 'Please sign in first.'; msg.style.color = '#dc2626'; }
+        return;
+      }
+
+      var btn = document.getElementById('hub-event-submit-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({
+          token: token,
+          city_slug: citySlug,
+          title: title,
+          starts_at: startsAt.toISOString(),
+          location_name: location,
+          city: city,
+          category: category,
+          description: desc || null,
+          ticket_url: ticketUrl || null
+        })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit for Review'; }
+        if (d.error) {
+          if (msg) { msg.textContent = d.error === 'validation_failed' ? 'Please check the required fields.' : d.error; msg.style.color = '#dc2626'; }
+          return;
+        }
+        form.reset();
+        if (msg) { msg.textContent = 'Thanks - your event is in for review.'; msg.style.color = 'var(--ve-green)'; }
+        setTimeout(closeModal, 1800);
+      }).catch(function () {
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit for Review'; }
+        if (msg) { msg.textContent = 'Something went wrong. Please try again.'; msg.style.color = '#dc2626'; }
+      });
+    });
+  }
+
   window.VEHubCommunity = {
     wireNewsSubmit: wireNewsSubmit,
     renderOpportunities: renderOpportunities,
     wireRewards: wireRewards,
     renderNonprofits: renderNonprofits,
     applyGates: applyGates,
-    wirePartnerApply: wirePartnerApply
+    wirePartnerApply: wirePartnerApply,
+    wireEventSubmit: wireEventSubmit
   };
 })();
