@@ -913,32 +913,63 @@
     VEHubNews.render('sf-news-grid', 'south-florida');
   }
 
+  function sfRenderEventRow(e, isPast) {
+    var dt = new Date(e.starts_at);
+    var day = dt.getDate();
+    var mon = dt.toLocaleString('en-US', { month: 'short' });
+    var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    return '<article class="event-row' + (isPast ? ' event-row-past' : '') + '" aria-label="' + sfEsc(e.title) + (isPast ? ', past event' : '') + '"' + (isPast ? ' style="opacity:0.62;"' : '') + '>' +
+      '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + sfEsc(mon) + '</span></div>' +
+      '<div class="event-body">' +
+        '<p class="event-type-badge">' + sfEsc(isPast ? 'Past Event' : (e.category || 'Event')) + '</p>' +
+        '<h3 class="event-name">' + sfEsc(e.title) + '</h3>' +
+        '<div class="event-details" aria-label="Event details">' +
+          '<span>' + sfEsc(e.location_name || e.city) + (e.city ? ', ' + sfEsc(e.city) : '') + '</span>' +
+          '<span>' + sfEsc(time) + '</span>' +
+          (e.rsvp_count ? '<span>' + e.rsvp_count + ' attending</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="event-cta-col">' + (isPast ? '<span class="btn-rsvp" style="opacity:.5;pointer-events:none;">Ended</span>' : (e.ticket_url ? '<a href="' + sfEsc(e.ticket_url) + '" class="btn-rsvp" target="_blank" rel="noopener noreferrer" aria-label="RSVP for ' + sfEsc(e.title) + '">RSVP</a>' : '<span class="btn-rsvp" style="opacity:.5;pointer-events:none;">Details soon</span>')) +
+      '</div></article>';
+  }
+
   function loadSFEvents() {
     var list = document.getElementById('sf-events-list');
-    fetch(SF_SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=100', {
+    var pastList = document.getElementById('sf-events-past-list');
+    var pastToggle = document.getElementById('sf-past-events-toggle');
+    fetch(SF_SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=200', {
       headers: { apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }
     }).then(function(r) { return r.json(); }).then(function(rows) {
       var sf = (rows || []).filter(function(e) { return e.city && SF_CITIES.indexOf(e.city) > -1; });
-      if (!sf.length) { list.innerHTML = '<p class="hub-dir-empty">No upcoming events posted yet. Check back soon.</p>'; return; }
-      list.innerHTML = sf.map(function(e) {
-        var dt = new Date(e.starts_at);
-        var day = dt.getDate();
-        var mon = dt.toLocaleString('en-US', { month: 'short' });
-        var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-        return '<article class="event-row" aria-label="' + sfEsc(e.title) + '">' +
-          '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + sfEsc(mon) + '</span></div>' +
-          '<div class="event-body">' +
-            '<p class="event-type-badge">' + sfEsc(e.category || 'Event') + '</p>' +
-            '<h3 class="event-name">' + sfEsc(e.title) + '</h3>' +
-            '<div class="event-details" aria-label="Event details">' +
-              '<span>' + sfEsc(e.location_name || e.city) + (e.city ? ', ' + sfEsc(e.city) : '') + '</span>' +
-              '<span>' + sfEsc(time) + '</span>' +
-              (e.rsvp_count ? '<span>' + e.rsvp_count + ' attending</span>' : '') +
-            '</div>' +
-          '</div>' +
-          '<div class="event-cta-col">' + (e.ticket_url ? '<a href="' + sfEsc(e.ticket_url) + '" class="btn-rsvp" target="_blank" rel="noopener noreferrer" aria-label="RSVP for ' + sfEsc(e.title) + '">RSVP</a>' : '<span class="btn-rsvp" style="opacity:.5;pointer-events:none;">Details soon</span>') +
-          '</div></article>';
-      }).join('');
+      var now = new Date();
+      var upcoming = sf.filter(function(e) { return new Date(e.starts_at) >= now; });
+      var past = sf.filter(function(e) { return new Date(e.starts_at) < now; });
+
+      if (!upcoming.length) { list.innerHTML = '<p class="hub-dir-empty">No upcoming events posted yet. Check back soon.</p>'; }
+      else { list.innerHTML = upcoming.map(function(e) { return sfRenderEventRow(e, false); }).join(''); }
+
+      if (past.length && pastList && pastToggle) {
+        past.sort(function(a, b) { return new Date(b.starts_at) - new Date(a.starts_at); });
+        var byYear = {};
+        var years = [];
+        past.forEach(function(e) {
+          var y = new Date(e.starts_at).getFullYear();
+          if (!byYear[y]) { byYear[y] = []; years.push(y); }
+          byYear[y].push(e);
+        });
+        years.sort(function(a, b) { return b - a; });
+        pastList.innerHTML = years.map(function(y) {
+          return '<h3 class="events-past-year-hdr" style="font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-text-75);margin:18px 0 10px;">Past ' + y + ' Events</h3>' +
+            byYear[y].map(function(e) { return sfRenderEventRow(e, true); }).join('');
+        }).join('');
+        pastToggle.style.display = '';
+        pastToggle.addEventListener('click', function() {
+          var showing = pastList.style.display !== 'none';
+          pastList.style.display = showing ? 'none' : '';
+          pastToggle.textContent = showing ? 'See Past Events' : 'Hide Past Events';
+          pastToggle.setAttribute('aria-expanded', showing ? 'false' : 'true');
+        });
+      }
     }).catch(function() { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });
   }
 
