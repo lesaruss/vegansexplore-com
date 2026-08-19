@@ -27,6 +27,11 @@ function completeOnboarding(payload){var body=Object.assign({},payload,{token:ge
 function setHomeCommunity(slug){return call('set_home_community',{token:getToken(),home_community:slug}).then(function(d){if(d.member){var m=Object.assign({},getRealMember()||{},d.member);setSession(getToken(),m);}return d;});}
 function joinCommunity(slug){return call('join_community',{token:getToken(),community_slug:slug}).then(function(d){if(d.communities){var m=Object.assign({},getRealMember()||{},{communities:d.communities});setSession(getToken(),m);}return d;});}
 function leaveCommunity(slug){return call('leave_community',{token:getToken(),community_slug:slug}).then(function(d){if(d.communities){var m=Object.assign({},getRealMember()||{},{communities:d.communities});setSession(getToken(),m);}return d;});}
+function hideModule(key){return call('hide_module',{token:getToken(),module_key:key}).then(function(d){if(d.hidden_modules){var m=Object.assign({},getRealMember()||{},{hidden_modules:d.hidden_modules});setSession(getToken(),m);}return d;});}
+function showModule(key){return call('show_module',{token:getToken(),module_key:key}).then(function(d){if(d.hidden_modules){var m=Object.assign({},getRealMember()||{},{hidden_modules:d.hidden_modules});setSession(getToken(),m);}return d;});}
+function saveListing(listingId){return call('save_listing',{token:getToken(),listing_id:listingId});}
+function unsaveListing(listingId){return call('unsave_listing',{token:getToken(),listing_id:listingId});}
+function listSavedListings(){return call('list_saved_listings',{token:getToken()});}
 function signOut(){clearSession();window.location.href='/';}
 function initGoogleSignIn(buttonEl,callback,community){if(!window.google||!window.google.accounts)return;window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){loginWithGoogle(r.credential,community).then(callback);}});if(buttonEl)window.google.accounts.id.renderButton(buttonEl,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:buttonEl.offsetWidth||360});}
 function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a free Passport to do that.');}
@@ -101,5 +106,5 @@ if(d.error){_showErr(d.error);return;}
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}
-global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
+global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,hideModule:hideModule,showModule:showModule,saveListing:saveListing,unsaveListing:unsaveListing,listSavedListings:listSavedListings,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
 })(window);
