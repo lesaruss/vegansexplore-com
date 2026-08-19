@@ -98,6 +98,7 @@
   /* CARDS / STATS */
   .wiz-card-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin: 16px 0; }
   .wiz-card-grid.wiz-card-grid-3 { grid-template-columns: repeat(3,1fr); }
+  .wiz-card-grid.wiz-card-grid-4 { grid-template-columns: repeat(4,1fr); }
   .wiz-card { background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 10px; padding: 18px 20px; }
   .wiz-card h4 { font-size: 13px; font-weight: 800; margin-bottom: 6px; color: var(--ve-text); }
   .wiz-card p { font-size: 13px; margin-bottom: 0; }
@@ -105,7 +106,7 @@
   a.wiz-card { display: block; text-decoration: none; color: inherit; transition: border-color 0.15s, transform 0.15s; }
   a.wiz-card:hover { border-color: var(--path-color); transform: translateY(-2px); }
   .wiz-card-cta { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--path-dark); margin-top: 10px; }
-  @media(max-width:820px){ .wiz-card-grid{grid-template-columns:1fr;} .wiz-card-grid.wiz-card-grid-3{grid-template-columns:1fr;} .wiz-layout{grid-template-columns:1fr;} .guide-rail{position:static;} }
+  @media(max-width:820px){ .wiz-card-grid{grid-template-columns:1fr;} .wiz-card-grid.wiz-card-grid-3{grid-template-columns:1fr;} .wiz-card-grid.wiz-card-grid-4{grid-template-columns:1fr;} .wiz-layout{grid-template-columns:1fr;} .guide-rail{position:static;} }
 
   .wiz-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 16px 0; }
   .wiz-stat { background: #fff; border: 1px solid var(--ve-border); border-radius: 10px; padding: 16px; text-align: center; }
@@ -259,7 +260,12 @@
         <div class="wiz-eyebrow">Who Are You?</div>
         <h1>Pick Your Path.</h1>
         <p>Each one only shows you what matters for you, learn at your own pace.</p>
-        <div class="wiz-card-grid wiz-card-grid-3">
+        <div class="wiz-card-grid wiz-card-grid-3" id="wiz-path-cards">
+          <!-- Campaign Capsule (brief_checkpoints id 517): rendered from door.entry_points
+               by renderPathCards() in loadPathData(), not hardcoded, so a different
+               brand copy can configure its own set of paths via campaign_entry_points
+               without touching this file. Falls back to these 3 static cards if the
+               API call fails, so the page still works. -->
           <button type="button" class="wiz-card lead" data-path="attend">
             <h4>I'm Planning To Attend</h4>
             <p>See what's happening, why it's worth showing up for, and how to get on the list.</p>
@@ -436,13 +442,28 @@
     });
   }
 
+  function renderPathCards(entryPoints) {
+    var grid = document.getElementById('wiz-path-cards');
+    if (!grid || !Array.isArray(entryPoints) || !entryPoints.length) return; // keep static fallback cards
+    var cols = Math.min(Math.max(entryPoints.length, 1), 4);
+    grid.className = 'wiz-card-grid' + (cols === 3 ? ' wiz-card-grid-3' : cols >= 4 ? ' wiz-card-grid-4' : '');
+    grid.innerHTML = entryPoints.map(function (ep, i) {
+      return '<button type="button" class="wiz-card' + (i === 0 ? ' lead' : '') + '" data-path="' + esc(ep.key) + '">' +
+        '<h4>' + esc(ep.label) + '</h4>' +
+        (ep.description ? '<p>' + esc(ep.description) + '</p>' : '') +
+        '<div class="wiz-card-cta">Continue &rarr;</div>' +
+        '</button>';
+    }).join('');
+  }
+
   function loadPathData() {
     return callAPI('get_initiative_front_door', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
       if (d && d.error) return;
+      renderPathCards(d.door && d.door.entry_points);
       renderAttendPanel(d);
       renderSponsorPanel(d);
       renderVolunteerPanel(d);
-    }).catch(function () { /* path panels just stay empty if this fails; the rest of the wizard still works */ });
+    }).catch(function () { /* path panels/cards just stay at their static fallback if this fails; the rest of the wizard still works */ });
   }
 
   function layoutFixedBottom() {
@@ -493,10 +514,16 @@
       render();
     }
 
-    document.querySelectorAll('[data-path]').forEach(function (btn) {
-      if (btn.closest('.wiz-path-panel')) return;
-      btn.addEventListener('click', function () { selectPath(btn.getAttribute('data-path')); });
-    });
+    // Event delegation, not per-button listeners: the Pick Your Path cards are
+    // re-rendered from door.entry_points after this runs (see renderPathCards in
+    // loadPathData), so binding to the container catches cards that don't exist yet.
+    var pathCardsGrid = document.getElementById('wiz-path-cards');
+    if (pathCardsGrid) {
+      pathCardsGrid.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-path]');
+        if (btn) selectPath(btn.getAttribute('data-path'));
+      });
+    }
 
     backBtn.addEventListener('click', function(){
       if (current > 0) { current -= 1; render(); }
