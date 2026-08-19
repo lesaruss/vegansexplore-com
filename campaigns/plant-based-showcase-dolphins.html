@@ -96,11 +96,23 @@
   .wiz-cover-mobile-image { display: none; }
   @media (max-width: 820px) {
     #coverBg { display: none !important; }
-    .wiz-step.wiz-cover { padding: 0 24px 40px; align-items: flex-start; min-height: 0; }
-    .wiz-cover-text { max-width: 100%; }
+    /* Round 5 (2026-08-19, V: "still getting a slight scroll... let's adjust
+       that one more time"): the previous pass let mobile cover flow to its
+       natural content height, which forced more scroll than necessary. Now the
+       whole cover section is sized in JS to the exact remaining viewport space
+       (see layoutFixedBottom()) and laid out as a flex column so the image --
+       not the title/copy/button -- absorbs any shortfall by shrinking within a
+       min/max range. Text never shrinks or gets clipped; only the image does. */
+    .wiz-step.wiz-cover { padding: 0 24px 20px; align-items: flex-start; min-height: 0; }
+    .wiz-cover-text { max-width: 100%; display: flex; flex-direction: column; width: 100%; height: 100%; }
 
-    .wiz-cover-mobile-image { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; margin-bottom: 22px; }
+    .wiz-cover-mobile-image { display: block; width: 100%; flex: 1 1 180px; min-height: 64px; max-height: 240px; border-radius: 14px; overflow: hidden; margin-bottom: 14px; flex-shrink: 1; }
     .wiz-cover-mobile-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 32%; display: block; }
+    .wiz-cover-wordmark, .wiz-cover-text .wiz-eyebrow, .wiz-cover-text h1, .wiz-cover-text p, .wiz-cover-text #wizCoverCta { flex: 0 0 auto; }
+    .wiz-cover-wordmark { margin-bottom: 10px; }
+    .wiz-cover-text .wiz-eyebrow { margin-bottom: 8px; }
+    .wiz-cover-text h1 { margin-bottom: 10px; }
+    .wiz-cover-text #wizCoverCta { margin-top: 14px; }
 
     /* Neutralize every cover-mode "white text on dark image" override below --
        on mobile the cover section sits on the normal white page background now,
@@ -720,16 +732,27 @@
     var cover = document.querySelector('.wiz-step.wiz-cover');
     var topbar = document.querySelector('.wiz-topbar');
     var banner = document.querySelector('.wiz-banner');
+    // Round 5 (2026-08-19, V: "still getting a slight scroll... adjust that one
+    // more time"): the site-wide sticky nav bar (.ve-nav, injected by nav.js)
+    // sits above the banner/topbar on every page and was never included in the
+    // top-chrome measurement -- a real ~60px gap that was silently forcing extra
+    // scroll on both mobile and desktop. Measure it and fold it in.
+    var siteNav = document.querySelector('.ve-nav');
+    var navH = siteNav ? siteNav.getBoundingClientRect().height : 0;
     if (cover) {
-      // Mobile cover image (2026-08-19, V direction): mobile no longer uses a
-      // full-bleed hero background (see .wiz-cover-mobile-image), so it isn't a
-      // full-viewport-height section anymore -- let it size to its natural
-      // content (image + title + copy) instead of forcing 100vh. Desktop keeps
-      // the exact-fit-no-scroll behavior from round 4.
+      var topReserved = navH + (topbar ? topbar.offsetHeight : 0) + (banner ? banner.offsetHeight : 0);
       if (window.innerWidth <= 820) {
+        // Mobile cover image (2026-08-19, V direction): mobile shows a normal
+        // image-above-title layout instead of a full-bleed hero. Round 5 fix:
+        // size the whole cover box to the exact remaining viewport space (like
+        // desktop) instead of letting it flow to natural content height, but lay
+        // it out as a flex column (see CSS) so the IMAGE shrinks first to absorb
+        // any shortfall -- title/copy/button never shrink or clip.
+        var available = window.innerHeight - topReserved - bottomReserved;
         cover.style.minHeight = '';
+        cover.style.height = Math.max(available, 0) + 'px';
       } else {
-        var topReserved = (topbar ? topbar.offsetHeight : 0) + (banner ? banner.offsetHeight : 0);
+        cover.style.height = '';
         cover.style.minHeight = 'calc(100vh - ' + (topReserved + bottomReserved) + 'px)';
       }
     }
