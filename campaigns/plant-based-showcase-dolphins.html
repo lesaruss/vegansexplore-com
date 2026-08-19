@@ -88,10 +88,40 @@
   .wiz-cover-text h1 { color: #fff; font-size: clamp(26px,3.6vw,42px); margin-bottom: 16px; }
   .wiz-cover-text p { color: rgba(255,255,255,0.88); max-width: 480px; }
   .wiz-cover-text #wizCoverCta { align-self: flex-start; margin-top: 22px; }
+  /* Mobile cover image (2026-08-19, V direction): the full-bleed dark hero image
+     was hard to read on small screens, so on mobile it's replaced with a plain
+     landscape crop of the same artwork, shown as a normal image block above the
+     title instead of a fixed full-bleed background. Desktop keeps the original
+     full-bleed hero treatment untouched. */
+  .wiz-cover-mobile-image { display: none; }
   @media (max-width: 820px) {
-    #coverBg .cover-bg-scrim { background: linear-gradient(180deg, rgba(10,16,12,0.35) 0%, rgba(10,16,12,0.88) 55%, rgba(10,16,12,0.96) 100%); }
-    .wiz-step.wiz-cover { padding: 0 24px; align-items: flex-end; padding-bottom: 40px; min-height: calc(100vh - 100px); }
+    #coverBg { display: none !important; }
+    .wiz-step.wiz-cover { padding: 0 24px 40px; align-items: flex-start; min-height: 0; }
     .wiz-cover-text { max-width: 100%; }
+
+    .wiz-cover-mobile-image { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; margin-bottom: 22px; }
+    .wiz-cover-mobile-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 32%; display: block; }
+
+    /* Neutralize every cover-mode "white text on dark image" override below --
+       on mobile the cover section sits on the normal white page background now,
+       so it needs the same colors every other step uses, not white-on-dark. */
+    #wizardFrame.cover-mode .wiz-banner { background: var(--path-light); border-bottom-color: var(--path-mid); }
+    #wizardFrame.cover-mode .wiz-banner span { color: var(--path-dark); }
+    #wizardFrame.cover-mode .wiz-dot { background: var(--ve-border); }
+    #wizardFrame.cover-mode .wiz-dot.done { background: var(--path-mid); }
+    #wizardFrame.cover-mode .wiz-dot.active { background: var(--path-color); }
+    #wizardFrame.cover-mode .wiz-step-label { color: var(--ve-text-50); }
+    #wizardFrame.cover-mode #wiz-dashboard-btn { border-color: var(--path-color); color: var(--path-dark); }
+    #wizardFrame.cover-mode #wiz-dashboard-btn:hover { background: var(--path-color); color: #fff; }
+    #wizardFrame.cover-mode .wiz-controls { background: #fff; border-top-color: var(--ve-border); }
+    #wizardFrame.cover-mode .wiz-btn-back { color: var(--ve-text-75); border-color: var(--ve-border); }
+    #wizardFrame.cover-mode .wiz-btn-back:hover { border-color: var(--path-color); color: var(--path-color); }
+    #wizardFrame.cover-mode .wiz-btn-back:disabled { opacity: 0.35; }
+
+    .wiz-cover-wordmark { color: var(--ve-text); }
+    .wiz-cover-text .wiz-eyebrow, .wiz-cover-text .wiz-eyebrow::before { color: var(--path-color); background: var(--path-color); }
+    .wiz-cover-text h1 { color: var(--ve-text); }
+    .wiz-cover-text p { color: var(--ve-text-75); }
   }
 
   .wiz-layout { display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: start; max-width: 1240px; margin: 0 auto; }
@@ -197,6 +227,9 @@
   <!-- STEP 0: COVER -->
   <section class="wiz-step active wiz-cover" data-step="0" data-requires-choice="1">
     <div class="wiz-cover-text">
+      <div class="wiz-cover-mobile-image" aria-hidden="true">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260526_235743_4d19dc52-da85-4e33-ad68-76850bd6b030.png" alt="">
+      </div>
       <div class="wiz-cover-wordmark">Plant Based Showcase</div>
       <div class="wiz-eyebrow">Vegans Explore &times; Miami Dolphins</div>
       <h1>A Real Showcase For What Plant-Based Living Can Be.</h1>
@@ -688,8 +721,17 @@
     var topbar = document.querySelector('.wiz-topbar');
     var banner = document.querySelector('.wiz-banner');
     if (cover) {
-      var topReserved = (topbar ? topbar.offsetHeight : 0) + (banner ? banner.offsetHeight : 0);
-      cover.style.minHeight = 'calc(100vh - ' + (topReserved + bottomReserved) + 'px)';
+      // Mobile cover image (2026-08-19, V direction): mobile no longer uses a
+      // full-bleed hero background (see .wiz-cover-mobile-image), so it isn't a
+      // full-viewport-height section anymore -- let it size to its natural
+      // content (image + title + copy) instead of forcing 100vh. Desktop keeps
+      // the exact-fit-no-scroll behavior from round 4.
+      if (window.innerWidth <= 820) {
+        cover.style.minHeight = '';
+      } else {
+        var topReserved = (topbar ? topbar.offsetHeight : 0) + (banner ? banner.offsetHeight : 0);
+        cover.style.minHeight = 'calc(100vh - ' + (topReserved + bottomReserved) + 'px)';
+      }
     }
   }
 
