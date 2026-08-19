@@ -42,6 +42,13 @@
   .wiz-topbar { display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 20px 48px 0; position: relative; z-index: 2; }
   #wiz-dashboard-btn { display: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; border: 1.5px solid var(--path-color); background: transparent; color: var(--path-dark); cursor: pointer; white-space: nowrap; }
   #wiz-dashboard-btn:hover { background: var(--path-color); color: #fff; }
+  /* Campaign Capsule (2026-08-19, V direction): the Dashboard button only ever
+     becomes visible once a real decision has been made on step 5 (see
+     markDecisionMade/showDashboardButton in the script below) -- at that point it
+     also gets this solid-green "unlocked" look instead of the plain outline, so it
+     reads as an active, ready-to-click CTA rather than a quiet secondary link. */
+  #wiz-dashboard-btn.unlocked { background: var(--path-color); border-color: var(--path-color); color: #fff; }
+  #wiz-dashboard-btn.unlocked:hover { background: var(--path-dark); border-color: var(--path-dark); }
   @media (max-width: 820px) { .wiz-topbar { padding: 16px 24px 0; } }
 
   /* Progress dots + step label (2026-08-19, V direction): moved out of the top
@@ -75,6 +82,8 @@
   #wizardFrame.cover-mode .wiz-step-label { color: rgba(255,255,255,0.85); }
   #wizardFrame.cover-mode #wiz-dashboard-btn { border-color: #fff; color: #fff; }
   #wizardFrame.cover-mode #wiz-dashboard-btn:hover { background: #fff; color: var(--path-dark); }
+  #wizardFrame.cover-mode #wiz-dashboard-btn.unlocked { background: var(--path-color); border-color: var(--path-color); color: #fff; }
+  #wizardFrame.cover-mode #wiz-dashboard-btn.unlocked:hover { background: var(--path-dark); border-color: var(--path-dark); }
   #wizardFrame.cover-mode .wiz-controls { background: transparent; border-top-color: rgba(255,255,255,0.22); }
   #wizardFrame.cover-mode .wiz-btn-back { color: #fff; border-color: rgba(255,255,255,0.6); }
   #wizardFrame.cover-mode .wiz-btn-back:hover { border-color: #fff; color: #fff; }
@@ -125,6 +134,8 @@
     #wizardFrame.cover-mode .wiz-step-label { color: var(--ve-text-50); }
     #wizardFrame.cover-mode #wiz-dashboard-btn { border-color: var(--path-color); color: var(--path-dark); }
     #wizardFrame.cover-mode #wiz-dashboard-btn:hover { background: var(--path-color); color: #fff; }
+    #wizardFrame.cover-mode #wiz-dashboard-btn.unlocked { background: var(--path-color); border-color: var(--path-color); color: #fff; }
+    #wizardFrame.cover-mode #wiz-dashboard-btn.unlocked:hover { background: var(--path-dark); border-color: var(--path-dark); }
     #wizardFrame.cover-mode .wiz-controls { background: #fff; border-top-color: var(--ve-border); }
     #wizardFrame.cover-mode .wiz-btn-back { color: var(--ve-text-75); border-color: var(--ve-border); }
     #wizardFrame.cover-mode .wiz-btn-back:hover { border-color: var(--path-color); color: var(--path-color); }
@@ -484,7 +495,7 @@
   var DECISION_ROLES = [];
   function showDashboardButton() {
     var b = document.getElementById('wiz-dashboard-btn');
-    if (b) b.style.display = 'inline-block';
+    if (b) { b.style.display = 'inline-block'; b.classList.add('unlocked'); }
   }
   function markDecisionMade(role) {
     if (DECISION_ROLES.indexOf(role) === -1) DECISION_ROLES.push(role);
@@ -826,10 +837,23 @@
       if (current > 0) { current -= 1; render(); }
     });
     nextBtn.addEventListener('click', function(){
+      // Campaign Capsule (2026-08-19, V direction): "after someone picks their
+      // path... there should be a prompt for them to login or register to see the
+      // rest." The path-detail step (highlights, sponsorship tiers, volunteer
+      // roles) is that "rest" -- gate it right here, before it's ever shown,
+      // instead of waiting until the final decision button. requireLoginThen()
+      // already no-ops straight through to its callback for an already-logged-in
+      // member, so this only interrupts anonymous visitors; a member who signs up
+      // here already has a real account by the time they reach the three decision
+      // buttons on the next step.
       if (current === PATH_STEP_INDEX && selectedPath) {
-        document.querySelectorAll('.wiz-path-panel').forEach(function (p) {
-          p.hidden = p.getAttribute('data-path') !== selectedPath;
-        });
+        requireLoginThen(function () {
+          document.querySelectorAll('.wiz-path-panel').forEach(function (p) {
+            p.hidden = p.getAttribute('data-path') !== selectedPath;
+          });
+          if (current < total - 1) { current += 1; render(); }
+        }, 'Almost there -- sign in or create a free account to see full details for your path.');
+        return;
       }
       if (current < total - 1) { current += 1; render(); }
     });
