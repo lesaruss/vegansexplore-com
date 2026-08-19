@@ -848,10 +848,6 @@
       "destination": "https://archive.vegansexplore.com/podcast-network/"
     },
     {
-      "source": "/podcast",
-      "destination": "https://archive.vegansexplore.com/podcast/"
-    },
-    {
       "source": "/premium-access",
       "destination": "https://archive.vegansexplore.com/premium-access/"
     },
