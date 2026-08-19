@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My List - VEGANS EXPLORE</title>
+<meta name="description" content="Every listing you've saved on Vegans Explore, in one place.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:960px;margin:0 auto;padding:44px 24px 80px;}
+  #ml-gate{text-align:center;padding:100px 20px;}
+  #ml-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #ml-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #ml-content{display:none;}
+  .ml-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:24px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .ml-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .ml-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+  .ml-card{border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+  .ml-card-thumb{height:120px;background-size:cover;background-position:center;background-color:var(--ve-green-light);}
+  .ml-card-body{padding:14px 16px;flex:1;display:flex;flex-direction:column;}
+  .ml-card-cat{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;}
+  .ml-card-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+  .ml-card-title a{color:var(--ve-text);text-decoration:none;}
+  .ml-card-title a:hover{color:var(--ve-green-dark);}
+  .ml-card-tagline{font-size:12px;color:var(--ve-text-75);line-height:1.5;margin-bottom:10px;flex:1;}
+  .ml-unsave-btn{align-self:flex-start;background:none;border:1.5px solid var(--ve-border);color:var(--ve-text-75);padding:7px 14px;border-radius:6px;font-weight:800;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
+  .ml-unsave-btn:hover{border-color:#dc2626;color:#dc2626;}
+  .ml-empty{font-size:13px;color:var(--ve-text-50);}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="ml-gate"><p>Checking access&hellip;</p></div>
+  <div id="ml-content">
+    <p class="ml-eyebrow">My List</p>
+    <h1>Your Saved Listings</h1>
+    <p class="ml-sub">Every restaurant, shop, and service you've saved across the Directory, in one place.</p>
+    <div id="ml-grid"><p class="ml-empty">Loading your list&hellip;</p></div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+<script>
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function renderGrid(items) {
+    var grid = document.getElementById('ml-grid');
+    if (!items.length) {
+      grid.innerHTML = '<p class="ml-empty">Nothing saved yet. Tap Save on any listing in the Directory to add it here.</p>';
+      return;
+    }
+    grid.innerHTML = '<div class="ml-grid"></div>';
+    var inner = grid.querySelector('.ml-grid');
+    items.forEach(function (l) {
+      var thumb = l.cover_url || l.logo_url || '';
+      var card = document.createElement('div');
+      card.className = 'ml-card';
+      card.setAttribute('data-listing-id', l.id);
+      card.innerHTML =
+        '<div class="ml-card-thumb"' + (thumb ? ' style="background-image:url(\'' + esc(thumb) + '\')"' : '') + '></div>' +
+        '<div class="ml-card-body">' +
+          '<div class="ml-card-cat">' + esc(l.category || '') + (l.address_city ? ' &middot; ' + esc(l.address_city) : '') + '</div>' +
+          '<div class="ml-card-title"><a href="/directory/' + esc(l.slug || '') + '">' + esc(l.name) + '</a></div>' +
+          '<div class="ml-card-tagline">' + esc(l.tagline || '') + '</div>' +
+          '<button class="ml-unsave-btn" data-id="' + esc(l.id) + '">Remove from list</button>' +
+        '</div>';
+      inner.appendChild(card);
+    });
+    inner.querySelectorAll('.ml-unsave-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        btn.disabled = true; btn.textContent = 'Removing...';
+        VEAuth.unsaveListing(id).then(function (d) {
+          if (d && d.error) { btn.disabled = false; btn.textContent = 'Remove from list'; return; }
+          var card = btn.closest('.ml-card');
+          if (card) card.remove();
+          if (!inner.querySelector('.ml-card')) renderGrid([]);
+        }).catch(function () { btn.disabled = false; btn.textContent = 'Remove from list'; });
+      });
+    });
+  }
+
+  function showDenied() {
+    document.getElementById('ml-gate').innerHTML = '<p>Sign in to see your list.</p><button id="ml-signin-btn">Sign In</button>';
+    var btn = document.getElementById('ml-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to see your list.', init); });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    document.getElementById('ml-gate').style.display = 'none';
+    document.getElementById('ml-content').style.display = 'block';
+    VEAuth.listSavedListings().then(function (d) {
+      if (d && d.error) { document.getElementById('ml-grid').innerHTML = '<p class="ml-empty">' + esc(d.error) + '</p>'; return; }
+      renderGrid(d.items || []);
+    }).catch(function () {
+      document.getElementById('ml-grid').innerHTML = '<p class="ml-empty">Could not load your list right now.</p>';
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
