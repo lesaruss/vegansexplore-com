@@ -34,11 +34,12 @@
   .wiz-banner { background: var(--path-light); border-bottom: 1px solid var(--path-mid); padding: 14px 48px; text-align: center; }
   .wiz-banner span { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--path-dark); }
 
-  /* Campaign Capsule (brief_checkpoints id 517, 2026-08-19, V direct feedback):
-     persistent wordmark + Dashboard access button, sits above the green wiz-banner
-     bar in both cover-mode and normal mode. */
-  .wiz-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 48px 0; position: relative; z-index: 2; }
-  .wiz-wordmark { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(15px,1.8vw,20px); letter-spacing: 0.02em; text-transform: uppercase; color: var(--path-dark); }
+  /* Campaign Capsule (brief_checkpoints id 517, 2026-08-19, V correction on the
+     first pass): the Dashboard access button is the only thing that lives in the
+     persistent top bar. The wordmark title moved INTO the cover hero itself (see
+     .wiz-cover-wordmark below) -- V wanted it in the blank space above the h1
+     inside the cover graphic, not as a bar repeated on every step. */
+  .wiz-topbar { display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 20px 48px 0; position: relative; z-index: 2; }
   #wiz-dashboard-btn { display: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; border: 1.5px solid var(--path-color); background: transparent; color: var(--path-dark); cursor: pointer; white-space: nowrap; }
   #wiz-dashboard-btn:hover { background: var(--path-color); color: #fff; }
   @media (max-width: 820px) { .wiz-topbar { padding: 16px 24px 0; } }
@@ -67,7 +68,6 @@
   #wizardFrame.cover-mode .wiz-dot.done { background: rgba(255,255,255,0.6); }
   #wizardFrame.cover-mode .wiz-dot.active { background: #8fd39a; }
   #wizardFrame.cover-mode .wiz-step-label { color: rgba(255,255,255,0.85); }
-  #wizardFrame.cover-mode .wiz-wordmark { color: #fff; }
   #wizardFrame.cover-mode #wiz-dashboard-btn { border-color: #fff; color: #fff; }
   #wizardFrame.cover-mode #wiz-dashboard-btn:hover { background: #fff; color: var(--path-dark); }
   #wizardFrame.cover-mode .wiz-controls { background: transparent; border-top-color: rgba(255,255,255,0.22); }
@@ -78,6 +78,7 @@
   .wiz-step.wiz-cover { padding: 0 48px; position: relative; z-index: 2; min-height: calc(100vh - 210px); align-items: center; }
   .wiz-step.wiz-cover.active { display: flex; }
   .wiz-cover-text { max-width: 560px; }
+  .wiz-cover-wordmark { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(20px,2.6vw,30px); letter-spacing: 0.01em; text-transform: uppercase; color: #fff; margin-bottom: 18px; line-height: 1.05; }
   .wiz-cover-text .wiz-eyebrow, .wiz-cover-text .wiz-eyebrow::before { color: #8fd39a; background: #8fd39a; }
   .wiz-cover-text h1 { color: #fff; font-size: clamp(26px,3.6vw,42px); margin-bottom: 16px; }
   .wiz-cover-text p { color: rgba(255,255,255,0.88); max-width: 480px; }
@@ -178,7 +179,6 @@
   </div>
 
   <div class="wiz-topbar">
-    <div class="wiz-wordmark">Plant Based Showcase</div>
     <button type="button" id="wiz-dashboard-btn">Dashboard &rarr;</button>
   </div>
 
@@ -197,6 +197,7 @@
   <!-- STEP 0: COVER -->
   <section class="wiz-step active wiz-cover" data-step="0" data-requires-choice="1">
     <div class="wiz-cover-text">
+      <div class="wiz-cover-wordmark">Plant Based Showcase</div>
       <div class="wiz-eyebrow">Vegans Explore &times; Miami Dolphins</div>
       <h1>A Real Showcase For What Plant-Based Living Can Be.</h1>
       <p>A November 2026 Dolphins home game at Hard Rock Stadium, inside the Garage. Free to attend with your normal game ticket.</p>
