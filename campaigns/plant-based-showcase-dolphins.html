@@ -83,7 +83,7 @@
   .wiz-step.wiz-cover { padding: 0 48px; position: relative; z-index: 2; min-height: calc(100vh - 130px); align-items: center; }
   .wiz-step.wiz-cover.active { display: flex; }
   .wiz-cover-text { max-width: 560px; }
-  .wiz-cover-wordmark { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(20px,2.6vw,30px); letter-spacing: 0.01em; text-transform: uppercase; color: #fff; margin-bottom: 18px; line-height: 1.05; }
+  .wiz-cover-wordmark { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(26px,3.4vw,40px); letter-spacing: 0.01em; text-transform: uppercase; color: #fff; margin-bottom: 20px; line-height: 1.05; }
   .wiz-cover-text .wiz-eyebrow, .wiz-cover-text .wiz-eyebrow::before { color: #8fd39a; background: #8fd39a; }
   .wiz-cover-text h1 { color: #fff; font-size: clamp(26px,3.6vw,42px); margin-bottom: 16px; }
   .wiz-cover-text p { color: rgba(255,255,255,0.88); max-width: 480px; }
@@ -122,6 +122,11 @@
   .wiz-card h4 { font-size: 13px; font-weight: 800; margin-bottom: 6px; color: var(--ve-text); }
   .wiz-card p { font-size: 13px; margin-bottom: 0; }
   .wiz-card.lead { border: 2px solid var(--path-color); background: var(--path-light); }
+  /* Pick Your Path selection state (2026-08-19, V direction, Fieldy feedback):
+     distinct from .lead (which is a plain "featured card" accent used elsewhere,
+     e.g. the step-2/step-3 grids). Nothing should look pre-selected on load --
+     .selected is only ever added by JS once someone actually clicks a path card. */
+  #wiz-path-cards .wiz-card.selected { border: 2px solid var(--path-color); background: var(--path-light); }
   a.wiz-card { display: block; text-decoration: none; color: inherit; transition: border-color 0.15s, transform 0.15s; }
   a.wiz-card:hover { border-color: var(--path-color); transform: translateY(-2px); }
   .wiz-card-cta { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--path-dark); margin-top: 10px; }
@@ -280,7 +285,7 @@
                brand copy can configure its own set of paths via campaign_entry_points
                without touching this file. Falls back to these 3 static cards if the
                API call fails, so the page still works. -->
-          <button type="button" class="wiz-card lead" data-path="attend">
+          <button type="button" class="wiz-card" data-path="attend">
             <h4>I'm Planning To Attend</h4>
             <p>See what's happening, why it's worth showing up for, and how to get on the list.</p>
             <div class="wiz-card-cta">Continue &rarr;</div>
@@ -553,13 +558,17 @@
     if (!grid || !Array.isArray(entryPoints) || !entryPoints.length) return; // keep static fallback cards
     var cols = Math.min(Math.max(entryPoints.length, 1), 4);
     grid.className = 'wiz-card-grid' + (cols === 3 ? ' wiz-card-grid-3' : cols >= 4 ? ' wiz-card-grid-4' : '');
-    grid.innerHTML = entryPoints.map(function (ep, i) {
-      return '<button type="button" class="wiz-card' + (i === 0 ? ' lead' : '') + '" data-path="' + esc(ep.key) + '">' +
+    // Campaign Capsule (2026-08-19, V direction, Fieldy feedback): no card starts
+    // selected -- selection state is applied only by markPathSelected() in
+    // initWizard() once someone actually clicks one.
+    grid.innerHTML = entryPoints.map(function (ep) {
+      return '<button type="button" class="wiz-card" data-path="' + esc(ep.key) + '">' +
         '<h4>' + esc(ep.label) + '</h4>' +
         (ep.description ? '<p>' + esc(ep.description) + '</p>' : '') +
         '<div class="wiz-card-cta">Continue &rarr;</div>' +
         '</button>';
     }).join('');
+    if (window.wizReapplyPathSelection) window.wizReapplyPathSelection();
   }
 
   function loadPathData() {
@@ -674,6 +683,8 @@
     var label = document.getElementById('wizStepLabel');
     var total = steps.length;
     var current = 0;
+    var PATH_STEP_INDEX = steps.findIndex(function (s) { return s.getAttribute('data-step') === '4'; });
+    var selectedPath = null;
 
     function render(){
       steps.forEach(function(s, i){ s.classList.toggle('active', i === current); });
@@ -683,17 +694,37 @@
       });
       label.textContent = 'Step ' + (current + 1) + ' of ' + total;
       backBtn.disabled = current === 0;
-      nextBtn.hidden = current === total - 1 || steps[current].hasAttribute('data-requires-choice');
+      // Campaign Capsule (2026-08-19, V direction, Fieldy feedback): Pick Your Path
+      // (data-requires-choice) hides Next until a path is actually chosen -- once
+      // chosen, Next stays visible even coming back to this step via Back, so a
+      // returning visitor isn't forced to re-click their already-picked path.
+      var requiresChoice = steps[current].hasAttribute('data-requires-choice');
+      var choiceSatisfied = current === PATH_STEP_INDEX && !!selectedPath;
+      nextBtn.hidden = current === total - 1 || (requiresChoice && !choiceSatisfied);
       document.getElementById('wizardFrame').classList.toggle('cover-mode', current === 0);
       window.scrollTo({top: 0, behavior: 'smooth'});
       layoutFixedBottom();
     }
 
-    function selectPath(path) {
-      document.querySelectorAll('.wiz-path-panel').forEach(function (p) {
-        p.hidden = p.getAttribute('data-path') !== path;
+    function applySelectedCardStyle() {
+      var grid = document.getElementById('wiz-path-cards');
+      if (!grid) return;
+      Array.prototype.slice.call(grid.querySelectorAll('[data-path]')).forEach(function (btn) {
+        btn.classList.toggle('selected', btn.getAttribute('data-path') === selectedPath);
       });
-      current = steps.length - 1;
+    }
+    // Exposed so renderPathCards() can restore the selected look if the API-driven
+    // cards render after a selection was already made (defensive, not expected in
+    // the normal load order).
+    window.wizReapplyPathSelection = applySelectedCardStyle;
+
+    // Campaign Capsule (2026-08-19, V direction, Fieldy feedback): clicking a path
+    // card no longer jumps straight to the detail panel. It only marks the choice
+    // (visually, via .selected) and reveals Next -- advancing now requires an
+    // explicit Next click, same as every other step, so nothing happens by surprise.
+    function markPathSelected(path) {
+      selectedPath = path;
+      applySelectedCardStyle();
       render();
     }
 
@@ -704,7 +735,7 @@
     if (pathCardsGrid) {
       pathCardsGrid.addEventListener('click', function (e) {
         var btn = e.target.closest('[data-path]');
-        if (btn) selectPath(btn.getAttribute('data-path'));
+        if (btn) markPathSelected(btn.getAttribute('data-path'));
       });
     }
 
@@ -712,6 +743,11 @@
       if (current > 0) { current -= 1; render(); }
     });
     nextBtn.addEventListener('click', function(){
+      if (current === PATH_STEP_INDEX && selectedPath) {
+        document.querySelectorAll('.wiz-path-panel').forEach(function (p) {
+          p.hidden = p.getAttribute('data-path') !== selectedPath;
+        });
+      }
       if (current < total - 1) { current += 1; render(); }
     });
 
