@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events — Vegans Explore</title>
+<meta name="description" content="Upcoming Vegans Explore events, meetups, and partner activations. Join free to be first to know when new events go live.">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #b8ddb9;
+    --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+    --ve-border: rgba(0,0,0,0.09); --ve-surface: #f7faf7;
+    --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+  .page-frame { width: 100%; background: #fff; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  .hero { background: linear-gradient(120deg, var(--ve-green-dark), var(--ve-green)); color: #fff; padding: 64px 28px 52px; text-align: center; }
+  .hero h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 900; letter-spacing: -0.01em; margin-bottom: 12px; }
+  .hero p { font-size: 16px; color: rgba(255,255,255,0.9); max-width: 620px; margin: 0 auto; line-height: 1.6; }
+
+  .events-section { padding: 56px 0 80px; }
+  .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin-top: 28px; }
+
+  .event-card { border: 1px solid var(--ve-border); border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: transform .15s, box-shadow .15s; }
+  .event-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+  .event-card .badge { display: inline-block; background: var(--ve-green-light); color: var(--ve-green-dark); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; padding: 5px 12px; border-radius: 20px; margin: 18px 20px 0; }
+  .event-card h3 { font-size: 19px; font-weight: 800; margin: 12px 20px 6px; line-height: 1.35; }
+  .event-card p { font-size: 14px; color: var(--ve-text-75); margin: 0 20px 20px; line-height: 1.55; }
+  .event-card .cta { display: block; background: var(--ve-orange); color: #fff; font-weight: 700; font-size: 13px; text-align: center; padding: 12px; margin-top: 4px; }
+  .event-card .cta:hover { background: var(--ve-orange-dark); }
+
+  .empty-note { margin-top: 36px; text-align: center; color: var(--ve-text-50); font-size: 14px; line-height: 1.6; max-width: 520px; margin-left: auto; margin-right: auto; }
+  .section-title { font-size: 22px; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="page-frame">
+
+<script src="/public/nav.js"></script>
+
+<section class="hero">
+  <h1>Events</h1>
+  <p>Real-world meetups, partner activations, and community gatherings from Vegans Explore. Join free to hear about new events as soon as they're announced.</p>
+</section>
+
+<section class="events-section">
+  <div class="wrap">
+    <div class="section-title">Upcoming &amp; in development</div>
+    <div class="events-grid">
+      <a class="event-card" href="/events/dolphins-plant-based-game-night">
+        <span class="badge">In development</span>
+        <h3>Plant-Based Game Night: Vegans Explore x Miami Dolphins</h3>
+        <p>Vegans Explore is bringing a plant-based day to a Miami Dolphins home game. Join free to be first to know the date.</p>
+        <span class="cta">Learn more &amp; join the list</span>
+      </a>
+    </div>
+    <p class="empty-note">More events are added here as they're confirmed. Want to host or partner on a Vegans Explore event in your city? <a href="/communities/find" style="color:var(--ve-green-dark); font-weight:700;">Find your community</a> to get connected.</p>
+  </div>
+</section>
+
+<script src="/public/footer.js"></script>
+</div>
+</body>
+</html>
