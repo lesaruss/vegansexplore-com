@@ -585,6 +585,52 @@
     <div class="events-list events-list-past" id="sf-events-past-list" style="display:none;margin-top:16px;" aria-label="Past events"></div>
   </section>
 
+  <div class="hub-modal-overlay" id="hub-event-submit-overlay">
+    <div class="hub-modal" role="dialog" aria-modal="true" aria-labelledby="hub-event-submit-title">
+      <button type="button" class="hub-modal-close" id="hub-event-submit-close" aria-label="Close">&times;</button>
+      <h3 id="hub-event-submit-title">Submit an Event</h3>
+      <p class="hub-modal-sub">Tell us what's happening and we'll review it before it goes live on the calendar.</p>
+      <form id="hub-event-submit-form">
+        <div class="hub-modal-field">
+          <label for="hub-ev-title">Event name</label>
+          <input type="text" id="hub-ev-title" maxlength="200" required>
+        </div>
+        <div class="hub-modal-field">
+          <label for="hub-ev-datetime">Date &amp; time</label>
+          <input type="datetime-local" id="hub-ev-datetime" required>
+        </div>
+        <div class="hub-modal-field">
+          <label for="hub-ev-location">Venue / location name</label>
+          <input type="text" id="hub-ev-location" maxlength="200" required>
+        </div>
+        <div class="hub-modal-field">
+          <label for="hub-ev-city">City</label>
+          <input type="text" id="hub-ev-city" maxlength="100" required>
+        </div>
+        <div class="hub-modal-field">
+          <label for="hub-ev-category">Category</label>
+          <select id="hub-ev-category">
+            <option value="festival">Festival</option>
+            <option value="food">Food</option>
+            <option value="health">Health</option>
+            <option value="media">Media</option>
+            <option value="other" selected>Other</option>
+          </select>
+        </div>
+        <div class="hub-modal-field">
+          <label for="hub-ev-desc">Description (optional)</label>
+          <textarea id="hub-ev-desc" rows="3" maxlength="2000"></textarea>
+        </div>
+        <div class="hub-modal-field">
+          <label for="hub-ev-url">Ticket / event link (optional)</label>
+          <input type="url" id="hub-ev-url" placeholder="https://">
+        </div>
+        <button type="submit" class="btn-join" id="hub-event-submit-btn">Submit for Review</button>
+        <p id="hub-event-submit-msg" style="font-size:12px;margin-top:10px;"></p>
+      </form>
+    </div>
+  </div>
+
   <!-- ========================= DIRECTORY SECTION ========================= -->
   <section class="hub-section" id="tab-directory" role="tabpanel" aria-labelledby="tab-btn-directory">
     <div class="section-hdr" style="margin-bottom:20px;">
