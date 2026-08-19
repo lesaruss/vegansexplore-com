@@ -56,12 +56,41 @@
       placement: 'right',
     },
     {
+      // NEW (2026-08-19, V correction): split the old single Directory step
+      // into a "here's the tab" step and a "here's the content" step. Before,
+      // the spotlight jumped straight to the tab panel content while the card
+      // landed far from the tab bar itself, so it was easy to miss which tab
+      // was even active. This step spotlights the tab button directly (the
+      // same element the tab-highlight ring already points at), so the
+      // dimming cutout and the ring converge on one unmistakable target.
+      page: '/communities/atlanta',
+      tab: 'directory',
+      selector: '#tab-btn-directory',
+      title: 'The Directory Lives Right Here',
+      body: "Your city's Directory is built right into the hub -- it's this tab, not a separate page.",
+      placement: 'bottom',
+    },
+    {
+      // Second half of the split: now show what's actually inside that tab.
       page: '/communities/atlanta',
       tab: 'directory',
       selector: '#tab-directory',
-      title: 'The Directory Lives Right Here',
-      body: "Your city's Directory is built into the hub, so you can search vegan-friendly spots near you without ever leaving the community.",
+      title: 'Search & Vote On Local Spots',
+      body: "Browse vegan-friendly restaurants and shops near you, vote for your favorites, without ever leaving the community.",
       placement: 'right',
+    },
+    {
+      // NEW (2026-08-19, V correction): before jumping straight to the Pulse
+      // page, show where it actually lives day to day -- the main nav menu --
+      // so members know how to get back to it later instead of only seeing it
+      // once via this tour. Opens the real hamburger drawer and rings the
+      // real Pulse link inside it (id added to nav.js for this).
+      page: '/communities/atlanta',
+      openNav: true,
+      selector: '#ve-nav-pulse-link',
+      title: 'Find It From Anywhere',
+      body: "Pulse always lives in your main menu -- tap here from any page on the site to catch up on what's happening site-wide.",
+      placement: 'left',
     },
     {
       page: '/pulse',
@@ -277,7 +306,13 @@
     var cardRect = card.getBoundingClientRect();
     var cTop, cLeft;
     var gap = 18;
-    if (currentPlacement === 'right') {
+    if (currentPlacement === 'left') {
+      cTop = top + height / 2 - cardRect.height / 2;
+      cLeft = left - cardRect.width - gap;
+      if (cLeft < window.scrollX + 12) {
+        cLeft = left + width + gap; // flip to right if no room
+      }
+    } else if (currentPlacement === 'right') {
       cTop = top + height / 2 - cardRect.height / 2;
       cLeft = left + width + gap;
       if (cLeft + cardRect.width > window.scrollX + window.innerWidth - 12) {
@@ -309,6 +344,18 @@
     function paint() {
       if (step.tab && typeof window.switchTab === 'function') {
         try { window.switchTab(step.tab); } catch (e) {}
+      }
+      // NEW (2026-08-19, V correction): steps can point at the real nav
+      // drawer instead of in-page content. Open it (reusing the site's own
+      // hamburger toggle, so its slide-in animation and aria state stay
+      // correct) when a step needs it, and close it again on any step that
+      // doesn't, in case a previous nav step left it open.
+      var mobMenu = document.getElementById('ve-mob-menu');
+      var hamburgerBtn = document.getElementById('ve-hamburger-btn');
+      if (mobMenu && hamburgerBtn) {
+        var menuOpen = mobMenu.classList.contains('open');
+        if (step.openNav && !menuOpen) { hamburgerBtn.click(); }
+        else if (!step.openNav && menuOpen) { hamburgerBtn.click(); }
       }
       // NEW (V correction): track the real tab button (id="tab-btn-<tab>",
       // matching the hub markup) so reposition() can ring-highlight it.
@@ -353,8 +400,9 @@
     }
 
     // Async tab content (e.g. the directory widget) can take a beat to mount;
-    // give it a short window before falling back to whatever is present.
-    if (step.tab) { setTimeout(paint, 120); } else { paint(); }
+    // same for the nav drawer's slide-in -- give both a short window before
+    // measuring positions.
+    if (step.tab || step.openNav) { setTimeout(paint, 120); } else { paint(); }
   }
 
   global.VETour = {
