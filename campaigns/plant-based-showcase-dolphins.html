@@ -408,6 +408,23 @@
   // button leads to a well-crafted "coming soon" screen, not real event content --
   // the real per-role experience is what get_campaign_live_view/renderLiveScreen
   // already serve once the campaign flips to 'live'.
+  // Campaign Capsule (2026-08-19, V direct feedback): the single gate for every
+  // decision action (Join Waitlist, Select Interest, Apply). VEAuth.requirePassport
+  // does not wire its onGranted callback through to the modal's success handler
+  // (a pre-existing gap in the shared ve-auth.js, confirmed by reading its source --
+  // not something to route around silently), so this calls VEAuth.showAuthModal
+  // directly with an explicit callback instead, the same pattern already used by
+  // the sign-in flow campaigns/index.html already uses elsewhere on the site.
+  // No page reload, no lost wizard state.
+  function requireLoginThen(action, message) {
+    if (window.VEAuth && VEAuth.isLoggedIn()) { TOKEN = VEAuth.getToken(); action(); return; }
+    if (!window.VEAuth) { alert('Could not reach sign-in right now, try again.'); return; }
+    VEAuth.showAuthModal(message || 'Almost there -- sign in or create a free account to continue.', function () {
+      TOKEN = VEAuth.getToken();
+      action();
+    });
+  }
+
   var DECISION_ROLES = [];
   function showDashboardButton() {
     var b = document.getElementById('wiz-dashboard-btn');
@@ -429,12 +446,14 @@
     var btn = document.getElementById('wiz-attend-btn');
     if (already) { btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>'; markDecisionMade('attend'); return; }
     btn.addEventListener('click', function () {
-      btn.disabled = true; btn.textContent = 'Submitting...';
-      callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'ticket' }).then(function (r) {
-        if (r && r.error) { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not submit: ' + r.error); return; }
-        btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>';
-        markDecisionMade('attend');
-      }).catch(function () { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not reach the server, try again.'); });
+      requireLoginThen(function () {
+        btn.disabled = true; btn.textContent = 'Submitting...';
+        callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'ticket' }).then(function (r) {
+          if (r && r.error) { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not submit: ' + r.error); return; }
+          btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>';
+          markDecisionMade('attend');
+        }).catch(function () { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not reach the server, try again.'); });
+      }, 'Almost there -- sign in or create a free account to join the waitlist.');
     });
   }
 
@@ -460,12 +479,14 @@
     list.querySelectorAll('button[data-tier]:not([disabled])').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var tierLabel = btn.getAttribute('data-tier');
-        btn.disabled = true; btn.textContent = 'Submitting...';
-        callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'sponsor_tier', tier_label: tierLabel }).then(function (r) {
-          if (r && r.error) { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not submit: ' + r.error); return; }
-          btn.classList.remove('wiz-btn-next'); btn.classList.add('wiz-btn-back'); btn.textContent = 'Interest Sent';
-          markDecisionMade('sponsor');
-        }).catch(function () { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not reach the server, try again.'); });
+        requireLoginThen(function () {
+          btn.disabled = true; btn.textContent = 'Submitting...';
+          callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'sponsor_tier', tier_label: tierLabel }).then(function (r) {
+            if (r && r.error) { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not submit: ' + r.error); return; }
+            btn.classList.remove('wiz-btn-next'); btn.classList.add('wiz-btn-back'); btn.textContent = 'Interest Sent';
+            markDecisionMade('sponsor');
+          }).catch(function () { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not reach the server, try again.'); });
+        }, 'Almost there -- sign in or create a free account to send your interest.');
       });
     });
   }
@@ -505,14 +526,18 @@
     list.querySelectorAll('button[data-id]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var card = btn.closest('.wiz-card');
-        var note = card.querySelector('.wiz-vol-note').value;
-        btn.disabled = true; btn.textContent = 'Applying...';
-        callAPI('submit_opportunity_application', { opportunity_id: btn.getAttribute('data-id'), cover_note: note }).then(function (d) {
-          if (d && d.error) { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not submit: ' + d.error); return; }
-          card.querySelector('.wiz-vol-note').remove();
-          btn.outerHTML = '<div class="wiz-tag">pending</div>';
-          markDecisionMade('volunteer');
-        }).catch(function () { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not reach the server, try again.'); });
+        var noteEl = card.querySelector('.wiz-vol-note');
+        var note = noteEl ? noteEl.value : '';
+        requireLoginThen(function () {
+          btn.disabled = true; btn.textContent = 'Applying...';
+          callAPI('submit_opportunity_application', { opportunity_id: btn.getAttribute('data-id'), cover_note: note }).then(function (d) {
+            if (d && d.error) { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not submit: ' + d.error); return; }
+            var el = card.querySelector('.wiz-vol-note');
+            if (el) el.remove();
+            btn.outerHTML = '<div class="wiz-tag">pending</div>';
+            markDecisionMade('volunteer');
+          }).catch(function () { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not reach the server, try again.'); });
+        }, 'Almost there -- sign in or create a free account to apply.');
       });
     });
   }
@@ -635,12 +660,6 @@
     frame.style.paddingBottom = (footerH + controlsH + 24) + 'px';
   }
 
-  function showDenied() {
-    document.getElementById('pbs-gate').innerHTML = '<p>Sign in to see how to get involved with the Plant Based Showcase.</p><button id="pbs-signin-btn">Sign In</button>';
-    var btn = document.getElementById('pbs-signin-btn');
-    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to get involved.', init); });
-  }
-
   function initWizard() {
     var steps = Array.prototype.slice.call(document.querySelectorAll('.wiz-step'));
     var dots = Array.prototype.slice.call(document.querySelectorAll('.wiz-dot'));
@@ -712,10 +731,16 @@
   // lifecycle_stage on both success and the 409 guard error) and route to
   // whichever screen matches. Falls back to the enrollment wizard on any
   // unexpected response so the page never goes blank.
+  // Campaign Capsule (2026-08-19, V direct feedback): the wizard is now browsable
+  // and pickable by anyone -- no login required just to see the pitch or pick a
+  // path. Login/signup is only required the moment someone submits a real decision
+  // (see the requireLoginThen() calls at each Join/Select/Apply button below), so
+  // this page can double as a recruitment tool instead of gating everyone at the door.
   function init() {
-    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
-    TOKEN = VEAuth.getToken();
     document.getElementById('pbs-gate').style.display = 'none';
+    TOKEN = (window.VEAuth && VEAuth.isLoggedIn()) ? VEAuth.getToken() : null;
+
+    if (!TOKEN) { showEnrollmentWizard(); return; }
 
     callAPI('get_campaign_live_view', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
       if (d && d.ok && d.lifecycle_stage === 'live') {
