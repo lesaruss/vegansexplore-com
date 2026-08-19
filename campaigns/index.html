@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campaigns - VEGANS EXPLORE</title>
+<meta name="description" content="Choose a campaign and see how to get involved -- attend, sponsor, or volunteer.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:1100px;margin:0 auto;padding:44px 24px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+  #camp-gate{text-align:center;padding:100px 20px;}
+  #camp-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #camp-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #camp-content{display:none;}
+  .camp-back{font-size:11px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;margin-bottom:14px;display:inline-block;}
+  .camp-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .camp-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:900px){ .camp-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .camp-grid{grid-template-columns:1fr;} }
+  .camp-tile{border:1.5px solid var(--ve-border);border-radius:14px;text-decoration:none;color:var(--ve-text);display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s,box-shadow .15s,transform .15s;background:#fff;}
+  .camp-tile:hover{border-color:var(--ve-green);box-shadow:0 6px 18px rgba(58,155,62,0.12);transform:translateY(-2px);}
+  .camp-thumb{height:110px;width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;background:linear-gradient(135deg,#F69820,#e07b00);}
+  .camp-tile-body{padding:16px 18px;flex:1;}
+  .camp-tile-title{font-size:15px;font-weight:800;margin-bottom:4px;}
+  .camp-tile-subtitle{font-size:11px;font-weight:700;letter-spacing:0.04em;color:var(--ve-green-dark);text-transform:uppercase;margin-bottom:8px;}
+  .camp-tile-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.55;}
+  .camp-empty{font-size:13px;color:var(--ve-text-50);grid-column:1/-1;}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <a class="camp-back" href="/dashboard">&larr; Back to Dashboard</a>
+  <div id="camp-gate"><p>Checking access&hellip;</p></div>
+  <div id="camp-content">
+    <p class="camp-eyebrow">Campaigns</p>
+    <h1>Get Involved</h1>
+    <p class="camp-sub">Pick a campaign to see how to be part of it -- attend, sponsor, or volunteer. New campaigns get added here as they go live.</p>
+    <div id="camp-grid" class="camp-grid"><p class="camp-empty">Loading campaigns&hellip;</p></div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var AVATAR_ICON = { pascal: '&#127859;', maya: '&#127805;', theo: '&#127942;', dani: '&#128295;' };
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function renderGrid(items) {
+    var grid = document.getElementById('camp-grid');
+    if (!items.length) {
+      grid.innerHTML = '<p class="camp-empty">No campaigns are open right now. Check back soon.</p>';
+      return;
+    }
+    grid.innerHTML = items.map(function (c) {
+      var icon = AVATAR_ICON[c.avatar] || '&#127881;';
+      return '<a class="camp-tile" href="' + esc(c.path) + '">' +
+        '<div class="camp-thumb">' + icon + '</div>' +
+        '<div class="camp-tile-body">' +
+          '<div class="camp-tile-title">' + esc(c.title) + '</div>' +
+          (c.subtitle ? '<div class="camp-tile-subtitle">' + esc(c.subtitle) + '</div>' : '') +
+          '<div class="camp-tile-desc">' + esc(c.summary || '') + '</div>' +
+        '</div>' +
+      '</a>';
+    }).join('');
+  }
+
+  function showDenied() {
+    document.getElementById('camp-gate').innerHTML = '<p>Sign in to see active campaigns.</p><button id="camp-signin-btn">Sign In</button>';
+    var btn = document.getElementById('camp-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to see campaigns.', init); });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    var token = VEAuth.getToken();
+    document.getElementById('camp-gate').style.display = 'none';
+    document.getElementById('camp-content').style.display = 'block';
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiatives', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.error) { document.getElementById('camp-grid').innerHTML = '<p class="camp-empty">' + esc(d.error) + '</p>'; return; }
+      renderGrid(d.items || []);
+    }).catch(function () {
+      document.getElementById('camp-grid').innerHTML = '<p class="camp-empty">Could not load campaigns right now.</p>';
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
