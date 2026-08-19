@@ -106,6 +106,11 @@
       <div class="dash-community-row" id="dash-community-row"></div>
     </div>
 
+    <div id="dash-campaigns-section" style="display:none;margin-bottom:28px;">
+      <p class="dash-section-title">Your Campaigns</p>
+      <div class="dash-community-row" id="dash-campaigns-row"></div>
+    </div>
+
     <p class="dash-section-title">Your Tools</p>
     <div class="dash-grid" id="dash-tile-grid"></div>
     <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Thumbnails are placeholders. Real illustrated artwork, in the GeekFon style, is next.</p>
@@ -420,10 +425,80 @@
     if (e.target.id === 'dash-tools-modal') closeToolsModal();
   });
 
+  // "Your Campaigns" section (2026-08-19, Logan, V direction, brief_checkpoints
+  // id 517 round 2): mirrors "Your Communities" above -- a row of the campaigns
+  // a member has real involvement in (a backer row, an interest submission, or
+  // an accepted/pending volunteer application, via the new ve-rewards
+  // 'list_my_campaigns' action), plus a trailing "+" tile that links to the
+  // Campaigns hub (/campaigns) to browse/join more. Unlike Your Communities,
+  // there is no in-page picker modal here -- picking a NEW campaign to support
+  // happens on that campaign's own wizard page, not from a dashboard modal, so
+  // the "+" tile is a plain link rather than an add-tile that opens a picker.
+  var CAMPAIGN_TAG_LABEL = { enrollment: 'Enrolling', live: 'Live', wrapped: 'Wrapped' };
+
+  function renderCampaignsSection(member) {
+    var section = document.getElementById('dash-campaigns-section');
+    var row = document.getElementById('dash-campaigns-row');
+    if (!section || !row) return;
+    section.style.display = 'block';
+    row.innerHTML = '<div class="dash-community-tile"><div class="dash-tile" style="padding:16px 18px;"><p style="font-size:12.5px;color:var(--ve-text-50);">Loading&hellip;</p></div></div>';
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_my_campaigns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var items = (d && d.items) || [];
+      row.innerHTML = '';
+
+      items.forEach(function (c) {
+        var wrap = document.createElement('div');
+        wrap.className = 'dash-community-tile';
+        var tile = document.createElement('a');
+        tile.className = 'dash-tile';
+        tile.href = c.path || '/campaigns';
+        var tag = CAMPAIGN_TAG_LABEL[c.lifecycle_stage] || 'Enrolling';
+        tile.innerHTML =
+          '<div class="dash-thumb" style="background-image:url(\'' + (c.avatar || '') + '\');background-color:var(--ve-green-light);"></div>' +
+          '<div class="dash-tile-body">' +
+            '<div class="dash-tile-title">' + (c.title || c.slug) + ' <span class="dash-tag live">' + tag + '</span></div>' +
+            (c.subtitle ? '<div class="dash-tile-desc">' + c.subtitle + '</div>' : '') +
+          '</div>';
+        wrap.appendChild(tile);
+        row.appendChild(wrap);
+      });
+
+      var addWrap = document.createElement('div');
+      addWrap.className = 'dash-community-tile';
+      var addLink = document.createElement('a');
+      addLink.className = 'dash-tile dash-add-tile';
+      addLink.href = '/campaigns';
+      addLink.innerHTML =
+        '<div class="dash-thumb">+</div>' +
+        '<div class="dash-tile-body">' +
+          '<div class="dash-tile-title">' + (items.length ? 'Support Another Campaign' : 'Support A Campaign') + '</div>' +
+          '<div class="dash-tile-desc">Browse active campaigns like the Plant Based Showcase and pick one to get involved with.</div>' +
+        '</div>';
+      addWrap.appendChild(addLink);
+      row.appendChild(addWrap);
+    }).catch(function () {
+      row.innerHTML = '';
+      var addWrap = document.createElement('div');
+      addWrap.className = 'dash-community-tile';
+      var addLink = document.createElement('a');
+      addLink.className = 'dash-tile dash-add-tile';
+      addLink.href = '/campaigns';
+      addLink.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">Support A Campaign</div><div class="dash-tile-desc">Browse active campaigns and pick one to get involved with.</div></div>';
+      addWrap.appendChild(addLink);
+      row.appendChild(addWrap);
+    });
+  }
+
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     renderCommunitySection(member);
+    renderCampaignsSection(member);
     renderToolsGrid(member);
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
