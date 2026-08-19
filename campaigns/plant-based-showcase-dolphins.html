@@ -672,7 +672,25 @@
     var footerH = footer.offsetHeight;
     controls.style.bottom = footerH + 'px';
     var controlsH = controls.offsetHeight;
-    frame.style.paddingBottom = (footerH + controlsH + 24) + 'px';
+    var bottomReserved = footerH + controlsH + 24;
+    frame.style.paddingBottom = bottomReserved + 'px';
+
+    // Campaign Capsule (2026-08-19, V feedback round 4 -- "fit on the page, no
+    // scrolling"): the cover step's min-height used to be a static guess (100vh
+    // minus a hardcoded topbar+banner estimate) that never accounted for the
+    // bottom-fixed controls+footer bar at all. Once the progress dots/step label
+    // moved into that bar (round 3), it grew taller than the guess assumed, so the
+    // frame's own paddingBottom above (reserved so normal content clears the fixed
+    // bar) pushed total page height past the viewport -- forcing a scroll, and at
+    // some viewport heights letting the fixed bar visually overlap the cover text.
+    // Compute the real available gap instead of guessing.
+    var cover = document.querySelector('.wiz-step.wiz-cover');
+    var topbar = document.querySelector('.wiz-topbar');
+    var banner = document.querySelector('.wiz-banner');
+    if (cover) {
+      var topReserved = (topbar ? topbar.offsetHeight : 0) + (banner ? banner.offsetHeight : 0);
+      cover.style.minHeight = 'calc(100vh - ' + (topReserved + bottomReserved) + 'px)';
+    }
   }
 
   function initWizard() {
