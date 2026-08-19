@@ -330,6 +330,28 @@
 </div>
 </div>
 
+<div id="pbs-live" style="display:none;">
+  <div class="wiz-banner"><span>Vegans Explore &middot; Plant Based Showcase &middot; Dolphins Garage Pilot &middot; Live Now</span></div>
+  <div style="max-width:760px;margin:0 auto;padding:56px 24px 140px;">
+    <div class="wiz-eyebrow">Event Live</div>
+    <h1 id="pbs-live-headline" style="font-size:clamp(24px,3.4vw,38px);font-weight:900;letter-spacing:-0.01em;line-height:1.1;text-transform:uppercase;margin-bottom:14px;">Loading&hellip;</h1>
+    <p id="pbs-live-body" style="font-size:15px;color:var(--ve-text-75);line-height:1.7;margin-bottom:14px;max-width:620px;"></p>
+    <div id="pbs-live-gate" class="wiz-note" style="display:none;"></div>
+    <div id="pbs-live-assets"></div>
+  </div>
+</div>
+
+<div id="pbs-wrapped" style="display:none;">
+  <div class="wiz-banner"><span>Vegans Explore &middot; Plant Based Showcase &middot; Dolphins Garage Pilot &middot; Wrapped</span></div>
+  <div style="max-width:760px;margin:0 auto;padding:56px 24px 140px;">
+    <div class="wiz-eyebrow">Wrapped</div>
+    <h1 id="pbs-wrapped-headline" style="font-size:clamp(24px,3.4vw,38px);font-weight:900;letter-spacing:-0.01em;line-height:1.1;text-transform:uppercase;margin-bottom:14px;">Loading&hellip;</h1>
+    <p id="pbs-wrapped-body" style="font-size:15px;color:var(--ve-text-75);line-height:1.7;margin-bottom:14px;max-width:620px;"></p>
+    <div class="wiz-stat-row" id="pbs-wrapped-stats"></div>
+    <div id="pbs-wrapped-assets"></div>
+  </div>
+</div>
+
 <script src="/public/footer.js"></script>
 </div>
 
@@ -466,6 +488,56 @@
     }).catch(function () { /* path panels/cards just stay at their static fallback if this fails; the rest of the wizard still works */ });
   }
 
+  function renderAssetsList(containerId, assets) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    if (!assets || !assets.length) { el.innerHTML = ''; return; }
+    el.innerHTML = '<h3 style="font-size:14px;font-weight:800;color:var(--ve-text);margin:28px 0 8px;">Resources</h3>' +
+      assets.map(function (a) {
+        return '<a class="wiz-card" href="' + esc(a.url) + '" target="_blank" rel="noopener" style="margin-bottom:10px;">' +
+          '<h4>' + esc(a.title) + '</h4>' +
+          (a.description ? '<p>' + esc(a.description) + '</p>' : '') +
+          '<div class="wiz-card-cta">Open &rarr;</div>' +
+          '</a>';
+      }).join('');
+  }
+
+  function loadCampaignAssets(containerId) {
+    callAPI('get_campaign_assets', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
+      if (d && d.error) return;
+      renderAssetsList(containerId, d.assets);
+    }).catch(function () { /* assets are additive, page still works without them */ });
+  }
+
+  // Campaign Capsule steps 4-5 (brief_checkpoints id 517, 2026-08-19): Live-stage
+  // and Wrapped-stage screens. Functional-first pass -- V flagged a clean look-and-feel
+  // update is coming once these exist, so this reuses the existing wiz-card/wiz-stat/
+  // wiz-eyebrow/wiz-note classes rather than inventing a new visual language.
+  function renderLiveScreen(d) {
+    document.getElementById('pbs-live-headline').textContent = (d.live && d.live.headline) || 'You\'re In.';
+    document.getElementById('pbs-live-body').textContent = (d.live && (d.live.details || d.live.message)) || '';
+    var gate = document.getElementById('pbs-live-gate');
+    if (!d.is_backer) {
+      gate.style.display = 'block';
+      gate.textContent = d.gate_message || 'This content unlocks once you have a confirmed spot for this campaign.';
+    }
+    loadCampaignAssets('pbs-live-assets');
+  }
+
+  function renderWrappedScreen(d) {
+    var report = d.report_content || {};
+    document.getElementById('pbs-wrapped-headline').textContent = report.headline || 'That\'s A Wrap.';
+    document.getElementById('pbs-wrapped-body').textContent = report.summary || '';
+    var n = d.numbers || {};
+    var totalInterest = 0;
+    for (var k in (n.interest_by_type || {})) { totalInterest += n.interest_by_type[k]; }
+    document.getElementById('pbs-wrapped-stats').innerHTML =
+      '<div class="wiz-stat"><span class="num">' + (n.total_backers || 0) + '</span><span class="lbl">Confirmed</span></div>' +
+      '<div class="wiz-stat"><span class="num">' + (n.accepted_volunteers || 0) + '</span><span class="lbl">Volunteers</span></div>' +
+      '<div class="wiz-stat"><span class="num">' + totalInterest + '</span><span class="lbl">Total Interest</span></div>';
+    loadCampaignAssets('pbs-wrapped-assets');
+  }
+
   function layoutFixedBottom() {
     var footer = document.querySelector('.ve-footer');
     var controls = document.querySelector('.wiz-controls');
@@ -540,14 +612,43 @@
     render();
   }
 
-  function init() {
-    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
-    TOKEN = VEAuth.getToken();
-    document.getElementById('pbs-gate').style.display = 'none';
+  function showEnrollmentWizard() {
     document.getElementById('pbs-content').style.display = 'block';
     initWizard();
     layoutFixedBottom();
     loadPathData();
+  }
+
+  // Campaign Capsule steps 4-5 (brief_checkpoints id 517, 2026-08-19): probe
+  // lifecycle_stage via the existing gate actions (no new API call needed --
+  // get_campaign_live_view/get_campaign_wrapped_view already return
+  // lifecycle_stage on both success and the 409 guard error) and route to
+  // whichever screen matches. Falls back to the enrollment wizard on any
+  // unexpected response so the page never goes blank.
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    TOKEN = VEAuth.getToken();
+    document.getElementById('pbs-gate').style.display = 'none';
+
+    callAPI('get_campaign_live_view', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
+      if (d && d.ok && d.lifecycle_stage === 'live') {
+        document.getElementById('pbs-live').style.display = 'block';
+        renderLiveScreen(d);
+        return;
+      }
+      if (d && d.error === 'not_live_yet' && d.lifecycle_stage === 'wrapped') {
+        callAPI('get_campaign_wrapped_view', { initiative_slug: INITIATIVE_SLUG }).then(function (w) {
+          if (w && w.ok) {
+            document.getElementById('pbs-wrapped').style.display = 'block';
+            renderWrappedScreen(w);
+          } else {
+            showEnrollmentWizard();
+          }
+        }).catch(showEnrollmentWizard);
+        return;
+      }
+      showEnrollmentWizard();
+    }).catch(showEnrollmentWizard);
   }
 
   window.addEventListener('resize', layoutFixedBottom);
