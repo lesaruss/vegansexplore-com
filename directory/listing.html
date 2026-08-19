@@ -48,6 +48,11 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .vote-hero-btn:hover{background:#4db368}
 .vote-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
 .vote-count-display{font-size:10px;font-weight:700;color:#888;text-align:center;letter-spacing:0.08em}
+.save-hero-btn{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:12px 24px;border-radius:6px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.35);cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s}
+.save-hero-btn:hover{border-color:#fff}
+.save-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
+.save-hero-btn.saved{background:#5EC47A;color:#000;border-color:#5EC47A}
+.save-hero-btn.saved svg{fill:#000}
 
 /* SOUTH FLORIDA REGION HERO — city-background treatment, scoped so other regions keep the flat #111 hero */
 .listing-hero.city-bg{position:relative;background-color:#111;background-size:cover;background-position:center center}
@@ -217,6 +222,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .badge-subcat{font-size:9px;padding:3px 8px}
   .listing-hero-right{flex-direction:column;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
   .vote-hero-btn{padding:10px 14px;font-size:10px}
+  .save-hero-btn{padding:10px 14px;font-size:10px}
   .photos-grid{display:none}
   .photos-carousel-wrap{display:block}
   .donate-row{flex-direction:column}
@@ -370,6 +376,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 </head>
 <body>
 <div id="frame">
+<script src="/public/ve-auth.js"></script>
 <script src="/public/nav.js"></script>
 
 <div id="listing-root">
@@ -1104,6 +1111,7 @@ function renderListing(l){
         '<div class="listing-hero-right">'+
           '<button class="vote-hero-btn" id="vote-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote</button>'+
           '<div class="vote-count-display" id="vote-display">'+votes+' votes</div>'+
+          '<button class="save-hero-btn" id="save-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg><span id="save-btn-label">Save</span></button>'+
         '</div>'+
       '</div>'+
     '</div>'+
@@ -1184,6 +1192,42 @@ function renderListing(l){
     var cl = document.getElementById('community-lesars');
     if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
   });
+
+  // Save / unsave listing (2026-08-19, Logan, V direction): folds this listing
+  // into "My List." Requires a real Passport -- unauthenticated clicks open
+  // the sign-in modal instead of silently failing.
+  (function(){
+    var saveBtn = document.getElementById('save-btn');
+    if(!saveBtn || !window.VEAuth) return;
+    var listingId = saveBtn.getAttribute('data-listing-id');
+    function paintSaved(isSaved){
+      saveBtn.classList.toggle('saved', isSaved);
+      var label = document.getElementById('save-btn-label');
+      if(label) label.textContent = isSaved ? 'Saved' : 'Save';
+    }
+    if(VEAuth.isLoggedIn()){
+      VEAuth.listSavedListings().then(function(d){
+        var items = (d && d.items) || [];
+        if(items.some(function(i){ return i.id === listingId; })) paintSaved(true);
+      }).catch(function(){});
+    }
+    saveBtn.addEventListener('click', function(){
+      if(!VEAuth.isLoggedIn()){
+        VEAuth.showAuthModal('Sign in to save this listing to your list.', function(){
+          window.location.reload();
+        });
+        return;
+      }
+      var isSaved = saveBtn.classList.contains('saved');
+      saveBtn.disabled = true;
+      var action = isSaved ? VEAuth.unsaveListing(listingId) : VEAuth.saveListing(listingId);
+      action.then(function(d){
+        saveBtn.disabled = false;
+        if(d && d.error){ return; }
+        paintSaved(!isSaved);
+      }).catch(function(){ saveBtn.disabled = false; });
+    });
+  })();
 
   // Donate Points button
   var donateBtn = document.getElementById('donate-btn');
