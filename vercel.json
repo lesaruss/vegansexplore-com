@@ -2930,6 +2930,16 @@
       "permanent": true
     },
     {
+      "source": "/regions/philadelphia",
+      "destination": "/communities/philadelphia",
+      "permanent": true
+    },
+    {
+      "source": "/regions/dmv",
+      "destination": "/communities/dmv",
+      "permanent": true
+    },
+    {
       "source": "/vegans-who-lift-academy",
       "destination": "/archive/vegans-who-lift-academy",
       "permanent": true
