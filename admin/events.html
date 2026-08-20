@@ -9,8 +9,11 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-50:rgba(26,26,26,0.5);}
-  body{background:#fafafa;color:var(--ve-text);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;padding:40px 24px;}
+  body{background:#fafafa;color:var(--ve-text);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+  main{padding:40px 24px 80px;}
   .wrap{max-width:900px;margin:0 auto;}
+  .back-link{display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);text-decoration:none;margin-bottom:16px;}
+  .back-link:hover{color:var(--ve-green-dark);}
   h1{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.02em;margin-bottom:6px;}
   .sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
   .status-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
@@ -40,7 +43,12 @@
 </style>
 </head>
 <body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
 <div class="wrap">
+  <a class="back-link" href="/dashboard">&larr; Back to Dashboard</a>
   <h1>Event Submissions</h1>
   <p class="sub">Events submitted through "Submit an Event" on any VE city hub. Approving publishes the event to that city's public calendar. Superadmin only.</p>
 
@@ -55,8 +63,9 @@
     <div id="empty" style="display:none;">Nothing here. Queue is clear.</div>
   </div>
 </div>
+</main>
 
-<script src="/public/ve-auth.js"></script>
+<script src="/public/footer.js"></script>
 <script>
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
