@@ -2955,11 +2955,7 @@
       "source": "/directory",
       "destination": "/communities",
       "permanent": true
-    },
-    {
-      "source": "/directory/:path*",
-      "destination": "/communities",
-      "permanent": true
     }
   ]
 }
+
