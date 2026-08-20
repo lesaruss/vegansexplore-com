@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Events — Vegans Explore</title>
-<meta name="description" content="Upcoming Vegans Explore events, meetups, and partner activations. Join free to be first to know when new events go live.">
+<meta name="description" content="Every upcoming Vegans Explore event, across every city, in one place. Join free to be first to know when new events go live.">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +26,7 @@
   .hero h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 900; letter-spacing: -0.01em; margin-bottom: 12px; }
   .hero p { font-size: 16px; color: rgba(255,255,255,0.9); max-width: 620px; margin: 0 auto; line-height: 1.6; }
 
-  .events-section { padding: 56px 0 80px; }
+  .events-section { padding: 56px 0 24px; }
   .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin-top: 28px; }
 
   .event-card { border: 1px solid var(--ve-border); border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: transform .15s, box-shadow .15s; }
@@ -37,8 +37,33 @@
   .event-card .cta { display: block; background: var(--ve-orange); color: #fff; font-weight: 700; font-size: 13px; text-align: center; padding: 12px; margin-top: 4px; }
   .event-card .cta:hover { background: var(--ve-orange-dark); }
 
-  .empty-note { margin-top: 36px; text-align: center; color: var(--ve-text-50); font-size: 14px; line-height: 1.6; max-width: 520px; margin-left: auto; margin-right: auto; }
   .section-title { font-size: 22px; font-weight: 800; }
+  .section-sub { font-size: 14px; color: var(--ve-text-50); margin-top: 6px; }
+
+  .all-events-section { padding: 24px 0 80px; }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0 8px; }
+  .filter-row.city-row button.active { background: var(--ve-orange); border-color: var(--ve-orange); }
+  .filter-row button { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 9px 16px; border-radius: 100px; border: 2px solid var(--ve-border); background: #fff; cursor: pointer; color: var(--ve-text); }
+  .filter-row button.active { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
+
+  .event-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .event-row { display: flex; align-items: center; gap: 20px; border: 1px solid var(--ve-border); border-radius: 12px; padding: 16px 20px; background: #fff; }
+  .event-row-date { flex-shrink: 0; width: 56px; text-align: center; }
+  .event-row-date .day { display: block; font-size: 22px; font-weight: 900; color: var(--ve-green-dark); line-height: 1; }
+  .event-row-date .mon { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-50); margin-top: 2px; }
+  .event-row-body { flex: 1; min-width: 0; }
+  .event-row-badge { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; background: var(--ve-green-light); color: var(--ve-green-dark); margin-bottom: 6px; }
+  .event-row-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .event-row-meta { font-size: 13px; color: var(--ve-text-75); }
+  .event-row-cta { flex-shrink: 0; }
+  .event-row-cta a, .event-row-cta span { display: inline-block; background: var(--ve-orange); color: #fff; font-weight: 800; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 20px; border-radius: 6px; white-space: nowrap; }
+  .event-row-cta a:hover { background: var(--ve-orange-dark); }
+  .event-row-cta span.disabled { background: #ddd; color: #888; }
+  @media (max-width: 600px) { .event-row { flex-wrap: wrap; } .event-row-cta { width: 100%; } .event-row-cta a, .event-row-cta span { display: block; text-align: center; } }
+
+  .empty-note { margin-top: 36px; text-align: center; color: var(--ve-text-50); font-size: 14px; line-height: 1.6; max-width: 520px; margin-left: auto; margin-right: auto; }
+  #events-loading, #events-empty { text-align: center; color: var(--ve-text-50); font-size: 14px; padding: 40px 0; }
+  #events-empty { display: none; }
 </style>
 </head>
 <body>
@@ -48,12 +73,12 @@
 
 <section class="hero">
   <h1>Events</h1>
-  <p>Real-world meetups, partner activations, and community gatherings from Vegans Explore. Join free to hear about new events as soon as they're announced.</p>
+  <p>Real-world meetups, partner activations, and community gatherings from Vegans Explore, across every city. Join free to hear about new events as soon as they're announced.</p>
 </section>
 
 <section class="events-section">
   <div class="wrap">
-    <div class="section-title">Upcoming &amp; in development</div>
+    <div class="section-title">Featured</div>
     <div class="events-grid">
       <a class="event-card" href="/campaigns/plant-based-showcase-dolphins">
         <span class="badge">In development</span>
@@ -62,11 +87,105 @@
         <span class="cta">Learn more &amp; join the list</span>
       </a>
     </div>
-    <p class="empty-note">More events are added here as they're confirmed. Want to host or partner on a Vegans Explore event in your city? <a href="/communities/find" style="color:var(--ve-green-dark); font-weight:700;">Find your community</a> to get connected.</p>
+  </div>
+</section>
+
+<section class="all-events-section">
+  <div class="wrap">
+    <div class="section-title">All Upcoming Events</div>
+    <p class="section-sub">Every approved event from every Vegans Explore city hub, in one place.</p>
+
+    <div class="filter-row" id="city-filter"></div>
+    <div class="filter-row" id="category-filter"></div>
+
+    <div id="events-loading">Loading events&hellip;</div>
+    <div class="event-list" id="event-list"></div>
+    <div id="events-empty">No upcoming events match this filter yet. Check back soon, or <a href="/communities/find" style="color:var(--ve-green-dark); font-weight:700;">find your community</a> to see what's local to you.</div>
+
+    <p class="empty-note">Want to host or partner on a Vegans Explore event in your city? <a href="/communities/find" style="color:var(--ve-green-dark); font-weight:700;">Find your community</a> to get connected, or submit an event directly from your city hub.</p>
   </div>
 </section>
 
 <script src="/public/footer.js"></script>
 </div>
+
+<script>
+  var VE_SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var VE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var veAllEvents = [];
+  var veActiveCity = 'all';
+  var veActiveCategory = 'all';
+
+  function veEsc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function veLoadEvents() {
+    fetch(VE_SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=300', {
+      headers: { apikey: VE_ANON_KEY, Authorization: 'Bearer ' + VE_ANON_KEY }
+    }).then(function(r) { return r.json(); }).then(function(rows) {
+      var now = new Date();
+      veAllEvents = (rows || []).filter(function(e) { return e.starts_at && new Date(e.starts_at) >= now; });
+      document.getElementById('events-loading').style.display = 'none';
+      veRenderFilters();
+      veRender();
+    }).catch(function() {
+      document.getElementById('events-loading').textContent = "Couldn't load events right now.";
+    });
+  }
+
+  function veRenderFilters() {
+    var cities = ['all'].concat(Array.from(new Set(veAllEvents.map(function(e){ return e.city || 'Other'; }))).sort());
+    var cityWrap = document.getElementById('city-filter');
+    cityWrap.innerHTML = cities.map(function(c) {
+      var count = c === 'all' ? veAllEvents.length : veAllEvents.filter(function(e){ return (e.city || 'Other') === c; }).length;
+      return '<button data-city="' + veEsc(c) + '" class="' + (c === veActiveCity ? 'active' : '') + '">' + veEsc(c === 'all' ? 'All Cities' : c) + ' (' + count + ')</button>';
+    }).join('');
+    cityWrap.querySelectorAll('button').forEach(function(btn) {
+      btn.addEventListener('click', function() { veActiveCity = btn.getAttribute('data-city'); veRenderFilters(); veRender(); });
+    });
+
+    var categories = ['all'].concat(Array.from(new Set(veAllEvents.map(function(e){ return e.category || 'other'; }))).sort());
+    var catWrap = document.getElementById('category-filter');
+    catWrap.innerHTML = categories.map(function(c) {
+      return '<button data-cat="' + veEsc(c) + '" class="' + (c === veActiveCategory ? 'active' : '') + '">' + veEsc(c === 'all' ? 'All Categories' : c) + '</button>';
+    }).join('');
+    catWrap.querySelectorAll('button').forEach(function(btn) {
+      btn.addEventListener('click', function() { veActiveCategory = btn.getAttribute('data-cat'); veRenderFilters(); veRender(); });
+    });
+  }
+
+  function veRenderRow(e) {
+    var dt = new Date(e.starts_at);
+    var day = dt.getDate();
+    var mon = dt.toLocaleString('en-US', { month: 'short' });
+    var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    var cta = e.ticket_url
+      ? '<a href="' + veEsc(e.ticket_url) + '" target="_blank" rel="noopener noreferrer">RSVP</a>'
+      : '<span class="disabled">Details soon</span>';
+    return '<div class="event-row">' +
+      '<div class="event-row-date"><span class="day">' + day + '</span><span class="mon">' + veEsc(mon) + '</span></div>' +
+      '<div class="event-row-body">' +
+        '<span class="event-row-badge">' + veEsc(e.category || 'Event') + '</span>' +
+        '<div class="event-row-title">' + veEsc(e.title) + '</div>' +
+        '<div class="event-row-meta">' + veEsc(e.location_name || '') + (e.city ? ', ' + veEsc(e.city) : '') + ' &middot; ' + veEsc(time) + (e.rsvp_count ? ' &middot; ' + e.rsvp_count + ' attending' : '') + '</div>' +
+      '</div>' +
+      '<div class="event-row-cta">' + cta + '</div>' +
+    '</div>';
+  }
+
+  function veRender() {
+    var items = veAllEvents.filter(function(e) {
+      var cityOk = veActiveCity === 'all' || (e.city || 'Other') === veActiveCity;
+      var catOk = veActiveCategory === 'all' || (e.category || 'other') === veActiveCategory;
+      return cityOk && catOk;
+    });
+    var list = document.getElementById('event-list');
+    var empty = document.getElementById('events-empty');
+    if (!items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    list.innerHTML = items.map(veRenderRow).join('');
+  }
+
+  veLoadEvents();
+</script>
 </body>
 </html>
