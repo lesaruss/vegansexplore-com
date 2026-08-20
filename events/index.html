@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Events — Vegans Explore</title>
-<meta name="description" content="Every upcoming Vegans Explore event, across every city, in one place. Join free to be first to know when new events go live.">
+<meta name="description" content="Every upcoming Vegans Explore event, browsable by continent, country, state, and city. Join free to be first to know when new events go live.">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,7 +24,17 @@
 
   .hero { background: linear-gradient(120deg, var(--ve-green-dark), var(--ve-green)); color: #fff; padding: 64px 28px 52px; text-align: center; }
   .hero h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 900; letter-spacing: -0.01em; margin-bottom: 12px; }
-  .hero p { font-size: 16px; color: rgba(255,255,255,0.9); max-width: 620px; margin: 0 auto; line-height: 1.6; }
+  .hero p { font-size: 16px; color: rgba(255,255,255,0.9); max-width: 620px; margin: 0 auto 24px; line-height: 1.6; }
+
+  .hero-search { max-width: 420px; margin: 0 auto; position: relative; }
+  .hero-search input { width: 100%; padding: 14px 18px; border-radius: 100px; border: none; font-size: 14px; font-family: 'Montserrat', sans-serif; font-weight: 600; }
+  .hero-search input:focus { outline: 3px solid var(--ve-orange); outline-offset: 2px; }
+  .search-results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; z-index: 20; text-align: left; display: none; }
+  .search-results.open { display: block; }
+  .search-results button { display: block; width: 100%; text-align: left; background: none; border: none; padding: 12px 18px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: var(--ve-text); cursor: pointer; border-bottom: 1px solid var(--ve-border); }
+  .search-results button:last-child { border-bottom: none; }
+  .search-results button:hover { background: var(--ve-green-light); }
+  .search-results button span { display: block; font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-top: 2px; }
 
   .events-section { padding: 56px 0 24px; }
   .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin-top: 28px; }
@@ -41,10 +51,24 @@
   .section-sub { font-size: 14px; color: var(--ve-text-50); margin-top: 6px; }
 
   .all-events-section { padding: 24px 0 80px; }
-  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0 8px; }
-  .filter-row.city-row button.active { background: var(--ve-orange); border-color: var(--ve-orange); }
+
+  .breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 24px 0 20px; font-size: 13px; font-weight: 700; }
+  .breadcrumb button { background: none; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: var(--ve-green-dark); padding: 4px 2px; }
+  .breadcrumb button:hover { text-decoration: underline; }
+  .breadcrumb button.current { color: var(--ve-text); cursor: default; text-decoration: none; }
+  .breadcrumb .sep { color: var(--ve-text-50); }
+
+  .browse-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 8px; }
+  .browse-tile { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 16px 18px; background: #fff; cursor: pointer; font-family: 'Montserrat', sans-serif; text-align: left; transition: border-color .15s, box-shadow .15s; }
+  .browse-tile:hover { border-color: var(--ve-green); box-shadow: 0 4px 14px rgba(58,155,62,0.12); }
+  .browse-tile-name { font-size: 14px; font-weight: 800; }
+  .browse-tile-count { font-size: 11px; font-weight: 800; color: #fff; background: var(--ve-green); border-radius: 100px; padding: 3px 10px; flex-shrink: 0; }
+  .browse-all-link { font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--ve-text-50); margin: 4px 0 20px; display: inline-block; cursor: pointer; text-decoration: underline; background: none; border: none; font-family: 'Montserrat', sans-serif; }
+  .browse-all-link:hover { color: var(--ve-green-dark); }
+
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 8px; }
   .filter-row button { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 9px 16px; border-radius: 100px; border: 2px solid var(--ve-border); background: #fff; cursor: pointer; color: var(--ve-text); }
-  .filter-row button.active { background: var(--ve-green); border-color: var(--ve-green); color: #fff; }
+  .filter-row button.active { background: var(--ve-orange); border-color: var(--ve-orange); color: #fff; }
 
   .event-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
   .event-row { display: flex; align-items: center; gap: 20px; border: 1px solid var(--ve-border); border-radius: 12px; padding: 16px 20px; background: #fff; }
@@ -73,7 +97,11 @@
 
 <section class="hero">
   <h1>Events</h1>
-  <p>Real-world meetups, partner activations, and community gatherings from Vegans Explore, across every city. Join free to hear about new events as soon as they're announced.</p>
+  <p>Real-world meetups, partner activations, and community gatherings from Vegans Explore, across every city. Browse by continent, country, state, and city, or search for yours directly.</p>
+  <div class="hero-search">
+    <input type="text" id="city-search" placeholder="Search for a city&hellip;" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
 </section>
 
 <section class="events-section">
@@ -92,15 +120,17 @@
 
 <section class="all-events-section">
   <div class="wrap">
-    <div class="section-title">All Upcoming Events</div>
-    <p class="section-sub">Every approved event from every Vegans Explore city hub, in one place.</p>
+    <div class="section-title">Browse Events by Location</div>
+    <p class="section-sub">Every approved event from every Vegans Explore city, organized by continent, country, state, and city.</p>
 
-    <div class="filter-row" id="city-filter"></div>
-    <div class="filter-row" id="category-filter"></div>
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <button type="button" class="browse-all-link" id="see-all-link" style="display:none;">See all upcoming events in one list &rarr;</button>
 
     <div id="events-loading">Loading events&hellip;</div>
+    <div class="browse-grid" id="browse-grid"></div>
+    <div class="filter-row" id="category-filter" style="display:none;"></div>
     <div class="event-list" id="event-list"></div>
-    <div id="events-empty">No upcoming events match this filter yet. Check back soon, or <a href="/communities/find" style="color:var(--ve-green-dark); font-weight:700;">find your community</a> to see what's local to you.</div>
+    <div id="events-empty">No upcoming events here yet. Check back soon, or <a href="/communities/find" style="color:var(--ve-green-dark); font-weight:700;">find your community</a> to see what's local to you.</div>
 
     <p class="empty-note">Want to host or partner on a Vegans Explore event in your city? <a href="/communities/find" style="color:var(--ve-green-dark); font-weight:700;">Find your community</a> to get connected, or submit an event directly from your city hub.</p>
   </div>
@@ -112,44 +142,94 @@
 <script>
   var VE_SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var VE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+  /* Standard ISO country -> {name, continent} reference data, used to group events
+     geographically (2026-08-20, Logan, per Sean direction to bring back the
+     continent/country/state/city browse structure the old WordPress site had). */
+  var VE_COUNTRY_INFO = {"AW":{"name":"Aruba","continent":"North America"},"AF":{"name":"Afghanistan","continent":"Asia"},"AO":{"name":"Angola","continent":"Africa"},"AI":{"name":"Anguilla","continent":"North America"},"AX":{"name":"\u00c5land Islands","continent":"Europe"},"AL":{"name":"Albania","continent":"Europe"},"AD":{"name":"Andorra","continent":"Europe"},"AE":{"name":"United Arab Emirates","continent":"Asia"},"AR":{"name":"Argentina","continent":"South America"},"AM":{"name":"Armenia","continent":"Asia"},"AS":{"name":"American Samoa","continent":"Oceania"},"AQ":{"name":"Antarctica","continent":"Other"},"TF":{"name":"French Southern Territories","continent":"Other"},"AG":{"name":"Antigua and Barbuda","continent":"North America"},"AU":{"name":"Australia","continent":"Oceania"},"AT":{"name":"Austria","continent":"Europe"},"AZ":{"name":"Azerbaijan","continent":"Asia"},"BI":{"name":"Burundi","continent":"Africa"},"BE":{"name":"Belgium","continent":"Europe"},"BJ":{"name":"Benin","continent":"Africa"},"BQ":{"name":"Bonaire, Sint Eustatius and Saba","continent":"North America"},"BF":{"name":"Burkina Faso","continent":"Africa"},"BD":{"name":"Bangladesh","continent":"Asia"},"BG":{"name":"Bulgaria","continent":"Europe"},"BH":{"name":"Bahrain","continent":"Asia"},"BS":{"name":"Bahamas","continent":"North America"},"BA":{"name":"Bosnia and Herzegovina","continent":"Europe"},"BL":{"name":"Saint Barth\u00e9lemy","continent":"North America"},"BY":{"name":"Belarus","continent":"Europe"},"BZ":{"name":"Belize","continent":"North America"},"BM":{"name":"Bermuda","continent":"North America"},"BO":{"name":"Bolivia, Plurinational State of","continent":"South America"},"BR":{"name":"Brazil","continent":"South America"},"BB":{"name":"Barbados","continent":"North America"},"BN":{"name":"Brunei Darussalam","continent":"Asia"},"BT":{"name":"Bhutan","continent":"Asia"},"BV":{"name":"Bouvet Island","continent":"Antarctica"},"BW":{"name":"Botswana","continent":"Africa"},"CF":{"name":"Central African Republic","continent":"Africa"},"CA":{"name":"Canada","continent":"North America"},"CC":{"name":"Cocos (Keeling) Islands","continent":"Asia"},"CH":{"name":"Switzerland","continent":"Europe"},"CL":{"name":"Chile","continent":"South America"},"CN":{"name":"China","continent":"Asia"},"CI":{"name":"C\u00f4te d'Ivoire","continent":"Africa"},"CM":{"name":"Cameroon","continent":"Africa"},"CD":{"name":"Congo, The Democratic Republic of the","continent":"Africa"},"CG":{"name":"Congo","continent":"Africa"},"CK":{"name":"Cook Islands","continent":"Oceania"},"CO":{"name":"Colombia","continent":"South America"},"KM":{"name":"Comoros","continent":"Africa"},"CV":{"name":"Cabo Verde","continent":"Africa"},"CR":{"name":"Costa Rica","continent":"North America"},"CU":{"name":"Cuba","continent":"North America"},"CW":{"name":"Cura\u00e7ao","continent":"North America"},"CX":{"name":"Christmas Island","continent":"Asia"},"KY":{"name":"Cayman Islands","continent":"North America"},"CY":{"name":"Cyprus","continent":"Asia"},"CZ":{"name":"Czechia","continent":"Europe"},"DE":{"name":"Germany","continent":"Europe"},"DJ":{"name":"Djibouti","continent":"Africa"},"DM":{"name":"Dominica","continent":"North America"},"DK":{"name":"Denmark","continent":"Europe"},"DO":{"name":"Dominican Republic","continent":"North America"},"DZ":{"name":"Algeria","continent":"Africa"},"EC":{"name":"Ecuador","continent":"South America"},"EG":{"name":"Egypt","continent":"Africa"},"ER":{"name":"Eritrea","continent":"Africa"},"EH":{"name":"Western Sahara","continent":"Other"},"ES":{"name":"Spain","continent":"Europe"},"EE":{"name":"Estonia","continent":"Europe"},"ET":{"name":"Ethiopia","continent":"Africa"},"FI":{"name":"Finland","continent":"Europe"},"FJ":{"name":"Fiji","continent":"Oceania"},"FK":{"name":"Falkland Islands (Malvinas)","continent":"South America"},"FR":{"name":"France","continent":"Europe"},"FO":{"name":"Faroe Islands","continent":"Europe"},"FM":{"name":"Micronesia, Federated States of","continent":"Oceania"},"GA":{"name":"Gabon","continent":"Africa"},"GB":{"name":"United Kingdom","continent":"Europe"},"GE":{"name":"Georgia","continent":"Asia"},"GG":{"name":"Guernsey","continent":"Europe"},"GH":{"name":"Ghana","continent":"Africa"},"GI":{"name":"Gibraltar","continent":"Europe"},"GN":{"name":"Guinea","continent":"Africa"},"GP":{"name":"Guadeloupe","continent":"North America"},"GM":{"name":"Gambia","continent":"Africa"},"GW":{"name":"Guinea-Bissau","continent":"Africa"},"GQ":{"name":"Equatorial Guinea","continent":"Africa"},"GR":{"name":"Greece","continent":"Europe"},"GD":{"name":"Grenada","continent":"North America"},"GL":{"name":"Greenland","continent":"North America"},"GT":{"name":"Guatemala","continent":"North America"},"GF":{"name":"French Guiana","continent":"South America"},"GU":{"name":"Guam","continent":"Oceania"},"GY":{"name":"Guyana","continent":"South America"},"HK":{"name":"Hong Kong","continent":"Asia"},"HM":{"name":"Heard Island and McDonald Islands","continent":"Antarctica"},"HN":{"name":"Honduras","continent":"North America"},"HR":{"name":"Croatia","continent":"Europe"},"HT":{"name":"Haiti","continent":"North America"},"HU":{"name":"Hungary","continent":"Europe"},"ID":{"name":"Indonesia","continent":"Asia"},"IM":{"name":"Isle of Man","continent":"Europe"},"IN":{"name":"India","continent":"Asia"},"IO":{"name":"British Indian Ocean Territory","continent":"Asia"},"IE":{"name":"Ireland","continent":"Europe"},"IR":{"name":"Iran, Islamic Republic of","continent":"Asia"},"IQ":{"name":"Iraq","continent":"Asia"},"IS":{"name":"Iceland","continent":"Europe"},"IL":{"name":"Israel","continent":"Asia"},"IT":{"name":"Italy","continent":"Europe"},"JM":{"name":"Jamaica","continent":"North America"},"JE":{"name":"Jersey","continent":"Europe"},"JO":{"name":"Jordan","continent":"Asia"},"JP":{"name":"Japan","continent":"Asia"},"KZ":{"name":"Kazakhstan","continent":"Asia"},"KE":{"name":"Kenya","continent":"Africa"},"KG":{"name":"Kyrgyzstan","continent":"Asia"},"KH":{"name":"Cambodia","continent":"Asia"},"KI":{"name":"Kiribati","continent":"Oceania"},"KN":{"name":"Saint Kitts and Nevis","continent":"North America"},"KR":{"name":"Korea, Republic of","continent":"Asia"},"KW":{"name":"Kuwait","continent":"Asia"},"LA":{"name":"Lao People's Democratic Republic","continent":"Asia"},"LB":{"name":"Lebanon","continent":"Asia"},"LR":{"name":"Liberia","continent":"Africa"},"LY":{"name":"Libya","continent":"Africa"},"LC":{"name":"Saint Lucia","continent":"North America"},"LI":{"name":"Liechtenstein","continent":"Europe"},"LK":{"name":"Sri Lanka","continent":"Asia"},"LS":{"name":"Lesotho","continent":"Africa"},"LT":{"name":"Lithuania","continent":"Europe"},"LU":{"name":"Luxembourg","continent":"Europe"},"LV":{"name":"Latvia","continent":"Europe"},"MO":{"name":"Macao","continent":"Asia"},"MF":{"name":"Saint Martin (French part)","continent":"North America"},"MA":{"name":"Morocco","continent":"Africa"},"MC":{"name":"Monaco","continent":"Europe"},"MD":{"name":"Moldova, Republic of","continent":"Europe"},"MG":{"name":"Madagascar","continent":"Africa"},"MV":{"name":"Maldives","continent":"Asia"},"MX":{"name":"Mexico","continent":"North America"},"MH":{"name":"Marshall Islands","continent":"Oceania"},"MK":{"name":"North Macedonia","continent":"Europe"},"ML":{"name":"Mali","continent":"Africa"},"MT":{"name":"Malta","continent":"Europe"},"MM":{"name":"Myanmar","continent":"Asia"},"ME":{"name":"Montenegro","continent":"Europe"},"MN":{"name":"Mongolia","continent":"Asia"},"MP":{"name":"Northern Mariana Islands","continent":"Oceania"},"MZ":{"name":"Mozambique","continent":"Africa"},"MR":{"name":"Mauritania","continent":"Africa"},"MS":{"name":"Montserrat","continent":"North America"},"MQ":{"name":"Martinique","continent":"North America"},"MU":{"name":"Mauritius","continent":"Africa"},"MW":{"name":"Malawi","continent":"Africa"},"MY":{"name":"Malaysia","continent":"Asia"},"YT":{"name":"Mayotte","continent":"Africa"},"NA":{"name":"Namibia","continent":"Africa"},"NC":{"name":"New Caledonia","continent":"Oceania"},"NE":{"name":"Niger","continent":"Africa"},"NF":{"name":"Norfolk Island","continent":"Oceania"},"NG":{"name":"Nigeria","continent":"Africa"},"NI":{"name":"Nicaragua","continent":"North America"},"NU":{"name":"Niue","continent":"Oceania"},"NL":{"name":"Netherlands","continent":"Europe"},"NO":{"name":"Norway","continent":"Europe"},"NP":{"name":"Nepal","continent":"Asia"},"NR":{"name":"Nauru","continent":"Oceania"},"NZ":{"name":"New Zealand","continent":"Oceania"},"OM":{"name":"Oman","continent":"Asia"},"PK":{"name":"Pakistan","continent":"Asia"},"PA":{"name":"Panama","continent":"North America"},"PN":{"name":"Pitcairn","continent":"Other"},"PE":{"name":"Peru","continent":"South America"},"PH":{"name":"Philippines","continent":"Asia"},"PW":{"name":"Palau","continent":"Oceania"},"PG":{"name":"Papua New Guinea","continent":"Oceania"},"PL":{"name":"Poland","continent":"Europe"},"PR":{"name":"Puerto Rico","continent":"North America"},"KP":{"name":"Korea, Democratic People's Republic of","continent":"Asia"},"PT":{"name":"Portugal","continent":"Europe"},"PY":{"name":"Paraguay","continent":"South America"},"PS":{"name":"Palestine, State of","continent":"Asia"},"PF":{"name":"French Polynesia","continent":"Oceania"},"QA":{"name":"Qatar","continent":"Asia"},"RE":{"name":"R\u00e9union","continent":"Africa"},"RO":{"name":"Romania","continent":"Europe"},"RU":{"name":"Russian Federation","continent":"Europe"},"RW":{"name":"Rwanda","continent":"Africa"},"SA":{"name":"Saudi Arabia","continent":"Asia"},"SD":{"name":"Sudan","continent":"Africa"},"SN":{"name":"Senegal","continent":"Africa"},"SG":{"name":"Singapore","continent":"Asia"},"GS":{"name":"South Georgia and the South Sandwich Islands","continent":"South America"},"SH":{"name":"Saint Helena, Ascension and Tristan da Cunha","continent":"Africa"},"SJ":{"name":"Svalbard and Jan Mayen","continent":"Europe"},"SB":{"name":"Solomon Islands","continent":"Oceania"},"SL":{"name":"Sierra Leone","continent":"Africa"},"SV":{"name":"El Salvador","continent":"North America"},"SM":{"name":"San Marino","continent":"Europe"},"SO":{"name":"Somalia","continent":"Africa"},"PM":{"name":"Saint Pierre and Miquelon","continent":"North America"},"RS":{"name":"Serbia","continent":"Europe"},"SS":{"name":"South Sudan","continent":"Africa"},"ST":{"name":"Sao Tome and Principe","continent":"Africa"},"SR":{"name":"Suriname","continent":"South America"},"SK":{"name":"Slovakia","continent":"Europe"},"SI":{"name":"Slovenia","continent":"Europe"},"SE":{"name":"Sweden","continent":"Europe"},"SZ":{"name":"Eswatini","continent":"Africa"},"SX":{"name":"Sint Maarten (Dutch part)","continent":"Other"},"SC":{"name":"Seychelles","continent":"Africa"},"SY":{"name":"Syrian Arab Republic","continent":"Asia"},"TC":{"name":"Turks and Caicos Islands","continent":"North America"},"TD":{"name":"Chad","continent":"Africa"},"TG":{"name":"Togo","continent":"Africa"},"TH":{"name":"Thailand","continent":"Asia"},"TJ":{"name":"Tajikistan","continent":"Asia"},"TK":{"name":"Tokelau","continent":"Oceania"},"TM":{"name":"Turkmenistan","continent":"Asia"},"TL":{"name":"Timor-Leste","continent":"Other"},"TO":{"name":"Tonga","continent":"Oceania"},"TT":{"name":"Trinidad and Tobago","continent":"North America"},"TN":{"name":"Tunisia","continent":"Africa"},"TR":{"name":"T\u00fcrkiye","continent":"Asia"},"TV":{"name":"Tuvalu","continent":"Oceania"},"TW":{"name":"Taiwan, Province of China","continent":"Asia"},"TZ":{"name":"Tanzania, United Republic of","continent":"Africa"},"UG":{"name":"Uganda","continent":"Africa"},"UA":{"name":"Ukraine","continent":"Europe"},"UM":{"name":"United States Minor Outlying Islands","continent":"Other"},"UY":{"name":"Uruguay","continent":"South America"},"US":{"name":"United States","continent":"North America"},"UZ":{"name":"Uzbekistan","continent":"Asia"},"VA":{"name":"Holy See (Vatican City State)","continent":"Other"},"VC":{"name":"Saint Vincent and the Grenadines","continent":"North America"},"VE":{"name":"Venezuela, Bolivarian Republic of","continent":"South America"},"VG":{"name":"Virgin Islands, British","continent":"North America"},"VI":{"name":"Virgin Islands, U.S.","continent":"North America"},"VN":{"name":"Viet Nam","continent":"Asia"},"VU":{"name":"Vanuatu","continent":"Oceania"},"WF":{"name":"Wallis and Futuna","continent":"Oceania"},"WS":{"name":"Samoa","continent":"Oceania"},"YE":{"name":"Yemen","continent":"Asia"},"ZA":{"name":"South Africa","continent":"Africa"},"ZM":{"name":"Zambia","continent":"Africa"},"ZW":{"name":"Zimbabwe","continent":"Africa"},"UK":{"name":"United Kingdom","continent":"Europe"}};
+  var VE_US_STATES = {"AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California","CO":"Colorado","CT":"Connecticut","DE":"Delaware","FL":"Florida","GA":"Georgia","HI":"Hawaii","ID":"Idaho","IL":"Illinois","IN":"Indiana","IA":"Iowa","KS":"Kansas","KY":"Kentucky","LA":"Louisiana","ME":"Maine","MD":"Maryland","MA":"Massachusetts","MI":"Michigan","MN":"Minnesota","MS":"Mississippi","MO":"Missouri","MT":"Montana","NE":"Nebraska","NV":"Nevada","NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York","NC":"North Carolina","ND":"North Dakota","OH":"Ohio","OK":"Oklahoma","OR":"Oregon","PA":"Pennsylvania","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota","TN":"Tennessee","TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia","WA":"Washington","WV":"West Virginia","WI":"Wisconsin","WY":"Wyoming","DC":"District of Columbia"};
+
   var veAllEvents = [];
-  var veActiveCity = 'all';
+  var veIndex = {}; // continent -> country -> state -> city -> [events]
+  var vePath = { continent: null, country: null, state: null, city: null };
   var veActiveCategory = 'all';
 
   function veEsc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+  function veCountryInfo(code) {
+    return VE_COUNTRY_INFO[(code || '').toUpperCase()] || { name: code || 'Other', continent: 'Other' };
+  }
+  function veStateName(code, countryCode) {
+    if (countryCode === 'US' && VE_US_STATES[(code || '').toUpperCase()]) return VE_US_STATES[code.toUpperCase()];
+    return code || 'Unspecified';
+  }
+
   function veLoadEvents() {
-    fetch(VE_SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=300', {
+    fetch(VE_SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,state,country,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=500', {
       headers: { apikey: VE_ANON_KEY, Authorization: 'Bearer ' + VE_ANON_KEY }
     }).then(function(r) { return r.json(); }).then(function(rows) {
       var now = new Date();
       veAllEvents = (rows || []).filter(function(e) { return e.starts_at && new Date(e.starts_at) >= now; });
+      veBuildIndex();
       document.getElementById('events-loading').style.display = 'none';
-      veRenderFilters();
       veRender();
     }).catch(function() {
       document.getElementById('events-loading').textContent = "Couldn't load events right now.";
     });
   }
 
-  function veRenderFilters() {
-    var cities = ['all'].concat(Array.from(new Set(veAllEvents.map(function(e){ return e.city || 'Other'; }))).sort());
-    var cityWrap = document.getElementById('city-filter');
-    cityWrap.innerHTML = cities.map(function(c) {
-      var count = c === 'all' ? veAllEvents.length : veAllEvents.filter(function(e){ return (e.city || 'Other') === c; }).length;
-      return '<button data-city="' + veEsc(c) + '" class="' + (c === veActiveCity ? 'active' : '') + '">' + veEsc(c === 'all' ? 'All Cities' : c) + ' (' + count + ')</button>';
-    }).join('');
-    cityWrap.querySelectorAll('button').forEach(function(btn) {
-      btn.addEventListener('click', function() { veActiveCity = btn.getAttribute('data-city'); veRenderFilters(); veRender(); });
+  function veBuildIndex() {
+    veIndex = {};
+    veAllEvents.forEach(function(e) {
+      var info = veCountryInfo(e.country);
+      var continent = info.continent;
+      var country = info.name;
+      var state = veStateName(e.state, (e.country || '').toUpperCase());
+      var city = e.city || 'Unspecified';
+      if (!veIndex[continent]) veIndex[continent] = {};
+      if (!veIndex[continent][country]) veIndex[continent][country] = {};
+      if (!veIndex[continent][country][state]) veIndex[continent][country][state] = {};
+      if (!veIndex[continent][country][state][city]) veIndex[continent][country][state][city] = [];
+      veIndex[continent][country][state][city].push(e);
     });
+  }
 
-    var categories = ['all'].concat(Array.from(new Set(veAllEvents.map(function(e){ return e.category || 'other'; }))).sort());
-    var catWrap = document.getElementById('category-filter');
-    catWrap.innerHTML = categories.map(function(c) {
-      return '<button data-cat="' + veEsc(c) + '" class="' + (c === veActiveCategory ? 'active' : '') + '">' + veEsc(c === 'all' ? 'All Categories' : c) + '</button>';
+  function veCountAll(node) {
+    if (Array.isArray(node)) return node.length;
+    return Object.keys(node).reduce(function(sum, k) { return sum + veCountAll(node[k]); }, 0);
+  }
+
+  function veCurrentNode() {
+    var node = veIndex;
+    if (vePath.continent) node = node[vePath.continent] || {};
+    if (vePath.continent && vePath.country) node = node[vePath.country] || {};
+    if (vePath.continent && vePath.country && vePath.state) node = node[vePath.state] || {};
+    return node;
+  }
+
+  function veRenderBreadcrumb() {
+    var crumbs = [{ label: 'All Continents', level: null }];
+    if (vePath.continent) crumbs.push({ label: vePath.continent, level: 'continent' });
+    if (vePath.country) crumbs.push({ label: vePath.country, level: 'country' });
+    if (vePath.state) crumbs.push({ label: vePath.state, level: 'state' });
+    if (vePath.city) crumbs.push({ label: vePath.city, level: 'city' });
+
+    var wrap = document.getElementById('breadcrumb');
+    wrap.innerHTML = crumbs.map(function(c, i) {
+      var isLast = i === crumbs.length - 1;
+      var btn = '<button type="button" data-level="' + (c.level || '') + '" class="' + (isLast ? 'current' : '') + '"' + (isLast ? ' disabled' : '') + '>' + veEsc(c.label) + '</button>';
+      return (i > 0 ? '<span class="sep">/</span>' : '') + btn;
     }).join('');
-    catWrap.querySelectorAll('button').forEach(function(btn) {
-      btn.addEventListener('click', function() { veActiveCategory = btn.getAttribute('data-cat'); veRenderFilters(); veRender(); });
+
+    wrap.querySelectorAll('button:not(.current)').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var level = btn.getAttribute('data-level');
+        if (!level) { vePath = { continent: null, country: null, state: null, city: null }; }
+        else if (level === 'continent') { vePath.country = null; vePath.state = null; vePath.city = null; }
+        else if (level === 'country') { vePath.state = null; vePath.city = null; }
+        else if (level === 'state') { vePath.city = null; }
+        veRender();
+      });
     });
   }
 
@@ -172,18 +252,164 @@
     '</div>';
   }
 
-  function veRender() {
-    var items = veAllEvents.filter(function(e) {
-      var cityOk = veActiveCity === 'all' || (e.city || 'Other') === veActiveCity;
-      var catOk = veActiveCategory === 'all' || (e.category || 'other') === veActiveCategory;
-      return cityOk && catOk;
+  function veRenderCategoryFilter(events) {
+    var wrap = document.getElementById('category-filter');
+    var categories = ['all'].concat(Array.from(new Set(events.map(function(e){ return e.category || 'other'; }))).sort());
+    if (categories.length <= 2) { wrap.style.display = 'none'; wrap.innerHTML=''; return; }
+    wrap.style.display = 'flex';
+    wrap.innerHTML = categories.map(function(c) {
+      return '<button data-cat="' + veEsc(c) + '" class="' + (c === veActiveCategory ? 'active' : '') + '">' + veEsc(c === 'all' ? 'All Categories' : c) + '</button>';
+    }).join('');
+    wrap.querySelectorAll('button').forEach(function(btn) {
+      btn.addEventListener('click', function() { veActiveCategory = btn.getAttribute('data-cat'); veRender(); });
     });
+  }
+
+  function veFlattenAll() {
+    return veAllEvents;
+  }
+
+  function veRender() {
+    veRenderBreadcrumb();
+    var loading = document.getElementById('events-loading');
+    var grid = document.getElementById('browse-grid');
     var list = document.getElementById('event-list');
     var empty = document.getElementById('events-empty');
-    if (!items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+    var catFilter = document.getElementById('category-filter');
+    var seeAll = document.getElementById('see-all-link');
+
+    if (!vePath.continent) {
+      // top level: continents
+      seeAll.style.display = 'inline-block';
+      var conts = Object.keys(veIndex).sort(function(a,b) { return veCountAll(veIndex[b]) - veCountAll(veIndex[a]); });
+      grid.style.display = 'grid';
+      list.innerHTML = ''; empty.style.display = 'none'; catFilter.style.display = 'none';
+      if (!conts.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+      grid.innerHTML = conts.map(function(c) {
+        return '<button type="button" class="browse-tile" data-cont="' + veEsc(c) + '"><span class="browse-tile-name">' + veEsc(c) + '</span><span class="browse-tile-count">' + veCountAll(veIndex[c]) + '</span></button>';
+      }).join('');
+      grid.querySelectorAll('button').forEach(function(btn) {
+        btn.addEventListener('click', function() { vePath.continent = btn.getAttribute('data-cont'); veRender(); });
+      });
+      return;
+    }
+
+    if (!vePath.country) {
+      var countryNode = veIndex[vePath.continent] || {};
+      var countries = Object.keys(countryNode).sort(function(a,b) { return veCountAll(countryNode[b]) - veCountAll(countryNode[a]); });
+      grid.style.display = 'grid';
+      list.innerHTML = ''; empty.style.display = 'none'; catFilter.style.display = 'none';
+      grid.innerHTML = countries.map(function(c) {
+        return '<button type="button" class="browse-tile" data-country="' + veEsc(c) + '"><span class="browse-tile-name">' + veEsc(c) + '</span><span class="browse-tile-count">' + veCountAll(countryNode[c]) + '</span></button>';
+      }).join('');
+      grid.querySelectorAll('button').forEach(function(btn) {
+        btn.addEventListener('click', function() { vePath.country = btn.getAttribute('data-country'); veRender(); });
+      });
+      return;
+    }
+
+    if (!vePath.state) {
+      var stateNode = (veIndex[vePath.continent] || {})[vePath.country] || {};
+      var states = Object.keys(stateNode).sort(function(a,b) { return veCountAll(stateNode[b]) - veCountAll(stateNode[a]); });
+      grid.style.display = 'grid';
+      list.innerHTML = ''; empty.style.display = 'none'; catFilter.style.display = 'none';
+      grid.innerHTML = states.map(function(s) {
+        return '<button type="button" class="browse-tile" data-state="' + veEsc(s) + '"><span class="browse-tile-name">' + veEsc(s) + '</span><span class="browse-tile-count">' + veCountAll(stateNode[s]) + '</span></button>';
+      }).join('');
+      grid.querySelectorAll('button').forEach(function(btn) {
+        btn.addEventListener('click', function() { vePath.state = btn.getAttribute('data-state'); veRender(); });
+      });
+      return;
+    }
+
+    if (!vePath.city) {
+      var cityNode = ((veIndex[vePath.continent] || {})[vePath.country] || {})[vePath.state] || {};
+      var cities = Object.keys(cityNode).sort(function(a,b) { return cityNode[b].length - cityNode[a].length; });
+      grid.style.display = 'grid';
+      list.innerHTML = ''; empty.style.display = 'none'; catFilter.style.display = 'none';
+      grid.innerHTML = cities.map(function(c) {
+        return '<button type="button" class="browse-tile" data-city="' + veEsc(c) + '"><span class="browse-tile-name">' + veEsc(c) + '</span><span class="browse-tile-count">' + cityNode[c].length + '</span></button>';
+      }).join('');
+      grid.querySelectorAll('button').forEach(function(btn) {
+        btn.addEventListener('click', function() { vePath.city = btn.getAttribute('data-city'); veRender(); });
+      });
+      return;
+    }
+
+    // city level: show the actual events
+    grid.style.display = 'none'; grid.innerHTML = '';
+    var events = (((veIndex[vePath.continent] || {})[vePath.country] || {})[vePath.state] || {})[vePath.city] || [];
+    veRenderCategoryFilter(events);
+    var filtered = veActiveCategory === 'all' ? events : events.filter(function(e) { return (e.category || 'other') === veActiveCategory; });
+    if (!filtered.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
-    list.innerHTML = items.map(veRenderRow).join('');
+    list.innerHTML = filtered.map(veRenderRow).join('');
   }
+
+  function veShowAllFlat() {
+    vePath = { continent: null, country: null, state: null, city: null };
+    var grid = document.getElementById('browse-grid');
+    var list = document.getElementById('event-list');
+    var empty = document.getElementById('events-empty');
+    var catFilter = document.getElementById('category-filter');
+    veRenderBreadcrumb();
+    grid.style.display = 'none'; grid.innerHTML = '';
+    veActiveCategory = 'all';
+    veRenderCategoryFilter(veAllEvents);
+    if (!veAllEvents.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    list.innerHTML = veAllEvents.map(veRenderRow).join('');
+  }
+
+  document.getElementById('see-all-link').addEventListener('click', function() {
+    document.getElementById('see-all-link').style.display = 'none';
+    veShowAllFlat();
+  });
+
+  /* City search: live-filters against every city in the dataset, jumps straight
+     into that city's drill-down path on click. */
+  var searchInput = document.getElementById('city-search');
+  var searchResults = document.getElementById('search-results');
+  searchInput.addEventListener('input', function() {
+    var q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove('open'); searchResults.innerHTML = ''; return; }
+    var matches = [];
+    Object.keys(veIndex).forEach(function(cont) {
+      Object.keys(veIndex[cont]).forEach(function(country) {
+        Object.keys(veIndex[cont][country]).forEach(function(state) {
+          Object.keys(veIndex[cont][country][state]).forEach(function(city) {
+            if (city.toLowerCase().indexOf(q) > -1) {
+              matches.push({ continent: cont, country: country, state: state, city: city, count: veIndex[cont][country][state][city].length });
+            }
+          });
+        });
+      });
+    });
+    matches = matches.slice(0, 8);
+    if (!matches.length) {
+      searchResults.innerHTML = '<button type="button" disabled>No matching city yet</button>';
+      searchResults.classList.add('open');
+      return;
+    }
+    searchResults.innerHTML = matches.map(function(m, i) {
+      return '<button type="button" data-i="' + i + '">' + veEsc(m.city) + '<span>' + veEsc(m.state) + ', ' + veEsc(m.country) + ' &middot; ' + m.count + ' event' + (m.count === 1 ? '' : 's') + '</span></button>';
+    }).join('');
+    searchResults.querySelectorAll('button[data-i]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var m = matches[parseInt(btn.getAttribute('data-i'), 10)];
+        vePath = { continent: m.continent, country: m.country, state: m.state, city: m.city };
+        searchResults.classList.remove('open');
+        searchInput.value = '';
+        document.getElementById('see-all-link').style.display = 'inline-block';
+        veRender();
+        document.querySelector('.all-events-section').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    searchResults.classList.add('open');
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.hero-search')) { searchResults.classList.remove('open'); }
+  });
 
   veLoadEvents();
 </script>
