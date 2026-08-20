@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Submissions, Vegans Explore Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-50:rgba(26,26,26,0.5);}
+  body{background:#fafafa;color:var(--ve-text);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;padding:40px 24px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.02em;margin-bottom:6px;}
+  .sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
+  .status-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .status-filter button{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;border-radius:100px;border:2px solid var(--ve-border);background:#fff;cursor:pointer;}
+  .status-filter button.active{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  .city-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .city-filter button{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;border-radius:100px;border:2px solid var(--ve-border);background:#fff;cursor:pointer;}
+  .city-filter button.active{background:var(--ve-orange);border-color:var(--ve-orange);color:#fff;}
+  .card{background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:20px;margin-bottom:14px;}
+  .card-meta{display:flex;gap:10px;align-items:center;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:8px;flex-wrap:wrap;}
+  .role-tag{padding:3px 9px;border-radius:100px;background:rgba(58,155,62,0.1);color:var(--ve-green-dark);}
+  .headline{font-size:16px;font-weight:800;margin-bottom:6px;}
+  .summary{font-size:13px;color:#444;line-height:1.5;margin-bottom:10px;}
+  .cover-note{font-size:13px;color:#444;line-height:1.5;margin-bottom:10px;background:#f7f7f7;border-radius:6px;padding:10px 12px;}
+  .rejection-note{font-size:12px;color:#dc2626;line-height:1.5;margin-bottom:10px;background:#FEF2F2;border-radius:6px;padding:10px 12px;}
+  .actions{display:flex;gap:10px;}
+  button.approve,button.reject{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;border-radius:6px;border:none;cursor:pointer;}
+  button.approve{background:var(--ve-green);color:#fff;}
+  button.approve:hover{background:var(--ve-green-dark);}
+  button.reject{background:#fff;border:1.5px solid #dc2626;color:#dc2626;}
+  button.reject:hover{background:#FEF2F2;}
+  #gate{text-align:center;padding:80px 20px;}
+  #gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #empty{text-align:center;padding:60px 20px;color:var(--ve-text-50);font-size:14px;}
+  #list{display:none;}
+  a.ticket-link{color:var(--ve-green-dark);font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Event Submissions</h1>
+  <p class="sub">Events submitted through "Submit an Event" on any VE city hub. Approving publishes the event to that city's public calendar. Superadmin only.</p>
+
+  <div id="gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="list">
+    <div class="status-filter" id="status-filter"></div>
+    <div class="city-filter" id="city-filter"></div>
+    <div id="cards"></div>
+    <div id="empty" style="display:none;">Nothing here. Queue is clear.</div>
+  </div>
+</div>
+
+<script src="/public/ve-auth.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var activeStatus = 'pending';
+  var activeCity = 'all';
+  var allItems = [];
+
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function init() {
+    var gate = document.getElementById('gate');
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) {
+      gate.innerHTML = '<p>Sign in with a superadmin account to review event submissions.</p><button id="signin-btn">Sign In</button>';
+      document.getElementById('signin-btn').addEventListener('click', function(){ VEAuth.showAuthModal('Sign in to review event submissions.', init); });
+      return;
+    }
+    var member = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+    if (!member || !member.is_superadmin) {
+      gate.innerHTML = '<p>This account does not have access to this page.</p>';
+      return;
+    }
+    gate.style.display = 'none';
+    document.getElementById('list').style.display = 'block';
+    renderStatusFilters();
+    loadEvents();
+  }
+
+  function renderStatusFilters() {
+    var statuses = ['pending', 'approved', 'rejected'];
+    var wrap = document.getElementById('status-filter');
+    wrap.innerHTML = statuses.map(function(s){
+      return '<button data-status="' + s + '" class="' + (s === activeStatus ? 'active' : '') + '">' + esc(s.charAt(0).toUpperCase() + s.slice(1)) + '</button>';
+    }).join('');
+    wrap.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){ activeStatus = btn.getAttribute('data-status'); activeCity = 'all'; renderStatusFilters(); loadEvents(); });
+    });
+  }
+
+  function loadEvents() {
+    var token = VEAuth.getToken();
+    document.getElementById('cards').innerHTML = '<p class="summary">Loading&hellip;</p>';
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_pending_events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token, status: activeStatus })
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if (d.error) { document.getElementById('cards').innerHTML = '<p>' + esc(d.error) + '</p>'; return; }
+      allItems = d.items || [];
+      renderCityFilters();
+      render();
+    });
+  }
+
+  function renderCityFilters() {
+    var cities = ['all'].concat(Array.from(new Set(allItems.map(function(i){ return i.city || 'Unknown'; }))));
+    var wrap = document.getElementById('city-filter');
+    wrap.innerHTML = cities.map(function(c){
+      var count = c === 'all' ? allItems.length : allItems.filter(function(i){ return (i.city || 'Unknown') === c; }).length;
+      return '<button data-city="' + esc(c) + '" class="' + (c === activeCity ? 'active' : '') + '">' + esc(c === 'all' ? 'All cities' : c) + ' (' + count + ')</button>';
+    }).join('');
+    wrap.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){ activeCity = btn.getAttribute('data-city'); renderCityFilters(); render(); });
+    });
+  }
+
+  function render() {
+    var items = activeCity === 'all' ? allItems : allItems.filter(function(i){ return (i.city || 'Unknown') === activeCity; });
+    var cards = document.getElementById('cards');
+    var empty = document.getElementById('empty');
+    if (!items.length) { cards.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    cards.innerHTML = items.map(function(e){
+      var author = e.members || {};
+      var startsAt = e.starts_at ? new Date(e.starts_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : 'TBD';
+      return '<div class="card" data-id="' + e.id + '">' +
+        '<div class="card-meta"><span class="role-tag">' + esc(e.category || 'other') + '</span><span>' + esc(e.city || '') + '</span><span>' + esc(startsAt) + '</span><span>Submitted ' + esc(new Date(e.created_at).toLocaleDateString()) + '</span></div>' +
+        '<div class="headline">' + esc(e.title || 'Untitled event') + '</div>' +
+        '<div class="summary">' + esc(e.location_name || '') + (author.name ? ' &middot; submitted by ' + esc(author.name) + (author.email ? ' (' + esc(author.email) + ')' : '') : '') + '</div>' +
+        (e.description ? '<div class="cover-note">' + esc(e.description) + '</div>' : '') +
+        (e.ticket_url ? '<p class="summary"><a class="ticket-link" href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener">' + esc(e.ticket_url) + '</a></p>' : '') +
+        (e.status === 'rejected' && e.rejection_reason ? '<div class="rejection-note">Rejected: ' + esc(e.rejection_reason) + '</div>' : '') +
+        (e.status === 'pending' ? '<div class="actions">' +
+          '<button class="approve" data-action="approved" data-id="' + e.id + '">Approve</button>' +
+          '<button class="reject" data-action="rejected" data-id="' + e.id + '">Reject</button>' +
+        '</div>' : '') +
+      '</div>';
+    }).join('');
+
+    cards.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-id');
+        var decision = btn.getAttribute('data-action');
+        var rejectionReason = null;
+        if (decision === 'rejected') {
+          if (!confirm('Reject this event submission?')) return;
+          rejectionReason = prompt('Optional: reason for rejection (shown internally only)') || null;
+        }
+        var token = VEAuth.getToken();
+        btn.closest('.card').style.opacity = '0.5';
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=review_event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: token, id: id, decision: decision, rejection_reason: rejectionReason })
+        }).then(function(r){ return r.json(); }).then(function(){
+          allItems = allItems.filter(function(i){ return i.id !== id; });
+          renderCityFilters();
+          render();
+        });
+      });
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
