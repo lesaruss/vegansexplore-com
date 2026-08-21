@@ -135,11 +135,17 @@
       listEl.innerHTML = '<div class="ve-doc-grid">' + items.map(function (it) {
         var safeSlug = it.slug.replace(/[^a-z0-9-]/g, '');
         var visual = DOC_VISUAL[it.slug] || ['&#128196;', 'linear-gradient(135deg,#9a9a9a,#6b6b6b)'];
+        // Titles come from the Campaign Bible as "VE Initiative: X" -- strip
+        // that prefix for display (2026-08-21, Sean direction: "a little
+        // redundant... they are left with the actual name of it"). The
+        // canonical brand_documents.title is left untouched; this is
+        // display-only.
+        var displayTitle = (it.title || '').replace(/^VE Initiative:\s*/i, '');
         return '<div class="ve-doc-card">' +
           '<div class="ve-doc-thumb" style="background:' + visual[1] + ';">' + visual[0] + '</div>' +
           '<div class="ve-doc-card-body-outer">' +
             '<div class="ve-doc-card-title" onclick="toggleDoc(\'' + safeSlug + '\', \'' + token.replace(/'/g, '') + '\')">' +
-              '<span>' + it.title + '</span><span class="ve-doc-toggle">View &darr;</span>' +
+              '<span>' + displayTitle + '</span><span class="ve-doc-toggle">View &darr;</span>' +
             '</div>' +
             '<div class="ve-doc-card-desc">' + it.description + '</div>' +
             '<div class="ve-doc-card-body" id="body-' + safeSlug + '"></div>' +
