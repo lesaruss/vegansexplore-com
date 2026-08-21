@@ -13,7 +13,8 @@
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#eaf6ea;--ve-orange:#F69820;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);--ve-border:rgba(0,0,0,0.09);}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
-  main{max-width:820px;margin:0 auto;padding:44px 24px 80px;}
+  main{max-width:1400px;margin:0 auto;padding:44px 32px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #leads-gate{text-align:center;padding:100px 20px;}
   #leads-gate p{font-size:14px;color:var(--ve-text-75);}
   #leads-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
@@ -47,6 +48,10 @@
   .lead-actions button.approve:hover{background:var(--ve-green-dark);}
   .lead-actions button.reject{background:#fff;border:1.5px solid #dc2626;color:#dc2626;}
   .lead-actions button.reject:hover{background:#fef2f2;}
+  .lead-actions button.delete-lead,.lead-delete-row button{background:#fff;border:1.5px solid var(--ve-text-50);color:var(--ve-text-50);}
+  .lead-actions button.delete-lead:hover,.lead-delete-row button:hover{background:#f2f2f2;border-color:var(--ve-text);color:var(--ve-text);}
+  .lead-delete-row{margin-top:6px;text-align:right;}
+  .lead-delete-row button{font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:8px 14px;border-radius:6px;cursor:pointer;}
   .lead-tag-decided{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:5px 10px;border-radius:100px;}
   .lead-tag-decided.accepted{background:var(--ve-green-light);color:var(--ve-green-dark);}
   .lead-tag-decided.rejected{background:#fef2f2;color:#dc2626;}
@@ -63,7 +68,7 @@
     <a class="leads-back" href="/dashboard">&larr; Back to Dashboard</a>
     <p class="leads-eyebrow">Superadmin</p>
     <h1>Leads</h1>
-    <p class="leads-sub">Every sponsor, attend, and volunteer/steering-committee submission across all campaigns (World Vegan Expo, Plant Based Showcase, and any future Campaign Capsule page), in one place. Nothing here is auto-approved -- this is where you see who to actually reach out to. General Vegan Explorer / Community Manager applications (not tied to a campaign) still live at Community Manager and Vegan Explorer Applications.</p>
+    <p class="leads-sub">Every sponsor, attend, and volunteer/steering-committee submission across all campaigns (World Vegan Expo, Plant Based Showcase, and any future Campaign Capsule page), in one place. Nothing here is auto-approved -- this is where you see who to actually reach out to. General Vegan Explorer / Community Manager applications (not tied to a campaign) still live at Community Manager and Vegan Explorer Applications. <strong>Status changes (Contacted / Confirmed / Declined, or Reject) just relabel a lead -- the row stays here for your records. Use Delete to permanently remove test entries or spam.</strong></p>
 
     <div class="leads-filters">
       <select id="leads-campaign-filter"><option value="all">All campaigns</option></select>
@@ -135,7 +140,7 @@
 
       var actionHtml;
       if (l.kind === 'interest') {
-        actionHtml = '<select class="lead-select ' + esc(l.status) + '" data-id="' + esc(l.id) + '" data-kind="interest">' +
+        actionHtml = '<select class="lead-select ' + esc(l.status) + '" data-id="' + esc(l.id) + '" data-kind="interest" title="Relabels this lead for your own tracking -- does not delete it or notify the member.">' +
           '<option value="new"' + (l.status === 'new' ? ' selected' : '') + '>New</option>' +
           '<option value="contacted"' + (l.status === 'contacted' ? ' selected' : '') + '>Contacted</option>' +
           '<option value="confirmed"' + (l.status === 'confirmed' ? ' selected' : '') + '>Confirmed</option>' +
@@ -143,16 +148,19 @@
         '</select>';
       } else if (l.status === 'pending') {
         actionHtml = '<div class="lead-actions"><button class="approve" data-id="' + esc(l.id) + '" data-kind="application" data-decision="accepted">Approve</button>' +
-          '<button class="reject" data-id="' + esc(l.id) + '" data-kind="application" data-decision="rejected">Reject</button></div>';
+          '<button class="reject" data-id="' + esc(l.id) + '" data-kind="application" data-decision="rejected" title="Marks this application rejected -- keeps the row here as a record, does not delete it.">Reject</button></div>';
       } else {
         actionHtml = '<span class="lead-tag-decided ' + (l.status === 'accepted' ? 'accepted' : 'rejected') + '">' + (l.status === 'accepted' ? 'Approved' : 'Rejected') + '</span>';
       }
+
+      var deleteRow = '<div class="lead-delete-row"><button class="delete-lead" data-id="' + esc(l.id) + '" data-kind="' + esc(l.kind) + '" title="Permanently removes this entry -- use for test rows or spam, not real leads you have decided against.">Delete</button></div>';
 
       return '<div class="lead-card" data-row-id="' + esc(l.id) + '" data-row-kind="' + esc(l.kind) + '">' +
         '<div class="lead-top"><div>' + kindTag + '<span class="lead-who">' + esc(l.who) + '</span><br><span class="lead-email">' + esc(l.email) + '</span></div>' + actionHtml + '</div>' +
         '<div class="lead-what">' + what + '</div>' +
         note + coverNote +
         '<div class="lead-meta">' + esc(campaignLabel(l.campaign_slug)) + ' &middot; ' + fullDateTime(l.created_at) + '</div>' +
+        deleteRow +
         '</div>';
     }).join('');
 
@@ -191,6 +199,24 @@
           if (lead) lead.status = decision;
           render();
         }).catch(function () { alert('Could not reach the server, try again.'); btn.closest('.lead-card').style.opacity = '1'; });
+      });
+    });
+    document.querySelectorAll('.delete-lead').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var kind = btn.getAttribute('data-kind');
+        if (!confirm('Permanently delete this lead? This cannot be undone -- use this for test rows or spam, not real leads you have simply decided against.')) return;
+        var card = btn.closest('.lead-card');
+        card.style.opacity = '0.5';
+        var action = kind === 'interest' ? 'delete_initiative_interest' : 'delete_opportunity_application';
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=' + action, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: VEAuth.getToken(), id: id })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.error) { alert('Could not delete: ' + d.error); card.style.opacity = '1'; return; }
+          allLeads = allLeads.filter(function (l) { return !(l.id === id && l.kind === kind); });
+          render();
+        }).catch(function () { alert('Could not reach the server, try again.'); card.style.opacity = '1'; });
       });
     });
   }
