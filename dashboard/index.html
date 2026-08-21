@@ -111,6 +111,17 @@
       <div class="dash-community-row" id="dash-campaigns-row"></div>
     </div>
 
+    <div class="dash-modal-overlay" id="dash-campaigns-modal">
+      <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Browse campaigns">
+        <div class="dash-modal-header">
+          <div class="dash-modal-title">Browse Campaigns</div>
+          <button type="button" class="dash-modal-close" id="dash-campaigns-modal-close" aria-label="Close">&times;</button>
+        </div>
+        <p class="dash-modal-sub">Pick a campaign to see how to get involved -- attend, sponsor, or volunteer.</p>
+        <div class="dash-modal-grid" id="dash-campaigns-modal-grid"></div>
+      </div>
+    </div>
+
     <p class="dash-section-title">Your Tools</p>
     <div class="dash-grid" id="dash-tile-grid"></div>
     <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Thumbnails are placeholders. Real illustrated artwork, in the GeekFon style, is next.</p>
@@ -465,6 +476,49 @@
   // the "+" tile is a plain link rather than an add-tile that opens a picker.
   var CAMPAIGN_TAG_LABEL = { enrollment: 'Enrolling', live: 'Live', wrapped: 'Wrapped' };
 
+  // Campaigns picker modal (2026-08-21, Sean direction): mirrors the "Your
+  // Communities" add-tile -> modal pattern above, but for campaigns. Clicking
+  // the "+" tile in Your Campaigns opens a popup listing every live campaign
+  // (via list_initiatives) as a clickable tile using that campaign's real
+  // hero/cover image as the thumbnail, instead of navigating straight to the
+  // /campaigns hub page. Picking a campaign takes you to its own wizard page --
+  // unlike Your Communities, there is no join/leave toggle here.
+  function openCampaignsModal() {
+    var overlay = document.getElementById('dash-campaigns-modal');
+    var grid = document.getElementById('dash-campaigns-modal-grid');
+    grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">Loading&hellip;</p>';
+    overlay.classList.add('open');
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiatives', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var items = (d && d.items) || [];
+      grid.innerHTML = '';
+      if (!items.length) {
+        grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">No campaigns are open right now. Check back soon.</p>';
+        return;
+      }
+      items.forEach(function (c) {
+        var opt = document.createElement('a');
+        opt.className = 'dash-modal-opt';
+        opt.href = c.path || '/campaigns';
+        opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + (c.hero_image || '') + '\');background-color:var(--ve-green-light);"></div>' +
+          '<div class="dash-modal-opt-name">' + (c.title || c.slug) + '</div>';
+        grid.appendChild(opt);
+      });
+    }).catch(function () {
+      grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">Could not load campaigns right now.</p>';
+    });
+  }
+  function closeCampaignsModal() {
+    document.getElementById('dash-campaigns-modal').classList.remove('open');
+  }
+  document.getElementById('dash-campaigns-modal-close').addEventListener('click', closeCampaignsModal);
+  document.getElementById('dash-campaigns-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-campaigns-modal') closeCampaignsModal();
+  });
+
   function renderCampaignsSection(member) {
     var section = document.getElementById('dash-campaigns-section');
     var row = document.getElementById('dash-campaigns-row');
@@ -488,7 +542,7 @@
         tile.href = c.path || '/campaigns';
         var tag = CAMPAIGN_TAG_LABEL[c.lifecycle_stage] || 'Enrolling';
         tile.innerHTML =
-          '<div class="dash-thumb" style="background-image:url(\'' + (c.avatar || '') + '\');background-color:var(--ve-green-light);"></div>' +
+          '<div class="dash-thumb" style="background-image:url(\'' + (c.hero_image || '') + '\');background-color:var(--ve-green-light);"></div>' +
           '<div class="dash-tile-body">' +
             '<div class="dash-tile-title">' + (c.title || c.slug) + ' <span class="dash-tag live">' + tag + '</span></div>' +
             (c.subtitle ? '<div class="dash-tile-desc">' + c.subtitle + '</div>' : '') +
@@ -499,26 +553,32 @@
 
       var addWrap = document.createElement('div');
       addWrap.className = 'dash-community-tile';
-      var addLink = document.createElement('a');
-      addLink.className = 'dash-tile dash-add-tile';
-      addLink.href = '/campaigns';
-      addLink.innerHTML =
+      var addTile = document.createElement('div');
+      addTile.className = 'dash-tile dash-add-tile';
+      addTile.setAttribute('role', 'button');
+      addTile.setAttribute('tabindex', '0');
+      addTile.innerHTML =
         '<div class="dash-thumb">+</div>' +
         '<div class="dash-tile-body">' +
           '<div class="dash-tile-title">' + (items.length ? 'Support Another Campaign' : 'Support A Campaign') + '</div>' +
           '<div class="dash-tile-desc">Browse active campaigns like the Plant Based Showcase and pick one to get involved with.</div>' +
         '</div>';
-      addWrap.appendChild(addLink);
+      addTile.addEventListener('click', openCampaignsModal);
+      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCampaignsModal(); } });
+      addWrap.appendChild(addTile);
       row.appendChild(addWrap);
     }).catch(function () {
       row.innerHTML = '';
       var addWrap = document.createElement('div');
       addWrap.className = 'dash-community-tile';
-      var addLink = document.createElement('a');
-      addLink.className = 'dash-tile dash-add-tile';
-      addLink.href = '/campaigns';
-      addLink.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">Support A Campaign</div><div class="dash-tile-desc">Browse active campaigns and pick one to get involved with.</div></div>';
-      addWrap.appendChild(addLink);
+      var addTile = document.createElement('div');
+      addTile.className = 'dash-tile dash-add-tile';
+      addTile.setAttribute('role', 'button');
+      addTile.setAttribute('tabindex', '0');
+      addTile.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">Support A Campaign</div><div class="dash-tile-desc">Browse active campaigns and pick one to get involved with.</div></div>';
+      addTile.addEventListener('click', openCampaignsModal);
+      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCampaignsModal(); } });
+      addWrap.appendChild(addTile);
       row.appendChild(addWrap);
     });
   }
