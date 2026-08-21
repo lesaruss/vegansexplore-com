@@ -47,6 +47,7 @@
   .dash-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;white-space:nowrap;}
   .dash-tag.superadmin{background:#eef2ff;color:#3730a3;}
   .dash-tag.live{background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .dash-tag.locked{background:#F3F4F6;color:#6B7280;}
   .dash-badge-count{background:var(--ve-orange);color:#fff;border-radius:100px;font-size:11px;font-weight:900;padding:2px 9px;}
 
   .dash-community-row{display:flex;gap:16px;flex-wrap:wrap;}
@@ -157,6 +158,10 @@
       <div class="dash-tile-section">
         <p class="dash-section-title">Media</p>
         <div class="dash-grid" id="dash-grid-media"></div>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Guides</p>
+        <div class="dash-grid" id="dash-grid-guides"></div>
       </div>
       <div class="dash-tile-section">
         <p class="dash-section-title">Your Tools</p>
@@ -411,14 +416,23 @@
     TILE_REGISTRY = MODULES.map(function (m) {
       return {
         key: m.key, href: m.href, iconHtml: m.icon, bg: m.bg, title: m.title, desc: m.desc,
-        visibility: 'all', defaultSection: (m.key === 'pulse' || m.key === 'podcasts') ? 'media' : 'tools'
+        visibility: 'all', defaultSection: (m.key === 'pulse' || m.key === 'podcasts') ? 'media' : 'tools',
+        locked: (m.key === 'tour' || m.key === 'pulse' || m.key === 'podcasts')
       };
     });
     TILE_REGISTRY.push(
       { key: 'sa-members', href: '/dashboard/members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/events.html', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'cm-initiatives', href: '/dashboard/2026-initiatives', iconHtml: '&#127758;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: '2026 Initiatives Portfolio', desc: 'The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.', visibility: 'staff', defaultSection: 'tools' },
-      { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' }
+      { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' },
+      // Guides section (2026-08-21, Sean direction): mirrors the 5 active
+      // guide personas from /guides (ve-guides-roster-v1.html), one tile per
+      // guide with their real portrait as the thumbnail rather than an icon.
+      { key: 'guide-maya', href: '/guides/ve-path-prevegan', img: '/public/guides/maya.png', bg: '#2d7d31', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-theo', href: '/guides/ve-path-seasonedvegan', img: '/public/guides/theo.png', bg: '#8B6914', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-nori', href: '/guides/ve-path-entrepreneur', img: '/public/guides/nori.png', bg: '#2D5F8A', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-dani', href: '/guides/ve-path-nonprofit', img: '/public/guides/dani.png', bg: '#C4522A', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-river', href: '/guides/ve-path-creator', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.', visibility: 'all', defaultSection: 'guides' }
     );
     return TILE_REGISTRY;
   }
@@ -431,13 +445,16 @@
     var registry = buildTileRegistry();
     var savedMap = {};
     (dashLayout || []).forEach(function (row) { savedMap[row.module_key] = row; });
-    var buckets = { superadmin: [], media: [], tools: [] };
+    var buckets = { superadmin: [], media: [], guides: [], tools: [] };
     registry.forEach(function (t) {
       if (t.visibility === 'staff' && !isStaff) return;
       if (t.visibility === 'superadmin' && !member.is_superadmin) return;
       var tile = t;
       if (t.key === 'opportunities' && isStaff) tile = Object.assign({}, t, { desc: 'Review applications, manage campaigns, and more.' });
-      var saved = savedMap[t.key];
+      // Locked tiles ignore any saved section move -- they always render in
+      // their default section, even if a stale layout row from before they
+      // were locked says otherwise.
+      var saved = !t.locked ? savedMap[t.key] : null;
       var section = (saved && buckets[saved.section_key]) ? saved.section_key : t.defaultSection;
       var order = saved ? saved.sort_order : 9999;
       buckets[section].push({ tile: tile, order: order });
@@ -447,9 +464,13 @@
   }
 
   function sectionedTileHtml(t) {
-    return '<div class="dash-thumb" style="background:' + t.bg + ';">' + t.iconHtml + '</div>' +
+    var thumbStyle = t.img
+      ? "background-image:url('" + t.img + "');background-size:cover;background-position:center;background-color:" + (t.bg || 'var(--ve-green-light)') + ";"
+      : 'background:' + t.bg + ';';
+    return '<div class="dash-thumb" style="' + thumbStyle + '">' + (t.img ? '' : t.iconHtml) + '</div>' +
       '<div class="dash-tile-body"><div class="dash-tile-title">' + t.title +
       (t.tagLabel ? ' <span class="dash-tag superadmin">' + t.tagLabel + '</span>' : '') +
+      (t.locked ? ' <span class="dash-tag locked">Fixed</span>' : '') +
       (t.badgeId ? ' <span class="dash-badge-count" id="' + t.badgeId + '" style="display:none;"></span>' : '') +
       '</div><div class="dash-tile-desc"' + (t.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + t.desc + '</div></div>';
   }
@@ -463,7 +484,8 @@
       var wrap = document.createElement('div');
       wrap.className = 'dash-tile-wrap';
       wrap.setAttribute('data-key', t.key);
-      wrap.draggable = layoutEditMode;
+      wrap.setAttribute('data-locked', t.locked ? '1' : '0');
+      wrap.draggable = layoutEditMode && !t.locked;
       var tile = document.createElement('a');
       tile.className = 'dash-tile';
       tile.href = t.href;
@@ -471,7 +493,7 @@
       tile.addEventListener('click', function (e) { if (layoutEditMode) e.preventDefault(); });
       wrap.appendChild(tile);
       wrap.addEventListener('dragstart', function (e) {
-        if (!layoutEditMode) { e.preventDefault(); return; }
+        if (!layoutEditMode || t.locked) { e.preventDefault(); return; }
         draggedTileEl = wrap;
         wrap.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
@@ -492,6 +514,7 @@
     var buckets = resolveDashboardSections(member, isStaff);
     renderSectionedGrid('dash-grid-superadmin', buckets.superadmin);
     renderSectionedGrid('dash-grid-media', buckets.media);
+    renderSectionedGrid('dash-grid-guides', buckets.guides);
     renderSectionedGrid('dash-grid-tools', buckets.tools);
     loadPendingEventsCount(VEAuth.getToken());
   }
@@ -520,7 +543,7 @@
 
   function persistDashboardLayout() {
     var layout = [];
-    [['superadmin', 'dash-grid-superadmin'], ['media', 'dash-grid-media'], ['tools', 'dash-grid-tools']].forEach(function (pair) {
+    [['superadmin', 'dash-grid-superadmin'], ['media', 'dash-grid-media'], ['guides', 'dash-grid-guides'], ['tools', 'dash-grid-tools']].forEach(function (pair) {
       var section = pair[0];
       var grid = document.getElementById(pair[1]);
       if (!grid) return;
@@ -532,7 +555,7 @@
     VEAuth.saveLayout(layout).catch(function () {});
   }
 
-  ['dash-grid-superadmin', 'dash-grid-media', 'dash-grid-tools'].forEach(function (gridId) {
+  ['dash-grid-superadmin', 'dash-grid-media', 'dash-grid-guides', 'dash-grid-tools'].forEach(function (gridId) {
     var grid = document.getElementById(gridId);
     if (!grid) return;
     grid.addEventListener('dragover', function (e) {
@@ -559,7 +582,7 @@
       editLayoutBtn.textContent = layoutEditMode ? 'Done' : 'Edit Layout';
       editLayoutBtn.classList.toggle('active', layoutEditMode);
       document.body.classList.toggle('dash-edit-mode', layoutEditMode);
-      document.querySelectorAll('#dash-tiles-sectioned .dash-tile-wrap').forEach(function (w) { w.draggable = layoutEditMode; });
+      document.querySelectorAll('#dash-tiles-sectioned .dash-tile-wrap').forEach(function (w) { w.draggable = layoutEditMode && w.getAttribute('data-locked') !== '1'; });
     });
   }
 
@@ -757,6 +780,14 @@
             (c.subtitle ? '<div class="dash-tile-desc">' + c.subtitle + '</div>' : '') +
           '</div>';
         wrap.appendChild(tile);
+
+        var leave = document.createElement('button');
+        leave.type = 'button';
+        leave.className = 'dash-community-change';
+        leave.textContent = 'Leave Campaign';
+        leave.addEventListener('click', function(e) { e.preventDefault(); toggleCampaignFollow(c.slug, true); });
+        wrap.appendChild(leave);
+
         row.appendChild(wrap);
       });
 
