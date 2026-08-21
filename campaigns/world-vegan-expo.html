@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The World Vegan Expo - VEGANS EXPLORE</title>
+<meta name="description" content="The World Vegan Expo is our next flagship activation -- and the community helps decide where it launches first. See how to be part of it, whether you're attending, sponsoring, or joining the founding steering committee.">
+<link rel="icon" href="/public/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ve-green: #2d7d31; --ve-green-dark: #1e5c21;
+    --path-color: #2d7d31; --path-light: #e8f5e9; --path-mid: #c8e6c9; --path-dark: #1e5c21;
+    --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+    --ve-border: rgba(0,0,0,0.09); --ve-surface: #f7faf7;
+    --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75);
+    --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+
+  #pbs-gate{text-align:center;padding:120px 20px;}
+  #pbs-gate button{margin-top:16px;background:var(--path-color);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #pbs-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #pbs-content{display:none;}
+
+  /* WIZARD SHELL - full width, no fixed side margins */
+  #wizardFrame { width: 100%; background: #fff; }
+
+  .wiz-banner { background: var(--path-light); border-bottom: 1px solid var(--path-mid); padding: 14px 48px; text-align: center; }
+  .wiz-banner span { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--path-dark); }
+
+  /* Campaign Capsule (brief_checkpoints id 517, 2026-08-19, V correction on the
+     first pass): the Dashboard access button is the only thing that lives in the
+     persistent top bar. The wordmark title moved INTO the cover hero itself (see
+     .wiz-cover-wordmark below) -- V wanted it in the blank space above the h1
+     inside the cover graphic, not as a bar repeated on every step. */
+  .wiz-topbar { display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 20px 48px 0; position: relative; z-index: 2; }
+  #wiz-dashboard-btn { display: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; border: 1.5px solid var(--path-color); background: transparent; color: var(--path-dark); cursor: pointer; white-space: nowrap; }
+  #wiz-dashboard-btn:hover { background: var(--path-color); color: #fff; }
+  /* Campaign Capsule (2026-08-19, V direction): the Dashboard button only ever
+     becomes visible once a real decision has been made on step 5 (see
+     markDecisionMade/showDashboardButton in the script below) -- at that point it
+     also gets this solid-green "unlocked" look instead of the plain outline, so it
+     reads as an active, ready-to-click CTA rather than a quiet secondary link. */
+  #wiz-dashboard-btn.unlocked { background: var(--path-color); border-color: var(--path-color); color: #fff; }
+  #wiz-dashboard-btn.unlocked:hover { background: var(--path-dark); border-color: var(--path-dark); }
+  @media (max-width: 820px) { .wiz-topbar { padding: 16px 24px 0; } }
+
+  /* Progress dots + step label (2026-08-19, V direction): moved out of the top
+     chrome and into the bottom controls bar, stacked directly above the Back/Next
+     row, so the "steps" indicator reads as part of the navigation controls rather
+     than sitting up near the banner. */
+  .wiz-controls-progress { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 10px; }
+  .wiz-progress { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .wiz-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ve-border); transition: background 0.2s, transform 0.2s; }
+  .wiz-dot.done { background: var(--path-mid); }
+  .wiz-dot.active { background: var(--path-color); transform: scale(1.3); }
+  .wiz-step-label { text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); }
+
+  .wiz-step { display: none; padding: 36px 48px 90px; }
+  .wiz-step.active { display: block; }
+
+  /* COVER (step 0) - image fills the whole viewport edge to edge, no white anywhere.
+     Banner, progress dots, step label and the Back/Next controls sit transparently
+     on top of it so they stay visible without breaking the full-bleed image. */
+  #coverBg { display: none; position: fixed; inset: 0; z-index: 1; }
+  #coverBg img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  #coverBg .cover-bg-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,16,12,0.94) 0%, rgba(10,16,12,0.78) 30%, rgba(10,16,12,0.2) 60%, rgba(10,16,12,0) 78%); }
+  #wizardFrame.cover-mode #coverBg { display: block; }
+
+  .wiz-banner { position: relative; z-index: 2; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+  #wizardFrame.cover-mode .wiz-banner { background: transparent; border-bottom-color: rgba(255,255,255,0.25); }
+  #wizardFrame.cover-mode .wiz-banner span { color: #fff; }
+  #wizardFrame.cover-mode .wiz-dot { background: rgba(255,255,255,0.3); }
+  #wizardFrame.cover-mode .wiz-dot.done { background: rgba(255,255,255,0.6); }
+  #wizardFrame.cover-mode .wiz-dot.active { background: #8fd39a; }
+  #wizardFrame.cover-mode .wiz-step-label { color: rgba(255,255,255,0.85); }
+  #wizardFrame.cover-mode #wiz-dashboard-btn { border-color: #fff; color: #fff; }
+  #wizardFrame.cover-mode #wiz-dashboard-btn:hover { background: #fff; color: var(--path-dark); }
+  #wizardFrame.cover-mode #wiz-dashboard-btn.unlocked { background: var(--path-color); border-color: var(--path-color); color: #fff; }
+  #wizardFrame.cover-mode #wiz-dashboard-btn.unlocked:hover { background: var(--path-dark); border-color: var(--path-dark); }
+  #wizardFrame.cover-mode .wiz-controls { background: transparent; border-top-color: rgba(255,255,255,0.22); }
+  #wizardFrame.cover-mode .wiz-btn-back { color: #fff; border-color: rgba(255,255,255,0.6); }
+  #wizardFrame.cover-mode .wiz-btn-back:hover { border-color: #fff; color: #fff; }
+  #wizardFrame.cover-mode .wiz-btn-back:disabled { opacity: 0.4; }
+
+  .wiz-step.wiz-cover { padding: 0 48px; position: relative; z-index: 2; min-height: calc(100vh - 130px); align-items: center; }
+  .wiz-step.wiz-cover.active { display: flex; }
+  .wiz-cover-text { max-width: 560px; }
+  .wiz-cover-wordmark { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(26px,3.4vw,40px); letter-spacing: 0.01em; text-transform: uppercase; color: #fff; margin-bottom: 20px; line-height: 1.05; }
+  .wiz-cover-text .wiz-eyebrow, .wiz-cover-text .wiz-eyebrow::before { color: #8fd39a; background: #8fd39a; }
+  .wiz-cover-text h1 { color: #fff; font-size: clamp(26px,3.6vw,42px); margin-bottom: 16px; }
+  .wiz-cover-text p { color: rgba(255,255,255,0.88); max-width: 480px; }
+  .wiz-cover-text #wizCoverCta { align-self: flex-start; margin-top: 22px; }
+  /* Mobile cover (2026-08-19, V direction, reverting the earlier mobile-only
+     redesign): "I still wanted the image in the background full height so you
+     see the full image with a black gradient overlay like on the desktop
+     version. I want to keep the full illustrated look but with the image on
+     top." The full-bleed #coverBg + scrim + white text treatment is now shared
+     by mobile and desktop -- only the side padding and the image's vertical
+     crop point differ on narrow screens, so more of the illustration's upper
+     portion (buildings/people) stays visible instead of a centered crop.
+     ROUND 9 (2026-08-19, same day): V reported the image no longer showed on
+     mobile and asked for a stronger dark overlay so text is ADA-compliant.
+     Root cause: desktop's scrim is a 90deg LEFT-TO-RIGHT gradient tuned for a
+     wide desktop hero (dark where the text column sits on the left, fading to
+     fully transparent by 78% width so the image reads clearly on the right).
+     On a narrow mobile viewport, that same gradient collapses almost entirely
+     within the first ~300px, so most of a phone screen actually gets little
+     to no darkening -- exactly backwards from what mobile needs, since the
+     text now spans nearly the full width. Replaced with a dedicated mobile
+     scrim: a top-to-bottom gradient at 82-92% opacity (computed to keep >=4.5:1
+     contrast for white body text even against the brightest parts of this
+     image), so the illustration still reads as a dim background texture but
+     never competes with the text. Also nudged the crop from "center top" to
+     "center 30%" so the illustration's people/buildings group -- not a blank
+     sky strip -- stays in frame on very narrow/tall phones where the crop is
+     width-bound rather than height-bound. */
+  @media (max-width: 820px) {
+    #coverBg img { object-position: center 30%; }
+    .wiz-step.wiz-cover { padding: 0 24px; }
+    #coverBg .cover-bg-scrim {
+      background: linear-gradient(180deg, rgba(10,16,12,0.82) 0%, rgba(10,16,12,0.86) 50%, rgba(10,16,12,0.92) 100%);
+    }
+    /* Round 9 follow-up: replacing the old mobile block wholesale (above) also
+       silently dropped round 5's mobile margin trims (wordmark/eyebrow/h1/CTA),
+       which were only ever declared inside that now-deleted block -- caught by
+       testing at a shorter viewport (iPhone SE-class, ~667px tall) where the
+       untrimmed spacing pushes the cover text past the available height and
+       reintroduces a scroll round 5 had eliminated. Restoring the same values. */
+    .wiz-cover-wordmark { margin-bottom: 10px; }
+    .wiz-cover-text .wiz-eyebrow { margin-bottom: 8px; }
+    .wiz-cover-text h1 { margin-bottom: 10px; }
+    .wiz-cover-text #wizCoverCta { margin-top: 14px; }
+  }
+
+  .wiz-layout { display: grid; grid-template-columns: 1fr 260px; gap: 48px; align-items: start; max-width: 1240px; margin: 0 auto; }
+  .wiz-layout.wiz-layout-full { grid-template-columns: 1fr; }
+  .wiz-layout.wiz-layout-full .wiz-body p { max-width: 760px; }
+  .wiz-body h1 { font-size: clamp(24px,3.4vw,38px); font-weight: 900; letter-spacing: -0.01em; line-height: 1.1; text-transform: uppercase; margin-bottom: 14px; }
+  .wiz-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--path-color); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .wiz-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--path-color); }
+  .wiz-body p { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.7; margin-bottom: 14px; max-width: 620px; }
+  .wiz-body p strong { color: var(--ve-text); font-weight: 700; }
+  .wiz-body h3 { font-size: 14px; font-weight: 800; color: var(--ve-text); margin: 20px 0 8px; }
+
+  /* GUIDE SIDEBAR */
+  .guide-rail { position: sticky; top: 24px; }
+  .guide-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .guide-avatar { width: 100%; height: 130px; background: linear-gradient(160deg, var(--path-color), var(--path-dark)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .guide-monogram { width: 68px; height: 68px; border-radius: 50%; background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #fff; letter-spacing: 0.02em; }
+  .guide-body { padding: 16px 18px; }
+  .guide-name { font-size: 15px; font-weight: 900; margin-bottom: 2px; }
+  .guide-role { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--path-color); margin-bottom: 12px; }
+  .guide-quote { font-size: 12.5px; font-style: italic; color: var(--ve-text-75); line-height: 1.6; }
+
+  /* CARDS / STATS */
+  .wiz-card-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin: 16px 0; }
+  .wiz-card-grid.wiz-card-grid-3 { grid-template-columns: repeat(3,1fr); }
+  .wiz-card-grid.wiz-card-grid-4 { grid-template-columns: repeat(4,1fr); }
+  .wiz-card { background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 10px; padding: 18px 20px; }
+  .wiz-card h4 { font-size: 13px; font-weight: 800; margin-bottom: 6px; color: var(--ve-text); }
+  .wiz-card p { font-size: 13px; margin-bottom: 0; }
+  .wiz-card.lead { border: 2px solid var(--path-color); background: var(--path-light); }
+  /* Pick Your Path selection state (2026-08-19, V direction, Fieldy feedback):
+     distinct from .lead (which is a plain "featured card" accent used elsewhere,
+     e.g. the step-2/step-3 grids). Nothing should look pre-selected on load --
+     .selected is only ever added by JS once someone actually clicks a path card. */
+  #wiz-path-cards .wiz-card.selected { border: 2px solid var(--path-color); background: var(--path-light); }
+  a.wiz-card { display: block; text-decoration: none; color: inherit; transition: border-color 0.15s, transform 0.15s; }
+  a.wiz-card:hover { border-color: var(--path-color); transform: translateY(-2px); }
+  .wiz-card-cta { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--path-dark); margin-top: 10px; }
+  @media(max-width:820px){ .wiz-card-grid{grid-template-columns:1fr;} .wiz-card-grid.wiz-card-grid-3{grid-template-columns:1fr;} .wiz-card-grid.wiz-card-grid-4{grid-template-columns:1fr;} .wiz-layout{grid-template-columns:1fr;} .guide-rail{position:static;} }
+
+  .wiz-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 16px 0; }
+  .wiz-stat { background: #fff; border: 1px solid var(--ve-border); border-radius: 10px; padding: 16px; text-align: center; }
+  .wiz-stat .num { font-size: 18px; font-weight: 900; display: block; margin-bottom: 2px; }
+  .wiz-stat .lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-50); }
+  @media(max-width:600px){ .wiz-stat-row{grid-template-columns:1fr;} }
+
+  .wiz-tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .wiz-tag { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--path-dark); background: var(--path-light); border: 1px solid var(--path-mid); border-radius: 100px; padding: 6px 14px; }
+  .wiz-note { background: #fff4e0; border: 1px solid rgba(246,152,32,0.35); border-radius: 8px; padding: 12px 16px; font-size: 12.5px; color: var(--ve-orange-dark); font-weight: 700; margin: 14px 0 0; }
+  .wiz-steps-list { margin: 10px 0 0 20px; }
+  .wiz-steps-list li { font-size: 13.5px; color: var(--ve-text-75); line-height: 1.7; margin-bottom: 8px; }
+
+  /* PATH BUTTONS (step 4) and PATH DETAIL PANELS (step 5) */
+  button.wiz-card { width: 100%; text-align: left; font-family: inherit; cursor: pointer; }
+  .wiz-path-panel[hidden] { display: none; }
+  .wiz-tier-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+  .wiz-tier-row .wiz-tier-price { font-weight: 700; color: var(--ve-orange-dark); margin-bottom: 6px; font-size: 13px; }
+  .wiz-vol-note { width: 100%; border: 1.5px solid var(--ve-border); border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 12.5px; margin: 10px 0; resize: vertical; min-height: 50px; }
+  .wiz-detail-toggle { background: none; border: none; cursor: pointer; padding: 0; color: var(--path-dark); }
+
+  /* NAV CONTROLS + FOOTER - pinned together at the bottom of the viewport, no whitespace ever shows beneath them */
+  .wiz-controls { display: flex; flex-direction: column; border-top: 1px solid var(--ve-border); padding: 10px 48px 16px; background: #fff; position: fixed; left: 0; right: 0; bottom: 96px; z-index: 411; }
+  .wiz-controls-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1240px; margin: 0 auto; width: 100%; }
+  .wiz-btn { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; border: none; cursor: pointer; transition: background 0.15s, opacity 0.15s; }
+  .wiz-btn-back { background: transparent; color: var(--ve-text-75); border: 1.5px solid var(--ve-border); }
+  .wiz-btn-back:hover { border-color: var(--path-color); color: var(--path-color); }
+  .wiz-btn-back:disabled { opacity: 0.35; cursor: default; }
+  .wiz-btn-back:disabled:hover { border-color: var(--ve-border); color: var(--ve-text-75); }
+  .wiz-btn-next { background: var(--path-color); color: #fff; }
+  .wiz-btn-next:hover { background: var(--path-dark); }
+  .wiz-btn-next[hidden] { display: none; }
+
+  .ve-footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 410; }
+
+  @media print {
+    .wiz-controls, .wiz-progress, .wiz-step-label, .wiz-banner, .ve-footer { display: none !important; }
+    .wiz-step { display: block !important; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+<div class="page-frame">
+
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<div id="pbs-gate"><p>Checking access&hellip;</p></div>
+
+<div id="pbs-content">
+<div id="wizardFrame" class="cover-mode">
+
+  <div id="coverBg" aria-hidden="true">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260718_223111_a12e5b88-7573-484c-a462-d0895d0ac6f2.png" alt="">
+    <div class="cover-bg-scrim"></div>
+  </div>
+
+  <div class="wiz-banner"><span>Vegans Explore &middot; World Vegan Expo &middot; Founding Chapter &middot; Vote For Your City</span></div>
+
+  <div class="wiz-topbar">
+    <button type="button" id="wiz-dashboard-btn">Dashboard &rarr;</button>
+  </div>
+
+  <!-- STEP 0: COVER -->
+  <section class="wiz-step active wiz-cover" data-step="0" data-requires-choice="1">
+    <div class="wiz-cover-text">
+      <div class="wiz-cover-wordmark">World Vegan Expo</div>
+      <div class="wiz-eyebrow">Vegans Explore Initiative &middot; Founding Chapter</div>
+      <h1>One Flagship Expo. You Help Decide Where It Launches.</h1>
+      <p>No city or date is locked in yet, on purpose. The community that shows up for this the most is where we build it first.</p>
+      <button type="button" class="wiz-btn wiz-btn-next" id="wizCoverCta">Take The Guided Tour</button>
+    </div>
+  </section>
+
+  <!-- STEP 1: TITLE / INTRO -->
+  <section class="wiz-step" data-step="1">
+    <div class="wiz-layout">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">Vegans Explore Initiative</div>
+        <h1>One Flagship Expo. You Help Decide Where It Launches.</h1>
+        <p><strong>The World Vegan Expo is our next flagship activation</strong> -- vendors, chefs, speakers, and the whole plant-based community in one place, bigger than any single-city activation we've run before.</p>
+        <p>Here's how to be part of it, whether you're planning to attend, you're a business or sponsor, or you want to help launch it in your city. Each path only shows you what matters for you.</p>
+      </div>
+      <div class="guide-rail">
+        <div class="guide-card">
+          <div class="guide-avatar"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260718_223111_a12e5b88-7573-484c-a462-d0895d0ac6f2.png" alt="Theo" style="width:100%;height:100%;object-fit:cover;"></div>
+          <div class="guide-body">
+            <div class="guide-name">Theo</div>
+            <div class="guide-role">Seasoned Vegan Guide</div>
+            <div class="guide-quote">"We've built this scene up city by city for years. This time, the cities get to build it with us from day one."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2: WHAT THIS IS -->
+  <section class="wiz-step" data-step="2">
+    <div class="wiz-layout wiz-layout-full">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">What This Is</div>
+        <h1>One Flagship Expo, Built By The Cities That Show Up For It.</h1>
+        <div class="wiz-card-grid">
+          <div class="wiz-card lead">
+            <h4>No City Locked In Yet</h4>
+            <p>Instead of picking a city and hoping people show up, we're flipping it: the city, and the community, that shows the most real interest is where we build it first.</p>
+          </div>
+          <div class="wiz-card">
+            <h4>A Real Flagship Expo</h4>
+            <p>Vendors, chefs, speakers, and the full plant-based community in one place, over multiple days, bigger than any single activation we've run before.</p>
+          </div>
+        </div>
+        <div class="wiz-stat-row">
+          <div class="wiz-stat"><span class="num">9</span><span class="lbl">Cities Worldwide</span></div>
+          <div class="wiz-stat"><span class="num">500+</span><span class="lbl">Activations Run</span></div>
+          <div class="wiz-stat"><span class="num">1</span><span class="lbl">City Chosen By You</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3: WHY US -->
+  <section class="wiz-step" data-step="3">
+    <div class="wiz-layout wiz-layout-full">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">Why Us</div>
+        <h1>We've Done This Before, Just Smaller.</h1>
+        <div class="wiz-card-grid">
+          <div class="wiz-card lead">
+            <h4>The Plant Based Showcase, Proven First</h4>
+            <p>Our Plant Based Showcase at the Miami Dolphins' Hard Rock Stadium is already proving we can execute a real activation end to end. The World Vegan Expo is the next size up.</p>
+          </div>
+          <div class="wiz-card">
+            <h4>The Steering Committee Is The Point</h4>
+            <p>This only works with real people on the ground in each city: picking venues, recruiting local sponsors and vendors, and getting the word out. That's what the rest of this page is about.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: PICK YOUR PATH -->
+  <section class="wiz-step" data-step="4" data-requires-choice="1">
+    <div class="wiz-layout wiz-layout-full">
+      <div class="wiz-body">
+        <div class="wiz-eyebrow">Who Are You?</div>
+        <h1>Pick Your Path.</h1>
+        <p>Each one only shows you what matters for you, learn at your own pace.</p>
+        <div class="wiz-card-grid wiz-card-grid-3" id="wiz-path-cards">
+          <!-- Campaign Capsule (brief_checkpoints id 517): rendered from door.entry_points
+               by renderPathCards() in loadPathData(), not hardcoded, so a different
+               brand copy can configure its own set of paths via campaign_entry_points
+               without touching this file. Falls back to these 3 static cards if the
+               API call fails, so the page still works. -->
+          <button type="button" class="wiz-card" data-path="attend">
+            <h4>I Want To Attend</h4>
+            <p>Help decide where this launches, and get on the list to hear the moment it's locked in.</p>
+            <div class="wiz-card-cta">Continue &rarr;</div>
+          </button>
+          <button type="button" class="wiz-card" data-path="sponsor">
+            <h4>I'm A Business Or Sponsor</h4>
+            <p>Founding sponsor tiers, laid out to decide on your own -- before the city is even picked.</p>
+            <div class="wiz-card-cta">Continue &rarr;</div>
+          </button>
+          <button type="button" class="wiz-card" data-path="volunteer">
+            <h4>I Want To Help Launch This In My City</h4>
+            <p>Open steering committee roles, city by city, and how to apply.</p>
+            <div class="wiz-card-cta">Continue &rarr;</div>
+          </button>
+        </div>
+        <div class="wiz-note">These are not automatic approvals. A real person on the team reviews every submission and reaches out directly.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 5: PATH DETAIL - same container, whichever panel matches the chosen path -->
+  <section class="wiz-step" data-step="5">
+    <div class="wiz-layout wiz-layout-full">
+      <div class="wiz-body">
+
+        <div class="wiz-path-panel" data-path="attend" hidden>
+          <div class="wiz-eyebrow">Attending</div>
+          <h1>Vote With Your Interest.</h1>
+          <ul class="wiz-steps-list" id="wiz-attend-highlights"></ul>
+          <div class="wiz-card lead" style="margin-top:20px;">
+            <h4>Join The Interest List</h4>
+            <p id="wiz-attend-note"></p>
+            <button class="wiz-btn wiz-btn-next" id="wiz-attend-btn" style="margin-top:12px;">Join The Interest List</button>
+          </div>
+        </div>
+
+        <div class="wiz-path-panel" data-path="sponsor" hidden>
+          <div class="wiz-eyebrow">Sponsor</div>
+          <h1>Back The Flagship, Before It Even Has A City.</h1>
+          <div id="wiz-sponsor-tiers"></div>
+          <p id="wiz-sponsor-note" style="font-size:12px;color:var(--ve-text-50);margin-top:14px;line-height:1.6;"></p>
+        </div>
+
+        <div class="wiz-path-panel" data-path="volunteer" hidden>
+          <div class="wiz-eyebrow">Volunteer</div>
+          <h1>Join The Founding Steering Committee.</h1>
+          <div id="wiz-volunteer-list"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="wiz-controls">
+    <div class="wiz-controls-progress">
+      <div class="wiz-progress" role="tablist" aria-label="Expo steps">
+        <div class="wiz-dot active" data-dot="0"></div>
+        <div class="wiz-dot" data-dot="1"></div>
+        <div class="wiz-dot" data-dot="2"></div>
+        <div class="wiz-dot" data-dot="3"></div>
+        <div class="wiz-dot" data-dot="4"></div>
+        <div class="wiz-dot" data-dot="5"></div>
+      </div>
+      <div class="wiz-step-label" id="wizStepLabel">Step 1 of 6</div>
+    </div>
+    <div class="wiz-controls-inner">
+      <button class="wiz-btn wiz-btn-back" id="wizBack" disabled>Back</button>
+      <button class="wiz-btn wiz-btn-next" id="wizNext">Next</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div id="pbs-live" style="display:none;">
+  <div class="wiz-banner"><span>Vegans Explore &middot; World Vegan Expo &middot; Founding Chapter &middot; Live Now</span></div>
+  <div style="max-width:760px;margin:0 auto;padding:56px 24px 140px;">
+    <div class="wiz-eyebrow">Event Live</div>
+    <h1 id="pbs-live-headline" style="font-size:clamp(24px,3.4vw,38px);font-weight:900;letter-spacing:-0.01em;line-height:1.1;text-transform:uppercase;margin-bottom:14px;">Loading&hellip;</h1>
+    <p id="pbs-live-body" style="font-size:15px;color:var(--ve-text-75);line-height:1.7;margin-bottom:14px;max-width:620px;"></p>
+    <div id="pbs-live-gate" class="wiz-note" style="display:none;"></div>
+    <div id="pbs-live-assets"></div>
+  </div>
+</div>
+
+<div id="pbs-wrapped" style="display:none;">
+  <div class="wiz-banner"><span>Vegans Explore &middot; World Vegan Expo &middot; Founding Chapter &middot; Wrapped</span></div>
+  <div style="max-width:760px;margin:0 auto;padding:56px 24px 140px;">
+    <div class="wiz-eyebrow">Wrapped</div>
+    <h1 id="pbs-wrapped-headline" style="font-size:clamp(24px,3.4vw,38px);font-weight:900;letter-spacing:-0.01em;line-height:1.1;text-transform:uppercase;margin-bottom:14px;">Loading&hellip;</h1>
+    <p id="pbs-wrapped-body" style="font-size:15px;color:var(--ve-text-75);line-height:1.7;margin-bottom:14px;max-width:620px;"></p>
+    <div class="wiz-stat-row" id="pbs-wrapped-stats"></div>
+    <div id="pbs-wrapped-assets"></div>
+  </div>
+</div>
+
+<div id="pbs-dashboard" style="display:none;">
+  <div class="wiz-banner"><span>Vegans Explore &middot; World Vegan Expo &middot; Founding Chapter &middot; Your Experience</span></div>
+  <div style="max-width:640px;margin:0 auto;padding:64px 24px 140px;text-align:center;">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260718_223111_a12e5b88-7573-484c-a462-d0895d0ac6f2.png" alt="" style="width:100%;max-width:420px;border-radius:16px;margin:0 auto 28px;display:block;box-shadow:0 12px 40px rgba(0,0,0,0.12);object-fit:cover;aspect-ratio:16/10;">
+    <div class="wiz-eyebrow" style="justify-content:center;">Your Spot Is Confirmed</div>
+    <h1 id="pbs-dashboard-headline" style="font-size:clamp(24px,3.4vw,34px);font-weight:900;letter-spacing:-0.01em;line-height:1.15;text-transform:uppercase;margin-bottom:14px;">You&rsquo;re In.</h1>
+    <p id="pbs-dashboard-body" style="font-size:15px;color:var(--ve-text-75);line-height:1.7;"></p>
+    <button type="button" class="wiz-btn wiz-btn-back" id="pbs-dashboard-back" style="margin-top:24px;">&larr; Back To The Tour</button>
+  </div>
+</div>
+
+<script src="/public/footer.js"></script>
+</div>
+
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var INITIATIVE_SLUG = 'vegans-explore-initiative-world-vegan-expo';
+  var TOKEN = null;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function callAPI(action, payload) {
+    return fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=' + action, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify(Object.assign({ token: TOKEN }, payload || {}))
+    }).then(function (r) { return r.json(); });
+  }
+
+  // Campaign Capsule (brief_checkpoints id 517, 2026-08-19, V direct feedback):
+  // once a member has made ANY path decision (joined the attend waitlist, sent
+  // sponsor tier interest, or applied to volunteer) show a persistent Dashboard
+  // button so they have somewhere to go instead of the flow just going quiet.
+  // This campaign is still lifecycle_stage='enrollment', so for now that
+  // button leads to a well-crafted "coming soon" screen, not real event content --
+  // the real per-role experience is what get_campaign_live_view/renderLiveScreen
+  // already serve once the campaign flips to 'live'.
+  // Campaign Capsule (2026-08-19, V direct feedback): the single gate for every
+  // decision action (Join Waitlist, Select Interest, Apply). VEAuth.requirePassport
+  // does not wire its onGranted callback through to the modal's success handler
+  // (a pre-existing gap in the shared ve-auth.js, confirmed by reading its source --
+  // not something to route around silently), so this calls VEAuth.showAuthModal
+  // directly with an explicit callback instead, the same pattern already used by
+  // the sign-in flow campaigns/index.html already uses elsewhere on the site.
+  // No page reload, no lost wizard state.
+  function requireLoginThen(action, message) {
+    if (window.VEAuth && VEAuth.isLoggedIn()) { TOKEN = VEAuth.getToken(); action(); return; }
+    if (!window.VEAuth) { alert('Could not reach sign-in right now, try again.'); return; }
+    VEAuth.showAuthModal(message || 'Almost there -- sign in or create a free account to continue.', function () {
+      TOKEN = VEAuth.getToken();
+      action();
+    });
+  }
+
+  var DECISION_ROLES = [];
+  function showDashboardButton() {
+    var b = document.getElementById('wiz-dashboard-btn');
+    if (b) { b.style.display = 'inline-block'; b.classList.add('unlocked'); }
+  }
+  function markDecisionMade(role) {
+    if (DECISION_ROLES.indexOf(role) === -1) DECISION_ROLES.push(role);
+    showDashboardButton();
+  }
+
+  function renderAttendPanel(d) {
+    var door = d.door || {};
+    var attend = door.attend || {};
+    document.getElementById('wiz-attend-highlights').innerHTML = (attend.highlights || []).map(function (h) {
+      return '<li>' + esc(h) + '</li>';
+    }).join('');
+    document.getElementById('wiz-attend-note').textContent = attend.cta_note || '';
+    var already = (d.my_interest || []).some(function (i) { return i.action_type === 'ticket'; });
+    var btn = document.getElementById('wiz-attend-btn');
+    if (already) { btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>'; markDecisionMade('attend'); return; }
+    btn.addEventListener('click', function () {
+      requireLoginThen(function () {
+        btn.disabled = true; btn.textContent = 'Submitting...';
+        callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'ticket' }).then(function (r) {
+          if (r && r.error) { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not submit: ' + r.error); return; }
+          btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>';
+          markDecisionMade('attend');
+        }).catch(function () { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not reach the server, try again.'); });
+      }, 'Almost there -- sign in or create a free account to join the waitlist.');
+    });
+  }
+
+  function renderSponsorPanel(d) {
+    var door = d.door || {};
+    var tiers = door.sponsorship_tiers || [];
+    var doneTiers = {};
+    (d.my_interest || []).forEach(function (i) {
+      if (i.action_type === 'sponsor_tier' || i.action_type === 'vendor_tier') doneTiers[i.tier_label] = true;
+    });
+    if (Object.keys(doneTiers).length) markDecisionMade('sponsor');
+    var list = document.getElementById('wiz-sponsor-tiers');
+    list.innerHTML = tiers.map(function (t) {
+      var already = !!doneTiers[t.label];
+      return '<div class="wiz-card' + (already ? ' lead' : '') + '"><div class="wiz-tier-row">' +
+        '<div><h4>' + esc(t.label) + '</h4><div class="wiz-tier-price">' + esc(t.price) + '</div><p>' + esc(t.blurb) + '</p></div>' +
+        '<button class="wiz-btn' + (already ? ' wiz-btn-back' : ' wiz-btn-next') + '" data-tier="' + esc(t.label) + '"' + (already ? ' disabled' : '') + ' style="white-space:nowrap;flex-shrink:0;">' +
+        (already ? 'Interest Sent' : 'Select Interest') + '</button>' +
+        '</div></div>';
+    }).join('');
+    document.getElementById('wiz-sponsor-note').textContent = door.interest_followup_note || '';
+
+    list.querySelectorAll('button[data-tier]:not([disabled])').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tierLabel = btn.getAttribute('data-tier');
+        requireLoginThen(function () {
+          btn.disabled = true; btn.textContent = 'Submitting...';
+          callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'sponsor_tier', tier_label: tierLabel }).then(function (r) {
+            if (r && r.error) { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not submit: ' + r.error); return; }
+            btn.classList.remove('wiz-btn-next'); btn.classList.add('wiz-btn-back'); btn.textContent = 'Interest Sent';
+            markDecisionMade('sponsor');
+          }).catch(function () { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not reach the server, try again.'); });
+        }, 'Almost there -- sign in or create a free account to send your interest.');
+      });
+    });
+  }
+
+  function renderVolunteerPanel(d) {
+    var opps = d.opportunities || [];
+    var TYPE_LABEL = { vegan_explorer: 'Vegan Explorer', volunteer: 'Volunteer', community_manager: 'Community Manager', community_coordinator: 'Community Coordinator' };
+    var list = document.getElementById('wiz-volunteer-list');
+    if (!opps.length) { list.innerHTML = '<p style="font-size:13px;color:var(--ve-text-50);">No open roles posted yet for this event. Check back soon.</p>'; return; }
+    if (opps.some(function (o) { return !!o.my_status; })) markDecisionMade('volunteer');
+    list.innerHTML = opps.map(function (o, i) {
+      var typeLabel = TYPE_LABEL[o.opportunity_type] || o.opportunity_type;
+      var reqHtml = o.requirements ? '<p style="font-size:12px;color:var(--ve-text-50);margin-top:8px;">' + esc(o.requirements) + '</p>' : '';
+      if (o.my_status) {
+        return '<div class="wiz-card" style="margin-bottom:12px;"><h4>' + esc(o.title) + ' &middot; ' + esc(typeLabel) + '</h4><p>' + esc(o.description || '') + '</p>' + reqHtml +
+          '<div class="wiz-tag" style="margin-top:10px;">' + esc(o.my_status) + '</div></div>';
+      }
+      return '<div class="wiz-card" style="margin-bottom:12px;" data-oid="' + esc(o.id) + '">' +
+        '<h4>' + esc(o.title) + ' &middot; ' + esc(typeLabel) + '</h4>' +
+        '<button class="wiz-detail-toggle" data-toggle="' + i + '">See Full Details</button>' +
+        '<div id="wiz-vol-detail-' + i + '" style="display:none;font-size:12.5px;color:var(--ve-text-75);line-height:1.6;margin:10px 0;">' + esc(o.description || '') + reqHtml + '</div>' +
+        '<textarea class="wiz-vol-note" placeholder="Say a little about why you\'re interested (optional)"></textarea>' +
+        '<button class="wiz-btn wiz-btn-next" data-id="' + esc(o.id) + '">Apply</button>' +
+        '</div>';
+    }).join('');
+
+    list.querySelectorAll('button[data-toggle]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = btn.getAttribute('data-toggle');
+        var detail = document.getElementById('wiz-vol-detail-' + idx);
+        var open = detail.style.display === 'block';
+        detail.style.display = open ? 'none' : 'block';
+        btn.textContent = open ? 'See Full Details' : 'Hide Details';
+      });
+    });
+
+    list.querySelectorAll('button[data-id]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var card = btn.closest('.wiz-card');
+        var noteEl = card.querySelector('.wiz-vol-note');
+        var note = noteEl ? noteEl.value : '';
+        requireLoginThen(function () {
+          btn.disabled = true; btn.textContent = 'Applying...';
+          callAPI('submit_opportunity_application', { opportunity_id: btn.getAttribute('data-id'), cover_note: note }).then(function (d) {
+            if (d && d.error) { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not submit: ' + d.error); return; }
+            var el = card.querySelector('.wiz-vol-note');
+            if (el) el.remove();
+            btn.outerHTML = '<div class="wiz-tag">pending</div>';
+            markDecisionMade('volunteer');
+          }).catch(function () { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not reach the server, try again.'); });
+        }, 'Almost there -- sign in or create a free account to apply.');
+      });
+    });
+  }
+
+  function renderPathCards(entryPoints) {
+    var grid = document.getElementById('wiz-path-cards');
+    if (!grid || !Array.isArray(entryPoints) || !entryPoints.length) return; // keep static fallback cards
+    var cols = Math.min(Math.max(entryPoints.length, 1), 4);
+    grid.className = 'wiz-card-grid' + (cols === 3 ? ' wiz-card-grid-3' : cols >= 4 ? ' wiz-card-grid-4' : '');
+    // Campaign Capsule (2026-08-19, V direction, Fieldy feedback): no card starts
+    // selected -- selection state is applied only by markPathSelected() in
+    // initWizard() once someone actually clicks one.
+    grid.innerHTML = entryPoints.map(function (ep) {
+      return '<button type="button" class="wiz-card" data-path="' + esc(ep.key) + '">' +
+        '<h4>' + esc(ep.label) + '</h4>' +
+        (ep.description ? '<p>' + esc(ep.description) + '</p>' : '') +
+        '<div class="wiz-card-cta">Continue &rarr;</div>' +
+        '</button>';
+    }).join('');
+    if (window.wizReapplyPathSelection) window.wizReapplyPathSelection();
+  }
+
+  function loadPathData() {
+    return callAPI('get_initiative_front_door', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
+      if (d && d.error) return;
+      renderPathCards(d.door && d.door.entry_points);
+      renderAttendPanel(d);
+      renderSponsorPanel(d);
+      renderVolunteerPanel(d);
+    }).catch(function () { /* path panels/cards just stay at their static fallback if this fails; the rest of the wizard still works */ });
+  }
+
+  function renderAssetsList(containerId, assets) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    if (!assets || !assets.length) { el.innerHTML = ''; return; }
+    el.innerHTML = '<h3 style="font-size:14px;font-weight:800;color:var(--ve-text);margin:28px 0 8px;">Resources</h3>' +
+      assets.map(function (a) {
+        return '<a class="wiz-card" href="' + esc(a.url) + '" target="_blank" rel="noopener" style="margin-bottom:10px;">' +
+          '<h4>' + esc(a.title) + '</h4>' +
+          (a.description ? '<p>' + esc(a.description) + '</p>' : '') +
+          '<div class="wiz-card-cta">Open &rarr;</div>' +
+          '</a>';
+      }).join('');
+  }
+
+  function loadCampaignAssets(containerId) {
+    callAPI('get_campaign_assets', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
+      if (d && d.error) return;
+      renderAssetsList(containerId, d.assets);
+    }).catch(function () { /* assets are additive, page still works without them */ });
+  }
+
+  // Campaign Capsule steps 4-5 (brief_checkpoints id 517, 2026-08-19): Live-stage
+  // and Wrapped-stage screens. Functional-first pass -- V flagged a clean look-and-feel
+  // update is coming once these exist, so this reuses the existing wiz-card/wiz-stat/
+  // wiz-eyebrow/wiz-note classes rather than inventing a new visual language.
+  function renderLiveScreen(d) {
+    document.getElementById('pbs-live-headline').textContent = (d.live && d.live.headline) || 'You\'re In.';
+    document.getElementById('pbs-live-body').textContent = (d.live && (d.live.details || d.live.message)) || '';
+    var gate = document.getElementById('pbs-live-gate');
+    if (!d.is_backer) {
+      gate.style.display = 'block';
+      gate.textContent = d.gate_message || 'This content unlocks once you have a confirmed spot for this campaign.';
+    }
+    loadCampaignAssets('pbs-live-assets');
+  }
+
+  function renderWrappedScreen(d) {
+    var report = d.report_content || {};
+    document.getElementById('pbs-wrapped-headline').textContent = report.headline || 'That\'s A Wrap.';
+    document.getElementById('pbs-wrapped-body').textContent = report.summary || '';
+    var n = d.numbers || {};
+    var totalInterest = 0;
+    for (var k in (n.interest_by_type || {})) { totalInterest += n.interest_by_type[k]; }
+    document.getElementById('pbs-wrapped-stats').innerHTML =
+      '<div class="wiz-stat"><span class="num">' + (n.total_backers || 0) + '</span><span class="lbl">Confirmed</span></div>' +
+      '<div class="wiz-stat"><span class="num">' + (n.accepted_volunteers || 0) + '</span><span class="lbl">Volunteers</span></div>' +
+      '<div class="wiz-stat"><span class="num">' + totalInterest + '</span><span class="lbl">Total Interest</span></div>';
+    loadCampaignAssets('pbs-wrapped-assets');
+  }
+
+  // Campaign Capsule (brief_checkpoints id 517, 2026-08-19, V direct feedback):
+  // the coming-soon Dashboard screen shown for enrollment-stage decisions across
+  // all three paths (attend/sponsor/volunteer). Priority order below picks the
+  // most "active" role if someone somehow qualifies for more than one, but the
+  // common case is exactly one role in DECISION_ROLES.
+  var DASHBOARD_COPY = {
+    sponsor: { headline: 'Your Interest Is In Front Of Our Team.', body: 'A real person reviews every founding sponsor submission and reaches out directly, nothing here is automatic. Real tier pricing and placement get finalized once the city is chosen.' },
+    volunteer: { headline: 'Your Steering Committee Application Is In.', body: 'We are reviewing steering committee applications now. Once you are confirmed, your role, city, and next steps will show up right here.' },
+    attend: { headline: 'You&rsquo;re On The List.', body: 'Your interest in the World Vegan Expo is counted. We will notify you here the moment a city and date are locked in.' }
+  };
+  function renderDashboardComingSoon() {
+    var order = ['sponsor', 'volunteer', 'attend'];
+    var role = order.filter(function (r) { return DECISION_ROLES.indexOf(r) !== -1; })[0];
+    var copy = DASHBOARD_COPY[role] || { headline: 'You&rsquo;re In.', body: 'Check back soon, this is where your full experience will live.' };
+    document.getElementById('pbs-dashboard-headline').innerHTML = copy.headline;
+    document.getElementById('pbs-dashboard-body').textContent = copy.body;
+  }
+  function initDashboardButton() {
+    var btn = document.getElementById('wiz-dashboard-btn');
+    var backBtn = document.getElementById('pbs-dashboard-back');
+    if (btn) btn.addEventListener('click', function () {
+      renderDashboardComingSoon();
+      document.getElementById('pbs-content').style.display = 'none';
+      document.getElementById('pbs-dashboard').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    if (backBtn) backBtn.addEventListener('click', function () {
+      document.getElementById('pbs-dashboard').style.display = 'none';
+      document.getElementById('pbs-content').style.display = 'block';
+      layoutFixedBottom();
+    });
+  }
+
+  function layoutFixedBottom() {
+    var footer = document.querySelector('.ve-footer');
+    var controls = document.querySelector('.wiz-controls');
+    var frame = document.getElementById('wizardFrame');
+    if (!footer || !controls || !frame) return;
+    var footerH = footer.offsetHeight;
+    controls.style.bottom = footerH + 'px';
+    var controlsH = controls.offsetHeight;
+    var bottomReserved = footerH + controlsH + 24;
+    frame.style.paddingBottom = bottomReserved + 'px';
+
+    // Campaign Capsule (2026-08-19, V feedback round 4 -- "fit on the page, no
+    // scrolling"): the cover step's min-height used to be a static guess (100vh
+    // minus a hardcoded topbar+banner estimate) that never accounted for the
+    // bottom-fixed controls+footer bar at all. Once the progress dots/step label
+    // moved into that bar (round 3), it grew taller than the guess assumed, so the
+    // frame's own paddingBottom above (reserved so normal content clears the fixed
+    // bar) pushed total page height past the viewport -- forcing a scroll, and at
+    // some viewport heights letting the fixed bar visually overlap the cover text.
+    // Compute the real available gap instead of guessing.
+    var cover = document.querySelector('.wiz-step.wiz-cover');
+    var topbar = document.querySelector('.wiz-topbar');
+    var banner = document.querySelector('.wiz-banner');
+    // Round 5 (2026-08-19, V: "still getting a slight scroll... adjust that one
+    // more time"): the site-wide sticky nav bar (.ve-nav, injected by nav.js)
+    // sits above the banner/topbar on every page and was never included in the
+    // top-chrome measurement -- a real ~60px gap that was silently forcing extra
+    // scroll on both mobile and desktop. Measure it and fold it in.
+    var siteNav = document.querySelector('.ve-nav');
+    var navH = siteNav ? siteNav.getBoundingClientRect().height : 0;
+    if (cover) {
+      // Round 6 (2026-08-19, V direction): mobile is back to the same full-bleed
+      // background-image treatment as desktop (see #coverBg CSS above), so the
+      // same exact-fit min-height calc applies on every viewport width now --
+      // no more mobile-only flex-shrink-the-image branch, since there's no
+      // longer an in-flow image to shrink.
+      var topReserved = navH + (topbar ? topbar.offsetHeight : 0) + (banner ? banner.offsetHeight : 0);
+      cover.style.height = '';
+      cover.style.minHeight = 'calc(100vh - ' + (topReserved + bottomReserved) + 'px)';
+    }
+  }
+
+  function initWizard() {
+    var steps = Array.prototype.slice.call(document.querySelectorAll('.wiz-step'));
+    var dots = Array.prototype.slice.call(document.querySelectorAll('.wiz-dot'));
+    var backBtn = document.getElementById('wizBack');
+    var nextBtn = document.getElementById('wizNext');
+    var label = document.getElementById('wizStepLabel');
+    var total = steps.length;
+    var current = 0;
+    var PATH_STEP_INDEX = steps.findIndex(function (s) { return s.getAttribute('data-step') === '4'; });
+    var selectedPath = null;
+
+    function render(){
+      steps.forEach(function(s, i){ s.classList.toggle('active', i === current); });
+      dots.forEach(function(d, i){
+        d.classList.toggle('active', i === current);
+        d.classList.toggle('done', i < current);
+      });
+      label.textContent = 'Step ' + (current + 1) + ' of ' + total;
+      backBtn.disabled = current === 0;
+      // Campaign Capsule (2026-08-19, V direction, Fieldy feedback): Pick Your Path
+      // (data-requires-choice) hides Next until a path is actually chosen -- once
+      // chosen, Next stays visible even coming back to this step via Back, so a
+      // returning visitor isn't forced to re-click their already-picked path.
+      var requiresChoice = steps[current].hasAttribute('data-requires-choice');
+      var choiceSatisfied = current === PATH_STEP_INDEX && !!selectedPath;
+      nextBtn.hidden = current === total - 1 || (requiresChoice && !choiceSatisfied);
+      document.getElementById('wizardFrame').classList.toggle('cover-mode', current === 0);
+      window.scrollTo({top: 0, behavior: 'smooth'});
+      layoutFixedBottom();
+    }
+
+    function applySelectedCardStyle() {
+      var grid = document.getElementById('wiz-path-cards');
+      if (!grid) return;
+      Array.prototype.slice.call(grid.querySelectorAll('[data-path]')).forEach(function (btn) {
+        btn.classList.toggle('selected', btn.getAttribute('data-path') === selectedPath);
+      });
+    }
+    // Exposed so renderPathCards() can restore the selected look if the API-driven
+    // cards render after a selection was already made (defensive, not expected in
+    // the normal load order).
+    window.wizReapplyPathSelection = applySelectedCardStyle;
+
+    // Campaign Capsule (2026-08-19, V direction, Fieldy feedback): clicking a path
+    // card no longer jumps straight to the detail panel. It only marks the choice
+    // (visually, via .selected) and reveals Next -- advancing now requires an
+    // explicit Next click, same as every other step, so nothing happens by surprise.
+    function markPathSelected(path) {
+      selectedPath = path;
+      applySelectedCardStyle();
+      render();
+    }
+
+    // Event delegation, not per-button listeners: the Pick Your Path cards are
+    // re-rendered from door.entry_points after this runs (see renderPathCards in
+    // loadPathData), so binding to the container catches cards that don't exist yet.
+    var pathCardsGrid = document.getElementById('wiz-path-cards');
+    if (pathCardsGrid) {
+      pathCardsGrid.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-path]');
+        if (btn) markPathSelected(btn.getAttribute('data-path'));
+      });
+    }
+
+    backBtn.addEventListener('click', function(){
+      if (current > 0) { current -= 1; render(); }
+    });
+    nextBtn.addEventListener('click', function(){
+      // Campaign Capsule (2026-08-19, V direction): "after someone picks their
+      // path... there should be a prompt for them to login or register to see the
+      // rest." The path-detail step (highlights, sponsorship tiers, volunteer
+      // roles) is that "rest" -- gate it right here, before it's ever shown,
+      // instead of waiting until the final decision button. requireLoginThen()
+      // already no-ops straight through to its callback for an already-logged-in
+      // member, so this only interrupts anonymous visitors; a member who signs up
+      // here already has a real account by the time they reach the three decision
+      // buttons on the next step.
+      if (current === PATH_STEP_INDEX && selectedPath) {
+        requireLoginThen(function () {
+          document.querySelectorAll('.wiz-path-panel').forEach(function (p) {
+            p.hidden = p.getAttribute('data-path') !== selectedPath;
+          });
+          if (current < total - 1) { current += 1; render(); }
+        }, 'Almost there -- sign in or create a free account to see full details for your path.');
+        return;
+      }
+      if (current < total - 1) { current += 1; render(); }
+    });
+
+    var coverCta = document.getElementById('wizCoverCta');
+    if (coverCta) coverCta.addEventListener('click', function(){
+      if (current < total - 1) { current += 1; render(); }
+    });
+
+    render();
+  }
+
+  function showEnrollmentWizard() {
+    document.getElementById('pbs-content').style.display = 'block';
+    initWizard();
+    initDashboardButton();
+    layoutFixedBottom();
+    loadPathData();
+  }
+
+  // Campaign Capsule steps 4-5 (brief_checkpoints id 517, 2026-08-19): probe
+  // lifecycle_stage via the existing gate actions (no new API call needed --
+  // get_campaign_live_view/get_campaign_wrapped_view already return
+  // lifecycle_stage on both success and the 409 guard error) and route to
+  // whichever screen matches. Falls back to the enrollment wizard on any
+  // unexpected response so the page never goes blank.
+  // Campaign Capsule (2026-08-19, V direct feedback): the wizard is now browsable
+  // and pickable by anyone -- no login required just to see the pitch or pick a
+  // path. Login/signup is only required the moment someone submits a real decision
+  // (see the requireLoginThen() calls at each Join/Select/Apply button below), so
+  // this page can double as a recruitment tool instead of gating everyone at the door.
+  function init() {
+    document.getElementById('pbs-gate').style.display = 'none';
+    TOKEN = (window.VEAuth && VEAuth.isLoggedIn()) ? VEAuth.getToken() : null;
+
+    if (!TOKEN) { showEnrollmentWizard(); return; }
+
+    callAPI('get_campaign_live_view', { initiative_slug: INITIATIVE_SLUG }).then(function (d) {
+      if (d && d.ok && d.lifecycle_stage === 'live') {
+        document.getElementById('pbs-live').style.display = 'block';
+        renderLiveScreen(d);
+        return;
+      }
+      if (d && d.error === 'not_live_yet' && d.lifecycle_stage === 'wrapped') {
+        callAPI('get_campaign_wrapped_view', { initiative_slug: INITIATIVE_SLUG }).then(function (w) {
+          if (w && w.ok) {
+            document.getElementById('pbs-wrapped').style.display = 'block';
+            renderWrappedScreen(w);
+          } else {
+            showEnrollmentWizard();
+          }
+        }).catch(showEnrollmentWizard);
+        return;
+      }
+      showEnrollmentWizard();
+    }).catch(showEnrollmentWizard);
+  }
+
+  window.addEventListener('resize', layoutFixedBottom);
+  init();
+</script>
+</body>
+</html>
