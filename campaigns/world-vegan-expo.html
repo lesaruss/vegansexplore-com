@@ -489,7 +489,7 @@
   var DECISION_ROLES = [];
   function showDashboardButton() {
     var b = document.getElementById('wiz-dashboard-btn');
-    if (b) { b.style.display = 'inline-block'; b.classList.add('unlocked'); }
+    if (b) { b.disabled = false; b.classList.add('unlocked'); }
   }
   function markDecisionMade(role) {
     if (DECISION_ROLES.indexOf(role) === -1) DECISION_ROLES.push(role);
