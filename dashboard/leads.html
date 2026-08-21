@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leads - VEGANS EXPLORE Dashboard</title>
+<meta name="description" content="Every sponsor, attend, and volunteer submission across all campaigns, in one place.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#eaf6ea;--ve-orange:#F69820;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);--ve-border:rgba(0,0,0,0.09);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:820px;margin:0 auto;padding:44px 24px 80px;}
+  #leads-gate{text-align:center;padding:100px 20px;}
+  #leads-gate p{font-size:14px;color:var(--ve-text-75);}
+  #leads-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #leads-content{display:none;}
+  .leads-back{font-size:11px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;margin-bottom:14px;display:inline-block;}
+  .leads-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  h1{font-size:24px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
+  .leads-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:24px;line-height:1.6;}
+  .leads-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .leads-filters select{font-size:11.5px;font-weight:700;padding:9px 12px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);}
+  .leads-filters button{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:100px;border:2px solid var(--ve-border);background:#fff;cursor:pointer;}
+  .leads-filters button.active{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  .lead-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px 18px;margin-bottom:10px;}
+  .lead-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+  .lead-who{font-size:13.5px;font-weight:800;}
+  .lead-email{font-size:11.5px;color:var(--ve-text-50);font-weight:600;}
+  .lead-kind{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;margin-right:6px;}
+  .lead-kind.interest{background:#fff3e0;color:#7d4a00;}
+  .lead-kind.volunteer{background:rgba(58,155,62,0.1);color:var(--ve-green-dark);}
+  .lead-what{font-size:12.5px;color:var(--ve-text-75);margin-bottom:8px;}
+  .lead-meta{font-size:11px;color:var(--ve-text-50);}
+  .lead-note{font-size:12.5px;color:#444;line-height:1.5;margin:8px 0;background:#f7f7f7;border-radius:6px;padding:9px 11px;}
+  .lead-select{font-size:11px;font-weight:700;padding:5px 8px;border-radius:6px;border:1.5px solid var(--ve-border);}
+  .lead-select.new{border-color:#f5cf8f;background:#fff3e0;}
+  .lead-select.contacted{border-color:#93c5fd;background:#eff6ff;}
+  .lead-select.confirmed{border-color:#8fcf9d;background:var(--ve-green-light);}
+  .lead-select.declined{border-color:#fca5a5;background:#fef2f2;}
+  .lead-actions{display:flex;gap:8px;margin-top:6px;}
+  .lead-actions button{font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:8px 14px;border-radius:6px;border:none;cursor:pointer;}
+  .lead-actions button.approve{background:var(--ve-green);color:#fff;}
+  .lead-actions button.approve:hover{background:var(--ve-green-dark);}
+  .lead-actions button.reject{background:#fff;border:1.5px solid #dc2626;color:#dc2626;}
+  .lead-actions button.reject:hover{background:#fef2f2;}
+  .lead-tag-decided{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:5px 10px;border-radius:100px;}
+  .lead-tag-decided.accepted{background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .lead-tag-decided.rejected{background:#fef2f2;color:#dc2626;}
+  #leads-empty{text-align:center;padding:60px 20px;color:var(--ve-text-50);font-size:14px;display:none;}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="leads-gate"><p>Checking access&hellip;</p></div>
+  <div id="leads-content">
+    <a class="leads-back" href="/dashboard">&larr; Back to Dashboard</a>
+    <p class="leads-eyebrow">Superadmin</p>
+    <h1>Leads</h1>
+    <p class="leads-sub">Every sponsor, attend, and volunteer/steering-committee submission across all campaigns (World Vegan Expo, Plant Based Showcase, and any future Campaign Capsule page), in one place. Nothing here is auto-approved -- this is where you see who to actually reach out to. General Vegan Explorer / Community Manager applications (not tied to a campaign) still live at Community Manager and Vegan Explorer Applications.</p>
+
+    <div class="leads-filters">
+      <select id="leads-campaign-filter"><option value="all">All campaigns</option></select>
+      <button type="button" id="leads-needs-action-btn" class="active" data-mode="needs_action">Needs Action</button>
+      <button type="button" id="leads-all-btn" data-mode="all">All</button>
+    </div>
+
+    <div id="leads-list"><p style="font-size:13px;color:var(--ve-text-50);">Loading leads&hellip;</p></div>
+    <div id="leads-empty">Nothing here for this filter. Queue is clear.</div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+
+  var ACTION_TYPE_LABELS = { pledge: 'Pledge', ticket: 'Attend / Waitlist', vendor_tier: 'Vendor Tier Interest', sponsor_tier: 'Sponsor Tier Interest' };
+  var CAMPAIGN_TITLES = {};
+  var allLeads = [];
+  var activeCampaign = 'all';
+  var activeMode = 'needs_action';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function fullDateTime(s) { if (!s) return ''; try { return new Date(s).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } }
+  function campaignLabel(slug) { return CAMPAIGN_TITLES[slug] || slug || 'Unknown campaign'; }
+
+  function showDenied() {
+    document.getElementById('leads-gate').innerHTML = '<p>Sign in with a superadmin account to view leads.</p><button id="leads-signin-btn">Sign In</button>';
+    var btn = document.getElementById('leads-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view leads.', init); });
+  }
+
+  function renderCampaignFilter() {
+    var sel = document.getElementById('leads-campaign-filter');
+    var slugs = Array.from(new Set(allLeads.map(function (l) { return l.campaign_slug; }))).sort();
+    sel.innerHTML = '<option value="all">All campaigns</option>' + slugs.map(function (s) {
+      return '<option value="' + esc(s) + '">' + esc(campaignLabel(s)) + '</option>';
+    }).join('');
+    sel.value = activeCampaign;
+  }
+
+  function needsAction(lead) {
+    if (lead.kind === 'interest') return lead.status === 'new';
+    return lead.status === 'pending';
+  }
+
+  function render() {
+    var items = allLeads.filter(function (l) {
+      if (activeCampaign !== 'all' && l.campaign_slug !== activeCampaign) return false;
+      if (activeMode === 'needs_action' && !needsAction(l)) return false;
+      return true;
+    }).sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+
+    var list = document.getElementById('leads-list');
+    var empty = document.getElementById('leads-empty');
+    if (!items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    list.innerHTML = items.map(function (l) {
+      var kindTag = l.kind === 'interest'
+        ? '<span class="lead-kind interest">' + esc(ACTION_TYPE_LABELS[l.what_key] || l.what_key) + '</span>'
+        : '<span class="lead-kind volunteer">Volunteer</span>';
+      var what = l.kind === 'interest'
+        ? (ACTION_TYPE_LABELS[l.what_key] || l.what_key) + (l.tier_label ? ': ' + esc(l.tier_label) : '') + (l.amount ? ' ($' + esc(l.amount) + ')' : '')
+        : esc(l.what_key);
+      var note = l.note ? '<div class="lead-note">"' + esc(l.note) + '"</div>' : '';
+      var coverNote = l.cover_note ? '<div class="lead-note">"' + esc(l.cover_note) + '"</div>' : '';
+
+      var actionHtml;
+      if (l.kind === 'interest') {
+        actionHtml = '<select class="lead-select ' + esc(l.status) + '" data-id="' + esc(l.id) + '" data-kind="interest">' +
+          '<option value="new"' + (l.status === 'new' ? ' selected' : '') + '>New</option>' +
+          '<option value="contacted"' + (l.status === 'contacted' ? ' selected' : '') + '>Contacted</option>' +
+          '<option value="confirmed"' + (l.status === 'confirmed' ? ' selected' : '') + '>Confirmed</option>' +
+          '<option value="declined"' + (l.status === 'declined' ? ' selected' : '') + '>Declined</option>' +
+        '</select>';
+      } else if (l.status === 'pending') {
+        actionHtml = '<div class="lead-actions"><button class="approve" data-id="' + esc(l.id) + '" data-kind="application" data-decision="accepted">Approve</button>' +
+          '<button class="reject" data-id="' + esc(l.id) + '" data-kind="application" data-decision="rejected">Reject</button></div>';
+      } else {
+        actionHtml = '<span class="lead-tag-decided ' + (l.status === 'accepted' ? 'accepted' : 'rejected') + '">' + (l.status === 'accepted' ? 'Approved' : 'Rejected') + '</span>';
+      }
+
+      return '<div class="lead-card" data-row-id="' + esc(l.id) + '" data-row-kind="' + esc(l.kind) + '">' +
+        '<div class="lead-top"><div>' + kindTag + '<span class="lead-who">' + esc(l.who) + '</span><br><span class="lead-email">' + esc(l.email) + '</span></div>' + actionHtml + '</div>' +
+        '<div class="lead-what">' + what + '</div>' +
+        note + coverNote +
+        '<div class="lead-meta">' + esc(campaignLabel(l.campaign_slug)) + ' &middot; ' + fullDateTime(l.created_at) + '</div>' +
+        '</div>';
+    }).join('');
+
+    wireActions();
+  }
+
+  function wireActions() {
+    document.querySelectorAll('.lead-select').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        var id = sel.getAttribute('data-id');
+        var newStatus = sel.value;
+        sel.className = 'lead-select ' + newStatus;
+        var lead = allLeads.filter(function (l) { return l.id === id && l.kind === 'interest'; })[0];
+        if (lead) lead.status = newStatus;
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=update_initiative_interest_status', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: VEAuth.getToken(), id: id, status: newStatus })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.error) alert('Could not update: ' + d.error);
+          render();
+        }).catch(function () { alert('Could not reach the server, try again.'); });
+      });
+    });
+    document.querySelectorAll('.lead-actions button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var decision = btn.getAttribute('data-decision');
+        if (decision === 'rejected' && !confirm('Reject this volunteer application?')) return;
+        btn.closest('.lead-card').style.opacity = '0.5';
+        fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=review_opportunity_application', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: VEAuth.getToken(), id: id, decision: decision })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.error) { alert('Could not update: ' + d.error); btn.closest('.lead-card').style.opacity = '1'; return; }
+          var lead = allLeads.filter(function (l) { return l.id === id && l.kind === 'application'; })[0];
+          if (lead) lead.status = decision;
+          render();
+        }).catch(function () { alert('Could not reach the server, try again.'); btn.closest('.lead-card').style.opacity = '1'; });
+      });
+    });
+  }
+
+  function wireFilters() {
+    document.getElementById('leads-campaign-filter').addEventListener('change', function (e) {
+      activeCampaign = e.target.value;
+      render();
+    });
+    document.getElementById('leads-needs-action-btn').addEventListener('click', function () { setMode('needs_action'); });
+    document.getElementById('leads-all-btn').addEventListener('click', function () { setMode('all'); });
+  }
+  function setMode(mode) {
+    activeMode = mode;
+    document.getElementById('leads-needs-action-btn').className = mode === 'needs_action' ? 'active' : '';
+    document.getElementById('leads-all-btn').className = mode === 'all' ? 'active' : '';
+    render();
+  }
+
+  function loadLeads(token) {
+    var interestP = fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiative_interest', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).catch(function () { return { items: [] }; });
+
+    var appsP = fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token, status: 'all' })
+    }).then(function (r) { return r.json(); }).catch(function () { return { items: [] }; });
+
+    var initiativesP = fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiatives', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).catch(function () { return { items: [] }; });
+
+    Promise.all([interestP, appsP, initiativesP]).then(function (results) {
+      var interestItems = (results[0] && results[0].items) || [];
+      var appItems = (results[1] && results[1].items) || [];
+      var initiatives = (results[2] && results[2].items) || [];
+
+      initiatives.forEach(function (i) { if (i.slug && i.title) CAMPAIGN_TITLES[i.slug] = i.title; });
+
+      var fromInterest = interestItems.map(function (it) {
+        return {
+          kind: 'interest', id: it.id, campaign_slug: it.initiative_slug,
+          who: (it.members && it.members.name) || 'Unknown member',
+          email: (it.members && it.members.email) || '',
+          what_key: it.action_type, tier_label: it.tier_label, amount: it.amount, note: it.note,
+          status: it.status, created_at: it.created_at
+        };
+      });
+
+      var fromApps = appItems.filter(function (a) {
+        return a.opportunities && a.opportunities.initiative_slug;
+      }).map(function (a) {
+        return {
+          kind: 'application', id: a.id, campaign_slug: a.opportunities.initiative_slug,
+          who: (a.members && a.members.name) || 'Unknown applicant',
+          email: (a.members && a.members.email) || '',
+          what_key: a.opportunities.title || a.opportunities.opportunity_type, cover_note: a.cover_note,
+          status: a.status, created_at: a.created_at
+        };
+      });
+
+      allLeads = fromInterest.concat(fromApps);
+      renderCampaignFilter();
+      render();
+    });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    var token = VEAuth.getToken();
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var member = d && d.member;
+      if (!member || !member.is_superadmin) { showDenied(); document.getElementById('leads-gate').innerHTML = '<p>This page is for superadmins only, for now.</p><p><a href="/dashboard" style="color:var(--ve-green-dark);font-weight:700;">Back to Dashboard</a></p>'; return; }
+      document.getElementById('leads-gate').style.display = 'none';
+      document.getElementById('leads-content').style.display = 'block';
+      wireFilters();
+      loadLeads(token);
+    }).catch(showDenied);
+  }
+
+  init();
+</script>
+</body>
+</html>
