@@ -223,6 +223,9 @@
   // "Members" and "Event Submissions" tiles (2026-08-15 / 2026-08-20, Logan).
   var SA_MEMBERS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
   var SA_EVENTS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>';
+  // Leads tile icon (2026-08-21, Logan, Sean direction): unified sponsor/
+  // attend interest + campaign-tied volunteer applications tile.
+  var SA_LEADS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
 
   function loadPendingEventsCount(token) {
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_pending_events', {
@@ -232,6 +235,36 @@
     }).then(function (r) { return r.json(); }).then(function (d) {
       var count = (d && d.items && d.items.length) || 0;
       var badge = document.getElementById('dash-events-pending-badge');
+      if (!badge) return;
+      if (count > 0) { badge.textContent = count; badge.style.display = ''; }
+      else { badge.style.display = 'none'; }
+    }).catch(function () {});
+  }
+
+  // Leads tile pending-count badge (2026-08-21, Logan, Sean direction):
+  // counts new/undecided sponsor+attend interest rows plus pending
+  // campaign-tied (initiative_slug truthy) volunteer/steering-committee
+  // applications, mirroring the same "needs action" filter used on
+  // dashboard/leads.html.
+  function loadPendingLeadsCount(token) {
+    Promise.all([
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiative_interest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: token })
+      }).then(function (r) { return r.json(); }).catch(function () { return {}; }),
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: token, status: 'pending' })
+      }).then(function (r) { return r.json(); }).catch(function () { return {}; })
+    ]).then(function (results) {
+      var interestItems = (results[0] && results[0].items) || [];
+      var appItems = (results[1] && results[1].items) || [];
+      var pendingInterest = interestItems.filter(function (i) { return i.status === 'new'; }).length;
+      var pendingApps = appItems.filter(function (a) { return a.opportunities && a.opportunities.initiative_slug; }).length;
+      var count = pendingInterest + pendingApps;
+      var badge = document.getElementById('dash-leads-pending-badge');
       if (!badge) return;
       if (count > 0) { badge.textContent = count; badge.style.display = ''; }
       else { badge.style.display = 'none'; }
@@ -423,6 +456,7 @@
     TILE_REGISTRY.push(
       { key: 'sa-members', href: '/dashboard/members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/events.html', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-leads', href: '/dashboard/leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'cm-initiatives', href: '/dashboard/2026-initiatives', iconHtml: '&#127758;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: '2026 Initiatives Portfolio', desc: 'The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.', visibility: 'staff', defaultSection: 'tools' },
       { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' },
       // Guides section (2026-08-21, Sean direction): mirrors the 5 active
@@ -517,6 +551,7 @@
     renderSectionedGrid('dash-grid-guides', buckets.guides);
     renderSectionedGrid('dash-grid-tools', buckets.tools);
     loadPendingEventsCount(VEAuth.getToken());
+    if (member.is_superadmin) loadPendingLeadsCount(VEAuth.getToken());
   }
 
   function loadAndRenderSectioned(member, isStaff) {
