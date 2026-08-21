@@ -40,13 +40,18 @@
      .wiz-cover-wordmark below) -- V wanted it in the blank space above the h1
      inside the cover graphic, not as a bar repeated on every step. */
   .wiz-topbar { display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 20px 48px 0; position: relative; z-index: 2; }
-  #wiz-dashboard-btn { display: none; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; border: 1.5px solid var(--path-color); background: transparent; color: var(--path-dark); cursor: pointer; white-space: nowrap; }
-  #wiz-dashboard-btn:hover { background: var(--path-color); color: #fff; }
-  /* Campaign Capsule (2026-08-19, V direction): the Dashboard button only ever
-     becomes visible once a real decision has been made on step 5 (see
-     markDecisionMade/showDashboardButton in the script below) -- at that point it
-     also gets this solid-green "unlocked" look instead of the plain outline, so it
-     reads as an active, ready-to-click CTA rather than a quiet secondary link. */
+  #wiz-dashboard-btn { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 18px; border-radius: 4px; border: 1.5px solid var(--path-color); background: transparent; color: var(--path-dark); cursor: pointer; white-space: nowrap; }
+  /* Campaign Capsule (2026-08-21, Sean direction): the Dashboard button is now
+     permanent chrome, visible from the first screen -- disabled/grayed until a
+     real decision has been made on step 5 (see markDecisionMade/showDashboardButton
+     below), so a member always knows where this is going before they choose a
+     path. Once a decision is made it un-disables and gets the solid-green
+     "unlocked" look instead of the grayed outline, reading as an active,
+     ready-to-click CTA. Going in disabled (not hidden) also means a member who
+     joined this campaign from the site dashboard's Your Campaigns picker still
+     sees the button, just correctly grayed until they walk the path steps here. */
+  #wiz-dashboard-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  #wiz-dashboard-btn:not(:disabled):hover { background: var(--path-color); color: #fff; }
   #wiz-dashboard-btn.unlocked { background: var(--path-color); border-color: var(--path-color); color: #fff; }
   #wiz-dashboard-btn.unlocked:hover { background: var(--path-dark); border-color: var(--path-dark); }
   @media (max-width: 820px) { .wiz-topbar { padding: 16px 24px 0; } }
