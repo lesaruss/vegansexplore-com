@@ -60,6 +60,23 @@
   .dash-tile-wrap{display:flex;flex-direction:column;}
   .dash-tile-wrap .dash-tile{flex:1;}
 
+  /* Sectioned, reorderable dashboard tiles -- superadmin only (2026-08-21,
+     Logan, Sean direction): "move the tiles around... into different
+     sections... like how I can do it on my iPhone." Only rendered for
+     is_superadmin accounts; every other member keeps the single flat
+     #dash-tile-grid above untouched. */
+  .dash-section-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .dash-tile-section{margin-bottom:28px;}
+  .dash-edit-btn{background:#fff;border:1.5px solid var(--ve-border);border-radius:100px;padding:9px 20px;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:"Montserrat",sans-serif;color:var(--ve-text-75);transition:border-color .15s,background .15s,color .15s;}
+  .dash-edit-btn:hover{border-color:var(--ve-green);color:var(--ve-green-dark);}
+  .dash-edit-btn.active{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  #dash-tiles-sectioned .dash-grid{min-height:20px;transition:background .15s;border-radius:14px;}
+  #dash-tiles-sectioned .dash-grid.drag-over{background:var(--ve-green-light);}
+  body.dash-edit-mode #dash-tiles-sectioned .dash-tile-wrap{cursor:grab;}
+  body.dash-edit-mode #dash-tiles-sectioned .dash-tile-wrap .dash-tile{animation:dash-jiggle 0.26s ease-in-out infinite alternate;pointer-events:none;}
+  body.dash-edit-mode #dash-tiles-sectioned .dash-tile-wrap.dragging .dash-tile{opacity:0.35;animation:none;}
+  @keyframes dash-jiggle{0%{transform:rotate(-1deg);}100%{transform:rotate(1deg);}}
+
   /* Community picker modal */
   .dash-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:900;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto;}
   .dash-modal-overlay.open{display:flex;}
@@ -122,9 +139,31 @@
       </div>
     </div>
 
-    <p class="dash-section-title">Your Tools</p>
-    <div class="dash-grid" id="dash-tile-grid"></div>
-    <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Thumbnails are placeholders. Real illustrated artwork, in the GeekFon style, is next.</p>
+    <div id="dash-tiles-flat">
+      <p class="dash-section-title">Your Tools</p>
+      <div class="dash-grid" id="dash-tile-grid"></div>
+      <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Thumbnails are placeholders. Real illustrated artwork, in the GeekFon style, is next.</p>
+    </div>
+
+    <div id="dash-tiles-sectioned" style="display:none;">
+      <div class="dash-section-header-row">
+        <p class="dash-section-title" style="margin-bottom:0;">Dashboard Layout</p>
+        <button type="button" id="dash-edit-layout-btn" class="dash-edit-btn">Edit Layout</button>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Super Admin</p>
+        <div class="dash-grid" id="dash-grid-superadmin"></div>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Media</p>
+        <div class="dash-grid" id="dash-grid-media"></div>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Your Tools</p>
+        <div class="dash-grid" id="dash-grid-tools"></div>
+      </div>
+      <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Tap Edit Layout to drag tiles between sections and reorder them, like rearranging apps on your phone.</p>
+    </div>
   </div>
 </main>
 
@@ -175,38 +214,10 @@
     if (prepend) grid.insertBefore(tile, grid.firstChild); else grid.appendChild(tile);
   }
 
-  // Superadmin only. The roster carries every member email across every brand and
-  // reads Supabase Auth, so it is deliberately NOT a Community Manager tile.
-  // Added 2026-08-15 after an audit found member signups had no surface at all.
-  function addSuperadminTiles() {
-    addTile('<span data-href="/dashboard/members"></span>' +
-      '<div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green-dark),var(--ve-green));">' +
-      '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
-      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
-      '<circle cx="9" cy="7" r="4"/>' +
-      '<path d="M22 21v-2a4 4 0 0 0-3-3.87"/>' +
-      '<path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>' +
-      '<div class="dash-tile-body"><div class="dash-tile-title">Members ' +
-      '<span class="dash-tag superadmin">Superadmin</span></div>' +
-      '<div class="dash-tile-desc">Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, ' +
-      'with tier, points, and who has never come back.</div></div>', true);
-
-    // Event Submissions tile (2026-08-20, Logan): superadmin-only at-a-glance
-    // link into admin/events.html, the review queue for events submitted via
-    // "Submit an Event" on any city hub. Badge shows the live pending count so
-    // there is no need to click in just to check whether anything is waiting.
-    addTile('<span data-href="/admin/events.html"></span>' +
-      '<div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),#d4800f);">' +
-      '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
-      '<rect x="3" y="4" width="18" height="18" rx="2"/>' +
-      '<path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></div>' +
-      '<div class="dash-tile-body"><div class="dash-tile-title">Event Submissions ' +
-      '<span class="dash-tag superadmin">Superadmin</span> ' +
-      '<span class="dash-badge-count" id="dash-events-pending-badge" style="display:none;"></span></div>' +
-      '<div class="dash-tile-desc">Review events submitted from any city hub and approve or reject before they go live.</div></div>', true);
-  }
+  // Superadmin-only inline icon SVGs, reused by TILE_REGISTRY below for the
+  // "Members" and "Event Submissions" tiles (2026-08-15 / 2026-08-20, Logan).
+  var SA_MEMBERS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+  var SA_EVENTS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>';
 
   function loadPendingEventsCount(token) {
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_pending_events', {
@@ -382,6 +393,175 @@
   ];
   var MODULES_BY_KEY = {};
   MODULES.forEach(function(m) { MODULES_BY_KEY[m.key] = m; });
+
+  // Sectioned, drag-to-reorder tile layout -- superadmin only (2026-08-21,
+  // Logan, Sean direction). TILE_REGISTRY unifies every tile that can appear
+  // anywhere on the dashboard: the 10 MODULES above (visibility 'all'), the
+  // two superadmin-only tiles that used to be hardcoded via addSuperadminTiles
+  // (visibility 'superadmin'), and the two Community Manager tiles that used
+  // to be hardcoded via addCmTiles (visibility 'staff'). Server-side
+  // VALID_LAYOUT_MODULES in ve-auth must stay in sync with these keys.
+  // defaultSection is only a fallback for tiles the superadmin hasn't moved
+  // yet -- Sean asked to "populate some sections", so Daily Pulse and
+  // Podcasts start in Media and the rest start in Tools; dragging overrides
+  // this permanently via member_dashboard_layout.
+  var TILE_REGISTRY = null;
+  function buildTileRegistry() {
+    if (TILE_REGISTRY) return TILE_REGISTRY;
+    TILE_REGISTRY = MODULES.map(function (m) {
+      return {
+        key: m.key, href: m.href, iconHtml: m.icon, bg: m.bg, title: m.title, desc: m.desc,
+        visibility: 'all', defaultSection: (m.key === 'pulse' || m.key === 'podcasts') ? 'media' : 'tools'
+      };
+    });
+    TILE_REGISTRY.push(
+      { key: 'sa-members', href: '/dashboard/members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-events', href: '/admin/events.html', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'cm-initiatives', href: '/dashboard/2026-initiatives', iconHtml: '&#127758;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: '2026 Initiatives Portfolio', desc: 'The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.', visibility: 'staff', defaultSection: 'tools' },
+      { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' }
+    );
+    return TILE_REGISTRY;
+  }
+
+  var dashLayout = [];
+  var layoutEditMode = false;
+  var draggedTileEl = null;
+
+  function resolveDashboardSections(member, isStaff) {
+    var registry = buildTileRegistry();
+    var savedMap = {};
+    (dashLayout || []).forEach(function (row) { savedMap[row.module_key] = row; });
+    var buckets = { superadmin: [], media: [], tools: [] };
+    registry.forEach(function (t) {
+      if (t.visibility === 'staff' && !isStaff) return;
+      if (t.visibility === 'superadmin' && !member.is_superadmin) return;
+      var tile = t;
+      if (t.key === 'opportunities' && isStaff) tile = Object.assign({}, t, { desc: 'Review applications, manage campaigns, and more.' });
+      var saved = savedMap[t.key];
+      var section = (saved && buckets[saved.section_key]) ? saved.section_key : t.defaultSection;
+      var order = saved ? saved.sort_order : 9999;
+      buckets[section].push({ tile: tile, order: order });
+    });
+    Object.keys(buckets).forEach(function (k) { buckets[k].sort(function (a, b) { return a.order - b.order; }); });
+    return buckets;
+  }
+
+  function sectionedTileHtml(t) {
+    return '<div class="dash-thumb" style="background:' + t.bg + ';">' + t.iconHtml + '</div>' +
+      '<div class="dash-tile-body"><div class="dash-tile-title">' + t.title +
+      (t.tagLabel ? ' <span class="dash-tag superadmin">' + t.tagLabel + '</span>' : '') +
+      (t.badgeId ? ' <span class="dash-badge-count" id="' + t.badgeId + '" style="display:none;"></span>' : '') +
+      '</div><div class="dash-tile-desc"' + (t.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + t.desc + '</div></div>';
+  }
+
+  function renderSectionedGrid(gridId, items) {
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = '';
+    items.forEach(function (entry) {
+      var t = entry.tile;
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-tile-wrap';
+      wrap.setAttribute('data-key', t.key);
+      wrap.draggable = layoutEditMode;
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = t.href;
+      tile.innerHTML = sectionedTileHtml(t);
+      tile.addEventListener('click', function (e) { if (layoutEditMode) e.preventDefault(); });
+      wrap.appendChild(tile);
+      wrap.addEventListener('dragstart', function (e) {
+        if (!layoutEditMode) { e.preventDefault(); return; }
+        draggedTileEl = wrap;
+        wrap.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', t.key);
+      });
+      wrap.addEventListener('dragend', function () {
+        wrap.classList.remove('dragging');
+        draggedTileEl = null;
+        document.querySelectorAll('#dash-tiles-sectioned .dash-grid').forEach(function (g) { g.classList.remove('drag-over'); });
+      });
+      grid.appendChild(wrap);
+    });
+  }
+
+  function renderSectionedTiles(member, isStaff) {
+    document.getElementById('dash-tiles-flat').style.display = 'none';
+    document.getElementById('dash-tiles-sectioned').style.display = 'block';
+    var buckets = resolveDashboardSections(member, isStaff);
+    renderSectionedGrid('dash-grid-superadmin', buckets.superadmin);
+    renderSectionedGrid('dash-grid-media', buckets.media);
+    renderSectionedGrid('dash-grid-tools', buckets.tools);
+    loadPendingEventsCount(VEAuth.getToken());
+  }
+
+  function loadAndRenderSectioned(member, isStaff) {
+    VEAuth.getLayout().then(function (d) {
+      dashLayout = (d && d.layout) || [];
+      renderSectionedTiles(member, isStaff);
+    }).catch(function () {
+      dashLayout = [];
+      renderSectionedTiles(member, isStaff);
+    });
+  }
+
+  function getDragTarget(container, x, y) {
+    var els = Array.prototype.slice.call(container.querySelectorAll('.dash-tile-wrap')).filter(function (el) { return el !== draggedTileEl; });
+    var closest = null, closestDist = Infinity, insertAfter = false;
+    els.forEach(function (el) {
+      var box = el.getBoundingClientRect();
+      var cx = box.left + box.width / 2, cy = box.top + box.height / 2;
+      var dist = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+      if (dist < closestDist) { closestDist = dist; closest = el; insertAfter = x > cx; }
+    });
+    return { closest: closest, insertAfter: insertAfter };
+  }
+
+  function persistDashboardLayout() {
+    var layout = [];
+    [['superadmin', 'dash-grid-superadmin'], ['media', 'dash-grid-media'], ['tools', 'dash-grid-tools']].forEach(function (pair) {
+      var section = pair[0];
+      var grid = document.getElementById(pair[1]);
+      if (!grid) return;
+      Array.prototype.forEach.call(grid.children, function (wrap, idx) {
+        layout.push({ module_key: wrap.getAttribute('data-key'), section_key: section, sort_order: idx });
+      });
+    });
+    dashLayout = layout;
+    VEAuth.saveLayout(layout).catch(function () {});
+  }
+
+  ['dash-grid-superadmin', 'dash-grid-media', 'dash-grid-tools'].forEach(function (gridId) {
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.addEventListener('dragover', function (e) {
+      if (!layoutEditMode || !draggedTileEl) return;
+      e.preventDefault();
+      grid.classList.add('drag-over');
+      var target = getDragTarget(grid, e.clientX, e.clientY);
+      if (!target.closest) { grid.appendChild(draggedTileEl); return; }
+      if (target.insertAfter) target.closest.parentNode.insertBefore(draggedTileEl, target.closest.nextSibling);
+      else target.closest.parentNode.insertBefore(draggedTileEl, target.closest);
+    });
+    grid.addEventListener('dragleave', function (e) { if (e.target === grid) grid.classList.remove('drag-over'); });
+    grid.addEventListener('drop', function (e) {
+      e.preventDefault();
+      grid.classList.remove('drag-over');
+      persistDashboardLayout();
+    });
+  });
+
+  var editLayoutBtn = document.getElementById('dash-edit-layout-btn');
+  if (editLayoutBtn) {
+    editLayoutBtn.addEventListener('click', function () {
+      layoutEditMode = !layoutEditMode;
+      editLayoutBtn.textContent = layoutEditMode ? 'Done' : 'Edit Layout';
+      editLayoutBtn.classList.toggle('active', layoutEditMode);
+      document.body.classList.toggle('dash-edit-mode', layoutEditMode);
+      document.querySelectorAll('#dash-tiles-sectioned .dash-tile-wrap').forEach(function (w) { w.draggable = layoutEditMode; });
+    });
+  }
 
   function toggleModule(key, isHidden) {
     var action = isHidden ? VEAuth.showModule(key) : VEAuth.hideModule(key);
@@ -617,19 +797,23 @@
     document.getElementById('dash-content').style.display = 'block';
     renderCommunitySection(member);
     renderCampaignsSection(member);
-    renderToolsGrid(member);
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
     document.getElementById('dash-welcome-name').textContent = 'Welcome back, ' + firstName;
     document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : (member.ve_tier === 'passport' ? 'Passport Member' : 'Member'));
 
-    if (member.is_superadmin) { addSuperadminTiles(); loadPendingEventsCount(VEAuth.getToken()); }
+    if (member.is_superadmin) {
+      loadAndRenderSectioned(member, isStaff);
+    } else {
+      renderToolsGrid(member);
+      if (isStaff) addCmTiles();
+    }
 
     if (isStaff) {
-      addCmTiles();
       document.getElementById('dash-stats-row').style.display = 'grid';
-      document.getElementById('dash-opps-desc').textContent = 'Review applications, manage campaigns, and more.';
+      var oppsDesc = document.getElementById('dash-opps-desc');
+      if (oppsDesc) oppsDesc.textContent = 'Review applications, manage campaigns, and more.';
       loadPendingCount(VEAuth.getToken());
 
       fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
