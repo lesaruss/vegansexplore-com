@@ -7,7 +7,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#F69820">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Vegans Explore — Become a Founding Member</title>
+  <title>Vegans Explore - Start Your Journey</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -185,10 +185,10 @@
         <span class="visually-hidden" id="heroCityLabelLive" aria-live="polite"></span>
       </div>
       <div class="hero-ctas">
-        <a class="btn-hero-primary" href="/communities" aria-label="Choose your city">
+        <button type="button" class="btn-hero-primary" onclick="startGuide()" aria-label="Start your journey">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          Choose Your City
-        </a>
+          Start Your Journey
+        </button>
         <a class="btn-hero-secondary" href="/login">Log In</a>
       </div>
     </div>
@@ -292,76 +292,71 @@
   <div class="guide-overlay" id="guideOverlay" aria-modal="true" role="dialog" aria-label="Guided Tour">
 
     <!-- PANEL 1 -->
-    <div class="guide-panel has-bg" id="panel-1" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260608_094246_bd14f17f-4efe-4ee3-bd59-0844b019fb33_min.webp)">
+    <div class="guide-panel has-bg" id="panel-1" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_223855_01920473-02b6-4406-a5a8-c224aa06565a_min.webp)">
       <div class="panel-num" aria-hidden="true">01</div>
       <div class="panel-two-col">
         <div class="panel-content">
           <div class="panel-step-tag">Step 01 of 06</div>
-          <h2 class="panel-title">The Vegan World<br>Is Scattered.</h2>
-          <p class="panel-body">Restaurant recommendations buried in Reddit threads. Events scattered across Facebook groups nobody checks. Vegan businesses closing because people didn't know they existed. The community is real - it just never had a home. That fragmentation is costing us all, city by city.</p>
+          <h2 class="panel-title">This Is<br>for You.</h2>
+          <p class="panel-body">You're a Vegan, a business owner building something plant-based, or someone who wants to fund the infrastructure that makes this movement grow.</p>
+          <p class="panel-body">This is for you.</p>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260608_094246_bd14f17f-4efe-4ee3-bd59-0844b019fb33_min.webp" alt="Illustrated scene of a fragmented Vegan community spread across social media and scattered sources" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_223855_01920473-02b6-4406-a5a8-c224aa06565a_min.webp" alt="Illustration of Vegans, business owners, and supporters welcomed onto one platform" />
         </div>
       </div>
     </div>
 
     <!-- PANEL 2 -->
-    <div class="guide-panel alt has-bg" id="panel-2" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_223855_01920473-02b6-4406-a5a8-c224aa06565a_min.webp)">
+    <div class="guide-panel alt has-bg" id="panel-2" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260608_094246_bd14f17f-4efe-4ee3-bd59-0844b019fb33_min.webp)">
       <div class="panel-num" aria-hidden="true">02</div>
       <div class="panel-two-col">
         <div class="panel-content">
           <div class="panel-step-tag">Step 02 of 06</div>
-          <h2 class="panel-title">One Platform.<br>Every City.<br>Everyone Welcome.</h2>
-          <p class="panel-body">VEGANS EXPLORE is being built as the single destination for everything Vegan - directory, communities, events, recipes, travel, guides. Whether you just switched, you've been Vegan for years, you run a business, or you create content - one place, built around your city.</p>
-          <div class="step-tags">
-            <span class="step-tag">Directory</span><span class="step-tag">Communities</span><span class="step-tag">Events</span><span class="step-tag">Recipes</span><span class="step-tag">Travel</span><span class="step-tag">Guides</span>
-          </div>
+          <h2 class="panel-title">The Vegan Community<br>Is Fractured.</h2>
+          <p class="panel-body">People are doing incredible work all over the place, but no one is speaking to each other. We're not growing together - we're growing separately.</p>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_223855_01920473-02b6-4406-a5a8-c224aa06565a_min.webp" alt="Illustration of the VEGANS EXPLORE platform uniting directory, communities, events, recipes, travel, and guides in one place" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260608_094246_bd14f17f-4efe-4ee3-bd59-0844b019fb33_min.webp" alt="Illustrated scene of a fragmented Vegan community spread across scattered groups and sources" />
         </div>
       </div>
     </div>
 
     <!-- PANEL 3 -->
-    <div class="guide-panel has-bg" id="panel-3" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_224104_3fb08286-61b9-4b41-af85-318df37e06df_min.webp)">
+    <div class="guide-panel has-bg" id="panel-3" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_225220_0566b8a3-61de-4f59-8e2c-ab9fd081defb_min.webp)">
       <div class="panel-num" aria-hidden="true">03</div>
       <div class="panel-two-col">
         <div class="panel-content">
           <div class="panel-step-tag">Step 03 of 06</div>
-          <h2 class="panel-title">We've Been<br>Doing This<br>for Years.</h2>
-          <p class="panel-body">Before the platform, before the launch date - the people behind VEGANS EXPLORE were already doing this work. Mapping Vegan cities. Building relationships with business owners. Learning what the community actually needed. 2,800+ businesses cataloged across 63 cities before this platform existed. We didn't find this community. We've been part of it. The platform is the infrastructure it always deserved.</p>
+          <h2 class="panel-title">Why This<br>Exists.</h2>
+          <p class="panel-body">Vegans Explore is the platform for the Vegan movement. We build the infrastructure for cities: a directory so you can find what's happening, events so you know where to show up, job boards so you can work in this movement, and volunteer opportunities so you can contribute where it matters.</p>
+          <p class="panel-body">We've done this for 10 years in South Florida and Central Florida - canvassing, connecting, showing up at events, hosting festivals. Now we're doing it with the technology infrastructure we didn't have before, so it's sustainable and can grow.</p>
+          <p class="panel-body">We're building this to support businesses that are struggling, nonprofits that need backing, and individuals who can't find what they need.</p>
+          <div class="step-tags">
+            <span class="step-tag">Directory</span><span class="step-tag">Events</span><span class="step-tag">Job Boards</span><span class="step-tag">Volunteering</span>
+          </div>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_224104_3fb08286-61b9-4b41-af85-318df37e06df_min.webp" alt="Illustrated portrait representing years of Vegan community research across 63 cities and 2,800 businesses" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_225220_0566b8a3-61de-4f59-8e2c-ab9fd081defb_min.webp" alt="Illustrated map representing the city infrastructure Vegans Explore builds: directory, events, job boards, and volunteer opportunities" />
         </div>
       </div>
     </div>
 
     <!-- PANEL 4 -->
-    <div class="guide-panel alt has-bg" id="panel-4" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_225220_0566b8a3-61de-4f59-8e2c-ab9fd081defb_min.webp)">
+    <div class="guide-panel alt has-bg" id="panel-4" style="background-image:url(https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_224104_3fb08286-61b9-4b41-af85-318df37e06df_min.webp)">
       <div class="panel-num" aria-hidden="true">04</div>
       <div class="panel-two-col">
         <div class="panel-content">
           <div class="panel-step-tag">Step 04 of 06</div>
-          <h2 class="panel-title">Nine Regions.<br>Day One.</h2>
-          <p class="panel-body">We're launching simultaneously across nine regions on July 13. Each region gets its own community, directory, and events feed. If your city isn't on the list yet, let us know - we're actively expanding.</p>
-          <div class="city-grid">
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">South Florida</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">Central Florida</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">Atlanta</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">New York</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">Los Angeles</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">London</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">Philadelphia</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">DMV Region</span></div>
-            <div class="city-tile"><div class="city-dot"></div><span class="city-name">North Carolina</span></div>
-            <div class="city-tile city-more"><div class="city-dot" style="background:var(--ve-green-dark)"></div><span class="city-name">Your City?</span></div>
-          </div>
+          <h2 class="panel-title">500+ Organizations.<br>Years on<br>the Ground.</h2>
+          <p class="panel-body">We've worked with over 500 organizations since launching.</p>
+          <p class="panel-body">Small potlucks. Expos. Multiple festivals. We've worked behind the scenes at some of the bigger festivals, covered events through our content, and went into restaurants to spotlight them.</p>
+          <p class="panel-body">We kept the community plugged in and learned through trial and error what works and what doesn't.</p>
+          <p class="panel-body">Here's what we know: for this to work, it needs to be a movement people believe will grow and stick around. You do that by creating something people want to back and support.</p>
+          <p class="panel-body">That was impossible until now. The technology infrastructure we have today means all the work that agents can do gets done by agents, and the relationship building - going into restaurants, making real connections - gets focused on by our members.</p>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_225220_0566b8a3-61de-4f59-8e2c-ab9fd081defb_min.webp" alt="Illustrated map showing nine Vegan community launch regions including South Florida, New York, Los Angeles, London and more" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_224104_3fb08286-61b9-4b41-af85-318df37e06df_min.webp" alt="Illustrated portrait representing years of on-the-ground Vegan community work across festivals, expos, and restaurants" />
         </div>
       </div>
     </div>
@@ -372,11 +367,15 @@
       <div class="panel-two-col">
         <div class="panel-content">
           <div class="panel-step-tag">Step 05 of 06</div>
-          <h2 class="panel-title">Beta Access.<br>Before Anyone Else.</h2>
-          <p class="panel-body">Founding members get beta access right now - not July 13. You'll be inside as we build, testing new features, shaping what works, and making sure it's ready. You're not waiting for a launch. You're part of one. When July 13 hits and the doors open publicly, you'll already be home.</p>
+          <h2 class="panel-title">How We Work.<br>Free to Join.</h2>
+          <p class="panel-body">The platform is free to join.</p>
+          <p class="panel-body">Once you join, you get a dashboard that shows you exactly what you need to know: opportunities to get involved, ways to level up, and a points system you can use to support other businesses. You can donate your points so they can use them for marketing services. You can launch your own projects. You have access to the full LESARUSS ecosystem.</p>
+          <p class="panel-body">You never have to guess what's going on when it comes to Veganism in your city or any city. As we grow, so does what we do in your city, and you'll have a front row seat because you'll be making it happen.</p>
+          <p class="panel-body"><strong>The points economy:</strong> If you want a monthly passport, you get points every month for $11. You can also get points one-off. Use points to support a business, unlock a service, or launch your own project.</p>
+          <p class="panel-body">We're a nonprofit under LESARUSS Foundation, so you can make donations at any time.</p>
         </div>
         <div class="panel-portrait">
-          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_231809_7befbb91-4126-421c-955f-52f4367f2020_min.webp" alt="Illustration of a Founding Member getting early beta access to the VEGANS EXPLORE platform before the July 13 launch" />
+          <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260607_231809_7befbb91-4126-421c-955f-52f4367f2020_min.webp" alt="Illustration of a member exploring the Vegans Explore dashboard, opportunities, and points system" />
         </div>
       </div>
     </div>
@@ -386,19 +385,18 @@
       <div class="panel-content">
         <div class="panel-step-tag" style="color:var(--ve-green)">Step 06 of 06</div>
         <div class="panel-num" aria-hidden="true">06</div>
-        <h2 class="panel-title">Lock In Your<br>Founder Badge.<br>Before July 13.</h2>
-        <p class="panel-body">Join for $11 - once, forever. After July 13, this price and this badge are gone permanently. No exceptions. Your Passport, your Founder badge on your profile, and a magic link to the app in your email. That's your way in.</p>
-        <div class="cta-price-row">
-          <span class="cta-price" aria-label="11 dollars">$11</span>
-          <div class="cta-price-detail"><strong>One-Time. Forever.</strong><span>Closes July 13, 2026</span></div>
-        </div>
-        <button class="btn-cta" onclick="startCheckout(this)"><span class="btn-text">Become a Founding Member</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <p class="cta-deadline">Secure checkout via Stripe. Magic link sent to your email after payment.</p>
+        <h2 class="panel-title">Start<br>Here.</h2>
+        <p class="panel-body">If this sounds like something you want to be a part of, join.</p>
+        <p class="panel-body">Join a community from your city. (Other communities are launching soon.) This plugs you into what's going on, how to get involved, and gives you options to upgrade to a paid membership.</p>
+        <p class="panel-body">We roll out new features. Members get to beta them first before anyone else. You give feedback. You help us build this. It's not a passive thing.</p>
+        <p class="panel-body">Join your city and find out what's going on in your community and around the world.</p>
+        <a class="btn-cta" href="/communities" style="text-decoration:none;"><span class="btn-text">Join Your City</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <p class="cta-deadline">Free to join. Pick your city and you're in.</p>
         <div class="cta-perks">
-          <div class="cta-perk"><div class="cta-perk-dot"></div>Founder Badge Forever</div>
-          <div class="cta-perk"><div class="cta-perk-dot"></div>Beta Access Now</div>
-          <div class="cta-perk"><div class="cta-perk-dot"></div>Locked In for Life</div>
-          <div class="cta-perk"><div class="cta-perk-dot"></div>Magic Link to the App</div>
+          <div class="cta-perk"><div class="cta-perk-dot"></div>Free to Join</div>
+          <div class="cta-perk"><div class="cta-perk-dot"></div>Points to Support Businesses</div>
+          <div class="cta-perk"><div class="cta-perk-dot"></div>Beta New Features First</div>
+          <div class="cta-perk"><div class="cta-perk-dot"></div>Launch Your Own Projects</div>
         </div>
       </div>
     </div>
