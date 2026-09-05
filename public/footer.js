@@ -45,4 +45,18 @@
 
   /* ── Inject before this script tag ── */
   document.currentScript.insertAdjacentHTML('beforebegin', html);
+
+  /* ── Universal Guide Widget (installed 2026-09-05, prototype property) ──
+   * Pinned to v1 so a future v2 elsewhere cannot silently change this site's widget.
+   * brand=vegans-explore routes escalations to Sean (contact@lesaruss.com) via the
+   * generalized coach-os-message-submit endpoint. Colors match this site's own
+   * nav green (#22C55E / #15803D). No Guide-picker yet (Group D, not built) --
+   * this is the generalized capture-and-escalation widget only. */
+  var gw = document.createElement('script');
+  gw.src = 'https://hq.lesaruss.ai/modules/guide-widget.v1.js';
+  gw.setAttribute('data-brand', 'vegans-explore');
+  gw.setAttribute('data-color', '#22C55E');
+  gw.setAttribute('data-color-dark', '#15803D');
+  gw.defer = true;
+  document.body.appendChild(gw);
 })();
