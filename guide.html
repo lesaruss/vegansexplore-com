@@ -418,6 +418,19 @@
           pushHistory();
           controls.innerHTML = '<div class="typing">' + g.name + ' is checking...</div>';
           apiCall('city_status', { city: v, state: st }).then(function(d){
+            // 2026-09-06 (Sean stress-test find): the backend now rejects
+            // obvious gibberish with {error:'invalid_city'} at HTTP 400, but
+            // apiCall() resolves on any JSON body regardless of status code --
+            // so an error response has to be checked explicitly here, or
+            // d.status being undefined would fall through to the 'new' city
+            // branch and silently accept it anyway.
+            if (d && d.error) {
+              controls.innerHTML = '<div class="input-row"><input class="input-pill" id="cityInput" placeholder="City, State (e.g. Miami, FL)" maxlength="80"><button class="send-btn" id="citySend">&rarr;</button></div>' +
+                '<div class="typing" style="color:#c0392b;">That doesn\'t look like a real city -- try again?</div>';
+              document.getElementById('citySend').onclick = submitCity;
+              document.getElementById('cityInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') submitCity(); });
+              return;
+            }
             state.chat_city = v;
             state.chat_state = st || null;
             state.city_status = d.status || 'new';
@@ -426,13 +439,10 @@
             saveState(state);
             render();
           }).catch(function(){
-            state.chat_city = v;
-            state.chat_state = st || null;
-            state.city_status = 'new';
-            state.community_slug = null;
-            state.city_display = v;
-            saveState(state);
-            render();
+            controls.innerHTML = '<div class="input-row"><input class="input-pill" id="cityInput" placeholder="City, State (e.g. Miami, FL)" maxlength="80"><button class="send-btn" id="citySend">&rarr;</button></div>' +
+              '<div class="typing" style="color:#c0392b;">Something went wrong checking that -- try again?</div>';
+            document.getElementById('citySend').onclick = submitCity;
+            document.getElementById('cityInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') submitCity(); });
           });
         };
         document.getElementById('citySend').onclick = submitCity;
