@@ -22,8 +22,17 @@
        framed panel in the middle of the page, the way it is drawn in
        the storyboard mockup -- not the whole page squeezed into a
        device bezel. The panel persists across every step since
-       render() only replaces #guideApp's contents. */
-    .guide-frame{max-width:600px;margin:36px auto 100px;padding:0 20px;}
+       render() only replaces #guideApp's contents.
+       2026-09-07 (Sean's field note, second pass): footer.js's footer
+       must always sit at the true bottom of the viewport with nothing
+       visible below it, and the flow's own content must never end up
+       hidden behind it. Standard sticky-footer flex pattern, scoped to
+       this page only (nav.js/footer.js themselves are untouched): the
+       page-frame wrapper they both live in becomes a full-height flex
+       column, and the guide-frame content grows to push the footer
+       down to the bottom on short pages without ever overlapping it. */
+    .page-frame{display:flex;flex-direction:column;min-height:100vh;}
+    .guide-frame{flex:1 0 auto;width:100%;max-width:600px;margin:36px auto 40px;padding:0 20px;}
     .guide-panel{
       background:var(--surface);border:1px solid var(--line);border-radius:20px;
       box-shadow:0 12px 40px -16px rgba(0,0,0,.10);
@@ -31,25 +40,13 @@
     }
     .guide-wrap{padding:28px 24px 32px;min-height:60vh;}
 
-    /* Persistent circular home mark, per storyboard frame 11/11b's
-       "home circle" -- not a multi-destination tab bar. */
-    .home-fab{
-      position:fixed;left:20px;bottom:20px;z-index:20;
-      width:52px;height:52px;border-radius:50%;
-      background:var(--surface);border:1px solid var(--line);
-      box-shadow:0 8px 24px -8px rgba(0,0,0,.22);
-      display:flex;align-items:center;justify-content:center;
-      overflow:hidden;
-    }
-    .home-fab img{width:34px;height:34px;object-fit:contain;}
-
     .g-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary-dark);background:var(--primary-light);display:inline-block;padding:5px 10px;border-radius:6px;margin-bottom:14px;}
 
     /* step: guide picker */
     .guide-list{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
     .guide-row{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;text-align:left;width:100%;transition:border-color .15s, box-shadow .15s;}
     .guide-row:hover{border-color:var(--primary);}
-    .guide-row img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:var(--primary-light);}
+    .guide-row img{width:56px;height:56px;border-radius:14px;object-fit:cover;object-position:top center;flex:0 0 auto;background:var(--primary-light);}
     .guide-row .g-copy{flex:1;min-width:0;}
     .guide-row .g-name{font-size:15px;font-weight:800;margin-bottom:2px;}
     .guide-row .g-path{font-size:10px;color:var(--accent-dark);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
@@ -58,7 +55,7 @@
     /* step: chat */
     .chat-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px;}
     .chat-hdr{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px;}
-    .chat-hdr img{width:38px;height:38px;border-radius:50%;object-fit:cover;}
+    .chat-hdr img{width:38px;height:38px;border-radius:10px;object-fit:cover;object-position:top center;}
     .chat-hdr .nm{font-size:14px;font-weight:800;}
     .chat-thread{display:flex;flex-direction:column;gap:10px;min-height:120px;}
     .msg{max-width:84%;font-size:14px;line-height:1.55;padding:10px 14px;border-radius:14px;}
@@ -120,10 +117,6 @@
       <div class="guide-wrap" id="guideApp"></div>
     </div>
   </div>
-
-  <a class="home-fab" href="/" aria-label="Home">
-    <img src="/public/ve-mark.png" alt="">
-  </a>
 
   <script src="/public/ve-auth.js"></script>
   <script>
@@ -216,7 +209,9 @@
     function renderChat(){
       var g = guideBySlug(state.guide_slug);
       var wrap = document.createElement('div');
-      wrap.innerHTML = '<div class="chat-card">' +
+      wrap.innerHTML = '<div class="g-eyebrow">Your Guide</div>' +
+        '<h1 style="font-size:19px;font-weight:900;margin:0 0 14px;">Getting to know you</h1>' +
+        '<div class="chat-card">' +
         '<div class="chat-hdr"><img src="' + g.image + '" alt="' + g.name + '"><div class="nm">' + g.name + '</div></div>' +
         '<div class="chat-thread" id="thread"></div>' +
         '<div id="chatControls"></div>' +
