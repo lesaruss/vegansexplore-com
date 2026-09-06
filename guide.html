@@ -14,7 +14,11 @@
       --line:#e2e2de; --surface:#ffffff; --bg:#faf9f5;
     }
     *{box-sizing:border-box;}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:'Montserrat',-apple-system,BlinkMacSystemFont,sans-serif;}
+    body{
+      margin:0;color:var(--ink);font-family:'Montserrat',-apple-system,BlinkMacSystemFont,sans-serif;
+      background-image:linear-gradient(rgba(10,20,14,.62),rgba(10,20,14,.62)),url('/communities/south-florida/banner.jpg');
+      background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed;
+    }
 
     /* Layout (2026-09-07, per Sean's correction): the real site nav
        (nav.js) stays full width at the top exactly like every other
