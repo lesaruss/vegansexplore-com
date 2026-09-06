@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talk to a Guide — Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#1A1A1A; --ink-muted:#555555; --ink-faint:#8a8a85;
+      --accent:#F69820; --accent-dark:#7d4a00;
+      --primary:#3A9B3E; --primary-dark:#1a5c3a; --primary-light:#e8f5ee;
+      --line:#e2e2de; --surface:#ffffff; --bg:#faf9f5;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:'Montserrat',-apple-system,BlinkMacSystemFont,sans-serif;}
+    .guide-wrap{max-width:520px;margin:0 auto;padding:28px 20px 80px;min-height:70vh;}
+
+    .g-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary-dark);background:var(--primary-light);display:inline-block;padding:5px 10px;border-radius:6px;margin-bottom:14px;}
+
+    /* step: guide picker */
+    .guide-list{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+    .guide-row{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;text-align:left;width:100%;transition:border-color .15s, box-shadow .15s;}
+    .guide-row:hover{border-color:var(--primary);}
+    .guide-row img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:var(--primary-light);}
+    .guide-row .g-copy{flex:1;min-width:0;}
+    .guide-row .g-name{font-size:15px;font-weight:800;margin-bottom:2px;}
+    .guide-row .g-path{font-size:10px;color:var(--accent-dark);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+    .guide-row .g-bio{font-size:12.5px;color:var(--ink-muted);line-height:1.45;}
+
+    /* step: chat */
+    .chat-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px;}
+    .chat-hdr{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px;}
+    .chat-hdr img{width:38px;height:38px;border-radius:50%;object-fit:cover;}
+    .chat-hdr .nm{font-size:14px;font-weight:800;}
+    .chat-thread{display:flex;flex-direction:column;gap:10px;min-height:120px;}
+    .msg{max-width:84%;font-size:14px;line-height:1.55;padding:10px 14px;border-radius:14px;}
+    .msg.guide{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px;}
+    .msg.user{align-self:flex-end;background:var(--primary-light);color:var(--primary-dark);border-bottom-right-radius:4px;font-weight:600;}
+    .typing{align-self:flex-start;font-size:12px;color:var(--ink-faint);padding:4px 4px;}
+    .choice-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+    .chip-btn{font-size:13px;font-weight:700;border:1.5px solid var(--primary);color:var(--primary-dark);border-radius:20px;padding:9px 16px;background:var(--primary-light);cursor:pointer;}
+    .chip-btn:hover{background:var(--primary);color:#fff;}
+    .chip-btn.alt{border-color:var(--accent);color:var(--accent-dark);background:#fdecd2;}
+    .chip-btn.alt:hover{background:var(--accent);color:#fff;}
+    .input-row{margin-top:14px;display:flex;gap:8px;}
+    .input-pill{flex:1;border:1px solid var(--line);border-radius:22px;padding:11px 16px;font-size:14px;font-family:inherit;}
+    .input-pill:focus{outline:none;border-color:var(--primary);}
+    .send-btn{border:none;background:var(--primary);color:#fff;border-radius:50%;width:42px;height:42px;font-size:16px;cursor:pointer;flex:0 0 auto;}
+    .send-btn:disabled{opacity:.5;cursor:default;}
+
+    /* fork / founding card */
+    .fork-card{background:#fdecd2;border:1px solid #f0d9ab;border-radius:12px;padding:16px;margin-top:14px;}
+    .fork-card p{font-size:13.5px;color:var(--accent-dark);line-height:1.6;margin:0 0 12px;}
+    .fork-actions{display:flex;flex-direction:column;gap:8px;}
+    .fork-btn{border:none;border-radius:10px;padding:13px 16px;font-size:14px;font-weight:800;cursor:pointer;text-align:left;}
+    .fork-btn.solid{background:var(--primary);color:#fff;}
+    .fork-btn.ghost{background:var(--surface);border:1.5px solid var(--line);color:var(--ink);}
+    .fork-btn .sub{display:block;font-size:11.5px;font-weight:600;opacity:.85;margin-top:2px;}
+
+    /* highlight reels */
+    .reel-card{position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(165deg,var(--primary-dark),#0e2f1f);min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;padding:20px;margin-top:16px;color:#eafff2;}
+    .reel-card .rp-tag{position:absolute;top:14px;left:14px;font-size:10px;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:6px;letter-spacing:.05em;text-transform:uppercase;}
+    .reel-card .rp-title{font-size:19px;font-weight:900;margin-bottom:6px;}
+    .reel-card .rp-body{font-size:13px;line-height:1.6;opacity:.92;}
+    .reel-dots{display:flex;gap:6px;justify-content:center;margin-top:12px;}
+    .reel-dots span{width:6px;height:6px;border-radius:50%;background:var(--line);}
+    .reel-dots span.on{background:var(--primary);}
+
+    /* membership drive */
+    .drive-actions{display:flex;flex-direction:column;gap:12px;margin-top:18px;}
+    .drive-card{border-radius:14px;padding:20px;border:1.5px solid var(--line);background:var(--surface);}
+    .drive-card.featured{border-color:var(--accent);background:#fffaf1;}
+    .drive-card h3{margin:0 0 6px;font-size:16px;font-weight:900;}
+    .drive-card p{margin:0 0 14px;font-size:13px;color:var(--ink-muted);line-height:1.6;}
+    .drive-card .price{font-size:20px;font-weight:900;color:var(--accent-dark);margin-bottom:6px;}
+    .btn{display:inline-block;width:100%;text-align:center;border:none;border-radius:10px;padding:13px 16px;font-size:14px;font-weight:800;cursor:pointer;}
+    .btn.primary{background:var(--primary);color:#fff;}
+    .btn.accent{background:var(--accent);color:#3a2400;}
+
+    .skip-link{display:block;text-align:center;margin-top:16px;font-size:12.5px;color:var(--ink-faint);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;}
+    .status-line{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:10px;}
+    .founding-badge{display:inline-flex;align-items:center;gap:6px;background:#fdecd2;color:var(--accent-dark);font-weight:800;font-size:12px;padding:6px 12px;border-radius:20px;margin-top:8px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <div class="guide-wrap" id="guideApp"></div>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+  (function(){
+    var GUIDES = [
+      { id: 'liz',   name: 'Liz',   title: 'Explorer',       image: '/public/guides/liz.png',   desc: 'Still figuring it out. No rush. Explore what the Vegan world has to offer.' },
+      { id: 'maya',  name: 'Maya',  title: 'Pre-Vegan',      image: '/public/guides/maya.png',  desc: 'Vegan-curious. Real answers, real support, and a clear path to make the shift.' },
+      { id: 'theo',  name: 'Theo',  title: 'Seasoned Vegan', image: '/public/guides/theo.png',  desc: 'Already living it. Deepen your impact, mentor others, and connect with the global movement.' },
+      { id: 'nori',  name: 'Nori',  title: 'Entrepreneur',   image: '/public/guides/nori.png',  desc: 'Building a Vegan business. Get listed, grow your audience, and connect with customers.' },
+      { id: 'dani',  name: 'Dani',  title: 'Nonprofit',      image: '/public/guides/dani.png',  desc: 'Running a Vegan org. Build your community on the platform and grow your base.' },
+      { id: 'river', name: 'River', title: 'Creator',        image: '/public/guides/river.jpg', desc: 'Creating content in the Vegan space. Grow your audience and earn through the ecosystem.' }
+    ];
+
+    var FN_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
+    var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    var PASSPORT_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-passport-checkout';
+
+    function apiCall(action, body){
+      return fetch(FN_URL + '?action=' + action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON },
+        body: JSON.stringify(body || {})
+      }).then(function(r){ return r.json(); });
+    }
+
+    function anonKey(){
+      try {
+        var k = localStorage.getItem('ve_guide_anon');
+        if (!k) { k = 'a' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('ve_guide_anon', k); }
+        return k;
+      } catch(e){ return 'anon-fallback'; }
+    }
+
+    var STATE_KEY = 've_guide_flow_state';
+    function loadState(){
+      try { return JSON.parse(localStorage.getItem(STATE_KEY) || '{}'); } catch(e){ return {}; }
+    }
+    function saveState(s){ try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch(e){} }
+
+    var state = loadState();
+    var app = document.getElementById('guideApp');
+
+    // Resume after Stripe Passport checkout redirects back here.
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('passport') === 'success') {
+      state.has_passport_pending_confirm = true;
+      saveState(state);
+      history.replaceState(null, '', '/guide.html');
+    }
+
+    function guideBySlug(slug){ for (var i=0;i<GUIDES.length;i++){ if (GUIDES[i].id === slug) return GUIDES[i]; } return GUIDES[0]; }
+
+    function render(){
+      app.innerHTML = '';
+      if (state.has_passport_pending_confirm) return renderPassportConfirm();
+      if (!state.guide_slug) return renderPicker();
+      if (!state.chat_done) return renderChat();
+      if (state.fork_pending) return renderFork();
+      if (!state.tellmore_answered) return renderTellMore();
+      if (state.open_question) return renderOpenQuestion();
+      if (!state.reels_seen) return renderReels();
+      if (!state.drive_done) return renderDrive();
+      return renderFinishing();
+    }
+
+    // ---- Step 1: guide picker (storyboard frame 3) ----------------------
+    function renderPicker(){
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="g-eyebrow">Meet your Guide</div>' +
+        '<h1 style="font-size:24px;font-weight:900;margin:0 0 6px;">Who feels like the right fit right now?</h1>' +
+        '<p style="font-size:14px;color:var(--ink-muted);line-height:1.6;margin:0 0 4px;">You can always talk to a different Guide later.</p>' +
+        '<div class="guide-list" id="glist"></div>';
+      app.appendChild(wrap);
+      var list = document.getElementById('glist');
+      GUIDES.forEach(function(g){
+        var btn = document.createElement('button');
+        btn.className = 'guide-row';
+        btn.innerHTML = '<img src="' + g.image + '" alt="' + g.name + '"><div class="g-copy"><div class="g-name">' + g.name + '</div><div class="g-path">' + g.title + '</div><div class="g-bio">' + g.desc + '</div></div>';
+        btn.onclick = function(){
+          state.guide_slug = g.id;
+          state.messages = [];
+          saveState(state);
+          render();
+        };
+        list.appendChild(btn);
+      });
+    }
+
+    // ---- Step 2: lo-fi chat (storyboard frame 4) -------------------------
+    function renderChat(){
+      var g = guideBySlug(state.guide_slug);
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="chat-card">' +
+        '<div class="chat-hdr"><img src="' + g.image + '" alt="' + g.name + '"><div class="nm">' + g.name + '</div></div>' +
+        '<div class="chat-thread" id="thread"></div>' +
+        '<div id="chatControls"></div>' +
+        '</div>';
+      app.appendChild(wrap);
+      var thread = document.getElementById('thread');
+      var controls = document.getElementById('chatControls');
+
+      function addMsg(role, text){
+        var m = document.createElement('div');
+        m.className = 'msg ' + role;
+        m.textContent = text;
+        thread.appendChild(m);
+      }
+
+      // Deterministic scripted chat, per frame 4: name, then city.
+      if (!state.chat_name) {
+        addMsg('guide', 'Hi, I am ' + g.name + '. What should I call you?');
+        var row = document.createElement('div');
+        row.className = 'input-row';
+        row.innerHTML = '<input class="input-pill" id="nameInput" placeholder="Your first name" maxlength="40"><button class="send-btn" id="nameSend">&rarr;</button>';
+        controls.appendChild(row);
+        var submitName = function(){
+          var v = document.getElementById('nameInput').value.trim();
+          if (!v) return;
+          state.chat_name = v;
+          saveState(state);
+          render();
+        };
+        document.getElementById('nameSend').onclick = submitName;
+        document.getElementById('nameInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') submitName(); });
+        return;
+      }
+
+      addMsg('guide', 'Good to meet you, ' + state.chat_name + '. Which city are you in?');
+      addMsg('user', state.chat_name);
+
+      if (!state.chat_city) {
+        var row2 = document.createElement('div');
+        row2.className = 'input-row';
+        row2.innerHTML = '<input class="input-pill" id="cityInput" placeholder="City" maxlength="60"><button class="send-btn" id="citySend">&rarr;</button>';
+        controls.appendChild(row2);
+        var submitCity = function(){
+          var v = document.getElementById('cityInput').value.trim();
+          if (!v) return;
+          controls.innerHTML = '<div class="typing">' + g.name + ' is checking...</div>';
+          apiCall('city_status', { city: v }).then(function(d){
+            state.chat_city = v;
+            state.city_status = d.status || 'new';
+            state.community_slug = d.community_slug || null;
+            state.city_display = d.display_name || v;
+            saveState(state);
+            render();
+          }).catch(function(){
+            state.chat_city = v;
+            state.city_status = 'new';
+            state.community_slug = null;
+            state.city_display = v;
+            saveState(state);
+            render();
+          });
+        };
+        document.getElementById('citySend').onclick = submitCity;
+        document.getElementById('cityInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') submitCity(); });
+        return;
+      }
+
+      addMsg('user', state.chat_city);
+      if (state.city_status === 'active') {
+        addMsg('guide', state.city_display + ' already has a Vegans Explore chapter. You are in good company.');
+      } else {
+        addMsg('guide', state.city_display + ' does not have a chapter yet. That is not a dead end, it is an opening.');
+      }
+      var cont = document.createElement('button');
+      cont.className = 'chip-btn';
+      cont.style.marginTop = '14px';
+      cont.textContent = 'Continue';
+      cont.onclick = function(){
+        state.chat_done = true;
+        state.fork_pending = state.city_status !== 'active';
+        saveState(state);
+        render();
+      };
+      controls.appendChild(cont);
+    }
+
+    // ---- Step 3: fork for a city with no chapter yet (storyboard frame 5) --
+    function renderFork(){
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="g-eyebrow">' + state.city_display + '</div>' +
+        '<h1 style="font-size:22px;font-weight:900;margin:0 0 10px;">' + state.city_display + ' does not have a chapter yet.</h1>' +
+        '<div class="fork-card"><p>You can join the waitlist for free, or become a Founding Member of ' + state.city_display + ' with a Passport. Founding Members get first pick of the badge number and help set the chapter up from day one.</p>' +
+        '<div class="fork-actions" id="forkActions"></div></div>';
+      app.appendChild(wrap);
+      var actions = document.getElementById('forkActions');
+
+      var joinBtn = document.createElement('button');
+      joinBtn.className = 'fork-btn ghost';
+      joinBtn.innerHTML = 'Join free<span class="sub">Get notified when ' + state.city_display + ' launches</span>';
+      joinBtn.onclick = function(){
+        joinCityFlow(false);
+      };
+
+      var foundBtn = document.createElement('button');
+      foundBtn.className = 'fork-btn solid';
+      foundBtn.innerHTML = 'Become a Founding Member<span class="sub">Requires a Passport, $11/month</span>';
+      foundBtn.onclick = function(){
+        startPassportForFounding();
+      };
+
+      actions.appendChild(joinBtn);
+      actions.appendChild(foundBtn);
+    }
+
+    function joinCityFlow(founding){
+      var token = null;
+      try { token = localStorage.getItem('ve_token'); } catch(e){}
+      if (!token) {
+        // Not signed in yet: collect a free account first, then retry.
+        VEAuth.showAuthModal('Create a free Passport to join ' + state.city_display + '.', function(){
+          joinCityFlow(founding);
+        });
+        return;
+      }
+      apiCall('join_city', { token: token, city: state.chat_city, founding: !!founding }).then(function(d){
+        if (d.error === 'passport_required') {
+          startPassportForFounding();
+          return;
+        }
+        state.join_result = d;
+        state.fork_pending = false;
+        saveState(state);
+        render();
+      });
+    }
+
+    function startPassportForFounding(){
+      var token = null;
+      try { token = localStorage.getItem('ve_token'); } catch(e){}
+      if (!token) {
+        VEAuth.showAuthModal('Create your Passport to become a Founding Member of ' + state.city_display + '.', function(){
+          startPassportForFounding();
+        });
+        return;
+      }
+      state.wants_founding_city = state.chat_city;
+      saveState(state);
+      fetch(PASSPORT_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({
+          success_url: window.location.origin + '/guide.html?passport=success',
+          cancel_url: window.location.origin + '/guide.html?passport=cancelled'
+        })
+      }).then(function(r){ return r.json(); }).then(function(d){
+        if (d.url) window.location.href = d.url;
+      });
+    }
+
+    function renderPassportConfirm(){
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="g-eyebrow">Passport active</div><h1 style="font-size:22px;font-weight:900;">Your Passport is active.</h1><p style="font-size:14px;color:var(--ink-muted);">Finishing up your chapter.</p>';
+      app.appendChild(wrap);
+      var token = null;
+      try { token = localStorage.getItem('ve_token'); } catch(e){}
+      var city = state.wants_founding_city || state.chat_city;
+      if (token && city) {
+        apiCall('join_city', { token: token, city: city, founding: true }).then(function(d){
+          state.join_result = d;
+          state.has_passport_pending_confirm = false;
+          state.fork_pending = false;
+          saveState(state);
+          render();
+        });
+      } else {
+        state.has_passport_pending_confirm = false;
+        saveState(state);
+        setTimeout(render, 300);
+      }
+    }
+
+    // ---- Step 4: tell-me-more yes/no (storyboard frame 6) -----------------
+    function renderTellMore(){
+      var g = guideBySlug(state.guide_slug);
+      var founding = state.join_result && state.join_result.is_founding;
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="chat-card"><div class="chat-hdr"><img src="' + g.image + '" alt="' + g.name + '"><div class="nm">' + g.name + '</div></div>' +
+        '<div class="chat-thread">' +
+        (founding ? '<div class="msg guide">You are Founding Member #' + (state.join_result.founding_number || '') + ' of ' + state.city_display + '. Want to hear more about what that means?</div>' : '<div class="msg guide">Want to hear a bit more about what Vegans Explore does for you day to day?</div>') +
+        '</div><div class="choice-row" id="tmRow"></div></div>';
+      app.appendChild(wrap);
+      var row = document.getElementById('tmRow');
+      var yes = document.createElement('button'); yes.className = 'chip-btn'; yes.textContent = 'Yes, tell me more';
+      yes.onclick = function(){ state.tellmore_answered = true; state.open_question = false; saveState(state); render(); };
+      var no = document.createElement('button'); no.className = 'chip-btn alt'; no.textContent = 'Not right now, I have a question';
+      no.onclick = function(){ state.tellmore_answered = true; state.open_question = true; saveState(state); render(); };
+      row.appendChild(yes); row.appendChild(no);
+    }
+
+    // ---- Step 4b: real open question, via character-respond --------------
+    function renderOpenQuestion(){
+      var g = guideBySlug(state.guide_slug);
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="chat-card"><div class="chat-hdr"><img src="' + g.image + '" alt="' + g.name + '"><div class="nm">' + g.name + '</div></div>' +
+        '<div class="chat-thread" id="oqThread"><div class="msg guide">Go ahead, ask me anything.</div></div>' +
+        '<div class="input-row"><input class="input-pill" id="oqInput" placeholder="Type your question"><button class="send-btn" id="oqSend">&rarr;</button></div>' +
+        '<button class="skip-link" id="oqSkip">Skip, continue instead</button></div>';
+      app.appendChild(wrap);
+      var thread = document.getElementById('oqThread');
+      document.getElementById('oqSkip').onclick = function(){ state.open_question = false; saveState(state); render(); };
+      var send = function(){
+        var input = document.getElementById('oqInput');
+        var v = input.value.trim();
+        if (!v) return;
+        var um = document.createElement('div'); um.className = 'msg user'; um.textContent = v; thread.appendChild(um);
+        input.value = '';
+        var typing = document.createElement('div'); typing.className = 'typing'; typing.textContent = g.name + ' is typing...'; thread.appendChild(typing);
+        var token = null;
+        try { token = localStorage.getItem('ve_token'); } catch(e){}
+        apiCall('guide_chat_send', { agent_slug: state.guide_slug, message: v, token: token || undefined, anon_key: token ? undefined : anonKey() }).then(function(d){
+          typing.remove();
+          var gm = document.createElement('div'); gm.className = 'msg guide';
+          gm.textContent = d.reply || 'Sorry, I am having trouble responding right now. Try again in a moment.';
+          thread.appendChild(gm);
+          var cont = document.createElement('button');
+          cont.className = 'chip-btn'; cont.style.marginTop = '10px'; cont.textContent = 'Continue';
+          cont.onclick = function(){ state.open_question = false; saveState(state); render(); };
+          thread.appendChild(cont);
+        });
+      };
+      document.getElementById('oqSend').onclick = send;
+      document.getElementById('oqInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') send(); });
+    }
+
+    // ---- Step 5: highlight reels (storyboard frame 7) --------------------
+    var REELS = [
+      { tag: 'Bounties', title: 'Real missions, real points', body: 'Show up at events, check in at businesses, complete bounties, and stack points toward the prize vault.' },
+      { tag: 'Directory', title: 'Every Vegan spot, in one place', body: 'Find and support Vegan-owned businesses near you, and vote for your favorites.' },
+      { tag: 'Community', title: 'Your city, organized', body: 'Chapters run meetups, potlucks, and campaigns. Founding Members help shape how it grows.' }
+    ];
+    function renderReels(){
+      var idx = state.reel_idx || 0;
+      var r = REELS[idx];
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="reel-card"><div class="rp-tag">' + r.tag + '</div><div class="rp-title">' + r.title + '</div><div class="rp-body">' + r.body + '</div></div>' +
+        '<div class="reel-dots" id="dots"></div>' +
+        '<div class="choice-row" style="margin-top:14px;justify-content:center;"><button class="chip-btn" id="reelNext">' + (idx < REELS.length - 1 ? 'Next' : 'Continue') + '</button></div>';
+      app.appendChild(wrap);
+      var dots = document.getElementById('dots');
+      REELS.forEach(function(_, i){ var d = document.createElement('span'); if (i === idx) d.className = 'on'; dots.appendChild(d); });
+      document.getElementById('reelNext').onclick = function(){
+        if (idx < REELS.length - 1) { state.reel_idx = idx + 1; saveState(state); render(); }
+        else { state.reels_seen = true; saveState(state); render(); }
+      };
+    }
+
+    // ---- Step 6: membership drive (storyboard frame 8/9) ------------------
+    function renderDrive(){
+      var isMember = false;
+      try { isMember = !!localStorage.getItem('ve_token'); } catch(e){}
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="g-eyebrow">Join Vegans Explore</div><h1 style="font-size:22px;font-weight:900;margin:0 0 4px;">Pick how you want in.</h1>' +
+        '<div class="drive-actions" id="driveActions"></div>';
+      app.appendChild(wrap);
+      var actions = document.getElementById('driveActions');
+
+      var freeCard = document.createElement('div');
+      freeCard.className = 'drive-card';
+      freeCard.innerHTML = '<h3>Free account</h3><p>Save your progress, join your chapter, and start earning points.</p><button class="btn primary" id="freeBtn">Join free</button>';
+      actions.appendChild(freeCard);
+
+      var passCard = document.createElement('div');
+      passCard.className = 'drive-card featured';
+      passCard.innerHTML = '<h3>Passport</h3><div class="price">$11/month</div><p>Founding badge where available, a points multiplier, and priority access to events and Showcase seats.</p><button class="btn accent" id="passBtn">Get Passport</button>';
+      actions.appendChild(passCard);
+
+      document.getElementById('freeBtn').onclick = function(){
+        if (isMember) { finishDrive(); return; }
+        VEAuth.showAuthModal('Create your free Vegans Explore account.', function(){ finishDrive(); });
+      };
+      document.getElementById('passBtn').onclick = function(){
+        var token = null;
+        try { token = localStorage.getItem('ve_token'); } catch(e){}
+        if (!token) {
+          VEAuth.showAuthModal('Create your account first, then add your Passport.', function(){ startPassportGeneral(); });
+          return;
+        }
+        startPassportGeneral();
+      };
+    }
+
+    function startPassportGeneral(){
+      var token = null;
+      try { token = localStorage.getItem('ve_token'); } catch(e){}
+      if (!token) return;
+      fetch(PASSPORT_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({
+          success_url: window.location.origin + '/guide.html?passport=success',
+          cancel_url: window.location.origin + '/guide.html?passport=cancelled'
+        })
+      }).then(function(r){ return r.json(); }).then(function(d){
+        if (d.url) window.location.href = d.url;
+      });
+    }
+
+    function finishDrive(){
+      state.drive_done = true;
+      saveState(state);
+      var token = null;
+      try { token = localStorage.getItem('ve_token'); } catch(e){}
+      if (token && state.city_status === 'active' && !state.join_result) {
+        apiCall('join_city', { token: token, city: state.chat_city, founding: false }).then(function(){ render(); });
+        return;
+      }
+      render();
+    }
+
+    // ---- Step 7: finishing, hand off to /dashboard ------------------------
+    function renderFinishing(){
+      var wrap = document.createElement('div');
+      var founding = state.join_result && state.join_result.is_founding;
+      wrap.innerHTML = '<div class="g-eyebrow">All set</div><h1 style="font-size:22px;font-weight:900;">Welcome to Vegans Explore, ' + (state.chat_name || '') + '.</h1>' +
+        (founding ? '<div class="founding-badge">Founding Member #' + (state.join_result.founding_number || '') + ' of ' + state.city_display + '</div>' : '') +
+        '<p class="status-line">Taking you to your home base...</p>';
+      app.appendChild(wrap);
+      try { localStorage.removeItem(STATE_KEY); } catch(e){}
+      setTimeout(function(){ window.location.href = '/dashboard'; }, 1400);
+    }
+
+    render();
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
