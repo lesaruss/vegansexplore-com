@@ -400,15 +400,26 @@
       if (!state.chat_city) {
         var row2 = document.createElement('div');
         row2.className = 'input-row';
-        row2.innerHTML = '<input class="input-pill" id="cityInput" placeholder="City" maxlength="60"><button class="send-btn" id="citySend">&rarr;</button>';
+        // 2026-09-07 (Sean field note): city+state disambiguation. Some city
+        // names collide across launched chapters (e.g. Hollywood, FL vs.
+        // Hollywood, CA) -- accepting "City, State" here and passing the state
+        // through to city_status/join_city lets the backend resolve those
+        // correctly instead of guessing. A bare city with no comma still works
+        // exactly as before for every unambiguous name.
+        row2.innerHTML = '<input class="input-pill" id="cityInput" placeholder="City, State (e.g. Miami, FL)" maxlength="80"><button class="send-btn" id="citySend">&rarr;</button>';
         controls.appendChild(row2);
         var submitCity = function(){
-          var v = document.getElementById('cityInput').value.trim();
+          var raw = document.getElementById('cityInput').value.trim();
+          if (!raw) return;
+          var parts = raw.split(',');
+          var v = parts[0].trim();
+          var st = parts.length > 1 ? parts.slice(1).join(',').trim() : '';
           if (!v) return;
           pushHistory();
           controls.innerHTML = '<div class="typing">' + g.name + ' is checking...</div>';
-          apiCall('city_status', { city: v }).then(function(d){
+          apiCall('city_status', { city: v, state: st }).then(function(d){
             state.chat_city = v;
+            state.chat_state = st || null;
             state.city_status = d.status || 'new';
             state.community_slug = d.community_slug || null;
             state.city_display = d.display_name || v;
@@ -416,6 +427,7 @@
             render();
           }).catch(function(){
             state.chat_city = v;
+            state.chat_state = st || null;
             state.city_status = 'new';
             state.community_slug = null;
             state.city_display = v;
@@ -488,7 +500,7 @@
         }, 'signup');
         return;
       }
-      apiCall('join_city', { token: token, city: state.chat_city, founding: !!founding }).then(function(d){
+      apiCall('join_city', { token: token, city: state.chat_city, state: state.chat_state || '', founding: !!founding }).then(function(d){
         if (d.error === 'passport_required') {
           startPassportForFounding();
           return;
@@ -531,7 +543,7 @@
       try { token = localStorage.getItem('ve_token'); } catch(e){}
       var city = state.wants_founding_city || state.chat_city;
       if (token && city) {
-        apiCall('join_city', { token: token, city: city, founding: true }).then(function(d){
+        apiCall('join_city', { token: token, city: city, state: state.chat_state || '', founding: true }).then(function(d){
           state.join_result = d;
           state.has_passport_pending_confirm = false;
           state.fork_pending = false;
@@ -762,7 +774,7 @@
       var token = null;
       try { token = localStorage.getItem('ve_token'); } catch(e){}
       if (token && state.city_status === 'active' && !state.join_result) {
-        apiCall('join_city', { token: token, city: state.chat_city, founding: false }).then(function(){ render(); });
+        apiCall('join_city', { token: token, city: state.chat_city, state: state.chat_state || '', founding: false }).then(function(){ render(); });
         return;
       }
       render();
