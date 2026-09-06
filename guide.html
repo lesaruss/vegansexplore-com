@@ -40,9 +40,23 @@
     .guide-panel{
       background:var(--surface);border:1px solid var(--line);border-radius:20px;
       box-shadow:0 12px 40px -16px rgba(0,0,0,.10);
-      overflow:hidden;
+      overflow-x:hidden;
     }
     .guide-wrap{padding:28px 24px 32px;min-height:60vh;}
+
+    /* 2026-09-07 (Sean field note, third pass): "keep the window size fixed
+       so you don't have to scroll on most laptops and desktops... in that
+       middle section, it'll be a scroll if it gets past a certain point"
+       -- named the guide-picker step specifically since its 6-row list is
+       the tallest content. fitPanelHeight() (below, in the script) measures
+       the real rendered nav/footer heights and caps .guide-panel to
+       whatever's left of the viewport, so the panel scrolls internally
+       instead of growing the page. Desktop/laptop only (>=768px); phones
+       keep the natural full-page scroll, matching Sean's "most laptops and
+       desktops" framing. */
+    @media (min-width:768px){
+      .guide-panel{overflow-y:auto;}
+    }
 
     .g-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary-dark);background:var(--primary-light);display:inline-block;padding:5px 10px;border-radius:6px;margin-bottom:14px;}
 
@@ -191,6 +205,37 @@
 
     var state = loadState();
     var app = document.getElementById('guideApp');
+
+    // 2026-09-07 (Sean field note): keep the window itself from scrolling on
+    // laptops/desktops -- measure the real rendered nav.js/footer.js heights
+    // (they're injected scripts, so their height isn't knowable at CSS-write
+    // time) plus the guide-frame's own top/bottom margin, and cap the panel
+    // to whatever's left of the viewport. Past that, the panel scrolls
+    // internally -- most visible on the "meet your guide" step, the tallest
+    // one. Phones (<768px) are left alone to scroll the full page normally.
+    function fitPanelHeight(){
+      var panel = document.querySelector('.guide-panel');
+      if (!panel) return;
+      if (window.innerWidth < 768) {
+        panel.style.maxHeight = '';
+        return;
+      }
+      try {
+        var navEl = document.querySelector('.ve-nav');
+        var footEl = document.querySelector('.ve-footer');
+        var navH = navEl ? navEl.offsetHeight : 60;
+        var footH = footEl ? footEl.offsetHeight : 100;
+        var frame = document.querySelector('.guide-frame');
+        var fs = frame ? window.getComputedStyle(frame) : null;
+        var marginTop = fs ? (parseFloat(fs.marginTop) || 0) : 36;
+        var marginBottom = fs ? (parseFloat(fs.marginBottom) || 0) : 40;
+        var avail = window.innerHeight - navH - footH - marginTop - marginBottom;
+        panel.style.maxHeight = avail > 240 ? avail + 'px' : '';
+      } catch(e){}
+    }
+    fitPanelHeight();
+    window.addEventListener('resize', fitPanelHeight);
+    window.addEventListener('load', function(){ fitPanelHeight(); setTimeout(fitPanelHeight, 300); });
 
     // Resume after Stripe Passport checkout redirects back here.
     var params = new URLSearchParams(window.location.search);
