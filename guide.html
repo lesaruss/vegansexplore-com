@@ -706,10 +706,40 @@
       var wrap = document.createElement('div');
       wrap.innerHTML = '<div class="g-eyebrow">Make it official</div><h1 style="font-size:22px;font-weight:900;margin:0 0 4px;">' + (isMember ? 'One more thing before you go.' : 'Pick how you want in.') + '</h1>' +
         '<p style="font-size:13.5px;color:var(--ink-muted);line-height:1.6;margin:0;">' + (isMember ? 'You are already in. A Passport adds a founding badge where available, a points multiplier, and priority access.' : 'Free gets you in the door today. Passport adds founding status where available, a points multiplier, and priority access.') + '</p>' +
-        '<div class="video-tile" id="driveVideo"><div class="vt-play">&#9658;</div><div class="vt-cap">60 sec: what Vegans Explore unlocks</div></div>' +
+        '<div class="video-tile" id="driveVideo"><div class="vt-play" id="driveVideoIcon">&#9658;</div><div class="vt-cap" id="driveVideoCap">30 sec: what Vegans Explore unlocks</div><audio id="driveAudio" preload="none" src="/public/audio/passport-drive.mp3"></audio></div>' +
         '<div class="drive-actions" id="driveActions"></div>';
       app.appendChild(wrap);
       var actions = document.getElementById('driveActions');
+
+      // Click-to-play static tile: tap plays the narration track, icon
+      // swaps to a pause glyph while it runs, reverts on end/pause.
+      // No generated video here by design (Sean, 2026-09-06) -- keep this
+      // slot lo-fi: a static tile plus voice, not a produced clip.
+      (function(){
+        var tile = document.getElementById('driveVideo');
+        var audio = document.getElementById('driveAudio');
+        var icon = document.getElementById('driveVideoIcon');
+        var cap = document.getElementById('driveVideoCap');
+        var playing = false;
+        tile.onclick = function(){
+          if (!playing) {
+            audio.play().catch(function(){});
+            icon.innerHTML = '&#10073;&#10073;';
+            cap.textContent = 'Playing: what Vegans Explore unlocks';
+            playing = true;
+          } else {
+            audio.pause();
+            icon.innerHTML = '&#9658;';
+            cap.textContent = '30 sec: what Vegans Explore unlocks';
+            playing = false;
+          }
+        };
+        audio.onended = function(){
+          icon.innerHTML = '&#9658;';
+          cap.textContent = '30 sec: what Vegans Explore unlocks';
+          playing = false;
+        };
+      })();
 
       if (!isMember) {
         var freeCard = document.createElement('div');
