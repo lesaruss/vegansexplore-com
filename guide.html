@@ -485,7 +485,7 @@
         // Not signed in yet: collect a free account first, then retry.
         VEAuth.showAuthModal('Create a free Passport to join ' + state.city_display + '.', function(){
           joinCityFlow(founding);
-        });
+        }, 'signup');
         return;
       }
       apiCall('join_city', { token: token, city: state.chat_city, founding: !!founding }).then(function(d){
@@ -506,7 +506,7 @@
       if (!token) {
         VEAuth.showAuthModal('Create your Passport to become a Founding Member of ' + state.city_display + '.', function(){
           startPassportForFounding();
-        });
+        }, 'signup');
         return;
       }
       state.wants_founding_city = state.chat_city;
@@ -715,14 +715,14 @@
       if (freeBtn) {
         freeBtn.onclick = function(){
           if (isMember) { finishDrive(); return; }
-          VEAuth.showAuthModal('Create your free Vegans Explore account.', function(){ finishDrive(); });
+          VEAuth.showAuthModal('Create your free Vegans Explore account.', function(){ finishDrive(); }, 'signup');
         };
       }
       document.getElementById('passBtn').onclick = function(){
         var token = null;
         try { token = localStorage.getItem('ve_token'); } catch(e){}
         if (!token) {
-          VEAuth.showAuthModal('Create your account first, then add your Passport.', function(){ startPassportGeneral(); });
+          VEAuth.showAuthModal('Create your account first, then add your Passport.', function(){ startPassportGeneral(); }, 'signup');
           return;
         }
         startPassportGeneral();
