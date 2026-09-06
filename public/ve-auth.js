@@ -42,7 +42,13 @@ function signOut(){clearSession();window.location.href='/';}
 function initGoogleSignIn(buttonEl,callback,community){if(!window.google||!window.google.accounts)return;window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){loginWithGoogle(r.credential,community).then(callback);}});if(buttonEl)window.google.accounts.id.renderButton(buttonEl,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:buttonEl.offsetWidth||360});}
 function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a free Passport to do that.');}
 var _modalCb=null,_modalInited=false,_gBtnInited=false;
-function showAuthModal(message,onSuccess){_modalCb=onSuccess||null;if(!_modalInited){_buildModal();_modalInited=true;}var msg=document.getElementById('ve-am-msg');if(msg)msg.textContent=message||'Sign in to your Passport, or create a free one to continue.';_setAuthMode('login');var modal=document.getElementById('ve-auth-modal');if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}_loadGSI(function(){if(!_gBtnInited){var el=document.getElementById('ve-am-google-btn');if(el)_initGBtn(el);}});}
+// mode (2026-09-07, Sean field note): optional third arg, defaults to
+// 'login' so every existing "Sign in to..." call site is unchanged. Callers
+// whose message is really asking someone to create an account (guide.html's
+// "Create a free Passport...", "Create your account first...", etc.) pass
+// 'signup' so the modal opens on the create-account tab instead of making
+// a brand-new visitor land on sign-in by default.
+function showAuthModal(message,onSuccess,mode){_modalCb=onSuccess||null;if(!_modalInited){_buildModal();_modalInited=true;}var msg=document.getElementById('ve-am-msg');if(msg)msg.textContent=message||'Sign in to your Passport, or create a free one to continue.';_setAuthMode(mode==='signup'?'signup':'login');var modal=document.getElementById('ve-auth-modal');if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}_loadGSI(function(){if(!_gBtnInited){var el=document.getElementById('ve-am-google-btn');if(el)_initGBtn(el);}});}
 function hideAuthModal(){var m=document.getElementById('ve-auth-modal');if(m){m.style.display='none';document.body.style.overflow='';}var e=document.getElementById('ve-am-error');if(e){e.textContent='';e.style.display='none';}}
 function _onSuccess(){hideAuthModal();if(_modalCb)_modalCb();else location.reload();}
 function _showErr(msg){var e=document.getElementById('ve-am-error');if(e){e.textContent=msg;e.style.display='block';}}
