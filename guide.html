@@ -705,7 +705,7 @@
       try { isMember = !!localStorage.getItem('ve_token'); } catch(e){}
       var wrap = document.createElement('div');
       wrap.innerHTML = '<div class="g-eyebrow">Make it official</div><h1 style="font-size:22px;font-weight:900;margin:0 0 4px;">' + (isMember ? 'One more thing before you go.' : 'Pick how you want in.') + '</h1>' +
-        '<p style="font-size:13.5px;color:var(--ink-muted);line-height:1.6;margin:0;">' + (isMember ? 'You are already in. A Passport adds a founding badge where available, a points multiplier, and priority access.' : 'Free gets you in the door today. Passport unlocks founding status, more points, and priority access.') + '</p>' +
+        '<p style="font-size:13.5px;color:var(--ink-muted);line-height:1.6;margin:0;">' + (isMember ? 'You are already in. A Passport adds a founding badge where available, a points multiplier, and priority access.' : 'Free gets you in the door today. Passport adds founding status where available, a points multiplier, and priority access.') + '</p>' +
         '<div class="video-tile" id="driveVideo"><div class="vt-play">&#9658;</div><div class="vt-cap">60 sec: what Vegans Explore unlocks</div></div>' +
         '<div class="drive-actions" id="driveActions"></div>';
       app.appendChild(wrap);
