@@ -1207,6 +1207,9 @@
     document.getElementById('dash-content').style.display = 'block';
     renderCommunitySection(member);
     renderCampaignsSection(member);
+    renderOpportunitiesSection(member);
+    renderPulseSection();
+    renderPodcastSection();
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
