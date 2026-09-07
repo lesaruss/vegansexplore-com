@@ -1497,13 +1497,10 @@
   function renderLeaderboard(member) {
     var list = document.getElementById('dash-leaderboard-list');
     if (!list) return;
-    var communities = member.communities || [];
-    var cities = [];
-    communities.forEach(function (slug) {
-      (LEADERBOARD_CITY_TERMS[slug] || []).forEach(function (term) { cities.push(term); });
-    });
+    var active = getActiveCity(member);
+    var cities = (active && LEADERBOARD_CITY_TERMS[active]) || [];
     if (!cities.length) {
-      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Join a community to see your city\'s leaderboard.</p>';
+      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its leaderboard.</p>';
       return;
     }
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=leaderboard', {
