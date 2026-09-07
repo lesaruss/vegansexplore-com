@@ -107,13 +107,21 @@
   .dash-stats-hero-label{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-text-50);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px;}
   @media (max-width:640px){ .dash-stats-hero{grid-template-columns:1fr 1fr 1fr;gap:8px;} .dash-stats-hero-tile{padding:12px 8px;} .dash-stats-hero-value{font-size:19px;} .dash-stats-hero-label{font-size:8.5px;} }
 
-  /* --- Daily Pulse + Bounties: explicit 3-column grid (2026-09-07, Sean,
-     Fieldy field note). Distinct from the auto-fit full-width pattern used
-     elsewhere on this page -- these two are meant to hold many small items
-     at a fixed density, not stretch a couple of tiles to fill the row. --- */
-  #dash-pulse-grid{grid-template-columns:repeat(3,1fr);}
-  @media (max-width:760px){ #dash-pulse-grid, .dash-bounty-scroll{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:480px){ #dash-pulse-grid, .dash-bounty-scroll{grid-template-columns:1fr;} }
+  /* --- Daily Pulse + Bounties: explicit column grids (2026-09-07, Sean,
+     Fieldy field note; Pulse widened to 4 cols same day, Sean direction:
+     square tiles, full thumbnail visible, four across). Bounties keeps its
+     own 3-column desktop default (see .dash-bounty-scroll below) and its
+     existing mobile steps. Distinct from the auto-fit full-width pattern
+     used elsewhere on this page -- meant to hold many small items at a
+     fixed density, not stretch a couple of tiles to fill the row. --- */
+  #dash-pulse-grid{grid-template-columns:repeat(4,1fr);}
+  @media (max-width:760px){ #dash-pulse-grid{grid-template-columns:repeat(3,1fr);} .dash-bounty-scroll{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:480px){ #dash-pulse-grid{grid-template-columns:repeat(2,1fr);} .dash-bounty-scroll{grid-template-columns:1fr;} }
+  /* Square, uncropped thumbnails for Daily Pulse/Shows episode tiles
+     (2026-09-07, Sean direction: "so you see the full thumbnail" -- YouTube
+     thumbnails are 16:9, so contain plus a dark fill letterboxes instead of
+     cropping like the default cover-fit .dash-thumb used elsewhere). */
+  #dash-pulse-grid .dash-thumb{aspect-ratio:1/1;background-size:contain;background-color:#0b0b0f;}
 
   /* --- Your City pill: single, compact, up front next to Welcome back
      (2026-09-07, Logan, Sean direction: "let's keep one pill, one row").
@@ -188,7 +196,10 @@
   .dash-tile.dash-add-tile{border-style:dashed;cursor:pointer;background:var(--ve-green-light);}
   .dash-tile.dash-add-tile:hover{border-color:var(--ve-green);}
   .dash-tile.dash-add-tile .dash-thumb{background:none;color:var(--ve-green-dark);font-size:30px;font-weight:900;}
-  #dash-podcast-shows-row .dash-thumb{aspect-ratio:auto;height:64px;font-size:26px;}
+  #dash-podcast-shows-row{grid-template-columns:repeat(4,1fr);}
+  #dash-podcast-shows-row .dash-thumb{aspect-ratio:1/1;height:auto;background-size:contain;background-color:#f5f5f5;font-size:26px;}
+  @media (max-width:480px){ #dash-podcast-shows-row{grid-template-columns:repeat(2,1fr);} }
+  .dash-thumb.guide-thumb{background-position:top center;}
   .dash-community-change{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;font-family:"Montserrat",sans-serif;}
   .dash-community-change:hover{color:var(--ve-green-dark);}
   .dash-tile-wrap{display:flex;flex-direction:column;}
@@ -411,6 +422,12 @@
       <div class="dash-community-row" id="dash-podcast-shows-row"></div>
       <p class="dash-section-title" style="margin-top:22px;">Daily Pulse</p>
       <div class="dash-grid" id="dash-pulse-grid"></div>
+    </div>
+
+    <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="7" data-tab-label="Guides">
+      <p class="dash-section-title">Guides</p>
+      <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Pick the guide that matches your journey. Each one walks you through a real path, at your pace.</p>
+      <div class="dash-community-row" id="dash-guides-row"></div>
     </div>
 
     <div class="dash-modal-overlay" id="dash-campaigns-modal">
@@ -711,6 +728,35 @@
     if (e.target.id === 'dash-guide-modal') closeGuideModal();
   });
 
+  // Guides tab (2026-09-07, Sean direction: "guides aren't in here" --
+  // promoted the existing Choose Your Guide picker, previously a modal
+  // tucked under Your Tools, into its own tab so it lives in the same
+  // in-frame experience as everything else instead of a click-through.
+  // Reuses GUIDE_PERSONAS verbatim: the same five real portraits, titles
+  // and descriptions already live in that modal, nothing invented. Each
+  // card still opens its own /guides/ve-path-* page for now -- those are
+  // their own already-built experiences; folding that content into this
+  // same frame too is the next slice of "move everything into this
+  // environment," not attempted in this pass.
+  function renderGuidesSection() {
+    var row = document.getElementById('dash-guides-row');
+    if (!row) return;
+    row.innerHTML = '';
+    GUIDE_PERSONAS.forEach(function(g) {
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-community-tile';
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = g.href;
+      tile.innerHTML =
+        '<div class="dash-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');background-color:' + g.bg + ';"></div>' +
+        '<div class="dash-tile-body"><div class="dash-tile-title">' + g.title + '</div>' +
+        '<div class="dash-tile-desc">' + g.desc + '</div></div>';
+      wrap.appendChild(tile);
+      row.appendChild(wrap);
+    });
+  }
+
   function renderCommunitySection(member) {
     currentMember = member;
     var section = document.getElementById('dash-community-section');
@@ -779,7 +825,7 @@
     { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
     { key: 'choose-guide', href: '#', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator.' },
     { key: 'choose-topics', href: '#', icon: '&#128218;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Choose Your Topics <span class="dash-tag">Coming Soon</span>', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.' },
-    { key: 'communities', href: '/communities', icon: '&#127758;', bg: 'linear-gradient(135deg,#0ea5e9,#0369a1)', title: 'Browse Communities', desc: 'See every city hub, not just your own, and find one to join.' },
+    { key: 'communities', href: '#', icon: '&#127758;', bg: 'linear-gradient(135deg,#0ea5e9,#0369a1)', title: 'Browse Communities', desc: 'See every city hub, not just your own, and find one to join.' },
     { key: 'lead', href: '/lead', icon: '&#127942;', bg: 'linear-gradient(135deg,#dc2626,#991b1b)', title: 'Lead Your City', desc: 'Apply to become a Community Manager and help grow your local Vegan scene.' }
   ];
   var MODULES_BY_KEY = {};
@@ -883,7 +929,8 @@
       tile.innerHTML = sectionedTileHtml(t);
       tile.addEventListener('click', function (e) {
         if (layoutEditMode) { e.preventDefault(); return; }
-        if (t.key === 'choose-guide') { e.preventDefault(); openGuideModal(); }
+        if (t.key === 'choose-guide') { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('guides'); }
+        if (t.key === 'communities') { e.preventDefault(); openCommunityModal(); }
       });
       wrap.appendChild(tile);
       wrap.addEventListener('dragstart', function (e) {
@@ -1036,7 +1083,10 @@
         '<div class="dash-tile-desc"' + (m.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + m.desc + '</div></div>';
       wrap.appendChild(tile);
       if (m.key === 'choose-guide') {
-        tile.addEventListener('click', function(e) { e.preventDefault(); openGuideModal(); });
+        tile.addEventListener('click', function(e) { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('guides'); });
+      }
+      if (m.key === 'communities') {
+        tile.addEventListener('click', function(e) { e.preventDefault(); openCommunityModal(); });
       }
       var remove = document.createElement('button');
       remove.type = 'button';
@@ -1817,6 +1867,10 @@
       });
       mobileSelect.value = key;
     }
+    // Exposed so tiles outside this closure (Your Tools) can jump straight
+    // to a tab instead of navigating away (2026-09-07, Sean direction:
+    // keep everything inside this one environment).
+    window.activateDashTab = activate;
 
     sections.forEach(function (s, i) {
       var key = s.getAttribute('data-tab-key');
@@ -1882,6 +1936,7 @@
     renderCampaignsSection(member);
     renderOpportunitiesSection(member);
     renderPodcastSection(member);
+    renderGuidesSection();
     initDashTabs();
     initBountyTopics();
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
