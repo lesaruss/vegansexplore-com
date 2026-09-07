@@ -118,9 +118,7 @@
   .dash-bounty-topic-pill{appearance:none;border:1.5px solid var(--ve-border);background:#fff;border-radius:100px;padding:6px 14px;font:inherit;font-size:11px;font-weight:800;letter-spacing:0.03em;color:var(--ve-text-75);cursor:pointer;}
   .dash-bounty-topic-pill.active{background:var(--ve-green-light);border-color:var(--ve-green);color:var(--ve-green-dark);}
   .dash-bounty-topic-pill[disabled]{cursor:default;opacity:0.5;}
-  .dash-bounty-scroll{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-  @media (max-width:1100px){ .dash-bounty-scroll{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:520px){ .dash-bounty-scroll{grid-template-columns:1fr;} }
+  .dash-bounty-scroll{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
   .dash-bounty-scroll .dash-tile[hidden]{display:none;}
 
   .dash-section-title{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px;}
