@@ -487,7 +487,7 @@
       var opt = document.createElement('a');
       opt.className = 'dash-modal-opt';
       opt.href = g.href;
-      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + g.img + '\');background-size:cover;background-position:center;background-color:' + g.bg + ';"></div><div class="dash-modal-opt-name">' + g.title + '</div>';
+      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');background-color:' + g.bg + ';"></div><div class="dash-modal-opt-name">' + g.title + '</div>';
       grid.appendChild(opt);
     });
     document.getElementById('dash-guide-modal').classList.add('open');
