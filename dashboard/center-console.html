@@ -200,6 +200,36 @@
   #dash-podcast-shows-row .dash-thumb{aspect-ratio:1/1;height:auto;background-size:contain;background-color:#f5f5f5;font-size:26px;}
   @media (max-width:480px){ #dash-podcast-shows-row{grid-template-columns:repeat(2,1fr);} }
   .dash-thumb.guide-thumb{background-position:top center;}
+  /* --- Guides tab (2026-09-07, Sean correction): the real Guide Catalog
+     from vegansexplore.com/guides, ported in-frame -- Sean specifically
+     wants THIS experience (the gc-card catalog with Start/View/Notify Me),
+     not the Choose-Your-Guide persona picker this replaced. Styles copied
+     from that page's .gc-* rules so the cards look the same here. --- */
+  .gc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:900px){ .gc-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .gc-grid{grid-template-columns:1fr;} }
+  .gc-card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:24px 22px;display:flex;flex-direction:column;gap:10px;transition:box-shadow 0.15s,transform 0.15s;}
+  .gc-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.07);transform:translateY(-2px);}
+  .gc-topline{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .gc-label{font-size:9px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);}
+  .gc-soon-tag{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#b45309;background:#fff3e0;border-radius:20px;padding:3px 10px;}
+  .gc-title{font-size:17px;font-weight:900;line-height:1.25;letter-spacing:-0.01em;font-family:"Montserrat",sans-serif;}
+  .gc-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.6;flex:1;}
+  .gc-meta-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .gc-chip{font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-dark);background:var(--ve-green-light);border-radius:20px;padding:6px 12px;}
+  .gc-chip.price{color:#1a1a1a;background:#f0f0f0;}
+  .gc-chip.free{color:var(--ve-green-dark);background:var(--ve-green-light);}
+  .gc-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:12px 20px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;width:100%;margin-top:4px;}
+  .gc-btn-primary{background:var(--ve-green-dark);color:#fff;}
+  .gc-btn-primary:hover{background:var(--ve-green);}
+  .gc-btn-outline{background:#fff;color:#1a1a1a;border:1px solid rgba(0,0,0,0.15);}
+  .gc-btn-outline:hover{background:#f5f5f5;}
+  .gc-waitlist{display:none;margin-top:6px;}
+  .gc-waitlist.open{display:flex;flex-direction:column;gap:8px;}
+  .gc-waitlist input{padding:9px 12px;border:1.5px solid rgba(0,0,0,0.12);border-radius:6px;font-family:"Montserrat",sans-serif;font-size:12px;}
+  .gc-waitlist input:focus{outline:none;border-color:var(--ve-green-dark);}
+  .gc-waitlist-success{display:none;font-size:11px;font-weight:700;color:var(--ve-green-dark);text-align:center;}
+  .gc-note{text-align:center;font-size:11px;color:#999;margin-top:20px;line-height:1.6;}
   .dash-community-change{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;font-family:"Montserrat",sans-serif;}
   .dash-community-change:hover{color:var(--ve-green-dark);}
   .dash-tile-wrap{display:flex;flex-direction:column;}
@@ -425,9 +455,11 @@
     </div>
 
     <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="7" data-tab-label="Guides">
-      <p class="dash-section-title">Guides</p>
-      <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Pick the guide that matches your journey. Each one walks you through a real path, at your pace.</p>
-      <div class="dash-community-row" id="dash-guides-row"></div>
+      <p class="dash-eyebrow" style="margin-bottom:2px;">Guides</p>
+      <p class="dash-section-title">Step-By-Step Guides</p>
+      <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Practical guides for wherever you are on the journey. Unlock guides with Points as they publish.</p>
+      <div class="gc-grid" id="dash-guides-row" role="list" aria-label="Guide catalog"></div>
+      <p class="gc-note">New guides publish as they're built. Join the waitlist on any guide to get notified the moment it's live.</p>
     </div>
 
     <div class="dash-modal-overlay" id="dash-campaigns-modal">
@@ -728,32 +760,86 @@
     if (e.target.id === 'dash-guide-modal') closeGuideModal();
   });
 
-  // Guides tab (2026-09-07, Sean direction: "guides aren't in here" --
-  // promoted the existing Choose Your Guide picker, previously a modal
-  // tucked under Your Tools, into its own tab so it lives in the same
-  // in-frame experience as everything else instead of a click-through.
-  // Reuses GUIDE_PERSONAS verbatim: the same five real portraits, titles
-  // and descriptions already live in that modal, nothing invented. Each
-  // card still opens its own /guides/ve-path-* page for now -- those are
-  // their own already-built experiences; folding that content into this
-  // same frame too is the next slice of "move everything into this
-  // environment," not attempted in this pass.
+  // Guides tab (2026-09-07, Sean correction): the first pass promoted the
+  // Choose Your Guide persona picker (Maya, etc.) to a tab, but that is not
+  // what is actually live on vegansexplore.com/guides today -- Sean pointed
+  // to the real page directly and asked for THAT experience in this frame.
+  // The persona flip-cards were removed from that page back on 2026-07-12
+  // (see its own HTML comment: "simplifying this page to lead with the
+  // Guide Catalog... character path-picker comes back once the guides are
+  // actually built"). What is actually live is the Guide Catalog: 7 real
+  // cards ported verbatim from that page's source (same titles, copy, step
+  // counts, point costs) -- two live guides with a real CTA, five
+  // in-development guides with a Notify Me waitlist capture into
+  // member_interest, same table and role_slug pattern the public page
+  // already uses. The member is already signed in inside this dashboard,
+  // so the guest/member toggle that page needs does not apply here -- the
+  // Restaurant Guide always renders as "View Guide", never the guest
+  // "Join Free" state.
+  var GUIDE_CATALOG = [
+    { slug: null, label: 'Getting Started', title: 'Welcome Guide', desc: 'Your first steps on Vegans Explore: set up your profile, find your city, and see how Points work.', chips: [{ text: '5 Steps' }, { text: 'Free', cls: 'free' }], cta: { text: 'Start Guide', href: '/welcome' } },
+    { slug: 'vegan-restaurant-survival-guide', label: 'Business', title: 'Vegan Restaurant Survival Guide', desc: 'A personalized 10-step walkthrough for restaurant owners navigating the Vegan market -- built and ready, with narration audio and a completion badge.', chips: [{ text: '10 Steps' }, { text: 'Personalized For You' }, { text: '1,111 Points', cls: 'price' }], cta: { text: 'View Guide', href: '/guides/vegan-restaurant-survival-guide' } },
+    { slug: 'entrepreneur', label: 'Entrepreneur Path', soon: true, title: 'Entrepreneur Guide', desc: 'Getting your Vegan business listed, claimed, and growing on the platform -- step by step.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'creator', label: 'Creator Path', soon: true, title: 'Creator Guide', desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'nonprofit', label: 'Nonprofit Path', soon: true, title: 'Nonprofit Guide', desc: "Building your org's community on the platform and growing your base of supporters.", chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'prevegan', label: 'Pre-Vegan Path', soon: true, title: 'Pre-Vegan Guide', desc: 'Real answers for going Vegan-curious to confident: what to eat, what to expect, and how to start.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'seasonedvegan', label: 'Seasoned Vegan Path', soon: true, title: 'Seasoned Vegan Guide', desc: 'Deepen your impact: advocacy, mentoring, and connecting with the global movement.', chips: [{ text: '~1,111 Points', cls: 'price' }] }
+  ];
+  function gcSubmitDashWaitlist(btn, slug) {
+    var card = btn.closest('.gc-card');
+    var input = card.querySelector('input[type="email"]');
+    var email = (input.value || '').trim();
+    if (!email || email.indexOf('@') === -1) { input.focus(); return; }
+    btn.textContent = 'Sending...'; btn.disabled = true;
+    fetch(SUPABASE_URL + '/rest/v1/member_interest', {
+      method: 'POST',
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ email: email, role_slug: 'guide-waitlist-' + slug, source: 'dashboard-guides-tab' })
+    }).then(function () {
+      card.querySelector('.gc-waitlist').classList.remove('open');
+      card.querySelector('.gc-waitlist-success').style.display = 'block';
+    }).catch(function () {
+      btn.textContent = 'Join Waitlist'; btn.disabled = false;
+    });
+  }
   function renderGuidesSection() {
     var row = document.getElementById('dash-guides-row');
     if (!row) return;
     row.innerHTML = '';
-    GUIDE_PERSONAS.forEach(function(g) {
-      var wrap = document.createElement('div');
-      wrap.className = 'dash-community-tile';
-      var tile = document.createElement('a');
-      tile.className = 'dash-tile';
-      tile.href = g.href;
-      tile.innerHTML =
-        '<div class="dash-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');background-color:' + g.bg + ';"></div>' +
-        '<div class="dash-tile-body"><div class="dash-tile-title">' + g.title + '</div>' +
-        '<div class="dash-tile-desc">' + g.desc + '</div></div>';
-      wrap.appendChild(tile);
-      row.appendChild(wrap);
+    GUIDE_CATALOG.forEach(function(g) {
+      var card = document.createElement('div');
+      card.className = 'gc-card';
+      card.setAttribute('role', 'listitem');
+      if (g.slug) card.setAttribute('data-slug', g.slug);
+      var chipsHtml = (g.chips || []).map(function(c) {
+        return '<span class="gc-chip' + (c.cls ? ' ' + c.cls : '') + '">' + c.text + '</span>';
+      }).join('');
+      var html =
+        '<div class="gc-topline"><span class="gc-label">' + g.label + '</span>' + (g.soon ? '<span class="gc-soon-tag">In Development</span>' : '') + '</div>' +
+        '<div class="gc-title">' + g.title + '</div>' +
+        '<p class="gc-desc">' + g.desc + '</p>' +
+        '<div class="gc-meta-row">' + chipsHtml + '</div>';
+      if (g.cta) {
+        html += '<a href="' + g.cta.href + '" class="gc-btn gc-btn-primary">' + g.cta.text + '</a>';
+      } else {
+        html +=
+          '<button type="button" class="gc-btn gc-btn-outline">Notify Me</button>' +
+          '<div class="gc-waitlist">' +
+            '<input type="email" placeholder="Your email address" aria-label="Email for notify me">' +
+            '<button type="button" class="gc-btn gc-btn-primary">Join Waitlist</button>' +
+            '<div class="gc-waitlist-success">You\'re on the list.</div>' +
+          '</div>';
+      }
+      card.innerHTML = html;
+      if (!g.cta) {
+        card.querySelector('.gc-btn-outline').addEventListener('click', function() {
+          card.querySelector('.gc-waitlist').classList.toggle('open');
+        });
+        card.querySelector('.gc-waitlist .gc-btn-primary').addEventListener('click', function(e) {
+          gcSubmitDashWaitlist(e.target, g.slug);
+        });
+      }
+      row.appendChild(card);
     });
   }
 
