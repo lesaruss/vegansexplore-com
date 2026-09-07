@@ -1648,28 +1648,64 @@
   // National posts (city_slug IS NULL -- confirmed live: 226 of 278
   // published posts) show for everyone; city-specific posts (52 of 278)
   // only show once that city is the active one.
+  // City-scoped Daily Pulse (2026-09-07, Logan, Sean direction 15:53-15:55:
+  // "the daily pulse... would be specific to each city... some national
+  // content... filtered into each city as well"). Shows content tagged for
+  // one of the member's joined communities, plus untagged/national content.
+  // A member in no community yet sees national content only, never every
+  // city's local stories mixed together.
+  // Unified catchall (2026-09-07, Sean direction: "we need to have all of
+  // the content filtered into here" after merging Podcast into Pulse) --
+  // no content_type filter, so every published row lands in this one grid,
+  // podcast episodes included, exactly like the old followed-shows-only
+  // episode grid this replaces. A row with a youtube_id still opens the
+  // real embedded on-platform player (same Watch modal Podcast used) so
+  // that experience isn't lost in the merge; everything else links out to
+  // its Pulse article or original source.
   function renderDailyPulse(member) {
     var grid = document.getElementById('dash-pulse-grid');
     if (!grid) return;
     var active = getActiveCity(member);
-    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,summary,thumbnail_url,city_slug,published_at&status=eq.published&order=published_at.desc&limit=60', {
+    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,summary,thumbnail_url,city_slug,published_at,podcast_show,youtube_id,source_url&status=eq.published&order=published_at.desc&limit=120', {
       headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
     }).then(function (r) { return r.json(); }).then(function (rows) {
-      var posts = (rows || []).filter(function (p) { return !p.city_slug || p.city_slug === active; }).slice(0, 12);
+      var posts = (rows || []).filter(function (p) { return !p.city_slug || p.city_slug === active; }).slice(0, 24);
       if (!posts.length) {
         grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">No Pulse posts yet.</p>';
         return;
       }
-      grid.innerHTML = posts.map(function (p) {
+      grid.innerHTML = '';
+      posts.forEach(function (p) {
         var d = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
         var thumbStyle = p.thumbnail_url ? "background-image:url('" + p.thumbnail_url + "');" : '';
-        return '<a class="dash-tile" href="/pulse/' + p.slug + '">' +
-          '<div class="dash-thumb" style="' + thumbStyle + '"></div>' +
+        var descBits = [];
+        descBits.push(p.podcast_show || p.category || 'Pulse');
+        if (d) descBits.push(d);
+        if (!p.city_slug) descBits.push('National');
+        var isPlayable = !!p.youtube_id;
+        var el = document.createElement(isPlayable ? 'div' : 'a');
+        el.className = 'dash-tile';
+        if (isPlayable) {
+          el.setAttribute('role', 'button');
+          el.setAttribute('tabindex', '0');
+          el.style.cursor = 'pointer';
+        } else {
+          el.href = p.slug ? ('/pulse/' + p.slug) : (p.source_url || '/pulse');
+          if (!p.slug && p.source_url) { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+        }
+        el.innerHTML = '<div class="dash-thumb" style="' + thumbStyle + 'position:relative;">' +
+            (isPlayable ? '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5);">&#9658;</div>' : '') +
+          '</div>' +
           '<div class="dash-tile-body">' +
             '<div class="dash-tile-title">' + p.title + '</div>' +
-            '<div class="dash-tile-desc">' + (p.category || 'Pulse') + (d ? ' &middot; ' + d : '') + (p.city_slug ? '' : ' &middot; National') + '</div>' +
-          '</div></a>';
-      }).join('');
+            '<div class="dash-tile-desc">' + descBits.join(' &middot; ') + (isPlayable ? '' : (p.podcast_show ? ' &middot; Listen externally' : '')) + '</div>' +
+          '</div>';
+        if (isPlayable) {
+          el.addEventListener('click', function () { openWatchModal(p.youtube_id, p.title); });
+          el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWatchModal(p.youtube_id, p.title); } });
+        }
+        grid.appendChild(el);
+      });
     }).catch(function () {
       grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Could not load Pulse right now.</p>';
     });
