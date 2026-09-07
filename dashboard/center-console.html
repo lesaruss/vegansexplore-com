@@ -789,6 +789,9 @@
         '<div class="dash-tile-body"><div class="dash-tile-title">' + m.title + (m.tag ? ' <span class="dash-tag live">' + m.tag + '</span>' : '') + '</div>' +
         '<div class="dash-tile-desc"' + (m.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + m.desc + '</div></div>';
       wrap.appendChild(tile);
+      if (m.key === 'choose-guide') {
+        tile.addEventListener('click', function(e) { e.preventDefault(); openGuideModal(); });
+      }
       var remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'dash-community-change';
