@@ -101,7 +101,7 @@
     fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=100', { headers: headers() })
       .then(function (r) { return r.json(); })
       .then(function (rows) {
-        var matches = (rows || []).filter(function (e) { return e.city && cityNames.indexOf(e.city) > -1; });
+        var matches = (rows || []).filter(function (e) { return !e.city || cityNames.indexOf(e.city) > -1; });
         if (!matches.length) { list.innerHTML = '<p class="hub-dir-empty">No upcoming events posted yet. Check back soon.</p>'; return; }
         list.innerHTML = matches.map(function (e) {
           var dt = new Date(e.starts_at);
