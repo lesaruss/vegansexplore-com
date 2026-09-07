@@ -126,6 +126,7 @@
       '<div class="subcat-pills">' + subcatBtns + '</div>' +
       buildBar(cat, config) +
       '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
+      '<div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
       '</div>';
   }
 
