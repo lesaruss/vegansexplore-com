@@ -430,7 +430,7 @@
     var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,color&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
-      .then(function (data) { populateGrids(root, config, approved, (data || []).filter(config.matchListing)); })
+      .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return config.matchListing(l) || isOnline(l); })); })
       .catch(function () { populateGrids(root, config, approved, []); });
   }
 
