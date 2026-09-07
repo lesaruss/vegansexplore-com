@@ -1358,52 +1358,6 @@
     });
   }
 
-  // Daily Pulse + Podcast preview sections (2026-09-07, Logan, Sean
-  // direction): both read straight from the public ve_pulse_content table
-  // (no ve-rewards action needed, RLS already allows public SELECT) --
-  // Pulse shows the 4 most recent non-podcast rows, Podcast shows the 4
-  // most recent content_type='podcast' rows. Both degrade to a Coming Soon
-  // empty state rather than fabricating placeholder content when there's
-  // nothing published yet for that slice.
-  // City-scoped Daily Pulse (2026-09-07, Logan, Sean direction 15:53-15:55:
-  // "the daily pulse... would be specific to each city... some national
-  // content... filtered into each city as well"). Shows content tagged for
-  // one of the member's joined communities, plus untagged/national content.
-  // A member in no community yet sees national content only, never every
-  // city's local stories mixed together.
-  function renderPulseSection(member) {
-    var grid = document.getElementById('dash-pulse-grid');
-    if (!grid) return;
-    var cities = (member && member.communities && member.communities.length) ? member.communities : [];
-    var cityFilter = cities.length
-      ? 'or=(city_slug.is.null,city_slug.in.(' + cities.map(encodeURIComponent).join(',') + '))'
-      : 'city_slug=is.null';
-    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=title,slug,summary,thumbnail_url,published_at&content_type=neq.podcast&status=eq.published&' + cityFilter + '&order=published_at.desc&limit=4', {
-      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
-    }).then(function (r) { return r.json(); }).then(function (items) {
-      items = Array.isArray(items) ? items : [];
-      grid.innerHTML = '';
-      if (!items.length) {
-        grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#128240;</div><div class="dash-tile-body"><div class="dash-tile-title">New stories coming soon <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Check back for fresh stories from the community.</div></div></div>';
-      } else {
-        items.forEach(function (p) {
-          var a = document.createElement('a');
-          a.className = 'dash-tile';
-          a.href = p.slug ? ('/pulse/' + p.slug) : '/pulse';
-          a.innerHTML = '<div class="dash-thumb" style="background-image:url(\'' + (p.thumbnail_url || '') + '\');background-color:var(--ve-green-light);"></div><div class="dash-tile-body"><div class="dash-tile-title">' + p.title + '</div>' + (p.summary ? '<div class="dash-tile-desc">' + p.summary + '</div>' : '') + '</div>';
-          grid.appendChild(a);
-        });
-      }
-      var more = document.createElement('a');
-      more.className = 'dash-tile dash-add-tile';
-      more.href = '/pulse';
-      more.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">See All Vegan Content</div><div class="dash-tile-desc">Every story, deeper into the Pulse.</div></div>';
-      grid.appendChild(more);
-    }).catch(function () {
-      grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#128240;</div><div class="dash-tile-body"><div class="dash-tile-title">Daily Pulse</div><div class="dash-tile-desc">Could not load right now.</div></div></div>';
-    });
-  }
-
   // Podcast "select-to-follow" model (2026-09-07, Sean direction): mirrors
   // Your Communities exactly -- currentMember.podcast_follows is a plain
   // array of show names returned by ve-auth's me/follow_podcast/
