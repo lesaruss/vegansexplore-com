@@ -252,34 +252,72 @@
       <p class="dash-eyebrow" id="dash-eyebrow">Member</p>
       <h1 id="dash-welcome-name">Your Dashboard</h1>
       <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
+      <!-- Your City pill (2026-09-07, Logan, Sean direction): one pill, one
+           row, up front. Text/click wiring in renderCityPill(). -->
+      <button type="button" class="dash-city-pill" id="dash-city-pill">Choose a City <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span></button>
     </div>
 
+    <!-- Front-and-center stats row: Points / Lifetime Points / Level
+         (2026-09-07, Logan, Sean direction: "total points, also lifetime
+         points, and maybe their level and how many points until next
+         level"). Membership and Badges moved into the new Your Profile tab
+         below -- Sean: "the rest can fit into your profile." Level has no
+         live XP system behind it yet (member_levels table checked live:
+         zero rows, no awarding pipeline wired anywhere), so it is styled
+         Coming Soon the same way Badges already is elsewhere on this page,
+         rather than showing an invented level/threshold. -->
     <div class="dash-stats-hero" id="dash-stats-hero">
       <div class="dash-stats-hero-tile">
         <div class="dash-stats-hero-value" id="dash-hero-points">--</div>
         <div class="dash-stats-hero-label">Points</div>
       </div>
       <div class="dash-stats-hero-tile">
-        <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
-        <div class="dash-stats-hero-label">Membership</div>
+        <div class="dash-stats-hero-value" id="dash-hero-lifetime">--</div>
+        <div class="dash-stats-hero-label">Lifetime Points</div>
       </div>
       <div class="dash-stats-hero-tile locked">
         <div class="dash-stats-hero-value">--</div>
-        <div class="dash-stats-hero-label">Badges <span class="dash-tag">Coming Soon</span></div>
+        <div class="dash-stats-hero-label">Level <span class="dash-tag">Coming Soon</span></div>
       </div>
-    </div>
-
-    <p class="dash-section-title" id="dash-role-label" style="display:none;margin-top:-6px;">Your Role</p>
-    <div class="dash-stats" id="dash-stats-row" style="display:none;">
-      <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
-      <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
-      <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
     </div>
 
     <div class="dash-tabs" id="dash-tabs" role="tablist" aria-label="Dashboard sections"></div>
     <select class="dash-tabs-mobile" id="dash-tabs-mobile" aria-label="Dashboard sections"></select>
 
-    <div id="dash-bounties-section" style="margin-bottom:28px;" data-tab-key="bounties" data-tab-order="1" data-tab-label="Bounties">
+    <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="1" data-tab-label="Your Profile">
+      <p class="dash-section-title">Your Profile</p>
+      <div class="dash-stats-hero cols-2">
+        <div class="dash-stats-hero-tile">
+          <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
+          <div class="dash-stats-hero-label">Membership</div>
+        </div>
+        <div class="dash-stats-hero-tile locked">
+          <div class="dash-stats-hero-value">--</div>
+          <div class="dash-stats-hero-label">Badges <span class="dash-tag">Coming Soon</span></div>
+        </div>
+      </div>
+
+      <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
+      <div class="dash-stats" id="dash-stats-row" style="display:none;">
+        <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
+        <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
+        <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
+      </div>
+
+      <!-- Leaderboard (2026-09-07, Logan, Sean direction: "that's where we
+           put the leaderboards"). Wired to the real ve-rewards leaderboard
+           action/ve_leaderboard RPC (checked live before building this) --
+           that RPC matches on members.location free text, not on
+           community_slug, so renderLeaderboard() passes city-name terms
+           derived from the member's joined communities. A member whose
+           location field doesn't mention their metro by name won't surface
+           on this board yet -- a real data-quality gap in the existing
+           location field, not something this tile can fabricate around. -->
+      <p class="dash-section-title" style="margin-top:24px;">Leaderboard</p>
+      <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
+    </div>
+
+    <div id="dash-bounties-section" style="margin-bottom:28px;" data-tab-key="bounties" data-tab-order="2" data-tab-label="Bounties">
       <p class="dash-section-title">Bounties</p>
       <div class="dash-bounty-topics" id="dash-bounty-topics">
         <button type="button" class="dash-bounty-topic-pill active" data-topic="all">All</button>
