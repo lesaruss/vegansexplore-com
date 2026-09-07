@@ -576,18 +576,23 @@
       { key: 'sa-events', href: '/admin/events.html', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-leads', href: '/dashboard/leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'cm-initiatives', href: '/dashboard/2026-initiatives', iconHtml: '&#127758;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: '2026 Initiatives Portfolio', desc: 'The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.', visibility: 'staff', defaultSection: 'tools' },
-      { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' },
-      // Guides section (2026-08-21, Sean direction): mirrors the 5 active
-      // guide personas from /guides (ve-guides-roster-v1.html), one tile per
-      // guide with their real portrait as the thumbnail rather than an icon.
-      { key: 'guide-maya', href: '/guides/ve-path-prevegan', img: '/public/guides/maya.png', bg: '#2d7d31', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.', visibility: 'all', defaultSection: 'guides' },
-      { key: 'guide-theo', href: '/guides/ve-path-seasonedvegan', img: '/public/guides/theo.png', bg: '#8B6914', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.', visibility: 'all', defaultSection: 'guides' },
-      { key: 'guide-nori', href: '/guides/ve-path-entrepreneur', img: '/public/guides/nori.png', bg: '#2D5F8A', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.', visibility: 'all', defaultSection: 'guides' },
-      { key: 'guide-dani', href: '/guides/ve-path-nonprofit', img: '/public/guides/dani.png', bg: '#C4522A', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.', visibility: 'all', defaultSection: 'guides' },
-      { key: 'guide-river', href: '/guides/ve-path-creator', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.', visibility: 'all', defaultSection: 'guides' }
+      { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' }
     );
     return TILE_REGISTRY;
   }
+
+  // Guide personas (2026-08-21, restructured 2026-09-07 per Sean direction):
+  // no longer their own tiles on the dashboard -- surfaced instead through
+  // the "Choose Your Guide" modal under Your Tools. The guide/wizard
+  // differentiator: a guide walks you through a journey, a wizard helps you
+  // build something. Real portrait as the thumbnail rather than an icon.
+  var GUIDE_PERSONAS = [
+    { key: 'guide-maya', href: '/guides/ve-path-prevegan', img: '/public/guides/maya.png', bg: '#2d7d31', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
+    { key: 'guide-theo', href: '/guides/ve-path-seasonedvegan', img: '/public/guides/theo.png', bg: '#8B6914', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
+    { key: 'guide-nori', href: '/guides/ve-path-entrepreneur', img: '/public/guides/nori.png', bg: '#2D5F8A', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.' },
+    { key: 'guide-dani', href: '/guides/ve-path-nonprofit', img: '/public/guides/dani.png', bg: '#C4522A', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.' },
+    { key: 'guide-river', href: '/guides/ve-path-creator', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.' }
+  ];
 
   var dashLayout = [];
   var layoutEditMode = false;
