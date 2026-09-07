@@ -602,7 +602,7 @@
     var registry = buildTileRegistry();
     var savedMap = {};
     (dashLayout || []).forEach(function (row) { savedMap[row.module_key] = row; });
-    var buckets = { superadmin: [], media: [], guides: [], tools: [] };
+    var buckets = { superadmin: [], media: [], tools: [] };
     registry.forEach(function (t) {
       if (t.visibility === 'staff' && !isStaff) return;
       if (t.visibility === 'superadmin' && !member.is_superadmin) return;
