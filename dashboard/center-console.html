@@ -1493,52 +1493,8 @@
     row.appendChild(addWrap);
   }
 
-  function renderPodcastEpisodes() {
-    var grid = document.getElementById('dash-podcast-grid');
-    if (!grid) return;
-    var followed = (currentMember && currentMember.podcast_follows) || [];
-
-    if (!followed.length) {
-      grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;">&#127911;</div><div class="dash-tile-body"><div class="dash-tile-title">Follow a show to see episodes here</div><div class="dash-tile-desc">Pick from the four shows across the Vegans Explore network above.</div></div></div>';
-      return;
-    }
-
-    var showFilter = 'podcast_show=in.(' + followed.map(encodeURIComponent).join(',') + ')';
-    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=title,podcast_show,thumbnail_url,published_at,youtube_id,source_url&' + showFilter + '&status=eq.published&order=published_at.desc&limit=8', {
-      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
-    }).then(function (r) { return r.json(); }).then(function (items) {
-      items = Array.isArray(items) ? items : [];
-      grid.innerHTML = '';
-      if (!items.length) {
-        grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;">&#127911;</div><div class="dash-tile-body"><div class="dash-tile-title">New episodes coming soon</div><div class="dash-tile-desc">Check back for episodes from the shows you follow.</div></div></div>';
-        return;
-      }
-      items.forEach(function (p) {
-        var tile = document.createElement('div');
-        tile.className = 'dash-tile';
-        tile.setAttribute('role', 'button');
-        tile.setAttribute('tabindex', '0');
-        tile.style.cursor = 'pointer';
-        tile.innerHTML = '<div class="dash-thumb" style="background-image:url(\'' + (p.thumbnail_url || '') + '\');background-color:var(--ve-green-light);position:relative;">' +
-          (p.youtube_id ? '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5);">&#9658;</div>' : '') +
-          '</div><div class="dash-tile-body"><div class="dash-tile-title">' + p.title + '</div>' + (p.podcast_show ? '<div class="dash-tile-desc">' + p.podcast_show + (p.youtube_id ? '' : ' &middot; Listen externally') + '</div>' : '') + '</div>';
-        if (p.youtube_id) {
-          tile.addEventListener('click', function() { openWatchModal(p.youtube_id, p.title); });
-          tile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWatchModal(p.youtube_id, p.title); } });
-        } else if (p.source_url) {
-          tile.addEventListener('click', function() { window.open(p.source_url, '_blank', 'noopener'); });
-          tile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(p.source_url, '_blank', 'noopener'); } });
-        }
-        grid.appendChild(tile);
-      });
-    }).catch(function () {
-      grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;">&#127911;</div><div class="dash-tile-body"><div class="dash-tile-title">Podcasts</div><div class="dash-tile-desc">Could not load right now.</div></div></div>';
-    });
-  }
-
   function renderPodcastSection(member) {
     renderPodcastShowsRow(member);
-    renderPodcastEpisodes();
   }
 
   // Front-and-center stats hero (2026-09-07, Logan, Sean direction): Points
