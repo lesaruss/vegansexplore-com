@@ -1358,25 +1358,33 @@
     });
   }
 
-  // Podcast "select-to-follow" model (2026-09-07, Sean direction): mirrors
-  // Your Communities exactly -- currentMember.podcast_follows is a plain
-  // array of show names returned by ve-auth's me/follow_podcast/
-  // unfollow_podcast actions, so no separate fetch is needed to know what a
-  // member follows. Followed shows render as a row of tiles with an
-  // Unfollow action, plus a trailing add-tile that opens a Follow Shows
-  // modal listing the four real shows live in ve_pulse_content.podcast_show
-  // (VALID_PODCAST_SHOWS mirrors the same hardcoded allow-list in the
-  // ve-auth edge function). Below that, a Latest Episodes grid pulls real
-  // episodes from just the followed shows; episodes with a youtube_id open
-  // a real embedded on-platform player in a modal, episodes without one
-  // (mainly SoFlo Vegans Podcast, which is RSS-only today with no
-  // per-episode video) link out to their source_url instead.
+  // Shows follow row, merged into Daily Pulse (2026-09-07, Sean direction:
+  // "podcast" is an inaccurate label since every show is also on YouTube,
+  // so this is "Shows" everywhere now, and the standalone Podcast tab is
+  // retired -- live data confirmed every published ve_pulse_content row is
+  // podcast-episode content today, so a separate Podcast feed was already
+  // redundant with Daily Pulse; Daily Pulse below is now the one unified
+  // catchall grid for all of it (episodes and any other post type that
+  // gets added later), not a separate filtered feed. Mirrors Your
+  // Communities exactly -- currentMember.podcast_follows is a plain array
+  // of show names returned by ve-auth's me/follow_podcast/unfollow_podcast
+  // actions, so no separate fetch is needed to know what a member follows.
+  // Followed shows render as a row of tiles with an Unfollow action, plus
+  // a trailing add-tile that opens a Follow Shows modal listing the four
+  // real shows live in ve_pulse_content.podcast_show (VALID_PODCAST_SHOWS
+  // mirrors the same hardcoded allow-list in the ve-auth edge function).
+  // Cover art is the real square artwork already live on the public
+  // /podcast network page (Apple Podcasts 600x600 art), not a placeholder
+  // gradient. Episodes render inside the unified Daily Pulse grid below --
+  // episodes with a youtube_id open a real embedded on-platform player in
+  // a modal, episodes without one (mainly SoFlo Vegans Podcast, RSS-only
+  // today with no per-episode video) link out to their source_url instead.
   var VALID_PODCAST_SHOWS = ['Vegans Explore Podcast', 'SoFlo Vegans Podcast', 'Vegans Who Lift Podcast', 'Pre-Vegans Podcast'];
   var PODCAST_SHOW_META = {
-    'Vegans Explore Podcast': 'linear-gradient(135deg,#22C55E,#16A34A)',
-    'SoFlo Vegans Podcast': 'linear-gradient(135deg,#F97316,#C2410C)',
-    'Vegans Who Lift Podcast': 'linear-gradient(135deg,#7c3aed,#4c1d95)',
-    'Pre-Vegans Podcast': 'linear-gradient(135deg,#0EA5E9,#0369A1)'
+    'Vegans Explore Podcast': 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/78/e8/15/78e815be-972b-683e-53eb-a56c001e9969/mza_10373735271438816480.jpg/600x600bb.jpg',
+    'SoFlo Vegans Podcast': 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg',
+    'Vegans Who Lift Podcast': 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/a0/99/53/a099536e-ce80-ef47-ff90-c9cf600fc2e8/mza_11962273234771203853.jpg/600x600bb.jpg',
+    'Pre-Vegans Podcast': 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/53/d9/56/53d95636-6d45-1b44-6274-201548f57873/mza_1682445160343010984.jpg/600x600bb.jpg'
   };
 
   function openPodcastModal() {
