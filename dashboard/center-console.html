@@ -1399,11 +1399,12 @@
     var followed = (currentMember && currentMember.podcast_follows) || [];
     VALID_PODCAST_SHOWS.forEach(function(show) {
       var isFollowed = followed.indexOf(show) !== -1;
-      var bg = PODCAST_SHOW_META[show] || 'linear-gradient(135deg,#7c3aed,#4c1d95)';
+      var img = PODCAST_SHOW_META[show];
+      var thumbStyle = img ? ("aspect-ratio:1/1;background-image:url('" + img + "');background-size:cover;background-position:center;") : 'aspect-ratio:1/1;background:linear-gradient(135deg,#7c3aed,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;';
       var opt = document.createElement('button');
       opt.type = 'button';
       opt.className = 'dash-modal-opt' + (isFollowed ? ' selected' : '');
-      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background:' + bg + ';display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;">&#127911;</div><div class="dash-modal-opt-name">' + show + (isFollowed ? ' &#10003;' : '') + '</div>';
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="' + thumbStyle + '">' + (img ? '' : '&#127911;') + '</div><div class="dash-modal-opt-name">' + show + (isFollowed ? ' &#10003;' : '') + '</div>';
       opt.addEventListener('click', function() { togglePodcastFollow(show, isFollowed); });
       grid.appendChild(opt);
     });
