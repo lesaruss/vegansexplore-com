@@ -416,7 +416,7 @@
         acc = acc.concat(data || []);
         if (data && data.length === 1000) { fetchAll(root, config, offset + 1000, acc); }
         else {
-          var approved = acc.filter(config.matchListing);
+          var approved = acc.filter(function (l) { return config.matchListing(l) || isOnline(l); });
           fetchClosed(root, config, approved);
         }
       })
