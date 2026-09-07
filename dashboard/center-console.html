@@ -1009,6 +1009,199 @@
     });
   }
 
+  // "Your Opportunities" section + Browse Opportunities modal (2026-09-07,
+  // Logan, Sean direction): mirrors "Your Campaigns" / Browse Campaigns above
+  // exactly, backed by the real opportunities table via the existing
+  // list_opportunities / my_applications / submit_opportunity_application
+  // ve-rewards actions. Unlike campaigns, applying is one-way (no
+  // leave/withdraw action exists yet), so an applied opportunity shows as
+  // checked/selected in the modal rather than toggling.
+  var allOpportunitiesCache = null;
+
+  function openOpportunitiesModal() {
+    var overlay = document.getElementById('dash-opportunities-modal');
+    var grid = document.getElementById('dash-opportunities-modal-grid');
+    overlay.classList.add('open');
+
+    grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">Loading&hellip;</p>';
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunities', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      allOpportunitiesCache = (d && d.opportunities) || [];
+      renderOpportunitiesModalGrid();
+    }).catch(function () {
+      grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">Could not load opportunities right now.</p>';
+    });
+  }
+
+  function renderOpportunitiesModalGrid() {
+    var grid = document.getElementById('dash-opportunities-modal-grid');
+    var items = allOpportunitiesCache || [];
+    grid.innerHTML = '';
+    if (!items.length) {
+      grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">No opportunities are open right now. Check back soon.</p>';
+      return;
+    }
+    items.forEach(function (o) {
+      var applied = !!o.my_status;
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'dash-modal-opt' + (applied ? ' selected' : '');
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));display:flex;align-items:center;justify-content:center;font-size:28px;">&#127775;</div>' +
+        '<div class="dash-modal-opt-name">' + o.title + (applied ? ' &#10003;' : '') + '</div>';
+      if (!applied) opt.addEventListener('click', function() { applyToOpportunity(o.id); });
+      grid.appendChild(opt);
+    });
+  }
+
+  function applyToOpportunity(id) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_opportunity_application', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken(), opportunity_id: id })
+    }).then(function(r){ return r.json(); }).then(function() {
+      allOpportunitiesCache = null;
+      openOpportunitiesModal();
+      renderOpportunitiesSection(currentMember);
+    });
+  }
+
+  function closeOpportunitiesModal() {
+    document.getElementById('dash-opportunities-modal').classList.remove('open');
+  }
+  document.getElementById('dash-opportunities-modal-close').addEventListener('click', closeOpportunitiesModal);
+  document.getElementById('dash-opportunities-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-opportunities-modal') closeOpportunitiesModal();
+  });
+
+  function renderOpportunitiesSection(member) {
+    var section = document.getElementById('dash-opportunities-section');
+    var row = document.getElementById('dash-opportunities-row');
+    if (!section || !row) return;
+    section.style.display = 'block';
+    row.innerHTML = '<div class="dash-community-tile"><div class="dash-tile" style="padding:16px 18px;"><p style="font-size:12.5px;color:var(--ve-text-50);">Loading&hellip;</p></div></div>';
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var items = ((d && d.applications) || []).filter(function(a) { return a.opportunities; });
+      row.innerHTML = '';
+
+      items.forEach(function (a) {
+        var wrap = document.createElement('div');
+        wrap.className = 'dash-community-tile';
+        var tile = document.createElement('a');
+        tile.className = 'dash-tile';
+        tile.href = '/dashboard/opportunities';
+        var tagLabel = a.status === 'accepted' ? 'Accepted' : (a.status === 'rejected' ? 'Not Selected' : 'Pending');
+        tile.innerHTML =
+          '<div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));display:flex;align-items:center;justify-content:center;font-size:28px;">&#127775;</div>' +
+          '<div class="dash-tile-body">' +
+            '<div class="dash-tile-title">' + a.opportunities.title + ' <span class="dash-tag live">' + tagLabel + '</span></div>' +
+          '</div>';
+        wrap.appendChild(tile);
+        row.appendChild(wrap);
+      });
+
+      var addWrap = document.createElement('div');
+      addWrap.className = 'dash-community-tile';
+      var addTile = document.createElement('div');
+      addTile.className = 'dash-tile dash-add-tile';
+      addTile.setAttribute('role', 'button');
+      addTile.setAttribute('tabindex', '0');
+      addTile.innerHTML =
+        '<div class="dash-thumb">+</div>' +
+        '<div class="dash-tile-body">' +
+          '<div class="dash-tile-title">' + (items.length ? 'Apply To Another Opportunity' : 'Find An Opportunity') + '</div>' +
+          '<div class="dash-tile-desc">Volunteer, sponsor, or join the team.</div>' +
+        '</div>';
+      addTile.addEventListener('click', openOpportunitiesModal);
+      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openOpportunitiesModal(); } });
+      addWrap.appendChild(addTile);
+      row.appendChild(addWrap);
+    }).catch(function () {
+      row.innerHTML = '';
+      var addWrap = document.createElement('div');
+      addWrap.className = 'dash-community-tile';
+      var addTile = document.createElement('div');
+      addTile.className = 'dash-tile dash-add-tile';
+      addTile.setAttribute('role', 'button');
+      addTile.setAttribute('tabindex', '0');
+      addTile.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">Find An Opportunity</div><div class="dash-tile-desc">Volunteer, sponsor, or join the team.</div></div>';
+      addTile.addEventListener('click', openOpportunitiesModal);
+      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openOpportunitiesModal(); } });
+      addWrap.appendChild(addTile);
+      row.appendChild(addWrap);
+    });
+  }
+
+  // Daily Pulse + Podcast preview sections (2026-09-07, Logan, Sean
+  // direction): both read straight from the public ve_pulse_content table
+  // (no ve-rewards action needed, RLS already allows public SELECT) --
+  // Pulse shows the 4 most recent non-podcast rows, Podcast shows the 4
+  // most recent content_type='podcast' rows. Both degrade to a Coming Soon
+  // empty state rather than fabricating placeholder content when there's
+  // nothing published yet for that slice.
+  function renderPulseSection() {
+    var grid = document.getElementById('dash-pulse-grid');
+    if (!grid) return;
+    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=title,slug,summary,thumbnail_url,published_at&content_type=neq.podcast&status=eq.published&order=published_at.desc&limit=4', {
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
+    }).then(function (r) { return r.json(); }).then(function (items) {
+      items = Array.isArray(items) ? items : [];
+      grid.innerHTML = '';
+      if (!items.length) {
+        grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#128240;</div><div class="dash-tile-body"><div class="dash-tile-title">New stories coming soon <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Check back for fresh stories from the community.</div></div></div>';
+      } else {
+        items.forEach(function (p) {
+          var a = document.createElement('a');
+          a.className = 'dash-tile';
+          a.href = p.slug ? ('/pulse/' + p.slug) : '/pulse';
+          a.innerHTML = '<div class="dash-thumb" style="background-image:url(\'' + (p.thumbnail_url || '') + '\');background-color:var(--ve-green-light);"></div><div class="dash-tile-body"><div class="dash-tile-title">' + p.title + '</div>' + (p.summary ? '<div class="dash-tile-desc">' + p.summary + '</div>' : '') + '</div>';
+          grid.appendChild(a);
+        });
+      }
+      var more = document.createElement('a');
+      more.className = 'dash-tile dash-add-tile';
+      more.href = '/pulse';
+      more.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">See All Vegan Content</div><div class="dash-tile-desc">Every story, deeper into the Pulse.</div></div>';
+      grid.appendChild(more);
+    }).catch(function () {
+      grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#128240;</div><div class="dash-tile-body"><div class="dash-tile-title">Daily Pulse</div><div class="dash-tile-desc">Could not load right now.</div></div></div>';
+    });
+  }
+
+  function renderPodcastSection() {
+    var grid = document.getElementById('dash-podcast-grid');
+    if (!grid) return;
+    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=title,podcast_show,thumbnail_url,published_at&content_type=eq.podcast&status=eq.published&order=published_at.desc&limit=4', {
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
+    }).then(function (r) { return r.json(); }).then(function (items) {
+      items = Array.isArray(items) ? items : [];
+      grid.innerHTML = '';
+      if (!items.length) {
+        grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);">&#127911;</div><div class="dash-tile-body"><div class="dash-tile-title">New episodes coming soon <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Check back for shows from across the network.</div></div></div>';
+      } else {
+        items.forEach(function (p) {
+          var a = document.createElement('a');
+          a.className = 'dash-tile';
+          a.href = '/podcast';
+          a.innerHTML = '<div class="dash-thumb" style="background-image:url(\'' + (p.thumbnail_url || '') + '\');background-color:var(--ve-green-light);"></div><div class="dash-tile-body"><div class="dash-tile-title">' + p.title + '</div>' + (p.podcast_show ? '<div class="dash-tile-desc">' + p.podcast_show + '</div>' : '') + '</div>';
+          grid.appendChild(a);
+        });
+      }
+      var more = document.createElement('a');
+      more.className = 'dash-tile dash-add-tile';
+      more.href = '/podcast';
+      more.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">See More Episodes</div><div class="dash-tile-desc">Every show across the Vegans Explore network.</div></div>';
+      grid.appendChild(more);
+    }).catch(function () {
+      grid.innerHTML = '<div class="dash-tile" style="cursor:default;"><div class="dash-thumb" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);">&#127911;</div><div class="dash-tile-body"><div class="dash-tile-title">Podcasts</div><div class="dash-tile-desc">Could not load right now.</div></div></div>';
+    });
+  }
+
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
