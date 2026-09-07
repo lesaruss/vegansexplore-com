@@ -141,10 +141,11 @@
   .dash-tag.locked{background:#F3F4F6;color:#6B7280;}
   .dash-badge-count{background:var(--ve-orange);color:#fff;border-radius:100px;font-size:11px;font-weight:900;padding:2px 9px;}
 
-  .dash-community-row{display:flex;gap:16px;flex-wrap:wrap;align-items:stretch;}
-  .dash-community-tile{width:100%;max-width:280px;display:flex;flex-direction:column;}
+  .dash-community-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:1100px){ .dash-community-row{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .dash-community-row{grid-template-columns:1fr;} }
+  .dash-community-tile{width:100%;display:flex;flex-direction:column;}
   .dash-community-tile .dash-tile{flex:1;}
-  @media (max-width:520px){ .dash-community-tile{max-width:100%;} }
   .dash-tile.dash-add-tile{border-style:dashed;cursor:pointer;background:var(--ve-green-light);}
   .dash-tile.dash-add-tile:hover{border-color:var(--ve-green);}
   .dash-tile.dash-add-tile .dash-thumb{background:none;color:var(--ve-green-dark);font-size:30px;font-weight:900;}
