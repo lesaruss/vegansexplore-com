@@ -591,8 +591,8 @@
     TILE_REGISTRY = MODULES.map(function (m) {
       return {
         key: m.key, href: m.href, iconHtml: m.icon, bg: m.bg, title: m.title, desc: m.desc,
-        visibility: 'all', defaultSection: (m.key === 'pulse' || m.key === 'podcasts') ? 'media' : 'tools',
-        locked: (m.key === 'tour' || m.key === 'pulse' || m.key === 'podcasts')
+        visibility: 'all', defaultSection: 'tools',
+        locked: (m.key === 'tour')
       };
     });
     TILE_REGISTRY.push(
