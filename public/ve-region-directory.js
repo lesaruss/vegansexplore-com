@@ -279,7 +279,7 @@
     bindVoteButtons(root);
     bindCardClicks(root);
 
-    root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, config); });
+    root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, config, true); });
   }
 
   function currentSubcat(panel) {
