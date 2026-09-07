@@ -1445,21 +1445,21 @@
   });
 
   function renderPodcastShowsRow(member) {
-    var section = document.getElementById('dash-podcast-section');
     var row = document.getElementById('dash-podcast-shows-row');
-    if (!section || !row) return;
+    if (!row) return;
     row.innerHTML = '';
     var followed = (member && member.podcast_follows) || [];
 
     followed.forEach(function(show) {
-      var bg = PODCAST_SHOW_META[show] || 'linear-gradient(135deg,#7c3aed,#4c1d95)';
+      var img = PODCAST_SHOW_META[show];
+      var thumbStyle = img ? ("background-image:url('" + img + "');") : 'background:linear-gradient(135deg,#7c3aed,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;';
       var wrap = document.createElement('div');
       wrap.className = 'dash-community-tile';
       var tile = document.createElement('div');
       tile.className = 'dash-tile';
       tile.style.cursor = 'default';
       tile.innerHTML =
-        '<div class="dash-thumb" style="background:' + bg + ';display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;">&#127911;</div>' +
+        '<div class="dash-thumb" style="' + thumbStyle + '">' + (img ? '' : '&#127911;') + '</div>' +
         '<div class="dash-tile-body">' +
           '<div class="dash-tile-title">' + show + ' <span class="dash-tag live">Following</span></div>' +
         '</div>';
@@ -1491,8 +1491,6 @@
     addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPodcastModal(); } });
     addWrap.appendChild(addTile);
     row.appendChild(addWrap);
-
-    section.style.display = 'block';
   }
 
   function renderPodcastEpisodes() {
