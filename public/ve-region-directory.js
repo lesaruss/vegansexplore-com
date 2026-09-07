@@ -197,7 +197,14 @@
 
   function isOnline(l) { return !l.address_city && !l.address_state; }
 
-  function bindCardClicks(root) {
+  // Optional in-frame open (2026-09-07, Logan, Sean direction): a caller
+  // can pass config.onOpenListing(slug, name) to keep listing clicks inside
+  // its own frame instead of navigating the whole window -- the dashboard
+  // uses this to open listings under its Directory tab with a breadcrumb
+  // back into the dashboard. Public /communities/[city] hub pages don't
+  // pass it, so their listing clicks keep navigating to /directory/[slug]
+  // as real, shareable URLs, unchanged.
+  function bindCardClicks(root, config) {
     root.querySelectorAll('.rank-card[data-slug]').forEach(function (card) {
       if (card.dataset.clickbound) return;
       card.dataset.clickbound = '1';
@@ -205,6 +212,7 @@
       if (!slug) return;
       card.addEventListener('click', function (e) {
         if (e.target.classList.contains('vote-btn') || e.target.closest('.vote-btn')) return;
+        if (config && typeof config.onOpenListing === 'function') { config.onOpenListing(slug, card.dataset.name || ''); return; }
         window.location = '/directory/' + slug;
       });
     });
@@ -289,7 +297,7 @@
     });
 
     bindVoteButtons(root);
-    bindCardClicks(root);
+    bindCardClicks(root, config);
 
     root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, config, true); });
   }
