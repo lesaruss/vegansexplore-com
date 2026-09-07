@@ -108,20 +108,22 @@
   @media (max-width:640px){ .dash-stats-hero{grid-template-columns:1fr 1fr 1fr;gap:8px;} .dash-stats-hero-tile{padding:12px 8px;} .dash-stats-hero-value{font-size:19px;} .dash-stats-hero-label{font-size:8.5px;} }
 
   /* --- Daily Pulse + Bounties: explicit column grids (2026-09-07, Sean,
-     Fieldy field note; Pulse widened to 4 cols same day, Sean direction:
-     square tiles, full thumbnail visible, four across). Bounties keeps its
+     Fieldy field note; Pulse widened to 4 cols same day). Bounties keeps its
      own 3-column desktop default (see .dash-bounty-scroll below) and its
      existing mobile steps. Distinct from the auto-fit full-width pattern
      used elsewhere on this page -- meant to hold many small items at a
-     fixed density, not stretch a couple of tiles to fill the row. --- */
+     fixed density, not stretch a couple of tiles to fill the row.
+     2026-09-07 (Logan, Sean direction 2nd pass): the square/contain thumb
+     treatment below was over-applied here -- Sean's "full thumbnail, mister
+     squares" ask was specifically for Your Shows (#dash-podcast-shows-row),
+     not the general Daily Pulse feed (a mix of articles + podcast clips).
+     Reverted this grid's thumb to the site default (8/5 cover) and added a
+     title line-clamp so a long headline can never push the meta line below
+     it out of view -- this was the "information below is cut off" report. */
   #dash-pulse-grid{grid-template-columns:repeat(4,1fr);}
   @media (max-width:760px){ #dash-pulse-grid{grid-template-columns:repeat(3,1fr);} .dash-bounty-scroll{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:480px){ #dash-pulse-grid{grid-template-columns:repeat(2,1fr);} .dash-bounty-scroll{grid-template-columns:1fr;} }
-  /* Square, uncropped thumbnails for Daily Pulse/Shows episode tiles
-     (2026-09-07, Sean direction: "so you see the full thumbnail" -- YouTube
-     thumbnails are 16:9, so contain plus a dark fill letterboxes instead of
-     cropping like the default cover-fit .dash-thumb used elsewhere). */
-  #dash-pulse-grid .dash-thumb{aspect-ratio:1/1;background-size:contain;background-color:#0b0b0f;}
+  #dash-pulse-grid .dash-tile-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 
   /* --- Your City pill: single, compact, up front next to Welcome back
      (2026-09-07, Logan, Sean direction: "let's keep one pill, one row").
@@ -196,8 +198,16 @@
   .dash-tile.dash-add-tile{border-style:dashed;cursor:pointer;background:var(--ve-green-light);}
   .dash-tile.dash-add-tile:hover{border-color:var(--ve-green);}
   .dash-tile.dash-add-tile .dash-thumb{background:none;color:var(--ve-green-dark);font-size:30px;font-weight:900;}
-  #dash-podcast-shows-row{grid-template-columns:repeat(4,1fr);}
+  /* Podcast/Shows row widened from 4 to 5 columns (2026-09-07, Sean
+     direction 2nd pass: "I wanna see the podcast five columns... smaller
+     in that field"). Tighter body padding + a title clamp keep the show
+     name from crowding the meta line at the narrower tile width. */
+  #dash-podcast-shows-row{grid-template-columns:repeat(5,1fr);}
   #dash-podcast-shows-row .dash-thumb{aspect-ratio:1/1;height:auto;background-size:contain;background-color:#f5f5f5;font-size:26px;}
+  #dash-podcast-shows-row .dash-tile-body{padding:10px 12px;}
+  #dash-podcast-shows-row .dash-tile-title{font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  #dash-podcast-shows-row .dash-tile-desc{font-size:11px;}
+  @media (max-width:900px){ #dash-podcast-shows-row{grid-template-columns:repeat(3,1fr);} }
   @media (max-width:480px){ #dash-podcast-shows-row{grid-template-columns:repeat(2,1fr);} }
   .dash-thumb.guide-thumb{background-position:top center;}
   /* --- Guides tab (2026-09-07, Sean correction): the real Guide Catalog
@@ -1231,6 +1241,22 @@
   var allCampaignsCache = null;
   var myCampaignSlugs = [];
 
+  // City scoping for the two flagship VE campaigns (2026-09-07, Logan, Sean
+  // direction): "Plant Based Showcase" is the Dolphins/Hard Rock Stadium
+  // pilot -- South Florida only, it doesn't match up with any other region.
+  // "World Vegan Expo" is the global flagship and stands in for every other
+  // region until region-specific campaigns are added ("we'll be adding a
+  // few more to the other locations"). Every other VE campaign (badge
+  // challenge, vegan tours, community night, etc.) has no regional home yet
+  // and stays visible everywhere. Applied to both the Browse Campaigns
+  // modal and the Your Campaigns row so the two stay in sync; layout
+  // (3-column grid) is untouched, this only changes which cards render.
+  function campaignVisibleForCity(slug, cityKey) {
+    if (slug === 'vegans-explore-initiative-plant-based-showcase') return cityKey === 'south-florida';
+    if (slug === 'vegans-explore-initiative-world-vegan-expo') return cityKey !== 'south-florida';
+    return true;
+  }
+
   function openCampaignsModal() {
     var overlay = document.getElementById('dash-campaigns-modal');
     var grid = document.getElementById('dash-campaigns-modal-grid');
@@ -1252,7 +1278,8 @@
 
   function renderCampaignsModalGrid() {
     var grid = document.getElementById('dash-campaigns-modal-grid');
-    var items = allCampaignsCache || [];
+    var cityKey = getActiveCity(currentMember);
+    var items = (allCampaignsCache || []).filter(function (c) { return campaignVisibleForCity(c.slug, cityKey); });
     grid.innerHTML = '';
     if (!items.length) {
       grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">No campaigns are open right now. Check back soon.</p>';
@@ -1302,6 +1329,8 @@
     }).then(function (r) { return r.json(); }).then(function (d) {
       var items = (d && d.items) || [];
       myCampaignSlugs = items.map(function(c) { return c.slug; });
+      var cityKey = getActiveCity(member);
+      items = items.filter(function (c) { return campaignVisibleForCity(c.slug, cityKey); });
       row.innerHTML = '';
 
       items.forEach(function (c) {
