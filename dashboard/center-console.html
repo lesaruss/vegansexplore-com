@@ -273,35 +273,32 @@
 
   <div id="dash-content">
     <div class="dash-welcome">
-      <p class="dash-eyebrow" id="dash-eyebrow">Member</p>
-      <h1 id="dash-welcome-name">Your Dashboard</h1>
-      <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
-      <!-- Your City pill (2026-09-07, Logan, Sean direction): one pill, one
-           row, up front. Text/click wiring in renderCityPill(). -->
-      <button type="button" class="dash-city-pill" id="dash-city-pill">Choose a City <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span></button>
-    </div>
+      <div class="dash-welcome-left">
+        <p class="dash-eyebrow" id="dash-eyebrow">Member</p>
+        <h1 id="dash-welcome-name">Your Dashboard</h1>
+        <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
+        <!-- Your City pill (2026-09-07, Logan, Sean direction): opens a
+             plain city switcher, not a join/leave picker -- Sean,
+             2026-09-07: "you shouldn't be checking the cities, you should
+             just be going to them." Text/click wiring in renderCityPill() /
+             openCityModal(). -->
+        <button type="button" class="dash-city-pill" id="dash-city-pill">Choose a City <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span></button>
+      </div>
 
-    <!-- Front-and-center stats row: Points / Lifetime Points / Level
-         (2026-09-07, Logan, Sean direction: "total points, also lifetime
-         points, and maybe their level and how many points until next
-         level"). Membership and Badges moved into the new Your Profile tab
-         below -- Sean: "the rest can fit into your profile." Level has no
-         live XP system behind it yet (member_levels table checked live:
-         zero rows, no awarding pipeline wired anywhere), so it is styled
-         Coming Soon the same way Badges already is elsewhere on this page,
-         rather than showing an invented level/threshold. -->
-    <div class="dash-stats-hero" id="dash-stats-hero">
-      <div class="dash-stats-hero-tile">
-        <div class="dash-stats-hero-value" id="dash-hero-points">--</div>
-        <div class="dash-stats-hero-label">Points</div>
-      </div>
-      <div class="dash-stats-hero-tile">
-        <div class="dash-stats-hero-value" id="dash-hero-lifetime">--</div>
-        <div class="dash-stats-hero-label">Lifetime Points</div>
-      </div>
-      <div class="dash-stats-hero-tile locked">
-        <div class="dash-stats-hero-value">--</div>
-        <div class="dash-stats-hero-label">Level <span class="dash-tag">Coming Soon</span></div>
+      <!-- Compact stats cluster, moved up next to Welcome/city pill so the
+           tab bar sits right underneath instead of below a full-width row
+           (Sean, 2026-09-07). Points and Lifetime Points combined into one
+           stat per Sean's direction. Same element ids as before, just
+           relocated, so renderStatsHero() needed no changes. -->
+      <div class="dash-welcome-stats" id="dash-welcome-stats">
+        <div class="dash-mini-stat">
+          <div class="dash-mini-stat-value"><span id="dash-hero-points">--</span><span class="dash-mini-stat-sep">/</span><span id="dash-hero-lifetime">--</span></div>
+          <div class="dash-mini-stat-label">Points / Lifetime</div>
+        </div>
+        <div class="dash-mini-stat locked">
+          <div class="dash-mini-stat-value">--</div>
+          <div class="dash-mini-stat-label">Level <span class="dash-tag">Coming Soon</span></div>
+        </div>
       </div>
     </div>
 
