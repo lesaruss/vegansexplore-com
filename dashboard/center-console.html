@@ -1088,6 +1088,10 @@
   // checked/selected in the modal rather than toggling.
   var allOpportunitiesCache = null;
 
+  // Browse Opportunities modal is city-scoped the same way (2026-09-07,
+  // Logan, Sean direction): pass the member's joined communities so the
+  // backend can show their city's postings plus untagged/national ones
+  // (e.g. B2B Vegan Product Sourcing Directory), not every city's at once.
   function openOpportunitiesModal() {
     var overlay = document.getElementById('dash-opportunities-modal');
     var grid = document.getElementById('dash-opportunities-modal-grid');
@@ -1096,7 +1100,7 @@
     grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">Loading&hellip;</p>';
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunities', {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: VEAuth.getToken() })
+      body: JSON.stringify({ token: VEAuth.getToken(), city_slugs: (currentMember && currentMember.communities) || [] })
     }).then(function (r) { return r.json(); }).then(function (d) {
       allOpportunitiesCache = (d && d.opportunities) || [];
       renderOpportunitiesModalGrid();
