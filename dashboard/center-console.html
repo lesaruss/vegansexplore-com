@@ -1407,14 +1407,73 @@
   // communities[0] is exactly "whichever one they picked during guide
   // registration" without needing a new is_primary flag. Reuses the
   // existing community picker modal rather than a new one.
+  // Active city (2026-09-07, Sean direction): the top pill is now a plain
+  // city switcher, not the join/leave picker -- "you shouldn't be checking
+  // the cities, you should just be going to them." Kept separate from
+  // member.communities (which Your Communities still manages for join/
+  // leave): this is purely "which city's content am I viewing right now,"
+  // so Directory and the Leaderboard can both be focused on one city the
+  // same way a visitor browsing a public /communities/[city] page is.
+  // Persisted in localStorage per browser; defaults to the member's
+  // first-joined community (same default as before) until they switch.
+  var VE_ACTIVE_CITY_KEY = 've_active_city';
+  function getActiveCity(member) {
+    var stored = null;
+    try { stored = window.localStorage.getItem(VE_ACTIVE_CITY_KEY); } catch (e) {}
+    if (stored && VE_CITY_NAMES[stored]) return stored;
+    var communities = (member && member.communities) || [];
+    return communities.length ? communities[0] : null;
+  }
+  function setActiveCity(slug) {
+    try { window.localStorage.setItem(VE_ACTIVE_CITY_KEY, slug); } catch (e) {}
+  }
+
   function renderCityPill(member) {
     var pill = document.getElementById('dash-city-pill');
     if (!pill) return;
-    var communities = member.communities || [];
-    var label = communities.length ? (VE_CITY_NAMES[communities[0]] || communities[0]) : 'Choose a City';
+    var active = getActiveCity(member);
+    var label = active ? (VE_CITY_NAMES[active] || active) : 'Choose a City';
     pill.innerHTML = label + ' <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span>';
-    pill.addEventListener('click', openCommunityModal);
+    pill.onclick = function () { openCityModal(member); };
   }
+
+  // Plain city switcher for the top pill -- every launched city, no
+  // checkmarks, no join/leave (that stays in dash-community-modal / Your
+  // Communities). Clicking a city sets it active and re-scopes Directory +
+  // Leaderboard to it.
+  function openCityModal(member) {
+    renderCityModalGrid(member);
+    document.getElementById('dash-city-modal').classList.add('open');
+  }
+  function renderCityModalGrid(member) {
+    var grid = document.getElementById('dash-city-modal-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    var active = getActiveCity(member);
+    Object.keys(VE_CITY_NAMES).forEach(function (slug) {
+      var isActive = slug === active;
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'dash-modal-opt' + (isActive ? ' current' : '');
+      var banner = VE_CITY_BANNER[slug];
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + banner + '\')"></div><div class="dash-modal-opt-name">' + VE_CITY_NAMES[slug] + (isActive ? ' <span class="dash-tag live">Viewing</span>' : '') + '</div>';
+      opt.addEventListener('click', function () {
+        setActiveCity(slug);
+        closeCityModal();
+        renderCityPill(member);
+        renderDirectory(member);
+        renderLeaderboard(member);
+      });
+      grid.appendChild(opt);
+    });
+  }
+  function closeCityModal() {
+    document.getElementById('dash-city-modal').classList.remove('open');
+  }
+  document.getElementById('dash-city-modal-close').addEventListener('click', closeCityModal);
+  document.getElementById('dash-city-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-city-modal') closeCityModal();
+  });
 
   // Leaderboard (2026-09-07, Logan, Sean direction: "that's where we put the
   // leaderboards"). ve_leaderboard (checked live before building this)
