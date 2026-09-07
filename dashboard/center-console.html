@@ -1357,9 +1357,86 @@
   // fabricated number, matching every other unbuilt tile on this page.
   function renderStatsHero(member) {
     var pointsEl = document.getElementById('dash-hero-points');
+    var lifetimeEl = document.getElementById('dash-hero-lifetime');
     var membershipEl = document.getElementById('dash-hero-membership');
     if (pointsEl) pointsEl.textContent = (typeof member.points === 'number' ? member.points : 0).toLocaleString();
+    if (lifetimeEl) lifetimeEl.textContent = (typeof member.total_points === 'number' ? member.total_points : 0).toLocaleString();
     if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport' : 'Free';
+  }
+
+  // Your City pill (2026-09-07, Logan, Sean direction): shows the member's
+  // first-joined community -- member.communities is already ordered by
+  // joined_at ascending server-side (ve-auth's getMemberCommunities), so
+  // communities[0] is exactly "whichever one they picked during guide
+  // registration" without needing a new is_primary flag. Reuses the
+  // existing community picker modal rather than a new one.
+  function renderCityPill(member) {
+    var pill = document.getElementById('dash-city-pill');
+    if (!pill) return;
+    var communities = member.communities || [];
+    var label = communities.length ? (VE_CITY_NAMES[communities[0]] || communities[0]) : 'Choose a City';
+    pill.innerHTML = label + ' <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span>';
+    pill.addEventListener('click', openCommunityModal);
+  }
+
+  // Leaderboard (2026-09-07, Logan, Sean direction: "that's where we put the
+  // leaderboards"). ve_leaderboard (checked live before building this)
+  // ranks members by available_points within a set of cities matched
+  // against members.location free text via ILIKE -- it does not key off
+  // community_slug. This map gives representative real-world place names
+  // per launched chapter so a member's own joined cities produce a
+  // sensible board; a member with no joined community sees an honest empty
+  // state rather than a silently wrong (defaulted) one.
+  var LEADERBOARD_CITY_TERMS = {
+    'atlanta': ['Atlanta'],
+    'central-florida': ['Orlando', 'Central Florida'],
+    'dmv': ['Washington', 'Maryland', 'Virginia'],
+    'london': ['London'],
+    'los-angeles': ['Los Angeles', 'LA'],
+    'new-york': ['New York', 'NYC'],
+    'philadelphia': ['Philadelphia'],
+    'south-florida': ['Miami', 'Fort Lauderdale', 'South Florida', 'Broward', 'Palm Beach'],
+  };
+
+  function renderLeaderboard(member) {
+    var list = document.getElementById('dash-leaderboard-list');
+    if (!list) return;
+    var communities = member.communities || [];
+    var cities = [];
+    communities.forEach(function (slug) {
+      (LEADERBOARD_CITY_TERMS[slug] || []).forEach(function (term) { cities.push(term); });
+    });
+    if (!cities.length) {
+      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Join a community to see your city\'s leaderboard.</p>';
+      return;
+    }
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=leaderboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken(), cities: cities })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var rows = (d && d.leaderboard) || [];
+      if (!rows.length) {
+        list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">No ranked members in your city yet.</p>';
+        return;
+      }
+      list.innerHTML = '';
+      rows.forEach(function (row) {
+        var el = document.createElement('div');
+        el.className = 'dash-leaderboard-row' + (row.is_you ? ' is-you' : '');
+        var avatarStyle = row.avatar_url
+          ? 'background-image:url(\'' + row.avatar_url + '\');'
+          : 'background:' + (row.color || 'var(--ve-green)') + ';';
+        el.innerHTML =
+          '<div class="dash-leaderboard-rank">' + row.rank + '</div>' +
+          '<div class="dash-leaderboard-avatar" style="' + avatarStyle + '">' + (row.avatar_url ? '' : (row.initials || '?')) + '</div>' +
+          '<div class="dash-leaderboard-name">' + row.name + '</div>' +
+          '<div class="dash-leaderboard-points">' + (row.points || 0).toLocaleString() + '</div>';
+        list.appendChild(el);
+      });
+    }).catch(function () {
+      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Could not load the leaderboard right now.</p>';
+    });
   }
 
   // Section tabs underneath the stats hero (2026-09-07, Logan, Sean
