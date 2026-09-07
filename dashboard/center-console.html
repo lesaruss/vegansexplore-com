@@ -1568,29 +1568,21 @@
   function renderDirectory(member) {
     var mount = document.getElementById('dash-directory-mount');
     if (!mount) return;
-    var communities = member.communities || [];
-    var configs = communities.map(function (slug) { return VE_DASH_REGION_CONFIG[slug]; }).filter(Boolean);
-    if (!configs.length) {
-      mount.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Join a community to see its local business directory.</p>';
+    var active = getActiveCity(member);
+    var cfg = active ? VE_DASH_REGION_CONFIG[active] : null;
+    if (!cfg) {
+      mount.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its local business directory.</p>';
       return;
     }
     if (!window.VERegionDirectory) {
       mount.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Directory is loading&hellip;</p>';
       return;
     }
-    var mergedCounties = {};
-    var hasCounties = false;
-    configs.forEach(function (cfg) {
-      if (cfg.counties) {
-        hasCounties = true;
-        Object.keys(cfg.counties).forEach(function (k) { mergedCounties[k] = cfg.counties[k]; });
-      }
-    });
     var initConfig = {
       mount: 'dash-directory-mount',
-      matchListing: function (l) { return configs.some(function (cfg) { return cfg.matchListing(l); }); }
+      matchListing: cfg.matchListing
     };
-    if (hasCounties) initConfig.counties = mergedCounties;
+    if (cfg.counties) initConfig.counties = cfg.counties;
     window.VERegionDirectory.init(initConfig);
   }
 
