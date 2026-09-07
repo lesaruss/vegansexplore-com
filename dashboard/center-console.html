@@ -12,17 +12,22 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
-  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  html,body{height:100%;}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);}
   main{max-width:1400px;margin:0 auto;padding:44px 32px 80px;}
 
   /* --- Center Console frame (2026-09-06, Logan, Sean direction: dashboard v1,
-     non-destructive parallel build) --- */
+     non-destructive parallel build). Updated 2026-09-07 (Sean direction):
+     fixed desktop-style shell -- the outer page never scrolls, the console
+     is a bounded app window sized like a normal window with its own
+     internal scroll, and the backdrop carries a LESARUSS Universe dock. --- */
+  @media (min-width:761px){ html,body{overflow:hidden;} }
   .console-backdrop{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#eaf7ea 0%,#f7fbf5 40%,#fff3e0 100%);overflow:hidden;}
   .console-backdrop::before,.console-backdrop::after{content:'';position:absolute;border-radius:50%;filter:blur(70px);opacity:0.32;}
   .console-backdrop::before{width:520px;height:520px;background:var(--ve-green);top:-160px;left:-140px;}
   .console-backdrop::after{width:460px;height:460px;background:var(--ve-orange);bottom:-160px;right:-110px;}
-  .console-frame{position:relative;z-index:1;max-width:1240px;margin:48px auto 64px;background:#fff;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
-  .console-titlebar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--ve-border);background:#fafafa;}
+  .console-frame{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;width:min(1240px,92vw);height:min(600px,72vh);display:flex;flex-direction:column;background:#fff;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+  .console-titlebar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--ve-border);background:#fafafa;flex-shrink:0;}
   .console-titlebar-dots{display:flex;gap:6px;flex-shrink:0;}
   .console-titlebar-dots span{width:11px;height:11px;border-radius:50%;display:inline-block;}
   .console-titlebar-dots span:nth-child(1){background:#ff5f57;}
@@ -30,10 +35,27 @@
   .console-titlebar-dots span:nth-child(3){background:#28c840;}
   .console-titlebar-label{flex:1;text-align:center;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);}
   .console-titlebar-spacer{width:53px;flex-shrink:0;}
+  .console-frame main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+
+  /* LESARUSS Universe dock -- fixed rail on the desktop backdrop. Cross-brand
+     navigation, not a support widget. v1 set: confirmed-live links go out,
+     brands still in build are shown muted ("coming soon") rather than
+     guessed at. Sean: expand/edit this set freely, this is a first pass. */
+  .lr-dock{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:2;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,0,0,0.08);border-radius:18px;padding:10px 12px;box-shadow:0 12px 34px rgba(0,0,0,0.16);}
+  .lr-dock-item{display:flex;flex-direction:column;align-items:center;gap:4px;width:58px;padding:4px 2px;border-radius:10px;text-decoration:none;color:inherit;transition:background 0.15s;cursor:default;}
+  a.lr-dock-item{cursor:pointer;}
+  .lr-dock-item:hover{background:rgba(0,0,0,0.05);}
+  .lr-dock-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+  .lr-dock-label{font-size:9px;font-weight:700;letter-spacing:0.02em;color:var(--ve-text-75);text-align:center;line-height:1.15;}
+  .lr-dock-item.lr-dock-current .lr-dock-icon{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ve-green);}
+  .lr-dock-item.lr-dock-soon{opacity:0.42;}
+  .lr-dock-sep{width:1px;align-self:stretch;background:rgba(0,0,0,0.1);margin:2px 2px;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
-    .console-frame{margin:0;border-radius:0;box-shadow:none;max-width:100%;}
+    .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
+    .console-frame main{flex:none;min-height:0;overflow:visible;}
+    .lr-dock{display:none;}
   }
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #dash-gate{text-align:center;padding:100px 20px;}
