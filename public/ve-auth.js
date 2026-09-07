@@ -31,6 +31,8 @@ function joinCommunity(slug){return call('join_community',{token:getToken(),comm
 function leaveCommunity(slug){return call('leave_community',{token:getToken(),community_slug:slug}).then(function(d){if(d.communities){var m=Object.assign({},getRealMember()||{},{communities:d.communities});setSession(getToken(),m);}return d;});}
 function joinCampaign(slug){return call('join_campaign',{token:getToken(),initiative_slug:slug}).then(function(d){if(d.campaigns){var m=Object.assign({},getRealMember()||{},{campaigns:d.campaigns});setSession(getToken(),m);}return d;});}
 function leaveCampaign(slug){return call('leave_campaign',{token:getToken(),initiative_slug:slug}).then(function(d){if(d.campaigns){var m=Object.assign({},getRealMember()||{},{campaigns:d.campaigns});setSession(getToken(),m);}return d;});}
+function followPodcast(show){return call('follow_podcast',{token:getToken(),podcast_show:show}).then(function(d){if(d.podcast_follows){var m=Object.assign({},getRealMember()||{},{podcast_follows:d.podcast_follows});setSession(getToken(),m);}return d;});}
+function unfollowPodcast(show){return call('unfollow_podcast',{token:getToken(),podcast_show:show}).then(function(d){if(d.podcast_follows){var m=Object.assign({},getRealMember()||{},{podcast_follows:d.podcast_follows});setSession(getToken(),m);}return d;});}
 function getLayout(){return call('get_layout',{token:getToken()});}
 function saveLayout(layout){return call('save_layout',{token:getToken(),layout:layout});}
 function hideModule(key){return call('hide_module',{token:getToken(),module_key:key}).then(function(d){if(d.hidden_modules){var m=Object.assign({},getRealMember()||{},{hidden_modules:d.hidden_modules});setSession(getToken(),m);}return d;});}
