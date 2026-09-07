@@ -327,6 +327,7 @@
       </div>
     </div>
 
+    <div id="dash-tools-section" style="display:none;margin-bottom:28px;" data-tab-key="tools" data-tab-order="6" data-tab-label="Your Tools">
     <div id="dash-tiles-flat">
       <p class="dash-section-title">Your Tools</p>
       <div class="dash-grid" id="dash-tile-grid"></div>
@@ -335,22 +336,22 @@
 
     <div id="dash-tiles-sectioned" style="display:none;">
       <div class="dash-section-header-row">
-        <p class="dash-section-title" style="margin-bottom:0;">Dashboard Layout</p>
+        <p class="dash-section-title" style="margin-bottom:0;">Your Tools</p>
         <button type="button" id="dash-edit-layout-btn" class="dash-edit-btn">Edit Layout</button>
       </div>
+      <!-- Superadmin tools are flushed into this same grid rather than a
+           separately labeled section (2026-09-07, Logan, Sean direction) --
+           a superadmin sees their normal tools plus the superadmin-only ones
+           mixed into one list; non-superadmins never see them, unchanged. -->
       <div class="dash-tile-section">
-        <p class="dash-section-title">Super Admin</p>
-        <div class="dash-grid" id="dash-grid-superadmin"></div>
+        <div class="dash-grid" id="dash-grid-tools"></div>
       </div>
       <div class="dash-tile-section">
         <p class="dash-section-title">Media</p>
         <div class="dash-grid" id="dash-grid-media"></div>
       </div>
-      <div class="dash-tile-section">
-        <p class="dash-section-title">Your Tools</p>
-        <div class="dash-grid" id="dash-grid-tools"></div>
-      </div>
       <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Tap Edit Layout to drag tiles between sections and reorder them, like rearranging apps on your phone.</p>
+    </div>
     </div>
   </div>
   </main>
