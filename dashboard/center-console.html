@@ -766,9 +766,14 @@
     document.getElementById('dash-tiles-flat').style.display = 'none';
     document.getElementById('dash-tiles-sectioned').style.display = 'block';
     var buckets = resolveDashboardSections(member, isStaff);
-    renderSectionedGrid('dash-grid-superadmin', buckets.superadmin);
+    // Flush superadmin-only tiles into the same Your Tools grid (2026-09-07,
+    // Logan, Sean direction) instead of a separately labeled Super Admin
+    // section. resolveDashboardSections already excludes visibility:
+    // 'superadmin' tiles for non-superadmins before they ever reach a
+    // bucket, so this merge never leaks them to anyone else.
+    var toolsAndAdmin = buckets.tools.concat(buckets.superadmin).sort(function (a, b) { return a.order - b.order; });
     renderSectionedGrid('dash-grid-media', buckets.media);
-    renderSectionedGrid('dash-grid-tools', buckets.tools);
+    renderSectionedGrid('dash-grid-tools', toolsAndAdmin);
     loadPendingEventsCount(VEAuth.getToken());
     if (member.is_superadmin) loadPendingLeadsCount(VEAuth.getToken());
   }
