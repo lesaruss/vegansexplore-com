@@ -439,6 +439,8 @@
           return 0;
         });
         cards.forEach(function (c) { grid.appendChild(c); });
+        var panel = sel.closest('.board-panel');
+        applyPanelFilters(panel, state, true);
       });
     });
   }
