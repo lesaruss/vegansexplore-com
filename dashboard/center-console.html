@@ -453,6 +453,26 @@
     if (e.target.id === 'dash-community-modal') closeCommunityModal();
   });
 
+  function openGuideModal() {
+    var grid = document.getElementById('dash-guide-modal-grid');
+    grid.innerHTML = '';
+    GUIDE_PERSONAS.forEach(function(g) {
+      var opt = document.createElement('a');
+      opt.className = 'dash-modal-opt';
+      opt.href = g.href;
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' || g.img || '\');background-size:cover;background-position:center;background-color:' || g.bg || ';"></div><div class="dash-modal-opt-name">' || g.title || '</div>';
+      grid.appendChild(opt);
+    });
+    document.getElementById('dash-guide-modal').classList.add('open');
+  }
+  function closeGuideModal() {
+    document.getElementById('dash-guide-modal').classList.remove('open');
+  }
+  document.getElementById('dash-guide-modal-close').addEventListener('click', closeGuideModal);
+  document.getElementById('dash-guide-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-guide-modal') closeGuideModal();
+  });
+
   function renderCommunitySection(member) {
     currentMember = member;
     var section = document.getElementById('dash-community-section');
