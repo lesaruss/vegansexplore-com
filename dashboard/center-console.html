@@ -1272,14 +1272,107 @@
     });
   }
 
+  // Front-and-center stats hero (2026-09-07, Logan, Sean direction): Points
+  // comes straight from ve-auth's 'me' response (member.points, backed by
+  // member_points.available_points -- wired same session). Membership shows
+  // the real tier. Badges has no table behind it yet (checked live before
+  // building this), so it stays a static Coming Soon tile rather than a
+  // fabricated number, matching every other unbuilt tile on this page.
+  function renderStatsHero(member) {
+    var pointsEl = document.getElementById('dash-hero-points');
+    var membershipEl = document.getElementById('dash-hero-membership');
+    if (pointsEl) pointsEl.textContent = (typeof member.points === 'number' ? member.points : 0).toLocaleString();
+    if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport' : 'Free';
+  }
+
+  // Section tabs underneath the stats hero (2026-09-07, Logan, Sean
+  // direction: "tabs underneath, Bounties etc, mobile dropdown variant").
+  // Built from every element carrying data-tab-key rather than a hardcoded
+  // list, so a future section only needs the attribute to join the tab set.
+  // Bounties/Campaigns/Opportunities/Communities/Pulse/Podcast all render
+  // unconditionally for every member (each falls back to an "Add" tile when
+  // empty), so no visibility filtering is needed here -- every tab is real.
+  function initDashTabs() {
+    var sections = Array.prototype.slice.call(document.querySelectorAll('[data-tab-key]'));
+    if (!sections.length) return;
+    var tabBar = document.getElementById('dash-tabs');
+    var mobileSelect = document.getElementById('dash-tabs-mobile');
+    if (!tabBar || !mobileSelect) return;
+    tabBar.innerHTML = '';
+    mobileSelect.innerHTML = '';
+
+    function activate(key) {
+      sections.forEach(function (s) {
+        s.style.display = (s.getAttribute('data-tab-key') === key) ? 'block' : 'none';
+      });
+      Array.prototype.forEach.call(tabBar.children, function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-tab-key') === key);
+      });
+      mobileSelect.value = key;
+    }
+
+    sections.forEach(function (s, i) {
+      var key = s.getAttribute('data-tab-key');
+      var label = s.getAttribute('data-tab-label') || key;
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dash-tab';
+      btn.setAttribute('data-tab-key', key);
+      btn.setAttribute('role', 'tab');
+      btn.textContent = label;
+      btn.addEventListener('click', function () { activate(key); });
+      tabBar.appendChild(btn);
+
+      var opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = label;
+      mobileSelect.appendChild(opt);
+    });
+
+    mobileSelect.addEventListener('change', function () { activate(mobileSelect.value); });
+
+    // Default to the first tab (Bounties, which always exists) rather than
+    // leaving every section stacked -- that stacked-scroll layout is exactly
+    // what this tabbed redesign replaces.
+    activate(sections[0].getAttribute('data-tab-key'));
+  }
+
+  // Bounties topic toggle (2026-09-07, Logan, Sean direction). Only "All" is
+  // wired to real tiles today -- there is exactly one live bounty type --
+  // the Community/Content/Referral pills stay disabled Coming Soon markers
+  // until real categorized bounty data exists, rather than faking categories
+  // with no content behind them. Written generically so flipping a pill from
+  // disabled to enabled later is the only change needed.
+  function initBountyTopics() {
+    var topicsRow = document.getElementById('dash-bounty-topics');
+    var scroll = document.getElementById('dash-bounty-scroll');
+    if (!topicsRow || !scroll) return;
+    Array.prototype.forEach.call(topicsRow.querySelectorAll('.dash-bounty-topic-pill'), function (pill) {
+      pill.addEventListener('click', function () {
+        if (pill.disabled) return;
+        Array.prototype.forEach.call(topicsRow.querySelectorAll('.dash-bounty-topic-pill'), function (p) { p.classList.remove('active'); });
+        pill.classList.add('active');
+        var topic = pill.getAttribute('data-topic');
+        Array.prototype.forEach.call(scroll.querySelectorAll('.dash-tile'), function (tile) {
+          var match = topic === 'all' || tile.getAttribute('data-topic') === topic;
+          tile.hidden = !match;
+        });
+      });
+    });
+  }
+
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
+    renderStatsHero(member);
     renderCommunitySection(member);
     renderCampaignsSection(member);
     renderOpportunitiesSection(member);
     renderPulseSection();
     renderPodcastSection();
+    initDashTabs();
+    initBountyTopics();
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
@@ -1294,6 +1387,7 @@
     }
 
     if (isStaff) {
+      document.getElementById('dash-role-label').style.display = 'block';
       document.getElementById('dash-stats-row').style.display = 'grid';
       var oppsDesc = document.getElementById('dash-opps-desc');
       if (oppsDesc) oppsDesc.textContent = 'Review applications, manage campaigns, and more.';
