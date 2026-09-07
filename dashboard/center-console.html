@@ -1295,6 +1295,14 @@
   function initDashTabs() {
     var sections = Array.prototype.slice.call(document.querySelectorAll('[data-tab-key]'));
     if (!sections.length) return;
+    // Sort by data-tab-order (2026-09-07, Logan, Sean direction: Communities
+    // leads the tab set as the city/community context-setter). Falls back to
+    // DOM order (stable sort, index as tiebreaker) for any future section
+    // that doesn't carry the attribute yet, so this never silently drops one.
+    sections = sections
+      .map(function (s, i) { return { el: s, order: parseInt(s.getAttribute('data-tab-order'), 10), i: i }; })
+      .sort(function (a, b) { return (isNaN(a.order) ? a.i + 1000 : a.order) - (isNaN(b.order) ? b.i + 1000 : b.order); })
+      .map(function (x) { return x.el; });
     var tabBar = document.getElementById('dash-tabs');
     var mobileSelect = document.getElementById('dash-tabs-mobile');
     if (!tabBar || !mobileSelect) return;
