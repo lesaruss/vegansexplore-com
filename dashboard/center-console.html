@@ -229,6 +229,27 @@
   .dash-modal-opt-name{padding:10px 12px;font-size:12.5px;font-weight:800;}
   .dash-modal-opt.selected{border-color:var(--ve-green);background:var(--ve-green-light);}
   .dash-modal-opt.current{border-color:var(--ve-green);background:var(--ve-green-light);}
+
+  /* Events tab (2026-09-07, Sean: "events aren't on here... we need events
+     on here as well"). Card markup/classes match VEHubNews.renderEvents()
+     exactly (public/hub-news.js, already live on every community hub page)
+     -- porting its CSS here so the shared renderer looks right wherever
+     it's mounted, tokens trimmed to the ones this file already defines. */
+  .event-row{display:flex;align-items:stretch;gap:0;border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-bottom:10px;}
+  .event-row:hover{border-color:var(--ve-green-dark);box-shadow:0 3px 14px rgba(58,155,62,0.07);}
+  .event-date-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;background:var(--ve-green-light);min-width:72px;text-align:center;flex-shrink:0;}
+  .event-day{font-size:26px;font-weight:900;letter-spacing:-0.03em;line-height:1;color:var(--ve-green-dark);}
+  .event-mon{font-size:9px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-green);margin-top:2px;}
+  .event-body{flex:1;padding:16px 22px;display:flex;flex-direction:column;justify-content:center;gap:3px;}
+  .event-type-badge{display:inline-flex;align-items:center;gap:5px;font-size:8px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:5px;}
+  .event-type-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .event-name{font-size:14px;font-weight:800;letter-spacing:-0.01em;line-height:1.3;color:var(--ve-text);}
+  .event-details{font-size:11px;font-weight:500;color:var(--ve-text-75);display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:2px;}
+  .event-details span{display:flex;align-items:center;gap:4px;}
+  .event-cta-col{display:flex;align-items:center;padding:16px 20px;flex-shrink:0;}
+  .btn-rsvp{font-size:9px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:10px 16px;border-radius:4px;background:var(--ve-green);color:#fff;border:none;cursor:pointer;text-decoration:none;transition:background .15s;white-space:nowrap;display:inline-block;}
+  .btn-rsvp:hover{background:var(--ve-green-dark);}
+  .hub-dir-empty{padding:32px 16px;text-align:center;color:var(--ve-text-50);font-size:13px;font-weight:600;}
 </style>
 </head>
 <body>
