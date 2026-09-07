@@ -113,7 +113,7 @@
     var typeHtml = '<span class="geo-label">Type</span>' +
       '<select aria-label="Filter by type" class="sort-select" data-vrd-type="' + cat.key + '">' + typeOptions + '</select>';
     var perpageHtml = '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
-      '<option value="24">Show 24</option><option value="48">Show 48</option><option value="111" selected>Show 111</option>' +
+      '<option value="24" selected>Show 24</option><option value="48">Show 48</option><option value="111">Show 111</option>' +
       '</select>';
     return '<div class="sort-bar">' + sortHtml + geoHtml + typeHtml + perpageHtml + '</div>';
   }
