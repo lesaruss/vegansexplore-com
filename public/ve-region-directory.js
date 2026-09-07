@@ -287,7 +287,9 @@
     return active ? active.getAttribute('data-vrd-subcat') : 'All';
   }
 
-  function applyPanelFilters(panel, state) {
+  var vrdPageState = {};
+
+  function applyPanelFilters(panel, state, resetPage) {
     var special = currentSubcat(panel);
     var catKey = panel.id.replace('board-', '');
     var grid = panel.querySelector('#' + catKey + '-grid');
@@ -296,13 +298,15 @@
     var countySel = bar ? bar.querySelector('[data-vrd-county]') : null;
     var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
     var typeSel = bar ? bar.querySelector('[data-vrd-type]') : null;
+    var perpageSel = bar ? bar.querySelector('[data-vrd-perpage]') : null;
     var county = countySel ? countySel.value : '';
     var city = citySel ? citySel.value : '';
     var type = typeSel ? typeSel.value : '';
+    var perpage = perpageSel ? (parseInt(perpageSel.value, 10) || 24) : 24;
     var countyMap = {};
     if (countySel) { try { countyMap = JSON.parse(countySel.dataset.cities || '{}'); } catch (e) {} }
-    var cards = grid.querySelectorAll('.rank-card');
-    var visibleCount = 0;
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.rank-card'));
+    var matched = [];
     cards.forEach(function (card) {
       var subOk = (special === 'All') || (card.dataset.subcat === special);
       var geoOk = true;
@@ -310,13 +314,24 @@
       else if (county && countyMap[county]) { geoOk = countyMap[county].indexOf(card.dataset.city) > -1; }
       var typeOk = type ? (card.dataset.listingType === type) : (card.dataset.listingType !== 'closed');
       var ok = subOk && geoOk && typeOk;
-      card.style.display = ok ? '' : 'none';
-      if (ok) visibleCount++;
+      if (ok) matched.push(card);
+      else card.style.display = 'none';
     });
+
+    if (resetPage) vrdPageState[catKey] = 1;
+    var totalPages = Math.max(1, Math.ceil(matched.length / perpage));
+    var page = Math.min(Math.max(vrdPageState[catKey] || 1, 1), totalPages);
+    vrdPageState[catKey] = page;
+    var start = (page - 1) * perpage;
+    var end = start + perpage;
+    matched.forEach(function (card, i) {
+      card.style.display = (i >= start && i < end) ? '' : 'none';
+    });
+
     if (cards.length) {
       var emptyText = { vf: 'No vegan-friendly listings yet.', online: 'No online-only listings for this region yet.', closed: 'No closed listings recorded.' }[type] || 'No listings match this filter yet.';
       var msg = grid.querySelector('.vrd-empty-dynamic');
-      if (visibleCount === 0) {
+      if (matched.length === 0) {
         if (!msg) { msg = document.createElement('p'); msg.className = 'vrd-empty vrd-empty-dynamic'; grid.appendChild(msg); }
         msg.textContent = emptyText;
         msg.style.display = '';
@@ -324,6 +339,30 @@
         msg.style.display = 'none';
       }
     }
+
+    renderVrdPagination(panel, catKey, page, totalPages);
+  }
+
+  function renderVrdPagination(panel, catKey, page, totalPages) {
+    var el = panel.querySelector('#' + catKey + '-pagination');
+    if (!el) return;
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    el.innerHTML =
+      '<button type="button" class="vrd-page-btn" data-vrd-page-prev' + (page <= 1 ? ' disabled' : '') + '>Prev</button>' +
+      '<span class="vrd-page-indicator">Page ' + page + ' of ' + totalPages + '</span>' +
+      '<button type="button" class="vrd-page-btn" data-vrd-page-next' + (page >= totalPages ? ' disabled' : '') + '>Next</button>';
+    var prevBtn = el.querySelector('[data-vrd-page-prev]');
+    var nextBtn = el.querySelector('[data-vrd-page-next]');
+    if (prevBtn) prevBtn.addEventListener('click', function () {
+      vrdPageState[catKey] = Math.max(1, (vrdPageState[catKey] || 1) - 1);
+      applyPanelFilters(panel, null, false);
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    if (nextBtn) nextBtn.addEventListener('click', function () {
+      vrdPageState[catKey] = (vrdPageState[catKey] || 1) + 1;
+      applyPanelFilters(panel, null, false);
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   function wireControls(root, state) {
