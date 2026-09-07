@@ -674,7 +674,6 @@
     var buckets = resolveDashboardSections(member, isStaff);
     renderSectionedGrid('dash-grid-superadmin', buckets.superadmin);
     renderSectionedGrid('dash-grid-media', buckets.media);
-    renderSectionedGrid('dash-grid-guides', buckets.guides);
     renderSectionedGrid('dash-grid-tools', buckets.tools);
     loadPendingEventsCount(VEAuth.getToken());
     if (member.is_superadmin) loadPendingLeadsCount(VEAuth.getToken());
