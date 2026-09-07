@@ -419,17 +419,8 @@
 
     root.querySelectorAll('[data-vrd-perpage]').forEach(function (sel) {
       sel.addEventListener('change', function () {
-        var cat = sel.getAttribute('data-vrd-perpage');
-        var grid = root.querySelector('#' + cat + '-grid');
-        if (!grid) return;
-        var n = parseInt(sel.value);
-        var shown = 0;
-        grid.querySelectorAll('.rank-card').forEach(function (c) {
-          if (c.style.display === 'none') return;
-          shown++;
-          c.style.opacity = shown <= n ? '1' : '0.25';
-          c.style.pointerEvents = shown <= n ? '' : 'none';
-        });
+        var panel = sel.closest('.board-panel');
+        applyPanelFilters(panel, state, true);
       });
     });
 
