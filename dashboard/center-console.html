@@ -1592,6 +1592,25 @@
     'dmv': { matchListing: function (l) { return (l.address_state === 'DC' || l.address_state === 'MD' || l.address_state === 'VA'); } }
   };
 
+  // Events tab (2026-09-07, Sean direction): reuses the shared
+  // VEHubNews.renderEvents() component already live on every community hub
+  // page, scoped by the same city-name terms as the leaderboard.
+  function renderEventsTab(member) {
+    var list = document.getElementById('dash-events-list');
+    if (!list) return;
+    var active = getActiveCity(member);
+    var cities = (active && LEADERBOARD_CITY_TERMS[active]) || [];
+    if (!cities.length) {
+      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its upcoming events.</p>';
+      return;
+    }
+    if (!window.VEHubNews) {
+      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Events are loading&hellip;</p>';
+      return;
+    }
+    window.VEHubNews.renderEvents('dash-events-list', cities);
+  }
+
   function renderDirectory(member) {
     var mount = document.getElementById('dash-directory-mount');
     if (!mount) return;
