@@ -235,16 +235,41 @@
       <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
     </div>
 
+    <div class="dash-stats-hero" id="dash-stats-hero">
+      <div class="dash-stats-hero-tile">
+        <div class="dash-stats-hero-value" id="dash-hero-points">--</div>
+        <div class="dash-stats-hero-label">Points</div>
+      </div>
+      <div class="dash-stats-hero-tile">
+        <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
+        <div class="dash-stats-hero-label">Membership</div>
+      </div>
+      <div class="dash-stats-hero-tile locked">
+        <div class="dash-stats-hero-value">--</div>
+        <div class="dash-stats-hero-label">Badges <span class="dash-tag">Coming Soon</span></div>
+      </div>
+    </div>
+
+    <p class="dash-section-title" id="dash-role-label" style="display:none;margin-top:-6px;">Your Role</p>
     <div class="dash-stats" id="dash-stats-row" style="display:none;">
       <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
       <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
       <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
     </div>
 
-    <div id="dash-bounties-section" style="margin-bottom:28px;">
+    <div class="dash-tabs" id="dash-tabs" role="tablist" aria-label="Dashboard sections"></div>
+    <select class="dash-tabs-mobile" id="dash-tabs-mobile" aria-label="Dashboard sections"></select>
+
+    <div id="dash-bounties-section" style="margin-bottom:28px;" data-tab-key="bounties" data-tab-label="Bounties">
       <p class="dash-section-title">Bounties</p>
-      <div class="dash-grid">
-        <div class="dash-tile" style="cursor:default;">
+      <div class="dash-bounty-topics" id="dash-bounty-topics">
+        <button type="button" class="dash-bounty-topic-pill active" data-topic="all">All</button>
+        <button type="button" class="dash-bounty-topic-pill" data-topic="community" disabled title="Coming soon">Community</button>
+        <button type="button" class="dash-bounty-topic-pill" data-topic="content" disabled title="Coming soon">Content</button>
+        <button type="button" class="dash-bounty-topic-pill" data-topic="referral" disabled title="Coming soon">Referral</button>
+      </div>
+      <div class="dash-bounty-scroll" id="dash-bounty-scroll">
+        <div class="dash-tile" style="cursor:default;" data-topic="all">
           <div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#127942;</div>
           <div class="dash-tile-body">
             <div class="dash-tile-title">Weekly Bounties <span class="dash-tag">Coming Soon</span></div>
