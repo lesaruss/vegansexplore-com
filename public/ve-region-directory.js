@@ -399,7 +399,7 @@
           citySel.style.display = county ? '' : 'none';
         }
         var panel = sel.closest('.board-panel');
-        applyPanelFilters(panel, state);
+        applyPanelFilters(panel, state, true);
       });
     });
 
