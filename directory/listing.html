@@ -375,6 +375,16 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 </style>
 </head>
 <body>
+<script>
+/* Dashboard iframe embed (2026-09-07, Logan, Sean direction): when this
+   page is loaded inside the Vegans Explore dashboard's Directory tab
+   iframe, hide the sitewide nav bar -- the dashboard already has its own
+   header/breadcrumb, and a second nav here is redundant and wastes
+   vertical space. Only applies inside an iframe on our own dashboard;
+   a normal top-level visit to /directory/[slug] is unaffected. */
+try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+</script>
+<style>.ve-embedded .ve-nav{display:none !important}</style>
 <div id="frame">
 <script src="/public/ve-auth.js"></script>
 <script src="/public/nav.js"></script>
