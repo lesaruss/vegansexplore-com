@@ -380,7 +380,7 @@
         var panel = btn.closest('.board-panel');
         panel.querySelectorAll('.subcat-pill').forEach(function (p) { p.classList.remove('sc-active'); });
         btn.classList.add('sc-active');
-        applyPanelFilters(panel, state);
+        applyPanelFilters(panel, state, true);
       });
     });
 
