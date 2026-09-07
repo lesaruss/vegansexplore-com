@@ -406,7 +406,7 @@
     root.querySelectorAll('[data-vrd-city]').forEach(function (sel) {
       sel.addEventListener('change', function () {
         var panel = sel.closest('.board-panel');
-        applyPanelFilters(panel, state);
+        applyPanelFilters(panel, state, true);
       });
     });
 
