@@ -64,7 +64,21 @@
   #dash-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
   #dash-content{display:none;}
 
-  .dash-welcome{padding-bottom:24px;border-bottom:1px solid var(--ve-border);margin-bottom:24px;}
+  .dash-welcome{padding-bottom:24px;border-bottom:1px solid var(--ve-border);margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+  .dash-welcome-left{flex:1;min-width:200px;}
+  /* Compact stats cluster next to Welcome/city pill (2026-09-07, Sean:
+     "so it doesn't take up so much room below the fold" -- combines
+     Points + Lifetime Points into one stat, plus Level, so the tab bar
+     lands right under the welcome row instead of below a full-width
+     three-tile block). */
+  .dash-welcome-stats{display:flex;gap:10px;flex-shrink:0;}
+  .dash-mini-stat{border:1.5px solid var(--ve-border);border-radius:14px;padding:10px 18px;background:linear-gradient(180deg,#fff,#fafdfa);text-align:center;min-width:88px;}
+  .dash-mini-stat.locked{opacity:0.6;}
+  .dash-mini-stat-value{font-size:20px;font-weight:900;letter-spacing:-0.01em;color:var(--ve-green-dark);line-height:1;}
+  .dash-mini-stat.locked .dash-mini-stat-value{color:var(--ve-text-50);}
+  .dash-mini-stat-sep{margin:0 4px;color:var(--ve-text-50);font-weight:700;}
+  .dash-mini-stat-label{font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:4px;}
+  @media (max-width:640px){ .dash-welcome{flex-direction:column;} .dash-welcome-stats{width:100%;} .dash-mini-stat{flex:1;} }
   .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
   .dash-welcome h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
   .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
