@@ -1559,6 +1559,38 @@
     });
   }
 
+  // Daily Pulse tab (2026-09-07, Sean direction): real content from
+  // ve_pulse_content -- the same table powering the public /pulse page.
+  // National posts (city_slug IS NULL -- confirmed live: 226 of 278
+  // published posts) show for everyone; city-specific posts (52 of 278)
+  // only show once that city is the active one.
+  function renderDailyPulse(member) {
+    var grid = document.getElementById('dash-pulse-grid');
+    if (!grid) return;
+    var active = getActiveCity(member);
+    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,summary,thumbnail_url,city_slug,published_at&status=eq.published&order=published_at.desc&limit=60', {
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
+    }).then(function (r) { return r.json(); }).then(function (rows) {
+      var posts = (rows || []).filter(function (p) { return !p.city_slug || p.city_slug === active; }).slice(0, 12);
+      if (!posts.length) {
+        grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">No Pulse posts yet.</p>';
+        return;
+      }
+      grid.innerHTML = posts.map(function (p) {
+        var d = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        var thumbStyle = p.thumbnail_url ? "background-image:url('" + p.thumbnail_url + "');" : '';
+        return '<a class="dash-tile" href="/pulse/' + p.slug + '">' +
+          '<div class="dash-thumb" style="' + thumbStyle + '"></div>' +
+          '<div class="dash-tile-body">' +
+            '<div class="dash-tile-title">' + p.title + '</div>' +
+            '<div class="dash-tile-desc">' + (p.category || 'Pulse') + (d ? ' &middot; ' + d : '') + (p.city_slug ? '' : ' &middot; National') + '</div>' +
+          '</div></a>';
+      }).join('');
+    }).catch(function () {
+      grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Could not load Pulse right now.</p>';
+    });
+  }
+
   // Local Directory tab (2026-09-07, Sean, Fieldy field note): reuses the
   // same VE Region Directory widget already live on every public
   // /communities/[city] hub page (see public/ve-region-directory.js),
