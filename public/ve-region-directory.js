@@ -8,13 +8,25 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
+  // Category map (2026-09-07, Logan, Sean direction): Services was a catch-all
+  // that mixed real local service providers in with SaaS tools Sean uses
+  // personally (ElevenLabs, Canva, Cloudflare, Calendly, etc.). Sean's call:
+  // Services on Vegans Explore means local service providers who register and
+  // get listed -- accountants, chiropractors, dentists, doctors, plumbers, and
+  // the like. The software/agency categories below are earmarked for the
+  // future LESARUSS AI directory instead (their `listings` rows are tagged
+  // 'lesaruss-ai-directory-candidate', not deleted) and route to 'lesaruss_ai',
+  // a tab key with no entry in CAT_CONFIG -- same pattern already used for
+  // 'events'/'media' below -- so they simply don't render on any VE region
+  // page rather than being lost. Community stays nonprofits (+ existing
+  // community-partner orgs); Products stays products.
   var CAT_MAP = {
     'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Brands': 'food', 'Catering': 'food', 'Meal Prep': 'food',
     'Brands': 'products', 'Beauty and Personal Care': 'products', 'Clothing and Fashion': 'products',
     'E-Commerce & Marketplaces': 'products', 'Fitness and Athletics': 'products',
-    'AI & Automation': 'services', 'Web & Development': 'services', 'Marketing & Growth': 'services',
-    'Health and Wellness': 'services', 'Business Operations': 'services', 'Branding & Creative Assets': 'services',
-    'Coaches and Consultants': 'services', 'Content Creation & Media': 'services',
+    'Health and Wellness': 'services', 'Coaches and Consultants': 'services',
+    'AI & Automation': 'lesaruss_ai', 'Web & Development': 'lesaruss_ai', 'Marketing & Growth': 'lesaruss_ai',
+    'Business Operations': 'lesaruss_ai', 'Branding & Creative Assets': 'lesaruss_ai', 'Content Creation & Media': 'lesaruss_ai',
     'Community Partner': 'community', 'Nonprofits': 'community',
     'Events and Catering': 'events',
     'Media': 'media', 'Uncategorized': 'media'
@@ -29,7 +41,7 @@
       subcats: ['Beauty and Personal Care', 'Clothing and Fashion', 'E-Commerce & Marketplaces', 'Fitness and Athletics', 'Brands'] },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
-      subcats: ['AI & Automation', 'Web & Development', 'Marketing & Growth', 'Health and Wellness', 'Business Operations', 'Branding & Creative Assets', 'Coaches and Consultants', 'Content Creation & Media'] },
+      subcats: ['Health and Wellness', 'Coaches and Consultants'] },
     { key: 'community', label: 'Community', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
       subcats: ['Community Partner', 'Nonprofits'] }
