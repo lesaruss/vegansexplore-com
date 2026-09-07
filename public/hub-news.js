@@ -93,35 +93,90 @@
     });
   }
 
-  /* Live "Upcoming Events" renderer, reused by newer hub pages.
-     cityNames: array of real city-name strings to match against events.city (a metro area may span several). */
+  /* Live "Upcoming / Past Events" renderer, reused by newer hub pages.
+     cityNames: array of real city-name strings to match against events.city (a metro area may span several).
+     Renders two toggle pills above the list -- Upcoming Events (default) and Past Events (archive) --
+     self-injects its own minimal CSS for the pills so styling stays consistent everywhere this is called. */
+  function injectEventToggleStyleOnce() {
+    if (document.getElementById('ve-event-toggle-style')) return;
+    var css = '.event-toggle-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}' +
+      '.event-toggle-pill{font-size:12px;font-weight:700;letter-spacing:.02em;padding:8px 18px;border-radius:20px;border:1.5px solid #e2e2e2;background:#fff;color:#666;cursor:pointer;transition:all .15s ease;font-family:inherit}' +
+      '.event-toggle-pill:hover{border-color:#5EC47A;color:#333}' +
+      '.event-toggle-pill.active{background:#5EC47A;border-color:#5EC47A;color:#fff}';
+    var style = document.createElement('style');
+    style.id = 've-event-toggle-style';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  function eventCardHtml(e) {
+    var dt = new Date(e.starts_at);
+    var day = dt.getDate();
+    var mon = dt.toLocaleString('en-US', { month: 'short' });
+    var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    return '<article class="event-row" aria-label="' + esc(e.title) + '">' +
+      '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + esc(mon) + '</span></div>' +
+      '<div class="event-body">' +
+        '<p class="event-type-badge">' + esc(e.category || 'Event') + '</p>' +
+        '<h3 class="event-name">' + esc(e.title) + '</h3>' +
+        '<div class="event-details" aria-label="Event details">' +
+          '<span>' + esc(e.location_name || e.city) + (e.city ? ', ' + esc(e.city) : '') + '</span>' +
+          '<span>' + esc(time) + '</span>' +
+          (e.rsvp_count ? '<span>' + e.rsvp_count + ' attending</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="event-cta-col">' + (e.ticket_url ? '<a href="' + esc(e.ticket_url) + '" class="btn-rsvp" target="_blank" rel="noopener noreferrer" aria-label="RSVP for ' + esc(e.title) + '">RSVP</a>' : '<span class="btn-rsvp" style="opacity:.5;pointer-events:none;">Details soon</span>') +
+      '</div></article>';
+  }
+
+  function renderEventsList(list, mode) {
+    var all = list._veEventsAll || [];
+    var now = Date.now();
+    var filtered = all.filter(function (e) {
+      var t = new Date(e.starts_at).getTime();
+      return mode === 'past' ? t < now : t >= now;
+    });
+    filtered.sort(function (a, b) {
+      var ta = new Date(a.starts_at).getTime(), tb = new Date(b.starts_at).getTime();
+      return mode === 'past' ? (tb - ta) : (ta - tb);
+    });
+    if (!filtered.length) {
+      list.innerHTML = '<p class="hub-dir-empty">' + (mode === 'past' ? 'No past events yet. Check back after the next one wraps.' : 'No upcoming events posted yet. Check back soon.') + '</p>';
+      return;
+    }
+    list.innerHTML = filtered.map(eventCardHtml).join('');
+  }
+
   function renderEvents(listId, cityNames) {
     var list = document.getElementById(listId);
     if (!list) return;
-    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=100', { headers: headers() })
+    injectEventToggleStyleOnce();
+    var toggle = document.getElementById(listId + '-toggle');
+    if (!toggle) {
+      toggle = document.createElement('div');
+      toggle.className = 'event-toggle-row';
+      toggle.id = listId + '-toggle';
+      toggle.dataset.eventMode = 'upcoming';
+      toggle.innerHTML =
+        '<button type="button" class="event-toggle-pill active" data-event-toggle="upcoming">Upcoming Events</button>' +
+        '<button type="button" class="event-toggle-pill" data-event-toggle="past">Past Events</button>';
+      list.parentNode.insertBefore(toggle, list);
+      toggle.querySelectorAll('[data-event-toggle]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.classList.contains('active')) return;
+          toggle.querySelectorAll('[data-event-toggle]').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          toggle.dataset.eventMode = btn.getAttribute('data-event-toggle');
+          renderEventsList(list, toggle.dataset.eventMode);
+        });
+      });
+    }
+    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=200', { headers: headers() })
       .then(function (r) { return r.json(); })
       .then(function (rows) {
         var matches = (rows || []).filter(function (e) { return !e.city || cityNames.indexOf(e.city) > -1; });
-        if (!matches.length) { list.innerHTML = '<p class="hub-dir-empty">No upcoming events posted yet. Check back soon.</p>'; return; }
-        list.innerHTML = matches.map(function (e) {
-          var dt = new Date(e.starts_at);
-          var day = dt.getDate();
-          var mon = dt.toLocaleString('en-US', { month: 'short' });
-          var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-          return '<article class="event-row" aria-label="' + esc(e.title) + '">' +
-            '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + esc(mon) + '</span></div>' +
-            '<div class="event-body">' +
-              '<p class="event-type-badge">' + esc(e.category || 'Event') + '</p>' +
-              '<h3 class="event-name">' + esc(e.title) + '</h3>' +
-              '<div class="event-details" aria-label="Event details">' +
-                '<span>' + esc(e.location_name || e.city) + (e.city ? ', ' + esc(e.city) : '') + '</span>' +
-                '<span>' + esc(time) + '</span>' +
-                (e.rsvp_count ? '<span>' + e.rsvp_count + ' attending</span>' : '') +
-              '</div>' +
-            '</div>' +
-            '<div class="event-cta-col">' + (e.ticket_url ? '<a href="' + esc(e.ticket_url) + '" class="btn-rsvp" target="_blank" rel="noopener noreferrer" aria-label="RSVP for ' + esc(e.title) + '">RSVP</a>' : '<span class="btn-rsvp" style="opacity:.5;pointer-events:none;">Details soon</span>') +
-            '</div></article>';
-        }).join('');
+        list._veEventsAll = matches;
+        renderEventsList(list, toggle.dataset.eventMode || 'upcoming');
       }).catch(function () { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });
   }
 
