@@ -802,7 +802,7 @@
 
   function persistDashboardLayout() {
     var layout = [];
-    [['superadmin', 'dash-grid-superadmin'], ['media', 'dash-grid-media'], ['tools', 'dash-grid-tools']].forEach(function (pair) {
+    [['media', 'dash-grid-media'], ['tools', 'dash-grid-tools']].forEach(function (pair) {
       var section = pair[0];
       var grid = document.getElementById(pair[1]);
       if (!grid) return;
