@@ -193,6 +193,15 @@
   .dash-badge-count{background:var(--ve-orange);color:#fff;border-radius:100px;font-size:11px;font-weight:900;padding:2px 9px;}
 
   .dash-community-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  /* Your Campaigns keeps a fixed 3-column grid regardless of item count
+     (2026-09-07, Logan, Sean direction: "it should always remain three
+     columns even if there's one or two things under your campaigns" --
+     the shared auto-fit above collapses to fewer columns when a row is
+     sparse, which is fine for Your Communities but not what Sean wants
+     here). Scoped to campaigns only; Your Communities keeps auto-fit. */
+  #dash-campaigns-row{grid-template-columns:repeat(3,1fr);}
+  @media (max-width:760px){ #dash-campaigns-row{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:480px){ #dash-campaigns-row{grid-template-columns:1fr;} }
   .dash-community-tile{width:100%;display:flex;flex-direction:column;}
   .dash-community-tile .dash-tile{flex:1;}
   .dash-tile.dash-add-tile{border-style:dashed;cursor:pointer;background:var(--ve-green-light);}
@@ -1241,19 +1250,22 @@
   var allCampaignsCache = null;
   var myCampaignSlugs = [];
 
-  // City scoping for the two flagship VE campaigns (2026-09-07, Logan, Sean
-  // direction): "Plant Based Showcase" is the Dolphins/Hard Rock Stadium
-  // pilot -- South Florida only, it doesn't match up with any other region.
-  // "World Vegan Expo" is the global flagship and stands in for every other
-  // region until region-specific campaigns are added ("we'll be adding a
-  // few more to the other locations"). Every other VE campaign (badge
-  // challenge, vegan tours, community night, etc.) has no regional home yet
-  // and stays visible everywhere. Applied to both the Browse Campaigns
-  // modal and the Your Campaigns row so the two stay in sync; layout
-  // (3-column grid) is untouched, this only changes which cards render.
+  // City scoping for the flagship VE campaigns (2026-09-07, Logan, Sean
+  // direction, 2nd correction: "South Florida should have World Vegan Expo
+  // as well... it's gonna be in every city, we're shopping to see who's
+  // gonna host us, and part of the campaign is spreading the word so
+  // people from every city come to the location"). So: "Plant Based
+  // Showcase" (the Dolphins/Hard Rock Stadium pilot) stays South Florida
+  // only -- it doesn't match up with any other region. "World Vegan Expo"
+  // is shown in every city, South Florida included, since the whole point
+  // is nationwide awareness while the host city is still being decided.
+  // Every other VE campaign (badge challenge, vegan tours, community
+  // night, etc.) has no regional home yet and stays visible everywhere.
+  // Applied to both the Browse Campaigns modal and the Your Campaigns row
+  // so the two stay in sync; layout (3-column grid) is untouched, this
+  // only changes which cards render.
   function campaignVisibleForCity(slug, cityKey) {
     if (slug === 'vegans-explore-initiative-plant-based-showcase') return cityKey === 'south-florida';
-    if (slug === 'vegans-explore-initiative-world-vegan-expo') return cityKey !== 'south-florida';
     return true;
   }
 
@@ -1739,6 +1751,14 @@
         renderDirectory(member);
         renderLeaderboard(member);
         renderEventsTab(member);
+        // 2026-09-07 (Logan, Sean caught live): switching cities left Your
+        // Campaigns showing the previous city's cards until a manual
+        // refresh -- same "city switch doesn't re-render" bug class already
+        // fixed for Events above. Daily Pulse is city-scoped the same way
+        // (renderDailyPulse filters posts by active city), so it gets the
+        // same fix proactively rather than waiting to be caught live too.
+        renderCampaignsSection(member);
+        renderDailyPulse(member);
       });
       grid.appendChild(opt);
     });
