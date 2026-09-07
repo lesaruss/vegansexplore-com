@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard (Center Console Preview) - VEGANS EXPLORE</title>
+<meta name="description" content="Your Community Manager dashboard.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:1400px;margin:0 auto;padding:44px 32px 80px;}
+
+  /* --- Center Console frame (2026-09-06, Logan, Sean direction: dashboard v1,
+     non-destructive parallel build) --- */
+  .console-backdrop{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#eaf7ea 0%,#f7fbf5 40%,#fff3e0 100%);overflow:hidden;}
+  .console-backdrop::before,.console-backdrop::after{content:'';position:absolute;border-radius:50%;filter:blur(70px);opacity:0.32;}
+  .console-backdrop::before{width:520px;height:520px;background:var(--ve-green);top:-160px;left:-140px;}
+  .console-backdrop::after{width:460px;height:460px;background:var(--ve-orange);bottom:-160px;right:-110px;}
+  .console-frame{position:relative;z-index:1;max-width:1240px;margin:48px auto 64px;background:#fff;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+  .console-titlebar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--ve-border);background:#fafafa;}
+  .console-titlebar-dots{display:flex;gap:6px;flex-shrink:0;}
+  .console-titlebar-dots span{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .console-titlebar-dots span:nth-child(1){background:#ff5f57;}
+  .console-titlebar-dots span:nth-child(2){background:#febc2e;}
+  .console-titlebar-dots span:nth-child(3){background:#28c840;}
+  .console-titlebar-label{flex:1;text-align:center;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);}
+  .console-titlebar-spacer{width:53px;flex-shrink:0;}
+  @media (max-width:760px){
+    .console-backdrop{display:none;}
+    .console-frame{margin:0;border-radius:0;box-shadow:none;max-width:100%;}
+    .console-titlebar{display:none;}
+  }
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+  #dash-gate{text-align:center;padding:100px 20px;}
+  #dash-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #dash-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #dash-content{display:none;}
+
+  .dash-welcome{padding-bottom:24px;border-bottom:1px solid var(--ve-border);margin-bottom:24px;}
+  .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  .dash-welcome h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
+  .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
+
+  .dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
+  .dash-stat{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px;}
+  .dash-stat-label{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:6px;}
+  .dash-stat-value{font-size:20px;font-weight:900;}
+  a.dash-stat{text-decoration:none;color:var(--ve-text);display:block;transition:border-color .15s,background .15s;}
+  a.dash-stat:hover{border-color:var(--ve-green);background:var(--ve-green-light);}
+  @media (max-width:640px){ .dash-stats{grid-template-columns:1fr 1fr;} }
+
+  .dash-section-title{font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px;}
+  .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:1100px){ .dash-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .dash-grid{grid-template-columns:1fr; } }
+  .dash-tile{border:1.5px solid var(--ve-border);border-radius:14px;text-decoration:none;color:var(--ve-text);display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s,box-shadow .15s,transform .15s;background:#fff;}
+  .dash-tile:hover{border-color:var(--ve-green);box-shadow:0 6px 18px rgba(58,155,62,0.12);transform:translateY(-2px);}
+  .dash-tile.coming{opacity:0.55;pointer-events:none;}
+  .dash-thumb{aspect-ratio:8/5;width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;background-size:cover;background-position:center;}
+  .dash-tile-body{padding:16px 18px;flex:1;}
+  .dash-tile-title{font-size:14px;font-weight:800;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .dash-tile-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.55;}
+  .dash-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;background:#fff3e0;color:#7d4a00;white-space:nowrap;}
+  .dash-tag.superadmin{background:#eef2ff;color:#3730a3;}
+  .dash-tag.live{background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .dash-tag.locked{background:#F3F4F6;color:#6B7280;}
+  .dash-badge-count{background:var(--ve-orange);color:#fff;border-radius:100px;font-size:11px;font-weight:900;padding:2px 9px;}
+
+  .dash-community-row{display:flex;gap:16px;flex-wrap:wrap;}
+  .dash-community-tile{width:100%;max-width:280px;}
+  @media (max-width:520px){ .dash-community-tile{max-width:100%;} }
+  .dash-tile.dash-add-tile{border-style:dashed;cursor:pointer;background:var(--ve-green-light);}
+  .dash-tile.dash-add-tile:hover{border-color:var(--ve-green);}
+  .dash-tile.dash-add-tile .dash-thumb{background:none;color:var(--ve-green-dark);font-size:30px;font-weight:900;}
+  .dash-community-change{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-50);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;font-family:"Montserrat",sans-serif;}
+  .dash-community-change:hover{color:var(--ve-green-dark);}
+  .dash-tile-wrap{display:flex;flex-direction:column;}
+  .dash-tile-wrap .dash-tile{flex:1;}
+
+  /* Sectioned, reorderable dashboard tiles -- superadmin only (2026-08-21,
+     Logan, Sean direction): "move the tiles around... into different
+     sections... like how I can do it on my iPhone." Only rendered for
+     is_superadmin accounts; every other member keeps the single flat
+     #dash-tile-grid above untouched. */
+  .dash-section-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .dash-tile-section{margin-bottom:28px;}
+  .dash-edit-btn{background:#fff;border:1.5px solid var(--ve-border);border-radius:100px;padding:9px 20px;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:"Montserrat",sans-serif;color:var(--ve-text-75);transition:border-color .15s,background .15s,color .15s;}
+  .dash-edit-btn:hover{border-color:var(--ve-green);color:var(--ve-green-dark);}
+  .dash-edit-btn.active{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  #dash-tiles-sectioned .dash-grid{min-height:20px;transition:background .15s;border-radius:14px;}
+  #dash-tiles-sectioned .dash-grid.drag-over{background:var(--ve-green-light);}
+  body.dash-edit-mode #dash-tiles-sectioned .dash-tile-wrap{cursor:grab;}
+  body.dash-edit-mode #dash-tiles-sectioned .dash-tile-wrap .dash-tile{animation:dash-jiggle 0.26s ease-in-out infinite alternate;pointer-events:none;}
+  body.dash-edit-mode #dash-tiles-sectioned .dash-tile-wrap.dragging .dash-tile{opacity:0.35;animation:none;}
+  @keyframes dash-jiggle{0%{transform:rotate(-1deg);}100%{transform:rotate(1deg);}}
+
+  /* Community picker modal */
+  .dash-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:900;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto;}
+  .dash-modal-overlay.open{display:flex;}
+  .dash-modal{background:#fff;border-radius:16px;width:100%;max-width:760px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+  .dash-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .dash-modal-title{font-size:18px;font-weight:900;}
+  .dash-modal-close{background:none;border:none;font-size:22px;line-height:1;cursor:pointer;color:var(--ve-text-50);padding:4px 8px;}
+  .dash-modal-close:hover{color:var(--ve-text);}
+  .dash-modal-sub{font-size:13px;color:var(--ve-text-75);margin-bottom:20px;}
+  .dash-modal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media (max-width:640px){ .dash-modal-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:420px){ .dash-modal-grid{grid-template-columns:1fr;} }
+  .dash-modal-opt{border:1.5px solid var(--ve-border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;text-align:left;font-family:"Montserrat",sans-serif;transition:border-color .15s,box-shadow .15s,transform .15s;}
+  .dash-modal-opt:hover{border-color:var(--ve-green);box-shadow:0 6px 18px rgba(58,155,62,0.12);transform:translateY(-2px);}
+  .dash-modal-opt-thumb{aspect-ratio:8/5;width:100%;background-size:cover;background-position:center;}
+  .dash-modal-opt-name{padding:10px 12px;font-size:12.5px;font-weight:800;}
+  .dash-modal-opt.selected{border-color:var(--ve-green);background:var(--ve-green-light);}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<div class="console-backdrop"></div>
+
+<div class="console-frame">
+  <div class="console-titlebar">
+    <div class="console-titlebar-dots"><span></span><span></span><span></span></div>
+    <div class="console-titlebar-label">Vegans Explore &mdash; Dashboard</div>
+    <div class="console-titlebar-spacer"></div>
+  </div>
+  <main>
+  <div id="dash-gate">
+    <p>Checking access&hellip;</p>
+  </div>
+
+  <div id="dash-content">
+    <div class="dash-welcome">
+      <p class="dash-eyebrow" id="dash-eyebrow">Member</p>
+      <h1 id="dash-welcome-name">Your Dashboard</h1>
+      <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
+    </div>
+
+    <div class="dash-stats" id="dash-stats-row" style="display:none;">
+      <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
+      <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
+      <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
+    </div>
+
+    <div id="dash-community-section" style="display:none;margin-bottom:28px;">
+      <p class="dash-section-title">Your Communities</p>
+      <div class="dash-community-row" id="dash-community-row"></div>
+    </div>
+
+    <div id="dash-campaigns-section" style="display:none;margin-bottom:28px;">
+      <p class="dash-section-title">Your Campaigns</p>
+      <div class="dash-community-row" id="dash-campaigns-row"></div>
+    </div>
+
+    <div class="dash-modal-overlay" id="dash-campaigns-modal">
+      <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Browse campaigns">
+        <div class="dash-modal-header">
+          <div class="dash-modal-title">Browse Campaigns</div>
+          <button type="button" class="dash-modal-close" id="dash-campaigns-modal-close" aria-label="Close">&times;</button>
+        </div>
+        <p class="dash-modal-sub">Pick a campaign to see how to get involved -- attend, sponsor, or volunteer.</p>
+        <div class="dash-modal-grid" id="dash-campaigns-modal-grid"></div>
+      </div>
+    </div>
+
+    <div id="dash-tiles-flat">
+      <p class="dash-section-title">Your Tools</p>
+      <div class="dash-grid" id="dash-tile-grid"></div>
+      <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Thumbnails are placeholders. Real illustrated artwork, in the GeekFon style, is next.</p>
+    </div>
+
+    <div id="dash-tiles-sectioned" style="display:none;">
+      <div class="dash-section-header-row">
+        <p class="dash-section-title" style="margin-bottom:0;">Dashboard Layout</p>
+        <button type="button" id="dash-edit-layout-btn" class="dash-edit-btn">Edit Layout</button>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Super Admin</p>
+        <div class="dash-grid" id="dash-grid-superadmin"></div>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Media</p>
+        <div class="dash-grid" id="dash-grid-media"></div>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Guides</p>
+        <div class="dash-grid" id="dash-grid-guides"></div>
+      </div>
+      <div class="dash-tile-section">
+        <p class="dash-section-title">Your Tools</p>
+        <div class="dash-grid" id="dash-grid-tools"></div>
+      </div>
+      <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Tap Edit Layout to drag tiles between sections and reorder them, like rearranging apps on your phone.</p>
+    </div>
+  </div>
+  </main>
+</div>
+
+<div class="dash-modal-overlay" id="dash-community-modal">
+  <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Choose your community">
+    <div class="dash-modal-header">
+      <div class="dash-modal-title">Choose Your Communities</div>
+      <button type="button" class="dash-modal-close" id="dash-community-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <p class="dash-modal-sub">Join as many cities as you want. Tap a joined city again to leave it.</p>
+    <div class="dash-modal-grid" id="dash-community-modal-grid"></div>
+  </div>
+</div>
+
+<div class="dash-modal-overlay" id="dash-tools-modal">
+  <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Customize your tools">
+    <div class="dash-modal-header">
+      <div class="dash-modal-title">Customize Your Tools</div>
+      <button type="button" class="dash-modal-close" id="dash-tools-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <p class="dash-modal-sub">Tap a tool to add it back, or remove it from the grid.</p>
+    <div class="dash-modal-grid" id="dash-tools-modal-grid"></div>
+  </div>
+</div>
+
+<script src="/public/ve-tour.js"></script>
+<script src="/public/footer.js"></script>
+
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','dmv':'/communities/dmv/banner.png','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
+
+  function showDenied() {
+    document.getElementById('dash-gate').innerHTML = '<p>Sign in to view your dashboard.</p><button id="dash-signin-btn">Sign In</button>';
+    var btn = document.getElementById('dash-signin-btn');
+    if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view your dashboard.', init); });
+  }
+
+  function addTile(html, prepend) {
+    var grid = document.getElementById('dash-tile-grid');
+    var tile = document.createElement('a');
+    tile.className = 'dash-tile';
+    tile.innerHTML = html;
+    var href = tile.querySelector('[data-href]');
+    if (href) { tile.href = href.getAttribute('data-href'); href.remove(); }
+    if (prepend) grid.insertBefore(tile, grid.firstChild); else grid.appendChild(tile);
+  }
+
+  // Superadmin-only inline icon SVGs, reused by TILE_REGISTRY below for the
+  // "Members" and "Event Submissions" tiles (2026-08-15 / 2026-08-20, Logan).
+  var SA_MEMBERS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+  var SA_EVENTS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>';
+  // Leads tile icon (2026-08-21, Logan, Sean direction): unified sponsor/
+  // attend interest + campaign-tied volunteer applications tile.
+  var SA_LEADS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
+
+  function loadPendingEventsCount(token) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_pending_events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token, status: 'pending' })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var count = (d && d.items && d.items.length) || 0;
+      var badge = document.getElementById('dash-events-pending-badge');
+      if (!badge) return;
+      if (count > 0) { badge.textContent = count; badge.style.display = ''; }
+      else { badge.style.display = 'none'; }
+    }).catch(function () {});
+  }
+
+  // Leads tile pending-count badge (2026-08-21, Logan, Sean direction):
+  // counts new/undecided sponsor+attend interest rows plus pending
+  // campaign-tied (initiative_slug truthy) volunteer/steering-committee
+  // applications, mirroring the same "needs action" filter used on
+  // dashboard/leads.html.
+  function loadPendingLeadsCount(token) {
+    Promise.all([
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiative_interest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: token })
+      }).then(function (r) { return r.json(); }).catch(function () { return {}; }),
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: token, status: 'pending' })
+      }).then(function (r) { return r.json(); }).catch(function () { return {}; })
+    ]).then(function (results) {
+      var interestItems = (results[0] && results[0].items) || [];
+      var appItems = (results[1] && results[1].items) || [];
+      var pendingInterest = interestItems.filter(function (i) { return i.status === 'new'; }).length;
+      var pendingApps = appItems.filter(function (a) { return a.opportunities && a.opportunities.initiative_slug; }).length;
+      var count = pendingInterest + pendingApps;
+      var badge = document.getElementById('dash-leads-pending-badge');
+      if (!badge) return;
+      if (count > 0) { badge.textContent = count; badge.style.display = ''; }
+      else { badge.style.display = 'none'; }
+    }).catch(function () {});
+  }
+
+  function addCmTiles() {
+    addTile('<span data-href="/dashboard/2026-initiatives"></span><div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-orange),var(--ve-green));">&#127758;</div><div class="dash-tile-body"><div class="dash-tile-title">2026 Initiatives Portfolio</div><div class="dash-tile-desc">The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.</div></div>');
+    addTile('<span data-href="/dashboard/handbook"></span><div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green),var(--ve-green-dark));">&#128214;</div><div class="dash-tile-body"><div class="dash-tile-title">Community Manager Handbook</div><div class="dash-tile-desc">The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.</div></div>');
+    var grid = document.getElementById('dash-tile-grid');
+    var coming1 = document.createElement('a'); coming1.className = 'dash-tile coming'; coming1.href = '#';
+    coming1.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128197;</div><div class="dash-tile-body"><div class="dash-tile-title">Event Management <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Post and manage events for your city\'s hub page directly from here.</div></div>';
+    grid.appendChild(coming1);
+    var coming2 = document.createElement('a'); coming2.className = 'dash-tile coming'; coming2.href = '#';
+    coming2.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128193;</div><div class="dash-tile-body"><div class="dash-tile-title">Directory Review <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Approve or edit business and listing submissions for your city before they go live.</div></div>';
+    grid.appendChild(coming2);
+  }
+
+  function loadPendingCount(token) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token, status: 'pending', opportunity_type: 'vegan_explorer' })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var count = (d && d.items && d.items.length) || 0;
+      document.getElementById('dash-stat-pending').textContent = count;
+    }).catch(function () {
+      document.getElementById('dash-stat-pending').textContent = '--';
+    });
+  }
+
+  // "Your Communities" row (2026-08-18, V direction): every member picks a
+  // home_community at signup (public.members.home_community); surface it as
+  // its own row on the dashboard rather than burying it inside the nav-page
+  // tile grid, styled like the "Your Tools" tiles rather than a full-bleed
+  // banner card. A member without one set gets a click-to-add tile instead
+  // of a dead link -- clicking it opens a modal listing every community as
+  // a selectable tile (banner + name); picking one calls VEAuth.setHomeCommunity
+  // (ve-auth 'set_home_community', added 2026-08-18) and re-renders in place,
+  // no page reload. The populated tile still opens the city hub on click, with
+  // a small "Change" link underneath that reopens the same picker.
+  // UPDATED (2026-08-18, Logan, V direction): communities are now multi-select.
+  // "Somebody wants to add them all, let them add them all... if they remove
+  // themselves, they can easily remove themselves." The modal no longer closes
+  // on pick -- each option toggles add/remove via join_community/leave_community
+  // and stays open so a member can add several cities in one pass. The row
+  // renders one tile per joined community plus a trailing "+ Add Community"
+  // tile, matching the same white-box tile look as Your Tools.
+  var currentMember = null;
+
+  function openCommunityModal() {
+    var overlay = document.getElementById('dash-community-modal');
+    renderModalGrid();
+    overlay.classList.add('open');
+  }
+
+  function renderModalGrid() {
+    var grid = document.getElementById('dash-community-modal-grid');
+    grid.innerHTML = '';
+    var joined = (currentMember && currentMember.communities) || [];
+    Object.keys(VE_CITY_NAMES).forEach(function(slug) {
+      var isJoined = joined.indexOf(slug) !== -1;
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'dash-modal-opt' + (isJoined ? ' selected' : '');
+      var banner = VE_CITY_BANNER[slug];
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + banner + '\')"></div><div class="dash-modal-opt-name">' + VE_CITY_NAMES[slug] + (isJoined ? ' &#10003;' : '') + '</div>';
+      opt.addEventListener('click', function() { toggleCommunity(slug, isJoined); });
+      grid.appendChild(opt);
+    });
+  }
+
+  function closeCommunityModal() {
+    document.getElementById('dash-community-modal').classList.remove('open');
+  }
+
+  function toggleCommunity(slug, isJoined) {
+    var action = isJoined ? VEAuth.leaveCommunity(slug) : VEAuth.joinCommunity(slug);
+    action.then(function(d) {
+      if (d && d.error) return;
+      currentMember = Object.assign({}, currentMember, { communities: (d && d.communities) || [] });
+      renderCommunitySection(currentMember);
+      renderModalGrid();
+    });
+  }
+
+  document.getElementById('dash-community-modal-close').addEventListener('click', closeCommunityModal);
+  document.getElementById('dash-community-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-community-modal') closeCommunityModal();
+  });
+
+  function renderCommunitySection(member) {
+    currentMember = member;
+    var section = document.getElementById('dash-community-section');
+    var row = document.getElementById('dash-community-row');
+    if (!section || !row) return;
+    row.innerHTML = '';
+    var joined = (member.communities && member.communities.length ? member.communities : (member.home_community ? [member.home_community] : []));
+
+    joined.forEach(function(slug) {
+      if (!VE_CITY_NAMES[slug]) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-community-tile';
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = '/communities/' + slug;
+      var banner = VE_CITY_BANNER[slug];
+      tile.innerHTML =
+        '<div class="dash-thumb" style="background-image:url(\'' + banner + '\');"></div>' +
+        '<div class="dash-tile-body">' +
+          '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] + ' <span class="dash-tag live">Joined</span></div>' +
+        '</div>';
+      wrap.appendChild(tile);
+
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'dash-community-change';
+      remove.textContent = 'Leave community';
+      remove.addEventListener('click', function(e) { e.preventDefault(); toggleCommunity(slug, true); });
+      wrap.appendChild(remove);
+
+      row.appendChild(wrap);
+    });
+
+    var addWrap = document.createElement('div');
+    addWrap.className = 'dash-community-tile';
+    var addTile = document.createElement('div');
+    addTile.className = 'dash-tile dash-add-tile';
+    addTile.setAttribute('role', 'button');
+    addTile.setAttribute('tabindex', '0');
+    addTile.innerHTML =
+      '<div class="dash-thumb">+</div>' +
+      '<div class="dash-tile-body">' +
+        '<div class="dash-tile-title">' + (joined.length ? 'Add Another Community' : 'Add Your Community') + '</div>' +
+        '<div class="dash-tile-desc">Pick as many cities as you want to connect with.</div>' +
+      '</div>';
+    addTile.addEventListener('click', openCommunityModal);
+    addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCommunityModal(); } });
+    addWrap.appendChild(addTile);
+    row.appendChild(addWrap);
+
+    section.style.display = 'block';
+  }
+
+  // "Your Tools" customizable add/remove grid (2026-08-19, Logan, V direction):
+  // same pick-and-choose pattern as Your Communities above, applied to the
+  // dashboard tile grid instead of city membership. Default is every module
+  // visible; hiding one records an exception via ve-auth's hide_module /
+  // show_module (member_hidden_modules table) rather than an allow-list, so a
+  // module added to this catalog later shows up for everyone automatically.
+  // "My List" (saved Directory listings, backed by ve_listing_saves) is folded
+  // in here as just another tile rather than living as a separate section.
+  var MODULES = [
+    { key: 'tour', href: '/tour', icon: '&#128075;', bg: 'linear-gradient(135deg,#22C55E,#F69820)', title: 'Take the Tour', desc: "New here? A 60-second walkthrough of everything Vegans Explore offers." },
+    { key: 'opportunities', href: '/dashboard/opportunities', icon: '&#127775;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: 'Opportunities', desc: 'Volunteer, become a Vegan Explorer, and more.' },
+    { key: 'showcase', href: '/campaigns', icon: '&#127881;', bg: 'linear-gradient(135deg,#F69820,#e07b00)', title: 'Campaigns', desc: 'Browse active campaigns like the Plant Based Showcase. Pledge support, reserve a spot, sponsor, or volunteer to get involved.' },
+    { key: 'directory', href: '/directory', icon: '&#128269;', bg: 'linear-gradient(135deg,#3A9B3E,#2d7d31)', title: 'Directory', desc: 'Discover and vote for Vegan-friendly restaurants and businesses near you.' },
+    { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
+    { key: 'pulse', href: '/pulse', icon: '&#128240;', bg: 'linear-gradient(135deg,#F69820,#e07b00)', title: 'Daily Pulse', desc: 'Fresh stories from the community. Read, comment, and join the conversation.' },
+    { key: 'guides', href: '/guides', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Guides', desc: 'Meet your guide and explore paths for every stage of the Vegan journey.' },
+    { key: 'podcasts', href: '/podcast', icon: '&#127911;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Podcasts', desc: 'Listen to shows from across the Vegans Explore network.' },
+    { key: 'communities', href: '/communities', icon: '&#127758;', bg: 'linear-gradient(135deg,#0ea5e9,#0369a1)', title: 'Browse Communities', desc: 'See every city hub, not just your own, and find one to join.' },
+    { key: 'lead', href: '/lead', icon: '&#127942;', bg: 'linear-gradient(135deg,#dc2626,#991b1b)', title: 'Lead Your City', desc: 'Apply to become a Community Manager and help grow your local Vegan scene.' }
+  ];
+  var MODULES_BY_KEY = {};
+  MODULES.forEach(function(m) { MODULES_BY_KEY[m.key] = m; });
+
+  // Sectioned, drag-to-reorder tile layout -- superadmin only (2026-08-21,
+  // Logan, Sean direction). TILE_REGISTRY unifies every tile that can appear
+  // anywhere on the dashboard: the 10 MODULES above (visibility 'all'), the
+  // two superadmin-only tiles that used to be hardcoded via addSuperadminTiles
+  // (visibility 'superadmin'), and the two Community Manager tiles that used
+  // to be hardcoded via addCmTiles (visibility 'staff'). Server-side
+  // VALID_LAYOUT_MODULES in ve-auth must stay in sync with these keys.
+  // defaultSection is only a fallback for tiles the superadmin hasn't moved
+  // yet -- Sean asked to "populate some sections", so Daily Pulse and
+  // Podcasts start in Media and the rest start in Tools; dragging overrides
+  // this permanently via member_dashboard_layout.
+  var TILE_REGISTRY = null;
+  function buildTileRegistry() {
+    if (TILE_REGISTRY) return TILE_REGISTRY;
+    TILE_REGISTRY = MODULES.map(function (m) {
+      return {
+        key: m.key, href: m.href, iconHtml: m.icon, bg: m.bg, title: m.title, desc: m.desc,
+        visibility: 'all', defaultSection: (m.key === 'pulse' || m.key === 'podcasts') ? 'media' : 'tools',
+        locked: (m.key === 'tour' || m.key === 'pulse' || m.key === 'podcasts')
+      };
+    });
+    TILE_REGISTRY.push(
+      { key: 'sa-members', href: '/dashboard/members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-events', href: '/admin/events.html', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-leads', href: '/dashboard/leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'cm-initiatives', href: '/dashboard/2026-initiatives', iconHtml: '&#127758;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: '2026 Initiatives Portfolio', desc: 'The 13 programs Sean laid out for the year, tailgates, supermarket campaigns, the World Vegan Expo, and more.', visibility: 'staff', defaultSection: 'tools' },
+      { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' },
+      // Guides section (2026-08-21, Sean direction): mirrors the 5 active
+      // guide personas from /guides (ve-guides-roster-v1.html), one tile per
+      // guide with their real portrait as the thumbnail rather than an icon.
+      { key: 'guide-maya', href: '/guides/ve-path-prevegan', img: '/public/guides/maya.png', bg: '#2d7d31', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-theo', href: '/guides/ve-path-seasonedvegan', img: '/public/guides/theo.png', bg: '#8B6914', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-nori', href: '/guides/ve-path-entrepreneur', img: '/public/guides/nori.png', bg: '#2D5F8A', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-dani', href: '/guides/ve-path-nonprofit', img: '/public/guides/dani.png', bg: '#C4522A', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.', visibility: 'all', defaultSection: 'guides' },
+      { key: 'guide-river', href: '/guides/ve-path-creator', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.', visibility: 'all', defaultSection: 'guides' }
+    );
+    return TILE_REGISTRY;
+  }
+
+  var dashLayout = [];
+  var layoutEditMode = false;
+  var draggedTileEl = null;
+
+  function resolveDashboardSections(member, isStaff) {
+    var registry = buildTileRegistry();
+    var savedMap = {};
+    (dashLayout || []).forEach(function (row) { savedMap[row.module_key] = row; });
+    var buckets = { superadmin: [], media: [], guides: [], tools: [] };
+    registry.forEach(function (t) {
+      if (t.visibility === 'staff' && !isStaff) return;
+      if (t.visibility === 'superadmin' && !member.is_superadmin) return;
+      var tile = t;
+      if (t.key === 'opportunities' && isStaff) tile = Object.assign({}, t, { desc: 'Review applications, manage campaigns, and more.' });
+      // Locked tiles ignore any saved section move -- they always render in
+      // their default section, even if a stale layout row from before they
+      // were locked says otherwise.
+      var saved = !t.locked ? savedMap[t.key] : null;
+      var section = (saved && buckets[saved.section_key]) ? saved.section_key : t.defaultSection;
+      var order = saved ? saved.sort_order : 9999;
+      buckets[section].push({ tile: tile, order: order });
+    });
+    Object.keys(buckets).forEach(function (k) { buckets[k].sort(function (a, b) { return a.order - b.order; }); });
+    return buckets;
+  }
+
+  function sectionedTileHtml(t) {
+    var thumbStyle = t.img
+      ? "background-image:url('" + t.img + "');background-size:cover;background-position:center;background-color:" + (t.bg || 'var(--ve-green-light)') + ";"
+      : 'background:' + t.bg + ';';
+    return '<div class="dash-thumb" style="' + thumbStyle + '">' + (t.img ? '' : t.iconHtml) + '</div>' +
+      '<div class="dash-tile-body"><div class="dash-tile-title">' + t.title +
+      (t.tagLabel ? ' <span class="dash-tag superadmin">' + t.tagLabel + '</span>' : '') +
+      (t.locked ? ' <span class="dash-tag locked">Fixed</span>' : '') +
+      (t.badgeId ? ' <span class="dash-badge-count" id="' + t.badgeId + '" style="display:none;"></span>' : '') +
+      '</div><div class="dash-tile-desc"' + (t.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + t.desc + '</div></div>';
+  }
+
+  function renderSectionedGrid(gridId, items) {
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = '';
+    items.forEach(function (entry) {
+      var t = entry.tile;
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-tile-wrap';
+      wrap.setAttribute('data-key', t.key);
+      wrap.setAttribute('data-locked', t.locked ? '1' : '0');
+      wrap.draggable = layoutEditMode && !t.locked;
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = t.href;
+      tile.innerHTML = sectionedTileHtml(t);
+      tile.addEventListener('click', function (e) { if (layoutEditMode) e.preventDefault(); });
+      wrap.appendChild(tile);
+      wrap.addEventListener('dragstart', function (e) {
+        if (!layoutEditMode || t.locked) { e.preventDefault(); return; }
+        draggedTileEl = wrap;
+        wrap.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', t.key);
+      });
+      wrap.addEventListener('dragend', function () {
+        wrap.classList.remove('dragging');
+        draggedTileEl = null;
+        document.querySelectorAll('#dash-tiles-sectioned .dash-grid').forEach(function (g) { g.classList.remove('drag-over'); });
+      });
+      grid.appendChild(wrap);
+    });
+  }
+
+  function renderSectionedTiles(member, isStaff) {
+    document.getElementById('dash-tiles-flat').style.display = 'none';
+    document.getElementById('dash-tiles-sectioned').style.display = 'block';
+    var buckets = resolveDashboardSections(member, isStaff);
+    renderSectionedGrid('dash-grid-superadmin', buckets.superadmin);
+    renderSectionedGrid('dash-grid-media', buckets.media);
+    renderSectionedGrid('dash-grid-guides', buckets.guides);
+    renderSectionedGrid('dash-grid-tools', buckets.tools);
+    loadPendingEventsCount(VEAuth.getToken());
+    if (member.is_superadmin) loadPendingLeadsCount(VEAuth.getToken());
+  }
+
+  function loadAndRenderSectioned(member, isStaff) {
+    VEAuth.getLayout().then(function (d) {
+      dashLayout = (d && d.layout) || [];
+      renderSectionedTiles(member, isStaff);
+    }).catch(function () {
+      dashLayout = [];
+      renderSectionedTiles(member, isStaff);
+    });
+  }
+
+  function getDragTarget(container, x, y) {
+    var els = Array.prototype.slice.call(container.querySelectorAll('.dash-tile-wrap')).filter(function (el) { return el !== draggedTileEl; });
+    var closest = null, closestDist = Infinity, insertAfter = false;
+    els.forEach(function (el) {
+      var box = el.getBoundingClientRect();
+      var cx = box.left + box.width / 2, cy = box.top + box.height / 2;
+      var dist = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+      if (dist < closestDist) { closestDist = dist; closest = el; insertAfter = x > cx; }
+    });
+    return { closest: closest, insertAfter: insertAfter };
+  }
+
+  function persistDashboardLayout() {
+    var layout = [];
+    [['superadmin', 'dash-grid-superadmin'], ['media', 'dash-grid-media'], ['guides', 'dash-grid-guides'], ['tools', 'dash-grid-tools']].forEach(function (pair) {
+      var section = pair[0];
+      var grid = document.getElementById(pair[1]);
+      if (!grid) return;
+      Array.prototype.forEach.call(grid.children, function (wrap, idx) {
+        layout.push({ module_key: wrap.getAttribute('data-key'), section_key: section, sort_order: idx });
+      });
+    });
+    dashLayout = layout;
+    VEAuth.saveLayout(layout).catch(function () {});
+  }
+
+  ['dash-grid-superadmin', 'dash-grid-media', 'dash-grid-guides', 'dash-grid-tools'].forEach(function (gridId) {
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.addEventListener('dragover', function (e) {
+      if (!layoutEditMode || !draggedTileEl) return;
+      e.preventDefault();
+      grid.classList.add('drag-over');
+      var target = getDragTarget(grid, e.clientX, e.clientY);
+      if (!target.closest) { grid.appendChild(draggedTileEl); return; }
+      if (target.insertAfter) target.closest.parentNode.insertBefore(draggedTileEl, target.closest.nextSibling);
+      else target.closest.parentNode.insertBefore(draggedTileEl, target.closest);
+    });
+    grid.addEventListener('dragleave', function (e) { if (e.target === grid) grid.classList.remove('drag-over'); });
+    grid.addEventListener('drop', function (e) {
+      e.preventDefault();
+      grid.classList.remove('drag-over');
+      persistDashboardLayout();
+    });
+  });
+
+  var editLayoutBtn = document.getElementById('dash-edit-layout-btn');
+  if (editLayoutBtn) {
+    editLayoutBtn.addEventListener('click', function () {
+      layoutEditMode = !layoutEditMode;
+      editLayoutBtn.textContent = layoutEditMode ? 'Done' : 'Edit Layout';
+      editLayoutBtn.classList.toggle('active', layoutEditMode);
+      document.body.classList.toggle('dash-edit-mode', layoutEditMode);
+      document.querySelectorAll('#dash-tiles-sectioned .dash-tile-wrap').forEach(function (w) { w.draggable = layoutEditMode && w.getAttribute('data-locked') !== '1'; });
+    });
+  }
+
+  function toggleModule(key, isHidden) {
+    var action = isHidden ? VEAuth.showModule(key) : VEAuth.hideModule(key);
+    action.then(function(d) {
+      if (d && d.error) return;
+      currentMember = Object.assign({}, currentMember, { hidden_modules: (d && d.hidden_modules) || [] });
+      renderToolsGrid(currentMember);
+      renderToolsModalGrid();
+    });
+  }
+
+  function openToolsModal() {
+    renderToolsModalGrid();
+    document.getElementById('dash-tools-modal').classList.add('open');
+  }
+  function closeToolsModal() {
+    document.getElementById('dash-tools-modal').classList.remove('open');
+  }
+
+  function renderToolsModalGrid() {
+    var grid = document.getElementById('dash-tools-modal-grid');
+    grid.innerHTML = '';
+    var hidden = (currentMember && currentMember.hidden_modules) || [];
+    MODULES.forEach(function(m) {
+      var isHidden = hidden.indexOf(m.key) !== -1;
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'dash-modal-opt' + (!isHidden ? ' selected' : '');
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background:' + m.bg + ';display:flex;align-items:center;justify-content:center;font-size:28px;">' + m.icon + '</div>' +
+        '<div class="dash-modal-opt-name">' + m.title + (!isHidden ? ' &#10003;' : '') + '</div>';
+      opt.addEventListener('click', function() { toggleModule(m.key, isHidden); });
+      grid.appendChild(opt);
+    });
+  }
+
+  function renderToolsGrid(member) {
+    var grid = document.getElementById('dash-tile-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    var hidden = (member.hidden_modules) || [];
+    MODULES.forEach(function(m) {
+      if (hidden.indexOf(m.key) !== -1) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-tile-wrap';
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = m.href;
+      tile.innerHTML = '<div class="dash-thumb" style="background:' + m.bg + ';">' + m.icon + '</div>' +
+        '<div class="dash-tile-body"><div class="dash-tile-title">' + m.title + (m.tag ? ' <span class="dash-tag live">' + m.tag + '</span>' : '') + '</div>' +
+        '<div class="dash-tile-desc"' + (m.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + m.desc + '</div></div>';
+      wrap.appendChild(tile);
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'dash-community-change';
+      remove.textContent = 'Remove from Your Tools';
+      remove.addEventListener('click', function(e) { e.preventDefault(); toggleModule(m.key, false); });
+      wrap.appendChild(remove);
+      grid.appendChild(wrap);
+    });
+
+    var addWrap = document.createElement('div');
+    addWrap.className = 'dash-tile-wrap';
+    var addTile = document.createElement('div');
+    addTile.className = 'dash-tile dash-add-tile';
+    addTile.setAttribute('role', 'button');
+    addTile.setAttribute('tabindex', '0');
+    addTile.innerHTML =
+      '<div class="dash-thumb">+</div>' +
+      '<div class="dash-tile-body">' +
+        '<div class="dash-tile-title">Add a Tool</div>' +
+        '<div class="dash-tile-desc">Bring back any tool you\'ve removed.</div>' +
+      '</div>';
+    addTile.addEventListener('click', openToolsModal);
+    addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openToolsModal(); } });
+    addWrap.appendChild(addTile);
+    grid.appendChild(addWrap);
+  }
+
+  document.getElementById('dash-tools-modal-close').addEventListener('click', closeToolsModal);
+  document.getElementById('dash-tools-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-tools-modal') closeToolsModal();
+  });
+
+  // "Your Campaigns" section (2026-08-19, Logan, V direction, brief_checkpoints
+  // id 517 round 2): mirrors "Your Communities" above -- a row of the campaigns
+  // a member has real involvement in (a backer row, an interest submission, or
+  // an accepted/pending volunteer application, via the new ve-rewards
+  // 'list_my_campaigns' action), plus a trailing "+" tile that links to the
+  // Campaigns hub (/campaigns) to browse/join more. Unlike Your Communities,
+  // there is no in-page picker modal here -- picking a NEW campaign to support
+  // happens on that campaign's own wizard page, not from a dashboard modal, so
+  // the "+" tile is a plain link rather than an add-tile that opens a picker.
+  var CAMPAIGN_TAG_LABEL = { enrollment: 'Enrolling', live: 'Live', wrapped: 'Wrapped' };
+
+  // Campaigns picker modal (2026-08-21, Sean direction): mirrors the "Your
+  // Communities" add-tile -> modal pattern above, but for campaigns. Clicking
+  // the "+" tile in Your Campaigns opens a popup listing every live campaign
+  // (via list_initiatives) as a selectable tile using that campaign's real
+  // hero/cover image as the thumbnail. Selecting a campaign here ADDS it to
+  // Your Campaigns on the dashboard (via the new ve-auth join_campaign/
+  // leave_campaign actions, backed by member_campaigns) -- it does NOT
+  // navigate to the campaign's own wizard page. The modal stays open so a
+  // member can add several campaigns in one pass, exactly like Your
+  // Communities. Going into a campaign happens afterwards, by closing the
+  // modal and clicking its tile in the Your Campaigns row.
+  var allCampaignsCache = null;
+  var myCampaignSlugs = [];
+
+  function openCampaignsModal() {
+    var overlay = document.getElementById('dash-campaigns-modal');
+    var grid = document.getElementById('dash-campaigns-modal-grid');
+    overlay.classList.add('open');
+
+    if (allCampaignsCache) { renderCampaignsModalGrid(); return; }
+    grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">Loading&hellip;</p>';
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiatives', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      allCampaignsCache = (d && d.items) || [];
+      renderCampaignsModalGrid();
+    }).catch(function () {
+      grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">Could not load campaigns right now.</p>';
+    });
+  }
+
+  function renderCampaignsModalGrid() {
+    var grid = document.getElementById('dash-campaigns-modal-grid');
+    var items = allCampaignsCache || [];
+    grid.innerHTML = '';
+    if (!items.length) {
+      grid.innerHTML = '<p style="font-size:12.5px;color:var(--ve-text-50);grid-column:1/-1;">No campaigns are open right now. Check back soon.</p>';
+      return;
+    }
+    items.forEach(function (c) {
+      var isJoined = myCampaignSlugs.indexOf(c.slug) !== -1;
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'dash-modal-opt' + (isJoined ? ' selected' : '');
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + (c.hero_image || '') + '\');background-color:var(--ve-green-light);"></div>' +
+        '<div class="dash-modal-opt-name">' + (c.title || c.slug) + (isJoined ? ' &#10003;' : '') + '</div>';
+      opt.addEventListener('click', function() { toggleCampaignFollow(c.slug, isJoined); });
+      grid.appendChild(opt);
+    });
+  }
+
+  function toggleCampaignFollow(slug, isJoined) {
+    var action = isJoined ? VEAuth.leaveCampaign(slug) : VEAuth.joinCampaign(slug);
+    action.then(function(d) {
+      if (d && d.error) return;
+      myCampaignSlugs = (d && d.campaigns) || [];
+      renderCampaignsModalGrid();
+      renderCampaignsSection(currentMember);
+    });
+  }
+
+  function closeCampaignsModal() {
+    document.getElementById('dash-campaigns-modal').classList.remove('open');
+  }
+  document.getElementById('dash-campaigns-modal-close').addEventListener('click', closeCampaignsModal);
+  document.getElementById('dash-campaigns-modal').addEventListener('click', function(e) {
+    if (e.target.id === 'dash-campaigns-modal') closeCampaignsModal();
+  });
+
+  function renderCampaignsSection(member) {
+    var section = document.getElementById('dash-campaigns-section');
+    var row = document.getElementById('dash-campaigns-row');
+    if (!section || !row) return;
+    section.style.display = 'block';
+    row.innerHTML = '<div class="dash-community-tile"><div class="dash-tile" style="padding:16px 18px;"><p style="font-size:12.5px;color:var(--ve-text-50);">Loading&hellip;</p></div></div>';
+
+    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_my_campaigns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var items = (d && d.items) || [];
+      myCampaignSlugs = items.map(function(c) { return c.slug; });
+      row.innerHTML = '';
+
+      items.forEach(function (c) {
+        var wrap = document.createElement('div');
+        wrap.className = 'dash-community-tile';
+        var tile = document.createElement('a');
+        tile.className = 'dash-tile';
+        tile.href = c.path || '/campaigns';
+        var tag = CAMPAIGN_TAG_LABEL[c.lifecycle_stage] || 'Enrolling';
+        tile.innerHTML =
+          '<div class="dash-thumb" style="background-image:url(\'' + (c.hero_image || '') + '\');background-color:var(--ve-green-light);"></div>' +
+          '<div class="dash-tile-body">' +
+            '<div class="dash-tile-title">' + (c.title || c.slug) + ' <span class="dash-tag live">' + tag + '</span></div>' +
+            (c.subtitle ? '<div class="dash-tile-desc">' + c.subtitle + '</div>' : '') +
+          '</div>';
+        wrap.appendChild(tile);
+
+        var leave = document.createElement('button');
+        leave.type = 'button';
+        leave.className = 'dash-community-change';
+        leave.textContent = 'Leave Campaign';
+        leave.addEventListener('click', function(e) { e.preventDefault(); toggleCampaignFollow(c.slug, true); });
+        wrap.appendChild(leave);
+
+        row.appendChild(wrap);
+      });
+
+      var addWrap = document.createElement('div');
+      addWrap.className = 'dash-community-tile';
+      var addTile = document.createElement('div');
+      addTile.className = 'dash-tile dash-add-tile';
+      addTile.setAttribute('role', 'button');
+      addTile.setAttribute('tabindex', '0');
+      addTile.innerHTML =
+        '<div class="dash-thumb">+</div>' +
+        '<div class="dash-tile-body">' +
+          '<div class="dash-tile-title">' + (items.length ? 'Support Another Campaign' : 'Support A Campaign') + '</div>' +
+          '<div class="dash-tile-desc">Browse active campaigns like the Plant Based Showcase and pick one to get involved with.</div>' +
+        '</div>';
+      addTile.addEventListener('click', openCampaignsModal);
+      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCampaignsModal(); } });
+      addWrap.appendChild(addTile);
+      row.appendChild(addWrap);
+    }).catch(function () {
+      row.innerHTML = '';
+      var addWrap = document.createElement('div');
+      addWrap.className = 'dash-community-tile';
+      var addTile = document.createElement('div');
+      addTile.className = 'dash-tile dash-add-tile';
+      addTile.setAttribute('role', 'button');
+      addTile.setAttribute('tabindex', '0');
+      addTile.innerHTML = '<div class="dash-thumb">+</div><div class="dash-tile-body"><div class="dash-tile-title">Support A Campaign</div><div class="dash-tile-desc">Browse active campaigns and pick one to get involved with.</div></div>';
+      addTile.addEventListener('click', openCampaignsModal);
+      addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCampaignsModal(); } });
+      addWrap.appendChild(addTile);
+      row.appendChild(addWrap);
+    });
+  }
+
+  function showDashboard(member) {
+    document.getElementById('dash-gate').style.display = 'none';
+    document.getElementById('dash-content').style.display = 'block';
+    renderCommunitySection(member);
+    renderCampaignsSection(member);
+    var firstName = member.name ? member.name.split(' ')[0] : 'there';
+    var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
+
+    document.getElementById('dash-welcome-name').textContent = 'Welcome back, ' + firstName;
+    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : (member.ve_tier === 'passport' ? 'Passport Member' : 'Member'));
+
+    if (member.is_superadmin) {
+      loadAndRenderSectioned(member, isStaff);
+    } else {
+      renderToolsGrid(member);
+      if (isStaff) addCmTiles();
+    }
+
+    if (isStaff) {
+      document.getElementById('dash-stats-row').style.display = 'grid';
+      var oppsDesc = document.getElementById('dash-opps-desc');
+      if (oppsDesc) oppsDesc.textContent = 'Review applications, manage campaigns, and more.';
+      loadPendingCount(VEAuth.getToken());
+
+      fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: VEAuth.getToken() })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        var apps = (d && d.applications) || [];
+        var accepted = apps.filter(function (a) { return a.status === 'accepted' && a.opportunities && a.opportunities.opportunity_type === 'community_manager'; });
+        var sub = document.getElementById('dash-welcome-sub');
+        if (accepted.length) {
+          var cityName = VE_CITY_NAMES[accepted[0].opportunities.city_slug] || accepted[0].opportunities.city_slug;
+          sub.textContent = 'You manage ' + cityName + '.';
+          document.getElementById('dash-stat-city').textContent = cityName;
+        } else if (member.is_superadmin) {
+          sub.textContent = 'Superadmin preview, no city assignment on file for this account.';
+          document.getElementById('dash-stat-city').textContent = 'All Cities';
+        } else {
+          sub.textContent = 'Role active, city assignment record not found. Flag this to the team.';
+        }
+      }).catch(function () {
+        document.getElementById('dash-welcome-sub').textContent = 'Could not load your city assignment right now.';
+      });
+    } else {
+      document.getElementById('dash-welcome-sub').textContent = member.ve_tier === 'passport' ? 'Passport member.' : 'Free member.';
+    }
+  }
+
+  function init() {
+    var gate = document.getElementById('dash-gate');
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
+    var token = VEAuth.getToken();
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=me', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ action: 'me', token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var member = d && d.member;
+      if (!member) { showDenied(); return; }
+      try { localStorage.setItem('ve_member', JSON.stringify(member)); } catch (e) {}
+      showDashboard(member);
+    }).catch(function () {
+      var cached = VEAuth.getMember();
+      if (cached) { showDashboard(cached); }
+      else { showDenied(); }
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
