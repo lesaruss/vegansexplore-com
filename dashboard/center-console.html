@@ -1007,5 +1007,29 @@
 
   init();
 </script>
+<script>
+(function(){
+  function relocateTitleTags(titleEl){
+    var tags = titleEl.querySelectorAll('.dash-tag, .dash-badge-count');
+    if(!tags.length) return;
+    var tile = titleEl.closest('.dash-tile');
+    var thumb = tile && tile.querySelector('.dash-thumb');
+    if(!thumb) return;
+    tags.forEach(function(tag){ thumb.appendChild(tag); });
+  }
+  function sweep(node){
+    if(!node || node.nodeType !== 1) return;
+    if(node.classList && node.classList.contains('dash-tile-title')) relocateTitleTags(node);
+    if(node.querySelectorAll){
+      var found = node.querySelectorAll('.dash-tile-title');
+      for (var i = 0; i < found.length; i++) relocateTitleTags(found[i]);
+    }
+  }
+  sweep(document.body);
+  new MutationObserver(function(muts){
+    muts.forEach(function(m){ m.addedNodes.forEach(sweep); });
+  }).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 </body>
 </html>
