@@ -814,7 +814,7 @@
     VEAuth.saveLayout(layout).catch(function () {});
   }
 
-  ['dash-grid-superadmin', 'dash-grid-media', 'dash-grid-tools'].forEach(function (gridId) {
+  ['dash-grid-media', 'dash-grid-tools'].forEach(function (gridId) {
     var grid = document.getElementById(gridId);
     if (!grid) return;
     grid.addEventListener('dragover', function (e) {
