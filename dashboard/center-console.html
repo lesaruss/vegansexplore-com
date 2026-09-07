@@ -647,7 +647,10 @@
       tile.className = 'dash-tile';
       tile.href = t.href;
       tile.innerHTML = sectionedTileHtml(t);
-      tile.addEventListener('click', function (e) { if (layoutEditMode) e.preventDefault(); });
+      tile.addEventListener('click', function (e) {
+        if (layoutEditMode) { e.preventDefault(); return; }
+        if (t.key === 'choose-guide') { e.preventDefault(); openGuideModal(); }
+      });
       wrap.appendChild(tile);
       wrap.addEventListener('dragstart', function (e) {
         if (!layoutEditMode || t.locked) { e.preventDefault(); return; }
