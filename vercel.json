@@ -12,7 +12,7 @@
       "destination": "/api/pulse-article?slug=:slug"
     },
     {
-      "source": "/dashboard/:tab(profile|directory|events|bounties|campaigns|opportunities|pulse|guides|tools|communities)",
+      "source": "/dashboard/:tab(profile|directory|events|bounties|campaigns|opportunities|pulse|guides|choose-guide|tools|communities)",
       "destination": "/dashboard/center-console"
     },
     {
