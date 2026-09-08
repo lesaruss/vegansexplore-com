@@ -12,6 +12,10 @@
       "destination": "/api/pulse-article?slug=:slug"
     },
     {
+      "source": "/dashboard/:tab(profile|directory|events|bounties|campaigns|opportunities|pulse|guides|tools|communities)",
+      "destination": "/dashboard/center-console"
+    },
+    {
       "source": "/10-plant-based-calcium-sources",
       "destination": "https://archive.vegansexplore.com/10-plant-based-calcium-sources/"
     },
