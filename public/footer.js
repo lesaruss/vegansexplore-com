@@ -59,4 +59,53 @@
   gw.setAttribute('data-color-dark', '#15803D');
   gw.defer = true;
   document.body.appendChild(gw);
+
+  /* ── Guide launcher personalization + tier branching (Sean, 2026-09-08) ──
+   * Layered on top of the shared widget from this file only -- guide-widget.v1.js
+   * itself is never touched, so no other brand's install can be affected.
+   *
+   * 1. Once a visitor has picked a Guide in the /guide.html flow (state written
+   *    to the same ve_guide_flow_state key the wizard already uses), the bare
+   *    green circle becomes a rounded square showing that Guide's photo --
+   *    "the guide they select," not a generic mark.
+   * 2. Free members keep today's behavior: the launcher opens the widget's own
+   *    "have a question" ticket form. Passport members get routed into the
+   *    real /guide.html chat sequence instead of that generic form. Reads
+   *    VEAuth.getMember() from ve-auth.js, which every page carrying this
+   *    footer already loads before this script runs; pages with no VEAuth (or
+   *    no signed-in member) just keep the default ticket behavior. */
+  var VE_GUIDE_IMAGES = {
+    liz: '/public/guides/liz.png',
+    maya: '/public/guides/maya.png',
+    theo: '/public/guides/theo.png',
+    nori: '/public/guides/nori.png',
+    dani: '/public/guides/dani.png',
+    river: '/public/guides/river.jpg'
+  };
+  function vePatchGuideWidget() {
+    var launchBtn = document.querySelector('.gw-launch .gw-btn');
+    if (!launchBtn) return;
+
+    var flow = null;
+    try { flow = JSON.parse(localStorage.getItem('ve_guide_flow_state') || 'null'); } catch (e) {}
+    var guideImg = flow && flow.guide_slug ? VE_GUIDE_IMAGES[flow.guide_slug] : null;
+    if (guideImg) {
+      var sqStyle = document.createElement('style');
+      sqStyle.textContent = '.gw-launch .gw-btn{border-radius:14px !important;}.gw-launch .gw-btn img{border-radius:14px !important;}';
+      document.head.appendChild(sqStyle);
+      var img = launchBtn.querySelector('img');
+      if (!img) { img = document.createElement('img'); img.alt = ''; launchBtn.appendChild(img); }
+      img.src = guideImg;
+    }
+
+    var member = (window.VEAuth && VEAuth.getMember) ? VEAuth.getMember() : null;
+    if (member && member.ve_tier === 'passport') {
+      launchBtn.addEventListener('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        window.location.href = '/guide.html';
+      }, true);
+    }
+  }
+  gw.addEventListener('load', vePatchGuideWidget);
 })();
