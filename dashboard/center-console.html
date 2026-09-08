@@ -205,6 +205,19 @@
   #dash-directory-detail{display:none;}
   .dash-directory-iframe{display:block;width:100%;height:1400px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ .dash-directory-iframe{height:1800px;} }
+  /* My List in-frame embed (2026-09-08, Sean, Fieldy field note: "anything
+     that is any of these tools, they need to open up inside the frame...
+     my list opens up outside the frame"). Same breadcrumb+iframe pattern
+     as the Directory listing embed above, applied to the My List tile
+     under Your Tools instead. */
+  #dash-mylist-crumb{display:none;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:-4px 0 14px;}
+  #dash-mylist-crumb .dash-crumb-back{background:none;border:none;color:var(--ve-green-dark);font-weight:800;font-size:12.5px;cursor:pointer;padding:0;font-family:inherit;}
+  #dash-mylist-crumb .dash-crumb-back:hover{text-decoration:underline;}
+  #dash-mylist-crumb .dash-crumb-sep{color:var(--ve-text-50);}
+  #dash-mylist-crumb .dash-crumb-current{color:var(--ve-text);}
+  #dash-mylist-detail{display:none;}
+  .dash-mylist-iframe{display:block;width:100%;height:900px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
+  @media (max-width:760px){ .dash-mylist-iframe{height:1100px;} }
 
   .dash-community-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
   /* Your Campaigns keeps a fixed 3-column grid regardless of item count
@@ -554,6 +567,8 @@
       </div>
       <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Tap Edit Layout to drag tiles between sections and reorder them, like rearranging apps on your phone.</p>
     </div>
+    <div id="dash-mylist-crumb"></div>
+    <div id="dash-mylist-detail"></div>
     </div>
   </div>
   </main>
@@ -691,7 +706,11 @@
   }
 
   function addCmTiles() {
-    addTile('<span data-href="/dashboard/handbook"></span><div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green),var(--ve-green-dark));">&#128214;</div><div class="dash-tile-body"><div class="dash-tile-title">Community Manager Handbook</div><div class="dash-tile-desc">The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.</div></div>');
+    // Community Manager Handbook tile removed 2026-09-08 (Sean, Fieldy
+    // field note): a Community Manager's role already shows as a pill via
+    // dash-eyebrow ("Community Manager", same mechanism as Superadmin), so
+    // a dedicated tile just for the handbook was redundant. Handbook page
+    // itself still lives at /dashboard/handbook if a link is needed again.
     var grid = document.getElementById('dash-tile-grid');
     var coming1 = document.createElement('a'); coming1.className = 'dash-tile coming'; coming1.href = '#';
     coming1.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128197;</div><div class="dash-tile-body"><div class="dash-tile-title">Event Management <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Post and manage events for your city\'s hub page directly from here.</div></div>';
@@ -1060,6 +1079,7 @@
         if (layoutEditMode) { e.preventDefault(); return; }
         if (t.key === 'choose-guide') { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('guides'); }
         if (t.key === 'communities') { e.preventDefault(); openCommunityModal(); }
+        if (t.key === 'my-list') { e.preventDefault(); openMyList(); }
       });
       wrap.appendChild(tile);
       wrap.addEventListener('dragstart', function (e) {
@@ -1079,6 +1099,7 @@
   }
 
   function renderSectionedTiles(member, isStaff) {
+    closeMyList();
     document.getElementById('dash-tiles-flat').style.display = 'none';
     document.getElementById('dash-tiles-sectioned').style.display = 'block';
     var buckets = resolveDashboardSections(member, isStaff);
@@ -1198,6 +1219,7 @@
   function renderToolsGrid(member) {
     var grid = document.getElementById('dash-tile-grid');
     if (!grid) return;
+    closeMyList();
     grid.innerHTML = '';
     var hidden = (member.hidden_modules) || [];
     MODULES.forEach(function(m) {
@@ -1216,6 +1238,9 @@
       }
       if (m.key === 'communities') {
         tile.addEventListener('click', function(e) { e.preventDefault(); openCommunityModal(); });
+      }
+      if (m.key === 'my-list') {
+        tile.addEventListener('click', function(e) { e.preventDefault(); openMyList(); });
       }
       var remove = document.createElement('button');
       remove.type = 'button';
@@ -2016,6 +2041,65 @@
     if (detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
     if (crumb) { crumb.style.display = 'none'; crumb.innerHTML = ''; }
     if (mount) mount.style.display = '';
+  }
+
+  // "My List" in-frame embed (2026-09-08, Sean, Fieldy field note): the My
+  // List tile under Your Tools used to be a plain <a href="/account/my-list">
+  // that navigated away from the dashboard entirely. Same breadcrumb+iframe
+  // pattern as openDashboardListing/closeDashboardListing above -- reuses
+  // the real, already-built /account/my-list page in an iframe rather than
+  // duplicating its saved-listings logic a second time inside the dashboard.
+  // Works from either the flat (non-superadmin) or sectioned (superadmin)
+  // Your Tools layout -- only one of those two is ever visible at a time,
+  // so this tracks which one to restore on close.
+  var dashMyListPrevLayout = null;
+  function openMyList() {
+    var flat = document.getElementById('dash-tiles-flat');
+    var sectioned = document.getElementById('dash-tiles-sectioned');
+    var crumb = document.getElementById('dash-mylist-crumb');
+    var detail = document.getElementById('dash-mylist-detail');
+    if (!crumb || !detail) return;
+    dashMyListPrevLayout = (sectioned && sectioned.style.display !== 'none') ? 'sectioned' : 'flat';
+    if (flat) flat.style.display = 'none';
+    if (sectioned) sectioned.style.display = 'none';
+    crumb.innerHTML = '';
+    var back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'dash-crumb-back';
+    back.innerHTML = '&larr; Your Tools';
+    back.addEventListener('click', closeMyList);
+    var sep = document.createElement('span');
+    sep.className = 'dash-crumb-sep';
+    sep.textContent = '/';
+    var current = document.createElement('span');
+    current.className = 'dash-crumb-current';
+    current.textContent = 'My List';
+    crumb.appendChild(back);
+    crumb.appendChild(sep);
+    crumb.appendChild(current);
+    crumb.style.display = 'flex';
+    var iframe = document.createElement('iframe');
+    iframe.className = 'dash-mylist-iframe';
+    iframe.title = 'My List';
+    iframe.src = '/account/my-list';
+    detail.innerHTML = '';
+    detail.appendChild(iframe);
+    detail.style.display = 'block';
+  }
+
+  function closeMyList() {
+    var flat = document.getElementById('dash-tiles-flat');
+    var sectioned = document.getElementById('dash-tiles-sectioned');
+    var crumb = document.getElementById('dash-mylist-crumb');
+    var detail = document.getElementById('dash-mylist-detail');
+    if (detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
+    if (crumb) { crumb.style.display = 'none'; crumb.innerHTML = ''; }
+    if (!crumb && !detail) return;
+    if (dashMyListPrevLayout === 'sectioned') {
+      if (sectioned) sectioned.style.display = 'block';
+    } else {
+      if (flat) flat.style.display = '';
+    }
   }
 
   function renderDirectory(member) {
