@@ -376,7 +376,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
    a normal top-level visit to /directory/[slug] is unaffected. */
 try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
 </script>
-<style>.ve-embedded .ve-nav{display:none !important}</style>
+<style>.ve-embedded .ve-nav{display:none !important}.ve-embedded .listing-breadcrumb{display:none !important}</style>
 <div id="frame">
 <script src="/public/ve-auth.js"></script>
 <script src="/public/nav.js"></script>
