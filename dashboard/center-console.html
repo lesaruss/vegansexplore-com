@@ -927,8 +927,6 @@
     addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCommunityModal(); } });
     addWrap.appendChild(addTile);
     row.appendChild(addWrap);
-
-    section.style.display = 'block';
   }
 
   // "Your Tools" customizable add/remove grid (2026-08-19, Logan, V direction):
@@ -1347,7 +1345,6 @@
     var section = document.getElementById('dash-campaigns-section');
     var row = document.getElementById('dash-campaigns-row');
     if (!section || !row) return;
-    section.style.display = 'block';
     row.innerHTML = '<div class="dash-community-tile"><div class="dash-tile" style="padding:16px 18px;"><p style="font-size:12.5px;color:var(--ve-text-50);">Loading&hellip;</p></div></div>';
 
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_my_campaigns', {
@@ -1491,7 +1488,6 @@
     var section = document.getElementById('dash-opportunities-section');
     var row = document.getElementById('dash-opportunities-row');
     if (!section || !row) return;
-    section.style.display = 'block';
     row.innerHTML = '<div class="dash-community-tile"><div class="dash-tile" style="padding:16px 18px;"><p style="font-size:12.5px;color:var(--ve-text-50);">Loading&hellip;</p></div></div>';
 
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
