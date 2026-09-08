@@ -507,7 +507,7 @@
       <div id="dash-events-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
     </div>
 
-    <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="9" data-tab-label="Your Communities">
+    <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="10" data-tab-label="Your Communities">
       <p class="dash-section-title">Your Communities</p>
       <div class="dash-community-row" id="dash-community-row"></div>
     </div>
@@ -526,6 +526,22 @@
       <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Practical guides for wherever you are on the journey. Unlock guides with Points as they publish.</p>
       <div class="gc-grid" id="dash-guides-row" role="list" aria-label="Guide catalog"></div>
       <p class="gc-note">New guides publish as they're built. Join the waitlist on any guide to get notified the moment it's live.</p>
+    </div>
+
+    <!-- Choose Your Guide (2026-09-08, Sean, Fieldy field note): restored
+         as its own dedicated tab, gated to Passport members -- see the
+         comment above MODULES for the full over-correction history. Not
+         the Guide Catalog (step-by-step written guides, above) -- this is
+         picking an ongoing real Guide to talk to. -->
+    <div id="dash-choose-guide-section" style="display:none;margin-bottom:28px;" data-tab-key="choose-guide" data-tab-order="8" data-tab-label="Choose Your Guide">
+      <p class="dash-eyebrow" style="margin-bottom:2px;">Passport</p>
+      <p class="dash-section-title">Choose Your Guide</p>
+      <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Pick the guide that matches your journey. Each one is a real, ongoing conversation -- not a one-off article -- tailored to where you are.</p>
+      <div id="dash-choose-guide-locked" style="display:none;border:1.5px solid var(--ve-border);border-radius:14px;padding:20px;background:linear-gradient(180deg,#fff,#fafdfa);">
+        <p style="font-size:13px;font-weight:800;margin-bottom:4px;">Passport benefit</p>
+        <p style="font-size:13px;color:var(--ve-text-75);">Choosing a dedicated Guide to walk with you is part of Passport membership. Upgrade to Passport to pick your Guide and start a real conversation.</p>
+      </div>
+      <div class="dash-modal-grid" id="dash-choose-guide-grid" style="display:none;"></div>
     </div>
 
     <div class="dash-modal-overlay" id="dash-campaigns-modal">
@@ -561,7 +577,7 @@
       </div>
     </div>
 
-    <div id="dash-tools-section" style="display:none;margin-bottom:28px;" data-tab-key="tools" data-tab-order="8" data-tab-label="Your Tools">
+    <div id="dash-tools-section" style="display:none;margin-bottom:28px;" data-tab-key="tools" data-tab-order="9" data-tab-label="Your Tools">
     <div id="dash-tiles-flat">
       <p class="dash-section-title">Your Tools</p>
       <div class="dash-grid" id="dash-tile-grid"></div>
@@ -980,9 +996,19 @@
   // Communities) or, for Lead Your City, duplicates what's already reachable
   // under Opportunities. "Take the Tour" moves to a direct prompt on the
   // Dashboard tab itself in a separate change, so it's not listed here either.
+  // choose-guide now opens its own dedicated, Passport-gated tab (see
+  // #dash-choose-guide-section / renderChooseGuideSection below) instead of
+  // jumping into the Guide Catalog tab -- Sean flagged that as an
+  // over-correction from an earlier pass: "the choose your guide is an
+  // actual different page... that's a passport tool only... it should have
+  // its own page and it should have the layout that you created before
+  // with the different guide images. That was correct." GUIDE_PERSONAS
+  // (real portraits, deep-links into a real /guide.html chat) was exactly
+  // that layout, just stranded in a dead modal (openGuideModal) that
+  // nothing called anymore -- reused here instead of building it twice.
   var MODULES = [
     { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
-    { key: 'choose-guide', href: '#', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator.' },
+    { key: 'choose-guide', href: '#', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' },
     { key: 'choose-topics', href: '#', icon: '&#128218;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Choose Your Topics <span class="dash-tag">Coming Soon</span>', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.' }
   ];
   var MODULES_BY_KEY = {};
@@ -1041,6 +1067,27 @@
     { key: 'guide-river', href: '/guide.html?guide=river', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.' }
   ];
 
+  function renderChooseGuideSection(member) {
+    var locked = document.getElementById('dash-choose-guide-locked');
+    var grid = document.getElementById('dash-choose-guide-grid');
+    if (!locked || !grid) return;
+    if (member.ve_tier !== 'passport') {
+      locked.style.display = 'block';
+      grid.style.display = 'none';
+      return;
+    }
+    locked.style.display = 'none';
+    grid.style.display = 'grid';
+    grid.innerHTML = '';
+    GUIDE_PERSONAS.forEach(function (g) {
+      var opt = document.createElement('a');
+      opt.className = 'dash-modal-opt';
+      opt.href = g.href;
+      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');background-color:' + g.bg + ';"></div><div class="dash-modal-opt-name">' + g.title + '</div><p style="font-size:11.5px;color:var(--ve-text-50);padding:0 12px 12px;line-height:1.4;">' + g.desc + '</p>';
+      grid.appendChild(opt);
+    });
+  }
+
   var dashLayout = [];
   var layoutEditMode = false;
   var draggedTileEl = null;
@@ -1096,7 +1143,7 @@
       tile.innerHTML = sectionedTileHtml(t);
       tile.addEventListener('click', function (e) {
         if (layoutEditMode) { e.preventDefault(); return; }
-        if (t.key === 'choose-guide') { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('guides'); }
+        if (t.key === 'choose-guide') { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('choose-guide'); }
         if (t.key === 'communities') { e.preventDefault(); openCommunityModal(); }
         if (t.key === 'my-list') { e.preventDefault(); openMyList(); }
       });
@@ -1253,7 +1300,7 @@
         '<div class="dash-tile-desc"' + (m.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + m.desc + '</div></div>';
       wrap.appendChild(tile);
       if (m.key === 'choose-guide') {
-        tile.addEventListener('click', function(e) { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('guides'); });
+        tile.addEventListener('click', function(e) { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('choose-guide'); });
       }
       if (m.key === 'communities') {
         tile.addEventListener('click', function(e) { e.preventDefault(); openCommunityModal(); });
@@ -2274,6 +2321,7 @@
     renderOpportunitiesSection(member);
     renderPodcastSection(member);
     renderGuidesSection();
+    renderChooseGuideSection(member);
     initDashTabs();
     initBountyTopics();
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
