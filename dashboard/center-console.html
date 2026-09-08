@@ -328,7 +328,6 @@
 </style>
 </head>
 <body>
-<script src="/public/nav.js"></script>
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/hub-news.js"></script>
@@ -2055,7 +2054,24 @@
     tabBar.innerHTML = '';
     mobileSelect.innerHTML = '';
 
-    function activate(key) {
+    // Real, shareable per-tab URLs (2026-09-07, Logan, Sean direction: "each
+    // of these tabs, I would like to have its own unique link... so if I
+    // shared it, people would be able to get to these pages"). Paired with
+    // a Vercel rewrite (/dashboard/:tab -> /dashboard/center-console) so
+    // /dashboard/directory, /dashboard/events, etc. all serve this same
+    // page, which then reads the tab key back out of the URL below. The
+    // auth gate in init()/showDenied() runs before this ever executes, so
+    // a signed-out visitor hitting one of these links is prompted to sign
+    // in or create an account first and lands on the right tab after.
+    function tabKeyFromPath() {
+      var m = location.pathname.match(/^\/dashboard\/([a-z0-9_-]+)\/?$/i);
+      if (!m) return null;
+      var found = sections.some(function (s) { return s.getAttribute('data-tab-key') === m[1]; });
+      return found ? m[1] : null;
+    }
+
+    function activate(key, opts) {
+      opts = opts || {};
       sections.forEach(function (s) {
         s.style.display = (s.getAttribute('data-tab-key') === key) ? 'block' : 'none';
       });
@@ -2063,6 +2079,10 @@
         btn.classList.toggle('active', btn.getAttribute('data-tab-key') === key);
       });
       mobileSelect.value = key;
+      if (!opts.skipHistory) {
+        var url = '/dashboard/' + key;
+        if (location.pathname !== url) history.pushState({ tabKey: key }, '', url);
+      }
     }
     // Exposed so tiles outside this closure (Your Tools) can jump straight
     // to a tab instead of navigating away (2026-09-07, Sean direction:
@@ -2090,10 +2110,16 @@
 
     mobileSelect.addEventListener('change', function () { activate(mobileSelect.value); });
 
-    // Default to the first tab (Bounties, which always exists) rather than
-    // leaving every section stacked -- that stacked-scroll layout is exactly
-    // what this tabbed redesign replaces.
-    activate(sections[0].getAttribute('data-tab-key'));
+    window.addEventListener('popstate', function (e) {
+      var key = (e.state && e.state.tabKey) || tabKeyFromPath() || sections[0].getAttribute('data-tab-key');
+      activate(key, { skipHistory: true });
+    });
+
+    // Land on whichever tab the URL names (a shared /dashboard/[tab] link)
+    // without rewriting the address bar on load; otherwise default to the
+    // first tab, same as before. skipHistory avoids stacking a duplicate
+    // history entry on top of the page the visitor actually landed on.
+    activate(tabKeyFromPath() || sections[0].getAttribute('data-tab-key'), { skipHistory: true });
   }
 
   // Bounties topic toggle (2026-09-07, Logan, Sean direction). Only "All" is
