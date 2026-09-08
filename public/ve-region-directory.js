@@ -32,18 +32,6 @@
     'Media': 'media', 'Uncategorized': 'media'
   };
 
-  // Vegan-status toggle groups (2026-09-07, Logan, Sean direction: "vegan
-  // friendly or fully vegan... it wouldn't be a dropdown, you can have them
-  // both on, you can have them one off"). Real `listings.vegan_status`
-  // values collapse into two independent, multi-select chips that work
-  // across every category, not just Food -- unlike the pre-existing
-  // per-Food "Vegan Friendly" Type-dropdown option, which is untouched and
-  // still works the same for anyone using it.
-  var VEGAN_GROUP = {
-    fully_vegan: 'full', vegan: 'full',
-    vegan_friendly: 'friendly', vegan_options: 'friendly'
-  };
-
   var CAT_CONFIG = [
     { key: 'food', label: 'Food', hasVF: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg>',
@@ -71,19 +59,11 @@
     + '.vrd-root .subcat-pill{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#888;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s}'
     + '.vrd-root .subcat-pill.sc-active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}'
     + '.vrd-root .subcat-pill:hover:not(.sc-active){border-color:#5EC47A;color:#2d7a4f}'
-    + '.vrd-root .vrd-global-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}'
-    + '.vrd-root .vrd-search-wrap{position:relative;flex:1;min-width:220px;max-width:420px}'
+    + '.vrd-root .subcat-pills .vrd-search-wrap{position:relative;margin-left:auto;flex:0 1 240px;min-width:160px;max-width:260px}'
     + '.vrd-root .vrd-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;display:flex;pointer-events:none}'
-    + '.vrd-root .vrd-search-input{width:100%;padding:9px 14px 9px 34px;border:1.5px solid #ddd;border-radius:20px;font-size:12.5px;font-family:Montserrat,sans-serif;color:#1a1a1a;background:#fff;transition:border-color .15s}'
+    + '.vrd-root .vrd-search-input{width:100%;padding:8px 14px 8px 32px;border:1.5px solid #ddd;border-radius:20px;font-size:12px;font-family:Montserrat,sans-serif;color:#1a1a1a;background:#fff;transition:border-color .15s}'
     + '.vrd-root .vrd-search-input:focus{outline:none;border-color:#5EC47A}'
-    + '.vrd-root .vrd-vegan-toggles{display:flex;gap:8px;flex-wrap:wrap}'
-    + '.vrd-root .vrd-vegan-chip{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:8px 16px;border-radius:20px;border:1.5px solid #cfe9d3;background:#fff;color:#2d7a4f;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s}'
-    + '.vrd-root .vrd-vegan-chip:hover{border-color:#5EC47A}'
-    + '.vrd-root .vrd-vegan-chip.active{background:#3A9B3E;color:#fff;border-color:#3A9B3E}'
-    + '.vrd-root .vrd-vegan-chip .chip-check{width:14px;height:14px;border-radius:50%;border:1.5px solid currentColor;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}'
-    + '.vrd-root .vrd-vegan-chip .chip-check svg{width:8px;height:8px;opacity:0;transition:opacity .1s}'
-    + '.vrd-root .vrd-vegan-chip.active .chip-check svg{opacity:1}'
-    + '@media(max-width:640px){.vrd-root .vrd-global-controls{flex-direction:column;align-items:stretch}.vrd-root .vrd-search-wrap{max-width:none}}'
+    + '@media(max-width:640px){.vrd-root .subcat-pills .vrd-search-wrap{flex:1 1 100%;margin-left:0;max-width:none;order:99}}'
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}'
@@ -160,38 +140,25 @@
     return '<div class="sort-bar">' + sortHtml + geoHtml + typeHtml + perpageHtml + '</div>';
   }
 
+  // Per-category search (2026-09-07, Logan, Sean correction: he'd first
+  // asked for one global search above the tabs, then realized "it's not
+  // searching all of the items" -- it should only search the active
+  // category -- so it lives on that category's own subcat-pills row,
+  // shifted to the right, "flush underneath the actual tab."
   function skeletonForCat(cat, config) {
     var subcatBtns = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>' +
       cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('');
+    var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+    var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
+      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(cat.label) + '&hellip;" aria-label="Search ' + esc(cat.label) + ' listings">' +
+      '</div>';
 
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
-      '<div class="subcat-pills">' + subcatBtns + '</div>' +
+      '<div class="subcat-pills">' + subcatBtns + searchHtml + '</div>' +
       buildBar(cat, config) +
       '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
       '<div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
       '</div>';
-  }
-
-  // Global search + vegan-status toggles (2026-09-07, Logan, Sean direction):
-  // placed above the category tabs rather than under one tab's subcat pills
-  // -- "the search should work for everything", not scoped to one category
-  // -- so it's visible and applies no matter which tab (Food, Products,
-  // Services, Community) is active. Both wire into applyPanelFilters()
-  // below, which re-reads them from the DOM on every keystroke/click and
-  // re-filters every panel (not just the visible one) so tab-switching
-  // shows the already-correct filtered results.
-  function renderGlobalControls() {
-    var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
-    var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-    return '<div class="vrd-global-controls">' +
-      '<div class="vrd-search-wrap">' + searchIcon +
-        '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search all listings by name or category&hellip;" aria-label="Search all listings">' +
-      '</div>' +
-      '<div class="vrd-vegan-toggles" role="group" aria-label="Filter by vegan status">' +
-        '<button type="button" class="vrd-vegan-chip" data-vrd-vegan="friendly"><span class="chip-check">' + checkSvg + '</span>Vegan Friendly</button>' +
-        '<button type="button" class="vrd-vegan-chip" data-vrd-vegan="full"><span class="chip-check">' + checkSvg + '</span>Fully Vegan</button>' +
-      '</div>' +
-    '</div>';
   }
 
   function renderSkeleton(config) {
@@ -200,7 +167,7 @@
         return '<button class="cat-tab' + (c.key === 'food' ? ' active' : '') + '" data-vrd-tab="' + c.key + '" role="tab">' + c.icon + ' ' + c.label + '</button>';
       }).join('') + '</div>';
     var panels = CAT_CONFIG.map(function (c) { return skeletonForCat(c, config); }).join('');
-    return '<div class="vrd-root">' + renderGlobalControls() + tabs + panels + '</div>';
+    return '<div class="vrd-root">' + tabs + panels + '</div>';
   }
 
   function makeAvatar(l) {
@@ -221,8 +188,7 @@
   function makeBrowseCard(l, idx, type) {
     var votes = (l.favorites_count || 0) + (l.likes_count || 0);
     var subcat = l.category || '';
-    var veganGroup = VEGAN_GROUP[l.vegan_status] || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-vegan-group="' + veganGroup + '">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
@@ -234,8 +200,7 @@
   function makeClosedCard(l, idx) {
     var votes = (l.favorites_count || 0) + (l.likes_count || 0);
     var subcat = l.category || '';
-    var veganGroup = VEGAN_GROUP[l.vegan_status] || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed" data-vegan-group="' + veganGroup + '" style="opacity:.7">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed" style="opacity:.7">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name" style="color:#888">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
@@ -363,7 +328,6 @@
     var catKey = panel.id.replace('board-', '');
     var grid = panel.querySelector('#' + catKey + '-grid');
     if (!grid) return;
-    var root = panel.closest('.vrd-root');
     var bar = panel.querySelector('.sort-bar');
     var countySel = bar ? bar.querySelector('[data-vrd-county]') : null;
     var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
@@ -375,9 +339,10 @@
     var perpage = perpageSel ? (parseInt(perpageSel.value, 10) || 24) : 24;
     var countyMap = {};
     if (countySel) { try { countyMap = JSON.parse(countySel.dataset.cities || '{}'); } catch (e) {} }
-    var searchInput = root ? root.querySelector('[data-vrd-search]') : null;
+    // Search is scoped to this panel/category only (2026-09-07, Logan, Sean
+    // correction) -- each panel has its own [data-vrd-search] input now.
+    var searchInput = panel.querySelector('[data-vrd-search]');
     var searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
-    var veganActive = root ? Array.prototype.slice.call(root.querySelectorAll('.vrd-vegan-chip.active')).map(function (b) { return b.getAttribute('data-vrd-vegan'); }) : [];
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.rank-card'));
     var matched = [];
     cards.forEach(function (card) {
@@ -390,8 +355,7 @@
         (card.dataset.name || '').toLowerCase().indexOf(searchTerm) > -1 ||
         (card.dataset.subcat || '').toLowerCase().indexOf(searchTerm) > -1 ||
         (card.dataset.city || '').toLowerCase().indexOf(searchTerm) > -1;
-      var veganOk = !veganActive.length || veganActive.indexOf(card.dataset.veganGroup) > -1;
-      var ok = subOk && geoOk && typeOk && searchOk && veganOk;
+      var ok = subOk && geoOk && typeOk && searchOk;
       if (ok) matched.push(card);
       else card.style.display = 'none';
     });
@@ -453,20 +417,13 @@
       });
     });
 
-    // Global search + vegan toggles re-filter every panel (not just the
-    // visible one), so switching tabs after searching/toggling shows
-    // already-correct results instead of resetting.
-    var searchInput = root.querySelector('[data-vrd-search]');
-    if (searchInput) {
-      searchInput.addEventListener('input', function () {
-        root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, null, true); });
-      });
-    }
-    root.querySelectorAll('[data-vrd-vegan]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        btn.classList.toggle('active');
-        root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, null, true); });
-      });
+    // Search is per-category now (2026-09-07, Logan, Sean correction): each
+    // panel owns its own [data-vrd-search] input and only re-filters itself.
+    root.querySelectorAll('.board-panel').forEach(function (panel) {
+      var searchInput = panel.querySelector('[data-vrd-search]');
+      if (searchInput) {
+        searchInput.addEventListener('input', function () { applyPanelFilters(panel, null, true); });
+      }
     });
 
     root.querySelectorAll('[data-vrd-subcat]').forEach(function (btn) {
