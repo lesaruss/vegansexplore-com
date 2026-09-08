@@ -936,15 +936,16 @@
   // module added to this catalog later shows up for everyone automatically.
   // "My List" (saved Directory listings, backed by ve_listing_saves) is folded
   // in here as just another tile rather than living as a separate section.
+  // Trimmed 2026-09-08 (Sean, Fieldy field note): Directory, Opportunities,
+  // Browse Communities and Lead Your City all removed as Your Tools tiles --
+  // each one duplicates a real tab (Directory, Your Opportunities, Your
+  // Communities) or, for Lead Your City, duplicates what's already reachable
+  // under Opportunities. "Take the Tour" moves to a direct prompt on the
+  // Dashboard tab itself in a separate change, so it's not listed here either.
   var MODULES = [
-    { key: 'tour', href: '/tour', icon: '&#128075;', bg: 'linear-gradient(135deg,#22C55E,#F69820)', title: 'Take the Tour', desc: "New here? A 60-second walkthrough of everything Vegans Explore offers." },
-    { key: 'opportunities', href: '/dashboard/opportunities', icon: '&#127775;', bg: 'linear-gradient(135deg,var(--ve-orange),var(--ve-green))', title: 'Opportunities', desc: 'Volunteer, become a Vegan Explorer, and more.' },
-    { key: 'directory', href: '/directory', icon: '&#128269;', bg: 'linear-gradient(135deg,#3A9B3E,#2d7d31)', title: 'Directory', desc: 'Discover and vote for Vegan-friendly restaurants and businesses near you.' },
     { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
     { key: 'choose-guide', href: '#', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator.' },
-    { key: 'choose-topics', href: '#', icon: '&#128218;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Choose Your Topics <span class="dash-tag">Coming Soon</span>', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.' },
-    { key: 'communities', href: '#', icon: '&#127758;', bg: 'linear-gradient(135deg,#0ea5e9,#0369a1)', title: 'Browse Communities', desc: 'See every city hub, not just your own, and find one to join.' },
-    { key: 'lead', href: '/lead', icon: '&#127942;', bg: 'linear-gradient(135deg,#dc2626,#991b1b)', title: 'Lead Your City', desc: 'Apply to become a Community Manager and help grow your local Vegan scene.' }
+    { key: 'choose-topics', href: '#', icon: '&#128218;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Choose Your Topics <span class="dash-tag">Coming Soon</span>', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.' }
   ];
   var MODULES_BY_KEY = {};
   MODULES.forEach(function(m) { MODULES_BY_KEY[m.key] = m; });
@@ -973,8 +974,14 @@
     TILE_REGISTRY.push(
       { key: 'sa-members', href: '/dashboard/members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/events.html', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
-      { key: 'sa-leads', href: '/dashboard/leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
-      { key: 'cm-handbook', href: '/dashboard/handbook', iconHtml: '&#128214;', bg: 'linear-gradient(135deg,var(--ve-green),var(--ve-green-dark))', title: 'Community Manager Handbook', desc: 'The full training handbook, straight from Sean: what the role covers, how you\'re supported and paid.', visibility: 'staff', defaultSection: 'tools' }
+      { key: 'sa-leads', href: '/dashboard/leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' }
+      // cm-handbook tile removed 2026-09-08 (Sean, Fieldy field note): a
+      // Community Manager's role already surfaces as a pill (dash-eyebrow
+      // reads member.ve_role === 'community_manager' and shows "Community
+      // Manager" the same way Superadmin gets its own eyebrow label), so a
+      // dedicated Your Tools tile just for the handbook was redundant. The
+      // handbook itself still lives at /dashboard/handbook if a link to it
+      // is needed again later.
     );
     return TILE_REGISTRY;
   }
