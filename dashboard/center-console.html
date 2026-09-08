@@ -106,6 +106,17 @@
   .dash-stats-hero-tile.locked .dash-stats-hero-value{color:var(--ve-text-50);}
   .dash-stats-hero-label{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-text-50);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px;}
   @media (max-width:640px){ .dash-stats-hero{grid-template-columns:1fr 1fr 1fr;gap:8px;} .dash-stats-hero-tile{padding:12px 8px;} .dash-stats-hero-value{font-size:19px;} .dash-stats-hero-label{font-size:8.5px;} }
+  /* Take the Tour prompt (2026-09-08, Sean, Fieldy field note: "we have
+     take the tour, should be actually on the dashboard"). Moved off the
+     Your Tools grid onto the Dashboard tab itself, where new members
+     actually land first -- same /tour entry point as before, unchanged. */
+  .dash-tour-prompt{display:flex;align-items:center;gap:14px;border:1.5px solid var(--ve-border);border-radius:14px;padding:14px 18px;background:linear-gradient(180deg,#fff,#fafdfa);text-decoration:none;color:var(--ve-text);margin-bottom:20px;transition:border-color 0.15s;}
+  .dash-tour-prompt:hover{border-color:var(--ve-green);}
+  .dash-tour-prompt-icon{font-size:22px;flex-shrink:0;}
+  .dash-tour-prompt-body{flex:1;}
+  .dash-tour-prompt-title{font-size:13.5px;font-weight:800;}
+  .dash-tour-prompt-desc{font-size:12px;color:var(--ve-text-50);margin-top:2px;}
+  .dash-tour-prompt-arrow{font-size:16px;color:var(--ve-green-dark);flex-shrink:0;}
 
   /* --- Daily Pulse + Bounties: explicit column grids (2026-09-07, Sean,
      Fieldy field note; Pulse widened to 4 cols same day). Bounties keeps its
@@ -416,6 +427,14 @@
 
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
       <p class="dash-section-title">Dashboard</p>
+      <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt">
+        <div class="dash-tour-prompt-icon">&#128075;</div>
+        <div class="dash-tour-prompt-body">
+          <div class="dash-tour-prompt-title">New here? Take the 60-second tour</div>
+          <div class="dash-tour-prompt-desc">A quick, live walkthrough of your Community Hub, Daily Pulse, Guides, and Points.</div>
+        </div>
+        <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
+      </a>
       <div class="dash-stats-hero cols-2">
         <div class="dash-stats-hero-tile">
           <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
