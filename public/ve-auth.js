@@ -7,17 +7,35 @@ function getToken(){try{return localStorage.getItem('ve_token')||null;}catch(e){
 function getRealMember(){try{return JSON.parse(localStorage.getItem('ve_member')||'null');}catch(e){return null;}}
 function setSession(t,m){try{localStorage.setItem('ve_token',t);localStorage.setItem('ve_member',JSON.stringify(m));}catch(e){}}
 function clearSession(){try{localStorage.removeItem('ve_token');localStorage.removeItem('ve_member');}catch(e){}}
-// --- Super Admin "View As" simulator (2026-07-12). Lets Sean's own account
-// (members.is_superadmin = true) preview the site as a logged-out visitor or a
-// simulated free member with a chosen Points balance, without touching his real
-// session. Preview only: getToken() always returns the REAL token, so any real
-// network call (signup, login, spend_points_for_guide, etc.) never runs against
-// faked data. Only ever honored when the real underlying account is a super admin.
+// --- Super Admin "View As" simulator (2026-07-12, extended 2026-09-08).
+// Lets Sean's own account (members.is_superadmin = true) preview the site as
+// a logged-out visitor or a simulated member, without touching his real
+// session. Preview only: getToken() always returns the REAL token, so any
+// real network call (signup, login, spend_points_for_guide, etc.) never runs
+// against faked data. Only ever honored when the real underlying account is
+// a super admin.
+//
+// Extended 2026-09-08 (Sean, Fieldy field note): "I wanna see a view as
+// member that only a super admin will have... I get to see it as a free
+// member. I get to see it as a passport member. I get to see it as a
+// community manager... without having to create a whole other account...
+// as soon as I log back out of it, whatever I did is erased." The payload
+// grows two optional fields alongside the original mode/points: `tier`
+// ('free' | 'passport') and `role` (null | 'community_manager'), both
+// merged onto the real member in getMember() below so the dashboard's
+// existing tier/role-driven rendering (isStaff, ve_tier gates, Passport
+// locks) reflects the previewed identity accurately -- this is what lets
+// Sean check "what's locked down, what's not locked down" without a second
+// account. is_superadmin is always forced false during a member preview so
+// superadmin-only tiles correctly disappear. Nothing here is persisted
+// server-side -- it is a client-only overlay on top of the real, unchanged
+// account -- and signOut() below clears it so a preview never survives
+// logout, per Sean's explicit requirement.
 function isRealSuperAdmin(){var m=getRealMember();return!!(m&&m.is_superadmin);}
 function getViewAs(){if(!isRealSuperAdmin())return null;try{var v=JSON.parse(localStorage.getItem('ve_view_as')||'null');if(!v||(v.mode!=='public'&&v.mode!=='member'))return null;return v;}catch(e){return null;}}
-function setViewAs(mode,points){if(!isRealSuperAdmin())return;try{localStorage.setItem('ve_view_as',JSON.stringify({mode:mode,points:points||0}));}catch(e){}window.location.reload();}
+function setViewAs(mode,opts){if(!isRealSuperAdmin())return;if(typeof opts==='number')opts={points:opts};opts=opts||{};try{var payload={mode:mode};if(mode==='member'){payload.points=opts.points||0;if(opts.tier)payload.tier=opts.tier;if(opts.role!==undefined)payload.role=opts.role;}localStorage.setItem('ve_view_as',JSON.stringify(payload));}catch(e){}window.location.reload();}
 function clearViewAs(){try{localStorage.removeItem('ve_view_as');}catch(e){}window.location.reload();}
-function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0}):null;}return getRealMember();}
+function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0,is_superadmin:false,ve_tier:v.tier||real.ve_tier,ve_role:(v.role!==undefined?v.role:null)}):null;}return getRealMember();}
 function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken();}
 function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();});}
 function signup(email,password,name,ref,community){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
@@ -40,7 +58,7 @@ function showModule(key){return call('show_module',{token:getToken(),module_key:
 function saveListing(listingId){return call('save_listing',{token:getToken(),listing_id:listingId});}
 function unsaveListing(listingId){return call('unsave_listing',{token:getToken(),listing_id:listingId});}
 function listSavedListings(){return call('list_saved_listings',{token:getToken()});}
-function signOut(){clearSession();window.location.href='/';}
+function signOut(){try{localStorage.removeItem('ve_view_as');}catch(e){}clearSession();window.location.href='/';}
 function initGoogleSignIn(buttonEl,callback,community){if(!window.google||!window.google.accounts)return;window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){loginWithGoogle(r.credential,community).then(callback);}});if(buttonEl)window.google.accounts.id.renderButton(buttonEl,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:buttonEl.offsetWidth||360});}
 function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a free Passport to do that.');}
 var _modalCb=null,_modalInited=false,_gBtnInited=false;
