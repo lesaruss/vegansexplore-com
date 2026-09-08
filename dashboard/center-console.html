@@ -146,6 +146,19 @@
   .dash-city-pill{appearance:none;border:1.5px solid var(--ve-green);background:var(--ve-green-light);color:var(--ve-green-dark);border-radius:100px;padding:7px 14px;font:inherit;font-size:12px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:10px;}
   .dash-city-pill:hover{background:#fff;}
   .dash-city-pill-caret{font-size:9px;opacity:0.7;}
+  /* Superadmin View As (2026-09-08, Sean, Fieldy field note) -- see the
+     markup comment above #dash-viewas-wrap for full context. Amber rather
+     than green so it never reads as a normal member-facing control. */
+  .dash-viewas-wrap{position:relative;margin-top:10px;margin-left:8px;}
+  .dash-viewas-pill{appearance:none;border:1.5px solid #B45309;background:#FEF3C7;color:#92400E;border-radius:100px;padding:7px 14px;font:inherit;font-size:12px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .dash-viewas-pill:hover{background:#fff;}
+  .dash-viewas-pill.previewing{background:#92400E;border-color:#92400E;color:#fff;}
+  .dash-viewas-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:#fff;border:1.5px solid var(--ve-border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.14);padding:6px;z-index:30;}
+  .dash-viewas-menu.open{display:block;}
+  .dash-viewas-opt{display:block;width:100%;text-align:left;appearance:none;border:none;background:none;font:inherit;font-size:12.5px;font-weight:700;color:var(--ve-text);padding:9px 10px;border-radius:8px;cursor:pointer;}
+  .dash-viewas-opt:hover{background:var(--ve-green-light);}
+  .dash-viewas-opt.current{color:var(--ve-green-dark);font-weight:900;}
+  .dash-viewas-sep{height:1px;background:var(--ve-border);margin:4px 2px;}
 
   /* --- Your Profile tab: 2-column variant of the stats-hero tile grid, for
      Membership + Badges (moved here from the front-and-center row, 2026-09-07
@@ -173,7 +186,7 @@
   .dash-tabs-mobile{display:none;}
   @media (max-width:640px){
     .dash-tabs{display:none;}
-    .dash-tabs-mobile{display:block;width:100%;margin-bottom:20px;padding:12px 14px;border:1.5px solid var(--ve-border);border-radius:10px;font:inherit;font-size:13px;font-weight:800;color:var(--ve-text);background:#fff;-webkit-appearance:none;appearance:none;}
+    .dash-tabs-mobile{display:block;width:100%;margin-bottom:20px;padding:12px 40px 12px 14px;border:1.5px solid var(--ve-border);border-radius:10px;font:inherit;font-size:13px;font-weight:800;color:var(--ve-text);background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 16px center;-webkit-appearance:none;appearance:none;}
   }
 
   /* --- Bounties topic toggle + horizontal scroll-all row. Only "All" is
@@ -403,6 +416,29 @@
              just be going to them." Text/click wiring in renderCityPill() /
              openCityModal(). -->
         <button type="button" class="dash-city-pill" id="dash-city-pill">Choose a City <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span></button>
+        <!-- Superadmin View As (2026-09-08, Sean, Fieldy field note): preview
+             the dashboard as a Free Member, Passport Member, or Community
+             Manager without creating a separate test account -- "I need to
+             make sure what's locked down, what's not locked down." Gated on
+             the REAL account (VEAuth.getRealMember, not the currently
+             previewed one) in initViewAsControl(), so it never shows up for
+             a real non-superadmin and stays usable while a preview is
+             active, to switch modes or return to Real Account. Ephemeral by
+             design -- VEAuth.signOut() clears ve_view_as, so nothing
+             survives logout, per Sean's explicit requirement. -->
+        <div class="dash-viewas-wrap" id="dash-viewas-wrap" style="display:none;">
+          <button type="button" class="dash-viewas-pill" id="dash-viewas-pill">
+            <span id="dash-viewas-label">View As</span>
+            <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span>
+          </button>
+          <div class="dash-viewas-menu" id="dash-viewas-menu" role="menu">
+            <button type="button" class="dash-viewas-opt" data-viewas="real" role="menuitem">My Account (Real)</button>
+            <div class="dash-viewas-sep"></div>
+            <button type="button" class="dash-viewas-opt" data-viewas="free" role="menuitem">Free Member</button>
+            <button type="button" class="dash-viewas-opt" data-viewas="passport" role="menuitem">Passport Member</button>
+            <button type="button" class="dash-viewas-opt" data-viewas="cm" role="menuitem">Community Manager</button>
+          </div>
+        </div>
       </div>
 
       <!-- Compact stats cluster, moved up next to Welcome/city pill so the
@@ -596,10 +632,10 @@
       <div class="dash-tile-section">
         <div class="dash-grid" id="dash-grid-tools"></div>
       </div>
-      <div class="dash-tile-section">
-        <p class="dash-section-title">Media</p>
-        <div class="dash-grid" id="dash-grid-media"></div>
-      </div>
+      <!-- Media section removed 2026-09-08 (Sean, Fieldy field note): it
+           never had anything default into it and stayed permanently empty.
+           Anything previously dragged there still renders -- just merged
+           into the Your Tools grid above now, see renderSectionedTiles. -->
       <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Tap Edit Layout to drag tiles between sections and reorder them, like rearranging apps on your phone.</p>
     </div>
     <div id="dash-mylist-crumb"></div>
@@ -871,7 +907,13 @@
     { slug: 'creator', label: 'Creator Path', soon: true, title: 'Creator Guide', desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
     { slug: 'nonprofit', label: 'Nonprofit Path', soon: true, title: 'Nonprofit Guide', desc: "Building your org's community on the platform and growing your base of supporters.", chips: [{ text: '~1,111 Points', cls: 'price' }] },
     { slug: 'prevegan', label: 'Pre-Vegan Path', soon: true, title: 'Pre-Vegan Guide', desc: 'Real answers for going Vegan-curious to confident: what to eat, what to expect, and how to start.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
-    { slug: 'seasonedvegan', label: 'Seasoned Vegan Path', soon: true, title: 'Seasoned Vegan Guide', desc: 'Deepen your impact: advocacy, mentoring, and connecting with the global movement.', chips: [{ text: '~1,111 Points', cls: 'price' }] }
+    { slug: 'seasonedvegan', label: 'Seasoned Vegan Path', soon: true, title: 'Seasoned Vegan Guide', desc: 'Deepen your impact: advocacy, mentoring, and connecting with the global movement.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    // Folded in from the Your Tools "Choose Your Topics" tile (2026-09-08,
+    // Sean, Fieldy field note): "that's gonna be under the guide section...
+    // we don't need this additional section." Same catalog, same Notify Me
+    // waitlist pattern as the other in-development guides above -- just
+    // living in the one place guides actually live now.
+    { slug: 'mini-guides', label: 'Mini Guides', soon: true, title: 'Choose Your Topics', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.', chips: [{ text: '$11 or 1,100 Points', cls: 'price' }] }
   ];
   function gcSubmitDashWaitlist(btn, slug) {
     var card = btn.closest('.gc-card');
@@ -952,6 +994,14 @@
         '<div class="dash-tile-body">' +
           '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] + ' <span class="dash-tag live">Joined</span></div>' +
         '</div>';
+      // 2026-09-08 (Sean, Fieldy field note): clicking a joined community
+      // here now brings it into view on the dashboard (top city pill,
+      // Directory, Leaderboard, Events, Campaigns, Daily Pulse) instead of
+      // navigating away to the standalone public community page.
+      tile.addEventListener('click', function (e) {
+        e.preventDefault();
+        switchActiveCity(slug, member);
+      });
       wrap.appendChild(tile);
 
       var remove = document.createElement('button');
@@ -1008,9 +1058,10 @@
   // nothing called anymore -- reused here instead of building it twice.
   var MODULES = [
     { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
-    { key: 'choose-guide', href: '#', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' },
-    { key: 'choose-topics', href: '#', icon: '&#128218;', bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Choose Your Topics <span class="dash-tag">Coming Soon</span>', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.' }
+    { key: 'choose-guide', href: '#', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' }
   ];
+  // choose-topics tile removed 2026-09-08 (Sean, Fieldy field note): folded
+  // into GUIDE_CATALOG above instead -- see the "mini-guides" entry there.
   var MODULES_BY_KEY = {};
   MODULES.forEach(function(m) { MODULES_BY_KEY[m.key] = m; });
 
@@ -1174,8 +1225,13 @@
     // section. resolveDashboardSections already excludes visibility:
     // 'superadmin' tiles for non-superadmins before they ever reach a
     // bucket, so this merge never leaks them to anyone else.
-    var toolsAndAdmin = buckets.tools.concat(buckets.superadmin).sort(function (a, b) { return a.order - b.order; });
-    renderSectionedGrid('dash-grid-media', buckets.media);
+    // Media bucket merged into the same grid as Tools/Superadmin (2026-09-08,
+    // Sean, Fieldy field note: "we don't need to have media on there... that
+    // could be pulled off") -- resolveDashboardSections still resolves a
+    // saved 'media' section_key from any older layout row so nothing
+    // previously dragged there vanishes, it just renders alongside
+    // everything else now instead of under its own empty header.
+    var toolsAndAdmin = buckets.tools.concat(buckets.superadmin).concat(buckets.media).sort(function (a, b) { return a.order - b.order; });
     renderSectionedGrid('dash-grid-tools', toolsAndAdmin);
     loadPendingEventsCount(VEAuth.getToken());
     if (member.is_superadmin) loadPendingLeadsCount(VEAuth.getToken());
@@ -1205,7 +1261,7 @@
 
   function persistDashboardLayout() {
     var layout = [];
-    [['media', 'dash-grid-media'], ['tools', 'dash-grid-tools']].forEach(function (pair) {
+    [['tools', 'dash-grid-tools']].forEach(function (pair) {
       var section = pair[0];
       var grid = document.getElementById(pair[1]);
       if (!grid) return;
@@ -1217,7 +1273,7 @@
     VEAuth.saveLayout(layout).catch(function () {});
   }
 
-  ['dash-grid-media', 'dash-grid-tools'].forEach(function (gridId) {
+  ['dash-grid-tools'].forEach(function (gridId) {
     var grid = document.getElementById(gridId);
     if (!grid) return;
     grid.addEventListener('dragover', function (e) {
@@ -1828,6 +1884,48 @@
     try { window.localStorage.setItem(VE_ACTIVE_CITY_KEY, slug); } catch (e) {}
   }
 
+  // Superadmin View As control (2026-09-08, Sean, Fieldy field note) -- see
+  // the markup comment on #dash-viewas-wrap above for full context. Reads
+  // VEAuth.getViewAs()/setViewAs()/clearViewAs(), which already merge
+  // tier/role overrides onto the real member in ve-auth.js's getMember().
+  var VIEW_AS_LABELS = { free: 'Free Member', passport: 'Passport Member', cm: 'Community Manager' };
+  function initViewAsControl() {
+    var real = VEAuth.getRealMember();
+    var wrap = document.getElementById('dash-viewas-wrap');
+    if (!wrap || !real || !real.is_superadmin) return;
+    wrap.style.display = 'inline-block';
+    var pill = document.getElementById('dash-viewas-pill');
+    var label = document.getElementById('dash-viewas-label');
+    var menu = document.getElementById('dash-viewas-menu');
+    var current = VEAuth.getViewAs();
+    var currentKey = 'real';
+    if (current && current.mode === 'member') {
+      if (current.role === 'community_manager') currentKey = 'cm';
+      else if (current.tier === 'passport') currentKey = 'passport';
+      else currentKey = 'free';
+    }
+    label.textContent = currentKey === 'real' ? 'View As' : ('Viewing: ' + VIEW_AS_LABELS[currentKey]);
+    pill.classList.toggle('previewing', currentKey !== 'real');
+    Array.prototype.forEach.call(menu.querySelectorAll('.dash-viewas-opt'), function (opt) {
+      opt.classList.toggle('current', opt.getAttribute('data-viewas') === currentKey);
+    });
+    pill.onclick = function (e) {
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    };
+    menu.addEventListener('click', function (e) { e.stopPropagation(); });
+    document.addEventListener('click', function () { menu.classList.remove('open'); });
+    Array.prototype.forEach.call(menu.querySelectorAll('.dash-viewas-opt'), function (opt) {
+      opt.addEventListener('click', function () {
+        var v = opt.getAttribute('data-viewas');
+        if (v === 'real') { VEAuth.clearViewAs(); return; }
+        if (v === 'free') { VEAuth.setViewAs('member', { tier: 'free', role: null }); return; }
+        if (v === 'passport') { VEAuth.setViewAs('member', { tier: 'passport', role: null }); return; }
+        if (v === 'cm') { VEAuth.setViewAs('member', { tier: 'free', role: 'community_manager' }); return; }
+      });
+    });
+  }
+
   function renderCityPill(member) {
     var pill = document.getElementById('dash-city-pill');
     if (!pill) return;
@@ -1858,26 +1956,36 @@
       var banner = VE_CITY_BANNER[slug];
       opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background-image:url(\'' + banner + '\')"></div><div class="dash-modal-opt-name">' + VE_CITY_NAMES[slug] + (isActive ? ' <span class="dash-tag live">Viewing</span>' : '') + '</div>';
       opt.addEventListener('click', function () {
-        setActiveCity(slug);
+        switchActiveCity(slug, member);
         closeCityModal();
-        renderCityPill(member);
-        renderDirectory(member);
-        renderLeaderboard(member);
-        renderEventsTab(member);
-        // 2026-09-07 (Logan, Sean caught live): switching cities left Your
-        // Campaigns showing the previous city's cards until a manual
-        // refresh -- same "city switch doesn't re-render" bug class already
-        // fixed for Events above. Daily Pulse is city-scoped the same way
-        // (renderDailyPulse filters posts by active city), so it gets the
-        // same fix proactively rather than waiting to be caught live too.
-        renderCampaignsSection(member);
-        renderDailyPulse(member);
       });
       grid.appendChild(opt);
     });
   }
   function closeCityModal() {
     document.getElementById('dash-city-modal').classList.remove('open');
+  }
+
+  // Shared "switch active city" logic (2026-09-08, Logan, Sean, Fieldy field
+  // note): factored out of the city modal's option click above so Your
+  // Communities can reuse the exact same city-scoped re-render instead of
+  // just navigating away and leaving the top pill stale -- see the call
+  // site in renderCommunitySection. Sean: "when I click on your
+  // communities, those should change the community that you see in that
+  // top pill box with the drop down. And right now it doesn't."
+  function switchActiveCity(slug, member) {
+    setActiveCity(slug);
+    renderCityPill(member);
+    renderDirectory(member);
+    renderLeaderboard(member);
+    renderEventsTab(member);
+    // 2026-09-07 (Logan, Sean caught live): switching cities left Your
+    // Campaigns showing the previous city's cards until a manual refresh --
+    // same "city switch doesn't re-render" bug class already fixed for
+    // Events above. Daily Pulse is city-scoped the same way (renderDailyPulse
+    // filters posts by active city), so it gets the same fix here too.
+    renderCampaignsSection(member);
+    renderDailyPulse(member);
   }
   document.getElementById('dash-city-modal-close').addEventListener('click', closeCityModal);
   document.getElementById('dash-city-modal').addEventListener('click', function(e) {
@@ -2312,6 +2420,7 @@
     document.getElementById('dash-content').style.display = 'block';
     renderStatsHero(member);
     renderCityPill(member);
+    initViewAsControl();
     renderLeaderboard(member);
     renderDirectory(member);
     renderEventsTab(member);
