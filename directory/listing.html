@@ -44,10 +44,10 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .rating-num{font-size:28px;font-weight:900;color:#fff;line-height:1}
 .rating-stars{font-size:12px;color:#F69820;letter-spacing:1px}
 .rating-count{font-size:10px;font-weight:600;color:#666;letter-spacing:0.06em}
-.vote-hero-btn{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:12px 24px;border-radius:6px;background:#5EC47A;color:#000;border:none;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+.vote-hero-btn{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:12px 20px;border-radius:6px;background:#5EC47A;color:#000;border:none;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
 .vote-hero-btn:hover{background:#4db368}
 .vote-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
-.vote-count-display{font-size:10px;font-weight:700;color:#888;text-align:center;letter-spacing:0.08em}
+.vote-badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:rgba(0,0,0,0.16);color:inherit;font-size:10px;font-weight:800;letter-spacing:0;line-height:1}
 .save-hero-btn{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:12px 24px;border-radius:6px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.35);cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s}
 .save-hero-btn:hover{border-color:#fff}
 .save-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
@@ -59,7 +59,6 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .listing-hero.city-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(6,14,10,0.82) 0%, rgba(6,14,10,0.68) 45%, rgba(6,14,10,0.88) 100%)}
 .listing-hero.city-bg .listing-hero-avatar,.listing-hero.city-bg .listing-hero-content{position:relative}
 .listing-hero.city-bg .listing-breadcrumb{color:rgba(255,255,255,0.72)}
-.listing-hero.city-bg .vote-count-display{color:rgba(255,255,255,0.75)}
 .listing-hero.city-bg .badge-verified{background:rgba(6,14,10,0.55);color:#8ff0ac;border-color:rgba(143,240,172,0.6)}
 
 /* QUICK INFO BAR */
@@ -226,7 +225,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .photos-grid{display:none}
   .photos-carousel-wrap{display:block}
   .donate-row{flex-direction:column}
-  .vote-count-display{font-size:9px}
+  .vote-badge{font-size:9px;min-width:18px;height:18px}
   .listing-body{grid-template-columns:1fr;padding:20px 16px}
   .listing-page-grid{grid-template-columns:1fr}
   .listing-sidebar{position:static;padding:0 16px 24px;max-height:none}
@@ -351,11 +350,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 /* BILLBOARD / AD INVENTORY */
 .bb-wrap{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:16px;margin-bottom:14px}
 .bb-header{font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--ve-border)}
-.bb-rotator{position:relative;min-height:80px}
-.bb-slide{display:none}
-.bb-slide.active{display:block}
 .bb-placeholder{width:100%;background:#f5f5f5;border:1px dashed #ddd;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 16px}
-.bb-tall{aspect-ratio:1/2}
 .bb-stacked{display:flex;flex-direction:column;gap:10px}
 .bb-stacked .bb-placeholder{aspect-ratio:6/5;padding:16px}
 .bb-ph-icon{color:#ccc}
@@ -364,9 +359,6 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-ad-img{width:100%;height:100%;display:block;border-radius:8px;object-fit:cover}
 .bb-ad-link{display:block;width:100%;height:100%}
 .bb-placeholder.bb-filled{border:none;background:none;padding:0;overflow:hidden;display:block}
-.bb-dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
-.bb-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);border:none;cursor:pointer;padding:0;transition:.15s}
-.bb-dot.active{background:#5EC47A;width:18px;border-radius:3px}
 .bb-tag{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);text-align:center;margin-top:10px}
 .listing-sidebar{display:flex;flex-direction:column}
 @media(max-width:768px){
@@ -791,7 +783,12 @@ function renderSidebar(l){
   });
 
   var verifBadge = l.ve_verified ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">VE Verified</span>' : '';
-  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your business? Claim this listing to update your info and unlock full analytics.</p><a href="/intake" class="claim-btn">Claim Listing</a></div></div>' : '';
+  // Copy sharpened (2026-09-08, Logan, Sean direction): make the payoff of
+  // claiming concrete -- a profile that looks like the site's best listings
+  // -- rather than a vague "unlock analytics" line. Claiming itself is free;
+  // it's filling the profile in afterward that produces that look, so the
+  // copy says exactly that rather than implying a paid unlock.
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your business? Claim this listing for free to add your photos, video, and story, and build a profile like our featured listings.</p><a href="/intake" class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
@@ -849,8 +846,8 @@ function renderSidebar(l){
   var unlockCard = !l.claimed_by_member_id
     ? '<div class="side-card" style="text-align:center">'+
         '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--ve-green);display:block;margin:0 auto 8px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+
-        '<div class="side-card-title" style="text-align:center;margin-bottom:8px">More coming to this profile</div>'+
-        '<p style="font-size:11px;color:var(--ve-text-50);line-height:1.65;margin-bottom:12px">Community Partners can unlock a menu, professional video, and a Pulse feed for news and updates.</p>'+
+        '<div class="side-card-title" style="text-align:center;margin-bottom:8px">Build Out This Profile</div>'+
+        '<p style="font-size:11px;color:var(--ve-text-50);line-height:1.65;margin-bottom:12px">Claimed businesses can add a menu, professional video, and a live Pulse feed, the full profile you see on our featured listings.</p>'+
         '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">'+
           '<span class="unlock-chip">'+_lkSvg+' Menu</span>'+
           '<span class="unlock-chip">'+_lkSvg+' Video</span>'+
@@ -861,27 +858,14 @@ function renderSidebar(l){
     : '';
 
   var _bbAdSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>';
+  // Skyscraper ad removed (2026-09-08, Logan, Sean direction): just the two
+  // smaller ads now, shown permanently rather than rotated in and out of view.
   var billboardHtml =
     '<div class="bb-wrap" id="bb-inventory">'+
       '<div class="bb-header">Billboard</div>'+
-      '<div class="bb-rotator">'+
-        '<div class="bb-slide active" id="bb-slide-0">'+
-          '<div class="bb-placeholder bb-tall" id="bb-ad-skyscraper">'+
-            '<div class="bb-ph-icon">'+_bbAdSvg+'</div>'+
-            '<div class="bb-ph-text">Skyscraper</div>'+
-            '<div class="bb-ph-dim">300 x 600</div>'+
-          '</div>'+
-        '</div>'+
-        '<div class="bb-slide" id="bb-slide-1">'+
-          '<div class="bb-stacked">'+
-            '<div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
-            '<div class="bb-placeholder" id="bb-ad-landscape-2"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
-          '</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="bb-dots">'+
-        '<button class="bb-dot active" id="bb-dot-0" aria-label="Skyscraper ad"></button>'+
-        '<button class="bb-dot" id="bb-dot-1" aria-label="Featured ads"></button>'+
+      '<div class="bb-stacked">'+
+        '<div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
+        '<div class="bb-placeholder" id="bb-ad-landscape-2"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
       '</div>'+
       '<div class="bb-tag">Powered by LESARUSS Advertising</div>'+
     '</div>';
@@ -1119,8 +1103,7 @@ function renderListing(l){
           (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
         '</div>'+
         '<div class="listing-hero-right">'+
-          '<button class="vote-hero-btn" id="vote-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote</button>'+
-          '<div class="vote-count-display" id="vote-display">'+votes+' votes</div>'+
+          '<button class="vote-hero-btn" id="vote-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote<span class="vote-badge" id="vote-badge">'+votes+'</span></button>'+
           '<button class="save-hero-btn" id="save-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg><span id="save-btn-label">Save</span></button>'+
         '</div>'+
       '</div>'+
@@ -1188,14 +1171,17 @@ function renderListing(l){
   // Wire overview carousel on load; Photos tab carousel on first click
   wireCarousel('ov');
 
-  // Vote button - increments vote display + community votes stat + gives business +1 Point
+  // Vote button - increments the integrated count badge + community votes stat
+  // + gives business +1 Point (2026-09-08, Logan, Sean direction: the vote
+  // count now lives inside the button itself, next to "Vote", instead of a
+  // separate label wedged between the vote and save buttons).
   document.getElementById('vote-btn').addEventListener('click', function(){
     if(this.dataset.voted) return;
     this.dataset.voted = '1';
-    this.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted!';
+    var badge = document.getElementById('vote-badge');
+    var newCount = ((badge ? parseInt(badge.textContent, 10) : 0) || 0) + 1;
+    this.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted!<span class="vote-badge" id="vote-badge">' + newCount + '</span>';
     this.style.background = '#2d7d31';
-    var disp = document.getElementById('vote-display');
-    if(disp){ disp.textContent = ((parseInt(disp.textContent)||0)+1) + ' votes'; }
     var cv = document.getElementById('community-votes');
     if(cv){ cv.textContent = (parseInt(cv.textContent)||0) + 1; }
     // +1 Point to business on every vote
@@ -1343,7 +1329,6 @@ function renderInstagramContent(veBusinessId){
 }
 
 var VE_BB_SLOT_ELS = {
-  've-directory-listing-skyscraper': 'bb-ad-skyscraper',
   've-directory-listing-landscape-1': 'bb-ad-landscape-1',
   've-directory-listing-landscape-2': 'bb-ad-landscape-2'
 };
@@ -1374,29 +1359,6 @@ function loadBillboardAds(){
       if(elId) renderBillboardSlot(elId, s);
     });
   }).catch(function(){ /* placeholder boxes still show if this fails */ });
-}
-
-function initBillboard(){
-  var bbSlot = 0;
-  var slides = [document.getElementById('bb-slide-0'), document.getElementById('bb-slide-1')];
-  var dots   = [document.getElementById('bb-dot-0'),   document.getElementById('bb-dot-1')];
-  if(!slides[0]) return;
-  function goTo(n){
-    slides.forEach(function(s){ if(s) s.classList.remove('active'); });
-    dots.forEach(function(d){ if(d) d.classList.remove('active'); });
-    bbSlot = n;
-    if(slides[n]) slides[n].classList.add('active');
-    if(dots[n]) dots[n].classList.add('active');
-  }
-  var timer = setInterval(function(){ goTo((bbSlot+1)%2); }, 6000);
-  dots.forEach(function(d, i){
-    if(d) d.addEventListener('click', function(){ goTo(i); clearInterval(timer); });
-  });
-  var wrap = document.getElementById('bb-inventory');
-  if(wrap){
-    wrap.addEventListener('mouseenter', function(){ clearInterval(timer); });
-    wrap.addEventListener('mouseleave', function(){ timer = setInterval(function(){ goTo((bbSlot+1)%2); }, 6000); });
-  }
 }
 
 function showNotFound(){
@@ -1655,7 +1617,6 @@ if(!slug || slug === 'listing'){
     if(data && data.length){
       var l = data[0];
       renderListing(l);
-      initBillboard();
       loadBillboardAds();
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
