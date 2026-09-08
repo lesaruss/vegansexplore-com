@@ -245,6 +245,20 @@
       history.replaceState(null, '', '/guide.html');
     }
 
+    // Deep link from a specific Guide's tile elsewhere on the site (2026-09-08,
+    // Sean) -- e.g. the dashboard's "Choose Your Guide" picker jumps straight
+    // into this real chat with that Guide already selected, instead of a
+    // separate landing page per Guide. An unrecognized id is ignored rather
+    // than silently switching state.guide_slug to something bogus.
+    var guideParam = params.get('guide');
+    if (guideParam && GUIDES.some(function (g) { return g.id === guideParam; })) {
+      state.guide_slug = guideParam;
+      state.chat_done = false;
+      state.messages = [];
+      saveState(state);
+      history.replaceState(null, '', '/guide.html');
+    }
+
     function guideBySlug(slug){ for (var i=0;i<GUIDES.length;i++){ if (GUIDES[i].id === slug) return GUIDES[i]; } return GUIDES[0]; }
 
     // ---- Back navigation (2026-09-07, Sean field note): "if I missed
