@@ -984,12 +984,16 @@
   // the "Choose Your Guide" modal under Your Tools. The guide/wizard
   // differentiator: a guide walks you through a journey, a wizard helps you
   // build something. Real portrait as the thumbnail rather than an icon.
+  // Personas now deep-link into the real /guide.html chat with that Guide
+  // pre-selected (2026-09-08, Sean) instead of the old /guides/ve-path-*
+  // pages, which were static, unfinished mockups (their own <title> tags
+  // say "(Mock)") that never talked to a real Guide.
   var GUIDE_PERSONAS = [
-    { key: 'guide-maya', href: '/guides/ve-path-prevegan', img: '/public/guides/maya.png', bg: '#2d7d31', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
-    { key: 'guide-theo', href: '/guides/ve-path-seasonedvegan', img: '/public/guides/theo.png', bg: '#8B6914', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
-    { key: 'guide-nori', href: '/guides/ve-path-entrepreneur', img: '/public/guides/nori.png', bg: '#2D5F8A', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.' },
-    { key: 'guide-dani', href: '/guides/ve-path-nonprofit', img: '/public/guides/dani.png', bg: '#C4522A', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.' },
-    { key: 'guide-river', href: '/guides/ve-path-creator', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.' }
+    { key: 'guide-maya', href: '/guide.html?guide=maya', img: '/public/guides/maya.png', bg: '#2d7d31', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
+    { key: 'guide-theo', href: '/guide.html?guide=theo', img: '/public/guides/theo.png', bg: '#8B6914', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
+    { key: 'guide-nori', href: '/guide.html?guide=nori', img: '/public/guides/nori.png', bg: '#2D5F8A', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.' },
+    { key: 'guide-dani', href: '/guide.html?guide=dani', img: '/public/guides/dani.png', bg: '#C4522A', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.' },
+    { key: 'guide-river', href: '/guide.html?guide=river', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.' }
   ];
 
   var dashLayout = [];
