@@ -55,12 +55,23 @@
   .lr-dock-item[data-tooltip]::before{content:'';position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(20,20,20,0.94);opacity:0;pointer-events:none;transition:opacity 0.12s ease;z-index:10;}
   .lr-dock-item[data-tooltip]:hover::after,.lr-dock-item[data-tooltip]:hover::before,.lr-dock-item[data-tooltip]:focus-visible::after,.lr-dock-item[data-tooltip]:focus-visible::before{opacity:1;}
   .lr-dock-sep{width:1px;align-self:stretch;background:rgba(0,0,0,0.1);margin:2px 2px;}
+  /* "Have a Question" dock item (2026-09-09): a <button>, since it drives the
+     Guide widget rather than navigating, so it needs the anchor items' pointer
+     and a reset of the default button chrome. Its floating bubble is hidden on
+     this page because the dock item replaces it. */
+  button.lr-dock-item{cursor:pointer;background:none;border:none;font:inherit;}
+  .lr-dock-ask .lr-dock-icon{font-size:22px;line-height:1;}
+  .gw-launch{display:none !important;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
     .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
     .lr-dock{display:none;}
+    /* The dock is hidden here, so the Guide widget's own floating bubble has
+       to come back: otherwise hiding it above would leave a phone with no
+       "have a question" entry point at all. */
+    .gw-launch{display:block !important;}
   }
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #dash-gate{text-align:center;padding:100px 20px;}
@@ -396,6 +407,21 @@
     <div class="lr-dock-icon" style="background:#1a7d7d;">ADA</div>
   </div>
   <div class="lr-dock-sep"></div>
+  <!-- "Have a Question" (2026-09-09, Sean, Fieldy 08:53 UTC: "I wanna take
+       the have a question and I want to put it into the selector, the
+       universe selector at the bottom... it'll go to the left of the LESARUSS
+       HQ icon and the right of the divider"). This is the Guide widget's own
+       "have a question" entry point, which until now was only reachable from
+       the floating bubble that widget injects. It is not a brand, so it sits
+       on the utility side of the divider next to HQ. Clicking it drives the
+       widget's real launcher rather than reimplementing it, so the tier
+       branching already wired in public/footer.js carries over untouched: a
+       free member gets the ticket form, a Passport member is routed into the
+       real Guide chat. The floating bubble is hidden on this page (see
+       .gw-launch below) so the console has one entry point, not two. -->
+  <button type="button" class="lr-dock-item lr-dock-ask" id="lr-dock-ask" data-tooltip="Have a Question" aria-label="Have a question? Talk to a Guide">
+    <div class="lr-dock-icon" style="background:#3f3f46;">?</div>
+  </button>
   <a class="lr-dock-item" href="https://hq.lesaruss.ai" target="_blank" rel="noopener" data-tooltip="LESARUSS HQ" aria-label="LESARUSS HQ -- explore the whole universe">
     <div class="lr-dock-icon" style="background:#1a1a1a;">&#9673;</div>
   </a>
@@ -2520,6 +2546,31 @@
       document.getElementById('dash-welcome-sub').textContent = member.ve_tier === 'passport' ? 'Passport member.' : 'Free member.';
     }
   }
+
+  // "Have a Question" dock item (2026-09-09, Sean, Fieldy 08:53 UTC). Drives
+  // the Guide widget's own launcher instead of reimplementing the ticket form,
+  // so whatever public/footer.js has wired onto that launcher (today: Passport
+  // members routed into the real Guide chat, free members into the ticket
+  // form) applies here with no duplication. The widget is injected by
+  // footer.js and initializes asynchronously, so the launcher may not exist
+  // yet at first click: retry briefly, then fall back to the Guide page rather
+  // than letting the button do nothing.
+  (function initDockAsk() {
+    var btn = document.getElementById('lr-dock-ask');
+    if (!btn) return;
+    function launcher() { return document.querySelector('.gw-launch .gw-btn'); }
+    btn.addEventListener('click', function () {
+      var el = launcher();
+      if (el) { el.click(); return; }
+      var tries = 0;
+      var iv = setInterval(function () {
+        tries++;
+        var late = launcher();
+        if (late) { clearInterval(iv); late.click(); return; }
+        if (tries > 20) { clearInterval(iv); window.location.href = '/guide.html'; }
+      }, 100);
+    });
+  })();
 
   function init() {
     var gate = document.getElementById('dash-gate');
