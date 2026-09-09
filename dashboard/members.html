@@ -79,6 +79,7 @@
   .pill.ve{background:var(--ve-green-light);color:var(--ve-green-dark);}
   .pill.gfs{background:#eef2ff;color:#3730a3;}
   .pill.unatt{background:var(--ve-alert-bg);color:var(--ve-alert-text);}
+  .pill.lr{background:#fff3e0;color:#7d4a00;}
   .pill.paid{background:#fef3c7;color:#78350f;}
   .pill.free{background:#f1f1f1;color:#4a4a4a;}
   .pill.staff{background:#e0f2fe;color:#075985;}
@@ -120,6 +121,18 @@
 </style>
 </head>
 <body>
+<script>
+/* Dashboard iframe embed (2026-09-09, Logan, Sean, Fieldy field note: Your
+   Tools links "are currently opening full screen in the old environment").
+   This tool now opens inside the dashboard frame, so hide the sitewide nav,
+   the dark sitewide footer, and this page's own "Back to Dashboard" link:
+   the console already supplies a header and a breadcrumb back to Your Tools,
+   and a second set of each inside the frame is redundant. Same pattern
+   already shipped for account/my-list.html and directory/listing.html. A
+   normal top-level visit to this page is unaffected. */
+try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+</script>
+<style>.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .m-back{display:none !important}</style>
 <script src="/public/nav.js"></script>
 <script src="/public/ve-auth.js"></script>
 
@@ -160,8 +173,9 @@
       <div>
         <label for="m-brand">Brand</label>
         <select id="m-brand">
+          <option value="vegans-explore" selected>VEGANS EXPLORE</option>
           <option value="">All brands</option>
-          <option value="vegans-explore">VEGANS EXPLORE</option>
+          <option value="lesaruss">LESARUSS</option>
           <option value="geekfon-society">GeekFon Society</option>
           <option value="unattributed">Unattributed</option>
         </select>
@@ -181,7 +195,7 @@
     <div class="m-table-wrap">
       <table>
         <caption class="m-eyebrow" style="text-align:left;padding:0 12px 8px;">
-          Every member identity across the LESARUSS ecosystem
+          VEGANS EXPLORE registrations by default. Switch the Brand filter for another tenant.
         </caption>
         <thead>
           <tr>
@@ -211,9 +225,18 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
+  // Brand vocabulary. 'lesaruss' and the other tenant slugs became reachable
+  // 2026-09-09 when lesaruss_member_roster started resolving a members-table
+  // row's brand from members.tenant_id -> public.tenants instead of assuming
+  // every row in that table was a Vegans Explore signup (error_registry
+  // MEMBERS-TABLE-TENANT-HARDCODED-VE, the same class already fixed inside
+  // notify_new_member and missed here).
   var BRAND_LABEL = {
     'vegans-explore': ['VEGANS EXPLORE', 've'],
     'geekfon-society': ['GeekFon Society', 'gfs'],
+    'lesaruss': ['LESARUSS', 'lr'],
+    '111-day-theory': ['111 Day Theory', 'lr'],
+    'k12-unlocked': ['K-12 Unlocked', 'lr'],
     'unattributed': ['Unattributed', 'unatt']
   };
   var ALL = [];
@@ -280,16 +303,48 @@
     }
   }
 
-  function renderStats(s) {
+  // Stats are VEGANS EXPLORE-scoped (2026-09-09, Sean, Fieldy field note: the
+  // "38 registered" headline "is not scoped to tenant"). The old grid read
+  // summary.members straight off the edge function, which counts real
+  // registrants across EVERY front door in the project: 8 Vegans Explore
+  // signups plus 30 Supabase Auth signups no brand was ever recorded for,
+  // hence 38. Every tile below is now computed from the loaded roster rows
+  // filtered to brand 'vegans-explore', so the headline is the Vegans Explore
+  // registration count and nothing else. The cross-brand total is kept as its
+  // own clearly-labeled last tile rather than being dropped, and the Brand
+  // filter still reaches every other tenant.
+  function veStats() {
+    var ve = ALL.filter(function (m) { return m.brand === 'vegans-explore'; });
+    var registered = ve.filter(function (m) { return m.member_class === 'member'; });
+    var now = Date.now();
+    function within(rows, days) {
+      return rows.filter(function (m) {
+        return m.joined_at && (now - new Date(m.joined_at).getTime()) < days * 86400000;
+      }).length;
+    }
+    return {
+      registered: registered.length,
+      new_7d: within(registered, 7),
+      new_30d: within(registered, 30),
+      paid: registered.filter(function (m) { return m.tier && m.tier !== 'free'; }).length,
+      never_returned: registered.filter(function (m) { return !m.last_activity_at; }).length,
+      agents: ve.filter(function (m) { return m.member_class === 'agent'; }).length,
+      quarantined: ve.filter(function (m) { return m.member_class === 'quarantined'; }).length,
+      all_identities: ALL.length
+    };
+  }
+
+  function renderStats() {
+    var s = veStats();
     var tiles = [
-      ['Registered members', s.members, false],
-      ['VEGANS EXPLORE', s.ve_registrants, false],
+      ['VEGANS EXPLORE registrations', s.registered, false],
       ['New, last 7 days', s.new_7d, false],
       ['New, last 30 days', s.new_30d, false],
       ['Paid tier', s.paid, false],
       ['Never returned', s.never_returned, s.never_returned > 0],
-      ['Brand unknown', s.unattributed, s.unattributed > 0],
-      ['In quarantine', s.quarantined, s.quarantined > 0]
+      ['Agent personas (not members)', s.agents, false],
+      ['In quarantine', s.quarantined, s.quarantined > 0],
+      ['All identities, every brand', s.all_identities, false]
     ];
     document.getElementById('m-stats').innerHTML = tiles.map(function (t) {
       return '<div class="m-stat' + (t[2] ? ' flag' : '') + '">' +
@@ -298,12 +353,13 @@
     }).join('');
 
     document.getElementById('m-note').innerHTML =
-      '<strong>Every number above counts registered members only.</strong> Agents, internal staff and ' +
-      'quarantined rows are excluded, so the member count cannot be inflated by seed data. ' +
-      '<strong>Brand unknown</strong> means a real person signed up through a Supabase Auth front door but ' +
-      'nothing recorded which brand, so we cannot say what they joined. That needs attribution at signup, not deletion. ' +
-      'One more caveat: VEGANS EXPLORE identities and GeekFon or LESARUSS AI identities are still separate systems, ' +
-      'so one person on two brands counts twice.';
+      '<strong>Every number above is VEGANS EXPLORE only, and counts registered members only.</strong> ' +
+      'Brand comes from the row\'s tenant, so a LESARUSS, GeekFon or client identity in the shared members ' +
+      'table is no longer counted here. Agents, internal staff and quarantined rows are excluded from the ' +
+      'registration count, so it cannot be inflated by seed data. The last tile is the only cross-brand ' +
+      'number: every identity in the project, every brand, every class. Switch the Brand filter to see ' +
+      'another tenant. One standing caveat: VEGANS EXPLORE identities and GeekFon or LESARUSS AI identities ' +
+      'are still separate systems, so one person on two brands counts twice.';
   }
 
   function renderTabCounts() {
@@ -368,7 +424,7 @@
     document.getElementById('m-cards').innerHTML = rows.map(cardHtml).join('');
     document.getElementById('m-count').textContent = rows.length + ' shown';
     document.getElementById('m-tabnote').textContent = CURRENT_CLASS ? TAB_NOTE[CURRENT_CLASS] :
-      'Every identity across every LESARUSS brand, in every class.';
+      (brand ? 'Every class for the selected brand.' : 'Every identity across every LESARUSS brand, in every class.');
     bindMoveHandlers();
     document.getElementById('m-empty').style.display = rows.length ? 'none' : 'block';
   }
@@ -435,10 +491,12 @@
       ALL = d.members || [];
       document.getElementById('m-gate').style.display = 'none';
       document.getElementById('m-content').style.display = 'block';
+      var ve = veStats();
       document.getElementById('m-sub').textContent =
-        d.summary.members + ' registered members, ' + d.summary.new_7d + ' in the last 7 days. ' +
-        d.summary.agents + ' agents and ' + d.summary.quarantined + ' quarantined rows are held separately.';
-      renderStats(d.summary);
+        ve.registered + ' VEGANS EXPLORE registrations, ' + ve.new_7d + ' in the last 7 days. ' +
+        ve.agents + ' agent personas and ' + ve.quarantined + ' quarantined rows are held separately, and ' +
+        d.summary.total_identities + ' identities exist across every brand.';
+      renderStats();
       renderTabCounts();
       bindTabs();
       applyFilters();

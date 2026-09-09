@@ -189,6 +189,75 @@
       }).then(function(r){ return r.json(); });
     }
 
+    /* City entry normalization (2026-09-09, Logan, Sean, Fieldy field note:
+       registering for New York City came back as "no chapter"). The launched
+       chapter is stored as 'new-york', so typing the city's natural full name
+       slugged to 'new-york-city', matched no chapter, and the Guide offered to
+       found a brand new one. Confirmed live: ve_chapter_requests carries a
+       'new-york-city' row from Sean's own test at 08:36 UTC that morning.
+
+       Fixed here as a class, not one special case: before the city goes to
+       city_status/join_city, a trailing state or country qualifier typed
+       without a comma is split off into the state field, a trailing "City" is
+       dropped ONLY when what remains is one of the launched chapters (so
+       "Kansas City" is never quietly turned into "Kansas"), and the everyday
+       shorthands expand to the chapter's real name. Everything else passes
+       through untouched, so a genuinely new city still reads as new and the
+       backend keeps ownership of metro-area aliasing. */
+    var VE_LAUNCHED_CHAPTERS = ['Atlanta', 'Central Florida', 'DMV', 'London', 'Los Angeles', 'New York', 'Philadelphia', 'South Florida'];
+    var VE_CITY_SHORTHAND = {
+      'nyc': 'New York', 'new york city': 'New York',
+      'la': 'Los Angeles', 'l.a.': 'Los Angeles',
+      'dc': 'DMV', 'd.c.': 'DMV', 'washington dc': 'DMV', 'washington d.c.': 'DMV',
+      'philly': 'Philadelphia', 'soflo': 'South Florida', 'so flo': 'South Florida'
+    };
+    var VE_TRAILING_QUALIFIERS = [
+      'al','ak','az','ar','ca','co','ct','de','fl','ga','hi','id','il','in','ia','ks','ky','la','me',
+      'md','ma','mi','mn','ms','mo','mt','ne','nv','nh','nj','nm','ny','nc','nd','oh','ok','or','pa',
+      'ri','sc','sd','tn','tx','ut','vt','va','wv','wi','wy',
+      'usa','us','uk','gb','england','scotland','wales','florida','california','georgia',
+      'pennsylvania','maryland','virginia','texas','new york'
+    ];
+
+    function isLaunchedChapterName(name){
+      var lower = String(name || '').toLowerCase();
+      for (var i = 0; i < VE_LAUNCHED_CHAPTERS.length; i++) {
+        if (VE_LAUNCHED_CHAPTERS[i].toLowerCase() === lower) return true;
+      }
+      return false;
+    }
+
+    function normalizeCityEntry(raw){
+      var parts = String(raw || '').split(',');
+      var city = parts[0].trim();
+      var st = parts.length > 1 ? parts.slice(1).join(',').trim() : '';
+
+      var shorthand = VE_CITY_SHORTHAND[city.toLowerCase()];
+      if (shorthand) return { city: shorthand, state: st };
+
+      /* No comma, but the entry still ends in a state or country. */
+      if (!st) {
+        for (var i = 0; i < VE_TRAILING_QUALIFIERS.length; i++) {
+          var q = VE_TRAILING_QUALIFIERS[i];
+          var suffix = ' ' + q;
+          if (city.length > suffix.length && city.toLowerCase().slice(-suffix.length) === suffix) {
+            var base = city.slice(0, city.length - suffix.length).trim();
+            var baseShorthand = VE_CITY_SHORTHAND[base.toLowerCase()];
+            if (base) { city = baseShorthand || base; st = q; }
+            break;
+          }
+        }
+      }
+
+      /* Trailing "City", but only where it names a launched chapter. */
+      if (city.toLowerCase().slice(-5) === ' city') {
+        var trimmed = city.slice(0, city.length - 5).trim();
+        if (isLaunchedChapterName(trimmed)) city = trimmed;
+      }
+
+      return { city: city, state: st };
+    }
+
     function anonKey(){
       try {
         var k = localStorage.getItem('ve_guide_anon');
@@ -425,9 +494,9 @@
         var submitCity = function(){
           var raw = document.getElementById('cityInput').value.trim();
           if (!raw) return;
-          var parts = raw.split(',');
-          var v = parts[0].trim();
-          var st = parts.length > 1 ? parts.slice(1).join(',').trim() : '';
+          var entry = normalizeCityEntry(raw);
+          var v = entry.city;
+          var st = entry.state;
           if (!v) return;
           pushHistory();
           controls.innerHTML = '<div class="typing">' + g.name + ' is checking...</div>';
