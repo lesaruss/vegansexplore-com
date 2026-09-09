@@ -59,6 +59,18 @@
 </style>
 </head>
 <body>
+<script>
+/* Dashboard iframe embed (2026-09-09, Logan, Sean, Fieldy field note: Your
+   Tools links "are currently opening full screen in the old environment").
+   This tool now opens inside the dashboard frame, so hide the sitewide nav,
+   the dark sitewide footer, and this page's own "Back to Dashboard" link:
+   the console already supplies a header and a breadcrumb back to Your Tools,
+   and a second set of each inside the frame is redundant. Same pattern
+   already shipped for account/my-list.html and directory/listing.html. A
+   normal top-level visit to this page is unaffected. */
+try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+</script>
+<style>.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .leads-back{display:none !important}</style>
 <script src="/public/nav.js"></script>
 <script src="/public/ve-auth.js"></script>
 

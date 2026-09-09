@@ -242,6 +242,10 @@
   #dash-mylist-detail{display:none;}
   .dash-mylist-iframe{display:block;width:100%;height:900px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ .dash-mylist-iframe{height:1100px;} }
+  /* Admin tools embedded in the same frame (2026-09-09) carry long tables and
+     stat grids, so they get the taller viewport the Directory embed uses. */
+  .dash-mylist-iframe.dash-tool-iframe-tall{height:1500px;}
+  @media (max-width:760px){ .dash-mylist-iframe.dash-tool-iframe-tall{height:1900px;} }
 
   .dash-community-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
   /* Your Campaigns keeps a fixed 3-column grid regardless of item count
@@ -1087,9 +1091,9 @@
       };
     });
     TILE_REGISTRY.push(
-      { key: 'sa-members', href: '/dashboard/members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every member across VEGANS EXPLORE, GeekFon Society and LESARUSS AI, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
-      { key: 'sa-events', href: '/admin/events.html', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
-      { key: 'sa-leads', href: '/dashboard/leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' }
+      { key: 'sa-members', href: '/dashboard/members', embed: true, embedLabel: 'Members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every VEGANS EXPLORE registration, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-events', href: '/admin/events.html', embed: true, embedLabel: 'Event Submissions', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' }
       // cm-handbook tile removed 2026-09-08 (Sean, Fieldy field note): a
       // Community Manager's role already surfaces as a pill (dash-eyebrow
       // reads member.ve_role === 'community_manager' and shows "Community
@@ -1197,6 +1201,7 @@
         if (t.key === 'choose-guide') { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('choose-guide'); }
         if (t.key === 'communities') { e.preventDefault(); openCommunityModal(); }
         if (t.key === 'my-list') { e.preventDefault(); openMyList(); }
+        else if (t.embed) { e.preventDefault(); openToolInFrame(t.embedLabel || 'Tool', t.href, true); }
       });
       wrap.appendChild(tile);
       wrap.addEventListener('dragstart', function (e) {
@@ -1935,6 +1940,21 @@
     pill.onclick = function () { openCityModal(member); };
   }
 
+  // "Your City" stat under Your Role (2026-09-09, Sean, Fieldy field note:
+  // it "always shows All Cities"). It used to be written only from the
+  // accepted Community Manager application, with a hardcoded 'All Cities'
+  // fallback for any superadmin without one -- which is every superadmin, so
+  // the tile never showed a real city. It now reads the same active city the
+  // top pill and the Directory/Leaderboard/Events tabs are already scoped to,
+  // so the stat and the rest of the page can never disagree. Kept in sync by
+  // switchActiveCity below.
+  function renderRoleCityStat(member) {
+    var el = document.getElementById('dash-stat-city');
+    if (!el) return;
+    var active = getActiveCity(member);
+    el.textContent = active ? (VE_CITY_NAMES[active] || active) : 'No city selected';
+  }
+
   // Plain city switcher for the top pill -- every launched city, no
   // checkmarks, no join/leave (that stays in dash-community-modal / Your
   // Communities). Clicking a city sets it active and re-scopes Directory +
@@ -1976,6 +1996,7 @@
   function switchActiveCity(slug, member) {
     setActiveCity(slug);
     renderCityPill(member);
+    renderRoleCityStat(member);
     renderDirectory(member);
     renderLeaderboard(member);
     renderEventsTab(member);
@@ -2000,15 +2021,22 @@
   // per launched chapter so a member's own joined cities produce a
   // sensible board; a member with no joined community sees an honest empty
   // state rather than a silently wrong (defaulted) one.
+  // Widened 2026-09-09 (Logan) to the same metro place names ve-auth's
+  // CITY_ALIASES already treats as belonging to each launched chapter. The
+  // original list only carried the chapter's own headline names, so a real
+  // member who typed the town they actually live in ("Plantation", not "Fort
+  // Lauderdale") never appeared on their own city's board. Same list, same
+  // chapter mapping, so registration and the leaderboard now agree on what
+  // counts as being in a metro.
   var LEADERBOARD_CITY_TERMS = {
-    'atlanta': ['Atlanta'],
-    'central-florida': ['Orlando', 'Central Florida'],
-    'dmv': ['Washington', 'Maryland', 'Virginia'],
-    'london': ['London'],
-    'los-angeles': ['Los Angeles', 'LA'],
-    'new-york': ['New York', 'NYC'],
-    'philadelphia': ['Philadelphia'],
-    'south-florida': ['Miami', 'Fort Lauderdale', 'South Florida', 'Broward', 'Palm Beach'],
+    'atlanta': ['Atlanta', 'Decatur', 'Marietta', 'Sandy Springs', 'Alpharetta', 'Roswell', 'Smyrna', 'Stone Mountain', 'College Park'],
+    'central-florida': ['Orlando', 'Central Florida', 'Kissimmee', 'Altamonte Springs', 'Winter Park', 'Clermont', 'Minneola', 'Apopka', 'Sanford', 'Deltona', 'Daytona Beach', 'Lakeland', 'The Villages', 'Winter Garden', 'Oviedo', 'Casselberry'],
+    'dmv': ['Washington', 'Maryland', 'Virginia', 'Arlington', 'Alexandria', 'Bethesda', 'Silver Spring', 'Rockville', 'Fairfax', 'Tysons'],
+    'london': ['London', 'Camden', 'Hackney', 'Brixton', 'Croydon', 'Greenwich', 'Islington', 'Shoreditch'],
+    'los-angeles': ['Los Angeles', 'LA', 'Santa Monica', 'Pasadena', 'Long Beach', 'Burbank', 'Glendale', 'Culver City', 'West Hollywood', 'Venice', 'Inglewood'],
+    'new-york': ['New York', 'NYC', 'Brooklyn', 'Queens', 'Bronx', 'Manhattan', 'Staten Island', 'Jersey City', 'Hoboken'],
+    'philadelphia': ['Philadelphia', 'Philly', 'King of Prussia', 'Norristown', 'Upper Darby'],
+    'south-florida': ['Miami', 'Fort Lauderdale', 'South Florida', 'Broward', 'Palm Beach', 'Pompano Beach', 'Boca Raton', 'Hialeah', 'Coral Springs', 'Davie', 'Plantation', 'Sunrise', 'Miramar', 'Pembroke Pines', 'Homestead', 'Aventura', 'Doral', 'Coral Gables', 'Delray Beach', 'Boynton Beach'],
   };
 
   function renderLeaderboard(member) {
@@ -2226,8 +2254,15 @@
   // Works from either the flat (non-superadmin) or sectioned (superadmin)
   // Your Tools layout -- only one of those two is ever visible at a time,
   // so this tracks which one to restore on close.
+  // Generalized 2026-09-09 (Sean, Fieldy field note: Your Tools links "are
+  // currently opening full screen in the old environment"). My List was the
+  // only tile wired to this embed; the Members, Event Submissions and Leads
+  // tiles were still plain <a href> that navigated the browser away from the
+  // console into their own standalone pages. Any tile carrying embed:true in
+  // TILE_REGISTRY now opens through this one path instead, so adding another
+  // embedded tool is one flag, not another bespoke open/close pair.
   var dashMyListPrevLayout = null;
-  function openMyList() {
+  function openToolInFrame(label, src, tall) {
     var flat = document.getElementById('dash-tiles-flat');
     var sectioned = document.getElementById('dash-tiles-sectioned');
     var crumb = document.getElementById('dash-mylist-crumb');
@@ -2247,18 +2282,22 @@
     sep.textContent = '/';
     var current = document.createElement('span');
     current.className = 'dash-crumb-current';
-    current.textContent = 'My List';
+    current.textContent = label;
     crumb.appendChild(back);
     crumb.appendChild(sep);
     crumb.appendChild(current);
     crumb.style.display = 'flex';
     var iframe = document.createElement('iframe');
-    iframe.className = 'dash-mylist-iframe';
-    iframe.title = 'My List';
-    iframe.src = '/account/my-list';
+    iframe.className = 'dash-mylist-iframe' + (tall ? ' dash-tool-iframe-tall' : '');
+    iframe.title = label;
+    iframe.src = src;
     detail.innerHTML = '';
     detail.appendChild(iframe);
     detail.style.display = 'block';
+  }
+
+  function openMyList() {
+    openToolInFrame('My List', '/account/my-list', false);
   }
 
   function closeMyList() {
@@ -2449,6 +2488,7 @@
     if (isStaff) {
       document.getElementById('dash-role-label').style.display = 'block';
       document.getElementById('dash-stats-row').style.display = 'grid';
+      renderRoleCityStat(member);
       var oppsDesc = document.getElementById('dash-opps-desc');
       if (oppsDesc) oppsDesc.textContent = 'Review applications, manage campaigns, and more.';
       loadPendingCount(VEAuth.getToken());
@@ -2464,10 +2504,8 @@
         if (accepted.length) {
           var cityName = VE_CITY_NAMES[accepted[0].opportunities.city_slug] || accepted[0].opportunities.city_slug;
           sub.textContent = 'You manage ' + cityName + '.';
-          document.getElementById('dash-stat-city').textContent = cityName;
         } else if (member.is_superadmin) {
           sub.textContent = 'Superadmin preview, no city assignment on file for this account.';
-          document.getElementById('dash-stat-city').textContent = 'All Cities';
         } else {
           sub.textContent = 'Role active, city assignment record not found. Flag this to the team.';
         }
@@ -2488,9 +2526,22 @@
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
       body: JSON.stringify({ action: 'me', token: token })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      var member = d && d.member;
+      var real = d && d.member;
+      if (!real) { showDenied(); return; }
+      try { localStorage.setItem('ve_member', JSON.stringify(real)); } catch (e) {}
+      // Render the PREVIEWED identity, not the raw server row (2026-09-09,
+      // Sean, Fieldy field note): this page fetched 'me' and handed the raw
+      // response straight to showDashboard, so it was the only surface on the
+      // site that ignored the View As overlay entirely. VEAuth.getMember()
+      // merges the previewed tier/role onto the real member (and forces
+      // is_superadmin false) exactly as nav.js and the guide gate already do,
+      // so switching to Passport Member now actually unlocks the Passport
+      // gates -- previously Choose Your Guide kept showing the "upgrade to
+      // Passport" benefit copy because Sean's real ve_tier is 'free'. Falls
+      // back to the raw row if the overlay is off, and treats a
+      // logged-out preview as denied, same as every other page.
+      var member = (window.VEAuth && VEAuth.getMember()) || (VEAuth.getViewAs() ? null : real);
       if (!member) { showDenied(); return; }
-      try { localStorage.setItem('ve_member', JSON.stringify(member)); } catch (e) {}
       showDashboard(member);
     }).catch(function () {
       var cached = VEAuth.getMember();

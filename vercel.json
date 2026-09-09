@@ -12,6 +12,10 @@
       "destination": "/api/pulse-article?slug=:slug"
     },
     {
+      "source": "/dashboard",
+      "destination": "/dashboard/center-console"
+    },
+    {
       "source": "/dashboard/:tab(profile|directory|events|bounties|campaigns|opportunities|pulse|guides|choose-guide|tools|communities)",
       "destination": "/dashboard/center-console"
     },
@@ -1678,6 +1682,16 @@
     {
       "source": "/passport/join",
       "destination": "/join",
+      "permanent": true
+    },
+    {
+      "source": "/supabase",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/supabase/(.*)",
+      "destination": "/",
       "permanent": true
     },
     {
