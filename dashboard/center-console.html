@@ -60,18 +60,24 @@
      and a reset of the default button chrome. Its floating bubble is hidden on
      this page because the dock item replaces it. */
   button.lr-dock-item{cursor:pointer;background:none;border:none;font:inherit;}
-  .lr-dock-ask .lr-dock-icon{font-size:22px;line-height:1;}
+  /* The ask icon wears the member's chosen Guide, defaulting to Liz
+     (2026-09-10, Sean, Group H: "default to Liz's image rather than the
+     current green circle"). Cropped from the top so the face sits in frame
+     rather than centering on a portrait's empty headroom. */
+  .lr-dock-ask-icon{background-size:cover;background-position:center 18%;background-color:var(--ve-green);}
   .gw-launch{display:none !important;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
     .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
-    .lr-dock{display:none;}
-    /* The dock is hidden here, so the Guide widget's own floating bubble has
-       to come back: otherwise hiding it above would leave a phone with no
-       "have a question" entry point at all. */
-    .gw-launch{display:block !important;}
+    /* Group H removed the floating bubble as a duplicate surface, so the dock
+       cannot simply disappear on a phone or there would be no way to ask a
+       question at all. The cross-brand icons still drop out here (they belong
+       to the desktop backdrop); the ask icon stays as the single surface, in
+       the same bottom-center position the bubble used to occupy. */
+    .lr-dock{padding:3px;gap:0;}
+    .lr-dock > *:not(.lr-dock-ask){display:none !important;}
   }
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #dash-gate{text-align:center;padding:100px 20px;}
@@ -249,11 +255,11 @@
      my list opens up outside the frame"). Same breadcrumb+iframe pattern
      as the Directory listing embed above, applied to the My List tile
      under Your Tools instead. */
-  #dash-mylist-crumb{display:none;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:-4px 0 14px;}
-  #dash-mylist-crumb .dash-crumb-back{background:none;border:none;color:var(--ve-green-dark);font-weight:800;font-size:12.5px;cursor:pointer;padding:0;font-family:inherit;}
-  #dash-mylist-crumb .dash-crumb-back:hover{text-decoration:underline;}
-  #dash-mylist-crumb .dash-crumb-sep{color:var(--ve-text-50);}
-  #dash-mylist-crumb .dash-crumb-current{color:var(--ve-text);}
+  #dash-mylist-crumb,#dash-choose-guide-crumb{display:none;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:-4px 0 14px;}
+  #dash-mylist-crumb .dash-crumb-back,#dash-choose-guide-crumb .dash-crumb-back{background:none;border:none;color:var(--ve-green-dark);font-weight:800;font-size:12.5px;cursor:pointer;padding:0;font-family:inherit;}
+  #dash-mylist-crumb .dash-crumb-back:hover,#dash-choose-guide-crumb .dash-crumb-back:hover{text-decoration:underline;}
+  #dash-mylist-crumb .dash-crumb-sep,#dash-choose-guide-crumb .dash-crumb-sep{color:var(--ve-text-50);}
+  #dash-mylist-crumb .dash-crumb-current,#dash-choose-guide-crumb .dash-crumb-current{color:var(--ve-text);}
   #dash-mylist-detail{display:none;}
   .dash-mylist-iframe{display:block;width:100%;height:900px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ .dash-mylist-iframe{height:1100px;} }
@@ -420,7 +426,7 @@
        real Guide chat. The floating bubble is hidden on this page (see
        .gw-launch below) so the console has one entry point, not two. -->
   <button type="button" class="lr-dock-item lr-dock-ask" id="lr-dock-ask" data-tooltip="Have a Question" aria-label="Have a question? Talk to a Guide">
-    <div class="lr-dock-icon" style="background:#3f3f46;">?</div>
+    <div class="lr-dock-icon lr-dock-ask-icon" id="lr-dock-ask-icon"></div>
   </button>
   <a class="lr-dock-item" href="https://hq.lesaruss.ai" target="_blank" rel="noopener" data-tooltip="LESARUSS HQ" aria-label="LESARUSS HQ -- explore the whole universe">
     <div class="lr-dock-icon" style="background:#1a1a1a;">&#9673;</div>
@@ -485,9 +491,14 @@
           <div class="dash-mini-stat-value"><span id="dash-hero-points">--</span><span class="dash-mini-stat-sep">/</span><span id="dash-hero-lifetime">--</span></div>
           <div class="dash-mini-stat-label">Points / Lifetime</div>
         </div>
-        <div class="dash-mini-stat locked">
-          <div class="dash-mini-stat-value">--</div>
-          <div class="dash-mini-stat-label">Level <span class="dash-tag">Coming Soon</span></div>
+        <!-- Real leveling (2026-09-10, Sean, Group H): the "LEVEL, COMING
+             SOON" placeholder badge is replaced with a live level. Everyone
+             starts at Level 1 and gains one level per 10,000 lifetime points.
+             That rate supersedes the 5,000 figure in the 2026-09-06 points
+             model entry, corrected live by Sean. -->
+        <div class="dash-mini-stat">
+          <div class="dash-mini-stat-value" id="dash-hero-level">--</div>
+          <div class="dash-mini-stat-label">Level</div>
         </div>
       </div>
     </div>
@@ -598,22 +609,6 @@
       <p class="gc-note">New guides publish as they're built. Join the waitlist on any guide to get notified the moment it's live.</p>
     </div>
 
-    <!-- Choose Your Guide (2026-09-08, Sean, Fieldy field note): restored
-         as its own dedicated tab, gated to Passport members -- see the
-         comment above MODULES for the full over-correction history. Not
-         the Guide Catalog (step-by-step written guides, above) -- this is
-         picking an ongoing real Guide to talk to. -->
-    <div id="dash-choose-guide-section" style="display:none;margin-bottom:28px;" data-tab-key="choose-guide" data-tab-order="8" data-tab-label="Choose Your Guide">
-      <p class="dash-eyebrow" style="margin-bottom:2px;">Passport</p>
-      <p class="dash-section-title">Choose Your Guide</p>
-      <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Pick the guide that matches your journey. Each one is a real, ongoing conversation -- not a one-off article -- tailored to where you are.</p>
-      <div id="dash-choose-guide-locked" style="display:none;border:1.5px solid var(--ve-border);border-radius:14px;padding:20px;background:linear-gradient(180deg,#fff,#fafdfa);">
-        <p style="font-size:13px;font-weight:800;margin-bottom:4px;">Passport benefit</p>
-        <p style="font-size:13px;color:var(--ve-text-75);">Choosing a dedicated Guide to walk with you is part of Passport membership. Upgrade to Passport to pick your Guide and start a real conversation.</p>
-      </div>
-      <div class="dash-modal-grid" id="dash-choose-guide-grid" style="display:none;"></div>
-    </div>
-
     <div class="dash-modal-overlay" id="dash-campaigns-modal">
       <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Browse campaigns">
         <div class="dash-modal-header">
@@ -672,6 +667,29 @@
            into the Your Tools grid above now, see renderSectionedTiles. -->
       <p style="font-size:11px;color:var(--ve-text-50);margin-top:10px;">Tap Edit Layout to drag tiles between sections and reorder them, like rearranging apps on your phone.</p>
     </div>
+      <!-- Choose Your Guide (2026-09-08; moved under Your Tools 2026-09-10) --
+           Sean, Group H: "Remove 'Choose Your Guide' from the main top-level
+           tab row. Keep it only under Your Tools, not duplicated at the top
+           level." The data-tab-key/order/label attributes are gone, so
+           initDashTabs no longer builds a tab for it and no longer controls
+           its visibility; it is revealed in place by the Your Tools tile via
+           openChooseGuide() below, and reset by veCloseToolPanels() whenever
+           the member switches tabs. Physically nested inside
+           #dash-tools-section so "only under Your Tools" is true of the
+           markup, not just the navigation. Not the Guide Catalog
+           (step-by-step written guides, its own tab) -- this is picking an
+           ongoing real Guide to talk to. -->
+      <div id="dash-choose-guide-crumb"></div>
+      <div id="dash-choose-guide-section" style="display:none;margin-bottom:28px;">
+        <p class="dash-eyebrow" style="margin-bottom:2px;">Passport</p>
+        <p class="dash-section-title">Choose Your Guide</p>
+        <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Pick the guide that matches your journey. Each one is a real, ongoing conversation -- not a one-off article -- tailored to where you are.</p>
+        <div id="dash-choose-guide-locked" style="display:none;border:1.5px solid var(--ve-border);border-radius:14px;padding:20px;background:linear-gradient(180deg,#fff,#fafdfa);">
+          <p style="font-size:13px;font-weight:800;margin-bottom:4px;">Passport benefit</p>
+          <p style="font-size:13px;color:var(--ve-text-75);">Choosing a dedicated Guide to walk with you is part of Passport membership. Upgrade to Passport to pick your Guide and start a real conversation.</p>
+        </div>
+        <div class="dash-modal-grid" id="dash-choose-guide-grid" style="display:none;"></div>
+      </div>
     <div id="dash-mylist-crumb"></div>
     <div id="dash-mylist-detail"></div>
     </div>
@@ -1090,9 +1108,24 @@
   // (real portraits, deep-links into a real /guide.html chat) was exactly
   // that layout, just stranded in a dead modal (openGuideModal) that
   // nothing called anymore -- reused here instead of building it twice.
+  // 'guide' as a tile img means "whichever Guide this member has chosen",
+  // resolved through public/footer.js so there is one map, not two. Falls back
+  // to Liz's portrait directly if the footer has not run yet.
+  function dashTileImg(img) {
+    if (img !== 'guide') return img;
+    if (typeof window.VEGuideImage === 'function') return window.VEGuideImage();
+    return '/public/guides/liz.png';
+  }
+
   var MODULES = [
     { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
-    { key: 'choose-guide', href: '#', icon: '&#129497;', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' }
+    // Thumbnail is the member's chosen Guide, cropped so the top of the head
+    // sits out of frame (2026-09-10, Sean, Group H: replace "the placeholder
+    // thumbnail (currently a witch/wizard emoji) ... with an actual photo of
+    // the member's chosen guide, cropped so the head is cut off"). The image
+    // is resolved at render time from public/footer.js's VEGuideImage, which
+    // defaults to Liz, so the tile and the dock icon can never disagree.
+    { key: 'choose-guide', href: '#', icon: '&#129497;', img: 'guide', imgPos: 'center 8%', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' }
   ];
   // choose-topics tile removed 2026-09-08 (Sean, Fieldy field note): folded
   // into GUIDE_CATALOG above instead -- see the "mini-guides" entry there.
@@ -1115,7 +1148,8 @@
     if (TILE_REGISTRY) return TILE_REGISTRY;
     TILE_REGISTRY = MODULES.map(function (m) {
       return {
-        key: m.key, href: m.href, iconHtml: m.icon, bg: m.bg, title: m.title, desc: m.desc,
+        key: m.key, href: m.href, iconHtml: m.icon, img: m.img, imgPos: m.imgPos,
+        bg: m.bg, title: m.title, desc: m.desc,
         visibility: 'all', defaultSection: 'tools',
         locked: (m.key === 'tour')
       };
@@ -1200,10 +1234,11 @@
   }
 
   function sectionedTileHtml(t) {
-    var thumbStyle = t.img
-      ? "background-image:url('" + t.img + "');background-size:cover;background-position:center;background-color:" + (t.bg || 'var(--ve-green-light)') + ";"
+    var src = t.img ? dashTileImg(t.img) : null;
+    var thumbStyle = src
+      ? "background-image:url('" + src + "');background-size:cover;background-position:" + (t.imgPos || 'center') + ";background-color:" + (t.bg || 'var(--ve-green-light)') + ";"
       : 'background:' + t.bg + ';';
-    return '<div class="dash-thumb" style="' + thumbStyle + '">' + (t.img ? '' : t.iconHtml) + '</div>' +
+    return '<div class="dash-thumb" style="' + thumbStyle + '">' + (src ? '' : t.iconHtml) + '</div>' +
       '<div class="dash-tile-body"><div class="dash-tile-title">' + t.title +
       (t.tagLabel ? ' <span class="dash-tag superadmin">' + t.tagLabel + '</span>' : '') +
       (t.locked ? ' <span class="dash-tag locked">Fixed</span>' : '') +
@@ -1228,7 +1263,7 @@
       tile.innerHTML = sectionedTileHtml(t);
       tile.addEventListener('click', function (e) {
         if (layoutEditMode) { e.preventDefault(); return; }
-        if (t.key === 'choose-guide') { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('choose-guide'); }
+        if (t.key === 'choose-guide') { e.preventDefault(); openChooseGuide(); }
         if (t.key === 'communities') { e.preventDefault(); openCommunityModal(); }
         if (t.key === 'my-list') { e.preventDefault(); openMyList(); }
         else if (t.embed) { e.preventDefault(); openToolInFrame(t.embedLabel || 'Tool', t.href, true); }
@@ -1366,7 +1401,11 @@
       var opt = document.createElement('button');
       opt.type = 'button';
       opt.className = 'dash-modal-opt' + (!isHidden ? ' selected' : '');
-      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="background:' + m.bg + ';display:flex;align-items:center;justify-content:center;font-size:28px;">' + m.icon + '</div>' +
+      var modalSrc = m.img ? dashTileImg(m.img) : null;
+      var modalThumb = modalSrc
+        ? "background-image:url('" + modalSrc + "');background-size:cover;background-position:" + (m.imgPos || 'center') + ";background-color:" + m.bg + ";"
+        : 'background:' + m.bg + ';display:flex;align-items:center;justify-content:center;font-size:28px;';
+      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="' + modalThumb + '">' + (modalSrc ? '' : m.icon) + '</div>' +
         '<div class="dash-modal-opt-name">' + m.title + (!isHidden ? ' &#10003;' : '') + '</div>';
       opt.addEventListener('click', function() { toggleModule(m.key, isHidden); });
       grid.appendChild(opt);
@@ -1386,12 +1425,16 @@
       var tile = document.createElement('a');
       tile.className = 'dash-tile';
       tile.href = m.href;
-      tile.innerHTML = '<div class="dash-thumb" style="background:' + m.bg + ';">' + m.icon + '</div>' +
+      var flatSrc = m.img ? dashTileImg(m.img) : null;
+      var flatThumb = flatSrc
+        ? "background-image:url('" + flatSrc + "');background-size:cover;background-position:" + (m.imgPos || 'center') + ";background-color:" + m.bg + ";"
+        : 'background:' + m.bg + ';';
+      tile.innerHTML = '<div class="dash-thumb" style="' + flatThumb + '">' + (flatSrc ? '' : m.icon) + '</div>' +
         '<div class="dash-tile-body"><div class="dash-tile-title">' + m.title + (m.tag ? ' <span class="dash-tag live">' + m.tag + '</span>' : '') + '</div>' +
         '<div class="dash-tile-desc"' + (m.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + m.desc + '</div></div>';
       wrap.appendChild(tile);
       if (m.key === 'choose-guide') {
-        tile.addEventListener('click', function(e) { e.preventDefault(); if (window.activateDashTab) window.activateDashTab('choose-guide'); });
+        tile.addEventListener('click', function(e) { e.preventDefault(); openChooseGuide(); });
       }
       if (m.key === 'communities') {
         tile.addEventListener('click', function(e) { e.preventDefault(); openCommunityModal(); });
@@ -1883,13 +1926,25 @@
   // the real tier. Badges has no table behind it yet (checked live before
   // building this), so it stays a static Coming Soon tile rather than a
   // fabricated number, matching every other unbuilt tile on this page.
+  // Level is driven by LIFETIME points, not the spendable balance, so
+  // redeeming points can never demote a member (2026-09-06 points model,
+  // rate corrected to 10,000 by Sean on 2026-09-10). Level 1 is the floor,
+  // including for a brand new member on zero points.
+  var VE_POINTS_PER_LEVEL = 10000;
+  function veLevelFor(lifetimePoints) {
+    var lifetime = typeof lifetimePoints === 'number' && lifetimePoints > 0 ? lifetimePoints : 0;
+    return Math.floor(lifetime / VE_POINTS_PER_LEVEL) + 1;
+  }
+
   function renderStatsHero(member) {
     var pointsEl = document.getElementById('dash-hero-points');
     var lifetimeEl = document.getElementById('dash-hero-lifetime');
     var membershipEl = document.getElementById('dash-hero-membership');
+    var levelEl = document.getElementById('dash-hero-level');
     if (pointsEl) pointsEl.textContent = (typeof member.points === 'number' ? member.points : 0).toLocaleString();
     if (lifetimeEl) lifetimeEl.textContent = (typeof member.total_points === 'number' ? member.total_points : 0).toLocaleString();
     if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport' : 'Free';
+    if (levelEl) levelEl.textContent = veLevelFor(member.total_points).toLocaleString();
   }
 
   // Your City pill (2026-09-07, Logan, Sean direction): shows the member's
@@ -2345,6 +2400,64 @@
     }
   }
 
+  // Choose Your Guide reveal (2026-09-10, Sean, Group H). It is no longer a
+  // top-level tab, so Your Tools opens it in place: the tile grid hides, the
+  // section shows with a breadcrumb back, exactly like the My List embed
+  // above but against local markup instead of an iframe.
+  var dashChooseGuidePrevLayout = null;
+  function openChooseGuide() {
+    var flat = document.getElementById('dash-tiles-flat');
+    var sectioned = document.getElementById('dash-tiles-sectioned');
+    var crumb = document.getElementById('dash-choose-guide-crumb');
+    var section = document.getElementById('dash-choose-guide-section');
+    if (!crumb || !section) return;
+    closeMyList();
+    dashChooseGuidePrevLayout = (sectioned && sectioned.style.display !== 'none') ? 'sectioned' : 'flat';
+    if (flat) flat.style.display = 'none';
+    if (sectioned) sectioned.style.display = 'none';
+    crumb.innerHTML = '';
+    var back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'dash-crumb-back';
+    back.innerHTML = '&larr; Your Tools';
+    back.addEventListener('click', closeChooseGuide);
+    var sep = document.createElement('span');
+    sep.className = 'dash-crumb-sep';
+    sep.textContent = '/';
+    var current = document.createElement('span');
+    current.className = 'dash-crumb-current';
+    current.textContent = 'Choose Your Guide';
+    crumb.appendChild(back);
+    crumb.appendChild(sep);
+    crumb.appendChild(current);
+    crumb.style.display = 'flex';
+    section.style.display = 'block';
+  }
+
+  function closeChooseGuide() {
+    var flat = document.getElementById('dash-tiles-flat');
+    var sectioned = document.getElementById('dash-tiles-sectioned');
+    var crumb = document.getElementById('dash-choose-guide-crumb');
+    var section = document.getElementById('dash-choose-guide-section');
+    if (section) section.style.display = 'none';
+    if (crumb) { crumb.style.display = 'none'; crumb.innerHTML = ''; }
+    if (!crumb && !section) return;
+    if (dashChooseGuidePrevLayout === 'sectioned') {
+      if (sectioned) sectioned.style.display = 'block';
+    } else {
+      if (flat) flat.style.display = '';
+    }
+    dashChooseGuidePrevLayout = null;
+  }
+
+  // Reset every in-place panel Your Tools can open. Called on tab switch so
+  // an open panel never bleeds onto another tab now that Choose Your Guide is
+  // no longer owned by the tab system.
+  window.veCloseToolPanels = function () {
+    closeMyList();
+    closeChooseGuide();
+  };
+
   function renderDirectory(member) {
     var mount = document.getElementById('dash-directory-mount');
     if (!mount) return;
@@ -2410,6 +2523,7 @@
 
     function activate(key, opts) {
       opts = opts || {};
+      if (window.veCloseToolPanels) window.veCloseToolPanels();
       sections.forEach(function (s) {
         s.style.display = (s.getAttribute('data-tab-key') === key) ? 'block' : 'none';
       });
@@ -2557,7 +2671,33 @@
   // than letting the button do nothing.
   (function initDockAsk() {
     var btn = document.getElementById('lr-dock-ask');
+    var icon = document.getElementById('lr-dock-ask-icon');
     if (!btn) return;
+
+    // Wear the member's chosen Guide, defaulting to Liz (2026-09-10, Sean,
+    // Group H). public/footer.js owns the slug-to-image map and exposes
+    // VEGuideImage so this does not keep a second copy; if the footer has not
+    // run yet the icon paints on the next frame instead of guessing.
+    function paintIcon() {
+      if (!icon) return false;
+      if (typeof window.VEGuideImage !== 'function') return false;
+      icon.style.backgroundImage = "url('" + window.VEGuideImage() + "')";
+      return true;
+    }
+    if (!paintIcon()) {
+      var paintTries = 0;
+      var paintIv = setInterval(function () {
+        paintTries++;
+        if (paintIcon() || paintTries > 30) clearInterval(paintIv);
+      }, 100);
+    }
+
+    // Always open the question dialogue. Group H, verbatim: the icon "must
+    // still open the same question dialogue box ... regardless of
+    // guide-selection state or Passport status." The Passport click override
+    // that used to swallow this in footer.js is gone, so driving the widget's
+    // own launcher now behaves identically for every tier, which is the
+    // "same click functionality as the green VE circle icon" Sean asked for.
     function launcher() { return document.querySelector('.gw-launch .gw-btn'); }
     btn.addEventListener('click', function () {
       var el = launcher();

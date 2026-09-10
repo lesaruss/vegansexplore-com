@@ -46,6 +46,25 @@
   /* ── Inject before this script tag ── */
   document.currentScript.insertAdjacentHTML('beforebegin', html);
 
+  /* ── Registered members only (2026-09-10, Sean, Work Queue Group H) ──
+   * "Remove the 'Have a Question' element from the homepage and the
+   * pre-registration onboarding flow entirely. It should only appear once
+   * someone is a registered member." Until now this script was injected on
+   * every page carrying the footer, visitor or not. Reads VEAuth when it is
+   * available and falls back to the stored session directly, so the gate
+   * holds on the pages that load this file without ve-auth.js (every one of
+   * those is a public page, which is exactly where the widget must not
+   * appear). A superadmin previewing "Public, logged out" through View As
+   * correctly sees no widget, since VEAuth.getMember() returns null there. */
+  function veSignedInMember() {
+    try {
+      if (window.VEAuth && VEAuth.getMember) return VEAuth.getMember();
+      if (!localStorage.getItem('ve_token')) return null;
+      return JSON.parse(localStorage.getItem('ve_member') || 'null');
+    } catch (e) { return null; }
+  }
+  if (!veSignedInMember()) return;
+
   /* ── Universal Guide Widget (installed 2026-09-05, prototype property) ──
    * Pinned to v1 so a future v2 elsewhere cannot silently change this site's widget.
    * brand=vegans-explore routes escalations to Sean (contact@lesaruss.com) via the
@@ -60,20 +79,29 @@
   gw.defer = true;
   document.body.appendChild(gw);
 
-  /* ── Guide launcher personalization + tier branching (Sean, 2026-09-08) ──
+  /* ── Guide launcher personalization (Sean, 2026-09-08, revised 2026-09-10) ──
    * Layered on top of the shared widget from this file only -- guide-widget.v1.js
    * itself is never touched, so no other brand's install can be affected.
    *
-   * 1. Once a visitor has picked a Guide in the /guide.html flow (state written
-   *    to the same ve_guide_flow_state key the wizard already uses), the bare
-   *    green circle becomes a rounded square showing that Guide's photo --
-   *    "the guide they select," not a generic mark.
-   * 2. Free members keep today's behavior: the launcher opens the widget's own
-   *    "have a question" ticket form. Passport members get routed into the
-   *    real /guide.html chat sequence instead of that generic form. Reads
-   *    VEAuth.getMember() from ve-auth.js, which every page carrying this
-   *    footer already loads before this script runs; pages with no VEAuth (or
-   *    no signed-in member) just keep the default ticket behavior. */
+   * The launcher always wears a Guide's face, defaulting to Liz when the
+   * member has not picked one yet (2026-09-10, Sean, Group H: "default to
+   * Liz's image rather than the current green circle"). It used to stay a
+   * bare green circle until a Guide was chosen.
+   *
+   * The tier branch added 2026-09-08 (Passport members routed into
+   * /guide.html instead of the ticket form) is REMOVED, superseded by Sean's
+   * 2026-09-10 instruction: the icon "must still open the same question
+   * dialogue box ... regardless of guide-selection state or Passport
+   * status." That override was the real reason the dialogue never opened in
+   * Passport view -- the click navigated away before the widget could handle
+   * it. Sean's own diagnosis pointed at the missing Guide selection; the
+   * missing Guide only explained the generic green circle, not the dead
+   * click. Both are fixed here, and the requirement he stated (the dialogue
+   * always opens) is what the code now guarantees.
+   *
+   * VE_DEFAULT_GUIDE_SLUG and veGuideImage are exposed on window so the
+   * dashboard's universe-dock icon resolves the same Guide from the same
+   * place instead of keeping a second copy of this map. */
   var VE_GUIDE_IMAGES = {
     liz: '/public/guides/liz.png',
     maya: '/public/guides/maya.png',
@@ -82,30 +110,28 @@
     dani: '/public/guides/dani.png',
     river: '/public/guides/river.jpg'
   };
+  var VE_DEFAULT_GUIDE_SLUG = 'liz';
+
+  function veChosenGuideSlug() {
+    try {
+      var flow = JSON.parse(localStorage.getItem('ve_guide_flow_state') || 'null');
+      if (flow && flow.guide_slug && VE_GUIDE_IMAGES[flow.guide_slug]) return flow.guide_slug;
+    } catch (e) {}
+    return VE_DEFAULT_GUIDE_SLUG;
+  }
+  function veGuideImage() { return VE_GUIDE_IMAGES[veChosenGuideSlug()]; }
+  window.VEGuideImage = veGuideImage;
+  window.VEChosenGuideSlug = veChosenGuideSlug;
+
   function vePatchGuideWidget() {
     var launchBtn = document.querySelector('.gw-launch .gw-btn');
     if (!launchBtn) return;
-
-    var flow = null;
-    try { flow = JSON.parse(localStorage.getItem('ve_guide_flow_state') || 'null'); } catch (e) {}
-    var guideImg = flow && flow.guide_slug ? VE_GUIDE_IMAGES[flow.guide_slug] : null;
-    if (guideImg) {
-      var sqStyle = document.createElement('style');
-      sqStyle.textContent = '.gw-launch .gw-btn{border-radius:14px !important;}.gw-launch .gw-btn img{border-radius:14px !important;}';
-      document.head.appendChild(sqStyle);
-      var img = launchBtn.querySelector('img');
-      if (!img) { img = document.createElement('img'); img.alt = ''; launchBtn.appendChild(img); }
-      img.src = guideImg;
-    }
-
-    var member = (window.VEAuth && VEAuth.getMember) ? VEAuth.getMember() : null;
-    if (member && member.ve_tier === 'passport') {
-      launchBtn.addEventListener('click', function (e) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        window.location.href = '/guide.html';
-      }, true);
-    }
+    var sqStyle = document.createElement('style');
+    sqStyle.textContent = '.gw-launch .gw-btn{border-radius:14px !important;}.gw-launch .gw-btn img{border-radius:14px !important;}';
+    document.head.appendChild(sqStyle);
+    var img = launchBtn.querySelector('img');
+    if (!img) { img = document.createElement('img'); img.alt = ''; launchBtn.appendChild(img); }
+    img.src = veGuideImage();
   }
   gw.addEventListener('load', vePatchGuideWidget);
 })();
