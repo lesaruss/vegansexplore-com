@@ -65,19 +65,27 @@
      current green circle"). Cropped from the top so the face sits in frame
      rather than centering on a portrait's empty headroom. */
   .lr-dock-ask-icon{background-size:cover;background-position:center 18%;background-color:var(--ve-green);}
+  /* Minimize control: mobile only, so it never appears on the desktop dock. */
+  .lr-dock-min{display:none;flex:0 0 auto;width:26px;height:26px;margin-left:4px;border:none;border-radius:50%;background:rgba(0,0,0,0.07);color:var(--ve-text-75);font-family:inherit;font-size:16px;line-height:1;cursor:pointer;align-items:center;justify-content:center;padding:0;}
+  .lr-dock-min:hover{background:rgba(0,0,0,0.14);color:var(--ve-text);}
   .gw-launch{display:none !important;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
     .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
-    /* Group H removed the floating bubble as a duplicate surface, so the dock
-       cannot simply disappear on a phone or there would be no way to ask a
-       question at all. The cross-brand icons still drop out here (they belong
-       to the desktop backdrop); the ask icon stays as the single surface, in
-       the same bottom-center position the bubble used to occupy. */
-    .lr-dock{padding:3px;gap:0;}
-    .lr-dock > *:not(.lr-dock-ask){display:none !important;}
+    /* Mobile dock (2026-09-10, Sean, supersedes the ask-icon-only fallback):
+       the FULL dock is available on a phone at desktop icon size, with a
+       minimize control that collapses it to just the member's Guide icon.
+       Collapsed is the load default, matching what shipped before this
+       revision, and the choice is remembered per device in localStorage so an
+       expanded dock stays expanded across reloads. At desktop icon size a
+       full row can exceed a narrow viewport, so it scrolls sideways rather
+       than clipping or shrinking the icons. */
+    .lr-dock{max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;}
+    .lr-dock-min{display:inline-flex;}
+    .lr-dock.is-collapsed{padding:3px;gap:0;max-width:none;overflow:visible;}
+    .lr-dock.is-collapsed > *:not(.lr-dock-ask){display:none !important;}
   }
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #dash-gate{text-align:center;padding:100px 20px;}
@@ -396,7 +404,7 @@
 
 <div class="console-backdrop"></div>
 
-<div class="lr-dock" role="navigation" aria-label="LESARUSS Universe">
+<div class="lr-dock" id="lr-dock" role="navigation" aria-label="LESARUSS Universe">
   <div class="lr-dock-item lr-dock-current" data-tooltip="Vegans Explore" aria-label="Vegans Explore (you are here)">
     <div class="lr-dock-icon" style="background:var(--ve-green);">VE</div>
   </div>
@@ -431,6 +439,12 @@
   <a class="lr-dock-item" href="https://hq.lesaruss.ai" target="_blank" rel="noopener" data-tooltip="LESARUSS HQ" aria-label="LESARUSS HQ -- explore the whole universe">
     <div class="lr-dock-icon" style="background:#1a1a1a;">&#9673;</div>
   </a>
+  <!-- Minimize control (2026-09-10, Sean): mobile only. Shrinks the dock to
+       just the member's Guide icon; tapping that icon brings the full dock
+       back. Deliberately the LAST element so the ordered universe row (and
+       the still-open slot to the left of LESARUSS HQ) is untouched. Hidden
+       above the mobile breakpoint, where the dock is always full. -->
+  <button type="button" class="lr-dock-min" id="lr-dock-min" aria-label="Minimize the universe dock" title="Minimize">&times;</button>
 </div>
 
 <div class="console-frame">
@@ -2669,6 +2683,63 @@
   // footer.js and initializes asynchronously, so the launcher may not exist
   // yet at first click: retry briefly, then fall back to the Guide page rather
   // than letting the button do nothing.
+  // Mobile dock collapse state (2026-09-10, Sean). Supersedes the
+  // ask-icon-only mobile fallback: the whole dock is reachable on a phone at
+  // desktop size, minimized down to just the member's Guide icon by a control
+  // in the dock, and the member's choice survives a reload on that device.
+  // Load default is collapsed, which is what the previous revision always
+  // showed, so nobody's first view changes. Desktop is untouched: the
+  // is-collapsed class only carries styling inside the mobile media query and
+  // the minimize control is hidden above it.
+  var VE_DOCK_STATE_KEY = 've_dock_expanded';
+  function dockIsMobile() {
+    try { return window.matchMedia('(max-width:760px)').matches; } catch (e) { return false; }
+  }
+  function dockExpandedStored() {
+    try { return window.localStorage.getItem(VE_DOCK_STATE_KEY) === '1'; } catch (e) { return false; }
+  }
+  // In-memory state is the source of truth; localStorage is persistence only.
+  // Reading storage back on every tap looked equivalent but broke where
+  // storage throws (a private window, or site data blocked): the dock would
+  // expand visually, the next tap would re-read false, and the member could
+  // never actually reach the question dialogue on a phone.
+  var dockExpanded = dockExpandedStored();
+  function applyDockState(expanded) {
+    var dock = document.getElementById('lr-dock');
+    if (!dock) return;
+    dock.classList.toggle('is-collapsed', !expanded);
+    var min = document.getElementById('lr-dock-min');
+    if (min) min.setAttribute('aria-expanded', String(!!expanded));
+    var ask = document.getElementById('lr-dock-ask');
+    // While collapsed on a phone the Guide icon's job is to reopen the dock,
+    // so say so rather than leaving the question label on it.
+    if (ask) {
+      var collapsedOnPhone = !expanded && dockIsMobile();
+      ask.setAttribute('aria-label', collapsedOnPhone
+        ? 'Expand the universe dock'
+        : 'Have a question? Talk to a Guide');
+      ask.setAttribute('data-tooltip', collapsedOnPhone ? 'Expand' : 'Have a Question');
+    }
+  }
+  function setDockExpanded(expanded) {
+    dockExpanded = !!expanded;
+    try { window.localStorage.setItem(VE_DOCK_STATE_KEY, dockExpanded ? '1' : '0'); } catch (e) {}
+    applyDockState(dockExpanded);
+  }
+  applyDockState(dockExpanded);
+  (function initDockMinimize() {
+    var min = document.getElementById('lr-dock-min');
+    if (min) min.addEventListener('click', function () { setDockExpanded(false); });
+    // Rotating a phone to a wide viewport (or back) changes which label the
+    // Guide icon should carry, so recompute rather than leaving it stale.
+    try {
+      var mq = window.matchMedia('(max-width:760px)');
+      var onChange = function () { applyDockState(dockExpanded); };
+      if (mq.addEventListener) mq.addEventListener('change', onChange);
+      else if (mq.addListener) mq.addListener(onChange);
+    } catch (e) {}
+  })();
+
   (function initDockAsk() {
     var btn = document.getElementById('lr-dock-ask');
     var icon = document.getElementById('lr-dock-ask-icon');
@@ -2700,6 +2771,10 @@
     // "same click functionality as the green VE circle icon" Sean asked for.
     function launcher() { return document.querySelector('.gw-launch .gw-btn'); }
     btn.addEventListener('click', function () {
+      // Collapsed on a phone, this icon is the dock's own expand control
+      // (Sean: "Tapping that shrunken icon expands the full dock back"), so it
+      // must not also fire the question dialogue on that tap.
+      if (dockIsMobile() && !dockExpanded) { setDockExpanded(true); return; }
       var el = launcher();
       if (el) { el.click(); return; }
       var tries = 0;
