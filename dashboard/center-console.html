@@ -72,8 +72,18 @@
      positions the art inside the padding box, so padding-top becomes real
      white space above the hair, and it scales with the icon rather than being
      a hardcoded pixel nudge. See .dash-thumb-guide for the same treatment on
-     the Choose Your Guide tile. */
-  .lr-dock-ask-icon{background-color:#fff;background-size:cover;background-position:center top;background-origin:content-box;padding-top:20%;}
+     the Choose Your Guide tile.
+
+     background-repeat:no-repeat is load-bearing here, not tidiness. Shipping
+     without it put a tiled slice of the portrait's own bottom edge (jeans and
+     a hand) into the strip that was supposed to be white. With
+     background-origin:content-box the image is sized to the CONTENT box while
+     the background paints across the whole PADDING box, so the default
+     repeat tiles into the padding instead of letting background-color show
+     through. Before content-box this could not happen, because cover filled
+     the padding box exactly and left nothing to tile into. Caught only by
+     rendering the page (2026-09-10); reading the CSS looked correct. */
+  .lr-dock-ask-icon{background-color:#fff;background-size:cover;background-repeat:no-repeat;background-position:center top;background-origin:content-box;padding-top:20%;}
   /* Belt and braces on the floating widget (2026-09-10, Group I). The JS
      below detaches .gw-launch from the DOM outright, which is the actual fix;
      this rule only covers the instant before that runs. It carries a
@@ -386,8 +396,8 @@
      so no background-position can invent space. background-origin:content-box
      puts the image inside the padding box and padding-top becomes white space
      above the hair, scaling with the element instead of a fixed nudge. */
-  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-color:#fff;background-position:center top;background-origin:content-box;padding-top:14%;}
-  .dash-thumb.dash-thumb-guide{background-color:#fff;background-position:center top;background-origin:content-box;padding-top:12%;}
+  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-color:#fff;background-repeat:no-repeat;background-position:center top;background-origin:content-box;padding-top:14%;}
+  .dash-thumb.dash-thumb-guide{background-color:#fff;background-repeat:no-repeat;background-position:center top;background-origin:content-box;padding-top:12%;}
   .dash-modal-opt-name{padding:10px 12px;font-size:12.5px;font-weight:800;}
   .dash-modal-opt.selected{border-color:var(--ve-green);background:var(--ve-green-light);}
   .dash-modal-opt.current{border-color:var(--ve-green);background:var(--ve-green-light);}
