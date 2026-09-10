@@ -65,9 +65,9 @@
      current green circle"). Cropped from the top so the face sits in frame
      rather than centering on a portrait's empty headroom. */
   .lr-dock-ask-icon{background-size:cover;background-position:center 18%;background-color:var(--ve-green);}
-  /* Minimize control: mobile only, so it never appears on the desktop dock. */
-  .lr-dock-min{display:none;flex:0 0 auto;width:26px;height:26px;margin-left:4px;border:none;border-radius:50%;background:rgba(0,0,0,0.07);color:var(--ve-text-75);font-family:inherit;font-size:16px;line-height:1;cursor:pointer;align-items:center;justify-content:center;padding:0;}
-  .lr-dock-min:hover{background:rgba(0,0,0,0.14);color:var(--ve-text);}
+  /* Expand/collapse toggle: mobile only, so it never appears on the desktop dock. */
+  .lr-dock-toggle{display:none;flex:0 0 auto;width:26px;height:26px;margin-left:4px;border:none;border-radius:50%;background:rgba(0,0,0,0.07);color:var(--ve-text-75);font-family:inherit;font-size:15px;line-height:1;cursor:pointer;align-items:center;justify-content:center;padding:0;}
+  .lr-dock-toggle:hover{background:rgba(0,0,0,0.14);color:var(--ve-text);}
   .gw-launch{display:none !important;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
@@ -83,9 +83,11 @@
        full row can exceed a narrow viewport, so it scrolls sideways rather
        than clipping or shrinking the icons. */
     .lr-dock{max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;}
-    .lr-dock-min{display:inline-flex;}
-    .lr-dock.is-collapsed{padding:3px;gap:0;max-width:none;overflow:visible;}
-    .lr-dock.is-collapsed > *:not(.lr-dock-ask){display:none !important;}
+    .lr-dock-toggle{display:inline-flex;}
+    /* Collapsed keeps the Guide icon AND the toggle, so the question dialogue
+       stays one tap away and expanding has its own control. */
+    .lr-dock.is-collapsed{padding:3px 4px;gap:0;max-width:none;overflow:visible;}
+    .lr-dock.is-collapsed > *:not(.lr-dock-ask):not(.lr-dock-toggle){display:none !important;}
   }
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #dash-gate{text-align:center;padding:100px 20px;}
@@ -439,12 +441,15 @@
   <a class="lr-dock-item" href="https://hq.lesaruss.ai" target="_blank" rel="noopener" data-tooltip="LESARUSS HQ" aria-label="LESARUSS HQ -- explore the whole universe">
     <div class="lr-dock-icon" style="background:#1a1a1a;">&#9673;</div>
   </a>
-  <!-- Minimize control (2026-09-10, Sean): mobile only. Shrinks the dock to
-       just the member's Guide icon; tapping that icon brings the full dock
-       back. Deliberately the LAST element so the ordered universe row (and
-       the still-open slot to the left of LESARUSS HQ) is untouched. Hidden
-       above the mobile breakpoint, where the dock is always full. -->
-  <button type="button" class="lr-dock-min" id="lr-dock-min" aria-label="Minimize the universe dock" title="Minimize">&times;</button>
+  <!-- Expand/collapse toggle (2026-09-10, Sean): mobile only. Collapsed, the
+       dock shows the member's Guide icon plus this control; the Guide icon
+       always opens the question dialogue, so asking is one tap from the
+       default state, and expanding the rest of the universe row is this
+       control's job alone. Deliberately the LAST element so the ordered
+       universe row (and the still-open slot to the left of LESARUSS HQ) is
+       untouched. Hidden above the mobile breakpoint, where the dock is
+       always full. -->
+  <button type="button" class="lr-dock-toggle" id="lr-dock-toggle" aria-label="Show the rest of the universe dock" aria-expanded="false" title="Show more">&hellip;</button>
 </div>
 
 <div class="console-frame">
@@ -2683,18 +2688,20 @@
   // footer.js and initializes asynchronously, so the launcher may not exist
   // yet at first click: retry briefly, then fall back to the Guide page rather
   // than letting the button do nothing.
-  // Mobile dock collapse state (2026-09-10, Sean). Supersedes the
-  // ask-icon-only mobile fallback: the whole dock is reachable on a phone at
-  // desktop size, minimized down to just the member's Guide icon by a control
-  // in the dock, and the member's choice survives a reload on that device.
-  // Load default is collapsed, which is what the previous revision always
-  // showed, so nobody's first view changes. Desktop is untouched: the
-  // is-collapsed class only carries styling inside the mobile media query and
-  // the minimize control is hidden above it.
+  // Mobile dock collapse state (2026-09-10, Sean). The whole dock is reachable
+  // on a phone at desktop size, collapsed down to the member's Guide icon plus
+  // a small toggle, and the member's choice survives a reload on that device.
+  // Load default is collapsed, so nobody's first view changes.
+  //
+  // Revised the same day at Sean's call: the Guide icon ALWAYS opens the
+  // question dialogue, including while collapsed, so asking is one tap from
+  // the default state. Expanding the rest of the row is the toggle's job
+  // alone. The first pass had the collapsed Guide icon expand the dock, which
+  // made the primary action cost two taps.
+  //
+  // Desktop is untouched: the is-collapsed class only carries styling inside
+  // the mobile media query and the toggle is hidden above it.
   var VE_DOCK_STATE_KEY = 've_dock_expanded';
-  function dockIsMobile() {
-    try { return window.matchMedia('(max-width:760px)').matches; } catch (e) { return false; }
-  }
   function dockExpandedStored() {
     try { return window.localStorage.getItem(VE_DOCK_STATE_KEY) === '1'; } catch (e) { return false; }
   }
@@ -2708,17 +2715,17 @@
     var dock = document.getElementById('lr-dock');
     if (!dock) return;
     dock.classList.toggle('is-collapsed', !expanded);
-    var min = document.getElementById('lr-dock-min');
-    if (min) min.setAttribute('aria-expanded', String(!!expanded));
-    var ask = document.getElementById('lr-dock-ask');
-    // While collapsed on a phone the Guide icon's job is to reopen the dock,
-    // so say so rather than leaving the question label on it.
-    if (ask) {
-      var collapsedOnPhone = !expanded && dockIsMobile();
-      ask.setAttribute('aria-label', collapsedOnPhone
-        ? 'Expand the universe dock'
-        : 'Have a question? Talk to a Guide');
-      ask.setAttribute('data-tooltip', collapsedOnPhone ? 'Expand' : 'Have a Question');
+    // The toggle carries both directions: reveal the rest of the row when
+    // collapsed, put it away when expanded. The Guide icon's own label never
+    // changes now, because its job never changes.
+    var toggle = document.getElementById('lr-dock-toggle');
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', String(!!expanded));
+      toggle.innerHTML = expanded ? '&times;' : '&hellip;';
+      toggle.setAttribute('aria-label', expanded
+        ? 'Hide the rest of the universe dock'
+        : 'Show the rest of the universe dock');
+      toggle.setAttribute('title', expanded ? 'Show less' : 'Show more');
     }
   }
   function setDockExpanded(expanded) {
@@ -2727,11 +2734,13 @@
     applyDockState(dockExpanded);
   }
   applyDockState(dockExpanded);
-  (function initDockMinimize() {
-    var min = document.getElementById('lr-dock-min');
-    if (min) min.addEventListener('click', function () { setDockExpanded(false); });
-    // Rotating a phone to a wide viewport (or back) changes which label the
-    // Guide icon should carry, so recompute rather than leaving it stale.
+  (function initDockToggle() {
+    var toggle = document.getElementById('lr-dock-toggle');
+    if (toggle) {
+      toggle.addEventListener('click', function () { setDockExpanded(!dockExpanded); });
+    }
+    // Rotating a phone to a wide viewport (or back) does not change the state,
+    // but re-applying keeps the toggle's glyph and labels consistent with it.
     try {
       var mq = window.matchMedia('(max-width:760px)');
       var onChange = function () { applyDockState(dockExpanded); };
@@ -2771,10 +2780,6 @@
     // "same click functionality as the green VE circle icon" Sean asked for.
     function launcher() { return document.querySelector('.gw-launch .gw-btn'); }
     btn.addEventListener('click', function () {
-      // Collapsed on a phone, this icon is the dock's own expand control
-      // (Sean: "Tapping that shrunken icon expands the full dock back"), so it
-      // must not also fire the question dialogue on that tap.
-      if (dockIsMobile() && !dockExpanded) { setDockExpanded(true); return; }
       var el = launcher();
       if (el) { el.click(); return; }
       var tries = 0;
