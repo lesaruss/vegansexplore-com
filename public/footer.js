@@ -46,62 +46,22 @@
   /* ── Inject before this script tag ── */
   document.currentScript.insertAdjacentHTML('beforebegin', html);
 
-  /* ── Registered members only (2026-09-10, Sean, Work Queue Group H) ──
-   * "Remove the 'Have a Question' element from the homepage and the
-   * pre-registration onboarding flow entirely. It should only appear once
-   * someone is a registered member." Until now this script was injected on
-   * every page carrying the footer, visitor or not. Reads VEAuth when it is
-   * available and falls back to the stored session directly, so the gate
-   * holds on the pages that load this file without ve-auth.js (every one of
-   * those is a public page, which is exactly where the widget must not
-   * appear). A superadmin previewing "Public, logged out" through View As
-   * correctly sees no widget, since VEAuth.getMember() returns null there. */
-  function veSignedInMember() {
-    try {
-      if (window.VEAuth && VEAuth.getMember) return VEAuth.getMember();
-      if (!localStorage.getItem('ve_token')) return null;
-      return JSON.parse(localStorage.getItem('ve_member') || 'null');
-    } catch (e) { return null; }
-  }
-  if (!veSignedInMember()) return;
-
-  /* ── Universal Guide Widget (installed 2026-09-05, prototype property) ──
-   * Pinned to v1 so a future v2 elsewhere cannot silently change this site's widget.
-   * brand=vegans-explore routes escalations to Sean (contact@lesaruss.com) via the
-   * generalized coach-os-message-submit endpoint. Colors match this site's own
-   * nav green (#22C55E / #15803D). No Guide-picker yet (Group D, not built) --
-   * this is the generalized capture-and-escalation widget only. */
-  var gw = document.createElement('script');
-  gw.src = 'https://hq.lesaruss.ai/modules/guide-widget.v1.js';
-  gw.setAttribute('data-brand', 'vegans-explore');
-  gw.setAttribute('data-color', '#22C55E');
-  gw.setAttribute('data-color-dark', '#15803D');
-  gw.defer = true;
-  document.body.appendChild(gw);
-
-  /* ── Guide launcher personalization (Sean, 2026-09-08, revised 2026-09-10) ──
-   * Layered on top of the shared widget from this file only -- guide-widget.v1.js
-   * itself is never touched, so no other brand's install can be affected.
+  /* ── Guide image helper ──
+   * The Guide widget install itself moved OUT of this shared footer on
+   * 2026-09-10 (Sean, Group I): the dialogue is now reachable only from the
+   * dashboard dock, so dashboard/center-console.html owns the widget script
+   * and this file no longer injects it on any page. Group H had already
+   * gated it to signed-in members; scoping it to the one surface that has a
+   * dock supersedes that gate and makes "no auto-appearing bubble anywhere"
+   * true site-wide rather than true for visitors only.
    *
-   * The launcher always wears a Guide's face, defaulting to Liz when the
-   * member has not picked one yet (2026-09-10, Sean, Group H: "default to
-   * Liz's image rather than the current green circle"). It used to stay a
-   * bare green circle until a Guide was chosen.
+   * What stays here is the slug-to-portrait map, because it is a plain
+   * lookup with nothing member-specific in it and both the dock icon and the
+   * Choose Your Guide tile resolve through it. One map, not two.
    *
-   * The tier branch added 2026-09-08 (Passport members routed into
-   * /guide.html instead of the ticket form) is REMOVED, superseded by Sean's
-   * 2026-09-10 instruction: the icon "must still open the same question
-   * dialogue box ... regardless of guide-selection state or Passport
-   * status." That override was the real reason the dialogue never opened in
-   * Passport view -- the click navigated away before the widget could handle
-   * it. Sean's own diagnosis pointed at the missing Guide selection; the
-   * missing Guide only explained the generic green circle, not the dead
-   * click. Both are fixed here, and the requirement he stated (the dialogue
-   * always opens) is what the code now guarantees.
-   *
-   * VE_DEFAULT_GUIDE_SLUG and veGuideImage are exposed on window so the
-   * dashboard's universe-dock icon resolves the same Guide from the same
-   * place instead of keeping a second copy of this map. */
+   * Liz is the default when the member has not picked a Guide yet (Sean,
+   * 2026-09-10): "default to Liz's image rather than the current green
+   * circle." */
   var VE_GUIDE_IMAGES = {
     liz: '/public/guides/liz.png',
     maya: '/public/guides/maya.png',
@@ -122,16 +82,4 @@
   function veGuideImage() { return VE_GUIDE_IMAGES[veChosenGuideSlug()]; }
   window.VEGuideImage = veGuideImage;
   window.VEChosenGuideSlug = veChosenGuideSlug;
-
-  function vePatchGuideWidget() {
-    var launchBtn = document.querySelector('.gw-launch .gw-btn');
-    if (!launchBtn) return;
-    var sqStyle = document.createElement('style');
-    sqStyle.textContent = '.gw-launch .gw-btn{border-radius:14px !important;}.gw-launch .gw-btn img{border-radius:14px !important;}';
-    document.head.appendChild(sqStyle);
-    var img = launchBtn.querySelector('img');
-    if (!img) { img = document.createElement('img'); img.alt = ''; launchBtn.appendChild(img); }
-    img.src = veGuideImage();
-  }
-  gw.addEventListener('load', vePatchGuideWidget);
 })();

@@ -60,34 +60,41 @@
      and a reset of the default button chrome. Its floating bubble is hidden on
      this page because the dock item replaces it. */
   button.lr-dock-item{cursor:pointer;background:none;border:none;font:inherit;}
+  .lr-dock-plus{font-size:28px;font-weight:400;line-height:1;}
   /* The ask icon wears the member's chosen Guide, defaulting to Liz
-     (2026-09-10, Sean, Group H: "default to Liz's image rather than the
-     current green circle"). Cropped from the top so the face sits in frame
-     rather than centering on a portrait's empty headroom. */
-  .lr-dock-ask-icon{background-size:cover;background-position:center 18%;background-color:var(--ve-green);}
-  /* Expand/collapse toggle: mobile only, so it never appears on the desktop dock. */
-  .lr-dock-toggle{display:none;flex:0 0 auto;width:26px;height:26px;margin-left:4px;border:none;border-radius:50%;background:rgba(0,0,0,0.07);color:var(--ve-text-75);font-family:inherit;font-size:15px;line-height:1;cursor:pointer;align-items:center;justify-content:center;padding:0;}
-  .lr-dock-toggle:hover{background:rgba(0,0,0,0.14);color:var(--ve-text);}
-  .gw-launch{display:none !important;}
+     (2026-09-10, Sean, Group H). Headroom fix, same day (Group I): the head
+     was sitting flush against the top of the icon. The Guide portraits are
+     full-body 3:4 art whose own top margin is a couple of source pixels, so
+     no background-position value can conjure headroom out of them: with
+     background-size:cover the image is always taller than the box, and a
+     percentage offset can only ever crop further in. The headroom has to come
+     from the container instead. background-origin:content-box sizes and
+     positions the art inside the padding box, so padding-top becomes real
+     white space above the hair, and it scales with the icon rather than being
+     a hardcoded pixel nudge. See .dash-thumb-guide for the same treatment on
+     the Choose Your Guide tile. */
+  .lr-dock-ask-icon{background-color:#fff;background-size:cover;background-position:center top;background-origin:content-box;padding-top:20%;}
+  /* Belt and braces on the floating widget (2026-09-10, Group I). The JS
+     below detaches .gw-launch from the DOM outright, which is the actual fix;
+     this rule only covers the instant before that runs. It carries a
+     descendant selector deliberately: guide-widget.v1.js injects its own
+     stylesheet into document.head at init, AFTER this page's <style>, and
+     sets .gw-launch{display:flex !important}. At equal specificity the later
+     rule wins, which is exactly why the plain .gw-launch{display:none
+     !important} shipped in PR #2 was present in the served HTML and still had
+     no effect. body .gw-launch outranks it on specificity. */
+  body .gw-launch{display:none !important;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
     .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
-    /* Mobile dock (2026-09-10, Sean, supersedes the ask-icon-only fallback):
-       the FULL dock is available on a phone at desktop icon size, with a
-       minimize control that collapses it to just the member's Guide icon.
-       Collapsed is the load default, matching what shipped before this
-       revision, and the choice is remembered per device in localStorage so an
-       expanded dock stays expanded across reloads. At desktop icon size a
-       full row can exceed a narrow viewport, so it scrolls sideways rather
-       than clipping or shrinking the icons. */
-    .lr-dock{max-width:calc(100vw - 16px);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;}
-    .lr-dock-toggle{display:inline-flex;}
-    /* Collapsed keeps the Guide icon AND the toggle, so the question dialogue
-       stays one tap away and expanding has its own control. */
-    .lr-dock.is-collapsed{padding:3px 4px;gap:0;max-width:none;overflow:visible;}
-    .lr-dock.is-collapsed > *:not(.lr-dock-ask):not(.lr-dock-toggle){display:none !important;}
+    /* No mobile-only dock treatment (2026-09-10, Sean, Group I: "applies
+       identically on mobile, the selector is the single entry point on both,
+       no separate mobile-only treatment"). Three selector items plus the
+       Guide icon fit a narrow viewport at full size, so the collapse/expand
+       toggle and its remembered state are gone and the dock simply renders
+       the same on both. */
   }
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #dash-gate{text-align:center;padding:100px 20px;}
@@ -304,7 +311,7 @@
   #dash-podcast-shows-row .dash-tile-desc{font-size:11px;}
   @media (max-width:900px){ #dash-podcast-shows-row{grid-template-columns:repeat(3,1fr);} }
   @media (max-width:480px){ #dash-podcast-shows-row{grid-template-columns:repeat(2,1fr);} }
-  .dash-thumb.guide-thumb{background-position:top center;}
+  .dash-thumb.guide-thumb{background-position:center top;}
   /* --- Guides tab (2026-09-07, Sean correction): the real Guide Catalog
      from vegansexplore.com/guides, ported in-frame -- Sean specifically
      wants THIS experience (the gc-card catalog with Start/View/Notify Me),
@@ -372,7 +379,15 @@
   .dash-modal-opt{border:1.5px solid var(--ve-border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;text-align:left;font-family:"Montserrat",sans-serif;transition:border-color .15s,box-shadow .15s,transform .15s;text-decoration:none;color:var(--ve-text);display:block;}
   .dash-modal-opt:hover{border-color:var(--ve-green);box-shadow:0 6px 18px rgba(58,155,62,0.12);transform:translateY(-2px);}
   .dash-modal-opt-thumb{aspect-ratio:8/5;width:100%;background-size:cover;background-position:center;}
-  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-position:top center;}
+  /* Guide portraits get real headroom (2026-09-10, Sean, Group I: "the head
+     currently sits right at the top edge of the circular icon with no
+     headroom. Add vertical white space above the head"). Same mechanism as
+     .lr-dock-ask-icon: the art is full-body 3:4 with a two-pixel top margin,
+     so no background-position can invent space. background-origin:content-box
+     puts the image inside the padding box and padding-top becomes white space
+     above the hair, scaling with the element instead of a fixed nudge. */
+  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-color:#fff;background-position:center top;background-origin:content-box;padding-top:14%;}
+  .dash-thumb.dash-thumb-guide{background-color:#fff;background-position:center top;background-origin:content-box;padding-top:12%;}
   .dash-modal-opt-name{padding:10px 12px;font-size:12.5px;font-weight:800;}
   .dash-modal-opt.selected{border-color:var(--ve-green);background:var(--ve-green-light);}
   .dash-modal-opt.current{border-color:var(--ve-green);background:var(--ve-green-light);}
@@ -406,50 +421,34 @@
 
 <div class="console-backdrop"></div>
 
+<!-- Universe selector, redesigned 2026-09-10 (Sean, Group I, supersedes the
+     "add one unnamed icon to the five-icon row" item): "the dock does not
+     need every individual brand icon. Reduce it to three items: GeekFon
+     Society, LESARUSS HQ (the main/home icon), and one + icon that links out
+     to lesaruss.com for access to every other brand." Vegans Explore,
+     Humble Cabbage, K12 Unlocked and ADA Unlocked come out; the "+" covers
+     every brand including those. Identical on mobile, no separate treatment,
+     which is why the collapse/expand toggle built earlier the same day is
+     gone: it existed only because seven icons would not fit a phone.
+
+     The Guide icon is not a universe entry, so it stays on the utility side
+     of the divider. It is the ONLY way to reach the Guide dialogue now (Sean,
+     same batch): "access to the Guide dialogue happens only by clicking the
+     dock icon itself, never a separate auto-appearing bubble." -->
 <div class="lr-dock" id="lr-dock" role="navigation" aria-label="LESARUSS Universe">
-  <div class="lr-dock-item lr-dock-current" data-tooltip="Vegans Explore" aria-label="Vegans Explore (you are here)">
-    <div class="lr-dock-icon" style="background:var(--ve-green);">VE</div>
-  </div>
-  <a class="lr-dock-item" href="https://humblecabbage.com" target="_blank" rel="noopener" data-tooltip="Humble Cabbage" aria-label="Humble Cabbage -- official clothing line of the LESARUSS Universe">
-    <div class="lr-dock-icon" style="background:#4B5D3A;">HC</div>
-  </a>
   <div class="lr-dock-item" data-tooltip="GeekFon Society" aria-label="GeekFon Society">
     <div class="lr-dock-icon" style="background:#F69820;">GF</div>
   </div>
-  <div class="lr-dock-item" data-tooltip="K12 Unlocked" aria-label="K12 Unlocked">
-    <div class="lr-dock-icon" style="background:#2D5F8A;">K12</div>
-  </div>
-  <div class="lr-dock-item" data-tooltip="ADA Unlocked" aria-label="ADA Unlocked">
-    <div class="lr-dock-icon" style="background:#1a7d7d;">ADA</div>
-  </div>
+  <a class="lr-dock-item" href="https://hq.lesaruss.ai" target="_blank" rel="noopener" data-tooltip="LESARUSS HQ" aria-label="LESARUSS HQ -- the home of the whole universe">
+    <div class="lr-dock-icon" style="background:#1a1a1a;">&#9673;</div>
+  </a>
+  <a class="lr-dock-item" href="https://lesaruss.com" target="_blank" rel="noopener" data-tooltip="Every other brand" aria-label="Every other brand in the LESARUSS Universe, on lesaruss.com">
+    <div class="lr-dock-icon lr-dock-plus" style="background:#3f3f46;">+</div>
+  </a>
   <div class="lr-dock-sep"></div>
-  <!-- "Have a Question" (2026-09-09, Sean, Fieldy 08:53 UTC: "I wanna take
-       the have a question and I want to put it into the selector, the
-       universe selector at the bottom... it'll go to the left of the LESARUSS
-       HQ icon and the right of the divider"). This is the Guide widget's own
-       "have a question" entry point, which until now was only reachable from
-       the floating bubble that widget injects. It is not a brand, so it sits
-       on the utility side of the divider next to HQ. Clicking it drives the
-       widget's real launcher rather than reimplementing it, so the tier
-       branching already wired in public/footer.js carries over untouched: a
-       free member gets the ticket form, a Passport member is routed into the
-       real Guide chat. The floating bubble is hidden on this page (see
-       .gw-launch below) so the console has one entry point, not two. -->
   <button type="button" class="lr-dock-item lr-dock-ask" id="lr-dock-ask" data-tooltip="Have a Question" aria-label="Have a question? Talk to a Guide">
     <div class="lr-dock-icon lr-dock-ask-icon" id="lr-dock-ask-icon"></div>
   </button>
-  <a class="lr-dock-item" href="https://hq.lesaruss.ai" target="_blank" rel="noopener" data-tooltip="LESARUSS HQ" aria-label="LESARUSS HQ -- explore the whole universe">
-    <div class="lr-dock-icon" style="background:#1a1a1a;">&#9673;</div>
-  </a>
-  <!-- Expand/collapse toggle (2026-09-10, Sean): mobile only. Collapsed, the
-       dock shows the member's Guide icon plus this control; the Guide icon
-       always opens the question dialogue, so asking is one tap from the
-       default state, and expanding the rest of the universe row is this
-       control's job alone. Deliberately the LAST element so the ordered
-       universe row (and the still-open slot to the left of LESARUSS HQ) is
-       untouched. Hidden above the mobile breakpoint, where the dock is
-       always full. -->
-  <button type="button" class="lr-dock-toggle" id="lr-dock-toggle" aria-label="Show the rest of the universe dock" aria-expanded="false" title="Show more">&hellip;</button>
 </div>
 
 <div class="console-frame">
@@ -942,7 +941,7 @@
       var opt = document.createElement('a');
       opt.className = 'dash-modal-opt';
       opt.href = g.href;
-      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');background-color:' + g.bg + ';"></div><div class="dash-modal-opt-name">' + g.title + '</div>';
+      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');"></div><div class="dash-modal-opt-name">' + g.title + '</div>';
       grid.appendChild(opt);
     });
     document.getElementById('dash-guide-modal').classList.add('open');
@@ -1144,7 +1143,7 @@
     // the member's chosen guide, cropped so the head is cut off"). The image
     // is resolved at render time from public/footer.js's VEGuideImage, which
     // defaults to Liz, so the tile and the dock icon can never disagree.
-    { key: 'choose-guide', href: '#', icon: '&#129497;', img: 'guide', imgPos: 'center 8%', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' }
+    { key: 'choose-guide', href: '#', icon: '&#129497;', img: 'guide', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' }
   ];
   // choose-topics tile removed 2026-09-08 (Sean, Fieldy field note): folded
   // into GUIDE_CATALOG above instead -- see the "mini-guides" entry there.
@@ -1167,7 +1166,7 @@
     if (TILE_REGISTRY) return TILE_REGISTRY;
     TILE_REGISTRY = MODULES.map(function (m) {
       return {
-        key: m.key, href: m.href, iconHtml: m.icon, img: m.img, imgPos: m.imgPos,
+        key: m.key, href: m.href, iconHtml: m.icon, img: m.img,
         bg: m.bg, title: m.title, desc: m.desc,
         visibility: 'all', defaultSection: 'tools',
         locked: (m.key === 'tour')
@@ -1198,11 +1197,11 @@
   // pages, which were static, unfinished mockups (their own <title> tags
   // say "(Mock)") that never talked to a real Guide.
   var GUIDE_PERSONAS = [
-    { key: 'guide-maya', href: '/guide.html?guide=maya', img: '/public/guides/maya.png', bg: '#2d7d31', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
-    { key: 'guide-theo', href: '/guide.html?guide=theo', img: '/public/guides/theo.png', bg: '#8B6914', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
-    { key: 'guide-nori', href: '/guide.html?guide=nori', img: '/public/guides/nori.png', bg: '#2D5F8A', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.' },
-    { key: 'guide-dani', href: '/guide.html?guide=dani', img: '/public/guides/dani.png', bg: '#C4522A', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.' },
-    { key: 'guide-river', href: '/guide.html?guide=river', img: '/public/guides/river.jpg', bg: '#6B35A8', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.' }
+    { key: 'guide-maya', href: '/guide.html?guide=maya', img: '/public/guides/maya.png', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
+    { key: 'guide-theo', href: '/guide.html?guide=theo', img: '/public/guides/theo.png', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
+    { key: 'guide-nori', href: '/guide.html?guide=nori', img: '/public/guides/nori.png', title: 'Nori', desc: 'Entrepreneur Guide. Building a Vegan business -- get listed, grow your audience, and connect with Vegan customers.' },
+    { key: 'guide-dani', href: '/guide.html?guide=dani', img: '/public/guides/dani.png', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.' },
+    { key: 'guide-river', href: '/guide.html?guide=river', img: '/public/guides/river.jpg', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.' }
   ];
 
   function renderChooseGuideSection(member) {
@@ -1221,7 +1220,7 @@
       var opt = document.createElement('a');
       opt.className = 'dash-modal-opt';
       opt.href = g.href;
-      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');background-color:' + g.bg + ';"></div><div class="dash-modal-opt-name">' + g.title + '</div><p style="font-size:11.5px;color:var(--ve-text-50);padding:0 12px 12px;line-height:1.4;">' + g.desc + '</p>';
+      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');"></div><div class="dash-modal-opt-name">' + g.title + '</div><p style="font-size:11.5px;color:var(--ve-text-50);padding:0 12px 12px;line-height:1.4;">' + g.desc + '</p>';
       grid.appendChild(opt);
     });
   }
@@ -1254,10 +1253,13 @@
 
   function sectionedTileHtml(t) {
     var src = t.img ? dashTileImg(t.img) : null;
+    // A Guide portrait carries its own class so the shared headroom rule
+    // applies, rather than each call site repeating a crop offset.
+    var thumbClass = 'dash-thumb' + (t.img === 'guide' ? ' dash-thumb-guide' : '');
     var thumbStyle = src
-      ? "background-image:url('" + src + "');background-size:cover;background-position:" + (t.imgPos || 'center') + ";background-color:" + (t.bg || 'var(--ve-green-light)') + ";"
+      ? "background-image:url('" + src + "');background-size:cover;background-color:" + (t.img === 'guide' ? '#fff' : (t.bg || 'var(--ve-green-light)')) + ";"
       : 'background:' + t.bg + ';';
-    return '<div class="dash-thumb" style="' + thumbStyle + '">' + (src ? '' : t.iconHtml) + '</div>' +
+    return '<div class="' + thumbClass + '" style="' + thumbStyle + '">' + (src ? '' : t.iconHtml) + '</div>' +
       '<div class="dash-tile-body"><div class="dash-tile-title">' + t.title +
       (t.tagLabel ? ' <span class="dash-tag superadmin">' + t.tagLabel + '</span>' : '') +
       (t.locked ? ' <span class="dash-tag locked">Fixed</span>' : '') +
@@ -1421,10 +1423,11 @@
       opt.type = 'button';
       opt.className = 'dash-modal-opt' + (!isHidden ? ' selected' : '');
       var modalSrc = m.img ? dashTileImg(m.img) : null;
+      var modalClass = 'dash-modal-opt-thumb' + (m.img === 'guide' ? ' guide-thumb' : '');
       var modalThumb = modalSrc
-        ? "background-image:url('" + modalSrc + "');background-size:cover;background-position:" + (m.imgPos || 'center') + ";background-color:" + m.bg + ";"
+        ? "background-image:url('" + modalSrc + "');background-size:cover;background-color:" + (m.img === 'guide' ? '#fff' : m.bg) + ";"
         : 'background:' + m.bg + ';display:flex;align-items:center;justify-content:center;font-size:28px;';
-      opt.innerHTML = '<div class="dash-modal-opt-thumb" style="' + modalThumb + '">' + (modalSrc ? '' : m.icon) + '</div>' +
+      opt.innerHTML = '<div class="' + modalClass + '" style="' + modalThumb + '">' + (modalSrc ? '' : m.icon) + '</div>' +
         '<div class="dash-modal-opt-name">' + m.title + (!isHidden ? ' &#10003;' : '') + '</div>';
       opt.addEventListener('click', function() { toggleModule(m.key, isHidden); });
       grid.appendChild(opt);
@@ -1445,10 +1448,11 @@
       tile.className = 'dash-tile';
       tile.href = m.href;
       var flatSrc = m.img ? dashTileImg(m.img) : null;
+      var flatClass = 'dash-thumb' + (m.img === 'guide' ? ' dash-thumb-guide' : '');
       var flatThumb = flatSrc
-        ? "background-image:url('" + flatSrc + "');background-size:cover;background-position:" + (m.imgPos || 'center') + ";background-color:" + m.bg + ";"
+        ? "background-image:url('" + flatSrc + "');background-size:cover;background-color:" + (m.img === 'guide' ? '#fff' : m.bg) + ";"
         : 'background:' + m.bg + ';';
-      tile.innerHTML = '<div class="dash-thumb" style="' + flatThumb + '">' + (flatSrc ? '' : m.icon) + '</div>' +
+      tile.innerHTML = '<div class="' + flatClass + '" style="' + flatThumb + '">' + (flatSrc ? '' : m.icon) + '</div>' +
         '<div class="dash-tile-body"><div class="dash-tile-title">' + m.title + (m.tag ? ' <span class="dash-tag live">' + m.tag + '</span>' : '') + '</div>' +
         '<div class="dash-tile-desc"' + (m.key === 'opportunities' ? ' id="dash-opps-desc"' : '') + '>' + m.desc + '</div></div>';
       wrap.appendChild(tile);
@@ -2688,65 +2692,65 @@
   // footer.js and initializes asynchronously, so the launcher may not exist
   // yet at first click: retry briefly, then fall back to the Guide page rather
   // than letting the button do nothing.
-  // Mobile dock collapse state (2026-09-10, Sean). The whole dock is reachable
-  // on a phone at desktop size, collapsed down to the member's Guide icon plus
-  // a small toggle, and the member's choice survives a reload on that device.
-  // Load default is collapsed, so nobody's first view changes.
+  // The Guide widget now lives here, not in public/footer.js (2026-09-10,
+   // Sean, Group I). It used to be injected by the shared footer on every
+   // page, which is how a bubble kept appearing on surfaces that have no dock
+   // to open it from. Scoping the install to the one page that has a dock
+   // makes "never a separate auto-appearing bubble" true everywhere, and the
+   // dialogue is reachable exactly where Sean says it should be.
   //
-  // Revised the same day at Sean's call: the Guide icon ALWAYS opens the
-  // question dialogue, including while collapsed, so asking is one tap from
-  // the default state. Expanding the rest of the row is the toggle's job
-  // alone. The first pass had the collapsed Guide icon expand the dock, which
-  // made the primary action cost two taps.
+  // Config matches what footer.js sent, so the escalation still routes to
+  // contact@lesaruss.com through coach-os-message-submit with this brand's
+  // colors. Pinned to v1 for the same reason as before: a future v2 must not
+  // silently change this install.
+  (function installGuideWidget() {
+    var gw = document.createElement('script');
+    gw.src = 'https://hq.lesaruss.ai/modules/guide-widget.v1.js';
+    gw.setAttribute('data-brand', 'vegans-explore');
+    gw.setAttribute('data-color', '#22C55E');
+    gw.setAttribute('data-color-dark', '#15803D');
+    gw.defer = true;
+    document.body.appendChild(gw);
+  })();
+
+  // Take the widget's own launcher out of the page entirely.
   //
-  // Desktop is untouched: the is-collapsed class only carries styling inside
-  // the mobile media query and the toggle is hidden above it.
-  var VE_DOCK_STATE_KEY = 've_dock_expanded';
-  function dockExpandedStored() {
-    try { return window.localStorage.getItem(VE_DOCK_STATE_KEY) === '1'; } catch (e) { return false; }
-  }
-  // In-memory state is the source of truth; localStorage is persistence only.
-  // Reading storage back on every tap looked equivalent but broke where
-  // storage throws (a private window, or site data blocked): the dock would
-  // expand visually, the next tap would re-read false, and the member could
-  // never actually reach the question dialogue on a phone.
-  var dockExpanded = dockExpandedStored();
-  function applyDockState(expanded) {
-    var dock = document.getElementById('lr-dock');
-    if (!dock) return;
-    dock.classList.toggle('is-collapsed', !expanded);
-    // The toggle carries both directions: reveal the rest of the row when
-    // collapsed, put it away when expanded. The Guide icon's own label never
-    // changes now, because its job never changes.
-    var toggle = document.getElementById('lr-dock-toggle');
-    if (toggle) {
-      toggle.setAttribute('aria-expanded', String(!!expanded));
-      toggle.innerHTML = expanded ? '&times;' : '&hellip;';
-      toggle.setAttribute('aria-label', expanded
-        ? 'Hide the rest of the universe dock'
-        : 'Show the rest of the universe dock');
-      toggle.setAttribute('title', expanded ? 'Show less' : 'Show more');
-    }
-  }
-  function setDockExpanded(expanded) {
-    dockExpanded = !!expanded;
-    try { window.localStorage.setItem(VE_DOCK_STATE_KEY, dockExpanded ? '1' : '0'); } catch (e) {}
-    applyDockState(dockExpanded);
-  }
-  applyDockState(dockExpanded);
-  (function initDockToggle() {
-    var toggle = document.getElementById('lr-dock-toggle');
-    if (toggle) {
-      toggle.addEventListener('click', function () { setDockExpanded(!dockExpanded); });
-    }
-    // Rotating a phone to a wide viewport (or back) does not change the state,
-    // but re-applying keeps the toggle's glyph and labels consistent with it.
-    try {
-      var mq = window.matchMedia('(max-width:760px)');
-      var onChange = function () { applyDockState(dockExpanded); };
-      if (mq.addEventListener) mq.addEventListener('change', onChange);
-      else if (mq.addListener) mq.addListener(onChange);
-    } catch (e) {}
+  // ROOT CAUSE of why the popup survived PR #2 (Sean, Group I: it is "STILL
+  // LIVE on production" despite being logged as removed). guide-widget.v1.js
+  // builds .gw-launch containing .gw-prompt (the avatar card reading "Send us
+  // a message and get a reply back by email", with its own .gw-prompt-close
+  // X) plus the .gw-btn bubble, appends it to document.body, and injects its
+  // own stylesheet into document.head at init time. Every rule in that sheet
+  // carries !important, including .gw-launch{display:flex !important}.
+  // PR #2 hid it with .gw-launch{display:none !important} in this page's
+  // <style>. Same specificity, both !important, and the widget's sheet lands
+  // in head LATER, so source order handed the win to the widget. The CSS was
+  // in the served HTML, which is what got verified, and had no effect on the
+  // rendered page, which is what did not.
+  //
+  // Fixing that with a higher-specificity selector alone would be an arms
+  // race against a third-party file nobody here controls. Detaching the node
+  // ends it: the prompt and the bubble cannot render if they are not in the
+  // document, whatever CSS arrives afterwards. The .gw-btn reference is kept
+  // because a click dispatched on a detached element still runs its
+  // listeners, so the dock icon can drive the widget's real open() exactly as
+  // before. The widget's own close() writes launch.style.display, which is
+  // harmless on a detached node. .gw-panel stays in the document, since that
+  // is the dialogue itself.
+  var veGuideLauncherBtn = null;
+  (function takeOverGuideLauncher() {
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      var launch = document.querySelector('.gw-launch');
+      if (launch) {
+        clearInterval(iv);
+        veGuideLauncherBtn = launch.querySelector('.gw-btn');
+        if (launch.parentNode) launch.parentNode.removeChild(launch);
+        return;
+      }
+      if (tries > 60) clearInterval(iv);
+    }, 100);
   })();
 
   (function initDockAsk() {
@@ -2778,16 +2782,17 @@
     // that used to swallow this in footer.js is gone, so driving the widget's
     // own launcher now behaves identically for every tier, which is the
     // "same click functionality as the green VE circle icon" Sean asked for.
-    function launcher() { return document.querySelector('.gw-launch .gw-btn'); }
+    // The launcher is detached, so query the kept reference rather than the
+    // DOM. Still polls, because the widget may not have mounted yet on a very
+    // early click, and still falls back to the Guide page rather than doing
+    // nothing if it never arrives.
     btn.addEventListener('click', function () {
-      var el = launcher();
-      if (el) { el.click(); return; }
+      if (veGuideLauncherBtn) { veGuideLauncherBtn.click(); return; }
       var tries = 0;
       var iv = setInterval(function () {
         tries++;
-        var late = launcher();
-        if (late) { clearInterval(iv); late.click(); return; }
-        if (tries > 20) { clearInterval(iv); window.location.href = '/guide.html'; }
+        if (veGuideLauncherBtn) { clearInterval(iv); veGuideLauncherBtn.click(); return; }
+        if (tries > 30) { clearInterval(iv); window.location.href = '/guide.html'; }
       }, 100);
     });
   })();
