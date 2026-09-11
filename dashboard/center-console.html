@@ -219,6 +219,9 @@
   .dash-leaderboard-name{flex:1;font-size:13px;font-weight:700;}
   .dash-leaderboard-row.is-you .dash-leaderboard-name{color:var(--ve-green-dark);}
   .dash-leaderboard-points{font-size:13px;font-weight:900;color:var(--ve-green-dark);flex-shrink:0;}
+  .dash-leaderboard-scope{display:flex;gap:4px;background:var(--ve-green-light);border-radius:100px;padding:3px;}
+  .dash-lb-scope-btn{appearance:none;border:none;background:transparent;font:inherit;font-size:11px;font-weight:800;letter-spacing:0.02em;color:var(--ve-text-75);padding:5px 12px;border-radius:100px;cursor:pointer;}
+  .dash-lb-scope-btn.active{background:#fff;color:var(--ve-green-dark);box-shadow:0 1px 2px rgba(0,0,0,0.08);}
 
   /* --- Section tabs underneath the stats hero. Desktop: horizontal tab
      strip. Mobile (<640px): a native <select> instead, same behavior,
@@ -579,7 +582,13 @@
            location field doesn't mention their metro by name won't surface
            on this board yet -- a real data-quality gap in the existing
            location field, not something this tile can fabricate around. -->
-      <p class="dash-section-title" style="margin-top:24px;">Leaderboard</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;">
+        <p class="dash-section-title" style="margin-top:0;">Leaderboard</p>
+        <div class="dash-leaderboard-scope" id="dash-leaderboard-scope" role="tablist" aria-label="Leaderboard scope">
+          <button type="button" class="dash-lb-scope-btn active" data-scope="city">This City</button>
+          <button type="button" class="dash-lb-scope-btn" data-scope="global">Global</button>
+        </div>
+      </div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
     </div>
 
@@ -2165,21 +2174,32 @@
     'south-florida': ['Miami', 'Fort Lauderdale', 'South Florida', 'Broward', 'Palm Beach', 'Pompano Beach', 'Boca Raton', 'Hialeah', 'Coral Springs', 'Davie', 'Plantation', 'Sunrise', 'Miramar', 'Pembroke Pines', 'Homestead', 'Aventura', 'Doral', 'Coral Gables', 'Delray Beach', 'Boynton Beach'],
   };
 
-  function renderLeaderboard(member) {
+  var LEADERBOARD_ALL_CITIES = Object.keys(LEADERBOARD_CITY_TERMS).reduce(function (acc, k) {
+    return acc.concat(LEADERBOARD_CITY_TERMS[k]);
+  }, []);
+  var dashLeaderboardScope = 'city';
+
+  function renderLeaderboard(member, scope) {
     var list = document.getElementById('dash-leaderboard-list');
     if (!list) return;
-    var active = getActiveCity(member);
-    var cities = (active && LEADERBOARD_CITY_TERMS[active]) || [];
-    if (!cities.length) {
-      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its leaderboard.</p>';
-      return;
+    var useScope = scope || dashLeaderboardScope;
+    var cities;
+    if (useScope === 'global') {
+      cities = LEADERBOARD_ALL_CITIES;
+    } else {
+      var active = getActiveCity(member);
+      cities = (active && LEADERBOARD_CITY_TERMS[active]) || [];
+      if (!cities.length) {
+        list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its leaderboard.</p>';
+        return;
+      }
     }
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=leaderboard', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
       body: JSON.stringify({ token: VEAuth.getToken(), cities: cities })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      var rows = (d && d.leaderboard) || [];
+      var rows = ((d && d.leaderboard) || []).slice(0, 5);
       if (!rows.length) {
         list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">No ranked members in your city yet.</p>';
         return;
@@ -2200,6 +2220,20 @@
       });
     }).catch(function () {
       list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Could not load the leaderboard right now.</p>';
+    });
+  }
+
+  function initLeaderboardScope(member) {
+    var wrap = document.getElementById('dash-leaderboard-scope');
+    if (!wrap) return;
+    Array.prototype.forEach.call(wrap.querySelectorAll('.dash-lb-scope-btn'), function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.classList.contains('active')) return;
+        Array.prototype.forEach.call(wrap.querySelectorAll('.dash-lb-scope-btn'), function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        dashLeaderboardScope = btn.dataset.scope;
+        renderLeaderboard(member, dashLeaderboardScope);
+      });
     });
   }
 
@@ -2646,6 +2680,7 @@
     renderCityPill(member);
     initViewAsControl();
     renderLeaderboard(member);
+    initLeaderboardScope(member);
     renderDirectory(member);
     renderEventsTab(member);
     renderDailyPulse(member);
