@@ -91,7 +91,7 @@ function _setAuthMode(mode){
   if(tabLogin)tabLogin.classList.toggle('active',!isSignup);
   if(tabSignup)tabSignup.classList.toggle('active',isSignup);
   var title=document.getElementById('ve-am-title');
-  if(title)title.textContent=isSignup?'Create Your Free Passport':'Welcome Back';
+  if(title)title.textContent=isSignup?'Create Your Free Account':'Welcome Back';
   var nameWrap=document.getElementById('ve-am-name-wrap');
   if(nameWrap)nameWrap.style.display=isSignup?'block':'none';
   var pwInput=document.getElementById('ve-am-password');

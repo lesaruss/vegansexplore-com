@@ -762,10 +762,24 @@
     }
 
     // ---- Step 5: highlight reels (storyboard frame 7) --------------------
+    // Per-Guide narration lookup (2026-09-12, Sean direction: ship the
+    // switching mechanism now, fall back to the shared generic reel audio
+    // until real per-Guide voice files exist -- wrong voice beats no
+    // connection to the chosen Guide). Keyed by guide id (state.guide_slug)
+    // then by REELS tag. Empty today on purpose -- add entries here as real
+    // per-Guide files land, no other code change needed.
+    var GUIDE_REEL_AUDIO = {
+      // liz:   { Community: '/public/audio/liz-community-reel.mp3', Directory: '/public/audio/liz-directory-reel.mp3', Bounties: '/public/audio/liz-bounties-reel.mp3' },
+      // maya:  { ... }, theo: { ... }, nori: { ... }, dani: { ... }, river: { ... }
+    };
+    function reelAudioFor(guideSlug, tag, fallback){
+      var g = GUIDE_REEL_AUDIO[guideSlug];
+      return (g && g[tag]) ? g[tag] : fallback;
+    }
     var REELS = [
-      { tag: 'Bounties', title: 'Real missions, real points', body: 'Show up at events, check in at businesses, complete bounties, and stack points toward the prize vault.', img: '/public/guides/thumb-bounties.jpg', audio: '/public/audio/bounties-reel.mp3', audioLabel: '30 sec: real missions, real points' },
+      { tag: 'Community', title: 'Your city, organized', body: 'Chapters run meetups, potlucks, and campaigns. Founding Members help shape how it grows.', img: '/public/guides/thumb-community.jpg', audio: '/public/audio/community-reel.mp3', audioLabel: '40 sec: your city, organized' },
       { tag: 'Directory', title: 'Every Vegan spot, in one place', body: 'Find and support Vegan-owned businesses near you, and vote for your favorites.', img: '/public/guides/thumb-directory.jpg', audio: '/public/audio/directory-reel.mp3', audioLabel: '30 sec: every Vegan spot, in one place' },
-      { tag: 'Community', title: 'Your city, organized', body: 'Chapters run meetups, potlucks, and campaigns. Founding Members help shape how it grows.', img: '/public/guides/thumb-community.jpg', audio: '/public/audio/community-reel.mp3', audioLabel: '40 sec: your city, organized' }
+      { tag: 'Bounties', title: 'Real missions, real points', body: 'Show up at events, check in at businesses, complete bounties, and stack points toward the prize vault.', img: '/public/guides/thumb-bounties.jpg', audio: '/public/audio/bounties-reel.mp3', audioLabel: '30 sec: real missions, real points' }
     ];
 
     // Unified thumbnail card: 16:9 image + play button on top, tag/title/
@@ -821,7 +835,7 @@
         '<div class="reel-dots" id="dots"></div>' +
         '<div class="choice-row" style="margin-top:14px;justify-content:center;"><button class="chip-btn" id="reelNext">' + (idx < REELS.length - 1 ? 'Next' : 'Continue') + '</button></div>';
       app.appendChild(wrap);
-      wireAudioTile('reelThumb', r.audio, r.audioLabel);
+      wireAudioTile('reelThumb', reelAudioFor(state.guide_slug, r.tag, r.audio), r.audioLabel);
       var dots = document.getElementById('dots');
       REELS.forEach(function(_, i){ var d = document.createElement('span'); if (i === idx) d.className = 'on'; dots.appendChild(d); });
       document.getElementById('reelNext').onclick = function(){

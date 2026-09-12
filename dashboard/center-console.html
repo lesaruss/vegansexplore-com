@@ -554,7 +554,7 @@
 
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
       <p class="dash-section-title">Dashboard</p>
-      <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt">
+      <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openToolInFrame('Tour', '/tour', false); return false;">
         <div class="dash-tour-prompt-icon">&#128075;</div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">New here? Take the 60-second tour</div>
@@ -576,7 +576,7 @@
       <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
       <div class="dash-stats" id="dash-stats-row" style="display:none;">
         <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
-        <a class="dash-stat" href="/dashboard/opportunities"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
+        <a class="dash-stat" href="/dashboard/opportunities" onclick="openToolInFrame('Pending Applications', '/dashboard/opportunities', false); return false;"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
         <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
       </div>
 
@@ -1013,8 +1013,8 @@
   // Restaurant Guide always renders as "View Guide", never the guest
   // "Join Free" state.
   var GUIDE_CATALOG = [
-    { slug: null, label: 'Getting Started', title: 'Welcome Guide', desc: 'Your first steps on Vegans Explore: set up your profile, find your city, and see how Points work.', chips: [{ text: '5 Steps' }, { text: 'Free', cls: 'free' }], cta: { text: 'Start Guide', href: '/welcome' } },
-    { slug: 'vegan-restaurant-survival-guide', label: 'Business', title: 'Vegan Restaurant Survival Guide', desc: 'A personalized 10-step walkthrough for restaurant owners navigating the Vegan market -- built and ready, with narration audio and a completion badge.', chips: [{ text: '10 Steps' }, { text: 'Personalized For You' }, { text: '1,111 Points', cls: 'price' }], cta: { text: 'View Guide', href: '/guides/vegan-restaurant-survival-guide' } },
+    { slug: null, label: 'Getting Started', title: 'Welcome Guide', desc: 'Your first steps on Vegans Explore: set up your profile, find your city, and see how Points work.', chips: [{ text: '5 Steps' }, { text: 'Free', cls: 'free' }], cta: { text: 'Start Guide', href: '/welcome', embed: true } },
+    { slug: 'vegan-restaurant-survival-guide', label: 'Business', title: 'Vegan Restaurant Survival Guide', desc: 'A personalized 10-step walkthrough for restaurant owners navigating the Vegan market -- built and ready, with narration audio and a completion badge.', chips: [{ text: '10 Steps' }, { text: 'Personalized For You' }, { text: '1,111 Points', cls: 'price' }], cta: { text: 'View Guide', href: '/guides/vegan-restaurant-survival-guide', embed: true } },
     { slug: 'entrepreneur', label: 'Entrepreneur Path', soon: true, title: 'Entrepreneur Guide', desc: 'Getting your Vegan business listed, claimed, and growing on the platform -- step by step.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
     { slug: 'creator', label: 'Creator Path', soon: true, title: 'Creator Guide', desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
     { slug: 'nonprofit', label: 'Nonprofit Path', soon: true, title: 'Nonprofit Guide', desc: "Building your org's community on the platform and growing your base of supporters.", chips: [{ text: '~1,111 Points', cls: 'price' }] },
@@ -1062,7 +1062,9 @@
         '<p class="gc-desc">' + g.desc + '</p>' +
         '<div class="gc-meta-row">' + chipsHtml + '</div>';
       if (g.cta) {
-        html += '<a href="' + g.cta.href + '" class="gc-btn gc-btn-primary">' + g.cta.text + '</a>';
+        html += g.cta.embed
+          ? '<a href="' + g.cta.href + '" class="gc-btn gc-btn-primary" onclick="openToolInFrame(\'' + g.cta.text.replace(/'/g, "\\'") + '\', \'' + g.cta.href + '\', false); return false;">' + g.cta.text + '</a>'
+          : '<a href="' + g.cta.href + '" class="gc-btn gc-btn-primary">' + g.cta.text + '</a>';
       } else {
         html +=
           '<button type="button" class="gc-btn gc-btn-outline">Notify Me</button>' +
