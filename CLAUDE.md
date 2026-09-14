@@ -73,6 +73,34 @@ of them. This rule prevents that drift from recurring.
 </html>
 ```
 
+## Summary two-row cap (LOCKED 2026-09-14)
+
+Every card summary / excerpt / blurb on a member-facing surface is capped at
+two rows. Sean set this rule on 2026-09-13 after a Pulse entry rendered four
+rows on the live site. Summaries come from Supabase (`ve_pulse_content.summary`,
+`ve_community_news.summary`, `opportunities.description`,
+`store_products.description`, `campaigns.summary`) and are unbounded in length,
+so the cap has to live in CSS, not in the copy.
+
+Any class that renders one of those fields must carry:
+
+```css
+display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+```
+
+Classes currently under the rule:
+
+- `.pulse-card-excerpt` — `/pulse.html`
+- `.news-excerpt` — all 8 `/communities/*/index.html` pages (shared by
+  `hub-news.js`, `hub-community.js` opportunity and reward cards)
+- `.camp-card-desc` — `/dashboard/campaigns.html`
+- `.camp-tile-desc` — `/campaigns/index.html`
+- `.dash-tile-desc` and the `#dash-pulse-grid` / `#dash-home-pulse-grid`
+  title clamps — `/dashboard/center-console.html`
+
+The cap applies to the card only. Full article and detail views
+(`.article-lede`, `.article-p`) are never clamped.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
