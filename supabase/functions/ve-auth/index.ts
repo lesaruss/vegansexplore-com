@@ -310,6 +310,75 @@ async function requireActiveMembership(memberId: string): Promise<Response | nul
   return null;
 }
 
+// Guest Passport heuristics (2026-09-17, Sean + V design session). Same
+// signal class that caught every real bot signup cleaned up by hand this
+// same day: a gibberish consonant-cluster name paired with a throwaway-
+// looking email. Mirrors isPlausibleCityName's shape but tuned for person
+// names -- more permissive on length since real names vary far more than
+// city names do.
+function isPlausibleName(raw: string): boolean {
+  const s = raw.trim();
+  if (s.length < 2 || s.length > 80) return false;
+  if (!/^[a-zA-ZÀ-ɏ\s'.-]+$/.test(s)) return false;
+  if (!/[aeiouyAEIOUYÀ-ɏ]/.test(s)) return false;
+  if (/(.)\1{2,}/i.test(s)) return false;
+  if (/[^aeiouyAEIOUY\s'.-]{6,}/.test(s)) return false;
+  return true;
+}
+
+// Gmail/Googlemail "dot trick" detector -- the exact pattern behind every
+// dotted-gmail bot signup cleaned up manually this session (e.g.
+// i.lo.d.a.ge87.4@gmail.com). Dots in the local part are ignored by Gmail,
+// so a script mints unlimited "unique" addresses from one inbox by
+// scattering dots into it. Real people essentially never do this.
+function looksLikeDottedThrowawayEmail(email: string): boolean {
+  const parts = email.toLowerCase().split('@');
+  const local = parts[0]; const domain = parts[1];
+  if (!local || !domain) return false;
+  if (domain !== 'gmail.com' && domain !== 'googlemail.com') return false;
+  const dotCount = (local.match(/\./g) || []).length;
+  return dotCount >= 3;
+}
+
+type GuestVerdict = { verdict: 'reject' | 'flag' | 'clean'; reason?: string };
+
+// Combines registration-level signals (name, email) with the mission survey
+// answer itself. A hard-fail on BOTH name and email is the same high-
+// confidence spam pattern already proven this session and never gets in at
+// all; a single weak signal (or a thin answer) still gets in but is flagged
+// for review rather than silently trusted -- per Sean's design, every Guest
+// Passport is reviewed, this just decides who jumps the queue.
+function assessGuestApplication(name: string, email: string, responseText: string): GuestVerdict {
+  const nameOk = isPlausibleName(name);
+  const emailSuspicious = looksLikeDottedThrowawayEmail(email);
+  const answerThin = responseText.trim().length < 15;
+
+  if (!nameOk && emailSuspicious) {
+    return { verdict: 'reject', reason: 'implausible_name_and_throwaway_email' };
+  }
+  if (!nameOk || emailSuspicious || answerThin) {
+    const reasons = [!nameOk && 'implausible_name', emailSuspicious && 'throwaway_email', answerThin && 'thin_answer'].filter(Boolean).join(',');
+    return { verdict: 'flag', reason: reasons };
+  }
+  return { verdict: 'clean' };
+}
+
+// Stricter than requireActiveMembership: Guest Passport clears the funnel
+// gate (membership_status = 'active') but is explicitly NOT a full member --
+// per Sean's design, guests can browse and vote but not post, join a
+// chapter, follow, or save/interact. Actions in that latter category use
+// this instead of requireActiveMembership.
+async function requireFullMember(memberId: string): Promise<Response | null> {
+  const { data } = await supabase.from('members').select('membership_status, membership_tier').eq('id', memberId).maybeSingle();
+  if (!data || data.membership_status !== 'active' || data.membership_tier === 'guest') {
+    return new Response(JSON.stringify({
+      error: 'payment_required',
+      message: 'Become a Passport Holder (membership or a one-time contribution) to do that.',
+    }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
+  return null;
+}
+
 // ---- Guide front door additions (2026-09-06, Logan, storyboard
 // vegans-explore-onboarding-playbook). Two new actions:
 //   city_status   -- does this city already have a launched chapter?
@@ -779,7 +848,7 @@ serve(async (req: Request) => {
       const community_slug = sanitizeCommunity(body.community_slug);
       if (!community_slug) return new Response(JSON.stringify({ error: 'Unrecognized community.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const gate = await requireActiveMembership(decoded.sub);
+      const gate = await requireFullMember(decoded.sub);
       if (gate) return gate;
 
       const { error: insertErr } = await supabase
@@ -820,7 +889,7 @@ serve(async (req: Request) => {
       const initiative_slug = await isValidInitiativeSlug(body.initiative_slug);
       if (!initiative_slug) return new Response(JSON.stringify({ error: 'Unrecognized campaign.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const gate = await requireActiveMembership(decoded.sub);
+      const gate = await requireFullMember(decoded.sub);
       if (gate) return gate;
 
       const { error: insertErr } = await supabase
@@ -861,7 +930,7 @@ serve(async (req: Request) => {
       const podcast_show = sanitizePodcastShow(body.podcast_show);
       if (!podcast_show) return new Response(JSON.stringify({ error: 'Unrecognized podcast show.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const gate = await requireActiveMembership(decoded.sub);
+      const gate = await requireFullMember(decoded.sub);
       if (gate) return gate;
 
       const { error: insertErr } = await supabase
@@ -984,7 +1053,7 @@ serve(async (req: Request) => {
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
       if (!listing_id) return new Response(JSON.stringify({ error: 'listing_id required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const gate = await requireActiveMembership(decoded.sub);
+      const gate = await requireFullMember(decoded.sub);
       if (gate) return gate;
 
       const { error: insertErr } = await supabase
@@ -1033,12 +1102,172 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ items }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    if (action === 'vote_listing') {
+      const token = body.token;
+      if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const decoded = decodeToken(token);
+      if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
+      if (!listing_id) return new Response(JSON.stringify({ error: 'listing_id required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      // Every tier that's cleared the gate at all can vote, Guest Passport
+      // included -- this is the one interaction guests get.
+      const gate = await requireActiveMembership(decoded.sub);
+      if (gate) return gate;
+
+      const { error: insertErr } = await supabase
+        .from('listing_daily_votes')
+        .insert({ member_id: decoded.sub, listing_id });
+      if (insertErr) {
+        if (insertErr.code === '23505') {
+          return new Response(JSON.stringify({ error: 'already_voted_today' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+        throw new Error(`vote_listing insert failed: ${insertErr.message}`);
+      }
+
+      return new Response(JSON.stringify({ ok: true, voted: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    if (action === 'mission_survey_status') {
+      const token = body.token;
+      if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const decoded = decodeToken(token);
+      if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const { data: member } = await supabase.from('members').select('membership_status, membership_tier, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
+      if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      return new Response(JSON.stringify({
+        completed: !!member.mission_survey_completed_at,
+        required: member.membership_status === 'pending_payment',
+        membership_status: member.membership_status,
+        membership_tier: member.membership_tier,
+        guest_review_status: member.guest_review_status,
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // Doubles as two different things depending on where the member is in the
+    // funnel (2026-09-17, Sean + V design session):
+    //  - membership_status 'pending_payment' (haven't cleared the gate yet):
+    //    this IS the Guest Passport application. A required-field, reviewed
+    //    "why do you want to join" answer, screened by assessGuestApplication
+    //    before any access is granted -- obvious spam never gets in at all,
+    //    everything else gets in but stays flagged for review.
+    //  - already 'active' (paid Passport Holder): optional dashboard task,
+    //    one-time 250-point reward, no gate involved.
+    if (action === 'submit_mission_survey') {
+      const token = body.token;
+      if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const decoded = decodeToken(token);
+      if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const responseText = typeof body.response_text === 'string' ? body.response_text.trim() : '';
+      if (!responseText) return new Response(JSON.stringify({ error: 'A response is required.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const { data: member } = await supabase.from('members').select('id, name, email, membership_status, membership_tier, mission_survey_completed_at').eq('id', decoded.sub).maybeSingle();
+      if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      if (member.mission_survey_completed_at) {
+        return new Response(JSON.stringify({ error: 'already_completed' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      if (member.membership_status === 'active' && member.membership_tier !== 'guest') {
+        const { error: updateErr } = await supabase.from('members').update({
+          mission_survey_response: responseText,
+          mission_survey_completed_at: new Date().toISOString(),
+        }).eq('id', member.id);
+        if (updateErr) throw new Error(`submit_mission_survey update failed: ${updateErr.message}`);
+
+        let pointsResult: unknown = null;
+        try {
+          const { data } = await supabase.rpc('award_points_bounty', {
+            p_member_id: member.id, p_brand: 'vegans-explore',
+            p_action_type: 'mission_survey_completed',
+            p_ref_id: `mission_survey_completed:${member.id}`, p_reason: 'mission_survey',
+          });
+          pointsResult = data;
+        } catch (e) { console.error('mission survey points award failed:', e); }
+
+        return new Response(JSON.stringify({ ok: true, gate: 'none', points: pointsResult }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      const verdict = assessGuestApplication(member.name, member.email, responseText);
+
+      if (verdict.verdict === 'reject') {
+        return new Response(JSON.stringify({ error: 'application_not_approved' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      const { error: updateErr } = await supabase.from('members').update({
+        membership_status: 'active',
+        membership_tier: 'guest',
+        mission_survey_response: responseText,
+        mission_survey_completed_at: new Date().toISOString(),
+        guest_review_status: verdict.verdict === 'flag' ? 'flagged' : 'pending_review',
+        guest_flag_reason: verdict.reason ?? null,
+      }).eq('id', member.id);
+      if (updateErr) throw new Error(`submit_mission_survey guest update failed: ${updateErr.message}`);
+
+      return new Response(JSON.stringify({
+        ok: true, gate: 'guest',
+        review_status: verdict.verdict === 'flag' ? 'flagged' : 'pending_review',
+      }), { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // ---- Guest Passport review queue (superadmin only) -----------------
+    if (action === 'list_guest_reviews') {
+      const token = body.token;
+      if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const decoded = decodeToken(token);
+      if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const { data, error } = await supabase.from('members')
+        .select('id, name, email, created_at, mission_survey_response, guest_review_status, guest_flag_reason')
+        .eq('tenant_id', VE_TENANT_ID)
+        .eq('membership_tier', 'guest')
+        .in('guest_review_status', ['pending_review', 'flagged', 'needs_followup'])
+        .order('created_at', { ascending: true });
+      if (error) throw new Error(`list_guest_reviews failed: ${error.message}`);
+
+      return new Response(JSON.stringify({ applications: data ?? [] }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    if (action === 'review_guest') {
+      const token = body.token;
+      if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const decoded = decodeToken(token);
+      if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const target_id = typeof body.member_id === 'string' ? body.member_id : null;
+      const decision = typeof body.decision === 'string' ? body.decision : null;
+      if (!target_id || !decision || !['approve', 'needs_followup', 'remove'].includes(decision)) {
+        return new Response(JSON.stringify({ error: 'member_id and a valid decision (approve|needs_followup|remove) required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      if (decision === 'remove') {
+        const { error } = await supabase.from('members').update({
+          guest_review_status: 'removed',
+          membership_status: 'pending_payment',
+        }).eq('id', target_id);
+        if (error) throw new Error(`review_guest remove failed: ${error.message}`);
+        return new Response(JSON.stringify({ ok: true, decision: 'removed' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      const guest_review_status = decision === 'approve' ? 'approved' : 'needs_followup';
+      const { error } = await supabase.from('members').update({ guest_review_status }).eq('id', target_id);
+      if (error) throw new Error(`review_guest update failed: ${error.message}`);
+
+      return new Response(JSON.stringify({ ok: true, decision: guest_review_status }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     if (action === 'me') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const decoded = decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at').eq('id', decoded.sub).maybeSingle();
+      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
       if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const communities = await getMemberCommunities(member.id);
       const hidden_modules = await getMemberHiddenModules(member.id);
@@ -1115,7 +1344,7 @@ serve(async (req: Request) => {
         return new Response(JSON.stringify({ error: 'invalid_city' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      const gate = await requireActiveMembership(decoded.sub);
+      const gate = await requireFullMember(decoded.sub);
       if (gate) return gate;
 
       if (launchedSlug) {

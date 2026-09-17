@@ -132,6 +132,23 @@ module.exports = async (req, res) => {
     }
 
     try {
+      // Pay-or-pledge gate v2 (2026-09-17, Sean + V design session): commenting
+      // is a Passport Holder benefit, not a Guest Passport one. Guests can
+      // browse and vote but not comment/connect/interact. Checked here rather
+      // than trusting the token's `tier` claim, which is fixed at sign-in and
+      // can go stale if membership changes mid-session.
+      const gateRes = await sbFetch(
+        `/members?id=eq.${encodeURIComponent(decoded.sub)}&select=membership_status,membership_tier`,
+        SERVICE_ROLE_KEY,
+        { method: 'GET' }
+      );
+      const gateRows = await gateRes.json();
+      const gateMember = Array.isArray(gateRows) ? gateRows[0] : null;
+      if (!gateMember || gateMember.membership_status !== 'active' || gateMember.membership_tier === 'guest') {
+        res.status(402).json({ error: 'payment_required', message: 'Become a Passport Holder (membership or a one-time contribution) to comment.' });
+        return;
+      }
+
       const insertRes = await sbFetch('/ve_pulse_comments', SERVICE_ROLE_KEY, {
         method: 'POST',
         headers: { Prefer: 'return=representation' },
