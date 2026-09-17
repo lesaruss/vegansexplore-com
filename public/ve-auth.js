@@ -214,7 +214,18 @@ function _onSuccess(){hideAuthModal();if(_modalCb)_modalCb();else location.reloa
 function _showErr(msg){var e=document.getElementById('ve-am-error');if(e){e.textContent=msg;e.style.display='block';}}
 function _clearErr(){var e=document.getElementById('ve-am-error');if(e){e.textContent='';e.style.display='none';}}
 function _loadGSI(cb){if(window.google&&window.google.accounts){cb();return;}if(document.querySelector('script[src*="accounts.google.com/gsi"]')){var t=0,iv=setInterval(function(){t++;if(window.google&&window.google.accounts){clearInterval(iv);cb();}else if(t>50)clearInterval(iv);},100);return;}var s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.defer=true;s.onload=cb;document.head.appendChild(s);}
-function _initGBtn(el){window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){_clearErr();loginWithGoogle(r.credential).then(function(d){if(d.error){_showErr(d.error||'Google sign-in failed. Please try again.');return;}_onSuccess();}).catch(function(){_showErr('Something went wrong. Please try again.');});}});window.google.accounts.id.renderButton(el,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:el.offsetWidth||336});_gBtnInited=true;}
+function _initGBtn(el){window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){_clearErr();loginWithGoogle(r.credential).then(function(d){
+if(d.error){_showErr(d.error||'Google sign-in failed. Please try again.');return;}
+hideAuthModal();
+// Mirrors the email tab's signup branch above: a brand-new (or a returning,
+// never-activated) Google account lands 'pending_payment' same as email --
+// the 'google' action response now carries membership_status (fixed
+// 2026-09-17, same bug as the email path: the field was missing from the
+// insert/lookup .select(), so this check always silently failed before).
+if(d.member&&d.member.membership_status==='pending_payment'){
+showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+}else if(_modalCb){_modalCb();}else{location.reload();}
+}).catch(function(){_showErr('Something went wrong. Please try again.');});}});window.google.accounts.id.renderButton(el,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:el.offsetWidth||336});_gBtnInited=true;}
 // Login/Create-Account are two tabs on the SAME modal (2026-08-19, V direction:
 // "Both options should be clearly available so they don't have to leave the
 // process") -- previously "create an account" was a small link off to a separate
