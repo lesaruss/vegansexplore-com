@@ -1,7 +1,8 @@
 
 (function(global){'use strict';
 var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-var FN_URL='https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
+var SUPABASE_URL='https://fwbhwfxpncrsfhttimna.supabase.co';
+var FN_URL=SUPABASE_URL+'/functions/v1/ve-auth';
 var GOOGLE_ID='554053879127-o0vp4rrjp5qgeoq4fbje3qtbrvlupt59.apps.googleusercontent.com';
 function getToken(){try{return localStorage.getItem('ve_token')||null;}catch(e){return null;}}
 function getRealMember(){try{return JSON.parse(localStorage.getItem('ve_member')||'null');}catch(e){return null;}}
@@ -37,7 +38,7 @@ function setViewAs(mode,opts){if(!isRealSuperAdmin())return;if(typeof opts==='nu
 function clearViewAs(){try{localStorage.removeItem('ve_view_as');}catch(e){}window.location.reload();}
 function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0,is_superadmin:false,ve_tier:v.tier||real.ve_tier,ve_role:(v.role!==undefined?v.role:null)}):null;}return getRealMember();}
 function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken();}
-function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();});}
+function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}return d;});}
 function signup(email,password,name,ref,community){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function loginWithGoogle(idToken,community){return call('google',{id_token:idToken,home_community:community||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
@@ -62,6 +63,95 @@ function listSavedListings(){return call('list_saved_listings',{token:getToken()
 function signOut(){try{localStorage.removeItem('ve_view_as');}catch(e){}clearSession();window.location.href='/';}
 function initGoogleSignIn(buttonEl,callback,community){if(!window.google||!window.google.accounts)return;window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){loginWithGoogle(r.credential,community).then(callback);}});if(buttonEl)window.google.accounts.id.renderButton(buttonEl,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:buttonEl.offsetWidth||360});}
 function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a free Passport to do that.');}
+// --- Pay-or-pledge gate (2026-09-17, Sean) ---------------------------------
+// A new signup now lands as membership_status 'pending_payment': browsing,
+// the Guide chat, and onboarding stay open, but posting, joining a chapter,
+// following, and saving/voting return {error:'payment_required'} from
+// ve-auth until either path below completes (ve-stripe-webhook flips the
+// member to 'active' on success). call() below surfaces that error as this
+// same activate modal from anywhere on the site, not just right after signup.
+function startPassportCheckout(){
+  var token=getToken();
+  return fetch(SUPABASE_URL+'/functions/v1/ve-passport-checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({success_url:window.location.origin+window.location.pathname+'?activate=success',cancel_url:window.location.origin+window.location.pathname+'?activate=cancelled'})}).then(function(r){return r.json();});
+}
+function startEntryCheckout(amountCents){
+  var token=getToken();
+  return fetch(SUPABASE_URL+'/functions/v1/ve-entry-checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({amount_cents:amountCents,success_url:window.location.origin+window.location.pathname+'?activate=success',cancel_url:window.location.origin+window.location.pathname+'?activate=cancelled'})}).then(function(r){return r.json();});
+}
+var _amInited=false;
+function showActivateModal(message){
+  if(!_amInited){_buildActivateModal();_amInited=true;}
+  var msg=document.getElementById('ve-pm-msg');
+  if(msg)msg.textContent=message||'Activate your Passport with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.';
+  var e=document.getElementById('ve-pm-error');if(e){e.textContent='';e.style.display='none';}
+  var modal=document.getElementById('ve-pledge-modal');
+  if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
+}
+function hideActivateModal(){var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}}
+function _buildActivateModal(){
+var s=document.createElement('style');
+s.textContent=
+'#ve-pledge-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px;font-family:"Montserrat",sans-serif;}'+
+'#ve-pm-box{background:#fff;border-radius:12px;padding:36px 32px 28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;}'+
+'#ve-pm-box h2{margin:0 0 6px;font-size:20px;font-weight:800;color:#1a1a1a;text-align:center;font-family:"Montserrat",sans-serif;}'+
+'#ve-pm-msg{margin:0 0 22px;font-size:13px;color:#555;text-align:center;line-height:1.5;font-family:"Montserrat",sans-serif;}'+
+'#ve-pm-error{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:12px;color:#dc2626;font-weight:600;margin-bottom:14px;line-height:1.4;text-align:left;font-family:"Montserrat",sans-serif;}'+
+'#ve-pm-member-btn{display:block;width:100%;padding:14px;background:#22C55E;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s;}'+
+'#ve-pm-member-btn:hover{background:#16A34A;}'+
+'#ve-pm-member-btn:disabled,#ve-pm-entry-btn:disabled{background:#9CA3AF;cursor:not-allowed;}'+
+'.ve-pm-divider{display:flex;align-items:center;gap:10px;margin:18px 0 16px;}'+
+'.ve-pm-divider-line{flex:1;border-top:1px solid rgba(0,0,0,0.1);}'+
+'.ve-pm-divider-text{font-size:11px;font-weight:700;color:#999;white-space:nowrap;font-family:"Montserrat",sans-serif;}'+
+'#ve-pm-entry-row{display:flex;gap:8px;}'+
+'#ve-pm-amount{width:100px;padding:11px 13px;border:1.5px solid rgba(0,0,0,0.15);border-radius:6px;font-family:"Montserrat",sans-serif;font-size:13px;color:#1a1a1a;background:#fff;box-sizing:border-box;}'+
+'#ve-pm-amount:focus{outline:none;border-color:#22C55E;}'+
+'#ve-pm-entry-btn{flex:1;padding:11px 13px;background:#1a1a1a;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s;}'+
+'#ve-pm-entry-btn:hover{background:#333;}'+
+'#ve-pm-hint{margin:8px 0 0;font-size:11px;color:#888;text-align:center;font-family:"Montserrat",sans-serif;}'+
+'#ve-pm-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1;padding:4px;}'+
+'#ve-pm-close:focus-visible{outline:3px solid #22C55E;border-radius:4px;}'+
+'@media(max-width:480px){#ve-pm-box{padding:28px 20px 22px;}}';
+document.head.appendChild(s);
+var el=document.createElement('div');
+el.id='ve-pledge-modal';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-labelledby','ve-pm-title');
+el.innerHTML=
+'<div id="ve-pm-box">'+
+'<button id="ve-pm-close" aria-label="Close">x</button>'+
+'<h2 id="ve-pm-title">Activate Your Passport</h2>'+
+'<p id="ve-pm-msg">Activate your Passport to unlock posting, joining chapters, following, and saving.</p>'+
+'<div id="ve-pm-error" role="alert"></div>'+
+'<button type="button" id="ve-pm-member-btn">Become a Member - $11/mo</button>'+
+'<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or contribute any amount</span><div class="ve-pm-divider-line"></div></div>'+
+'<div id="ve-pm-entry-row">'+
+'<input type="number" id="ve-pm-amount" min="1" step="1" placeholder="$ amount" aria-label="Contribution amount in dollars">'+
+'<button type="button" id="ve-pm-entry-btn">Contribute</button>'+
+'</div>'+
+'<p id="ve-pm-hint">One-time, any amount. No subscription.</p>'+
+'</div>';
+document.body.appendChild(el);
+document.getElementById('ve-pm-close').addEventListener('click',hideActivateModal);
+el.addEventListener('click',function(e){if(e.target===el)hideActivateModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el.style.display==='flex')hideActivateModal();});
+function showPmErr(msg){var e=document.getElementById('ve-pm-error');if(e){e.textContent=msg;e.style.display='block';}}
+document.getElementById('ve-pm-member-btn').addEventListener('click',function(){
+var btn=this;btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting to checkout...';
+startPassportCheckout().then(function(d){
+if(d&&d.url){window.location.href=d.url;return;}
+btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');
+}).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong starting checkout. Please try again.');});
+});
+document.getElementById('ve-pm-entry-btn').addEventListener('click',function(){
+var btn=this;var input=document.getElementById('ve-pm-amount');
+var dollars=parseFloat(input.value);
+if(!dollars||dollars<0.5){showPmErr('Enter an amount of at least $0.50.');return;}
+var cents=Math.round(dollars*100);
+btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting...';
+startEntryCheckout(cents).then(function(d){
+if(d&&d.url){window.location.href=d.url;return;}
+btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');
+}).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong starting checkout. Please try again.');});
+});
+}
 var _modalCb=null,_modalInited=false,_gBtnInited=false;
 // mode (2026-09-07, Sean field note): optional third arg, defaults to
 // 'login' so every existing "Sign in to..." call site is unchanged. Callers
@@ -171,7 +261,10 @@ btn.disabled=true;btn.textContent='Creating your Passport...';
 signup(email,pw,name).then(function(d){
 btn.disabled=false;btn.textContent='Create Free Account';
 if(d.error){_showErr(d.error);return;}
-_onSuccess();
+hideAuthModal();
+if(d.member&&d.member.membership_status==='pending_payment'){
+showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+}else if(_modalCb){_modalCb();}else{location.reload();}
 }).catch(function(){btn.disabled=false;btn.textContent='Create Free Account';_showErr('Something went wrong. Please try again.');});
 return;
 }
@@ -183,5 +276,5 @@ if(d.error){_showErr(d.error);return;}
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}
-global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,forgotPassword:forgotPassword,resetPassword:resetPassword,verifyEmail:verifyEmail,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,joinCampaign:joinCampaign,leaveCampaign:leaveCampaign,followPodcast:followPodcast,unfollowPodcast:unfollowPodcast,getLayout:getLayout,saveLayout:saveLayout,hideModule:hideModule,showModule:showModule,saveListing:saveListing,unsaveListing:unsaveListing,listSavedListings:listSavedListings,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
+global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,forgotPassword:forgotPassword,resetPassword:resetPassword,verifyEmail:verifyEmail,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,joinCampaign:joinCampaign,leaveCampaign:leaveCampaign,followPodcast:followPodcast,unfollowPodcast:unfollowPodcast,getLayout:getLayout,saveLayout:saveLayout,hideModule:hideModule,showModule:showModule,saveListing:saveListing,unsaveListing:unsaveListing,listSavedListings:listSavedListings,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,showActivateModal:showActivateModal,hideActivateModal:hideActivateModal,startPassportCheckout:startPassportCheckout,startEntryCheckout:startEntryCheckout,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
 })(window);

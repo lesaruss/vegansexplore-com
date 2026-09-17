@@ -292,6 +292,24 @@ function decodeToken(token: string): { sub: string; exp: number } | null {
   } catch { return null; }
 }
 
+// Pay-or-pledge gate (2026-09-17, Sean). New signups land as
+// membership_status = 'pending_payment', not 'active' -- browsing, the Guide
+// chat, and onboarding stay open, but the participation actions below require
+// either the $11/month Passport (ve-passport-checkout) or a one-time
+// contribution of any amount (ve-entry-checkout) to have completed, which is
+// what flips this to 'active' (see ve-stripe-webhook). Members who existed
+// before this shipped are already 'active' and are untouched by it.
+async function requireActiveMembership(memberId: string): Promise<Response | null> {
+  const { data } = await supabase.from('members').select('membership_status').eq('id', memberId).maybeSingle();
+  if (!data || data.membership_status !== 'active') {
+    return new Response(JSON.stringify({
+      error: 'payment_required',
+      message: 'Activate your Passport with a membership or a one-time contribution to do that.',
+    }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
+  return null;
+}
+
 // ---- Guide front door additions (2026-09-06, Logan, storyboard
 // vegans-explore-onboarding-playbook). Two new actions:
 //   city_status   -- does this city already have a launched chapter?
@@ -510,7 +528,7 @@ serve(async (req: Request) => {
       const { data: member, error: insertErr } = await supabase.from('members').insert({
         email: email.toLowerCase(), password_hash, name,
         initials, color, referral_code: ref_code, referred_by,
-        membership_tier: 'free', membership_status: 'active', ve_role: 'member', ve_tier: 'free',
+        membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
         auth_methods: ['email'], home_community,
         tenant_id: VE_TENANT_ID,
       }).select(MEMBER_FIELDS).single();
@@ -557,7 +575,13 @@ serve(async (req: Request) => {
       const { data: existing } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status').eq('google_id', gUser.sub).maybeSingle();
 
       if (existing) {
-        if (existing.membership_status !== 'active') return new Response(JSON.stringify({ error: 'Account suspended.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        // 'pending_payment' is allowed through -- browsing, the Guide chat, and
+        // onboarding stay open pre-payment (see requireActiveMembership); only
+        // an unrecognized status (a future suspension state, not in use today)
+        // blocks sign-in outright.
+        if (existing.membership_status !== 'active' && existing.membership_status !== 'pending_payment') {
+          return new Response(JSON.stringify({ error: 'Account suspended.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
         const token = await signJWT({ sub: existing.id, email: existing.email, tier: existing.membership_tier, brand: 'vegans-explore' });
         await supabase.from('members').update({ last_activity_at: new Date().toISOString() }).eq('id', existing.id);
         const communities = await getMemberCommunities(existing.id);
@@ -582,7 +606,7 @@ serve(async (req: Request) => {
       const { data: member, error: insertErr } = await supabase.from('members').insert({
         email: gUser.email.toLowerCase(), name: gUser.name, google_id: gUser.sub,
         avatar_url: gUser.picture, initials, color: '#22C55E', referral_code: ref_code,
-        membership_tier: 'free', membership_status: 'active', ve_role: 'member', ve_tier: 'free',
+        membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
         auth_methods: ['google'], home_community, email_verified: true,
         tenant_id: VE_TENANT_ID,
       }).select(MEMBER_FIELDS + ', avatar_url').single();
@@ -603,7 +627,13 @@ serve(async (req: Request) => {
 
       const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, password_hash, avatar_url').eq('email', email.toLowerCase()).limit(1).single();
       if (!member) return new Response(JSON.stringify({ error: 'No account found with that email.' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      if (member.membership_status !== 'active') return new Response(JSON.stringify({ error: 'Account is not active.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      // 'pending_payment' signs in fine -- browsing, the Guide chat, and
+      // onboarding stay open pre-payment (see requireActiveMembership); only
+      // an unrecognized status (a future suspension state, not in use today)
+      // blocks sign-in outright.
+      if (member.membership_status !== 'active' && member.membership_status !== 'pending_payment') {
+        return new Response(JSON.stringify({ error: 'Account is not active.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
       if (!member.password_hash) return new Response(JSON.stringify({ error: 'This account uses Google or Apple sign-in. Please use that method.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const valid = await verifyPassword(password, member.password_hash);
@@ -749,6 +779,9 @@ serve(async (req: Request) => {
       const community_slug = sanitizeCommunity(body.community_slug);
       if (!community_slug) return new Response(JSON.stringify({ error: 'Unrecognized community.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
+      const gate = await requireActiveMembership(decoded.sub);
+      if (gate) return gate;
+
       const { error: insertErr } = await supabase
         .from('member_communities')
         .insert({ member_id: decoded.sub, community_slug });
@@ -787,6 +820,9 @@ serve(async (req: Request) => {
       const initiative_slug = await isValidInitiativeSlug(body.initiative_slug);
       if (!initiative_slug) return new Response(JSON.stringify({ error: 'Unrecognized campaign.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
+      const gate = await requireActiveMembership(decoded.sub);
+      if (gate) return gate;
+
       const { error: insertErr } = await supabase
         .from('member_campaigns')
         .insert({ member_id: decoded.sub, initiative_slug });
@@ -824,6 +860,9 @@ serve(async (req: Request) => {
 
       const podcast_show = sanitizePodcastShow(body.podcast_show);
       if (!podcast_show) return new Response(JSON.stringify({ error: 'Unrecognized podcast show.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const gate = await requireActiveMembership(decoded.sub);
+      if (gate) return gate;
 
       const { error: insertErr } = await supabase
         .from('member_podcast_follows')
@@ -944,6 +983,9 @@ serve(async (req: Request) => {
 
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
       if (!listing_id) return new Response(JSON.stringify({ error: 'listing_id required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const gate = await requireActiveMembership(decoded.sub);
+      if (gate) return gate;
 
       const { error: insertErr } = await supabase
         .from('ve_listing_saves')
@@ -1072,6 +1114,9 @@ serve(async (req: Request) => {
       if (!launchedSlug && !isPlausibleCityName(rawCity)) {
         return new Response(JSON.stringify({ error: 'invalid_city' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
+
+      const gate = await requireActiveMembership(decoded.sub);
+      if (gate) return gate;
 
       if (launchedSlug) {
         const { error: insertErr } = await supabase.from('member_communities').insert({ member_id: decoded.sub, community_slug: launchedSlug });
