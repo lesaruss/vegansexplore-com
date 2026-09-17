@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Your Email - VEGANS EXPLORE</title>
+  <meta name="description" content="Confirm your email for your VEGANS EXPLORE Passport.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Montserrat", sans-serif; background: #fff; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; }
+    .login-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 48px 20px 80px; }
+    .login-card { width: 100%; max-width: 400px; text-align: center; }
+    .login-logo { text-align: center; margin-bottom: 32px; }
+    .login-logo img { height: 36px; width: auto; }
+    h1 { font-size: 24px; font-weight: 900; color: #1a1a1a; margin-bottom: 6px; }
+    .login-sub { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+    .login-error { display: none; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 12px 14px; font-size: 13px; color: #dc2626; font-weight: 600; margin-bottom: 14px; line-height: 1.4; text-align: left; }
+    .login-error.visible { display: block; }
+    .login-success { display: none; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 6px; padding: 14px 16px; font-size: 13px; color: #15803D; font-weight: 600; margin-bottom: 14px; line-height: 1.5; text-align: left; }
+    .login-success.visible { display: block; }
+    .login-join { margin-top: 24px; font-size: 13px; color: #555; }
+    .login-join a { color: #22C55E; font-weight: 700; text-decoration: none; }
+    @media (max-width: 480px) { .login-wrap { padding: 32px 16px 60px; } h1 { font-size: 20px; } }
+  </style>
+</head>
+<body>
+  <script src="/public/nav.js"></script>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
+      </div>
+      <h1 id="ve-title">Confirming your email...</h1>
+      <p class="login-sub" id="ve-sub">One second.</p>
+      <div id="ve-error" class="login-error" role="alert"></div>
+      <div id="ve-success" class="login-success" role="status"></div>
+      <p class="login-join"><a href="/">Back to Vegans Explore</a></p>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    var token = new URLSearchParams(window.location.search).get('token');
+    var titleEl = document.getElementById('ve-title');
+    var subEl = document.getElementById('ve-sub');
+    var errorBox = document.getElementById('ve-error');
+    var successBox = document.getElementById('ve-success');
+
+    if (!token) {
+      titleEl.textContent = 'Missing verification link';
+      subEl.textContent = '';
+      errorBox.textContent = 'This link is missing its token. Please use the link from your confirmation email.';
+      errorBox.classList.add('visible');
+    } else {
+      VEAuth.verifyEmail(token).then(function(d) {
+        subEl.textContent = '';
+        if (d.error) {
+          titleEl.textContent = 'Verification failed';
+          errorBox.textContent = d.error;
+          errorBox.classList.add('visible');
+          return;
+        }
+        titleEl.textContent = 'Email confirmed';
+        successBox.textContent = d.message || 'Your email is confirmed. Thanks!';
+        successBox.classList.add('visible');
+      }).catch(function() {
+        titleEl.textContent = 'Something went wrong';
+        subEl.textContent = '';
+        errorBox.textContent = 'Please try the link again, or reach out if it keeps failing.';
+        errorBox.classList.add('visible');
+      });
+    }
+  </script>
+</body>
+</html>

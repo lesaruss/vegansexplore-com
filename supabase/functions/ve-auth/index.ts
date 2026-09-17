@@ -160,6 +160,42 @@ function generateResetToken(): string {
   return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+async function createEmailVerificationToken(memberId: string): Promise<string> {
+  const token = generateResetToken();
+  const expires_at = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  const { error } = await supabase.from('email_verification_tokens').insert({ member_id: memberId, token, expires_at });
+  if (error) console.error('createEmailVerificationToken insert failed:', error.message);
+  return token;
+}
+
+async function sendVerificationEmail(email: string, name: string, token: string): Promise<void> {
+  const link = `https://vegansexplore.com/verify-email?token=${token}`;
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
+        to: email,
+        subject: 'Confirm your email for VEGANS EXPLORE',
+        html: `
+<div style="font-family:sans-serif;max-width:540px;margin:0 auto;background:#fff;padding:40px 32px;">
+  <div style="background:#1A1A1A;padding:20px 24px;border-radius:8px;margin-bottom:32px;">
+    <span style="color:#22C55E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span>
+  </div>
+  <h1 style="font-size:24px;font-weight:700;color:#1A1A1A;margin:0 0 8px;">Confirm your email, ${name}.</h1>
+  <p style="color:#555;margin:0 0 24px;line-height:1.6;">One quick step: confirm this is your email address so we know you're really here. This link expires in 24 hours.</p>
+  <a href="${link}" style="display:inline-block;background:#22C55E;color:#fff;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:15px;">Confirm Email</a>
+  <p style="margin:24px 0 0;font-size:12px;color:#999;word-break:break-all;">Or paste this link into your browser:<br>${link}</p>
+  <p style="margin:32px 0 0;font-size:12px;color:#999;">VEGANS EXPLORE - The community for everyone exploring vegan life.</p>
+</div>`,
+      }),
+    });
+  } catch (e) {
+    console.error('Verification email failed:', e);
+  }
+}
+
 async function sendPasswordResetEmail(email: string, name: string, token: string): Promise<void> {
   const link = `https://vegansexplore.com/reset-password?token=${token}`;
   try {
@@ -488,8 +524,26 @@ serve(async (req: Request) => {
       await ensureMemberPointsRow(member.id);
       if (referred_by) await awardReferralBounty(referred_by, member.id);
       await sendWelcomeEmail(email.toLowerCase(), name);
+      const verify_token = await createEmailVerificationToken(member.id);
+      await sendVerificationEmail(email.toLowerCase(), name, verify_token);
       const token = await signJWT({ sub: member.id, email: member.email, tier: 'free', brand: 'vegans-explore' });
       return new Response(JSON.stringify({ token, member: { ...member, communities: home_community ? [home_community] : [], hidden_modules: [] } }), { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    if (action === 'verify_email') {
+      const token = typeof body.token === 'string' ? body.token.trim() : '';
+      if (!token) return new Response(JSON.stringify({ error: 'Verification link is invalid or missing.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const { data: rec } = await supabase.from('email_verification_tokens').select('id, member_id, expires_at, used_at').eq('token', token).maybeSingle();
+      if (!rec) return new Response(JSON.stringify({ error: 'This verification link is invalid.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (rec.used_at) return new Response(JSON.stringify({ ok: true, message: 'This email is already verified.' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (new Date(rec.expires_at).getTime() < Date.now()) return new Response(JSON.stringify({ error: 'This verification link has expired.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      const { error: updateErr } = await supabase.from('members').update({ email_verified: true }).eq('id', rec.member_id);
+      if (updateErr) throw new Error(`verify_email member update failed: ${updateErr.message}`);
+      await supabase.from('email_verification_tokens').update({ used_at: new Date().toISOString() }).eq('id', rec.id);
+
+      return new Response(JSON.stringify({ ok: true, message: 'Email verified. Thanks!' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     if (action === 'google') {
@@ -513,7 +567,7 @@ serve(async (req: Request) => {
 
       const byEmail = await findMemberByEmail(gUser.email.toLowerCase());
       if (byEmail) {
-        await supabase.from('members').update({ google_id: gUser.sub, avatar_url: gUser.picture }).eq('id', byEmail.id);
+        await supabase.from('members').update({ google_id: gUser.sub, avatar_url: gUser.picture, email_verified: true }).eq('id', byEmail.id);
         const { data: linked } = await supabase.from('members').select(MEMBER_FIELDS).eq('id', byEmail.id).single();
         if (!linked) throw new Error('Failed to load linked member after google_id update');
         await ensureMemberPointsRow(linked.id);
@@ -529,7 +583,7 @@ serve(async (req: Request) => {
         email: gUser.email.toLowerCase(), name: gUser.name, google_id: gUser.sub,
         avatar_url: gUser.picture, initials, color: '#22C55E', referral_code: ref_code,
         membership_tier: 'free', membership_status: 'active', ve_role: 'member', ve_tier: 'free',
-        auth_methods: ['google'], home_community,
+        auth_methods: ['google'], home_community, email_verified: true,
         tenant_id: VE_TENANT_ID,
       }).select(MEMBER_FIELDS + ', avatar_url').single();
 
