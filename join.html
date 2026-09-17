@@ -148,6 +148,20 @@
       VEAuth.signup(email, password, name, refCode, community)
         .then(function(d) {
           if (d.error) { showError(d.error); setLoading(false); return; }
+          // Pay-or-pledge gate (2026-09-17): a fresh signup lands
+          // membership_status 'pending_payment'. This is the site's primary
+          // signup entry point (the header's "Get Passport - Free" CTA on
+          // every page links here), and it was skipping the gate entirely --
+          // straight to /onboarding with no membership, contribution, or
+          // Guest Passport prompt ever shown. Mirrors the shared auth
+          // modal's own signup tab: show the gate in place rather than
+          // navigating away, so closing without resolving it doesn't leave
+          // the visitor mid-onboarding with nothing actually unlocked.
+          if (d.member && d.member.membership_status === 'pending_payment') {
+            setLoading(false);
+            VEAuth.showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+            return;
+          }
           window.location.replace('/onboarding');
         })
         .catch(function() { showError('Something went wrong. Please try again.'); setLoading(false); });
@@ -155,6 +169,10 @@
     window.addEventListener('load', function() {
       VEAuth.initGoogleSignIn(document.getElementById('join-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
+        if (d.member && d.member.membership_status === 'pending_payment') {
+          VEAuth.showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+          return;
+        }
         window.location.replace('/onboarding');
       }, community);
     });
