@@ -166,6 +166,17 @@
   .dash-tour-prompt-title{font-size:13.5px;font-weight:800;}
   .dash-tour-prompt-desc{font-size:12px;color:var(--ve-text-50);margin-top:2px;}
   .dash-tour-prompt-arrow{font-size:16px;color:var(--ve-green-dark);flex-shrink:0;}
+  /* Survey prompt reuses the tour-prompt look but is a <button>, not an <a>
+     (2026-09-17, Sean + V design session: the mission-survey dashboard task).
+     Resets the button-element defaults the other rule doesn't need to touch. */
+  button.dash-tour-prompt{font-family:inherit;text-align:left;width:100%;cursor:pointer;background:linear-gradient(180deg,#fff,#fafdfa);}
+  #dash-survey-textarea{display:block;width:100%;min-height:110px;padding:12px 14px;border:1.5px solid var(--ve-border);border-radius:8px;font-family:"Montserrat",sans-serif;font-size:13.5px;color:var(--ve-text);box-sizing:border-box;resize:vertical;margin-bottom:12px;}
+  #dash-survey-textarea:focus{outline:none;border-color:var(--ve-green);}
+  #dash-survey-submit{display:block;width:100%;padding:13px;background:var(--ve-green);color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;}
+  #dash-survey-submit:hover{background:var(--ve-green-dark);}
+  #dash-survey-submit:disabled{background:#9CA3AF;cursor:not-allowed;}
+  #dash-survey-error{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:12px;color:#dc2626;font-weight:600;margin-bottom:12px;}
+  #dash-survey-success{display:none;background:var(--ve-green-light);border:1px solid var(--ve-green);border-radius:6px;padding:12px 14px;font-size:13px;color:var(--ve-green-dark);font-weight:700;text-align:center;}
 
   /* --- Daily Pulse + Bounties: explicit column grids (2026-09-07, Sean,
      Fieldy field note; Pulse widened to 4 cols same day). Bounties keeps its
@@ -562,6 +573,21 @@
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
+      <!-- Mission Survey dashboard task (2026-09-17, Sean + V design session):
+           a one-time, optional 250-point task for Passport Holders only --
+           renderMissionSurveyPrompt() below shows this only when the member
+           is active and not a Guest, and hasn't completed it yet, per Sean:
+           "it doesn't show up if they've already completed it... because
+           they have to complete it in order to access the dashboard [as a
+           Guest], it won't show up [for guests]." -->
+      <button type="button" class="dash-tour-prompt" id="dash-survey-prompt" style="display:none;" onclick="openMissionSurveyModal();">
+        <div class="dash-tour-prompt-icon">&#128221;</div>
+        <div class="dash-tour-prompt-body">
+          <div class="dash-tour-prompt-title">Complete the Mission Survey - earn 250 points</div>
+          <div class="dash-tour-prompt-desc">Two minutes. Tell us why you're here -- it shapes what we build next.</div>
+        </div>
+        <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
+      </button>
       <div class="dash-stats-hero cols-2">
         <div class="dash-stats-hero-tile">
           <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
@@ -789,6 +815,22 @@
   </div>
 </div>
 
+<div class="dash-modal-overlay" id="dash-survey-modal">
+  <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Mission survey">
+    <div class="dash-modal-header">
+      <div class="dash-modal-title">The Mission Survey</div>
+      <button type="button" class="dash-modal-close" id="dash-survey-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <p class="dash-modal-sub">Tell us why you're here and what you need from this community. It's optional, but it directly shapes what we build next -- and it's worth 250 points.</p>
+    <div id="dash-survey-error"></div>
+    <div id="dash-survey-success">Thanks -- 250 points are on their way.</div>
+    <div id="dash-survey-form">
+      <textarea id="dash-survey-textarea" placeholder="Why are you here, and what would make this worth your time?"></textarea>
+      <button type="button" id="dash-survey-submit">Submit and earn 250 points</button>
+    </div>
+  </div>
+</div>
+
 <div class="dash-modal-overlay" id="dash-guide-modal">
   <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Choose your guide">
     <div class="dash-modal-header">
@@ -843,6 +885,9 @@
   // Leads tile icon (2026-08-21, Logan, Sean direction): unified sponsor/
   // attend interest + campaign-tied volunteer applications tile.
   var SA_LEADS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
+  // Guest Reviews tile icon (2026-09-17, Sean + V design session: the Guest
+  // Passport application review queue).
+  var SA_GUEST_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>';
 
   function loadPendingEventsCount(token) {
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_pending_events', {
@@ -882,6 +927,23 @@
       var pendingApps = appItems.filter(function (a) { return a.opportunities && a.opportunities.initiative_slug; }).length;
       var count = pendingInterest + pendingApps;
       var badge = document.getElementById('dash-leads-pending-badge');
+      if (!badge) return;
+      if (count > 0) { badge.textContent = count; badge.style.display = ''; }
+      else { badge.style.display = 'none'; }
+    }).catch(function () {});
+  }
+
+  // Guest Reviews tile pending-count badge (2026-09-17, Sean + V design
+  // session): counts flagged/pending/needs_followup Guest Passport
+  // applications, mirroring loadPendingEventsCount/loadPendingLeadsCount above.
+  function loadPendingGuestReviewsCount(token) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=list_guest_reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: token })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var count = (d && d.applications && d.applications.length) || 0;
+      var badge = document.getElementById('dash-guest-reviews-pending-badge');
       if (!badge) return;
       if (count > 0) { badge.textContent = count; badge.style.display = ''; }
       else { badge.style.display = 'none'; }
@@ -1219,7 +1281,8 @@
     TILE_REGISTRY.push(
       { key: 'sa-members', href: '/dashboard/members', embed: true, embedLabel: 'Members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every VEGANS EXPLORE registration, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/events.html', embed: true, embedLabel: 'Event Submissions', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
-      { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' }
+      { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-guest-reviews', href: '/dashboard/guest-reviews', embed: true, embedLabel: 'Guest Reviews', iconHtml: SA_GUEST_SVG, bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Guest Reviews', tagLabel: 'Superadmin', badgeId: 'dash-guest-reviews-pending-badge', desc: 'Review flagged and pending Guest Passport applications -- approve, follow up, or remove.', visibility: 'superadmin', defaultSection: 'superadmin' }
       // cm-handbook tile removed 2026-09-08 (Sean, Fieldy field note): a
       // Community Manager's role already surfaces as a pill (dash-eyebrow
       // reads member.ve_role === 'community_manager' and shows "Community
@@ -1369,7 +1432,7 @@
     var toolsAndAdmin = buckets.tools.concat(buckets.superadmin).concat(buckets.media).sort(function (a, b) { return a.order - b.order; });
     renderSectionedGrid('dash-grid-tools', toolsAndAdmin);
     loadPendingEventsCount(VEAuth.getToken());
-    if (member.is_superadmin) loadPendingLeadsCount(VEAuth.getToken());
+    if (member.is_superadmin) { loadPendingLeadsCount(VEAuth.getToken()); loadPendingGuestReviewsCount(VEAuth.getToken()); }
   }
 
   function loadAndRenderSectioned(member, isStaff) {
@@ -2020,6 +2083,62 @@
       levelProgressEl.textContent = intoLevel.toLocaleString() + ' / ' + VE_POINTS_PER_LEVEL.toLocaleString() + ' to Lv ' + nextLevel;
     }
   }
+
+  // Mission Survey dashboard task (2026-09-17, Sean + V design session):
+  // Passport Holder-only (paid tiers, not Guest). submit_mission_survey
+  // returns {gate:'none'} for an already-active non-guest member instead of
+  // the application-grant path, and awards 250 points via award_points_bounty
+  // server-side. mission_survey_status is checked live rather than trusting
+  // whatever 'me' returned at page load, since a fresh signup that upgrades
+  // mid-session (e.g. via the activate modal) should see the prompt appear
+  // without a full reload.
+  function renderMissionSurveyPrompt(member) {
+    var prompt = document.getElementById('dash-survey-prompt');
+    if (!prompt) return;
+    if (member.membership_status !== 'active' || member.membership_tier === 'guest') { prompt.style.display = 'none'; return; }
+    fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=mission_survey_status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken() })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      prompt.style.display = (d && !d.completed) ? 'flex' : 'none';
+    }).catch(function () {});
+  }
+  function openMissionSurveyModal() {
+    document.getElementById('dash-survey-error').style.display = 'none';
+    document.getElementById('dash-survey-success').style.display = 'none';
+    document.getElementById('dash-survey-form').style.display = 'block';
+    document.getElementById('dash-survey-textarea').value = '';
+    document.getElementById('dash-survey-modal').classList.add('open');
+  }
+  function closeMissionSurveyModal() {
+    document.getElementById('dash-survey-modal').classList.remove('open');
+  }
+  document.getElementById('dash-survey-modal-close').addEventListener('click', closeMissionSurveyModal);
+  document.getElementById('dash-survey-submit').addEventListener('click', function () {
+    var btn = this;
+    var text = document.getElementById('dash-survey-textarea').value.trim();
+    var errEl = document.getElementById('dash-survey-error');
+    errEl.style.display = 'none';
+    if (!text) { errEl.textContent = 'Please write a short answer before submitting.'; errEl.style.display = 'block'; return; }
+    btn.disabled = true; var orig = btn.textContent; btn.textContent = 'Submitting...';
+    VEAuth.submitMissionSurvey(text).then(function (d) {
+      btn.disabled = false; btn.textContent = orig;
+      if (d && d.ok) {
+        document.getElementById('dash-survey-form').style.display = 'none';
+        document.getElementById('dash-survey-success').style.display = 'block';
+        document.getElementById('dash-survey-prompt').style.display = 'none';
+        setTimeout(closeMissionSurveyModal, 1600);
+        return;
+      }
+      errEl.textContent = (d && d.error) || 'Something went wrong. Please try again.';
+      errEl.style.display = 'block';
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = orig;
+      errEl.textContent = 'Could not reach the server. Please try again.';
+      errEl.style.display = 'block';
+    });
+  });
 
   // Your City pill (2026-09-07, Logan, Sean direction): shows the member's
   // first-joined community -- member.communities is already ordered by
@@ -2747,6 +2866,7 @@
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     renderStatsHero(member);
+    renderMissionSurveyPrompt(member);
     renderCityPill(member);
     initViewAsControl();
     renderLeaderboard(member);

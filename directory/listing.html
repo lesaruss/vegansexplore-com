@@ -1103,7 +1103,7 @@ function renderListing(l){
           (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
         '</div>'+
         '<div class="listing-hero-right">'+
-          '<button class="vote-hero-btn" id="vote-btn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote<span class="vote-badge" id="vote-badge">'+votes+'</span></button>'+
+          '<button class="vote-hero-btn" id="vote-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote<span class="vote-badge" id="vote-badge">'+votes+'</span></button>'+
           '<button class="save-hero-btn" id="save-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg><span id="save-btn-label">Save</span></button>'+
         '</div>'+
       '</div>'+
@@ -1171,23 +1171,43 @@ function renderListing(l){
   // Wire overview carousel on load; Photos tab carousel on first click
   wireCarousel('ov');
 
-  // Vote button - increments the integrated count badge + community votes stat
-  // + gives business +1 Point (2026-09-08, Logan, Sean direction: the vote
-  // count now lives inside the button itself, next to "Vote", instead of a
-  // separate label wedged between the vote and save buttons).
-  document.getElementById('vote-btn').addEventListener('click', function(){
-    if(this.dataset.voted) return;
-    this.dataset.voted = '1';
-    var badge = document.getElementById('vote-badge');
-    var newCount = ((badge ? parseInt(badge.textContent, 10) : 0) || 0) + 1;
-    this.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted!<span class="vote-badge" id="vote-badge">' + newCount + '</span>';
-    this.style.background = '#2d7d31';
-    var cv = document.getElementById('community-votes');
-    if(cv){ cv.textContent = (parseInt(cv.textContent)||0) + 1; }
-    // +1 Point to business on every vote
-    var cl = document.getElementById('community-lesars');
-    if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
-  });
+  // Vote button (2026-09-17, Logan: wired to the real vote_listing backend --
+  // was previously purely decorative, a local DOM increment with nothing
+  // persisted). Once per day per member (listing_daily_votes, unique on
+  // member_id+vote_date); requireActiveMembership so Guest Passport holders
+  // can vote too, this is their one interaction. Not logged in -> sign-in
+  // modal; not yet past the pay-or-pledge gate -> VEAuth.call() auto-shows
+  // the activate modal on the payment_required response.
+  (function(){
+    var voteBtn = document.getElementById('vote-btn');
+    if(!voteBtn || !window.VEAuth) return;
+    var listingId = voteBtn.getAttribute('data-listing-id');
+    function paintVoted(){
+      var badge = document.getElementById('vote-badge');
+      var newCount = ((badge ? parseInt(badge.textContent, 10) : 0) || 0) + 1;
+      voteBtn.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted!<span class="vote-badge" id="vote-badge">' + newCount + '</span>';
+      voteBtn.style.background = '#2d7d31';
+      var cv = document.getElementById('community-votes');
+      if(cv){ cv.textContent = (parseInt(cv.textContent)||0) + 1; }
+      var cl = document.getElementById('community-lesars');
+      if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
+    }
+    voteBtn.addEventListener('click', function(){
+      if(voteBtn.dataset.voted) return;
+      if(!VEAuth.isLoggedIn()){
+        VEAuth.showAuthModal('Sign in to vote for this business.', function(){ window.location.reload(); });
+        return;
+      }
+      voteBtn.disabled = true;
+      VEAuth.voteListing(listingId).then(function(d){
+        voteBtn.disabled = false;
+        if(d && d.error === 'already_voted_today'){ voteBtn.dataset.voted = '1'; return; }
+        if(d && d.error){ return; }
+        voteBtn.dataset.voted = '1';
+        paintVoted();
+      }).catch(function(){ voteBtn.disabled = false; });
+    });
+  })();
 
   // Save / unsave listing (2026-08-19, Logan, V direction): folds this listing
   // into "My List." Requires a real Passport -- unauthenticated clicks open

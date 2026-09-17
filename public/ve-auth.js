@@ -58,6 +58,7 @@ function saveLayout(layout){return call('save_layout',{token:getToken(),layout:l
 function hideModule(key){return call('hide_module',{token:getToken(),module_key:key}).then(function(d){if(d.hidden_modules){var m=Object.assign({},getRealMember()||{},{hidden_modules:d.hidden_modules});setSession(getToken(),m);}return d;});}
 function showModule(key){return call('show_module',{token:getToken(),module_key:key}).then(function(d){if(d.hidden_modules){var m=Object.assign({},getRealMember()||{},{hidden_modules:d.hidden_modules});setSession(getToken(),m);}return d;});}
 function saveListing(listingId){return call('save_listing',{token:getToken(),listing_id:listingId});}
+function voteListing(listingId){return call('vote_listing',{token:getToken(),listing_id:listingId});}
 function unsaveListing(listingId){return call('unsave_listing',{token:getToken(),listing_id:listingId});}
 function listSavedListings(){return call('list_saved_listings',{token:getToken()});}
 function signOut(){try{localStorage.removeItem('ve_view_as');}catch(e){}clearSession();window.location.href='/';}
@@ -70,9 +71,22 @@ function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;
 // ve-auth until either path below completes (ve-stripe-webhook flips the
 // member to 'active' on success). call() below surfaces that error as this
 // same activate modal from anywhere on the site, not just right after signup.
-function startPassportCheckout(){
+function startPassportCheckout(period){
   var token=getToken();
-  return fetch(SUPABASE_URL+'/functions/v1/ve-passport-checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({success_url:window.location.origin+window.location.pathname+'?activate=success',cancel_url:window.location.origin+window.location.pathname+'?activate=cancelled'})}).then(function(r){return r.json();});
+  return fetch(SUPABASE_URL+'/functions/v1/ve-passport-checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({period:period==='annual'?'annual':'monthly',success_url:window.location.origin+window.location.pathname+'?activate=success',cancel_url:window.location.origin+window.location.pathname+'?activate=cancelled'})}).then(function(r){return r.json();});
+}
+// Guest Passport application (2026-09-17, Sean + V design session): the
+// third path off the same pledge gate. submit_mission_survey doubles as the
+// paid-tier survey task, but for a member still 'pending_payment' it IS the
+// application -- a granted gate:'guest' response never carries an updated
+// member payload (ve-auth only returns {ok,gate,review_status}), so the
+// local session is patched here the same way every other gate-clearing
+// action in this file patches it after the fact.
+function submitMissionSurvey(responseText){
+  return call('submit_mission_survey',{token:getToken(),response_text:responseText}).then(function(d){
+    if(d&&d.ok&&d.gate==='guest'){var m=Object.assign({},getRealMember()||{},{membership_status:'active',membership_tier:'guest'});setSession(getToken(),m);}
+    return d;
+  });
 }
 function startEntryCheckout(amountCents){
   var token=getToken();
@@ -110,6 +124,16 @@ s.textContent=
 '#ve-pm-hint{margin:8px 0 0;font-size:11px;color:#888;text-align:center;font-family:"Montserrat",sans-serif;}'+
 '#ve-pm-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1;padding:4px;}'+
 '#ve-pm-close:focus-visible{outline:3px solid #22C55E;border-radius:4px;}'+
+'#ve-pm-annual-row{display:flex;align-items:center;gap:7px;margin:10px 0 2px;justify-content:center;}'+
+'#ve-pm-annual-row label{font-size:12px;color:#555;font-weight:600;font-family:"Montserrat",sans-serif;cursor:pointer;}'+
+'#ve-pm-guest-toggle{display:block;width:100%;background:none;border:none;padding:4px;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#555;text-decoration:underline;cursor:pointer;margin-top:2px;}'+
+'#ve-pm-guest-panel{display:none;text-align:left;margin-top:10px;}'+
+'#ve-pm-guest-panel p{font-size:12px;color:#666;line-height:1.5;margin-bottom:10px;}'+
+'#ve-pm-guest-text{display:block;width:100%;min-height:88px;padding:11px 13px;border:1.5px solid rgba(0,0,0,0.15);border-radius:6px;font-family:"Montserrat",sans-serif;font-size:13px;color:#1a1a1a;box-sizing:border-box;resize:vertical;margin-bottom:10px;}'+
+'#ve-pm-guest-text:focus{outline:none;border-color:#22C55E;}'+
+'#ve-pm-guest-submit{display:block;width:100%;padding:12px;background:#1a1a1a;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;}'+
+'#ve-pm-guest-submit:hover{background:#333;}'+
+'#ve-pm-guest-submit:disabled{background:#9CA3AF;cursor:not-allowed;}'+
 '@media(max-width:480px){#ve-pm-box{padding:28px 20px 22px;}}';
 document.head.appendChild(s);
 var el=document.createElement('div');
@@ -121,12 +145,19 @@ el.innerHTML=
 '<p id="ve-pm-msg">Activate your Passport to unlock posting, joining chapters, following, and saving.</p>'+
 '<div id="ve-pm-error" role="alert"></div>'+
 '<button type="button" id="ve-pm-member-btn">Become a Member - $11/mo</button>'+
+'<div id="ve-pm-annual-row"><input type="checkbox" id="ve-pm-annual"><label for="ve-pm-annual">Bill annually instead - $111/yr</label></div>'+
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or contribute any amount</span><div class="ve-pm-divider-line"></div></div>'+
 '<div id="ve-pm-entry-row">'+
 '<input type="number" id="ve-pm-amount" min="1" step="1" placeholder="$ amount" aria-label="Contribution amount in dollars">'+
 '<button type="button" id="ve-pm-entry-btn">Contribute</button>'+
 '</div>'+
 '<p id="ve-pm-hint">One-time, any amount. No subscription.</p>'+
+'<button type="button" id="ve-pm-guest-toggle">Not ready to contribute? Apply for a free Guest Passport</button>'+
+'<div id="ve-pm-guest-panel">'+
+'<p>Tell us in your own words why you want to join Vegans Explore. Every application is reviewed -- a real answer gets you in.</p>'+
+'<textarea id="ve-pm-guest-text" placeholder="Why do you want to join?" aria-label="Why do you want to join Vegans Explore"></textarea>'+
+'<button type="button" id="ve-pm-guest-submit">Submit Application</button>'+
+'</div>'+
 '</div>';
 document.body.appendChild(el);
 document.getElementById('ve-pm-close').addEventListener('click',hideActivateModal);
@@ -135,10 +166,28 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el.style.di
 function showPmErr(msg){var e=document.getElementById('ve-pm-error');if(e){e.textContent=msg;e.style.display='block';}}
 document.getElementById('ve-pm-member-btn').addEventListener('click',function(){
 var btn=this;btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting to checkout...';
-startPassportCheckout().then(function(d){
+var annual=document.getElementById('ve-pm-annual').checked;
+startPassportCheckout(annual?'annual':'monthly').then(function(d){
 if(d&&d.url){window.location.href=d.url;return;}
 btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');
 }).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong starting checkout. Please try again.');});
+});
+document.getElementById('ve-pm-guest-toggle').addEventListener('click',function(){
+var panel=document.getElementById('ve-pm-guest-panel');
+var open=panel.style.display==='block';
+panel.style.display=open?'none':'block';
+this.textContent=open?'Not ready to contribute? Apply for a free Guest Passport':'Hide the application';
+});
+document.getElementById('ve-pm-guest-submit').addEventListener('click',function(){
+var btn=this;var text=document.getElementById('ve-pm-guest-text').value.trim();
+if(!text){showPmErr('Please write a short answer before submitting.');return;}
+btn.disabled=true;var orig=btn.textContent;btn.textContent='Submitting...';
+submitMissionSurvey(text).then(function(d){
+if(d&&d.ok&&d.gate==='guest'){hideActivateModal();location.reload();return;}
+btn.disabled=false;btn.textContent=orig;
+if(d&&d.error==='application_not_approved'){showPmErr('We could not approve that application. You are welcome to become a member or make a one-time contribution instead.');return;}
+showPmErr(d&&d.error?d.error:'Something went wrong submitting your application. Please try again.');
+}).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong submitting your application. Please try again.');});
 });
 document.getElementById('ve-pm-entry-btn').addEventListener('click',function(){
 var btn=this;var input=document.getElementById('ve-pm-amount');
@@ -276,5 +325,5 @@ if(d.error){_showErr(d.error);return;}
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}
-global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,forgotPassword:forgotPassword,resetPassword:resetPassword,verifyEmail:verifyEmail,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,joinCampaign:joinCampaign,leaveCampaign:leaveCampaign,followPodcast:followPodcast,unfollowPodcast:unfollowPodcast,getLayout:getLayout,saveLayout:saveLayout,hideModule:hideModule,showModule:showModule,saveListing:saveListing,unsaveListing:unsaveListing,listSavedListings:listSavedListings,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,showActivateModal:showActivateModal,hideActivateModal:hideActivateModal,startPassportCheckout:startPassportCheckout,startEntryCheckout:startEntryCheckout,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
+global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,forgotPassword:forgotPassword,resetPassword:resetPassword,verifyEmail:verifyEmail,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,joinCampaign:joinCampaign,leaveCampaign:leaveCampaign,followPodcast:followPodcast,unfollowPodcast:unfollowPodcast,getLayout:getLayout,saveLayout:saveLayout,hideModule:hideModule,showModule:showModule,saveListing:saveListing,unsaveListing:unsaveListing,listSavedListings:listSavedListings,voteListing:voteListing,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,showActivateModal:showActivateModal,hideActivateModal:hideActivateModal,startPassportCheckout:startPassportCheckout,startEntryCheckout:startEntryCheckout,submitMissionSurvey:submitMissionSurvey,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
 })(window);

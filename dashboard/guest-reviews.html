@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guest Reviews - VEGANS EXPLORE</title>
+<meta name="description" content="Review Guest Passport applications.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;
+    --ve-border:rgba(0,0,0,0.09);
+    --ve-text:#1a1a1a;--ve-text-75:#4a4a4a;--ve-text-50:#595959;
+    --ve-alert-text:#7d4a00;--ve-alert-bg:#fff3e0;
+  }
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:900px;margin:0 auto;padding:44px 32px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+
+  a:focus-visible,button:focus-visible{outline:3px solid var(--ve-green-dark);outline-offset:2px;}
+
+  #gr-gate{text-align:center;padding:100px 20px;}
+  #gr-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #gr-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;
+    border-radius:6px;font-family:inherit;font-weight:800;font-size:12px;letter-spacing:0.1em;
+    text-transform:uppercase;cursor:pointer;}
+  #gr-content{display:none;}
+
+  .gr-back{display:inline-block;margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;}
+  .gr-back:hover{text-decoration:underline;}
+  .gr-head{padding-bottom:24px;border-bottom:1px solid var(--ve-border);margin-bottom:24px;}
+  .gr-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--ve-green-dark);margin-bottom:6px;}
+  .gr-head h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
+  .gr-head-sub{font-size:13px;color:var(--ve-text-50);}
+
+  .gr-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:18px 20px;margin-bottom:14px;}
+  .gr-card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;}
+  .gr-name{font-weight:800;font-size:14px;}
+  .gr-email{font-size:12px;color:var(--ve-text-50);}
+  .gr-meta{font-size:11px;color:var(--ve-text-50);margin-top:2px;}
+  .gr-response{font-size:13px;line-height:1.6;color:var(--ve-text-75);background:#fafafa;border:1px solid var(--ve-border);
+    border-left:3px solid var(--ve-green);border-radius:6px;padding:12px 14px;margin-bottom:12px;white-space:pre-wrap;}
+  .gr-flag{font-size:12px;color:var(--ve-alert-text);background:var(--ve-alert-bg);border-radius:6px;padding:8px 12px;margin-bottom:12px;}
+
+  .pill{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;
+    padding:3px 9px;border-radius:100px;white-space:nowrap;}
+  .pill.flagged{background:var(--ve-alert-bg);color:var(--ve-alert-text);}
+  .pill.pending_review{background:#f1f1f1;color:#4a4a4a;}
+  .pill.needs_followup{background:#eef2ff;color:#3730a3;}
+
+  .gr-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .gr-btn{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;
+    padding:9px 14px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);cursor:pointer;}
+  .gr-btn:hover{border-color:var(--ve-green);}
+  .gr-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .gr-btn.approve{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  .gr-btn.approve:hover{background:var(--ve-green-dark);}
+  .gr-btn.remove{background:#fee2e2;border-color:#fecaca;color:#991b1b;}
+  .gr-btn.remove:hover{background:#fecaca;}
+
+  .gr-empty{padding:60px 20px;text-align:center;color:var(--ve-text-50);font-size:13px;}
+  .gr-note{font-size:12.5px;line-height:1.6;color:var(--ve-text-75);background:#fafafa;
+    border:1px solid var(--ve-border);border-left:3px solid var(--ve-green);border-radius:6px;
+    padding:12px 16px;margin-bottom:26px;}
+</style>
+</head>
+<body>
+<script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+</script>
+<style>.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .gr-back{display:none !important}</style>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="gr-gate"><p>Checking access&hellip;</p></div>
+
+  <div id="gr-content">
+    <a class="gr-back" href="/dashboard">&larr; Back to dashboard</a>
+    <div class="gr-head">
+      <p class="gr-eyebrow">Superadmin</p>
+      <h1>Guest Reviews</h1>
+      <p class="gr-head-sub" id="gr-sub">Loading applications&hellip;</p>
+    </div>
+    <p class="gr-note">Every Guest Passport applicant already has access -- rejecting an obvious bot happens automatically at signup. What's queued here already got in, and is either flagged by the spam heuristics or simply waiting on a first look. Approve confirms them, Needs Follow-up keeps them active while you ask more, Remove reverts them to pending_payment (they'll see the pay-or-pledge gate again).</p>
+    <div id="gr-list"></div>
+    <p class="gr-empty" id="gr-empty" style="display:none;">Nothing waiting on review.</p>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var STATUS_LABEL = { flagged: 'Flagged', pending_review: 'Pending Review', needs_followup: 'Needs Follow-up' };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function fmtDate(d) {
+    if (!d) return 'Unknown';
+    var dt = new Date(d);
+    if (isNaN(dt)) return 'Unknown';
+    return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function call(action, body) {
+    return fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=' + action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify(body || {})
+    }).then(function (r) { return r.json(); });
+  }
+
+  function showGate(msg, withButton) {
+    var gate = document.getElementById('gr-gate');
+    gate.innerHTML = '<p>' + esc(msg) + '</p>';
+    if (withButton) {
+      var b = document.createElement('button');
+      b.textContent = 'Sign In';
+      b.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to review applications.', init); });
+      gate.appendChild(b);
+    }
+  }
+
+  function cardHtml(a) {
+    return '<div class="gr-card" data-id="' + esc(a.id) + '">' +
+      '<div class="gr-card-top">' +
+        '<div><div class="gr-name">' + esc(a.name || 'No name given') + '</div>' +
+        '<div class="gr-email">' + esc(a.email) + '</div>' +
+        '<div class="gr-meta">Applied ' + esc(fmtDate(a.created_at)) + '</div></div>' +
+        '<span class="pill ' + esc(a.guest_review_status) + '">' + esc(STATUS_LABEL[a.guest_review_status] || a.guest_review_status) + '</span>' +
+      '</div>' +
+      (a.guest_flag_reason ? '<div class="gr-flag">Flagged: ' + esc(a.guest_flag_reason) + '</div>' : '') +
+      '<div class="gr-response">' + esc(a.mission_survey_response || '(no response on file)') + '</div>' +
+      '<div class="gr-actions">' +
+        '<button type="button" class="gr-btn approve" data-decision="approve">Approve</button>' +
+        '<button type="button" class="gr-btn" data-decision="needs_followup">Needs Follow-up</button>' +
+        '<button type="button" class="gr-btn remove" data-decision="remove">Remove</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function bindActions() {
+    Array.prototype.forEach.call(document.querySelectorAll('.gr-btn'), function (btn) {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', function () {
+        var card = btn.closest('.gr-card');
+        var id = card.getAttribute('data-id');
+        var decision = btn.getAttribute('data-decision');
+        if (decision === 'remove' && !window.confirm('Remove this Guest Passport? They will lose access and see the pay-or-pledge gate again on their next visit.')) return;
+        Array.prototype.forEach.call(card.querySelectorAll('.gr-btn'), function (b) { b.disabled = true; });
+        call('review_guest', { token: VEAuth.getToken(), member_id: id, decision: decision }).then(function (d) {
+          if (!d.ok) {
+            window.alert('Could not update that application: ' + (d.error || 'unknown error'));
+            Array.prototype.forEach.call(card.querySelectorAll('.gr-btn'), function (b) { b.disabled = false; });
+            return;
+          }
+          card.remove();
+          var remaining = document.querySelectorAll('.gr-card').length;
+          document.getElementById('gr-empty').style.display = remaining ? 'none' : 'block';
+          document.getElementById('gr-sub').textContent = remaining + ' application' + (remaining === 1 ? '' : 's') + ' waiting on review.';
+        }).catch(function () {
+          window.alert('Could not reach the server. Nothing was changed.');
+          Array.prototype.forEach.call(card.querySelectorAll('.gr-btn'), function (b) { b.disabled = false; });
+        });
+      });
+    });
+  }
+
+  function loadApplications(token) {
+    call('list_guest_reviews', { token: token }).then(function (d) {
+      if (d.error === 'Superadmin only.') { showGate('Guest Reviews is superadmin only. Your account does not have that role yet.', false); return; }
+      if (!d.applications) { showGate('Could not load applications right now. Try again shortly.', false); return; }
+
+      document.getElementById('gr-gate').style.display = 'none';
+      document.getElementById('gr-content').style.display = 'block';
+      document.getElementById('gr-sub').textContent = d.applications.length + ' application' + (d.applications.length === 1 ? '' : 's') + ' waiting on review.';
+      document.getElementById('gr-list').innerHTML = d.applications.map(cardHtml).join('');
+      document.getElementById('gr-empty').style.display = d.applications.length ? 'none' : 'block';
+      bindActions();
+    }).catch(function () {
+      showGate('Could not reach the review service. Check your connection and reload.', false);
+    });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showGate('Sign in to review applications.', true); return; }
+    loadApplications(VEAuth.getToken());
+  }
+
+  init();
+</script>
+</body>
+</html>
