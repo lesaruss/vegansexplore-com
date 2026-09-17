@@ -600,7 +600,7 @@ serve(async (req: Request) => {
         membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
         auth_methods: ['email'], home_community,
         tenant_id: VE_TENANT_ID,
-      }).select(MEMBER_FIELDS).single();
+      }).select(MEMBER_FIELDS + ', membership_status').single();
 
       if (insertErr) throw new Error(`signup insert failed: ${insertErr.message}`);
 
@@ -661,7 +661,7 @@ serve(async (req: Request) => {
       const byEmail = await findMemberByEmail(gUser.email.toLowerCase());
       if (byEmail) {
         await supabase.from('members').update({ google_id: gUser.sub, avatar_url: gUser.picture, email_verified: true }).eq('id', byEmail.id);
-        const { data: linked } = await supabase.from('members').select(MEMBER_FIELDS).eq('id', byEmail.id).single();
+        const { data: linked } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status').eq('id', byEmail.id).single();
         if (!linked) throw new Error('Failed to load linked member after google_id update');
         await ensureMemberPointsRow(linked.id);
         const token = await signJWT({ sub: linked.id, email: linked.email, tier: linked.membership_tier, brand: 'vegans-explore' });
@@ -678,7 +678,7 @@ serve(async (req: Request) => {
         membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
         auth_methods: ['google'], home_community, email_verified: true,
         tenant_id: VE_TENANT_ID,
-      }).select(MEMBER_FIELDS + ', avatar_url').single();
+      }).select(MEMBER_FIELDS + ', avatar_url, membership_status').single();
 
       if (insertErr) throw new Error(`google insert failed: ${insertErr.message}`);
       if (home_community) {
