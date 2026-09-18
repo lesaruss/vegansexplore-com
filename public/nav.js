@@ -154,13 +154,18 @@
       '</div>' +
       '<button class="ve-mob-signout" id="ve-signout-mobile">Sign Out</button>';
   } else {
+    // Copy fixed 2026-09-18 (Sean, live test): "- Free" pushed the free tier
+    // as the default, which is backwards -- there is no more standalone
+    // free tier, and the paid sustaining Passport is meant to be the
+    // default choice, with the free Guest Passport application available
+    // but not the headline.
     desktopRight =
       '<a href="/login" class="ve-nav-login"' + cur('/login') + '>Log In</a>' +
-      '<a href="/join" class="ve-nav-cta">Get Passport - Free</a>';
+      '<a href="/join" class="ve-nav-cta">Get Passport</a>';
     mobileBottom =
       '<div class="ve-mob-cta-wrap">' +
         '<a href="/login" class="ve-mob-login"' + cur('/login') + '>Log In</a>' +
-        '<a href="/join" class="ve-mob-cta">Get Passport - Free</a>' +
+        '<a href="/join" class="ve-mob-cta">Get Passport</a>' +
       '</div>';
   }
 
@@ -237,7 +242,7 @@
      updating the rotation is a database edit, not a deploy. Falls back to a
      single safe default if the fetch fails so the pill never breaks. */
   (function() {
-    var FALLBACK = [{ text: 'Free to join. Vote, save, and connect with your city.', href: '/join' }];
+    var FALLBACK = [{ text: 'Join the movement. Membership, a one-time contribution, or a free Guest Passport.', href: '/join' }];
     var idx = 0;
     var messages = FALLBACK;
     var textEl = document.getElementById('ve-announce-text');

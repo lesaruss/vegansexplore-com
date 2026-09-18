@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Get Your Passport - VEGANS EXPLORE</title>
-  <meta name="description" content="Join VEGANS EXPLORE free. Vote for your favorites, save listings, join communities, and access free Guides.">
+  <meta name="description" content="Join VEGANS EXPLORE: become a sustaining Passport Holder, make a one-time contribution, or apply for a free Guest Passport.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@
         <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
       </div>
       <h1>Get Your Passport</h1>
-      <p class="join-sub">Free to join. Vote, save, and connect with the community.</p>
+      <p class="join-sub">Become a sustaining Passport Holder, make a one-time contribution, or apply for a free Guest Passport -- you'll choose next.</p>
       <p class="join-sub" id="join-community-note" style="display:none;color:#166534;font-weight:700;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:6px;padding:8px 12px;margin-top:-2px;"></p>
       <div class="join-perks">
         <div class="join-perks-title">What you unlock</div>
@@ -150,8 +150,8 @@
           if (d.error) { showError(d.error); setLoading(false); return; }
           // Pay-or-pledge gate (2026-09-17): a fresh signup lands
           // membership_status 'pending_payment'. This is the site's primary
-          // signup entry point (the header's "Get Passport - Free" CTA on
-          // every page links here), and it was skipping the gate entirely --
+          // signup entry point (the header's "Get Passport" CTA on every
+          // page links here), and it was skipping the gate entirely --
           // straight to /onboarding with no membership, contribution, or
           // Guest Passport prompt ever shown. Mirrors the shared auth
           // modal's own signup tab: show the gate in place rather than

@@ -587,8 +587,8 @@
       var token = null;
       try { token = localStorage.getItem('ve_token'); } catch(e){}
       if (!token) {
-        // Not signed in yet: collect a free account first, then retry.
-        VEAuth.showAuthModal('Create a free Passport to join ' + state.city_display + '.', function(){
+        // Not signed in yet: create an account first, then retry.
+        VEAuth.showAuthModal('Create your account to join ' + state.city_display + '.', function(){
           joinCityFlow(founding);
         }, 'signup');
         return;
@@ -849,11 +849,22 @@
     // 2026-09-07 (Sean field note): a Founding Member arriving here already
     // picked a tier at the fork step (auto-skipped in render() above), so
     // this only ever shows to someone who hasn't chosen yet, or who joined
-    // an already-launched chapter for free and might still want a Passport.
-    // For the latter the "Free account" card is dropped since it would be
-    // asking them to pick something they already have. A video placeholder
-    // and fuller copy address Sean's "it's a little light" note; swap the
-    // placeholder for a real embed once that asset exists.
+    // an already-launched chapter and might still want to upgrade.
+    //
+    // Rewritten 2026-09-18 (Sean, live test): this used to be its own
+    // "Free account" vs "Passport $11/mo" binary choice, built before the
+    // pay-or-pledge gate + Guest Passport shipped (2026-09-17) and never
+    // updated to match -- clicking "Passport" while logged out opened the
+    // shared signup modal, but that modal ALWAYS lands a brand-new signup
+    // at membership_status 'pending_payment' and shows the activate modal
+    // instead of running the callback that would've started $11/mo
+    // checkout, so "Passport" and "Free account" both just dead-ended into
+    // the exact same "Create Your Free Account" form with no visible way
+    // to actually pay. Rather than keep two tier-choice UIs in sync, this
+    // step is now a single CTA into that same signup -> activate-modal
+    // flow, which already offers the real choice (sustaining membership
+    // $11/mo or $111/yr, a one-time contribution, or a free Guest Passport
+    // application) and is the one place that choice is built and tested.
     function renderDrive(){
       var isMember = false;
       try { isMember = !!localStorage.getItem('ve_token'); } catch(e){}
@@ -862,8 +873,8 @@
         thumbCardHtml('driveThumb', {
           img: '/public/guides/thumb-passport.jpg',
           tag: 'Passport',
-          title: isMember ? 'One more thing before you go.' : 'Pick how you want in.',
-          body: isMember ? 'You are already in. A Passport adds a founding badge where available, a points multiplier, and priority access.' : 'Free gets you in the door today. Passport adds founding status where available, a points multiplier, and priority access.',
+          title: isMember ? 'One more thing before you go.' : 'Join the movement.',
+          body: isMember ? 'You are already in. A sustaining Passport adds a founding badge where available, a points multiplier, and priority access.' : 'Become a sustaining Passport Holder, make a one-time contribution, or apply for a free Guest Passport -- every path gets you in the door.',
           audioLabel: '30 sec: what Vegans Explore unlocks'
         }) +
         '<div class="drive-actions" id="driveActions"></div>';
@@ -872,37 +883,22 @@
       wireAudioTile('driveThumb', '/public/audio/passport-drive.mp3', '30 sec: what Vegans Explore unlocks');
 
       if (!isMember) {
-        var freeCard = document.createElement('div');
-        freeCard.className = 'drive-card';
-        freeCard.innerHTML = '<h3>Free account</h3><p>Save your progress, join your chapter, vote in the Directory, and start earning points.</p><button class="btn primary" id="freeBtn">Join free</button>';
-        actions.appendChild(freeCard);
-      }
-
-      var passCard = document.createElement('div');
-      passCard.className = 'drive-card featured';
-      passCard.innerHTML = '<h3>Passport</h3><div class="price">$11/month</div><p>Founding badge where available, a points multiplier, and priority access to events and Showcase seats.</p><button class="btn accent" id="passBtn">Get Passport</button>';
-      actions.appendChild(passCard);
-
-      var freeBtn = document.getElementById('freeBtn');
-      if (freeBtn) {
-        freeBtn.onclick = function(){
-          if (isMember) { finishDrive(); return; }
-          VEAuth.showAuthModal('Create your free Vegans Explore account.', function(){ finishDrive(); }, 'signup');
+        var joinCard = document.createElement('div');
+        joinCard.className = 'drive-card featured';
+        joinCard.innerHTML = '<h3>Join Vegans Explore</h3><p>Sustaining Passport ($11/mo or $111/yr), a one-time contribution, or a free Guest Passport application -- you choose next.</p><button class="btn accent" id="joinBtn">Get Started</button>';
+        actions.appendChild(joinCard);
+        document.getElementById('joinBtn').onclick = function(){
+          VEAuth.showAuthModal('Create your account, then choose how you want in.', function(){ finishDrive(); }, 'signup');
         };
-      }
-      document.getElementById('passBtn').onclick = function(){
-        var token = null;
-        try { token = localStorage.getItem('ve_token'); } catch(e){}
-        if (!token) {
-          VEAuth.showAuthModal('Create your account first, then add your Passport.', function(){ startPassportGeneral(); }, 'signup');
-          return;
-        }
-        startPassportGeneral();
-      };
+      } else {
+        var passCard = document.createElement('div');
+        passCard.className = 'drive-card featured';
+        passCard.innerHTML = '<h3>Sustaining Passport</h3><div class="price">$11/month</div><p>Founding badge where available, a points multiplier, and priority access to events and Showcase seats.</p><button class="btn accent" id="passBtn">Get Passport</button>';
+        actions.appendChild(passCard);
+        document.getElementById('passBtn').onclick = function(){ startPassportGeneral(); };
 
-      // Already a member with no upsell to make -- give them a plain way
-      // through instead of forcing a Passport decision to leave this step.
-      if (isMember) {
+        // Already a member with no upsell to make -- give them a plain way
+        // through instead of forcing a Passport decision to leave this step.
         var skip = document.createElement('button');
         skip.className = 'skip-link';
         skip.textContent = 'No thanks, take me in';

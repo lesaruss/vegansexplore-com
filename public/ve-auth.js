@@ -242,13 +242,17 @@ function _setAuthMode(mode){
   if(tabLogin)tabLogin.classList.toggle('active',!isSignup);
   if(tabSignup)tabSignup.classList.toggle('active',isSignup);
   var title=document.getElementById('ve-am-title');
-  if(title)title.textContent=isSignup?'Create Your Free Account':'Welcome Back';
+  // "Free Account" dropped from this copy (2026-09-18, Sean, live test):
+  // there is no more standalone free tier -- account creation is just step
+  // one, the real choice (sustaining membership, one-time contribution, or
+  // Guest Passport) is the activate modal that follows.
+  if(title)title.textContent=isSignup?'Create Your Account':'Welcome Back';
   var nameWrap=document.getElementById('ve-am-name-wrap');
   if(nameWrap)nameWrap.style.display=isSignup?'block':'none';
   var pwInput=document.getElementById('ve-am-password');
   if(pwInput)pwInput.setAttribute('autocomplete',isSignup?'new-password':'current-password');
   var submit=document.getElementById('ve-am-submit');
-  if(submit)submit.textContent=isSignup?'Create Free Account':'Sign In';
+  if(submit)submit.textContent=isSignup?'Create Account':'Sign In';
   _clearErr();
 }
 function _buildModal(){
@@ -289,7 +293,7 @@ el.innerHTML=
 '<p id="ve-am-msg">Sign in to your Passport.</p>'+
 '<div id="ve-am-tabs" role="tablist">'+
 '<button type="button" id="ve-am-tab-login" class="ve-am-tab active" role="tab" aria-selected="true">Sign In</button>'+
-'<button type="button" id="ve-am-tab-signup" class="ve-am-tab" role="tab" aria-selected="false">Create Free Account</button>'+
+'<button type="button" id="ve-am-tab-signup" class="ve-am-tab" role="tab" aria-selected="false">Create Account</button>'+
 '</div>'+
 '<div id="ve-am-error" role="alert"></div>'+
 '<div id="ve-am-google-wrap"><div id="ve-am-google-btn"></div></div>'+
@@ -319,13 +323,13 @@ if(!name){_showErr('Please enter your name.');return;}
 if(pw.length<8){_showErr('Password must be at least 8 characters.');return;}
 btn.disabled=true;btn.textContent='Creating your Passport...';
 signup(email,pw,name).then(function(d){
-btn.disabled=false;btn.textContent='Create Free Account';
+btn.disabled=false;btn.textContent='Create Account';
 if(d.error){_showErr(d.error);return;}
 hideAuthModal();
 if(d.member&&d.member.membership_status==='pending_payment'){
 showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
 }else if(_modalCb){_modalCb();}else{location.reload();}
-}).catch(function(){btn.disabled=false;btn.textContent='Create Free Account';_showErr('Something went wrong. Please try again.');});
+}).catch(function(){btn.disabled=false;btn.textContent='Create Account';_showErr('Something went wrong. Please try again.');});
 return;
 }
 if(!pw){_showErr('Please enter your password.');return;}

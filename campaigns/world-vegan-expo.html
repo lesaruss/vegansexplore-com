@@ -480,7 +480,7 @@
   function requireLoginThen(action, message) {
     if (window.VEAuth && VEAuth.isLoggedIn()) { TOKEN = VEAuth.getToken(); action(); return; }
     if (!window.VEAuth) { alert('Could not reach sign-in right now, try again.'); return; }
-    VEAuth.showAuthModal(message || 'Almost there -- sign in or create a free account to continue.', function () {
+    VEAuth.showAuthModal(message || 'Almost there -- sign in or create an account to continue.', function () {
       TOKEN = VEAuth.getToken();
       action();
     });

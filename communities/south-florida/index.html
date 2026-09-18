@@ -1120,7 +1120,7 @@
 
     openBtn.addEventListener('click', function() {
       if (!window.VEAuth || !window.VEAuth.isLoggedIn()) {
-        if (window.VEAuth) window.VEAuth.showAuthModal('Sign in with your free Passport to submit news.', function() {
+        if (window.VEAuth) window.VEAuth.showAuthModal('Sign in with your Passport to submit news.', function() {
           closedWrap.style.display = 'none';
           form.style.display = 'block';
         });
