@@ -138,15 +138,12 @@
     .reel-dots span{width:6px;height:6px;border-radius:50%;background:var(--line);}
     .reel-dots span.on{background:var(--primary);}
 
-    /* membership drive */
-    .drive-actions{display:flex;flex-direction:column;gap:12px;margin-top:18px;}
-    .drive-card{border-radius:14px;padding:20px;border:1.5px solid var(--line);background:var(--surface);}
-    .drive-card.featured{border-color:var(--accent);background:#fffaf1;}
-    .drive-card h3{margin:0 0 6px;font-size:16px;font-weight:900;}
-    .drive-card p{margin:0 0 14px;font-size:13px;color:var(--ink-muted);line-height:1.6;}
-    .drive-card .price{font-size:20px;font-weight:900;color:var(--accent-dark);margin-bottom:6px;}
+    /* membership drive: condensed into the thumb-card itself (2026-09-18,
+       Sean, live test) -- no more separate tile below it. */
+    .drive-bullets{margin:0 0 14px 18px;padding:0;list-style:disc;}
+    .drive-bullets li{margin-bottom:5px;}
+    .thumb-card .tc-body-text .drive-cta{opacity:1;margin-top:6px;}
     .btn{display:inline-block;width:100%;text-align:center;border:none;border-radius:10px;padding:13px 16px;font-size:14px;font-weight:800;cursor:pointer;}
-    .btn.primary{background:var(--primary);color:#fff;}
     .btn.accent{background:var(--accent);color:#3a2400;}
 
     .skip-link{display:block;text-align:center;margin-top:16px;font-size:12.5px;color:var(--ink-faint);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;}
@@ -554,18 +551,25 @@
     }
 
     // ---- Step 3: fork for a city with no chapter yet (storyboard frame 5) --
+    // Copy fixed 2026-09-18 (Sean, live test: "it says join free... doesn't
+    // look like that picked up the update"). Neither path here is actually
+    // free -- join_city requires the same full pay-or-pledge gate as
+    // everything else (a Guest Passport alone isn't enough to join or found
+    // a chapter), so "Join free" was wrong twice over: it implied a
+    // permanent free tier that no longer exists, and it understated what
+    // the waitlist path actually requires.
     function renderFork(){
       var wrap = document.createElement('div');
       wrap.innerHTML = '<div class="g-eyebrow">' + state.city_display + '</div>' +
         '<h1 style="font-size:22px;font-weight:900;margin:0 0 10px;">' + state.city_display + ' does not have a chapter yet.</h1>' +
-        '<div class="fork-card"><p>You can join the waitlist for free, or become a Founding Member of ' + state.city_display + ' with a Passport. Founding Members get first pick of the badge number and help set the chapter up from day one.</p>' +
+        '<div class="fork-card"><p>You can join the waitlist to get notified, or become a Founding Member of ' + state.city_display + ' as a sustaining Passport Holder. Founding Members get first pick of the badge number and help set the chapter up from day one.</p>' +
         '<div class="fork-actions" id="forkActions"></div></div>';
       app.appendChild(wrap);
       var actions = document.getElementById('forkActions');
 
       var joinBtn = document.createElement('button');
       joinBtn.className = 'fork-btn ghost';
-      joinBtn.innerHTML = 'Join free<span class="sub">Get notified when ' + state.city_display + ' launches</span>';
+      joinBtn.innerHTML = 'Join the Waitlist<span class="sub">Get notified when ' + state.city_display + ' launches</span>';
       joinBtn.onclick = function(){
         pushHistory();
         joinCityFlow(false);
@@ -573,7 +577,7 @@
 
       var foundBtn = document.createElement('button');
       foundBtn.className = 'fork-btn solid';
-      foundBtn.innerHTML = 'Become a Founding Member<span class="sub">Requires a Passport, $11/month</span>';
+      foundBtn.innerHTML = 'Become a Founding Member<span class="sub">Requires a sustaining Passport, $11/mo or $111/yr</span>';
       foundBtn.onclick = function(){
         pushHistory();
         startPassportForFounding();
@@ -865,36 +869,42 @@
     // flow, which already offers the real choice (sustaining membership
     // $11/mo or $111/yr, a one-time contribution, or a free Guest Passport
     // application) and is the one place that choice is built and tested.
+    // Condensed 2026-09-18 (Sean, live test): the intro card and the card
+    // below it said basically the same thing twice. Everything -- copy,
+    // options, and the CTA button -- now lives in the one green thumb-card,
+    // with the second tile removed entirely so the step is shorter.
     function renderDrive(){
       var isMember = false;
       try { isMember = !!localStorage.getItem('ve_token'); } catch(e){}
+      var bodyHtml, btnId, btnLabel;
+      if (!isMember) {
+        bodyHtml = '<ul class="drive-bullets">' +
+          '<li>Sustaining Passport -- $11/mo or $111/yr</li>' +
+          '<li>One-time contribution, any amount</li>' +
+          '<li>Free Guest Passport application</li>' +
+        '</ul>';
+        btnId = 'joinBtn'; btnLabel = 'Get Started';
+      } else {
+        bodyHtml = 'You are already in. A sustaining Passport adds a founding badge where available, a points multiplier, and priority access.';
+        btnId = 'passBtn'; btnLabel = 'Get Passport';
+      }
       var wrap = document.createElement('div');
       wrap.innerHTML = '<div class="g-eyebrow">Make it official</div>' +
         thumbCardHtml('driveThumb', {
           img: '/public/guides/thumb-passport.jpg',
           tag: 'Passport',
           title: isMember ? 'One more thing before you go.' : 'Join the movement.',
-          body: isMember ? 'You are already in. A sustaining Passport adds a founding badge where available, a points multiplier, and priority access.' : 'Become a sustaining Passport Holder, make a one-time contribution, or apply for a free Guest Passport -- every path gets you in the door.',
+          body: bodyHtml + '<button type="button" class="btn accent drive-cta" id="' + btnId + '">' + btnLabel + '</button>',
           audioLabel: '30 sec: what Vegans Explore unlocks'
-        }) +
-        '<div class="drive-actions" id="driveActions"></div>';
+        });
       app.appendChild(wrap);
-      var actions = document.getElementById('driveActions');
       wireAudioTile('driveThumb', '/public/audio/passport-drive.mp3', '30 sec: what Vegans Explore unlocks');
 
       if (!isMember) {
-        var joinCard = document.createElement('div');
-        joinCard.className = 'drive-card featured';
-        joinCard.innerHTML = '<h3>Join Vegans Explore</h3><p>Sustaining Passport ($11/mo or $111/yr), a one-time contribution, or a free Guest Passport application -- you choose next.</p><button class="btn accent" id="joinBtn">Get Started</button>';
-        actions.appendChild(joinCard);
         document.getElementById('joinBtn').onclick = function(){
           VEAuth.showAuthModal('Create your account, then choose how you want in.', function(){ finishDrive(); }, 'signup');
         };
       } else {
-        var passCard = document.createElement('div');
-        passCard.className = 'drive-card featured';
-        passCard.innerHTML = '<h3>Sustaining Passport</h3><div class="price">$11/month</div><p>Founding badge where available, a points multiplier, and priority access to events and Showcase seats.</p><button class="btn accent" id="passBtn">Get Passport</button>';
-        actions.appendChild(passCard);
         document.getElementById('passBtn').onclick = function(){ startPassportGeneral(); };
 
         // Already a member with no upsell to make -- give them a plain way
