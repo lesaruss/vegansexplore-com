@@ -602,6 +602,17 @@
           startPassportForFounding();
           return;
         }
+        // 2026-09-18 bug (Sean, live test): apiCall() is a bare fetch with no
+        // payment_required handling (unlike VEAuth.call(), which auto-shows
+        // the activate modal). This used to fall straight through to the
+        // success branch below on ANY response including an error, clearing
+        // fork_pending and silently advancing the wizard past the whole
+        // membership pitch even though nothing was actually joined.
+        if (d.error === 'payment_required') {
+          VEAuth.showActivateModal(d.message || 'Activate your Passport with a membership, a one-time contribution, or a free Guest Passport application to join the waitlist.');
+          return;
+        }
+        if (d.error) return;
         state.join_result = d;
         state.fork_pending = false;
         saveState(state);

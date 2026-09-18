@@ -1344,7 +1344,19 @@ serve(async (req: Request) => {
         return new Response(JSON.stringify({ error: 'invalid_city' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      const gate = await requireFullMember(decoded.sub);
+      // Joining an already-launched chapter is a full "join a community"
+      // action, same bar as join_community -- a Guest Passport holder can
+      // browse and vote but not join. Signaling interest in a city that
+      // hasn't launched yet is a much lighter ask (2026-09-18, Sean, live
+      // test: someone hitting a "no chapter yet" city should still be able
+      // to get in as a Guest and just ask to be notified, not be forced
+      // through the full membership gate for a notification), so it only
+      // needs the funnel gate cleared at all -- a Guest Passport is enough.
+      // Founding a chapter is stricter still, gated separately below
+      // (requires an actual sustaining Passport, not just active status).
+      const gate = launchedSlug
+        ? await requireFullMember(decoded.sub)
+        : await requireActiveMembership(decoded.sub);
       if (gate) return gate;
 
       if (launchedSlug) {
