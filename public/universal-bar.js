@@ -50,6 +50,12 @@
   /** The one brand that earns a permanent slot beside the hub. */
   var PERMANENT_SLUG = 'lesaruss-ai';
 
+  /** The registry slug of THIS site, sent to lr-shell so the bar marks the
+   *  current brand "you are here". This is vegansexplore.com. lr-shell also
+   *  echoes it back as `current`; sending it is what lets one shared bar file
+   *  serve every brand by changing only this line. */
+  var CURRENT_SLUG = 'vegans-explore';
+
   // --- Ink ---------------------------------------------------------------
   // Pick the label ink that actually passes AA on a given brand colour instead
   // of always using white. Several brand colours clear 4.5:1 against exactly
@@ -309,12 +315,12 @@
     }
 
     function load() {
-      return post('me', { token: getToken(), current: SHELL_CURRENT }).then(function (d) {
+      return post('me', { token: getToken(), current: CURRENT_SLUG }).then(function (d) {
         if (!d) return;
         state.member = d.member || null;
         state.dock = Array.isArray(d.dock) ? d.dock : [];
         state.brands = Array.isArray(d.brands) ? d.brands : [];
-        state.current = d.current || null;
+        state.current = d.current || CURRENT_SLUG;
         render();
         // The member's own icon is the other half of the sync. Any page that
         // draws it (public/nav.js) gets told, rather than this file reaching
