@@ -164,6 +164,14 @@
       (b.isHub ? HUB_MARK : esc(b.mono)) + '</span>';
   }
 
+  // Where a brand's icon links: its dashboard when one exists, else the domain
+  // root. Mirrors brandHref() in lesaruss-hq/lib/universeBrands.ts so both bars
+  // send the same icon to the same place.
+  function brandHref(b) {
+    if (!b.domain) return null;
+    return 'https://' + b.domain + (b.dashboardPath || '');
+  }
+
   function itemHTML(b, isCurrent) {
     if (isCurrent) {
       return '<span class="lr-dock-item lr-dock-current" data-tooltip="' + esc(b.name) + '" aria-label="' + esc(b.name) + ', you are here" aria-current="page">' + iconHTML(b) + '</span>';
@@ -174,8 +182,10 @@
     if (!b.domain) {
       return '<span class="lr-dock-item" data-tooltip="' + esc(b.name) + ' is not live yet" aria-label="' + esc(b.name) + ', not live yet">' + iconHTML(b) + '</span>';
     }
-    return '<a class="lr-dock-item" href="https://' + esc(b.domain) + '" target="_blank" rel="noopener" data-tooltip="' + esc(b.name) +
-      '" aria-label="' + esc(b.name) + ', opens ' + esc(b.domain) + ' in a new tab">' + iconHTML(b) + '</a>';
+    // Same-tab: this is a switcher, so it takes you to that brand's dashboard
+    // (signed in, if your session there is live) rather than piling up tabs.
+    return '<a class="lr-dock-item" href="' + esc(brandHref(b)) + '" data-tooltip="' + esc(b.name) +
+      '" aria-label="' + esc(b.name) + ', opens its dashboard">' + iconHTML(b) + '</a>';
   }
 
   // --- Component ---------------------------------------------------------

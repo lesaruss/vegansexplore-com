@@ -89,11 +89,11 @@ async function verifiedSub(token: string | undefined): Promise<string | null> {
 async function shellBrands() {
   const { data } = await supabase
     .from('universe_brands')
-    .select('slug, name, mono, color, domain, is_hub, is_live')
+    .select('slug, name, mono, color, domain, dashboard_path, is_hub, is_live')
     .order('sort_order', { ascending: true });
   return (data ?? []).map((r: Record<string, unknown>) => ({
     slug: r.slug, name: r.name, mono: r.mono, color: r.color,
-    domain: r.domain ?? null, isHub: !!r.is_hub, isLive: !!r.is_live,
+    domain: r.domain ?? null, dashboardPath: r.dashboard_path ?? null, isHub: !!r.is_hub, isLive: !!r.is_live,
   }));
 }
 
