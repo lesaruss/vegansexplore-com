@@ -31,6 +31,13 @@
   .ve-topnav{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:rgba(255,255,255,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--ve-border);}
   .ve-topnav-left{display:flex;align-items:center;gap:22px;min-width:0;flex-shrink:0;}
   .ve-topnav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  /* The dashboard tab strip lives in the top nav (2026-09-20, Sean: "the
+     navigation should be at the top, like HQ is"), where HQ carries its
+     primary nav. It scrolls inside the bar rather than widening it. */
+  .ve-topnav-nav{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;}
+  .ve-topnav .dash-tabs{border-bottom:none;margin-bottom:0;overflow-x:auto;scrollbar-width:none;}
+  .ve-topnav .dash-tabs::-webkit-scrollbar{display:none;}
+  .ve-topnav .dash-tab{padding:7px 4px;}
   .ve-wordmark{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--ve-text);white-space:nowrap;flex-shrink:0;text-decoration:none;}
   .ve-wordmark .dot{color:var(--ve-green);}
   .ve-apps-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:8px;border:1.5px solid var(--ve-border);background:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--ve-text);cursor:pointer;transition:border-color 0.15s;}
@@ -82,8 +89,12 @@
   @media (max-width:760px){
     .console-backdrop{display:none;}
     /* The top nav rides at the top of normal flow on a phone, same as HQ's
-       does at this width, rather than floating fixed over the content. */
-    .ve-topnav{position:static;}
+       does at this width, rather than floating fixed over the content. The
+       section nav drops to its own row (the mobile select), like HQ wraps its
+       primary nav below the bar at this width. */
+    .ve-topnav{position:static;height:auto;flex-wrap:wrap;row-gap:8px;padding-top:8px;padding-bottom:8px;}
+    .ve-topnav-nav{order:3;flex:0 0 100%;}
+    .ve-topnav-nav .dash-tabs-mobile{margin-bottom:0;}
     .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
@@ -449,6 +460,12 @@
   <div class="ve-topnav-left">
     <a class="ve-wordmark" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home">VEGANS<span class="dot" aria-hidden="true">.</span>EXPLORE</a>
   </div>
+  <!-- Dashboard section nav, in the top bar like HQ (2026-09-20). initDashTabs
+       fills #dash-tabs / #dash-tabs-mobile by id regardless of where they sit. -->
+  <div class="ve-topnav-nav">
+    <div class="dash-tabs" id="dash-tabs" role="tablist" aria-label="Dashboard sections"></div>
+    <select class="dash-tabs-mobile" id="dash-tabs-mobile" aria-label="Dashboard sections"></select>
+  </div>
   <div class="ve-topnav-right">
     <button type="button" class="ve-apps-btn" id="ve-apps-btn" aria-haspopup="menu" aria-expanded="false" aria-label="All brands in the LESARUSS Universe">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -548,8 +565,7 @@
       </div>
     </div>
 
-    <div class="dash-tabs" id="dash-tabs" role="tablist" aria-label="Dashboard sections"></div>
-    <select class="dash-tabs-mobile" id="dash-tabs-mobile" aria-label="Dashboard sections"></select>
+    <!-- The tab strip moved up into the top nav (.ve-topnav-nav) 2026-09-20. -->
 
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
       <p class="dash-section-title">Dashboard</p>
@@ -611,14 +627,20 @@
         </div>
       </div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
-    </div>
 
-    <div style="margin-top:24px;margin-bottom:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <p class="dash-section-title" style="margin-top:0;">Daily Pulse</p>
-        <button type="button" class="dash-home-pulse-seeall" id="dash-home-pulse-seeall">See All &rarr;</button>
+      <!-- Home Daily Pulse preview. MUST stay inside #dash-profile-section
+           (2026-09-20): it was a sibling AFTER the section's </div>, so it
+           belonged to no tab and rendered on every page (Sean: "the daily
+           pulse shows up on all of the pages"). Moving the section's close to
+           after this block scopes it to the Dashboard tab, where the "See All"
+           jumps to the full Daily Pulse tab. -->
+      <div style="margin-top:24px;margin-bottom:28px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <p class="dash-section-title" style="margin-top:0;">Daily Pulse</p>
+          <button type="button" class="dash-home-pulse-seeall" id="dash-home-pulse-seeall">See All &rarr;</button>
+        </div>
+        <div class="dash-grid" id="dash-home-pulse-grid"></div>
       </div>
-      <div class="dash-grid" id="dash-home-pulse-grid"></div>
     </div>
 
     <div id="dash-bounties-section" style="margin-bottom:28px;" data-tab-key="bounties" data-tab-order="3" data-tab-label="Bounties">
