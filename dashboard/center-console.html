@@ -41,48 +41,14 @@
   .console-titlebar-spacer{width:53px;flex-shrink:0;}
   .console-frame main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
-  /* LESARUSS Universe dock -- fixed rail on the desktop backdrop. Cross-brand
-     navigation, not a support widget. v1 set: confirmed-live links go out,
-     brands still in build are shown muted ("coming soon") rather than
-     guessed at. Sean: expand/edit this set freely, this is a first pass. */
-  .lr-dock{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:2;display:flex;align-items:center;gap:2px;background:rgba(255,255,255,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,0,0,0.08);border-radius:20px;padding:3px 8px;box-shadow:0 12px 34px rgba(0,0,0,0.16);}
-  .lr-dock-item{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1px 3px;border-radius:14px;text-decoration:none;color:inherit;transition:background 0.15s;cursor:default;}
-  a.lr-dock-item{cursor:pointer;}
-  .lr-dock-item:hover{background:rgba(0,0,0,0.05);}
-  .lr-dock-icon{width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;}
-  .lr-dock-item.lr-dock-current .lr-dock-icon{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ve-green);}
-  .lr-dock-item[data-tooltip]::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:rgba(20,20,20,0.94);color:#fff;font-size:11px;font-weight:700;padding:6px 11px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.12s ease;box-shadow:0 6px 16px rgba(0,0,0,0.28);z-index:10;}
-  .lr-dock-item[data-tooltip]::before{content:'';position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(20,20,20,0.94);opacity:0;pointer-events:none;transition:opacity 0.12s ease;z-index:10;}
-  .lr-dock-item[data-tooltip]:hover::after,.lr-dock-item[data-tooltip]:hover::before,.lr-dock-item[data-tooltip]:focus-visible::after,.lr-dock-item[data-tooltip]:focus-visible::before{opacity:1;}
-  .lr-dock-sep{width:1px;align-self:stretch;background:rgba(0,0,0,0.1);margin:2px 2px;}
-  /* "Have a Question" dock item (2026-09-09): a <button>, since it drives the
-     Guide widget rather than navigating, so it needs the anchor items' pointer
-     and a reset of the default button chrome. Its floating bubble is hidden on
-     this page because the dock item replaces it. */
-  button.lr-dock-item{cursor:pointer;background:none;border:none;font:inherit;}
-  .lr-dock-plus{font-size:28px;font-weight:400;line-height:1;}
-  /* The ask icon wears the member's chosen Guide, defaulting to Liz
-     (2026-09-10, Sean, Group H). Headroom fix, same day (Group I): the head
-     was sitting flush against the top of the icon. The Guide portraits are
-     full-body 3:4 art whose own top margin is a couple of source pixels, so
-     no background-position value can conjure headroom out of them: with
-     background-size:cover the image is always taller than the box, and a
-     percentage offset can only ever crop further in. The headroom has to come
-     from the container instead. background-origin:content-box sizes and
-     positions the art inside the padding box, so padding-top becomes real
-     white space above the hair, and it scales with the icon rather than being
-     a hardcoded pixel nudge. See .dash-thumb-guide for the same treatment on
-     the Choose Your Guide tile.
-
-     background-repeat:no-repeat is load-bearing here, not tidiness. Shipping
-     without it put a tiled slice of the portrait's own bottom edge (jeans and
-     a hand) into the strip that was supposed to be white. With
-     background-origin:content-box the image is sized to the CONTENT box while
-     the background paints across the whole PADDING box, so the default
-     repeat tiles into the padding instead of letting background-color show
-     through. Before content-box this could not happen, because cover filled
-     the padding box exactly and left nothing to tile into. Caught only by
-     rendering the page (2026-09-10); reading the CSS looked correct. */
+  /* LESARUSS Universe dock.
+     2026-09-20: the bar's markup, CSS and behaviour moved to
+     /public/universal-bar.js, which is shared and reads the same
+     member_dock row LESARUSS HQ writes, so the same person sees the same
+     icons on both. What was here was a hardcoded four-icon row with
+     hand-copied hex that had already drifted from the registry. The one
+     rule kept below is this site's own: the Guide portrait inside the
+     shared .lr-dock-icon box. */
   .lr-dock-ask-icon{background-color:#fff;background-size:cover;background-repeat:no-repeat;background-position:center top;background-origin:content-box;padding-top:14%;}
   /* Belt and braces on the floating widget (2026-09-10, Group I). The JS
      below detaches .gw-launch from the DOM outright, which is the actual fix;
@@ -446,48 +412,30 @@
 </head>
 <body>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/universal-bar.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/hub-news.js"></script>
 
 <div class="console-backdrop"></div>
 
-<!-- Universe selector, redesigned 2026-09-10 (Sean, Group I, supersedes the
-     "add one unnamed icon to the five-icon row" item): "the dock does not
-     need every individual brand icon. Reduce it to three items: GeekFon
-     Society, LESARUSS HQ (the main/home icon), and one + icon that links out
-     to lesaruss.com for access to every other brand." Vegans Explore,
-     Humble Cabbage, K12 Unlocked and ADA Unlocked come out; the "+" covers
-     every brand including those. Identical on mobile, no separate treatment,
-     which is why the collapse/expand toggle built earlier the same day is
-     gone: it existed only because seven icons would not fit a phone.
+<!-- The LESARUSS universal bar.
+     2026-09-20 (Sean: "the icon needs to be synced on both. Right now if I go
+     to Vegans Explore logged in with my username, it's different than when I
+     go to LESARUSS HQ"). What sat here was a hardcoded four-icon row -- an
+     inert GeekFon <div>, a plus pointing at lesaruss.com, the Guide button
+     and LESARUSS HQ -- with colours copied by hand. It could not show the
+     member's own picks, because this site had no key to read them by:
+     member_dock was keyed on auth.users.id and this site does not use
+     Supabase Auth. It is keyed on members.id now, which ve-auth resolves from
+     the ve_token, so the bar is the same bar on both sites.
 
-     Order, revised 2026-09-10 (Sean, after seeing it live): GeekFon Society,
-     "+", divider, Guide icon, LESARUSS HQ. HQ moves to the right of the split
-     bar and the Guide icon to its left, so HQ reads as the rightmost anchor
-     of the row rather than sitting mid-run. This deliberately drops the
-     earlier "universe entries left of the divider, utilities right" reading,
-     which is why that rationale is not restated here: the divider now marks
-     where the brand row ends, not what kind of thing follows it. Do not
-     "correct" HQ back in with GeekFon on the assumption it was misfiled.
-
-     The Guide icon is the ONLY way to reach the Guide dialogue (Sean, Group
-     I): "access to the Guide dialogue happens only by clicking the dock icon
-     itself, never a separate auto-appearing bubble." -->
-<div class="lr-dock" id="lr-dock" role="navigation" aria-label="LESARUSS Universe">
-  <div class="lr-dock-item" data-tooltip="GeekFon Society" aria-label="GeekFon Society">
-    <div class="lr-dock-icon" style="background:#F69820;">GF</div>
-  </div>
-  <a class="lr-dock-item" href="https://lesaruss.com" target="_blank" rel="noopener" data-tooltip="Every other brand" aria-label="Every other brand in the LESARUSS Universe, on lesaruss.com">
-    <div class="lr-dock-icon lr-dock-plus" style="background:#3f3f46;">+</div>
-  </a>
-  <div class="lr-dock-sep"></div>
-  <button type="button" class="lr-dock-item lr-dock-ask" id="lr-dock-ask" data-tooltip="Have a Question" aria-label="Have a question? Talk to a Guide">
-    <div class="lr-dock-icon lr-dock-ask-icon" id="lr-dock-ask-icon"></div>
-  </button>
-  <a class="lr-dock-item" href="https://hq.lesaruss.ai" target="_blank" rel="noopener" data-tooltip="LESARUSS HQ" aria-label="LESARUSS HQ -- the home of the whole universe">
-    <div class="lr-dock-icon" style="background:#1a1a1a;">&#9673;</div>
-  </a>
-</div>
+     Everything the bar is lives in /public/universal-bar.js, per the locked
+     shared-component rule in CLAUDE.md: no dock markup in a page file. This
+     page contributes exactly one thing, the Guide button, passed in as an
+     extra -- Sean, 2026-09-10, Group I: "access to the Guide dialogue happens
+     only by clicking the dock icon itself, never a separate auto-appearing
+     bubble." -->
+<div id="lr-dock-mount"></div>
 
 <div class="console-frame">
   <div class="console-titlebar">
@@ -2998,47 +2946,77 @@
     }, 100);
   })();
 
-  (function initDockAsk() {
-    var btn = document.getElementById('lr-dock-ask');
-    var icon = document.getElementById('lr-dock-ask-icon');
-    if (!btn) return;
+  // Mount the shared universal bar, with this page's Guide button as its one
+  // local item (2026-09-20).
+  //
+  // The Guide button used to be static markup in this file, so a one-shot
+  // IIFE could find it by id and bind to it once. The bar re-renders whenever
+  // the member picks a brand, which destroys and rebuilds that node, so the
+  // binding moved into an `extras` entry: `html` is rendered into the row
+  // after the divider, and `onMount` runs again after every render to re-bind
+  // it. Behaviour is unchanged -- same icon, same click, same fallbacks.
+  (function mountUniversalBar() {
+    var mount = document.getElementById('lr-dock-mount');
+    if (!mount || !window.LRUniversalBar) return;
 
     // Wear the member's chosen Guide, defaulting to Liz (2026-09-10, Sean,
     // Group H). public/footer.js owns the slug-to-image map and exposes
-    // VEGuideImage so this does not keep a second copy; if the footer has not
-    // run yet the icon paints on the next frame instead of guessing.
-    function paintIcon() {
-      if (!icon) return false;
-      if (typeof window.VEGuideImage !== 'function') return false;
-      icon.style.backgroundImage = "url('" + window.VEGuideImage() + "')";
-      return true;
-    }
-    if (!paintIcon()) {
-      var paintTries = 0;
-      var paintIv = setInterval(function () {
-        paintTries++;
-        if (paintIcon() || paintTries > 30) clearInterval(paintIv);
-      }, 100);
-    }
-
-    // Always open the question dialogue. Group H, verbatim: the icon "must
-    // still open the same question dialogue box ... regardless of
-    // guide-selection state or Passport status." The Passport click override
-    // that used to swallow this in footer.js is gone, so driving the widget's
-    // own launcher now behaves identically for every tier, which is the
-    // "same click functionality as the green VE circle icon" Sean asked for.
-    // The launcher is detached, so query the kept reference rather than the
-    // DOM. Still polls, because the widget may not have mounted yet on a very
-    // early click, and still falls back to the Guide page rather than doing
-    // nothing if it never arrives.
-    btn.addEventListener('click', function () {
-      if (veGuideLauncherBtn) { veGuideLauncherBtn.click(); return; }
+    // VEGuideImage so this does not keep a second copy. Resolved once and
+    // cached, rather than re-polling on every re-render of the bar; if the
+    // footer has not run yet the icon paints on a later frame instead of
+    // guessing.
+    var guideImage = null;
+    (function resolveGuideImage() {
+      function attempt() {
+        if (typeof window.VEGuideImage !== 'function') return false;
+        guideImage = window.VEGuideImage();
+        paintGuideIcon();
+        return true;
+      }
+      if (attempt()) return;
       var tries = 0;
       var iv = setInterval(function () {
         tries++;
-        if (veGuideLauncherBtn) { clearInterval(iv); veGuideLauncherBtn.click(); return; }
-        if (tries > 30) { clearInterval(iv); window.location.href = '/guide.html'; }
+        if (attempt() || tries > 30) clearInterval(iv);
       }, 100);
+    })();
+
+    function paintGuideIcon() {
+      var icon = document.getElementById('lr-dock-ask-icon');
+      if (icon && guideImage) icon.style.backgroundImage = "url('" + guideImage + "')";
+    }
+
+    var guideExtra = {
+      html: '<button type="button" class="lr-dock-item lr-dock-ask" id="lr-dock-ask" data-tooltip="Have a Question" aria-label="Have a question? Talk to a Guide">' +
+              '<span class="lr-dock-icon lr-dock-ask-icon" id="lr-dock-ask-icon"></span>' +
+            '</button>',
+      onMount: function () {
+        paintGuideIcon();
+        var btn = document.getElementById('lr-dock-ask');
+        if (!btn) return;
+        // Always open the question dialogue. Group H, verbatim: the icon
+        // "must still open the same question dialogue box ... regardless of
+        // guide-selection state or Passport status." The widget's own
+        // launcher is detached from the document (see takeOverGuideLauncher
+        // above), so this clicks the kept reference rather than the DOM, and
+        // still polls in case the widget has not mounted yet on a very early
+        // click, falling back to the Guide page rather than doing nothing.
+        btn.addEventListener('click', function () {
+          if (veGuideLauncherBtn) { veGuideLauncherBtn.click(); return; }
+          var tries = 0;
+          var iv = setInterval(function () {
+            tries++;
+            if (veGuideLauncherBtn) { clearInterval(iv); veGuideLauncherBtn.click(); return; }
+            if (tries > 30) { clearInterval(iv); window.location.href = '/guide.html'; }
+          }, 100);
+        });
+      },
+    };
+
+    window.LRUniversalBar.mount({
+      mount: mount,
+      extras: [guideExtra],
+      getToken: function () { return window.VEAuth ? VEAuth.getToken() : null; },
     });
   })();
 
