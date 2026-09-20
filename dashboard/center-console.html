@@ -20,6 +20,25 @@
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);}
   main{max-width:none;margin:0;padding:44px 32px 80px;}
 
+  /* --- HQ-style top nav (2026-09-20, Sean: "the way it looks on Vegans
+     Explore should match. What's on LESARUSS HQ is canon. Make Vegans Explore
+     look like that.") Ported from lesaruss-hq app/globals.css .hq-topnav, one
+     for one on the metrics (62px bar, blur, round buttons, 34px avatar), with
+     VE tokens for colour so the shell reads as the same object on both. The
+     console window already gives VE the traffic-light title bar HQ's window
+     frame has; this fills the empty 80px band above it that HQ fills with its
+     top nav. --- */
+  .ve-topnav{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:rgba(255,255,255,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--ve-border);}
+  .ve-topnav-left{display:flex;align-items:center;gap:22px;min-width:0;flex-shrink:0;}
+  .ve-topnav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .ve-wordmark{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--ve-text);white-space:nowrap;flex-shrink:0;text-decoration:none;}
+  .ve-wordmark .dot{color:var(--ve-green);}
+  .ve-apps-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:8px;border:1.5px solid var(--ve-border);background:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--ve-text);cursor:pointer;transition:border-color 0.15s;}
+  .ve-apps-btn:hover,.ve-apps-btn.is-open{border-color:var(--ve-green);}
+  .ve-apps-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
+  .ve-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--ve-green);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:900;letter-spacing:0.05em;border:none;cursor:pointer;margin-left:2px;overflow:hidden;padding:0;}
+  .ve-avatar-img{width:100%;height:100%;object-fit:cover;display:block;}
+
   /* --- Center Console frame (2026-09-06, Logan, Sean direction: dashboard v1,
      non-destructive parallel build). Updated 2026-09-07 (Sean direction):
      fixed desktop-style shell -- the outer page never scrolls, the console
@@ -62,6 +81,9 @@
   body .gw-launch{display:none !important;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
+    /* The top nav rides at the top of normal flow on a phone, same as HQ's
+       does at this width, rather than floating fixed over the content. */
+    .ve-topnav{position:static;}
     .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
@@ -417,6 +439,24 @@
 <script src="/public/hub-news.js"></script>
 
 <div class="console-backdrop"></div>
+
+<!-- HQ-style top nav (2026-09-20). Matches LESARUSS HQ's shell: wordmark left,
+     brand-waffle Apps button and the member avatar right. The avatar is the
+     same member icon the bottom bar draws, painted from the shell member event
+     that universal-bar.js dispatches. Apps opens the same brand waffle the
+     bottom bar's plus opens, via a window event universal-bar.js listens for. -->
+<header class="ve-topnav" role="banner">
+  <div class="ve-topnav-left">
+    <a class="ve-wordmark" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home">VEGANS<span class="dot" aria-hidden="true">.</span>EXPLORE</a>
+  </div>
+  <div class="ve-topnav-right">
+    <button type="button" class="ve-apps-btn" id="ve-apps-btn" aria-haspopup="menu" aria-expanded="false" aria-label="All brands in the LESARUSS Universe">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Apps
+    </button>
+    <button type="button" class="ve-avatar" id="ve-topnav-avatar" aria-label="Your account"></button>
+  </div>
+</header>
 
 <!-- The LESARUSS universal bar.
      2026-09-20 (Sean: "the icon needs to be synced on both. Right now if I go
@@ -3018,6 +3058,42 @@
       extras: [guideExtra],
       getToken: function () { return window.VEAuth ? VEAuth.getToken() : null; },
     });
+  })();
+
+  // HQ-style top nav wiring (2026-09-20). The avatar is the same member icon
+  // the bottom bar draws: painted from the shell member universal-bar.js
+  // publishes (event, or window cache if it already fired). The Apps button
+  // opens the same brand waffle the bottom bar's plus opens.
+  (function initTopNav() {
+    var avatar = document.getElementById('ve-topnav-avatar');
+    var apps = document.getElementById('ve-apps-btn');
+
+    function inkFor(hex) {
+      // Same AA ink pick the bar uses, so the initials are legible on any
+      // member colour. Falls back to white on a bad value.
+      if (window.LRUniversalBar && typeof window.LRUniversalBar.inkFor === 'function') return window.LRUniversalBar.inkFor(hex);
+      return '#ffffff';
+    }
+    function paintAvatar(m) {
+      if (!avatar || !m) return;
+      if (m.avatarUrl) {
+        avatar.innerHTML = '<img class="ve-avatar-img" src="' + m.avatarUrl + '" alt="">';
+      } else {
+        avatar.textContent = m.initials || '';
+        if (m.color) { avatar.style.background = m.color; avatar.style.color = inkFor(m.color); }
+      }
+      if (m.name) avatar.setAttribute('aria-label', 'Your account, ' + m.name);
+    }
+    if (window.__lrShellMember) paintAvatar(window.__lrShellMember);
+    window.addEventListener('lr:shell-member', function (e) { paintAvatar(e.detail); });
+
+    if (apps) {
+      apps.addEventListener('click', function () {
+        var expanded = apps.getAttribute('aria-expanded') === 'true';
+        apps.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        window.dispatchEvent(new CustomEvent('lr:toggle-waffle'));
+      });
+    }
   })();
 
   function init() {

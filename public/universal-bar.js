@@ -322,6 +322,13 @@
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && state.waffleOpen) { state.waffleOpen = false; render(); }
       });
+      // The HQ-style top nav's Apps button opens the same waffle, from outside
+      // this component, via a window event (the pattern HQ uses between its top
+      // nav and bar).
+      global.addEventListener('lr:toggle-waffle', function () {
+        state.waffleOpen = !state.waffleOpen;
+        render();
+      });
     }
 
     function load() {
@@ -333,9 +340,11 @@
         state.current = d.current || CURRENT_SLUG;
         render();
         // The member's own icon is the other half of the sync. Any page that
-        // draws it (public/nav.js) gets told, rather than this file reaching
-        // into that page's markup.
+        // draws it (public/nav.js, the HQ-style top nav) gets told, rather than
+        // this file reaching into that page's markup. Also cached on the window
+        // so a listener that registered after this fired can still read it.
         try {
+          global.__lrShellMember = state.member;
           global.dispatchEvent(new CustomEvent('lr:shell-member', { detail: state.member }));
         } catch (e) { /* older browsers: the bar still works without it */ }
       });
