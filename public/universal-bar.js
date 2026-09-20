@@ -184,8 +184,10 @@
     }
     // Same-tab: this is a switcher, so it takes you to that brand's dashboard
     // (signed in, if your session there is live) rather than piling up tabs.
-    return '<a class="lr-dock-item" href="' + esc(brandHref(b)) + '" data-tooltip="' + esc(b.name) +
-      '" aria-label="' + esc(b.name) + ', opens its dashboard">' + iconHTML(b) + '</a>';
+    // data-brand-slug lets the click handler mint an SSO handoff for a brand
+    // that can consume one, so you land signed in even if you were not.
+    return '<a class="lr-dock-item" href="' + esc(brandHref(b)) + '" data-brand-slug="' + esc(b.slug) +
+      '" data-tooltip="' + esc(b.name) + '" aria-label="' + esc(b.name) + ', opens its dashboard">' + iconHTML(b) + '</a>';
   }
 
   // --- Component ---------------------------------------------------------
@@ -285,6 +287,10 @@
         btn.addEventListener('click', function () { toggle(btn.getAttribute('data-slug')); });
       });
 
+      Array.prototype.forEach.call(mount.querySelectorAll('a[data-brand-slug]'), function (a) {
+        a.addEventListener('click', function (e) { onBrandClick(e, a.getAttribute('data-brand-slug')); });
+      });
+
       // Re-attach whatever this site added, since the row was just rebuilt.
       extras.forEach(function (x) { if (typeof x.onMount === 'function') x.onMount(mount); });
     }
@@ -310,6 +316,28 @@
           if (Array.isArray(d.brand_slugs)) { state.dock = d.brand_slugs; render(); }
         })
         .catch(function () { state.dock = before; render(); });
+    }
+
+    // Clicking a brand that can consume SSO signs you into it automatically:
+    // mint a one-time handoff for the signed-in VE member and route through the
+    // destination's consumer with ?lrsso. If the mint fails, or you are not
+    // signed in, the click falls through to the plain dashboard link the <a>
+    // already carries, so the switcher never dead-ends.
+    function onBrandClick(e, slug) {
+      var b = bySlug(slug);
+      var token = getToken();
+      if (!b || !b.ssoPath || !b.domain || !token) return; // plain link runs
+      e.preventDefault();
+      var fallback = brandHref(b);
+      post('handoff', { token: token }).then(function (d) {
+        if (d && d.token) {
+          var u = 'https://' + b.domain + b.ssoPath + '?lrsso=' + encodeURIComponent(d.token);
+          if (b.ssoPath !== b.dashboardPath && b.dashboardPath) u += '&next=' + encodeURIComponent(b.dashboardPath);
+          global.location.href = u;
+        } else {
+          global.location.href = fallback;
+        }
+      }).catch(function () { global.location.href = fallback; });
     }
 
     function closeWaffleOnOutsideClick() {
@@ -361,4 +389,30 @@
   }
 
   global.LRUniversalBar = { mount: UniversalBar, inkFor: inkFor };
+
+  // --- SSO landing: redeem a handoff token arriving from another brand ------
+  // When another brand sends the member here with ?lrsso=<token>, exchange it
+  // for a real VE session (ve_token) and reload clean, so the member lands
+  // signed in. Runs at parse time, before the dashboard's own gate, and on
+  // failure just strips the param and lets the normal (signed-out) flow show,
+  // rather than looping. Single-use is enforced server-side, so a refresh of
+  // the clean URL never re-redeems.
+  (function redeemHandoffOnLoad() {
+    try {
+      var params = new URLSearchParams(global.location.search);
+      var lrsso = params.get('lrsso');
+      if (!lrsso) return;
+      params.delete('lrsso');
+      params.delete('next');
+      var clean = global.location.pathname + (params.toString() ? '?' + params.toString() : '') + global.location.hash;
+      fetch(FN_URL + '?action=redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ANON, 'apikey': ANON },
+        body: JSON.stringify({ token: lrsso }),
+      }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (d && d.token) { try { localStorage.setItem('ve_token', d.token); } catch (e) {} }
+        global.location.replace(clean);
+      }).catch(function () { global.location.replace(clean); });
+    } catch (e) { /* no URL API: skip, the plain flow still works */ }
+  })();
 })(window);

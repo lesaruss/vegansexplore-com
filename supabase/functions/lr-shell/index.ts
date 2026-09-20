@@ -85,15 +85,54 @@ async function verifiedSub(token: string | undefined): Promise<string | null> {
   }
 }
 
+// ---- Token minting (same HMAC scheme as ve-auth signJWT and HQ lib/ssoToken)
+function b64urlFromBytes(bytes: Uint8Array): string {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function b64urlFromStr(s: string): string {
+  return b64urlFromBytes(new TextEncoder().encode(s));
+}
+async function signToken(payload: Record<string, unknown>): Promise<string> {
+  const header = b64urlFromStr(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const body = b64urlFromStr(JSON.stringify(payload));
+  const secret = new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
+  const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${header}.${body}`));
+  return `${header}.${body}.${b64urlFromBytes(new Uint8Array(sig))}`;
+}
+
+// Verify a cross-brand SSO handoff token (kind 'lrsso'): signature, kind, exp.
+// Single-use is enforced by the caller against sso_handoffs.
+async function verifyHandoff(token: string | undefined): Promise<{ sub: string; email: string | null; jti: string } | null> {
+  if (!token || typeof token !== 'string' || token.split('.').length !== 3) return null;
+  const [header, body, sig] = token.split('.');
+  try {
+    const secret = new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
+    const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    const ok = await crypto.subtle.verify('HMAC', key, b64urlToBytes(sig), new TextEncoder().encode(`${header}.${body}`));
+    if (!ok) return null;
+    const c = JSON.parse(new TextDecoder().decode(b64urlToBytes(body)));
+    if (c.kind !== 'lrsso') return null;
+    if (typeof c.exp !== 'number' || c.exp < Math.floor(Date.now() / 1000)) return null;
+    if (typeof c.sub !== 'string' || typeof c.jti !== 'string') return null;
+    return { sub: c.sub, email: typeof c.email === 'string' ? c.email : null, jti: c.jti };
+  } catch {
+    return null;
+  }
+}
+
 // ---- Shared shape ---------------------------------------------------------
 async function shellBrands() {
   const { data } = await supabase
     .from('universe_brands')
-    .select('slug, name, mono, color, domain, dashboard_path, is_hub, is_live')
+    .select('slug, name, mono, color, domain, dashboard_path, sso_path, is_hub, is_live')
     .order('sort_order', { ascending: true });
   return (data ?? []).map((r: Record<string, unknown>) => ({
     slug: r.slug, name: r.name, mono: r.mono, color: r.color,
-    domain: r.domain ?? null, dashboardPath: r.dashboard_path ?? null, isHub: !!r.is_hub, isLive: !!r.is_live,
+    domain: r.domain ?? null, dashboardPath: r.dashboard_path ?? null, ssoPath: r.sso_path ?? null,
+    isHub: !!r.is_hub, isLive: !!r.is_live,
   }));
 }
 
@@ -190,6 +229,52 @@ serve(async (req: Request) => {
       if (dockErr) return json({ error: 'Could not update your bar.' }, 500);
 
       return json({ ok: true, brand_slugs: next });
+    }
+
+    // ---- Cross-brand SSO ----------------------------------------------------
+    // handoff: mint a single-use token for the signed-in VE member, so the bar
+    // can hand them to another brand already logged in. Authed by the ve_token.
+    if (action === 'handoff') {
+      const sub = await verifiedSub(body.token);
+      if (!sub) return json({ error: 'Sign in first.' }, 401);
+      const { data: m } = await supabase.from('members').select('id, email').eq('id', sub).maybeSingle();
+      if (!m) return json({ error: 'No member.' }, 404);
+      const jti = crypto.randomUUID();
+      const now = Math.floor(Date.now() / 1000);
+      const token = await signToken({ sub: m.id, email: m.email ?? null, kind: 'lrsso', iat: now, exp: now + 120, jti });
+      const { error: insErr } = await supabase.from('sso_handoffs').insert({ jti, member_id: m.id });
+      if (insErr) return json({ error: 'Could not start the handoff.' }, 500);
+      return json({ token });
+    }
+
+    // redeem: consume a handoff token minted by another brand and return a
+    // fresh VE session (ve_token) for that member, so vegansexplore.com can log
+    // them in. Single-use: the jti flips consumed_at exactly once.
+    if (action === 'redeem') {
+      const claims = await verifyHandoff(body.token);
+      if (!claims) return json({ error: 'Invalid handoff.' }, 401);
+      const { data: spent } = await supabase
+        .from('sso_handoffs')
+        .update({ consumed_at: new Date().toISOString() })
+        .eq('jti', claims.jti)
+        .is('consumed_at', null)
+        .select('jti')
+        .maybeSingle();
+      if (!spent) return json({ error: 'Handoff already used or expired.' }, 401);
+      const { data: m } = await supabase
+        .from('members')
+        .select('id, email, membership_tier')
+        .eq('id', claims.sub)
+        .maybeSingle();
+      if (!m) return json({ error: 'No member.' }, 404);
+      const now = Math.floor(Date.now() / 1000);
+      // A real ve_token, same shape ve-auth signJWT issues, so every VE action
+      // accepts it: 30-day expiry, sub = members.id.
+      const veToken = await signToken({
+        sub: m.id, email: m.email, tier: m.membership_tier || 'free', brand: 'vegans-explore',
+        iat: now, exp: now + 60 * 60 * 24 * 30,
+      });
+      return json({ token: veToken });
     }
 
     return json({ error: 'Unknown action.' }, 400);
