@@ -85,7 +85,7 @@ async function verifiedSub(token: string | undefined): Promise<string | null> {
   }
 }
 
-// ---- Token minting (same HMAC scheme as ve-auth signJWT and HQ lib/ssoToken)
+// ---- Token minting ---------------------------------------------------------
 function b64urlFromBytes(bytes: Uint8Array): string {
   let bin = '';
   for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
@@ -94,22 +94,46 @@ function b64urlFromBytes(bytes: Uint8Array): string {
 function b64urlFromStr(s: string): string {
   return b64urlFromBytes(new TextEncoder().encode(s));
 }
-async function signToken(payload: Record<string, unknown>): Promise<string> {
+
+// The ve_token key: first 32 bytes of THIS runtime's service role key, the same
+// derivation ve-auth signJWT and verifiedSub use, so a ve_token minted here is
+// accepted everywhere on the VE site.
+function edgeSecretBytes(): Uint8Array {
+  return new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
+}
+
+// The cross-brand handoff key: lesaruss_secrets.LR_SSO_SECRET, read from the
+// database, NOT derived from the service key. HQ (Vercel, legacy service JWT)
+// and this edge runtime (newer-format service key) do not share the same
+// service-key prefix, so a service-key-derived secret is not portable between
+// them; the lesaruss_secrets row is the one value both read identically.
+let cachedSsoSecret: Uint8Array | null = null;
+async function ssoSecretBytes(): Promise<Uint8Array | null> {
+  if (cachedSsoSecret) return cachedSsoSecret;
+  const { data } = await supabase.from('lesaruss_secrets').select('value').eq('key', 'LR_SSO_SECRET').maybeSingle();
+  const value = data?.value;
+  if (typeof value !== 'string' || !value) return null;
+  cachedSsoSecret = new TextEncoder().encode(value);
+  return cachedSsoSecret;
+}
+
+async function signToken(payload: Record<string, unknown>, secret: Uint8Array): Promise<string> {
   const header = b64urlFromStr(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body = b64urlFromStr(JSON.stringify(payload));
-  const secret = new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
   const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${header}.${body}`));
   return `${header}.${body}.${b64urlFromBytes(new Uint8Array(sig))}`;
 }
 
-// Verify a cross-brand SSO handoff token (kind 'lrsso'): signature, kind, exp.
-// Single-use is enforced by the caller against sso_handoffs.
+// Verify a cross-brand SSO handoff token (kind 'lrsso') with the shared secret:
+// signature, kind, exp. Single-use is enforced by the caller against
+// sso_handoffs.
 async function verifyHandoff(token: string | undefined): Promise<{ sub: string; email: string | null; jti: string } | null> {
   if (!token || typeof token !== 'string' || token.split('.').length !== 3) return null;
+  const secret = await ssoSecretBytes();
+  if (!secret) return null;
   const [header, body, sig] = token.split('.');
   try {
-    const secret = new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
     const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
     const ok = await crypto.subtle.verify('HMAC', key, b64urlToBytes(sig), new TextEncoder().encode(`${header}.${body}`));
     if (!ok) return null;
@@ -239,9 +263,12 @@ serve(async (req: Request) => {
       if (!sub) return json({ error: 'Sign in first.' }, 401);
       const { data: m } = await supabase.from('members').select('id, email').eq('id', sub).maybeSingle();
       if (!m) return json({ error: 'No member.' }, 404);
+      const ssoSecret = await ssoSecretBytes();
+      if (!ssoSecret) return json({ error: 'Handoff unavailable.' }, 503);
       const jti = crypto.randomUUID();
       const now = Math.floor(Date.now() / 1000);
-      const token = await signToken({ sub: m.id, email: m.email ?? null, kind: 'lrsso', iat: now, exp: now + 120, jti });
+      // Handoff token: shared secret, so HQ can verify it.
+      const token = await signToken({ sub: m.id, email: m.email ?? null, kind: 'lrsso', iat: now, exp: now + 120, jti }, ssoSecret);
       const { error: insErr } = await supabase.from('sso_handoffs').insert({ jti, member_id: m.id });
       if (insErr) return json({ error: 'Could not start the handoff.' }, 500);
       return json({ token });
@@ -273,7 +300,7 @@ serve(async (req: Request) => {
       const veToken = await signToken({
         sub: m.id, email: m.email, tier: m.membership_tier || 'free', brand: 'vegans-explore',
         iat: now, exp: now + 60 * 60 * 24 * 30,
-      });
+      }, edgeSecretBytes());
       return json({ token: veToken });
     }
 
