@@ -23,15 +23,19 @@
  * own ve_token is sent as-is; lr-shell verifies its signature before trusting
  * the member id inside it.
  *
- * THE ORDER IS THE CONTRACT. It matches lesaruss-hq's
- * components/shell/UniversalBar.tsx exactly:
+ * THE ORDER. On a brand site (this file) the row reads:
  *
- *   current brand (you are here) -> hub -> LESARUSS AI -> the member's picks
- *   -> divider -> [this site's own items] -> plus
+ *   current brand (you are here) -> LESARUSS AI -> the member's picks
+ *   -> divider -> [this site's own items] -> plus -> hub (home anchor)
  *
- * On HQ the current brand IS the hub, so the two collapse into one there and
- * the row reads hub, LESARUSS AI, picks, plus. Here the current brand is
- * VEGANS EXPLORE, so you get your own icon lit first and HQ right beside it.
+ * The hub (LESARUSS HQ) is pinned to the far right as a persistent "home"
+ * anchor, on the right side of the divider (Sean, 2026-09-21: "the HQ icon
+ * should be on the right side of the divider... home anchor, rightmost").
+ * On HQ's own bar the current brand IS the hub, so there it is naturally the
+ * leftmost "you are here" icon and no separate home anchor is drawn; that is
+ * why the hub sits left there and right here. Everything else -- the picks,
+ * the colours, the member's own icon -- is identical on both surfaces, which
+ * is the sync that matters.
  *
  * WHAT IS LOCAL TO THIS SITE. The Guide button. Sean, 2026-09-10, Group I:
  * "access to the Guide dialogue happens only by clicking the dock icon itself,
@@ -221,10 +225,9 @@
       return null;
     }
 
-    /* The order, and the reason it is a function rather than inline: HQ's
-       UniversalBar.tsx builds the identical list, and keeping it in one named
-       place on each side is what makes a future change to one obviously a
-       change to the other. */
+    /* The left group, in order: current brand ("you are here"), LESARUSS AI,
+       then the member's picks. The hub is deliberately NOT here -- it is drawn
+       separately as a right-hand home anchor (see render). */
     function row() {
       var out = [];
       var seen = {};
@@ -234,7 +237,6 @@
         out.push(b);
       }
       push(bySlug(state.current));
-      push(hub());
       push(bySlug(PERMANENT_SLUG));
       for (var i = 0; i < state.dock.length; i++) push(bySlug(state.dock[i]));
       return out;
@@ -263,6 +265,11 @@
     function render() {
       var brandItems = row().map(function (b) { return itemHTML(b, b.slug === state.current); }).join('');
       var extraItems = extras.map(function (x) { return x.html; }).join('');
+      // The hub as a right-hand home anchor. Skipped only in the impossible
+      // case that this site IS the hub (CURRENT_SLUG would then equal it and it
+      // is already the "you are here" icon on the left).
+      var hb = hub();
+      var hubItem = (hb && hb.slug !== state.current) ? itemHTML(hb, false) : '';
 
       mount.innerHTML =
         '<nav class="lr-dock" id="lr-dock" aria-label="LESARUSS Universe">' +
@@ -273,6 +280,7 @@
             '<button type="button" class="lr-dock-item" id="lr-dock-plus" data-tooltip="All brands" aria-haspopup="menu" aria-expanded="' + (state.waffleOpen ? 'true' : 'false') + '" aria-label="All brands in the LESARUSS Universe">' +
               '<span class="lr-dock-icon lr-dock-plus" style="background:#3f3f46;color:#ffffff;">+</span>' +
             '</button>' +
+            hubItem +
           '</div>' +
         '</nav>' +
         waffleHTML();

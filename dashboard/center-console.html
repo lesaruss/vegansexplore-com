@@ -130,6 +130,17 @@
   .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
   .dash-welcome h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
   .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
+  /* The "Welcome back" hero (eyebrow, name, sub, and the points/level stat
+     cluster) shows only on the Dashboard tab (Sean, 2026-09-21: "the welcome
+     back should only be on the dashboard"). The City selector and the
+     super-admin View As control deliberately STAY in the welcome row on every
+     tab -- Sean wants the city switcher reachable from anywhere -- so they are
+     not part of this hide. data-dash-tab is set on <body> by activate() in
+     initDashTabs; the Dashboard tab's key is "profile". */
+  body:not([data-dash-tab="profile"]) #dash-eyebrow,
+  body:not([data-dash-tab="profile"]) #dash-welcome-name,
+  body:not([data-dash-tab="profile"]) #dash-welcome-sub,
+  body:not([data-dash-tab="profile"]) #dash-welcome-stats{display:none !important;}
 
   .dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
   .dash-stat{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px;}
@@ -191,8 +202,15 @@
      title line-clamp so a long headline can never push the meta line below
      it out of view -- this was the "information below is cut off" report. */
   #dash-pulse-grid{grid-template-columns:repeat(4,1fr);}
-  @media (max-width:760px){ #dash-pulse-grid{grid-template-columns:repeat(3,1fr);} .dash-bounty-scroll{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:480px){ #dash-pulse-grid{grid-template-columns:repeat(2,1fr);} .dash-bounty-scroll{grid-template-columns:1fr;} }
+  /* Bounties collapses to a single column on mobile (Sean, 2026-09-21: match
+     Your Campaigns, which he wants at one; Opportunities is already one).
+     Uses the #dash-bounty-scroll id, not the .dash-bounty-scroll class, so it
+     outranks the later base rule (.dash-bounty-scroll{...repeat(3,1fr)}) --
+     with equal class specificity the later source rule was winning and these
+     media overrides never took effect. Same id-selector pattern #dash-pulse-
+     grid already relies on just below. */
+  @media (max-width:760px){ #dash-pulse-grid{grid-template-columns:repeat(3,1fr);} #dash-bounty-scroll{grid-template-columns:1fr;} }
+  @media (max-width:480px){ #dash-pulse-grid{grid-template-columns:repeat(2,1fr);} #dash-bounty-scroll{grid-template-columns:1fr;} }
   #dash-pulse-grid .dash-tile-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   #dash-home-pulse-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:12px;}
   @media (max-width:760px){ #dash-home-pulse-grid{grid-template-columns:repeat(3,1fr);} }
@@ -351,6 +369,15 @@
   @media (max-width:600px){ .gc-grid{grid-template-columns:1fr;} }
   .gc-card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:24px 22px;display:flex;flex-direction:column;gap:10px;transition:box-shadow 0.15s,transform 0.15s;}
   .gc-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.07);transform:translateY(-2px);}
+  /* Placeholder cover image per guide card (Sean, 2026-09-21: guide cards
+     should carry an image, not be text-only). Full-bleed banner across the
+     card top -- a branded gradient with the guide's glyph -- standing in until
+     real per-guide art exists. Negative margins cancel the card padding so it
+     meets the rounded top corners edge to edge. */
+  .gc-thumb{aspect-ratio:16/9;margin:-24px -22px 4px;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;font-size:40px;line-height:1;background:linear-gradient(135deg,#22C55E,#16A34A);color:#fff;position:relative;overflow:hidden;}
+  .gc-thumb::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 28% 22%,rgba(255,255,255,0.24),transparent 58%);}
+  .gc-thumb-glyph{position:relative;z-index:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.20));}
+  .gc-card.is-soon .gc-thumb{background:linear-gradient(135deg,#9CA3AF,#6B7280);}
   .gc-topline{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .gc-label{font-size:9px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);}
   .gc-soon-tag{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#b45309;background:#fff3e0;border-radius:20px;padding:3px 10px;}
@@ -689,15 +716,24 @@
       <div class="dash-community-row" id="dash-community-row"></div>
     </div>
 
-    <div id="dash-pulse-section" style="margin-bottom:28px;" data-tab-key="pulse" data-tab-order="6" data-tab-label="Daily Pulse">
+    <!-- Shows and Daily Pulse split into two separate tabs (Sean, 2026-09-21:
+         "split the shows from the daily pulse"). Shows = the podcast/show row;
+         Daily Pulse = the article/clip feed. The element ids (#dash-podcast-
+         shows-row, #dash-pulse-grid) are unchanged so renderDailyPulse() still
+         populates both without a JS change. -->
+    <div id="dash-shows-section" style="display:none;margin-bottom:28px;" data-tab-key="shows" data-tab-order="6" data-tab-label="Shows">
       <p class="dash-eyebrow" style="margin-bottom:2px;">Shows</p>
       <p class="dash-section-title">Your Shows</p>
       <div class="dash-community-row" id="dash-podcast-shows-row"></div>
-      <p class="dash-section-title" style="margin-top:22px;">Daily Pulse</p>
+    </div>
+
+    <div id="dash-pulse-section" style="display:none;margin-bottom:28px;" data-tab-key="pulse" data-tab-order="7" data-tab-label="Daily Pulse">
+      <p class="dash-eyebrow" style="margin-bottom:2px;">Feed</p>
+      <p class="dash-section-title">Daily Pulse</p>
       <div class="dash-grid" id="dash-pulse-grid"></div>
     </div>
 
-    <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="7" data-tab-label="Guides">
+    <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="8" data-tab-label="Guides">
       <p class="dash-eyebrow" style="margin-bottom:2px;">Guides</p>
       <p class="dash-section-title">Step-By-Step Guides</p>
       <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Practical guides for wherever you are on the journey. Unlock guides with Points as they publish.</p>
@@ -1085,19 +1121,19 @@
   // Restaurant Guide always renders as "View Guide", never the guest
   // "Join Free" state.
   var GUIDE_CATALOG = [
-    { slug: null, label: 'Getting Started', title: 'Welcome Guide', desc: 'Your first steps on Vegans Explore: set up your profile, find your city, and see how Points work.', chips: [{ text: '5 Steps' }, { text: 'Free', cls: 'free' }], cta: { text: 'Start Guide', href: '/welcome', embed: true } },
-    { slug: 'vegan-restaurant-survival-guide', label: 'Business', title: 'Vegan Restaurant Survival Guide', desc: 'A personalized 10-step walkthrough for restaurant owners navigating the Vegan market -- built and ready, with narration audio and a completion badge.', chips: [{ text: '10 Steps' }, { text: 'Personalized For You' }, { text: '1,111 Points', cls: 'price' }], cta: { text: 'View Guide', href: '/guides/vegan-restaurant-survival-guide', embed: true } },
-    { slug: 'entrepreneur', label: 'Entrepreneur Path', soon: true, title: 'Entrepreneur Guide', desc: 'Getting your Vegan business listed, claimed, and growing on the platform -- step by step.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
-    { slug: 'creator', label: 'Creator Path', soon: true, title: 'Creator Guide', desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
-    { slug: 'nonprofit', label: 'Nonprofit Path', soon: true, title: 'Nonprofit Guide', desc: "Building your org's community on the platform and growing your base of supporters.", chips: [{ text: '~1,111 Points', cls: 'price' }] },
-    { slug: 'prevegan', label: 'Pre-Vegan Path', soon: true, title: 'Pre-Vegan Guide', desc: 'Real answers for going Vegan-curious to confident: what to eat, what to expect, and how to start.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
-    { slug: 'seasonedvegan', label: 'Seasoned Vegan Path', soon: true, title: 'Seasoned Vegan Guide', desc: 'Deepen your impact: advocacy, mentoring, and connecting with the global movement.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: null, label: 'Getting Started', thumb: '👋', title: 'Welcome Guide', desc: 'Your first steps on Vegans Explore: set up your profile, find your city, and see how Points work.', chips: [{ text: '5 Steps' }, { text: 'Free', cls: 'free' }], cta: { text: 'Start Guide', href: '/welcome', embed: true } },
+    { slug: 'vegan-restaurant-survival-guide', label: 'Business', thumb: '🍽️', title: 'Vegan Restaurant Survival Guide', desc: 'A personalized 10-step walkthrough for restaurant owners navigating the Vegan market -- built and ready, with narration audio and a completion badge.', chips: [{ text: '10 Steps' }, { text: 'Personalized For You' }, { text: '1,111 Points', cls: 'price' }], cta: { text: 'View Guide', href: '/guides/vegan-restaurant-survival-guide', embed: true } },
+    { slug: 'entrepreneur', label: 'Entrepreneur Path', soon: true, thumb: '🚀', title: 'Entrepreneur Guide', desc: 'Getting your Vegan business listed, claimed, and growing on the platform -- step by step.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'creator', label: 'Creator Path', soon: true, thumb: '🎬', title: 'Creator Guide', desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'nonprofit', label: 'Nonprofit Path', soon: true, thumb: '🤝', title: 'Nonprofit Guide', desc: "Building your org's community on the platform and growing your base of supporters.", chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'prevegan', label: 'Pre-Vegan Path', soon: true, thumb: '🌱', title: 'Pre-Vegan Guide', desc: 'Real answers for going Vegan-curious to confident: what to eat, what to expect, and how to start.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
+    { slug: 'seasonedvegan', label: 'Seasoned Vegan Path', soon: true, thumb: '🌍', title: 'Seasoned Vegan Guide', desc: 'Deepen your impact: advocacy, mentoring, and connecting with the global movement.', chips: [{ text: '~1,111 Points', cls: 'price' }] },
     // Folded in from the Your Tools "Choose Your Topics" tile (2026-09-08,
     // Sean, Fieldy field note): "that's gonna be under the guide section...
     // we don't need this additional section." Same catalog, same Notify Me
     // waitlist pattern as the other in-development guides above -- just
     // living in the one place guides actually live now.
-    { slug: 'mini-guides', label: 'Mini Guides', soon: true, title: 'Choose Your Topics', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.', chips: [{ text: '$11 or 1,100 Points', cls: 'price' }] }
+    { slug: 'mini-guides', label: 'Mini Guides', soon: true, thumb: '🧭', title: 'Choose Your Topics', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.', chips: [{ text: '$11 or 1,100 Points', cls: 'price' }] }
   ];
   function gcSubmitDashWaitlist(btn, slug) {
     var card = btn.closest('.gc-card');
@@ -1122,13 +1158,14 @@
     row.innerHTML = '';
     GUIDE_CATALOG.forEach(function(g) {
       var card = document.createElement('div');
-      card.className = 'gc-card';
+      card.className = 'gc-card' + (g.soon ? ' is-soon' : '');
       card.setAttribute('role', 'listitem');
       if (g.slug) card.setAttribute('data-slug', g.slug);
       var chipsHtml = (g.chips || []).map(function(c) {
         return '<span class="gc-chip' + (c.cls ? ' ' + c.cls : '') + '">' + c.text + '</span>';
       }).join('');
       var html =
+        '<div class="gc-thumb" aria-hidden="true"><span class="gc-thumb-glyph">' + (g.thumb || '📘') + '</span></div>' +
         '<div class="gc-topline"><span class="gc-label">' + g.label + '</span>' + (g.soon ? '<span class="gc-soon-tag">In Development</span>' : '') + '</div>' +
         '<div class="gc-title">' + g.title + '</div>' +
         '<p class="gc-desc">' + g.desc + '</p>' +
@@ -2798,6 +2835,10 @@
     function activate(key, opts) {
       opts = opts || {};
       if (window.veCloseToolPanels) window.veCloseToolPanels();
+      // The welcome hero is scoped to the Dashboard tab via a body attribute
+      // (Sean, 2026-09-21). CSS keys off body[data-dash-tab]; the city pill and
+      // View As stay visible on every tab (see the .dash-welcome CSS).
+      document.body.setAttribute('data-dash-tab', key);
       sections.forEach(function (s) {
         s.style.display = (s.getAttribute('data-tab-key') === key) ? 'block' : 'none';
       });
@@ -3110,7 +3151,13 @@
     window.addEventListener('lr:shell-member', function (e) { paintAvatar(e.detail); });
 
     if (apps) {
-      apps.addEventListener('click', function () {
+      apps.addEventListener('click', function (e) {
+        // Stop the click here: without this it bubbles to the bar's
+        // document-level outside-click handler, which -- seeing a click
+        // outside the bar mount -- closes the waffle on the very same click
+        // that just opened it, so the button appeared to do nothing. The
+        // bar's own plus button stops propagation for exactly this reason.
+        e.stopPropagation();
         var expanded = apps.getAttribute('aria-expanded') === 'true';
         apps.setAttribute('aria-expanded', expanded ? 'false' : 'true');
         window.dispatchEvent(new CustomEvent('lr:toggle-waffle'));
