@@ -72,7 +72,13 @@
     + '.vrd-root .sort-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:5px 26px 5px 12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}'
     + '.vrd-root .sort-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .rank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}'
-    + '.vrd-root .rank-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}'
+    /* min-width:0 is load-bearing: the card is a grid item, and without it the
+       grid track's automatic minimum grows to the card's min-content (the
+       nowrap .rank-name forces that ~430px wide), so on a phone the track --
+       and the card -- overflow the column and get clipped on the right. Zeroing
+       the item's min-width lets the track shrink to the container so the name's
+       ellipsis engages instead. Pairs with minmax(0,1fr) in the mobile grid. */
+    + '.vrd-root .rank-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s;min-width:0}'
     + '.vrd-root .rank-card:hover{border-color:#5EC47A}'
     + '.vrd-root .rank-num-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;min-width:32px}'
     + '.vrd-root .rank-num{font-size:20px;font-weight:900;color:#e0e0e0;line-height:1;text-align:center}'
@@ -96,7 +102,7 @@
     + '.vrd-root .vrd-page-btn:hover:not(:disabled){border-color:#5EC47A;color:#2d7a4f}'
     + '.vrd-root .vrd-page-btn:disabled{opacity:.35;cursor:default}'
     + '.vrd-root .vrd-page-indicator{font-size:11px;font-weight:700;color:#888;letter-spacing:.04em}'
-    + '@media(max-width:768px){.vrd-root .rank-grid{grid-template-columns:1fr}.vrd-root .cat-tab{font-size:10px;padding:10px 12px}.vrd-root .perpage-select{margin-left:0}}';
+    + '@media(max-width:768px){.vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}.vrd-root .cat-tab{font-size:10px;padding:10px 12px}.vrd-root .perpage-select{margin-left:0}}';
 
   function injectStyleOnce() {
     if (document.getElementById('vrd-style')) return;
