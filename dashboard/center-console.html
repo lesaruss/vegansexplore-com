@@ -202,14 +202,17 @@
   a.dash-preview-card{text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s;}
   a.dash-preview-card:hover{border-color:var(--ve-green);box-shadow:0 4px 18px rgba(58,155,62,0.10);}
   .dash-preview-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;}
-  /* Take-the-tour overlay */
-  .dash-tour-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.62);align-items:center;justify-content:center;padding:24px;}
-  .dash-tour-overlay.open{display:flex;}
-  .dash-tour-frame-wrap{position:relative;width:min(1100px,100%);height:min(86vh,900px);background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,0.4);}
-  .dash-tour-close{position:absolute;top:10px;right:12px;z-index:2;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,0.55);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-  .dash-tour-close:hover{background:rgba(0,0,0,0.75);}
-  .dash-tour-frame-host,.dash-tour-frame-host iframe{width:100%;height:100%;border:none;display:block;}
-  @media (max-width:760px){ .dash-tour-overlay{padding:0;} .dash-tour-frame-wrap{width:100%;height:100%;border-radius:0;} }
+  /* In-place console frame (Sean, 2026-09-22): a tool/page opens INSIDE the
+     dashboard window, replacing its content with a breadcrumb back -- not a
+     pop-up. .detail-open hides every other direct child of #dash-content. */
+  #dash-content.detail-open > :not(#dash-console-detail){display:none !important;}
+  #dash-console-crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin-bottom:16px;}
+  #dash-console-crumb .dash-crumb-back{background:none;border:none;color:var(--ve-green-dark);font-weight:800;font-size:12.5px;cursor:pointer;padding:0;font-family:inherit;}
+  #dash-console-crumb .dash-crumb-back:hover{text-decoration:underline;}
+  #dash-console-crumb .dash-crumb-sep{color:var(--ve-text-50);}
+  #dash-console-crumb .dash-crumb-current{color:var(--ve-text);}
+  #dash-console-host iframe{display:block;width:100%;height:min(660px,calc(100vh - 300px));min-height:440px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
+  @media (max-width:760px){ #dash-console-host iframe{height:calc(100vh - 170px);min-height:520px;} }
   /* Survey prompt reuses the tour-prompt look but is a <button>, not an <a>
      (2026-09-17, Sean + V design session: the mission-survey dashboard task).
      Resets the button-element defaults the other rule doesn't need to touch. */
@@ -568,17 +571,6 @@
   </div>
 </header>
 
-<!-- Take-the-tour overlay (Sean, 2026-09-22: "when I click take the tour, I
-     don't see anything"). The prompt used to call openToolInFrame, which
-     renders into #dash-mylist-detail inside the (hidden) Tools tab, so nothing
-     showed from the Dashboard. This is a self-contained full-screen overlay
-     that works from any tab. -->
-<div class="dash-tour-overlay" id="dash-tour-overlay" aria-hidden="true">
-  <div class="dash-tour-frame-wrap" role="dialog" aria-modal="true" aria-label="Take the tour">
-    <button type="button" class="dash-tour-close" id="dash-tour-close" aria-label="Close the tour">&times;</button>
-    <div class="dash-tour-frame-host" id="dash-tour-frame-host"></div>
-  </div>
-</div>
 
 <!-- The LESARUSS universal bar.
      2026-09-20 (Sean: "the icon needs to be synced on both. Right now if I go
@@ -931,6 +923,14 @@
       </div>
     <div id="dash-mylist-crumb"></div>
     <div id="dash-mylist-detail"></div>
+    </div>
+    <!-- In-place console frame (Sean, 2026-09-22): tools/pages open here, IN the
+         window, replacing the dashboard content with a breadcrumb back -- not a
+         pop-up. openConsoleFrame() fills this and adds .detail-open to
+         #dash-content, which hides its other children. -->
+    <div id="dash-console-detail" style="display:none;">
+      <div id="dash-console-crumb"></div>
+      <div id="dash-console-host"></div>
     </div>
   </div>
   </main>
@@ -3055,6 +3055,7 @@
     closeMyList();
     closeChooseGuide();
     closeToolSection();
+    if (window.closeConsoleFrame) closeConsoleFrame();
   };
 
   // --- Sections under Tools (Sean, 2026-09-22) --------------------------
@@ -3157,39 +3158,50 @@
   };
 
   // --- Take-the-tour overlay --------------------------------------------
-  // Shared in-console frame overlay (Sean, 2026-09-22: things open "in the
-  // frame", not full-screen). Any console tool -- the tour, Community Insights,
-  // the admin pages -- opens its own URL in this one overlay iframe, which works
-  // from any tab. The embedded page hides its own nav/footer via .ve-embedded.
+  // In-place console frame (Sean, 2026-09-22): a tool or admin page opens INSIDE
+  // the dashboard window, replacing its content with a breadcrumb back -- not a
+  // pop-up. Everything stays "in that window", the way My List / Members already
+  // behave. Adds .detail-open to #dash-content (CSS hides its other children)
+  // and fills #dash-console-detail with a "<- Dashboard" crumb + the iframe.
   function openConsoleFrame(src, label) {
-    var ov = document.getElementById('dash-tour-overlay');
-    var host = document.getElementById('dash-tour-frame-host');
-    if (!ov || !host) return;
+    var content = document.getElementById('dash-content');
+    var detail = document.getElementById('dash-console-detail');
+    var crumb = document.getElementById('dash-console-crumb');
+    var host = document.getElementById('dash-console-host');
+    if (!content || !detail || !crumb || !host) return;
+    // Close any other in-place panel first so only one thing shows at a time.
+    if (window.veCloseToolPanels) window.veCloseToolPanels();
+    crumb.innerHTML = '';
+    var back = document.createElement('button');
+    back.type = 'button'; back.className = 'dash-crumb-back'; back.innerHTML = '&larr; Dashboard';
+    back.addEventListener('click', closeConsoleFrame);
+    var sep = document.createElement('span'); sep.className = 'dash-crumb-sep'; sep.textContent = '/';
+    var cur = document.createElement('span'); cur.className = 'dash-crumb-current'; cur.textContent = label || '';
+    crumb.appendChild(back); crumb.appendChild(sep); crumb.appendChild(cur);
     host.innerHTML = '';
-    var f = document.createElement('iframe');
-    f.title = label || 'Vegans Explore'; f.src = src;
+    var f = document.createElement('iframe'); f.title = label || 'Vegans Explore'; f.src = src;
     host.appendChild(f);
-    ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    detail.style.display = 'block';
+    content.classList.add('detail-open');
+    try { var m = document.querySelector('.console-frame main'); if (m) m.scrollTop = 0; } catch (e) {}
+    try { window.scrollTo(0, 0); } catch (e) {}
   }
   window.openConsoleFrame = openConsoleFrame;
+  function closeConsoleFrame() {
+    var content = document.getElementById('dash-content');
+    var detail = document.getElementById('dash-console-detail');
+    var host = document.getElementById('dash-console-host');
+    if (content) content.classList.remove('detail-open');
+    if (detail) detail.style.display = 'none';
+    if (host) host.innerHTML = '';
+  }
+  window.closeConsoleFrame = closeConsoleFrame;
   function openTour() { openConsoleFrame('/tour', 'Take the tour'); }
   window.openTour = openTour;
-  function closeTour() {
-    var ov = document.getElementById('dash-tour-overlay');
-    var host = document.getElementById('dash-tour-frame-host');
-    if (!ov) return;
-    ov.classList.remove('open'); ov.setAttribute('aria-hidden', 'true');
-    if (host) host.innerHTML = '';
-    document.body.style.overflow = '';
-  }
-  (function wireTour() {
-    var closeBtn = document.getElementById('dash-tour-close');
-    if (closeBtn) closeBtn.addEventListener('click', closeTour);
-    var ov = document.getElementById('dash-tour-overlay');
-    if (ov) ov.addEventListener('click', function (e) { if (e.target === ov) closeTour(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeTour(); });
-  })();
+  document.addEventListener('keydown', function (e) {
+    var content = document.getElementById('dash-content');
+    if (e.key === 'Escape' && content && content.classList.contains('detail-open')) closeConsoleFrame();
+  });
 
   // --- Dashboard preview hub (Sean, 2026-09-22) -------------------------
   function dpDate(s) {
