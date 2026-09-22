@@ -3157,23 +3157,30 @@
   };
 
   // --- Take-the-tour overlay --------------------------------------------
-  function openTour() {
+  // Shared in-console frame overlay (Sean, 2026-09-22: things open "in the
+  // frame", not full-screen). Any console tool -- the tour, Community Insights,
+  // the admin pages -- opens its own URL in this one overlay iframe, which works
+  // from any tab. The embedded page hides its own nav/footer via .ve-embedded.
+  function openConsoleFrame(src, label) {
     var ov = document.getElementById('dash-tour-overlay');
     var host = document.getElementById('dash-tour-frame-host');
     if (!ov || !host) return;
-    if (!host.querySelector('iframe')) {
-      var f = document.createElement('iframe');
-      f.title = 'Take the tour'; f.src = '/tour';
-      host.appendChild(f);
-    }
+    host.innerHTML = '';
+    var f = document.createElement('iframe');
+    f.title = label || 'Vegans Explore'; f.src = src;
+    host.appendChild(f);
     ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   }
+  window.openConsoleFrame = openConsoleFrame;
+  function openTour() { openConsoleFrame('/tour', 'Take the tour'); }
   window.openTour = openTour;
   function closeTour() {
     var ov = document.getElementById('dash-tour-overlay');
+    var host = document.getElementById('dash-tour-frame-host');
     if (!ov) return;
     ov.classList.remove('open'); ov.setAttribute('aria-hidden', 'true');
+    if (host) host.innerHTML = '';
     document.body.style.overflow = '';
   }
   (function wireTour() {
@@ -3224,6 +3231,9 @@
     var head = document.createElement('div'); head.className = 'dash-preview-head';
     var t = document.createElement('span'); t.className = 'dash-preview-title'; t.textContent = title;
     var va = document.createElement('a'); va.className = 'dash-preview-viewall'; va.textContent = 'View all →'; va.href = viewAllHref;
+    // Open the full admin page inside the console frame (Sean, 2026-09-22),
+    // not as a full-page navigation.
+    va.addEventListener('click', function (e) { e.preventDefault(); openConsoleFrame(viewAllHref, title); });
     head.appendChild(t); head.appendChild(va);
     var body = document.createElement('div'); body.className = 'dash-preview-body';
     body.innerHTML = '<p class="dash-preview-empty">Loading…</p>';
@@ -3278,7 +3288,7 @@
           dpRows(body, rows, function (a) { return { name: a.name || a.email || 'Applicant', meta: a.email && a.name ? a.email : dpDate(a.created_at) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
-      grid.appendChild(dpAccessCard({ icon: '📊', bg: '#EAF7EA', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { window.location.href = '/dashboard/insights'; } }));
+      grid.appendChild(dpAccessCard({ icon: '📊', bg: '#EAF7EA', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
       return;
     }
 
