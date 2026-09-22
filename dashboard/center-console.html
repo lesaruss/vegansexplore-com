@@ -180,6 +180,36 @@
   .dash-tour-prompt-title{font-size:13.5px;font-weight:800;}
   .dash-tour-prompt-desc{font-size:12px;color:var(--ve-text-50);margin-top:2px;}
   .dash-tour-prompt-arrow{font-size:16px;color:var(--ve-green-dark);flex-shrink:0;}
+  /* Dashboard preview hub (Sean, 2026-09-22) */
+  .dash-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:8px;}
+  @media (max-width:760px){ .dash-preview-grid{grid-template-columns:1fr;} }
+  .dash-preview-card{border:1.5px solid var(--ve-border);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,#fff,#fafdfa);display:flex;flex-direction:column;min-width:0;}
+  .dash-preview-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+  .dash-preview-title{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-75);display:flex;align-items:center;gap:8px;}
+  .dash-preview-title .dash-preview-count{background:var(--ve-green-light);color:var(--ve-green-dark);border-radius:20px;padding:1px 8px;font-size:10px;letter-spacing:0.04em;}
+  .dash-preview-viewall{background:none;border:none;font:inherit;font-size:11px;font-weight:800;letter-spacing:0.04em;color:var(--ve-green-dark);cursor:pointer;white-space:nowrap;padding:0;text-decoration:none;}
+  .dash-preview-viewall:hover{text-decoration:underline;}
+  .dash-preview-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--ve-border);min-width:0;}
+  .dash-preview-row:first-child{border-top:none;}
+  .dash-preview-av{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;background:var(--ve-green);overflow:hidden;}
+  .dash-preview-av img{width:100%;height:100%;object-fit:cover;}
+  .dash-preview-rowbody{min-width:0;flex:1;}
+  .dash-preview-name{font-size:13px;font-weight:700;color:var(--ve-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25;}
+  .dash-preview-meta{font-size:11px;color:var(--ve-text-50);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dash-preview-empty{font-size:12px;color:var(--ve-text-50);padding:10px 0;}
+  .dash-preview-desc{font-size:12.5px;color:var(--ve-text-75);line-height:1.5;flex:1;}
+  /* Access-style preview cards (non-superadmin) are clickable as a whole */
+  a.dash-preview-card{text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s;}
+  a.dash-preview-card:hover{border-color:var(--ve-green);box-shadow:0 4px 18px rgba(58,155,62,0.10);}
+  .dash-preview-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;}
+  /* Take-the-tour overlay */
+  .dash-tour-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.62);align-items:center;justify-content:center;padding:24px;}
+  .dash-tour-overlay.open{display:flex;}
+  .dash-tour-frame-wrap{position:relative;width:min(1100px,100%);height:min(86vh,900px);background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,0.4);}
+  .dash-tour-close{position:absolute;top:10px;right:12px;z-index:2;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,0.55);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .dash-tour-close:hover{background:rgba(0,0,0,0.75);}
+  .dash-tour-frame-host,.dash-tour-frame-host iframe{width:100%;height:100%;border:none;display:block;}
+  @media (max-width:760px){ .dash-tour-overlay{padding:0;} .dash-tour-frame-wrap{width:100%;height:100%;border-radius:0;} }
   /* Survey prompt reuses the tour-prompt look but is a <button>, not an <a>
      (2026-09-17, Sean + V design session: the mission-survey dashboard task).
      Resets the button-element defaults the other rule doesn't need to touch. */
@@ -514,6 +544,18 @@
   </div>
 </header>
 
+<!-- Take-the-tour overlay (Sean, 2026-09-22: "when I click take the tour, I
+     don't see anything"). The prompt used to call openToolInFrame, which
+     renders into #dash-mylist-detail inside the (hidden) Tools tab, so nothing
+     showed from the Dashboard. This is a self-contained full-screen overlay
+     that works from any tab. -->
+<div class="dash-tour-overlay" id="dash-tour-overlay" aria-hidden="true">
+  <div class="dash-tour-frame-wrap" role="dialog" aria-modal="true" aria-label="Take the tour">
+    <button type="button" class="dash-tour-close" id="dash-tour-close" aria-label="Close the tour">&times;</button>
+    <div class="dash-tour-frame-host" id="dash-tour-frame-host"></div>
+  </div>
+</div>
+
 <!-- The LESARUSS universal bar.
      2026-09-20 (Sean: "the icon needs to be synced on both. Right now if I go
      to Vegans Explore logged in with my username, it's different than when I
@@ -612,7 +654,7 @@
          Pulse, Communities, Tools). -->
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
       <p class="dash-section-title">Dashboard</p>
-      <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openToolInFrame('Tour', '/tour', false); return false;">
+      <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openTour(); return false;">
         <div class="dash-tour-prompt-icon">&#128075;</div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">New here? Take the 60-second tour</div>
@@ -646,6 +688,14 @@
         </div>
       </div>
 
+      <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
+           tools. Superadmins see the 5 most recent Members, Event Submissions,
+           Leads and Guest Reviews (each with a "View all"); everyone else sees
+           preview/access cards for Bounties, Campaigns, Opportunities, Guides,
+           My List, Choose Your Guide (Passport) and new Communities. Filled by
+           renderDashboardPreviews(). Leaderboard + Daily Pulse stay below. -->
+      <div id="dash-previews"></div>
+
       <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
       <div class="dash-stats" id="dash-stats-row" style="display:none;">
         <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
@@ -665,8 +715,8 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;">
         <p class="dash-section-title" style="margin-top:0;">Leaderboard</p>
         <div class="dash-leaderboard-scope" id="dash-leaderboard-scope" role="tablist" aria-label="Leaderboard scope">
-          <button type="button" class="dash-lb-scope-btn active" data-scope="city">This City</button>
-          <button type="button" class="dash-lb-scope-btn" data-scope="global">Global</button>
+          <button type="button" class="dash-lb-scope-btn" data-scope="city">This City</button>
+          <button type="button" class="dash-lb-scope-btn active" data-scope="global">Global</button>
         </div>
       </div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
@@ -2400,7 +2450,7 @@
   var LEADERBOARD_ALL_CITIES = Object.keys(LEADERBOARD_CITY_TERMS).reduce(function (acc, k) {
     return acc.concat(LEADERBOARD_CITY_TERMS[k]);
   }, []);
-  var dashLeaderboardScope = 'city';
+  var dashLeaderboardScope = 'global';
 
   function renderLeaderboard(member, scope) {
     var list = document.getElementById('dash-leaderboard-list');
@@ -2424,7 +2474,7 @@
     }).then(function (r) { return r.json(); }).then(function (d) {
       var rows = ((d && d.leaderboard) || []).slice(0, 5);
       if (!rows.length) {
-        list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">No ranked members in your city yet.</p>';
+        list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">' + (useScope === 'global' ? 'No ranked members yet.' : 'No ranked members in your city yet.') + '</p>';
         return;
       }
       list.innerHTML = '';
@@ -2906,6 +2956,153 @@
     });
   }
 
+  // Jump from a Dashboard preview into a Tools section: switch to the Tools tab
+  // (which reveals #dash-tools-section) then open the section in place.
+  window.gotoToolSection = function (id, label) {
+    if (window.activateDashTab) window.activateDashTab('tools');
+    openToolSection(id, label);
+  };
+
+  // --- Take-the-tour overlay --------------------------------------------
+  function openTour() {
+    var ov = document.getElementById('dash-tour-overlay');
+    var host = document.getElementById('dash-tour-frame-host');
+    if (!ov || !host) return;
+    if (!host.querySelector('iframe')) {
+      var f = document.createElement('iframe');
+      f.title = 'Take the tour'; f.src = '/tour';
+      host.appendChild(f);
+    }
+    ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  window.openTour = openTour;
+  function closeTour() {
+    var ov = document.getElementById('dash-tour-overlay');
+    if (!ov) return;
+    ov.classList.remove('open'); ov.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  (function wireTour() {
+    var closeBtn = document.getElementById('dash-tour-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeTour);
+    var ov = document.getElementById('dash-tour-overlay');
+    if (ov) ov.addEventListener('click', function (e) { if (e.target === ov) closeTour(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeTour(); });
+  })();
+
+  // --- Dashboard preview hub (Sean, 2026-09-22) -------------------------
+  function dpDate(s) {
+    try { var d = new Date(s); if (isNaN(d.getTime())) return ''; return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); }
+    catch (e) { return ''; }
+  }
+  function dpCount(titleEl, n) {
+    if (!titleEl || !n) return;
+    var b = document.createElement('span'); b.className = 'dash-preview-count'; b.textContent = n;
+    titleEl.appendChild(b);
+  }
+  function dpRows(body, rows, mapFn) {
+    body.innerHTML = '';
+    var five = (rows || []).slice(0, 5);
+    if (!five.length) { body.innerHTML = '<p class="dash-preview-empty">Nothing here yet.</p>'; return; }
+    five.forEach(function (r) {
+      var m = mapFn(r) || {};
+      var row = document.createElement('div'); row.className = 'dash-preview-row';
+      var av = document.createElement('span'); av.className = 'dash-preview-av';
+      if (m.url) { var img = document.createElement('img'); img.src = m.url; img.alt = ''; av.appendChild(img); }
+      else { av.textContent = (String(m.name || '?').trim().charAt(0) || '?').toUpperCase(); if (m.color) av.style.background = m.color; }
+      var rb = document.createElement('div'); rb.className = 'dash-preview-rowbody';
+      var nm = document.createElement('div'); nm.className = 'dash-preview-name'; nm.textContent = m.name || '—';
+      var mt = document.createElement('div'); mt.className = 'dash-preview-meta'; mt.textContent = m.meta || '';
+      rb.appendChild(nm); rb.appendChild(mt);
+      row.appendChild(av); row.appendChild(rb);
+      body.appendChild(row);
+    });
+  }
+  function dpFetch(url, payload) {
+    return fetch(SUPABASE_URL + url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify(payload || {})
+    }).then(function (r) { return r.json(); });
+  }
+  function dpDataCard(title, viewAllHref, loader) {
+    var card = document.createElement('div'); card.className = 'dash-preview-card';
+    var head = document.createElement('div'); head.className = 'dash-preview-head';
+    var t = document.createElement('span'); t.className = 'dash-preview-title'; t.textContent = title;
+    var va = document.createElement('a'); va.className = 'dash-preview-viewall'; va.textContent = 'View all →'; va.href = viewAllHref;
+    head.appendChild(t); head.appendChild(va);
+    var body = document.createElement('div'); body.className = 'dash-preview-body';
+    body.innerHTML = '<p class="dash-preview-empty">Loading…</p>';
+    card.appendChild(head); card.appendChild(body);
+    try { loader(VEAuth.getToken(), body, t); } catch (e) { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; }
+    return card;
+  }
+  function dpAccessCard(c) {
+    var card = document.createElement('a'); card.className = 'dash-preview-card'; card.href = '#';
+    card.innerHTML = '<div class="dash-preview-icon" style="background:' + c.bg + ';">' + c.icon + '</div>' +
+      '<div class="dash-preview-head" style="margin-bottom:6px;"><span class="dash-preview-title">' + c.title + '</span><span class="dash-preview-viewall">Open →</span></div>' +
+      '<div class="dash-preview-desc">' + c.desc + '</div>';
+    card.addEventListener('click', function (e) { e.preventDefault(); c.fn(); });
+    return card;
+  }
+  function renderDashboardPreviews(member) {
+    var host = document.getElementById('dash-previews');
+    if (!host) return;
+    host.innerHTML = '';
+    var grid = document.createElement('div'); grid.className = 'dash-preview-grid';
+    host.appendChild(grid);
+
+    if (member.is_superadmin) {
+      grid.appendChild(dpDataCard('Recent Members', '/dashboard/members', function (token, body, t) {
+        dpFetch('/functions/v1/ve-members-admin?action=list_all_members', { token: token }).then(function (d) {
+          var rows = ((d && d.members) || []).slice().sort(function (a, b) { return new Date(b.joined_at || 0) - new Date(a.joined_at || 0); });
+          dpCount(t, rows.length);
+          dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color }; });
+        }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
+      }));
+      grid.appendChild(dpDataCard('Event Submissions', '/admin/events.html', function (token, body, t) {
+        dpFetch('/functions/v1/ve-rewards?action=list_pending_events', { token: token, status: 'pending' }).then(function (d) {
+          var rows = ((d && d.items) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
+          dpCount(t, rows.length);
+          dpRows(body, rows, function (e) { return { name: e.title || 'Event', meta: [e.city, dpDate(e.starts_at || e.created_at)].filter(Boolean).join(' · ') }; });
+        }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
+      }));
+      grid.appendChild(dpDataCard('Recent Leads', '/dashboard/leads', function (token, body, t) {
+        dpFetch('/functions/v1/ve-rewards?action=list_initiative_interest', { token: token }).then(function (d) {
+          var rows = ((d && d.items) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
+          dpCount(t, rows.length);
+          dpRows(body, rows, function (it) {
+            var who = it.members ? (it.members.display_name || it.members.email) : null;
+            return { name: who || 'Interest', meta: [it.action_type, it.initiative_slug].filter(Boolean).join(' · ') || dpDate(it.created_at) };
+          });
+        }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
+      }));
+      grid.appendChild(dpDataCard('Guest Reviews', '/dashboard/guest-reviews', function (token, body, t) {
+        dpFetch('/functions/v1/ve-auth?action=list_guest_reviews', { token: token }).then(function (d) {
+          var rows = ((d && d.applications) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
+          dpCount(t, rows.length);
+          dpRows(body, rows, function (a) { return { name: a.name || a.email || 'Applicant', meta: a.email && a.name ? a.email : dpDate(a.created_at) }; });
+        }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
+      }));
+      return;
+    }
+
+    // Non-superadmin: access/preview cards for their tools.
+    var access = [
+      { icon: '🏆', bg: '#FEF0DD', title: 'Bounties', desc: 'Weekly tasks you can complete for points.', fn: function () { gotoToolSection('dash-bounties-section', 'Bounties'); } },
+      { icon: '📣', bg: '#F1EBFE', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
+      { icon: '🎯', bg: '#E0F2FE', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
+      { icon: '📚', bg: '#E8F8EF', title: 'Guides', desc: 'Step-by-step guides for your journey.', fn: function () { gotoToolSection('dash-guides-section', 'Guides'); } },
+      { icon: '📋', bg: '#E0F7FA', title: 'My List', desc: "Every listing you've saved from the Directory.", fn: function () { if (window.activateDashTab) activateDashTab('tools'); openMyList(); } }
+    ];
+    if (member.ve_tier && member.ve_tier !== 'free') {
+      access.push({ icon: '🧭', bg: '#E8F8EF', title: 'Choose Your Guide', desc: 'Pick a dedicated guide to walk with you. A Passport benefit.', fn: function () { if (window.activateDashTab) activateDashTab('tools'); openChooseGuide(); } });
+    }
+    access.push({ icon: '🌆', bg: '#F1EBFE', title: 'Communities', desc: 'Explore and join Vegans Explore communities.', fn: function () { if (window.activateDashTab) activateDashTab('communities'); } });
+    access.forEach(function (c) { grid.appendChild(dpAccessCard(c)); });
+  }
+
   function renderDirectory(member) {
     var mount = document.getElementById('dash-directory-mount');
     if (!mount) return;
@@ -3077,6 +3274,7 @@
     renderChooseGuideSection(member);
     initToolsConsolidation();
     renderToolSectionTiles();
+    renderDashboardPreviews(member);
     initDashTabs();
     initBountyTopics();
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
