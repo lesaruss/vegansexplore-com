@@ -606,11 +606,11 @@
 
     <!-- The tab strip moved up into the top nav (.ve-topnav-nav) 2026-09-20. -->
 
-    <!-- Dashboard (home). Kept as the default/landing tab and reachable via the
-         top-left logo, but data-tab-hidden keeps it OUT of the nav chip row
-         (Sean, 2026-09-22: condensed nav = Directory, Events, Shows, Daily
+    <!-- Dashboard (home). The default/landing tab, first in the nav row, and
+         also reachable via the top-left logo (Sean, 2026-09-22: keep an explicit
+         Dashboard button in the nav alongside Directory, Events, Shows, Daily
          Pulse, Communities, Tools). -->
-    <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard" data-tab-hidden="1">
+    <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
       <p class="dash-section-title">Dashboard</p>
       <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openToolInFrame('Tour', '/tour', false); return false;">
         <div class="dash-tour-prompt-icon">&#128075;</div>
