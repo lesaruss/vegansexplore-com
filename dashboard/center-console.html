@@ -38,8 +38,12 @@
   .ve-topnav .dash-tabs{border-bottom:none;margin-bottom:0;overflow-x:auto;scrollbar-width:none;}
   .ve-topnav .dash-tabs::-webkit-scrollbar{display:none;}
   .ve-topnav .dash-tab{padding:7px 4px;}
-  .ve-wordmark{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--ve-text);white-space:nowrap;flex-shrink:0;text-decoration:none;}
+  .ve-wordmark{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--ve-text);white-space:nowrap;flex-shrink:0;text-decoration:none;display:flex;align-items:center;}
   .ve-wordmark .dot{color:var(--ve-green);}
+  /* Real Vegans Explore logo in the top-left (Sean, 2026-09-22), replacing the
+     text wordmark. Same landscape SVG the public site nav uses. */
+  .ve-wordmark-logo{height:30px;width:auto;display:block;}
+  @media (max-width:760px){ .ve-wordmark-logo{height:26px;} }
   .ve-apps-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:8px;border:1.5px solid var(--ve-border);background:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--ve-text);cursor:pointer;transition:border-color 0.15s;}
   .ve-apps-btn:hover,.ve-apps-btn.is-open{border-color:var(--ve-green);}
   .ve-apps-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
@@ -320,10 +324,18 @@
      as the Directory listing embed above, applied to the My List tile
      under Your Tools instead. */
   #dash-mylist-crumb,#dash-choose-guide-crumb{display:none;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:-4px 0 14px;}
-  #dash-mylist-crumb .dash-crumb-back,#dash-choose-guide-crumb .dash-crumb-back{background:none;border:none;color:var(--ve-green-dark);font-weight:800;font-size:12.5px;cursor:pointer;padding:0;font-family:inherit;}
-  #dash-mylist-crumb .dash-crumb-back:hover,#dash-choose-guide-crumb .dash-crumb-back:hover{text-decoration:underline;}
-  #dash-mylist-crumb .dash-crumb-sep,#dash-choose-guide-crumb .dash-crumb-sep{color:var(--ve-text-50);}
-  #dash-mylist-crumb .dash-crumb-current,#dash-choose-guide-crumb .dash-crumb-current{color:var(--ve-text);}
+  #dash-mylist-crumb .dash-crumb-back,#dash-choose-guide-crumb .dash-crumb-back,#dash-tools-crumb .dash-crumb-back{background:none;border:none;color:var(--ve-green-dark);font-weight:800;font-size:12.5px;cursor:pointer;padding:0;font-family:inherit;}
+  #dash-mylist-crumb .dash-crumb-back:hover,#dash-choose-guide-crumb .dash-crumb-back:hover,#dash-tools-crumb .dash-crumb-back:hover{text-decoration:underline;}
+  #dash-mylist-crumb .dash-crumb-sep,#dash-choose-guide-crumb .dash-crumb-sep,#dash-tools-crumb .dash-crumb-sep{color:var(--ve-text-50);}
+  #dash-mylist-crumb .dash-crumb-current,#dash-choose-guide-crumb .dash-crumb-current,#dash-tools-crumb .dash-crumb-current{color:var(--ve-text);}
+  #dash-tools-crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-bottom:18px;}
+  /* Your Tools grids at four columns (Sean, 2026-09-22: "four columns instead
+     of five"). Overrides the auto-fit .dash-grid default via id specificity.
+     Covers the section entry tiles, the flat grid, and the superadmin grid. */
+  #dash-tools-sections-grid,#dash-tile-grid,#dash-grid-tools{grid-template-columns:repeat(4,minmax(0,1fr));}
+  @media (max-width:900px){ #dash-tools-sections-grid,#dash-tile-grid,#dash-grid-tools{grid-template-columns:repeat(3,minmax(0,1fr));} }
+  @media (max-width:640px){ #dash-tools-sections-grid,#dash-tile-grid,#dash-grid-tools{grid-template-columns:repeat(2,minmax(0,1fr));} }
+  #dash-tools-sections{margin-bottom:22px;}
   #dash-mylist-detail{display:none;}
   .dash-mylist-iframe{display:block;width:100%;height:900px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ .dash-mylist-iframe{height:1100px;} }
@@ -485,7 +497,7 @@
      bottom bar's plus opens, via a window event universal-bar.js listens for. -->
 <header class="ve-topnav" role="banner">
   <div class="ve-topnav-left">
-    <a class="ve-wordmark" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home">VEGANS<span class="dot" aria-hidden="true">.</span>EXPLORE</a>
+    <a class="ve-wordmark" id="ve-logo-home" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home"><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>
   </div>
   <!-- Dashboard section nav, in the top bar like HQ (2026-09-20). initDashTabs
        fills #dash-tabs / #dash-tabs-mobile by id regardless of where they sit. -->
@@ -594,7 +606,11 @@
 
     <!-- The tab strip moved up into the top nav (.ve-topnav-nav) 2026-09-20. -->
 
-    <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
+    <!-- Dashboard (home). Kept as the default/landing tab and reachable via the
+         top-left logo, but data-tab-hidden keeps it OUT of the nav chip row
+         (Sean, 2026-09-22: condensed nav = Directory, Events, Shows, Daily
+         Pulse, Communities, Tools). -->
+    <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard" data-tab-hidden="1">
       <p class="dash-section-title">Dashboard</p>
       <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openToolInFrame('Tour', '/tour', false); return false;">
         <div class="dash-tour-prompt-icon">&#128075;</div>
@@ -670,7 +686,12 @@
       </div>
     </div>
 
-    <div id="dash-bounties-section" style="margin-bottom:28px;" data-tab-key="bounties" data-tab-order="3" data-tab-label="Bounties">
+    <!-- Bounties, Campaigns, Opportunities and Guides moved UNDER the Tools tab
+         (Sean, 2026-09-22: "everything else falls under tools"). Their
+         data-tab-* attributes are gone so they leave the nav; initToolsConsol-
+         idation() relocates them into #dash-tools-detail and they are revealed
+         in place from a Tools tile via openToolSection(). -->
+    <div id="dash-bounties-section" style="display:none;margin-bottom:28px;">
       <p class="dash-section-title">Bounties</p>
       <div class="dash-bounty-topics" id="dash-bounty-topics">
         <button type="button" class="dash-bounty-topic-pill active" data-topic="all">All</button>
@@ -689,12 +710,12 @@
       </div>
     </div>
 
-    <div id="dash-campaigns-section" style="display:none;margin-bottom:28px;" data-tab-key="campaigns" data-tab-order="4" data-tab-label="Your Campaigns">
+    <div id="dash-campaigns-section" style="display:none;margin-bottom:28px;">
       <p class="dash-section-title">Your Campaigns</p>
       <div class="dash-community-row" id="dash-campaigns-row"></div>
     </div>
 
-    <div id="dash-opportunities-section" style="display:none;margin-bottom:28px;" data-tab-key="opportunities" data-tab-order="5" data-tab-label="Your Opportunities">
+    <div id="dash-opportunities-section" style="display:none;margin-bottom:28px;">
       <p class="dash-section-title">Your Opportunities</p>
       <div class="dash-community-row" id="dash-opportunities-row"></div>
     </div>
@@ -711,7 +732,7 @@
       <div id="dash-events-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
     </div>
 
-    <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="10" data-tab-label="Your Communities">
+    <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="8" data-tab-label="Communities">
       <p class="dash-section-title">Your Communities</p>
       <div class="dash-community-row" id="dash-community-row"></div>
     </div>
@@ -733,7 +754,7 @@
       <div class="dash-grid" id="dash-pulse-grid"></div>
     </div>
 
-    <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="8" data-tab-label="Guides">
+    <div id="dash-guides-section" style="display:none;margin-bottom:28px;">
       <p class="dash-eyebrow" style="margin-bottom:2px;">Guides</p>
       <p class="dash-section-title">Step-By-Step Guides</p>
       <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Practical guides for wherever you are on the journey. Unlock guides with Points as they publish.</p>
@@ -774,7 +795,19 @@
       </div>
     </div>
 
-    <div id="dash-tools-section" style="display:none;margin-bottom:28px;" data-tab-key="tools" data-tab-order="9" data-tab-label="Your Tools">
+    <div id="dash-tools-section" style="display:none;margin-bottom:28px;" data-tab-key="tools" data-tab-order="9" data-tab-label="Tools">
+    <!-- Section entry tiles (Sean, 2026-09-22): Bounties, Campaigns,
+         Opportunities and Guides now live under Tools. These open the relocated
+         sections in place via openToolSection(). Rendered by
+         renderToolSectionTiles() for every member (superadmin included), above
+         the customizable Your Tools grid. -->
+    <div id="dash-tools-sections">
+      <div class="dash-grid" id="dash-tools-sections-grid"></div>
+    </div>
+    <!-- Breadcrumb + host for an opened section (Bounties/Campaigns/etc). The
+         four sections are relocated into #dash-tools-detail at init. -->
+    <div id="dash-tools-crumb" style="display:none;"></div>
+    <div id="dash-tools-detail"></div>
     <div id="dash-tiles-flat">
       <p class="dash-section-title">Your Tools</p>
       <div class="dash-grid" id="dash-tile-grid"></div>
@@ -2667,6 +2700,7 @@
     dashMyListPrevLayout = (sectioned && sectioned.style.display !== 'none') ? 'sectioned' : 'flat';
     if (flat) flat.style.display = 'none';
     if (sectioned) sectioned.style.display = 'none';
+    var toolsSect1 = document.getElementById('dash-tools-sections'); if (toolsSect1) toolsSect1.style.display = 'none';
     crumb.innerHTML = '';
     var back = document.createElement('button');
     back.type = 'button';
@@ -2701,9 +2735,15 @@
     var sectioned = document.getElementById('dash-tiles-sectioned');
     var crumb = document.getElementById('dash-mylist-crumb');
     var detail = document.getElementById('dash-mylist-detail');
+    if (!crumb && !detail) return;
+    // Only restore the landing if My List was actually open. Otherwise this is
+    // a no-op, so tab switches (which call veCloseToolPanels) don't clobber the
+    // superadmin sectioned layout by force-showing the flat grid.
+    var wasOpen = (detail && detail.style.display !== 'none') || (crumb && crumb.style.display !== 'none');
     if (detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
     if (crumb) { crumb.style.display = 'none'; crumb.innerHTML = ''; }
-    if (!crumb && !detail) return;
+    if (!wasOpen) return;
+    var toolsSect2 = document.getElementById('dash-tools-sections'); if (toolsSect2) toolsSect2.style.display = '';
     if (dashMyListPrevLayout === 'sectioned') {
       if (sectioned) sectioned.style.display = 'block';
     } else {
@@ -2726,6 +2766,7 @@
     dashChooseGuidePrevLayout = (sectioned && sectioned.style.display !== 'none') ? 'sectioned' : 'flat';
     if (flat) flat.style.display = 'none';
     if (sectioned) sectioned.style.display = 'none';
+    var toolsSect3 = document.getElementById('dash-tools-sections'); if (toolsSect3) toolsSect3.style.display = 'none';
     crumb.innerHTML = '';
     var back = document.createElement('button');
     back.type = 'button';
@@ -2750,9 +2791,12 @@
     var sectioned = document.getElementById('dash-tiles-sectioned');
     var crumb = document.getElementById('dash-choose-guide-crumb');
     var section = document.getElementById('dash-choose-guide-section');
+    if (!crumb && !section) return;
+    var wasOpen = (section && section.style.display !== 'none') || (crumb && crumb.style.display !== 'none');
     if (section) section.style.display = 'none';
     if (crumb) { crumb.style.display = 'none'; crumb.innerHTML = ''; }
-    if (!crumb && !section) return;
+    if (!wasOpen) return;
+    var toolsSect4 = document.getElementById('dash-tools-sections'); if (toolsSect4) toolsSect4.style.display = '';
     if (dashChooseGuidePrevLayout === 'sectioned') {
       if (sectioned) sectioned.style.display = 'block';
     } else {
@@ -2767,7 +2811,100 @@
   window.veCloseToolPanels = function () {
     closeMyList();
     closeChooseGuide();
+    closeToolSection();
   };
+
+  // --- Sections under Tools (Sean, 2026-09-22) --------------------------
+  // Bounties, Campaigns, Opportunities and Guides used to be top-level tabs.
+  // They now live under the Tools tab: relocated into #dash-tools-detail and
+  // opened in place from an entry tile, the same breadcrumb pattern My List and
+  // Choose Your Guide already use.
+  var TOOL_SECTIONS = [
+    { id: 'dash-bounties-section', key: 'bounties', label: 'Bounties', icon: '🏆', bg: 'linear-gradient(135deg,#F69820,#e07b00)', desc: 'Weekly tasks you can complete for points.' },
+    { id: 'dash-campaigns-section', key: 'campaigns', label: 'Your Campaigns', icon: '📣', bg: 'linear-gradient(135deg,#8B5CF6,#6D28D9)', desc: 'Campaigns you can attend, sponsor, or volunteer for.' },
+    { id: 'dash-opportunities-section', key: 'opportunities', label: 'Your Opportunities', icon: '🎯', bg: 'linear-gradient(135deg,#0EA5E9,#0369A1)', desc: 'Ways to get involved and lead in your city.' },
+    { id: 'dash-guides-section', key: 'guides', label: 'Guides', icon: '📚', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', desc: 'Step-by-step guides for wherever you are on the journey.' }
+  ];
+  var dashToolSectionPrevLayout = null;
+
+  // Relocate the four sections into #dash-tools-detail once, so they render in
+  // the right place when opened. Idempotent -- safe to call on every render.
+  function initToolsConsolidation() {
+    var detail = document.getElementById('dash-tools-detail');
+    if (!detail) return;
+    TOOL_SECTIONS.forEach(function (t) {
+      var el = document.getElementById(t.id);
+      if (el && el.parentNode !== detail) { el.style.display = 'none'; detail.appendChild(el); }
+    });
+  }
+
+  function toolsLandingHide() {
+    var sect = document.getElementById('dash-tools-sections');
+    var flat = document.getElementById('dash-tiles-flat');
+    var sectioned = document.getElementById('dash-tiles-sectioned');
+    var prev = (sectioned && sectioned.style.display !== 'none') ? 'sectioned' : 'flat';
+    if (sect) sect.style.display = 'none';
+    if (flat) flat.style.display = 'none';
+    if (sectioned) sectioned.style.display = 'none';
+    return prev;
+  }
+  function toolsLandingShow(prev) {
+    var sect = document.getElementById('dash-tools-sections');
+    var flat = document.getElementById('dash-tiles-flat');
+    var sectioned = document.getElementById('dash-tiles-sectioned');
+    if (sect) sect.style.display = '';
+    if (prev === 'sectioned') { if (sectioned) sectioned.style.display = 'block'; }
+    else { if (flat) flat.style.display = ''; }
+  }
+
+  function openToolSection(id, label) {
+    var target = document.getElementById(id);
+    var crumb = document.getElementById('dash-tools-crumb');
+    if (!target || !crumb) return;
+    // Close any sibling panel (My List / Choose Guide) first, then hide landing.
+    closeMyList(); closeChooseGuide();
+    dashToolSectionPrevLayout = toolsLandingHide();
+    TOOL_SECTIONS.forEach(function (t) { var el = document.getElementById(t.id); if (el) el.style.display = 'none'; });
+    target.style.display = 'block';
+    crumb.innerHTML = '';
+    var back = document.createElement('button');
+    back.type = 'button'; back.className = 'dash-crumb-back'; back.innerHTML = '&larr; Tools';
+    back.addEventListener('click', closeToolSection);
+    var sep = document.createElement('span'); sep.className = 'dash-crumb-sep'; sep.textContent = '/';
+    var cur = document.createElement('span'); cur.className = 'dash-crumb-current'; cur.textContent = label || 'Section';
+    crumb.appendChild(back); crumb.appendChild(sep); crumb.appendChild(cur);
+    crumb.style.display = 'flex';
+  }
+
+  function closeToolSection() {
+    var crumb = document.getElementById('dash-tools-crumb');
+    var anyOpen = false;
+    TOOL_SECTIONS.forEach(function (t) { var el = document.getElementById(t.id); if (el) { if (el.style.display !== 'none') anyOpen = true; el.style.display = 'none'; } });
+    if (crumb) { crumb.style.display = 'none'; crumb.innerHTML = ''; }
+    // Only restore the landing if a section was actually open, so this is a safe
+    // no-op when called on tab switches with nothing revealed.
+    if (anyOpen) toolsLandingShow(dashToolSectionPrevLayout);
+    dashToolSectionPrevLayout = null;
+  }
+
+  function renderToolSectionTiles() {
+    var grid = document.getElementById('dash-tools-sections-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    TOOL_SECTIONS.forEach(function (t) {
+      var wrap = document.createElement('div');
+      wrap.className = 'dash-tile-wrap';
+      var tile = document.createElement('a');
+      tile.className = 'dash-tile';
+      tile.href = '#';
+      tile.innerHTML = '<div class="dash-thumb" style="background:' + t.bg + ';">' + t.icon + '</div>' +
+        '<div class="dash-tile-body"><div class="dash-tile-title">' + t.label + '</div>' +
+        '<div class="dash-tile-desc">' + t.desc + '</div></div>';
+      tile.addEventListener('click', function (e) { e.preventDefault(); openToolSection(t.id, t.label); });
+      wrap.appendChild(tile);
+      grid.appendChild(wrap);
+    });
+  }
 
   function renderDirectory(member) {
     var mount = document.getElementById('dash-directory-mount');
@@ -2860,6 +2997,11 @@
       var key = s.getAttribute('data-tab-key');
       var label = s.getAttribute('data-tab-label') || key;
 
+      // Hidden sections (e.g. Dashboard/home) still get show/hide + default +
+      // URL handling via the sections array, but no nav chip or select option
+      // (Sean, 2026-09-22).
+      if (s.getAttribute('data-tab-hidden')) return;
+
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'dash-tab';
@@ -2933,6 +3075,8 @@
     renderPodcastSection(member);
     renderGuidesSection();
     renderChooseGuideSection(member);
+    initToolsConsolidation();
+    renderToolSectionTiles();
     initDashTabs();
     initBountyTopics();
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
@@ -3149,6 +3293,19 @@
     }
     if (window.__lrShellMember) paintAvatar(window.__lrShellMember);
     window.addEventListener('lr:shell-member', function (e) { paintAvatar(e.detail); });
+
+    // The logo is home: on the dashboard it jumps to the Dashboard tab in place
+    // (Sean, 2026-09-22: Dashboard left the nav, the logo is how you get back)
+    // rather than doing a full-page reload.
+    var logo = document.getElementById('ve-logo-home');
+    if (logo) {
+      logo.addEventListener('click', function (e) {
+        if (window.activateDashTab && /^\/dashboard\//.test(location.pathname)) {
+          e.preventDefault();
+          window.activateDashTab('profile');
+        }
+      });
+    }
 
     if (apps) {
       apps.addEventListener('click', function (e) {
