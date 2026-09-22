@@ -221,6 +221,30 @@
   #dash-survey-submit:disabled{background:#9CA3AF;cursor:not-allowed;}
   #dash-survey-error{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:12px;color:#dc2626;font-weight:600;margin-bottom:12px;}
   #dash-survey-success{display:none;background:var(--ve-green-light);border:1px solid var(--ve-green);border-radius:6px;padding:12px 14px;font-size:13px;color:var(--ve-green-dark);font-weight:700;text-align:center;}
+  /* Multi-step Mission Survey (Sean, 2026-09-22) */
+  .dash-survey-progress{height:6px;background:var(--ve-border);border-radius:100px;overflow:hidden;margin-bottom:8px;}
+  .dash-survey-progress-bar{height:100%;background:var(--ve-green);width:0;transition:width .25s;}
+  .dash-survey-stepmeta{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:16px;}
+  .dash-survey-q{margin-bottom:20px;}
+  .dash-survey-q-label{font-size:14px;font-weight:800;color:var(--ve-text);margin-bottom:9px;display:block;line-height:1.35;}
+  .dash-survey-q-req{color:var(--ve-green-dark);}
+  .dash-survey-q-hint{font-size:11px;font-weight:600;color:var(--ve-text-50);}
+  .dash-survey-opts{display:flex;flex-wrap:wrap;gap:8px;}
+  .dash-survey-opt{position:relative;display:inline-flex;align-items:center;border:1.5px solid var(--ve-border);border-radius:100px;padding:8px 15px;font-size:12.5px;font-weight:700;color:var(--ve-text-75);cursor:pointer;background:#fff;user-select:none;transition:background .12s,border-color .12s,color .12s;}
+  .dash-survey-opt:hover{border-color:var(--ve-green);}
+  .dash-survey-opt.sel{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  .dash-survey-opt input{position:absolute;opacity:0;width:0;height:0;pointer-events:none;}
+  .dash-survey-input,.dash-survey-select{width:100%;padding:11px 14px;border:1.5px solid var(--ve-border);border-radius:8px;font-family:"Montserrat",sans-serif;font-size:13.5px;color:var(--ve-text);box-sizing:border-box;background:#fff;}
+  .dash-survey-input:focus,.dash-survey-select:focus{outline:none;border-color:var(--ve-green);}
+  textarea.dash-survey-input{min-height:96px;resize:vertical;}
+  .dash-survey-scale{display:flex;gap:6px;flex-wrap:wrap;}
+  .dash-survey-scale .dash-survey-opt{min-width:40px;justify-content:center;padding:9px 0;}
+  .dash-survey-nav{display:flex;justify-content:space-between;gap:10px;margin-top:6px;}
+  .dash-survey-btn{padding:12px 22px;border-radius:8px;border:none;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:var(--ve-green);color:#fff;}
+  .dash-survey-btn:hover{background:var(--ve-green-dark);}
+  .dash-survey-btn.ghost{background:#fff;color:var(--ve-text-75);border:1.5px solid var(--ve-border);}
+  .dash-survey-btn.ghost:hover{background:#f5f5f5;}
+  .dash-survey-btn:disabled{opacity:.45;cursor:default;}
 
   /* --- Daily Pulse + Bounties: explicit column grids (2026-09-07, Sean,
      Fieldy field note; Pulse widened to 4 cols same day). Bounties keeps its
@@ -950,12 +974,18 @@
       <div class="dash-modal-title">The Mission Survey</div>
       <button type="button" class="dash-modal-close" id="dash-survey-modal-close" aria-label="Close">&times;</button>
     </div>
-    <p class="dash-modal-sub">Tell us why you're here and what you need from this community. It's optional, but it directly shapes what we build next -- and it's worth 250 points.</p>
+    <p class="dash-modal-sub">A few quick questions about you and your area. It shapes what we build for your community -- and completing it fills out your profile and earns 250 points.</p>
     <div id="dash-survey-error"></div>
-    <div id="dash-survey-success">Thanks -- 250 points are on their way.</div>
+    <div id="dash-survey-success">Thanks -- 250 points are on their way, and your profile just got stronger.</div>
     <div id="dash-survey-form">
-      <textarea id="dash-survey-textarea" placeholder="Why are you here, and what would make this worth your time?"></textarea>
-      <button type="button" id="dash-survey-submit">Submit and earn 250 points</button>
+      <div class="dash-survey-progress"><div class="dash-survey-progress-bar" id="dash-survey-progress-bar"></div></div>
+      <div class="dash-survey-stepmeta" id="dash-survey-stepmeta"></div>
+      <div id="dash-survey-step"></div>
+      <div class="dash-survey-nav">
+        <button type="button" class="dash-survey-btn ghost" id="dash-survey-back">Back</button>
+        <button type="button" class="dash-survey-btn" id="dash-survey-next">Next</button>
+        <button type="button" class="dash-survey-btn" id="dash-survey-submit" style="display:none;">Submit and earn 250 points</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2234,35 +2264,198 @@
       prompt.style.display = (d && !d.completed) ? 'flex' : 'none';
     }).catch(function () {});
   }
+  // Multi-step Mission Survey (Sean, 2026-09-22): ~20 questions that complete
+  // the member's profile and give per-community market research. Rendered from
+  // MS_STEPS; profile-mapped answers (q1/q2/q3/q4/q5/q7) are written to real
+  // columns server-side, the full set to members.mission_survey_answers, and
+  // q21 (open text) drives the same reward + guest-safe response as before.
+  var MS_STEPS = [
+    { title: 'About you', qs: [
+      { id: 'q1_city', label: 'Which community are you part of?', type: 'city', required: true },
+      { id: 'q2_zip', label: 'ZIP or neighborhood', hint: 'optional', type: 'text', placeholder: 'e.g. 33139 or Wynwood' },
+      { id: 'q3_roles', label: 'Which best describes you?', hint: 'select all that apply', type: 'multi', required: true, options: ['Eater / diner', 'Business owner', 'Creator / influencer', 'Activist', 'Nonprofit / organizer', 'Service provider', 'Investor', 'Just exploring'] },
+      { id: 'q4_website', label: 'Website or business link', hint: 'optional', type: 'text', placeholder: 'https://' },
+      { id: 'q5_instagram', label: 'Instagram or main social handle', hint: 'optional', type: 'text', placeholder: '@yourhandle' }
+    ] },
+    { title: 'Your vegan journey', qs: [
+      { id: 'q6_stage', label: 'Where are you on your journey?', type: 'single', required: true, options: ['Curious / pre-vegan', 'Flexitarian', 'Vegetarian', 'New vegan (under 1 year)', 'Established (1-5 years)', 'Longtime (5+ years)'] },
+      { id: 'q7_vegan_since', label: 'Roughly when did you go (or start going) vegan?', hint: 'optional', type: 'month' },
+      { id: 'q8_drivers', label: 'What first drew you to it?', hint: 'select all that apply', type: 'multi', options: ['Animals / ethics', 'Health', 'Environment', 'Faith / spirituality', 'Cost', 'Taste / curiosity', 'Family / friends'] },
+      { id: 'q9_challenges', label: 'Biggest challenge staying vegan?', hint: 'select all that apply', type: 'multi', options: ['Dining out', 'Social pressure', 'Cost', 'Convenience', 'Recipes / knowledge', 'Family', 'Travel'] }
+    ] },
+    { title: 'Your community & region', qs: [
+      { id: 'q10_options_rating', label: 'How would you rate vegan options in your area today?', hint: '1 = poor, 5 = excellent', type: 'scale', scale: [1, 2, 3, 4, 5] },
+      { id: 'q11_missing', label: "What's missing most where you live?", hint: 'select all that apply', type: 'multi', options: ['Restaurants', 'Grocery / products', 'Events', 'Social groups', 'Health / wellness services', 'Education', 'Kid / family options'] },
+      { id: 'q12_business_types', label: 'Which vegan businesses would you support if they opened here?', hint: 'select all that apply', type: 'multi', options: ['Restaurant / cafe', 'Bakery', 'Grocer', 'Food truck', 'Meal prep', 'Wellness', 'Clothing / goods'] },
+      { id: 'q13_eatout_freq', label: 'How often do you eat out or order vegan?', type: 'single', options: ['Daily', 'A few times a week', 'Weekly', 'Occasionally', 'Rarely'] },
+      { id: 'q14_spend', label: 'Roughly what do you spend on vegan food & products a month?', type: 'single', options: ['Under $50', '$50-$150', '$150-$300', '$300-$600', '$600+'] },
+      { id: 'q15_local_spots', label: 'Any local vegan spots or businesses we should add to the directory?', hint: 'optional', type: 'text', placeholder: 'Names, links, anything' }
+    ] },
+    { title: 'How we can serve you', qs: [
+      { id: 'q16_wants', label: 'What do you most want from Vegans Explore?', hint: 'select all that apply', type: 'multi', options: ['Directory', 'Community / meetups', 'Deals / rewards', 'Events', 'Guides / education', 'Activism', 'Business growth'] },
+      { id: 'q17_connect', label: 'How do you like to connect?', hint: 'select all that apply', type: 'multi', options: ['In-person events', 'Online groups', '1:1', 'Social media', 'Not looking to connect'] },
+      { id: 'q18_events', label: 'Would you attend local vegan events if we hosted them?', type: 'single', options: ['Definitely', 'Maybe', 'No'] },
+      { id: 'q19_nps', label: 'How likely are you to recommend this community to a friend?', hint: '0 = not likely, 10 = extremely', type: 'scale', scale: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+      { id: 'q20_contribute', label: 'Interested in contributing?', hint: 'select all that apply', type: 'multi', options: ['Volunteer', 'Lead my city', 'List my business', 'Sponsor', 'Create content', 'Not now'] }
+    ] },
+    { title: 'Last bit', qs: [
+      { id: 'q21_open', label: 'Anything else you want us to know -- what would make this worth your time?', type: 'longtext', required: true, placeholder: 'Your words help us most.' },
+      { id: 'q22_goal', label: 'Your top goal in this lifestyle for the next year?', hint: 'optional', type: 'text', placeholder: 'e.g. cook more at home, find community' }
+    ] }
+  ];
+  var msAnswers = {};
+  var msStep = 0;
+
+  function msCityOptions() {
+    var names = window.VE_CITY_NAMES || {};
+    return Object.keys(names).map(function (slug) { return { value: slug, label: names[slug] }; });
+  }
+
+  function msRenderQuestion(q) {
+    var wrap = document.createElement('div'); wrap.className = 'dash-survey-q';
+    var lab = document.createElement('label'); lab.className = 'dash-survey-q-label';
+    lab.innerHTML = q.label + (q.required ? ' <span class="dash-survey-q-req">*</span>' : (q.hint ? ' <span class="dash-survey-q-hint">(' + q.hint + ')</span>' : '')) +
+      (q.required && q.hint ? ' <span class="dash-survey-q-hint">(' + q.hint + ')</span>' : '');
+    wrap.appendChild(lab);
+
+    if (q.type === 'text') {
+      var inp = document.createElement('input'); inp.type = 'text'; inp.className = 'dash-survey-input';
+      if (q.placeholder) inp.placeholder = q.placeholder;
+      if (msAnswers[q.id]) inp.value = msAnswers[q.id];
+      inp.addEventListener('input', function () { msAnswers[q.id] = inp.value; });
+      wrap.appendChild(inp);
+    } else if (q.type === 'longtext') {
+      var ta = document.createElement('textarea'); ta.className = 'dash-survey-input';
+      if (q.placeholder) ta.placeholder = q.placeholder;
+      if (msAnswers[q.id]) ta.value = msAnswers[q.id];
+      ta.addEventListener('input', function () { msAnswers[q.id] = ta.value; });
+      wrap.appendChild(ta);
+    } else if (q.type === 'month') {
+      var mi = document.createElement('input'); mi.type = 'month'; mi.className = 'dash-survey-input';
+      if (msAnswers[q.id]) mi.value = msAnswers[q.id];
+      mi.addEventListener('input', function () { msAnswers[q.id] = mi.value; });
+      wrap.appendChild(mi);
+    } else if (q.type === 'city') {
+      var sel = document.createElement('select'); sel.className = 'dash-survey-select';
+      var opt0 = document.createElement('option'); opt0.value = ''; opt0.textContent = 'Select your community…'; sel.appendChild(opt0);
+      msCityOptions().forEach(function (o) {
+        var op = document.createElement('option'); op.value = o.value; op.textContent = o.label;
+        if (msAnswers[q.id] === o.value) op.selected = true;
+        sel.appendChild(op);
+      });
+      var oth = document.createElement('option'); oth.value = 'other'; oth.textContent = 'Somewhere else';
+      if (msAnswers[q.id] === 'other') oth.selected = true; sel.appendChild(oth);
+      sel.addEventListener('change', function () { msAnswers[q.id] = sel.value; });
+      wrap.appendChild(sel);
+    } else if (q.type === 'single' || q.type === 'multi' || q.type === 'scale') {
+      var opts = document.createElement('div');
+      opts.className = q.type === 'scale' ? 'dash-survey-opts dash-survey-scale' : 'dash-survey-opts';
+      var values = q.type === 'scale' ? q.scale.map(String) : q.options;
+      values.forEach(function (v) {
+        var b = document.createElement('span'); b.className = 'dash-survey-opt'; b.textContent = v;
+        var isSel = q.type === 'multi'
+          ? (Array.isArray(msAnswers[q.id]) && msAnswers[q.id].indexOf(v) !== -1)
+          : (String(msAnswers[q.id]) === v);
+        if (isSel) b.classList.add('sel');
+        b.addEventListener('click', function () {
+          if (q.type === 'multi') {
+            var arr = Array.isArray(msAnswers[q.id]) ? msAnswers[q.id].slice() : [];
+            var i = arr.indexOf(v);
+            if (i === -1) arr.push(v); else arr.splice(i, 1);
+            msAnswers[q.id] = arr;
+            b.classList.toggle('sel');
+          } else {
+            msAnswers[q.id] = v;
+            Array.prototype.forEach.call(opts.children, function (c) { c.classList.remove('sel'); });
+            b.classList.add('sel');
+          }
+        });
+        opts.appendChild(b);
+      });
+      wrap.appendChild(opts);
+    }
+    return wrap;
+  }
+
+  function msMissingRequired(step) {
+    var missing = [];
+    MS_STEPS[step].qs.forEach(function (q) {
+      if (!q.required) return;
+      var a = msAnswers[q.id];
+      var empty = (a === undefined || a === null || a === '' || (Array.isArray(a) && a.length === 0));
+      if (empty) missing.push(q.label.replace(/<[^>]*>/g, ''));
+    });
+    return missing;
+  }
+
+  function msRender() {
+    var host = document.getElementById('dash-survey-step');
+    var meta = document.getElementById('dash-survey-stepmeta');
+    var bar = document.getElementById('dash-survey-progress-bar');
+    var back = document.getElementById('dash-survey-back');
+    var next = document.getElementById('dash-survey-next');
+    var submit = document.getElementById('dash-survey-submit');
+    if (!host) return;
+    host.innerHTML = '';
+    MS_STEPS[msStep].qs.forEach(function (q) { host.appendChild(msRenderQuestion(q)); });
+    meta.textContent = 'Step ' + (msStep + 1) + ' of ' + MS_STEPS.length + ' · ' + MS_STEPS[msStep].title;
+    bar.style.width = Math.round(((msStep + 1) / MS_STEPS.length) * 100) + '%';
+    back.style.visibility = msStep === 0 ? 'hidden' : 'visible';
+    var last = msStep === MS_STEPS.length - 1;
+    next.style.display = last ? 'none' : '';
+    submit.style.display = last ? '' : 'none';
+    document.getElementById('dash-survey-error').style.display = 'none';
+  }
+
   function openMissionSurveyModal() {
+    msAnswers = {}; msStep = 0;
     document.getElementById('dash-survey-error').style.display = 'none';
     document.getElementById('dash-survey-success').style.display = 'none';
     document.getElementById('dash-survey-form').style.display = 'block';
-    document.getElementById('dash-survey-textarea').value = '';
     document.getElementById('dash-survey-modal').classList.add('open');
+    msRender();
   }
   function closeMissionSurveyModal() {
     document.getElementById('dash-survey-modal').classList.remove('open');
   }
   document.getElementById('dash-survey-modal-close').addEventListener('click', closeMissionSurveyModal);
+  document.getElementById('dash-survey-back').addEventListener('click', function () {
+    if (msStep > 0) { msStep--; msRender(); }
+  });
+  document.getElementById('dash-survey-next').addEventListener('click', function () {
+    var missing = msMissingRequired(msStep);
+    var errEl = document.getElementById('dash-survey-error');
+    if (missing.length) { errEl.textContent = 'Please answer: ' + missing.join(', '); errEl.style.display = 'block'; return; }
+    if (msStep < MS_STEPS.length - 1) { msStep++; msRender(); }
+  });
   document.getElementById('dash-survey-submit').addEventListener('click', function () {
     var btn = this;
-    var text = document.getElementById('dash-survey-textarea').value.trim();
     var errEl = document.getElementById('dash-survey-error');
     errEl.style.display = 'none';
-    if (!text) { errEl.textContent = 'Please write a short answer before submitting.'; errEl.style.display = 'block'; return; }
+    // Validate every required question across all steps before submitting.
+    for (var s = 0; s < MS_STEPS.length; s++) {
+      var miss = msMissingRequired(s);
+      if (miss.length) { msStep = s; msRender(); errEl.textContent = 'Please answer: ' + miss.join(', '); errEl.style.display = 'block'; return; }
+    }
     btn.disabled = true; var orig = btn.textContent; btn.textContent = 'Submitting...';
-    VEAuth.submitMissionSurvey(text).then(function (d) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-mission-survey?action=submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken(), response_text: (msAnswers.q21_open || '').trim(), answers: msAnswers })
+    }).then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); }).then(function (res) {
       btn.disabled = false; btn.textContent = orig;
-      if (d && d.ok) {
+      var d = res.d || {};
+      if (res.status < 300 && d.ok) {
         document.getElementById('dash-survey-form').style.display = 'none';
         document.getElementById('dash-survey-success').style.display = 'block';
-        document.getElementById('dash-survey-prompt').style.display = 'none';
-        setTimeout(closeMissionSurveyModal, 1600);
+        var p = document.getElementById('dash-survey-prompt'); if (p) p.style.display = 'none';
+        setTimeout(closeMissionSurveyModal, 1800);
         return;
       }
-      errEl.textContent = (d && d.error) || 'Something went wrong. Please try again.';
-      errEl.style.display = 'block';
+      var msg = d.error === 'already_completed' ? "You've already completed the survey."
+        : d.error === 'not_eligible' ? 'This survey is for active members.'
+        : (d.error || 'Something went wrong. Please try again.');
+      errEl.textContent = msg; errEl.style.display = 'block';
     }).catch(function () {
       btn.disabled = false; btn.textContent = orig;
       errEl.textContent = 'Could not reach the server. Please try again.';
