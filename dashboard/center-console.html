@@ -3278,6 +3278,7 @@
           dpRows(body, rows, function (a) { return { name: a.name || a.email || 'Applicant', meta: a.email && a.name ? a.email : dpDate(a.created_at) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
+      grid.appendChild(dpAccessCard({ icon: '📊', bg: '#EAF7EA', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { window.location.href = '/dashboard/insights'; } }));
       return;
     }
 

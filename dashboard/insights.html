@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Insights - VEGANS EXPLORE</title>
+<meta name="description" content="Per-community market research from the Mission Survey.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;
+    --ve-border:rgba(0,0,0,0.09);
+    --ve-text:#1a1a1a;--ve-text-75:#4a4a4a;--ve-text-50:#595959;
+    --ve-surface:#fafdfa;
+  }
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:1200px;margin:0 auto;padding:44px 32px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+  a:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid var(--ve-green-dark);outline-offset:2px;}
+
+  #i-gate{text-align:center;padding:100px 20px;}
+  #i-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #i-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-family:inherit;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #i-content{display:none;}
+
+  .i-back{display:inline-block;margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;}
+  .i-back:hover{text-decoration:underline;}
+  .i-head{padding-bottom:20px;border-bottom:1px solid var(--ve-border);margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;}
+  .i-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  .i-head h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
+  .i-head-sub{font-size:13px;color:var(--ve-text-50);}
+  .i-select{font-family:"Montserrat",sans-serif;font-size:12.5px;font-weight:700;color:var(--ve-text);background:#fff;border:1.5px solid var(--ve-border);border-radius:100px;padding:9px 34px 9px 16px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+
+  /* Stat tiles (KPI row) */
+  .i-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+  @media (max-width:760px){ .i-tiles{grid-template-columns:1fr 1fr;} }
+  .i-tile{border:1.5px solid var(--ve-border);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,#fff,var(--ve-surface));}
+  .i-tile-value{font-size:28px;font-weight:900;letter-spacing:-0.01em;color:var(--ve-green-dark);line-height:1;}
+  .i-tile-value.muted{color:var(--ve-text-50);}
+  .i-tile-label{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-top:8px;}
+  .i-tile-sub{font-size:10.5px;color:var(--ve-text-50);margin-top:3px;}
+
+  /* Bar cards */
+  .i-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  @media (max-width:760px){ .i-grid{grid-template-columns:1fr;} }
+  .i-card{border:1.5px solid var(--ve-border);border-radius:14px;padding:18px 20px;background:#fff;}
+  .i-card.span2{grid-column:1 / -1;}
+  .i-card-title{font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text);margin-bottom:4px;}
+  .i-card-note{font-size:11px;color:var(--ve-text-50);margin-bottom:14px;}
+  .i-bar-row{margin-bottom:11px;}
+  .i-bar-row:last-child{margin-bottom:0;}
+  .i-bar-head{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;margin-bottom:5px;}
+  .i-bar-label{font-weight:700;color:var(--ve-text-75);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .i-bar-val{font-weight:800;color:var(--ve-text);flex-shrink:0;}
+  .i-bar-val span{font-weight:600;color:var(--ve-text-50);margin-left:4px;}
+  .i-bar-track{height:9px;background:var(--ve-green-light);border-radius:100px;overflow:hidden;}
+  .i-bar-fill{height:100%;background:var(--ve-green);border-radius:100px;min-width:3px;}
+  .i-empty{font-size:12.5px;color:var(--ve-text-50);padding:6px 0;}
+
+  /* Qualitative */
+  .i-quote-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;}
+  .i-quote{font-size:12.5px;color:var(--ve-text-75);line-height:1.5;border-left:3px solid var(--ve-green-light);padding:2px 0 2px 12px;}
+  .i-section-title{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-text-50);margin:30px 0 14px;}
+</style>
+</head>
+<body>
+<script>
+try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+</script>
+<style>.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .i-back{display:none !important}</style>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+
+<main>
+  <div id="i-gate"><p>Checking access&hellip;</p></div>
+
+  <div id="i-content">
+    <a class="i-back" href="/dashboard">&larr; Back to dashboard</a>
+    <div class="i-head">
+      <div>
+        <p class="i-eyebrow">Superadmin &middot; Market Research</p>
+        <h1>Community Insights</h1>
+        <p class="i-head-sub" id="i-sub">Loading survey data&hellip;</p>
+      </div>
+      <select class="i-select" id="i-community" aria-label="Choose a community"></select>
+    </div>
+
+    <div class="i-tiles" id="i-tiles"></div>
+    <div class="i-grid" id="i-grid"></div>
+
+    <p class="i-section-title">In their words</p>
+    <div class="i-grid" id="i-qual"></div>
+  </div>
+</main>
+
+<script src="/public/footer.js"></script>
+<script>
+(function () {
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var currentScope = 'all';
+  var loadedSelector = false;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function titleize(slug) {
+    if (!slug || slug === 'all') return 'All communities';
+    return String(slug).split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+  }
+  function sum(obj) { var t = 0; for (var k in obj) t += obj[k]; return t; }
+
+  function showGate(msg, withBtn) {
+    var g = document.getElementById('i-gate');
+    document.getElementById('i-content').style.display = 'none';
+    g.style.display = 'block';
+    g.innerHTML = '<p>' + esc(msg) + '</p>';
+    if (withBtn) {
+      var b = document.createElement('button');
+      b.textContent = 'Sign in';
+      b.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view Community Insights.', init); });
+      g.appendChild(b);
+    }
+  }
+
+  function tile(value, label, sub, muted) {
+    return '<div class="i-tile"><div class="i-tile-value' + (muted ? ' muted' : '') + '">' + esc(value) + '</div>' +
+      '<div class="i-tile-label">' + esc(label) + '</div>' + (sub ? '<div class="i-tile-sub">' + esc(sub) + '</div>' : '') + '</div>';
+  }
+
+  // A single-series magnitude card: sorted bars, mono green, count + % of
+  // respondents, bar width scaled to the top value so the leader reads full.
+  function barCard(title, note, obj, respondents, span) {
+    var entries = Object.keys(obj || {}).map(function (k) { return [k, obj[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+    var body;
+    if (!entries.length) {
+      body = '<p class="i-empty">No answers yet.</p>';
+    } else {
+      var max = entries[0][1] || 1;
+      body = entries.map(function (e) {
+        var pct = respondents ? Math.round((e[1] / respondents) * 100) : 0;
+        var w = Math.max(3, Math.round((e[1] / max) * 100));
+        return '<div class="i-bar-row"><div class="i-bar-head">' +
+          '<span class="i-bar-label">' + esc(e[0]) + '</span>' +
+          '<span class="i-bar-val">' + e[1] + '<span>' + pct + '%</span></span></div>' +
+          '<div class="i-bar-track"><div class="i-bar-fill" style="width:' + w + '%;"></div></div></div>';
+      }).join('');
+    }
+    return '<div class="i-card' + (span ? ' span2' : '') + '"><div class="i-card-title">' + esc(title) + '</div>' +
+      (note ? '<div class="i-card-note">' + esc(note) + '</div>' : '') + body + '</div>';
+  }
+
+  function quoteCard(title, note, list) {
+    var body = (list && list.length)
+      ? '<div class="i-quote-list">' + list.map(function (q) { return '<div class="i-quote">' + esc(q) + '</div>'; }).join('') + '</div>'
+      : '<p class="i-empty">Nothing yet.</p>';
+    return '<div class="i-card"><div class="i-card-title">' + esc(title) + '</div>' +
+      (note ? '<div class="i-card-note">' + esc(note) + '</div>' : '') + body + '</div>';
+  }
+
+  function render(data) {
+    var ins = data.insights || {};
+    var n = ins.respondents || 0;
+
+    // Selector (once)
+    if (!loadedSelector) {
+      var sel = document.getElementById('i-community');
+      var opts = ['<option value="all">All communities (' + (data.total || 0) + ')</option>'];
+      (data.communities || []).forEach(function (c) {
+        opts.push('<option value="' + esc(c.slug) + '">' + esc(titleize(c.slug)) + ' (' + c.count + ')</option>');
+      });
+      sel.innerHTML = opts.join('');
+      sel.value = currentScope;
+      sel.addEventListener('change', function () { currentScope = sel.value; load(currentScope); });
+      loadedSelector = true;
+    }
+
+    document.getElementById('i-sub').textContent =
+      n + ' survey response' + (n === 1 ? '' : 's') + ' · ' + titleize(data.scope || 'all');
+
+    // KPI tiles
+    var events = ins.events || {};
+    var evTotal = sum(events);
+    var evYes = (events['Definitely'] || 0) + (events['Maybe'] || 0);
+    var evPct = evTotal ? Math.round((evYes / evTotal) * 100) : null;
+    var nps = ins.nps || {};
+    document.getElementById('i-tiles').innerHTML =
+      tile(n, 'Respondents', null, false) +
+      tile(ins.rating_avg != null ? ins.rating_avg + '/5' : '--', 'Avg options rating', 'How they rate local vegan options', ins.rating_avg == null) +
+      tile(nps.score != null ? (nps.score > 0 ? '+' + nps.score : String(nps.score)) : '--', 'NPS', (nps.responses || 0) + ' rated', nps.score == null) +
+      tile(evPct != null ? evPct + '%' : '--', 'Would attend events', 'Definitely or maybe', evPct == null);
+
+    // Bar cards
+    var g = [];
+    g.push(barCard('What’s missing most', '% of respondents who named each gap', ins.missing, n, true));
+    g.push(barCard('Business demand', 'Types they’d support if opened here', ins.demand, n));
+    g.push(barCard('What they want from us', null, ins.wants, n));
+    g.push(barCard('Journey stage', null, ins.stage, n));
+    g.push(barCard('What drew them in', null, ins.drivers, n));
+    g.push(barCard('Biggest challenges', null, ins.challenges, n));
+    g.push(barCard('Monthly spend', 'On vegan food & products', ins.spend, n));
+    g.push(barCard('Eat out / order frequency', null, ins.eatout, n));
+    g.push(barCard('How they like to connect', null, ins.connect, n));
+    g.push(barCard('Willing to contribute', null, ins.contribute, n));
+    g.push(barCard('Who they are', null, ins.roles, n));
+    document.getElementById('i-grid').innerHTML = g.join('');
+
+    // Qualitative
+    document.getElementById('i-qual').innerHTML =
+      quoteCard('Local spots to add', 'Directory leads from members', ins.spots) +
+      quoteCard('Open feedback', 'What would make this worth their time', ins.open) +
+      quoteCard('Their goals this year', null, ins.goals);
+  }
+
+  function load(scope) {
+    fetch(SUPABASE_URL + '/functions/v1/ve-insights', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ token: VEAuth.getToken(), community: scope })
+    }).then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); }).then(function (res) {
+      var d = res.d || {};
+      if (res.status === 403 || d.error === 'forbidden') { showGate('Community Insights is superadmin only. Your account does not have that role yet.', false); return; }
+      if (!d.ok) { showGate('Could not load insights right now. Try again shortly.', false); return; }
+      document.getElementById('i-gate').style.display = 'none';
+      document.getElementById('i-content').style.display = 'block';
+      render(d);
+    }).catch(function () { showGate('Could not reach the insights service. Check your connection and reload.', false); });
+  }
+
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showGate('Sign in to view Community Insights.', true); return; }
+    load(currentScope);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>
