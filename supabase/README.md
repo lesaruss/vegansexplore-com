@@ -15,6 +15,14 @@ design: the site calls it with the anon key in the Authorization header and
 the VE app JWT in `body.token`, and the function does its own verification.
 Keep that setting on any redeploy.
 
+Deployed as v54 on 2026-09-23 with `verify_jwt=false` restored. v53 had
+gone out with the deploy tool's default (`true`), which made Supabase's
+gateway reject every call carrying the VE app token in the Authorization
+header (`account/lesars.html`, two calls in `guide.html`) with
+`401 UNAUTHORIZED_LEGACY_JWT` before the function ran. v54 also added the
+signup honeypot and rate limits (`public.ve_signup_attempts`) and made
+`decodeToken` verify the HMAC instead of only decoding the payload.
+
 Staged and not yet deployed as of 2026-09-09:
 
 - `resolveLaunchedCommunity` normalization. A trailing state or country
