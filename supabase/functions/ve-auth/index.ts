@@ -283,11 +283,34 @@ async function getMemberLayout(memberId: string): Promise<{ module_key: string; 
   return data ?? [];
 }
 
-function decodeToken(token: string): { sub: string; exp: number } | null {
+// Verifies the HMAC before trusting anything in the token (2026-09-23). This
+// used to base64-decode the payload and check only `exp`, so anyone who knew a
+// member's id could mint a token with that `sub` and act as them on every
+// action below. lr-shell flagged it and verified its own copy; this closes it
+// here. Same key derivation as signJWT above (first 32 bytes of the service
+// key, zero-padded), so every legitimately issued token still verifies; the
+// ve-entry-checkout and ve-passport-checkout functions already verify the
+// same tokens the same way.
+function b64urlDecodeToBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+async function decodeToken(token: string): Promise<{ sub: string; exp: number } | null> {
   try {
-    const [, payload] = token.split('.');
-    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    if (decoded.exp < Math.floor(Date.now() / 1000)) return null;
+    if (typeof token !== 'string') return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [header, payload, sig] = parts;
+    const secret = new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
+    const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    const ok = await crypto.subtle.verify('HMAC', key, b64urlDecodeToBytes(sig), new TextEncoder().encode(`${header}.${payload}`));
+    if (!ok) return null;
+    const decoded = JSON.parse(new TextDecoder().decode(b64urlDecodeToBytes(payload)));
+    if (typeof decoded.sub !== 'string' || decoded.exp < Math.floor(Date.now() / 1000)) return null;
     return decoded;
   } catch { return null; }
 }
@@ -559,6 +582,63 @@ function resolveLaunchedCommunity(citySlug: string, stateSlug?: string | null): 
   return null;
 }
 
+// ---- Signup abuse guard (2026-09-23, error_registry VE-BOT-SIGNUP-WAVE-2026-09-17)
+// From 2026-09-17 an automated wave hit signup at ~6/day (baseline ~1/week):
+// harvested addresses, no payment, email never verified. Every one of those
+// requests also sent a welcome and a verification email to someone who never
+// signed up, so the damage was our sender reputation as much as the members
+// table. Two guards run before any insert or email:
+//   1. Honeypot. The signup forms carry a hidden `website` field a person
+//      never sees. If it arrives filled, answer with the same shape a real
+//      pending signup gets and create nothing, so a bot learns nothing.
+//   2. Rate limits from public.ve_signup_attempts: per client IP, and per
+//      email domain. Freemail domains get a much higher ceiling, since many
+//      real people share gmail.com; a company domain is one organization.
+// The IP is only ever stored as a salted hash. A request with no client IP
+// header skips the IP limit rather than pooling every such request into one
+// bucket that could lock out real people.
+const SIGNUP_IP_LIMIT_PER_HOUR = 3;
+const SIGNUP_DOMAIN_LIMIT_PER_HOUR = 3;
+const SIGNUP_FREEMAIL_DOMAIN_LIMIT_PER_HOUR = 30;
+const FREEMAIL_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.uk', 'ymail.com', 'hotmail.com', 'hotmail.co.uk',
+  'outlook.com', 'live.com', 'live.ca', 'msn.com', 'aol.com', 'icloud.com', 'me.com', 'mac.com',
+  'proton.me', 'protonmail.com', 'gmx.com', 'mail.com', 'zoho.com', 'comcast.net', 'verizon.net',
+  'att.net', 'sbcglobal.net', 'cox.net', 'charter.net', 'bellsouth.net', 'tmomail.net',
+]);
+
+function signupClientIp(req: Request): string | null {
+  const fwd = req.headers.get('x-forwarded-for');
+  const first = fwd ? fwd.split(',')[0].trim() : '';
+  return first || req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || null;
+}
+
+async function hashSignupIp(ip: string): Promise<string> {
+  const data = new TextEncoder().encode(`ve-signup:${SERVICE_KEY.slice(-24)}:${ip}`);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function logSignupAttempt(ip_hash: string | null, email_domain: string | null, outcome: string, member_id: string | null = null) {
+  // Never let the audit log be the reason a real signup fails.
+  try {
+    await supabase.from('ve_signup_attempts').insert({ ip_hash, email_domain, outcome, member_id });
+  } catch (_e) { /* best effort */ }
+}
+
+async function signupAttemptsSince(column: 'ip_hash' | 'email_domain', value: string, outcomes: string[]): Promise<number> {
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count, error } = await supabase
+    .from('ve_signup_attempts')
+    .select('id', { count: 'exact', head: true })
+    .eq(column, value)
+    .in('outcome', outcomes)
+    .gte('created_at', since);
+  // Fail open: a broken counter must not lock real people out of signing up.
+  if (error) return 0;
+  return count ?? 0;
+}
+
 async function currentMonthPeriod(): Promise<string> {
   const d = new Date();
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
@@ -579,8 +659,38 @@ serve(async (req: Request) => {
       if (!email || !password || !name) return new Response(JSON.stringify({ error: 'email, password, and name required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       if (password.length < 8) return new Response(JSON.stringify({ error: 'Password must be at least 8 characters' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
+      // Abuse guard, see the block above currentMonthPeriod().
+      const clientIp = signupClientIp(req);
+      const ip_hash = clientIp ? await hashSignupIp(clientIp) : null;
+      const email_domain = String(email).toLowerCase().split('@').pop() || null;
+
+      if (typeof body.website === 'string' && body.website.trim() !== '') {
+        await logSignupAttempt(ip_hash, email_domain, 'honeypot');
+        return new Response(JSON.stringify({ member: { membership_status: 'pending_payment' } }), { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      const limited = { error: 'Too many sign-up attempts. Please try again in an hour, or sign in if you already have a Passport.' };
+      if (ip_hash) {
+        const fromIp = await signupAttemptsSince('ip_hash', ip_hash, ['created', 'honeypot', 'rate_limited_ip', 'rate_limited_domain']);
+        if (fromIp >= SIGNUP_IP_LIMIT_PER_HOUR) {
+          await logSignupAttempt(ip_hash, email_domain, 'rate_limited_ip');
+          return new Response(JSON.stringify(limited), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+      }
+      if (email_domain) {
+        const cap = FREEMAIL_DOMAINS.has(email_domain) ? SIGNUP_FREEMAIL_DOMAIN_LIMIT_PER_HOUR : SIGNUP_DOMAIN_LIMIT_PER_HOUR;
+        const fromDomain = await signupAttemptsSince('email_domain', email_domain, ['created']);
+        if (fromDomain >= cap) {
+          await logSignupAttempt(ip_hash, email_domain, 'rate_limited_domain');
+          return new Response(JSON.stringify(limited), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+      }
+
       const existing = await findMemberByEmail(email.toLowerCase());
-      if (existing) return new Response(JSON.stringify({ error: 'An account with that email already exists.' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (existing) {
+        await logSignupAttempt(ip_hash, email_domain, 'duplicate');
+        return new Response(JSON.stringify({ error: 'An account with that email already exists.' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
 
       const password_hash = await hashPassword(password);
       const initials = name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
@@ -602,7 +712,11 @@ serve(async (req: Request) => {
         tenant_id: VE_TENANT_ID,
       }).select(MEMBER_FIELDS + ', membership_status').single();
 
-      if (insertErr) throw new Error(`signup insert failed: ${insertErr.message}`);
+      if (insertErr) {
+        await logSignupAttempt(ip_hash, email_domain, 'error');
+        throw new Error(`signup insert failed: ${insertErr.message}`);
+      }
+      await logSignupAttempt(ip_hash, email_domain, 'created', member.id);
 
       if (home_community) {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
@@ -759,7 +873,7 @@ serve(async (req: Request) => {
     if (action === 'complete_onboarding') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const {
@@ -821,7 +935,7 @@ serve(async (req: Request) => {
     if (action === 'set_home_community') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const home_community = sanitizeCommunity(body.home_community);
@@ -842,7 +956,7 @@ serve(async (req: Request) => {
     if (action === 'join_community') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const community_slug = sanitizeCommunity(body.community_slug);
@@ -863,7 +977,7 @@ serve(async (req: Request) => {
     if (action === 'leave_community') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const community_slug = sanitizeCommunity(body.community_slug);
@@ -883,7 +997,7 @@ serve(async (req: Request) => {
     if (action === 'join_campaign') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const initiative_slug = await isValidInitiativeSlug(body.initiative_slug);
@@ -904,7 +1018,7 @@ serve(async (req: Request) => {
     if (action === 'leave_campaign') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const initiative_slug = typeof body.initiative_slug === 'string' ? body.initiative_slug : null;
@@ -924,7 +1038,7 @@ serve(async (req: Request) => {
     if (action === 'follow_podcast') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const podcast_show = sanitizePodcastShow(body.podcast_show);
@@ -945,7 +1059,7 @@ serve(async (req: Request) => {
     if (action === 'unfollow_podcast') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const podcast_show = sanitizePodcastShow(body.podcast_show);
@@ -965,7 +1079,7 @@ serve(async (req: Request) => {
     if (action === 'get_layout') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -977,7 +1091,7 @@ serve(async (req: Request) => {
     if (action === 'save_layout') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -1009,7 +1123,7 @@ serve(async (req: Request) => {
     if (action === 'hide_module') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const module_key = sanitizeModule(body.module_key);
@@ -1027,7 +1141,7 @@ serve(async (req: Request) => {
     if (action === 'show_module') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const module_key = sanitizeModule(body.module_key);
@@ -1047,7 +1161,7 @@ serve(async (req: Request) => {
     if (action === 'save_listing') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
@@ -1067,7 +1181,7 @@ serve(async (req: Request) => {
     if (action === 'unsave_listing') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
@@ -1086,7 +1200,7 @@ serve(async (req: Request) => {
     if (action === 'list_saved_listings') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const { data, error } = await supabase
@@ -1105,7 +1219,7 @@ serve(async (req: Request) => {
     if (action === 'vote_listing') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
@@ -1132,7 +1246,7 @@ serve(async (req: Request) => {
     if (action === 'mission_survey_status') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const { data: member } = await supabase.from('members').select('membership_status, membership_tier, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
@@ -1159,7 +1273,7 @@ serve(async (req: Request) => {
     if (action === 'submit_mission_survey') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const responseText = typeof body.response_text === 'string' ? body.response_text.trim() : '';
@@ -1218,7 +1332,7 @@ serve(async (req: Request) => {
     if (action === 'list_guest_reviews') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
@@ -1236,7 +1350,7 @@ serve(async (req: Request) => {
     if (action === 'review_guest') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
@@ -1265,7 +1379,7 @@ serve(async (req: Request) => {
     if (action === 'me') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
       if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -1322,7 +1436,7 @@ serve(async (req: Request) => {
     if (action === 'join_city') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const rawCity = typeof body.city === 'string' ? body.city.trim() : '';
@@ -1439,7 +1553,7 @@ serve(async (req: Request) => {
       let balance: number | null = null;
 
       const token = typeof body.token === 'string' ? body.token : '';
-      const decoded = token ? decodeToken(token) : null;
+      const decoded = token ? await decodeToken(token) : null;
 
       if (decoded) {
         const { data: member } = await supabase.from('members').select('id, name, membership_tier').eq('id', decoded.sub).maybeSingle();

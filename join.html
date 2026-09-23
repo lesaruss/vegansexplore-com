@@ -106,6 +106,11 @@
             <input type="text" id="join-referral" name="referral_code" placeholder="VE-XXXXXX" autocomplete="off" style="text-transform:uppercase;">
           </div>
         </div>
+        <!-- Honeypot (VE-BOT-SIGNUP-WAVE-2026-09-17): hidden from people and screen readers; a filled value means a bot. -->
+        <div aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">
+          <label for="join-website">Leave this field empty</label>
+          <input type="text" id="join-website" name="website" tabindex="-1" autocomplete="off" value="">
+        </div>
         <button type="submit" class="join-submit" id="join-submit">Create My Passport</button>
       </form>
       <p class="join-terms">By joining, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.</p>
@@ -145,7 +150,7 @@
       if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
       if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
       setLoading(true);
-      VEAuth.signup(email, password, name, refCode, community)
+      VEAuth.signup(email, password, name, refCode, community, document.getElementById('join-website').value)
         .then(function(d) {
           if (d.error) { showError(d.error); setLoading(false); return; }
           // Pay-or-pledge gate (2026-09-17): a fresh signup lands

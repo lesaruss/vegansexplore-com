@@ -39,7 +39,7 @@ function clearViewAs(){try{localStorage.removeItem('ve_view_as');}catch(e){}wind
 function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0,is_superadmin:false,ve_tier:v.tier||real.ve_tier,ve_role:(v.role!==undefined?v.role:null)}):null;}return getRealMember();}
 function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken();}
 function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}return d;});}
-function signup(email,password,name,ref,community){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
+function signup(email,password,name,ref,community,website){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null,website:website||''}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function loginWithGoogle(idToken,community){return call('google',{id_token:idToken,home_community:community||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function forgotPassword(email){return call('forgot_password',{email:email});}
@@ -302,6 +302,7 @@ el.innerHTML=
 '<div class="ve-am-field" id="ve-am-name-wrap" style="display:none;"><label for="ve-am-name">Name</label><input type="text" id="ve-am-name" name="name" autocomplete="name" placeholder="Your name"></div>'+
 '<div class="ve-am-field"><label for="ve-am-email">Email</label><input type="email" id="ve-am-email" name="email" autocomplete="email" placeholder="you@example.com" required></div>'+
 '<div class="ve-am-field"><label for="ve-am-password">Password</label><input type="password" id="ve-am-password" name="password" autocomplete="current-password" placeholder="Your password" required></div>'+
+'<div aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;"><label for="ve-am-website">Leave this field empty</label><input type="text" id="ve-am-website" name="website" tabindex="-1" autocomplete="off" value=""></div>'+
 '<button type="submit" id="ve-am-submit">Sign In</button>'+
 '</form>'+
 '</div>';
@@ -322,7 +323,7 @@ var name=document.getElementById('ve-am-name').value.trim();
 if(!name){_showErr('Please enter your name.');return;}
 if(pw.length<8){_showErr('Password must be at least 8 characters.');return;}
 btn.disabled=true;btn.textContent='Creating your Passport...';
-signup(email,pw,name).then(function(d){
+signup(email,pw,name,null,null,(document.getElementById('ve-am-website')||{}).value).then(function(d){
 btn.disabled=false;btn.textContent='Create Account';
 if(d.error){_showErr(d.error);return;}
 hideAuthModal();
