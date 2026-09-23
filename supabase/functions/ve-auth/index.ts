@@ -559,6 +559,63 @@ function resolveLaunchedCommunity(citySlug: string, stateSlug?: string | null): 
   return null;
 }
 
+// ---- Signup abuse guard (2026-09-23, error_registry VE-BOT-SIGNUP-WAVE-2026-09-17)
+// From 2026-09-17 an automated wave hit signup at ~6/day (baseline ~1/week):
+// harvested addresses, no payment, email never verified. Every one of those
+// requests also sent a welcome and a verification email to someone who never
+// signed up, so the damage was our sender reputation as much as the members
+// table. Two guards run before any insert or email:
+//   1. Honeypot. The signup forms carry a hidden `website` field a person
+//      never sees. If it arrives filled, answer with the same shape a real
+//      pending signup gets and create nothing, so a bot learns nothing.
+//   2. Rate limits from public.ve_signup_attempts: per client IP, and per
+//      email domain. Freemail domains get a much higher ceiling, since many
+//      real people share gmail.com; a company domain is one organization.
+// The IP is only ever stored as a salted hash. A request with no client IP
+// header skips the IP limit rather than pooling every such request into one
+// bucket that could lock out real people.
+const SIGNUP_IP_LIMIT_PER_HOUR = 3;
+const SIGNUP_DOMAIN_LIMIT_PER_HOUR = 3;
+const SIGNUP_FREEMAIL_DOMAIN_LIMIT_PER_HOUR = 30;
+const FREEMAIL_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.uk', 'ymail.com', 'hotmail.com', 'hotmail.co.uk',
+  'outlook.com', 'live.com', 'live.ca', 'msn.com', 'aol.com', 'icloud.com', 'me.com', 'mac.com',
+  'proton.me', 'protonmail.com', 'gmx.com', 'mail.com', 'zoho.com', 'comcast.net', 'verizon.net',
+  'att.net', 'sbcglobal.net', 'cox.net', 'charter.net', 'bellsouth.net', 'tmomail.net',
+]);
+
+function signupClientIp(req: Request): string | null {
+  const fwd = req.headers.get('x-forwarded-for');
+  const first = fwd ? fwd.split(',')[0].trim() : '';
+  return first || req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || null;
+}
+
+async function hashSignupIp(ip: string): Promise<string> {
+  const data = new TextEncoder().encode(`ve-signup:${SERVICE_KEY.slice(-24)}:${ip}`);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function logSignupAttempt(ip_hash: string | null, email_domain: string | null, outcome: string, member_id: string | null = null) {
+  // Never let the audit log be the reason a real signup fails.
+  try {
+    await supabase.from('ve_signup_attempts').insert({ ip_hash, email_domain, outcome, member_id });
+  } catch (_e) { /* best effort */ }
+}
+
+async function signupAttemptsSince(column: 'ip_hash' | 'email_domain', value: string, outcomes: string[]): Promise<number> {
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count, error } = await supabase
+    .from('ve_signup_attempts')
+    .select('id', { count: 'exact', head: true })
+    .eq(column, value)
+    .in('outcome', outcomes)
+    .gte('created_at', since);
+  // Fail open: a broken counter must not lock real people out of signing up.
+  if (error) return 0;
+  return count ?? 0;
+}
+
 async function currentMonthPeriod(): Promise<string> {
   const d = new Date();
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
@@ -579,8 +636,38 @@ serve(async (req: Request) => {
       if (!email || !password || !name) return new Response(JSON.stringify({ error: 'email, password, and name required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       if (password.length < 8) return new Response(JSON.stringify({ error: 'Password must be at least 8 characters' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
+      // Abuse guard, see the block above currentMonthPeriod().
+      const clientIp = signupClientIp(req);
+      const ip_hash = clientIp ? await hashSignupIp(clientIp) : null;
+      const email_domain = String(email).toLowerCase().split('@').pop() || null;
+
+      if (typeof body.website === 'string' && body.website.trim() !== '') {
+        await logSignupAttempt(ip_hash, email_domain, 'honeypot');
+        return new Response(JSON.stringify({ member: { membership_status: 'pending_payment' } }), { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      const limited = { error: 'Too many sign-up attempts. Please try again in an hour, or sign in if you already have a Passport.' };
+      if (ip_hash) {
+        const fromIp = await signupAttemptsSince('ip_hash', ip_hash, ['created', 'honeypot', 'rate_limited_ip', 'rate_limited_domain']);
+        if (fromIp >= SIGNUP_IP_LIMIT_PER_HOUR) {
+          await logSignupAttempt(ip_hash, email_domain, 'rate_limited_ip');
+          return new Response(JSON.stringify(limited), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+      }
+      if (email_domain) {
+        const cap = FREEMAIL_DOMAINS.has(email_domain) ? SIGNUP_FREEMAIL_DOMAIN_LIMIT_PER_HOUR : SIGNUP_DOMAIN_LIMIT_PER_HOUR;
+        const fromDomain = await signupAttemptsSince('email_domain', email_domain, ['created']);
+        if (fromDomain >= cap) {
+          await logSignupAttempt(ip_hash, email_domain, 'rate_limited_domain');
+          return new Response(JSON.stringify(limited), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+      }
+
       const existing = await findMemberByEmail(email.toLowerCase());
-      if (existing) return new Response(JSON.stringify({ error: 'An account with that email already exists.' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (existing) {
+        await logSignupAttempt(ip_hash, email_domain, 'duplicate');
+        return new Response(JSON.stringify({ error: 'An account with that email already exists.' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
 
       const password_hash = await hashPassword(password);
       const initials = name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
@@ -602,7 +689,11 @@ serve(async (req: Request) => {
         tenant_id: VE_TENANT_ID,
       }).select(MEMBER_FIELDS + ', membership_status').single();
 
-      if (insertErr) throw new Error(`signup insert failed: ${insertErr.message}`);
+      if (insertErr) {
+        await logSignupAttempt(ip_hash, email_domain, 'error');
+        throw new Error(`signup insert failed: ${insertErr.message}`);
+      }
+      await logSignupAttempt(ip_hash, email_domain, 'created', member.id);
 
       if (home_community) {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
