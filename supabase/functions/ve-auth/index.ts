@@ -283,11 +283,34 @@ async function getMemberLayout(memberId: string): Promise<{ module_key: string; 
   return data ?? [];
 }
 
-function decodeToken(token: string): { sub: string; exp: number } | null {
+// Verifies the HMAC before trusting anything in the token (2026-09-23). This
+// used to base64-decode the payload and check only `exp`, so anyone who knew a
+// member's id could mint a token with that `sub` and act as them on every
+// action below. lr-shell flagged it and verified its own copy; this closes it
+// here. Same key derivation as signJWT above (first 32 bytes of the service
+// key, zero-padded), so every legitimately issued token still verifies; the
+// ve-entry-checkout and ve-passport-checkout functions already verify the
+// same tokens the same way.
+function b64urlDecodeToBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+async function decodeToken(token: string): Promise<{ sub: string; exp: number } | null> {
   try {
-    const [, payload] = token.split('.');
-    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    if (decoded.exp < Math.floor(Date.now() / 1000)) return null;
+    if (typeof token !== 'string') return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [header, payload, sig] = parts;
+    const secret = new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
+    const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    const ok = await crypto.subtle.verify('HMAC', key, b64urlDecodeToBytes(sig), new TextEncoder().encode(`${header}.${payload}`));
+    if (!ok) return null;
+    const decoded = JSON.parse(new TextDecoder().decode(b64urlDecodeToBytes(payload)));
+    if (typeof decoded.sub !== 'string' || decoded.exp < Math.floor(Date.now() / 1000)) return null;
     return decoded;
   } catch { return null; }
 }
@@ -850,7 +873,7 @@ serve(async (req: Request) => {
     if (action === 'complete_onboarding') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const {
@@ -912,7 +935,7 @@ serve(async (req: Request) => {
     if (action === 'set_home_community') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const home_community = sanitizeCommunity(body.home_community);
@@ -933,7 +956,7 @@ serve(async (req: Request) => {
     if (action === 'join_community') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const community_slug = sanitizeCommunity(body.community_slug);
@@ -954,7 +977,7 @@ serve(async (req: Request) => {
     if (action === 'leave_community') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const community_slug = sanitizeCommunity(body.community_slug);
@@ -974,7 +997,7 @@ serve(async (req: Request) => {
     if (action === 'join_campaign') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const initiative_slug = await isValidInitiativeSlug(body.initiative_slug);
@@ -995,7 +1018,7 @@ serve(async (req: Request) => {
     if (action === 'leave_campaign') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const initiative_slug = typeof body.initiative_slug === 'string' ? body.initiative_slug : null;
@@ -1015,7 +1038,7 @@ serve(async (req: Request) => {
     if (action === 'follow_podcast') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const podcast_show = sanitizePodcastShow(body.podcast_show);
@@ -1036,7 +1059,7 @@ serve(async (req: Request) => {
     if (action === 'unfollow_podcast') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const podcast_show = sanitizePodcastShow(body.podcast_show);
@@ -1056,7 +1079,7 @@ serve(async (req: Request) => {
     if (action === 'get_layout') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -1068,7 +1091,7 @@ serve(async (req: Request) => {
     if (action === 'save_layout') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -1100,7 +1123,7 @@ serve(async (req: Request) => {
     if (action === 'hide_module') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const module_key = sanitizeModule(body.module_key);
@@ -1118,7 +1141,7 @@ serve(async (req: Request) => {
     if (action === 'show_module') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const module_key = sanitizeModule(body.module_key);
@@ -1138,7 +1161,7 @@ serve(async (req: Request) => {
     if (action === 'save_listing') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
@@ -1158,7 +1181,7 @@ serve(async (req: Request) => {
     if (action === 'unsave_listing') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
@@ -1177,7 +1200,7 @@ serve(async (req: Request) => {
     if (action === 'list_saved_listings') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const { data, error } = await supabase
@@ -1196,7 +1219,7 @@ serve(async (req: Request) => {
     if (action === 'vote_listing') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const listing_id = typeof body.listing_id === 'string' ? body.listing_id : null;
@@ -1223,7 +1246,7 @@ serve(async (req: Request) => {
     if (action === 'mission_survey_status') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const { data: member } = await supabase.from('members').select('membership_status, membership_tier, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
@@ -1250,7 +1273,7 @@ serve(async (req: Request) => {
     if (action === 'submit_mission_survey') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const responseText = typeof body.response_text === 'string' ? body.response_text.trim() : '';
@@ -1309,7 +1332,7 @@ serve(async (req: Request) => {
     if (action === 'list_guest_reviews') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
@@ -1327,7 +1350,7 @@ serve(async (req: Request) => {
     if (action === 'review_guest') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       if (!(await isSuperadmin(decoded.sub))) return new Response(JSON.stringify({ error: 'Superadmin only.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
@@ -1356,7 +1379,7 @@ serve(async (req: Request) => {
     if (action === 'me') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
       if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -1413,7 +1436,7 @@ serve(async (req: Request) => {
     if (action === 'join_city') {
       const token = body.token;
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const decoded = decodeToken(token);
+      const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const rawCity = typeof body.city === 'string' ? body.city.trim() : '';
@@ -1530,7 +1553,7 @@ serve(async (req: Request) => {
       let balance: number | null = null;
 
       const token = typeof body.token === 'string' ? body.token : '';
-      const decoded = token ? decodeToken(token) : null;
+      const decoded = token ? await decodeToken(token) : null;
 
       if (decoded) {
         const { data: member } = await supabase.from('members').select('id, name, membership_tier').eq('id', decoded.sub).maybeSingle();
