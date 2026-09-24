@@ -77,7 +77,9 @@
     audience_required: 'Tell us who you are at the top of the guide first.',
     message_required: 'Please write your question.',
     event_choice_required: 'Pick which Community Night you want.',
-    sold_out: 'All five Activation Partner spots are taken. Ask a question below and we will add you to the list.',
+    sold_out: 'All five Activation Partner spots are taken. Ask a question below to talk through other options.',
+    meeting_requires_8k_budget: 'Meetings with Sean start at $8,000. Choose that budget above, or pick a self-serve option.',
+    already_holding: 'You already have a spot on hold. Check your email for the details.',
     too_many_requests: 'We received several requests from this email in the last hour. Please try again later.',
     city_not_live: 'Checkout opens when your city goes live. Leave your email and we will tell you first.'
   };
@@ -175,19 +177,19 @@
     var city = d.cities.filter(function (c) { return c.slug === s.city; })[0];
     if (city && city.status !== 'live') {
       return '<h3 class="vpg-results-head">' + esc(city.name) + ' is coming</h3>' +
-        '<p class="vpg-results-sub">A Community Manager is already lined up. The city opens when the numbers show it can support the season. Leave your email and you will hear first.</p>' +
-        '<div class="vpg-grid"><div class="vpg-card featured"><h3>Get notified</h3><p class="vpg-tagline">One email when ' + esc(city.name) + ' goes live, with the partner menu for your city.</p>' +
+        '<p class="vpg-results-sub">A Community Manager is already lined up. The city opens when the numbers show it can support the season. Leave your email and the team will reach out when it opens.</p>' +
+        '<div class="vpg-grid"><div class="vpg-card featured"><h3>Get on the list</h3><p class="vpg-tagline">Tell us you are interested in ' + esc(city.name) + ' and the team will be in touch when it opens.</p>' +
         '<div class="vpg-actions"><button type="button" class="vpg-btn" data-open="notify-city">Notify me</button></div>' +
         this.form('notify-city', 'notify', null, 'Notify me') + '</div></div>';
     }
     var m = this.matches();
     var head = s.audience === 'attendee' ? 'Your way in' : 'What fits you';
     var sub = s.audience === 'attendee'
-      ? 'Membership is the one ask for everyone. It covers entry to member events all season.'
-      : (m.list.length ? 'Pick one and lock it in. Every option includes a report within 7 days of each event.' : '');
+      ? 'Membership is the one ask for everyone. It covers entry to member events for the year.'
+      : (m.list.length ? 'Options under $8,000 check out right here. $8,000 and up starts with a call with Sean.' : '');
     var html = '<h3 class="vpg-results-head">' + head + '</h3>' + (sub ? '<p class="vpg-results-sub">' + sub + '</p>' : '');
     if (!m.list.length) {
-      html += '<p class="vpg-empty">Nothing on the menu matches that budget yet. Ask a question below and we will build around it.</p>';
+      html += '<p class="vpg-empty">Nothing on the menu matches that budget yet. Try a different range, or ask a question below.</p>';
     } else {
       html += '<div class="vpg-grid">' + m.list.map(function (o, i) { return self.card(o, i === 0); }).join('') + '</div>';
     }
@@ -253,11 +255,11 @@
     var city = d.cities.filter(function (c) { return c.slug === s.city; })[0] || {};
     var who = s.audience === 'national_brand'
       ? 'National brand questions go straight to Sean.'
-      : (city.status === 'live' && city.manager_name
+      : (city.status === 'live' && city.manager_name && city.manager_routed
         ? 'Your question goes to ' + esc(city.manager_name) + ', our ' + esc(city.name) + ' Community Manager, with Sean copied.'
         : 'Your question goes to the Vegans Explore team.');
     var me = member();
-    return '<section class="vpg-ask" aria-labelledby="vpg-ask-h"><h3 id="vpg-ask-h">Ask a question</h3><p class="vpg-hint" style="margin:0 0 6px;">' + who + ' Expect a reply within two business days.</p>' +
+    return '<section class="vpg-ask" aria-labelledby="vpg-ask-h"><h3 id="vpg-ask-h">Ask a question</h3><p class="vpg-hint" style="margin:0 0 6px;">' + who + ' We reply by email.</p>' +
       '<form class="vpg-form" data-kind="question" data-offer="" novalidate>' +
       '<div class="vpg-row"><label>Name<input class="vpg-input" name="name" autocomplete="name" required value="' + esc(me.name || '') + '"></label>' +
       '<label>Email<input class="vpg-input" name="email" type="email" autocomplete="email" required value="' + esc(me.email || '') + '"></label></div>' +
@@ -328,8 +330,8 @@
         if (!res.ok || j.error) { btn.disabled = false; show('err', ERRORS[j.error] || 'Something went wrong. Please try again, or email contact@vegansexplore.com.'); return; }
         if (kind === 'checkout' && j.url) { window.location.href = j.url; return; }
         var msg = {
-          question: 'Got it. Your question is on its way, and a copy is in your inbox.',
-          notify: 'You are on the list. We will email you first.',
+          question: 'Got it. Your question is on its way, and we emailed you a copy.',
+          notify: 'You are on the list. The team will reach out when it opens.',
           meeting: 'Request received. <a href="' + esc(j.meeting_url) + '" target="_blank" rel="noopener">Pick a time on Sean\'s calendar</a>. The link is in your email too.',
           reserve: 'Your spot is held until ' + esc(new Date(j.hold_expires_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })) + '. <a href="' + esc(j.meeting_url) + '" target="_blank" rel="noopener">Book your call with Sean</a> to finalize pricing.'
         }[kind];

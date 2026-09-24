@@ -483,7 +483,8 @@ Deno.serve(async (req: Request) => {
           await send([email], `You're in: ${offerName}`, shell(`You're in, ${first}.`,
             para(`Payment of ${amount} received for <strong>${esc(offerName)}${esc(eventChoice)}</strong>. Here is what is included:`) +
             list(offer?.includes ?? []) + membershipLine +
-            para('Your Community Manager will reach out with next steps. Questions? Just reply to this email.')))
+            para('The Vegans Explore team will reach out with next steps. Questions? Just reply to this email.')),
+            (Array.isArray(sp.routed_to) && sp.routed_to[0]) || 'contact@lesaruss.com')
         }
         const routed: string[] = Array.isArray(sp.routed_to) && sp.routed_to.length ? sp.routed_to : ['contact@lesaruss.com']
         await send(routed, `[Explore Season] Paid ${amount}: ${offerName} - ${sp.company_name || sp.contact_name}`, shell('New Partners Guide purchase',

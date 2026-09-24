@@ -185,10 +185,12 @@ Deno.serve(async (req: Request) => {
     if (action === 'catalog') {
       const [{ data: offers }, { data: cities }, spots] = await Promise.all([
         supabase.from('ve_partner_offers').select('slug,name,tagline,price_cents,price_label,price_note,exit,audiences,goals,min_budget_cents,includes,includes_membership,capacity,event_choices,early_sign_note,sort').eq('active', true).order('sort'),
-        supabase.from('ve_partner_cities').select('slug,name,status,manager_name,sort').order('sort'),
+        supabase.from('ve_partner_cities').select('slug,name,status,manager_name,manager_email,sort').order('sort'),
         activationSpotsLeft(),
       ]);
-      return json({ offers: offers ?? [], cities: cities ?? [], activation_spots_left: spots, meeting_url: MEETING_URL });
+      // Only whether a manager inbox is on file leaves the server, never the address.
+      const publicCities = (cities ?? []).map(({ manager_email, ...c }: any) => ({ ...c, manager_routed: !!manager_email }));
+      return json({ offers: offers ?? [], cities: publicCities, activation_spots_left: spots });
     }
 
     if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -265,6 +267,7 @@ Deno.serve(async (req: Request) => {
         'cancel_url': `${SITE}/partners?checkout=cancelled&offer=${encodeURIComponent(offer.slug)}`,
         'customer_email': contact.email,
         'billing_address_collection': 'auto',
+        'payment_intent_data[receipt_email]': contact.email,
         'client_reference_id': row.id,
         'metadata[type]': 'partner_guide_purchase',
         'metadata[sponsor_id]': row.id,
@@ -295,10 +298,15 @@ Deno.serve(async (req: Request) => {
       if (!['question', 'meeting', 'reserve', 'notify'].includes(kind)) return json({ error: 'unknown_kind' }, 400);
       if ((kind === 'meeting' || kind === 'reserve') && (!offer || offer.exit !== 'meeting')) return json({ error: 'offer_requires_meeting_tier' }, 400);
       if (kind === 'question' && !contact.message) return json({ error: 'message_required' }, 400);
+      // Nobody under $8K books Sean (playbook routing rule); everyone can still buy or ask.
+      if ((kind === 'meeting' || kind === 'reserve') && contact.answers.budget !== '8k_plus') return json({ error: 'meeting_requires_8k_budget' }, 400);
 
       let holdUntil: string | null = null;
       if (kind === 'reserve') {
         if (offer.capacity && (await activationSpotsLeft()) <= 0 && offer.slug === 'activation-partner') return json({ error: 'sold_out' }, 409);
+        const { count: liveHolds } = await supabase.from('sponsors').select('id', { count: 'exact', head: true })
+          .eq('contact_email', contact.email).eq('offer_slug', offer.slug).eq('status', 'reserved').gt('hold_expires_at', new Date().toISOString());
+        if ((liveHolds ?? 0) > 0) return json({ error: 'already_holding' }, 409);
         holdUntil = new Date(Date.now() + HOLD_DAYS * 86400_000).toISOString();
       }
 
@@ -325,10 +333,11 @@ Deno.serve(async (req: Request) => {
 
       const first = esc(contact.name.split(' ')[0]);
       const confirmBody = {
-        question: p(`Thanks, ${first}. Your question reached the Vegans Explore team${city.status === 'live' ? ` in ${esc(city.name)}` : ''}. Expect a reply by email within two business days.`),
+        question: p(`Thanks, ${first}. Your question reached the Vegans Explore team${city.status === 'live' ? ` in ${esc(city.name)}` : ''}, and we will reply by email.`) +
+          p('<strong>Your question</strong><br>' + esc(contact.message).replace(/\n/g, '<br>')),
         meeting: p(`Thanks, ${first}. Pick a time for your discovery call with Sean here: <a href="${MEETING_URL}">${MEETING_URL}</a>. If none of the times work, reply to this email.`),
         reserve: p(`Thanks, ${first}. Your ${esc(offer?.name ?? '')} spot is held until <strong>${holdUntil ? new Date(holdUntil).toDateString() : ''}</strong> while we finalize pricing together. Book your call with Sean here: <a href="${MEETING_URL}">${MEETING_URL}</a>.`),
-        notify: p(`Thanks, ${first}. We will email you the moment ${offer ? esc(offer.name) : 'this'} opens${city.status !== 'live' ? ` or when ${esc(city.name)} goes live` : ''}.`),
+        notify: p(`Thanks, ${first}. You are on our list for ${offer ? esc(offer.name) : esc(city.name)}, and the team will reach out when it opens.`),
       }[kind]!;
       await sendEmail([contact.email], kind === 'reserve' ? 'Your Explore Season spot is held for 7 days' : 'We got it - Vegans Explore', emailShell('We got it.', confirmBody));
 
