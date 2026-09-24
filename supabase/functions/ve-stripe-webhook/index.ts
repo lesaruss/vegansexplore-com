@@ -406,7 +406,7 @@ Deno.serve(async (req: Request) => {
     // --- Explore Season Partners Guide purchase (ve-partner-guide sessions carry this metadata) ---
     // Added 2026-09-24 (Logan) per the locked playbook explore-season-partners-guide.
     // ve-partner-guide writes a pending public.sponsors row before sending the
-    // buyer to Stripe; this flips it to active, grants a year of membership when
+    // buyer to Stripe; this flips it to active, grants the one-time membership when
     // the offer includes it (Member, Community Night tables), and emails the
     // buyer plus whoever the row was routed to (city Community Manager and/or
     // Sean). A buyer with no account yet keeps the membership waiting on the
@@ -471,7 +471,7 @@ Deno.serve(async (req: Request) => {
         const first = esc(String(sp.contact_name || '').split(' ')[0] || 'there')
         const membershipLine = sp.includes_membership
           ? (claimedBy
-            ? para('Your Vegans Explore membership is active on your account for the year.')
+            ? para('Your Vegans Explore Founding Membership is active on your account. It is one time and never renews.')
             : para(`Your membership is included. Create your account at <a href="https://vegansexplore.com/join">vegansexplore.com/join</a> with this same email (${esc(email)}) and it will already be active.`))
           : ''
         const send = (to: string[], subject: string, html: string, replyTo?: string) => fetch('https://api.resend.com/emails', {

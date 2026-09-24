@@ -48,7 +48,9 @@
     '.ve-announce-text{font-size:11px;font-weight:700;color:#15803D;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1;transition:opacity 0.25s;}',
     '.ve-announce-text.fading{opacity:0;}',
     '.ve-nav-right-wrap{display:flex;align-items:center;}',
-    '@media(max-width:900px){.ve-announce{max-width:200px;} .ve-nav-right-wrap{display:none;}}',
+    '@media(max-width:900px){.ve-announce{max-width:360px;} .ve-nav-right-wrap{display:none;}}',
+    /* Phones: the pill gets its own full-width row so the message is readable instead of a 7px ellipsis. */
+    '@media(max-width:560px){.ve-nav-inner{height:auto;flex-wrap:wrap;row-gap:0;padding-bottom:10px;} .ve-wordmark{height:60px;} .ve-announce-wrap{order:4;flex:0 0 100%;margin:0;} .ve-announce{max-width:none;width:100%;border-radius:18px;} .ve-announce-text{white-space:normal;overflow:visible;line-height:1.35;} .ve-mob-menu{top:104px;}}',
     '.ve-va-panel{padding:14px 20px 18px;position:relative;}',
     '.ve-va-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:rgba(0,0,0,0.4);margin-bottom:10px;}',
     '.ve-va-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:10px 12px;border:1px solid rgba(0,0,0,0.15);border-radius:6px;background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;transition:border-color 0.1s;}',
@@ -197,11 +199,11 @@
   /* ---- Nav HTML ---- */
   var announceHtml =
     '<div class="ve-announce-wrap">' +
-      '<a class="ve-announce" id="ve-announce" href="/join" aria-label="Special announcements">' +
+      '<a class="ve-announce" id="ve-announce" href="/partners#guide" aria-label="Special announcements">' +
         '<span class="ve-announce-icon" aria-hidden="true">' +
           '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.9a2 2 0 1 1-3.2 0"/></svg>' +
         '</span>' +
-        '<span class="ve-announce-text" id="ve-announce-text">Founding Membership: $11 once, forever - closes July 13</span>' +
+        '<span class="ve-announce-text" id="ve-announce-text">Founding Membership: $11 one time, and you are in.</span>' +
       '</a>' +
     '</div>';
 
@@ -242,7 +244,7 @@
      updating the rotation is a database edit, not a deploy. Falls back to a
      single safe default if the fetch fails so the pill never breaks. */
   (function() {
-    var FALLBACK = [{ text: 'Join the movement. Membership, a one-time contribution, or a free Guest Passport.', href: '/join' }];
+    var FALLBACK = [{ text: 'Founding Membership: $11 one time, and you are in.', href: '/partners#guide' }];
     var idx = 0;
     var messages = FALLBACK;
     var textEl = document.getElementById('ve-announce-text');
@@ -344,6 +346,8 @@
   var overlay   = document.getElementById('ve-mob-overlay');
 
   function setMobOpen(open) {
+    // The nav is taller on phones (announcement row), so open the menu right under it.
+    if (open) { var navEl = document.querySelector('.ve-nav'); if (navEl) mobMenu.style.top = Math.round(navEl.getBoundingClientRect().bottom) + 'px'; }
     mobMenu.classList.toggle('open', open);
     overlay.classList.toggle('open', open);
     hamburger.setAttribute('aria-expanded', String(open));

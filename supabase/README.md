@@ -58,7 +58,7 @@ routing change with a row update, not a deploy. Deployed as v2 on 2026-09-24 (se
 
 The shared Stripe webhook for the VE, LESARUSS and Meatless Muscle accounts.
 `verify_jwt` is **false** (Stripe signs the request, not Supabase). Tracked
-here from v47 (2026-09-24, now v48), which added the `partner_guide_purchase` branch
+here from v47 (2026-09-24, now v49), which added the `partner_guide_purchase` branch
 ahead of the legacy founding-membership fallback; v47 is v46 plus that branch
 only, verified by diff against the deployed source. A buyer who pays before
 having an account has the membership waiting on the sponsors row; the

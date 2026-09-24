@@ -185,7 +185,7 @@
     var m = this.matches();
     var head = s.audience === 'attendee' ? 'Your way in' : 'What fits you';
     var sub = s.audience === 'attendee'
-      ? 'Membership is the one ask for everyone. It covers entry to member events for the year.'
+      ? 'Founding Membership is the one ask for everyone: $11 one time, and you are in.'
       : (m.list.length ? 'Options under $8,000 check out right here. $8,000 and up starts with a call with Sean.' : '');
     var html = '<h3 class="vpg-results-head">' + head + '</h3>' + (sub ? '<p class="vpg-results-sub">' + sub + '</p>' : '');
     if (!m.list.length) {
