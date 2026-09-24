@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Community Manager Onboarding | Vegans Explore</title>
+  <meta name="description" content="Onboarding for Vegans Explore Community Managers: why we exist, the Explore Season, what you own and your first week.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-orange-text:#7d4a00;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);line-height:1.6;}
+    a{color:var(--ve-green-deep);}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+
+    /* Guided slides: one full-height panel at a time on desktop, no page scroll needed. */
+    .stage{position:relative;height:calc(100vh - 61px);min-height:560px;overflow:hidden;}
+    .slide{position:absolute;inset:0;display:none;padding:28px max(40px,calc((100% - 1200px)/2)) 88px;}
+    .slide.active{display:flex;align-items:center;}
+    .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:center;width:100%;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
+    h1,h2{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;}
+    h2{font-size:clamp(28px,3.2vw,42px);margin-bottom:18px;}
+    .lede{font-size:16px;color:var(--ve-text-75);margin-bottom:18px;max-width:520px;}
+    .points{list-style:none;display:grid;gap:10px;margin-bottom:20px;}
+    .points li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px;font-weight:600;line-height:1.45;}
+    .points li::before{content:"";flex:0 0 22px;height:22px;border-radius:50%;background:var(--ve-green-light) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/12px no-repeat;margin-top:1px;}
+    .spotlight{font-size:17px;font-weight:800;line-height:1.4;border-left:4px solid var(--ve-orange);padding:6px 0 6px 16px;max-width:520px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 26px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;}
+    .btn-primary{background:#22C55E;color:#0b2e14;}
+    .btn-primary:hover{background:#4ade80;}
+    .btn-dark{background:var(--ve-green-dark);color:#fff;}
+    .btn-dark:hover{background:var(--ve-green-deep);}
+    .btn-link{background:none;color:var(--ve-green-deep);text-decoration:underline;text-underline-offset:3px;padding:14px 8px;letter-spacing:0.06em;}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:24px;}
+
+    /* Slide 1: hero */
+    .slide-hero{background-image:url('/public/events/vegan-foodie-fest-2025.jpg');background-size:cover;background-position:center right;color:#fff;}
+    .slide-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.99) 0%,rgba(0,0,0,0.95) 28%,rgba(0,0,0,0.72) 52%,rgba(0,0,0,0.28) 68%,transparent 84%);}
+    .slide-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.45) 0%,transparent 32%);}
+    .hero-inner{position:relative;z-index:1;max-width:600px;}
+    .slide-hero .split{position:relative;z-index:1;}
+    .hero-media{border:1px solid rgba(255,255,255,0.18);}
+    .hero-inner .eyebrow{color:#9be29e;}
+    .hero-inner h1{font-size:clamp(36px,5vw,60px);margin-bottom:18px;}
+    .hero-inner .lede{color:rgba(255,255,255,0.9);font-size:17px;max-width:540px;}
+
+    /* Media column: video when one is set, a labeled placeholder until then */
+    .media{position:relative;border-radius:16px;overflow:hidden;background:#0f1a10;aspect-ratio:16/10;box-shadow:0 18px 40px rgba(0,0,0,0.18);}
+    .media img,.media video{width:100%;height:100%;object-fit:cover;display:block;}
+    .media.tall{aspect-ratio:4/5;max-height:calc(100vh - 220px);margin-left:auto;}
+    .media-veil{position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;text-align:center;padding:20px;}
+    .media-play{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.85);display:flex;align-items:center;justify-content:center;}
+    .media-cap{text-shadow:0 1px 3px rgba(0,0,0,0.6);font-size:12px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;}
+    .media-cap span{display:block;font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;opacity:0.85;margin-top:4px;}
+
+    /* Slide 3: season rows */
+    .rows{list-style:none;display:grid;gap:8px;margin-bottom:20px;}
+    .rows li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px;align-items:baseline;padding:11px 14px;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
+    .rows li.lead{border-color:var(--ve-green-dark);background:#f7fcf7;}
+    .rows b{font-size:12px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .rows span{font-size:15px;font-weight:700;}
+    .rows small{display:block;font-size:12.5px;font-weight:600;color:var(--ve-text-75);}
+
+    /* Slide 4: three ways in */
+    .ways{display:grid;gap:10px;margin-bottom:6px;}
+    .way{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--ve-border);border-radius:12px;}
+    .way b{font-size:14px;font-weight:900;}
+    .way span{font-size:14.5px;color:var(--ve-text-75);font-weight:600;}
+    .fine{font-size:13.5px;color:var(--ve-text-75);margin-top:14px;}
+    .member-box{margin-top:14px;padding:14px 16px;border-radius:12px;background:var(--ve-green-light);border:1px solid #b8ddb9;}
+    .member-price{font-size:15px;font-weight:700;margin-bottom:4px;}
+    .member-price b{font-weight:900;color:var(--ve-green-deep);margin-right:6px;}
+    .member-copy{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
+
+    /* Controls */
+    .controls{position:absolute;left:0;right:0;bottom:22px;z-index:5;display:flex;justify-content:center;align-items:center;gap:14px;pointer-events:none;}
+    .controls > *{pointer-events:auto;}
+    .ctrl{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.18);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1a1a1a;}
+    .ctrl[disabled]{opacity:0.35;cursor:default;}
+    .dots{display:flex;gap:8px;background:rgba(255,255,255,0.92);padding:8px 12px;border-radius:99px;}
+    .dot{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.2);border:0;cursor:pointer;padding:0;}
+    .dot[aria-current="step"]{background:var(--ve-green-dark);width:26px;border-radius:99px;}
+    .on-hero .ctrl{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.5);color:#fff;}
+
+    /* Good to know */
+    .faq-dialog{margin:auto;border:0;border-radius:16px;padding:0;width:min(620px,calc(100% - 32px));max-height:calc(100vh - 32px);box-shadow:0 24px 60px rgba(0,0,0,0.3);font-family:"Montserrat",sans-serif;}
+    .faq-dialog::backdrop{background:rgba(10,20,12,0.62);}
+    .faq-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--ve-border);}
+    .faq-head h2{font-size:20px;margin:0;}
+    .faq-x{width:44px;height:44px;border:0;background:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .faq-x:hover{background:#f2f2f2;}
+    .faq-body{padding:8px 22px 22px;}
+    .faq-body h3{font-size:15px;font-weight:800;margin:16px 0 4px;}
+    .faq-body p{font-size:14px;color:var(--ve-text-75);}
+
+    /* Desktop: the guided page is the whole screen, so the site footer (links also in the menu) does not add a page scroll. */
+    @media (min-width:901px){ html,body{overflow:hidden;height:100%;} .ve-footer{display:none !important;} }
+
+    /* Short desktop screens: tighten spacing so every slide still fits above the controls. */
+    @media (min-width:901px) and (max-height:780px){
+      .slide{padding-top:12px;padding-bottom:76px;}
+      h2{font-size:clamp(26px,2.6vw,34px);margin-bottom:12px;}
+      .lede{font-size:15px;margin-bottom:12px;}
+      .points{gap:7px;margin-bottom:14px;}
+      .rows{gap:6px;margin-bottom:14px;}
+      .rows li{padding:8px 12px;}
+      .spotlight{font-size:15.5px;}
+      .way{padding:7px 14px;}
+      .ways{gap:6px;}
+      .member-box{margin-top:10px;padding:10px 14px;}
+      .cta-row{margin-top:12px;}
+      .eyebrow{margin-bottom:8px;}
+      .member-copy{font-size:13px;line-height:1.45;}
+      .media.tall{max-height:calc(100vh - 190px);}
+    }
+
+    /* Phones and tablets: slides stack and the page scrolls within a slide; video sits above the words. */
+    @media (max-width:900px){
+      .stage{height:auto;min-height:0;overflow:visible;}
+      .slide{position:relative;inset:auto;padding:36px 24px 104px;}
+      .slide.active{display:block;}
+      .split{grid-template-columns:minmax(0,1fr);gap:24px;}
+      .split > .media{order:-1;}
+      .media.tall{aspect-ratio:16/10;max-height:none;margin:0;}
+      .slide-hero{background-image:url('/public/partner/ve-partner-mobile.png');background-position:center center;min-height:calc(100vh - 104px);display:none;padding:0;}
+      .slide-hero.active{display:flex;align-items:flex-end;}
+      .slide-hero::before{background:rgba(0,0,0,0.32);}
+      .slide-hero::after{display:none;}
+      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 96px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
+      .controls{position:fixed;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.97);border-top:1px solid var(--ve-border);}
+      .on-hero .ctrl{background:#fff;border-color:rgba(0,0,0,0.18);color:#1a1a1a;}
+      .way{grid-template-columns:minmax(0,1fr);gap:2px;}
+    }
+    @media (max-width:480px){
+      .slide{padding:28px 16px 100px;}
+      .slide-hero::before{background:rgba(0,0,0,0.32);}
+      .slide-hero::after{display:none;}
+      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 96px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
+      .hero-inner .lede{font-size:15.5px;}
+      .rows li{grid-template-columns:minmax(0,1fr);gap:2px;}
+    }
+  
+    .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:16px;}
+    .col{border:1px solid var(--ve-border);border-radius:12px;padding:14px 16px;min-width:0;}
+    .col h3{font-size:12px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    .col ul{list-style:none;display:grid;gap:6px;}
+    .col li{font-size:13.5px;font-weight:600;line-height:1.4;}
+    .steps{list-style:none;counter-reset:s;display:grid;gap:8px;margin-bottom:16px;}
+    .steps li{counter-increment:s;display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;font-size:14.5px;font-weight:600;line-height:1.45;}
+    .steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--ve-green-dark);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+    .checks{list-style:none;display:grid;gap:7px;}
+    .checks li{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:600;line-height:1.4;}
+    .checks li::before{content:"";flex:0 0 18px;height:18px;border:2px solid var(--ve-green-dark);border-radius:4px;margin-top:1px;}
+    @media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr);}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Community Manager onboarding">
+
+    <section class="slide slide-hero active" id="s-welcome" aria-roledescription="slide" aria-label="1 of 6">
+      <div class="split">
+        <div class="hero-inner">
+          <p class="eyebrow">Community Manager onboarding</p>
+          <h1>Welcome to the team.</h1>
+          <p class="lede">You are the person on the ground who makes this real in your city. In a few minutes you will know why we exist, what is happening this season, what you own and what to do this week.</p>
+          <div class="cta-row"><button type="button" class="btn btn-primary" data-go="1">Let's go</button></div>
+        </div>
+        <div class="media hero-media" data-video="welcome" data-poster="/public/images/ve-hero-mobile.png" data-cap="A welcome from Sean"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-why" aria-roledescription="slide" aria-label="2 of 6">
+      <div class="split">
+        <div>
+          <p class="eyebrow">Why we exist</p>
+          <h2>We help plant-based businesses reach a new room.</h2>
+          <p class="lede">Most plant-based businesses keep selling to the same crowd. Many people will not change for the animals, but they will try something delicious. So we throw nights non-Vegans actually want to go to, and put great food in their hands.</p>
+          <p class="spotlight">Great food opens the door. The movement grows from there, and you are the one holding it open.</p>
+        </div>
+        <div class="media" data-video="why" data-poster="/public/images/ve-panel2.png" data-cap="Why we do this"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-season" aria-roledescription="slide" aria-label="3 of 6">
+      <div class="split">
+        <div>
+          <p class="eyebrow">The Explore Season</p>
+          <h2>Your first season.</h2>
+          <ul class="rows">
+            <li class="lead"><b>Sat, Oct 24</b><span>Launch Community Night<small>West Palm Beach, Halloween weekend</small></span></li>
+            <li><b>November</b><span>Community Night<small>Also goodie bag pickup for our Dolphins group</small></span></li>
+            <li class="lead"><b>Sun, Nov 29</b><span>Miami Dolphins vs. New York Jets<small>Game night at Hard Rock Stadium</small></span></li>
+            <li><b>December</b><span>Community Night</span></li>
+          </ul>
+          <p class="spotlight">Your part: be in the room at every one, run the back table at Community Nights, and bring the local businesses.</p>
+        </div>
+        <div class="media" data-video="season" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="This season"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-own" aria-roledescription="slide" aria-label="4 of 6">
+      <div class="split">
+        <div>
+          <p class="eyebrow">Your role</p>
+          <h2>What you own.</h2>
+          <div class="cols">
+            <div class="col"><h3>You</h3><ul>
+              <li>Local businesses: find them, invite them, get them to a table or into the goodie bags</li>
+              <li>Event presence: you, or someone on your team, at every event in your city</li>
+              <li>The back table at Community Nights</li>
+              <li>Finding opportunities: venues, outside events, new partners</li>
+            </ul></div>
+            <div class="col"><h3>Sean</h3><ul>
+              <li>Every partnership at $8,000 and up</li>
+              <li>Every national brand</li>
+              <li>Big local meetings, until a Community Coordinator is in place</li>
+            </ul></div>
+          </div>
+          <p class="spotlight">Local questions and purchases from the partners page come to your inbox with Sean copied. Reply to them directly.</p>
+        </div>
+        <div class="media"><img src="/public/partner/ve-partner-mobile.png" style="object-position:center 30%" alt="Two partners sampling their drinks under a vendor tent at a Vegans Explore event"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-partners" aria-roledescription="slide" aria-label="5 of 6">
+      <div class="split">
+        <div>
+          <p class="eyebrow">How partners come in</p>
+          <h2>Send them to the partners page.</h2>
+          <p class="lede"><a href="/partners">vegansexplore.com/partners</a> is the one link every business needs.</p>
+          <ol class="steps">
+            <li>They tap Find my fit and answer a few quick questions.</li>
+            <li>They become a Founding Member, $11 one time, to see their options and pricing.</li>
+            <li>They lock in a table or goodie bags, or book a call with Sean for bigger partnerships.</li>
+            <li>You get an email with what they chose, and you make sure they get it.</li>
+          </ol>
+          <p class="spotlight">Every partner gets a report within 7 days of each event.</p>
+        </div>
+        <div class="media" data-video="partners" data-poster="/public/images/ve-panel2.png" data-cap="Walking a business through it"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-start" aria-roledescription="slide" aria-label="6 of 6">
+      <div class="split">
+        <div>
+          <p class="eyebrow">Getting started</p>
+          <h2>Your first week.</h2>
+          <ul class="checks">
+            <li>Create your account at vegansexplore.com/join with the email Sean has on file. It sets you up as a Community Manager automatically.</li>
+            <li>Read the Community Manager Handbook in your dashboard.</li>
+            <li>Walk through vegansexplore.com/partners yourself, start to finish.</li>
+            <li>Confirm the Oct 24 venue with Sean: capacity, table count and food-sampling rules.</li>
+            <li>Start your list of local businesses to invite.</li>
+          </ul>
+          <div class="member-box" style="margin-top:14px;"><p class="member-copy"><b>How we measure the role:</b> events attended, contacts logged, warm introductions, and three qualified sponsor conversations a month.</p></div>
+          <div class="cta-row">
+            <a class="btn btn-dark" href="/join">Create my account</a>
+            <a class="btn btn-link" href="/dashboard/handbook">Open the handbook</a>
+          </div>
+        </div>
+        <div class="media" data-video="start" data-poster="/public/images/ve-hero-mobile.png" data-cap="Your first week"></div>
+      </div>
+    </section>
+
+    <div class="controls on-hero" id="controls">
+      <button type="button" class="ctrl" id="prev" aria-label="Previous slide" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="dots" id="dots"></div>
+      <button type="button" class="ctrl" id="next" aria-label="Next slide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+  </main>
+
+  <script>
+    // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
+    var VIDEOS = { welcome: '', why: '', season: '', partners: '', start: '' };
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+      var ids = ['welcome', 'why', 'season', 'own', 'partners', 'start'];
+      var cur = 0;
+      var dots = document.getElementById('dots');
+      var controls = document.getElementById('controls');
+
+      document.querySelectorAll('.media[data-video]').forEach(function (m) {
+        var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
+        if (src) {
+          m.innerHTML = '<video controls playsinline preload="metadata" poster="' + poster + '" src="' + src + '" aria-label="' + cap + '"></video>';
+        } else {
+          m.innerHTML = '<img src="' + poster + '" alt="">' +
+            '<div class="media-veil"><div class="media-play" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>' +
+            '<p class="media-cap">Video coming soon<span>' + cap + '</span></p></div>';
+        }
+      });
+
+      slides.forEach(function (_, i) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'dot'; b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        b.addEventListener('click', function () { show(i); });
+        dots.appendChild(b);
+      });
+
+      function show(n, fromHash) {
+        cur = Math.max(0, Math.min(slides.length - 1, n));
+        slides.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
+        dots.querySelectorAll('.dot').forEach(function (d, i) { if (i === cur) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current'); });
+        document.getElementById('prev').disabled = cur === 0;
+        document.getElementById('next').disabled = cur === slides.length - 1;
+        controls.classList.toggle('on-hero', cur === 0);
+        if (!fromHash) history.replaceState(null, '', cur ? '#' + ids[cur] : location.pathname + location.search);
+        if (window.innerWidth <= 900) window.scrollTo(0, 0);
+        try { if (window.gtag) gtag('event', 'cm_onboarding_slide', { slide: ids[cur] }); } catch (e) {}
+      }
+
+      document.getElementById('prev').addEventListener('click', function () { show(cur - 1); });
+      document.getElementById('next').addEventListener('click', function () { show(cur + 1); });
+      document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
+      document.addEventListener('keydown', function (e) {
+        if (document.querySelector('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+      });
+
+      var start = ids.indexOf((location.hash || '').replace('#', ''));
+      show(start > 0 ? start : 0, true);
+
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
