@@ -71,6 +71,10 @@
     .way b{font-size:14px;font-weight:900;}
     .way span{font-size:14.5px;color:var(--ve-text-75);font-weight:600;}
     .fine{font-size:13.5px;color:var(--ve-text-75);margin-top:14px;}
+    .member-box{margin-top:14px;padding:14px 16px;border-radius:12px;background:var(--ve-green-light);border:1px solid #b8ddb9;}
+    .member-price{font-size:15px;font-weight:700;margin-bottom:4px;}
+    .member-price b{font-weight:900;color:var(--ve-green-deep);margin-right:6px;}
+    .member-copy{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
 
     /* Controls */
     .controls{position:absolute;left:0;right:0;bottom:22px;z-index:5;display:flex;justify-content:center;align-items:center;gap:14px;pointer-events:none;}
@@ -98,15 +102,19 @@
 
     /* Short desktop screens: tighten spacing so every slide still fits above the controls. */
     @media (min-width:901px) and (max-height:780px){
-      .slide{padding-top:24px;padding-bottom:80px;}
+      .slide{padding-top:12px;padding-bottom:76px;}
       h2{font-size:clamp(26px,2.6vw,34px);margin-bottom:12px;}
       .lede{font-size:15px;margin-bottom:12px;}
       .points{gap:7px;margin-bottom:14px;}
       .rows{gap:6px;margin-bottom:14px;}
       .rows li{padding:8px 12px;}
       .spotlight{font-size:15.5px;}
-      .way{padding:11px 14px;}
-      .cta-row{margin-top:16px;}
+      .way{padding:7px 14px;}
+      .ways{gap:6px;}
+      .member-box{margin-top:10px;padding:10px 14px;}
+      .cta-row{margin-top:12px;}
+      .eyebrow{margin-bottom:8px;}
+      .member-copy{font-size:13px;line-height:1.45;}
       .media.tall{max-height:calc(100vh - 190px);}
     }
 
@@ -177,9 +185,10 @@
           <ul class="rows">
             <li class="lead"><b>Sat, Oct 24</b><span>Launch Community Night<small>West Palm Beach: food, sampling, vendors, costumes and a DJ</small></span></li>
             <li><b>November</b><span>Community Night</span></li>
+            <li class="lead"><b>Sun, Nov 29</b><span>Miami Dolphins vs. New York Jets<small>Game night at Hard Rock Stadium. Jets fans welcome.</small></span></li>
             <li><b>December</b><span>Community Night</span></li>
-            <li><b>In the works</b><span>Miami Dolphins game night</span></li>
           </ul>
+          <p class="spotlight">Big nights now, and bigger ideas right behind them.</p>
           <div class="cta-row"><button type="button" class="btn btn-dark" data-go="3">Who is behind this</button></div>
         </div>
         <div class="media" data-video="season" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="This season"></div>
@@ -210,12 +219,15 @@
           <p class="eyebrow">Join us</p>
           <h2>Choose how you show up.</h2>
           <div class="ways">
-            <div class="way"><b>Just come</b><span>Become a Founding Member and join us at every Community Night.</span></div>
+            <div class="way"><b>Just come</b><span>Become a Founding Member and join us at member events.</span></div>
             <div class="way"><b>Bring your table</b><span>Meet new customers face to face at Community Night.</span></div>
             <div class="way"><b>Fill the bags</b><span>Put your product in our goodie bags, no table needed.</span></div>
             <div class="way"><b>Shape the season</b><span>Design an activation with us. Five spots, one grocer only.</span></div>
           </div>
-          <p class="fine">Members see full details and pricing inside.</p>
+          <div class="member-box">
+            <p class="member-price"><b>Founding Membership</b> $11, one time</p>
+            <p class="member-copy">Your contribution goes straight into what we are building. It unlocks full details and pricing for every option, a seat in our upcoming campaigns, member events and the whole community.</p>
+          </div>
           <div class="cta-row">
             <button type="button" class="btn btn-dark" data-vpg-open data-source="partners_page">Find my fit</button>
             <button type="button" class="btn btn-link" data-vpg-open data-vpg-step="question" data-source="partners_page">Not sure? Ask us</button>

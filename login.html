@@ -112,7 +112,7 @@
         // the shared auth modal's own asymmetry: only account creation
         // (or, here, an unresolved account) shows the gate up front.
         if (d.member && d.member.membership_status === 'pending_payment') {
-          VEAuth.showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+          VEAuth.showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
           return;
         }
         var next = new URLSearchParams(window.location.search).get('next') || '/dashboard';

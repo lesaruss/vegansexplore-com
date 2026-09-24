@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Get Your Passport - VEGANS EXPLORE</title>
-  <meta name="description" content="Join VEGANS EXPLORE: become a sustaining Passport Holder, make a one-time contribution, or apply for a free Guest Passport.">
+  <meta name="description" content="Join VEGANS EXPLORE: become a Founding Member for $11, one time, or go further with a Passport.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@
         <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">
       </div>
       <h1>Get Your Passport</h1>
-      <p class="join-sub">Become a sustaining Passport Holder, make a one-time contribution, or apply for a free Guest Passport -- you'll choose next.</p>
+      <p class="join-sub">Become a Founding Member for $11, one time, or go further with a Passport. You will choose next.</p>
       <p class="join-sub" id="join-community-note" style="display:none;color:#166534;font-weight:700;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:6px;padding:8px 12px;margin-top:-2px;"></p>
       <div class="join-perks">
         <div class="join-perks-title">What you unlock</div>
@@ -164,7 +164,7 @@
           // the visitor mid-onboarding with nothing actually unlocked.
           if (d.member && d.member.membership_status === 'pending_payment') {
             setLoading(false);
-            VEAuth.showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+            VEAuth.showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
             return;
           }
           window.location.replace('/onboarding');
@@ -175,7 +175,7 @@
       VEAuth.initGoogleSignIn(document.getElementById('join-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
         if (d.member && d.member.membership_status === 'pending_payment') {
-          VEAuth.showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+          VEAuth.showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
           return;
         }
         window.location.replace('/onboarding');

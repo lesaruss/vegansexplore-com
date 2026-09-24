@@ -11,13 +11,16 @@
  * Offers, cities and spots come from the ve-partner-guide edge function, which
  * reads public.ve_partner_offers; every checkout or inquiry writes a sponsors row.
  *
- * Pricing is a member benefit (Sean, 2026-09-24): a visitor who is not signed
- * in answers the questions, then creates an account or logs in (VEAuth pop-up)
- * and lands back on their matches with full details and prices.
+ * Pricing is a member benefit (Sean, 2026-09-24): full details and prices show
+ * only to Founding Members (membership_status 'active'). Everyone else answers
+ * the questions, sees what the $11 one-time Founding Membership unlocks, joins
+ * (VEAuth sign-up, then the $11 checkout) and lands back on their matches.
  */
 (function () {
   var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-partner-guide';
   var STORE_KEY = 've_pg_state';
+  var AUTH_API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
   var CSS = [
     '.vpg-dialog{margin:auto;font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1a1a1a;border:0;padding:0;border-radius:16px;width:min(680px,calc(100% - 32px));max-height:min(760px,calc(100vh - 32px));box-shadow:0 24px 60px rgba(0,0,0,0.3);overflow:hidden;}',
@@ -116,6 +119,16 @@
   }
   function token() { try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
   function member() { try { return JSON.parse(localStorage.getItem('ve_member') || 'null') || {}; } catch (e) { return {}; } }
+  // Fresh membership status from ve-auth (the cached ve_member can be stale right after checkout).
+  function refreshMember() {
+    var t = token();
+    if (!t) { G.memberStatus = null; return Promise.resolve(null); }
+    return fetch(AUTH_API + '?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'me', token: t }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { G.memberStatus = d && d.member ? d.member.membership_status : null; return G.memberStatus; })
+      .catch(function () { G.memberStatus = null; return null; });
+  }
+  function isFoundingMember() { return loggedIn() && G.memberStatus === 'active'; }
   function loggedIn() { try { return window.VEAuth ? VEAuth.isLoggedIn() : !!token(); } catch (e) { return !!token(); } }
   function track(name, params) { try { if (window.gtag) window.gtag('event', name, params || {}); } catch (e) {} }
   var ICON_X = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
@@ -174,11 +187,13 @@
     if (!d.open) d.showModal();
     if (opts.step) G.state.step = opts.step;
     track('pg_open', { source: G.source });
-    if (G.data) { render(); return; }
+    if (G.data && G.memberChecked) { render(); return; }
     d.querySelector('.vpg-body').innerHTML = '<p class="vpg-q-sub">Loading the season&hellip;</p>';
-    fetch(API + '?action=catalog').then(function (r) { return r.json(); }).then(function (data) {
+    Promise.all([G.data ? Promise.resolve(G.data) : fetch(API + '?action=catalog').then(function (r) { return r.json(); }), refreshMember()]).then(function (res) {
+      var data = res[0];
       if (!data || !data.offers) throw new Error('no offers');
       G.data = data;
+      G.memberChecked = true;
       if ((steps().indexOf(G.state.step) === -1 && ['question', 'success'].indexOf(G.state.step) === -1) || (G.state.step === 'results' && !G.state.audience)) G.state.step = 'audience';
       render();
     }).catch(function () {
@@ -233,7 +248,7 @@
     else if (s.step === 'budget') html = choiceStep('budget', 'What is your budget?', 'Everything under $8,000 checks out right here, no meeting needed.', BUDGETS);
     else if (s.step === 'start') html = choiceStep('start', 'When do you want to start?', 'Sign before Oct 24 and you get every event this quarter.', STARTS);
     else if (s.step === 'coming') html = comingStep();
-    else if (s.step === 'results') html = loggedIn() ? resultsStep() : gateStep();
+    else if (s.step === 'results') html = isFoundingMember() ? resultsStep() : gateStep();
     else if (s.step === 'question') html = questionStep();
     else if (s.step === 'success') html = '<h2 class="vpg-q-title" id="vpg-q-title">You are in.</h2><p class="vpg-q-sub">Your payment went through. Check your email for your receipt and what is included. The team will reach out with next steps.</p><button type="button" class="vpg-btn" data-act="close">Done</button>';
     body.innerHTML = html;
@@ -251,30 +266,41 @@
   }
 
   function gateStep() {
-    var attendee = G.state.audience === 'attendee';
-    track('pg_gate', { audience: G.state.audience });
+    var signedIn = loggedIn();
+    track('pg_gate', { audience: G.state.audience, signed_in: signedIn });
     return '<h2 class="vpg-q-title" id="vpg-q-title">Your matches are ready.</h2>' +
-      '<p class="vpg-q-sub">' + (attendee ? 'Join Vegans Explore to see how Founding Membership works and what it includes.'
-        : 'Members see every option that fits you, what is included and the pricing. Join Vegans Explore or log in to see yours.') + '</p>' +
-      '<div class="vpg-actions" style="margin-top:0;"><button type="button" class="vpg-btn" data-auth="signup">Join Vegans Explore</button>' +
-      '<button type="button" class="vpg-btn ghost" data-auth="login">I am a member, log in</button></div>' +
-      '<p class="vpg-hint">Rather talk first? Use "Have a question instead?" below and the team will reply by email.</p>';
+      '<p class="vpg-q-sub">Details and pricing are for Founding Members. It is one $11 contribution, one time, and it goes straight into what we are building.</p>' +
+      '<ul class="vpg-inc" style="margin-bottom:18px;">' +
+        '<li>Every option that fits you, with full details and pricing</li>' +
+        '<li>A seat in our upcoming campaigns, starting this season</li>' +
+        '<li>Entry to member events, including Community Nights</li>' +
+        '<li>Full community access: post, join your city, follow and save</li>' +
+        '<li>1,100 Points to use toward guides</li>' +
+      '</ul>' +
+      '<div class="vpg-actions" style="margin-top:0;"><button type="button" class="vpg-btn" data-auth="' + (signedIn ? 'pay' : 'signup') + '">Become a Founding Member, $11</button>' +
+      (signedIn ? '' : '<button type="button" class="vpg-btn ghost" data-auth="login">I am a member, log in</button>') + '</div>' +
+      '<p class="vpg-hint">One time. It never renews. Rather talk first? Use "Have a question instead?" below.</p>';
   }
 
   // After sign-up the site may show its own activation prompt first; reopen on the
   // visitor's matches once they are signed in and every account pop-up is closed.
   function authThenResults(mode) {
     saveState();
+    if (mode === 'pay' && window.VEAuth) {
+      track('pg_membership_checkout', {});
+      VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; }).catch(function () {});
+      return;
+    }
     close();
     if (!window.VEAuth) { location.href = '/join'; return; }
-    VEAuth.showAuthModal(mode === 'signup' ? 'Join Vegans Explore to see your matches and pricing.' : 'Log in to see your matches and pricing.', function () { open({ step: 'results' }); }, mode);
+    VEAuth.showAuthModal(mode === 'signup' ? 'Create your account, then become a Founding Member for $11 to see your matches and pricing.' : 'Log in to see your matches and pricing.', function () { refreshMember().then(function () { open({ step: 'results' }); }); }, mode);
     var shown = function (id) { var el = document.getElementById(id); return el && el.style.display !== 'none' && el.style.display !== ''; };
     var started = Date.now();
     var timer = setInterval(function () {
       if (Date.now() - started > 15 * 60000) { clearInterval(timer); return; }
       if (loggedIn() && !shown('ve-auth-modal') && !shown('ve-pledge-modal')) {
         clearInterval(timer);
-        if (!G.dialog || !G.dialog.open) open({ step: 'results' });
+        if (!G.dialog || !G.dialog.open) refreshMember().then(function () { if (isFoundingMember()) open({ step: 'results' }); });
       }
     }, 700);
   }
@@ -458,7 +484,16 @@
       open({ source: t.getAttribute('data-source') || G.source, step: t.getAttribute('data-vpg-step') || undefined });
     });
     var q = new URLSearchParams(location.search);
-    if (q.get('checkout') === 'success') open({ step: 'success' });
+    if (q.get('activate') === 'success') {
+      var tries = 0;
+      (function poll() {
+        refreshMember().then(function () {
+          if (isFoundingMember() || ++tries > 12) { G.memberChecked = true; open({ step: 'results' }); }
+          else setTimeout(poll, 1500);
+        });
+      })();
+    }
+    else if (q.get('checkout') === 'success') open({ step: 'success' });
     else if (q.get('checkout') === 'cancelled') open({ step: 'results' });
   }
 

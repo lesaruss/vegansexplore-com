@@ -64,3 +64,12 @@ only, verified by diff against the deployed source. A buyer who pays before
 having an account has the membership waiting on the sponsors row; the
 `trg_zz_claim_partner_membership_*` triggers on `public.members` grant it at
 signup.
+
+## ve-entry-checkout
+
+The $11 one-time Founding Membership checkout (Sean, 2026-09-24: it replaces
+the free tier and the any-amount contribution; $11 is the floor, more is
+allowed). `verify_jwt` is **false**: the VE app token is verified in the
+function. Deployed as v2 on 2026-09-24 with the 1,100-cent minimum and Stripe
+receipts on. The webhook's `entry_contribution` branch activates the member
+and credits 1,100 Points.

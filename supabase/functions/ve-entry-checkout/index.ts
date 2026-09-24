@@ -14,9 +14,9 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 // Reuses the Founders-pledge point rate already locked in canon
 // (canon-ve-founders-pledge-points-2026-08-29: $1 = 100 points), so a $5
 // contribution credits 500 points exactly like a $5 Founders pledge would.
-// No minimum is enforced beyond Stripe's own real floor for a USD charge
-// (50 cents) -- Sean explicitly wants to see what happens without one before
-// adding a floor.
+// 2026-09-24 (Sean): this is now the Founding Membership, a flat $11 one-time
+// contribution that never renews and replaces the free tier. $11 is the floor;
+// someone may choose to give more. The 2026-09-17 any-amount experiment is over.
 //
 // Auth pattern copied exactly from ve-points-checkout / ve-passport-checkout:
 // verifies the custom HMAC-signed token minted by ve-auth's signJWT().
@@ -30,7 +30,7 @@ const STRIPE_SECRET = Deno.env.get('STRIPE_SECRET_KEY') ?? ''; // Vegans Explore
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
-const MIN_AMOUNT_CENTS = 50; // Stripe's real floor for a USD charge, not a product decision.
+const MIN_AMOUNT_CENTS = 1100; // Founding Membership, $11 one time (Sean, 2026-09-24).
 const MAX_AMOUNT_CENTS = 100000; // $1,000 sanity ceiling against fat-fingered input; raise if Sean asks.
 
 const corsHeaders = {
@@ -105,13 +105,14 @@ Deno.serve(async (req: Request) => {
     const params = new URLSearchParams({
       'mode': 'payment',
       'line_items[0][price_data][currency]': 'usd',
-      'line_items[0][price_data][product_data][name]': 'Vegans Explore - Community Support',
+      'line_items[0][price_data][product_data][name]': 'Vegans Explore - Founding Membership (one time)',
       'line_items[0][price_data][unit_amount]': String(amountCents),
       'line_items[0][quantity]': '1',
       'success_url': successUrl,
       'cancel_url': cancelUrl,
       'customer_email': member.email,
       'billing_address_collection': 'auto',
+      'payment_intent_data[receipt_email]': member.email,
       'metadata[type]': 'entry_contribution',
       'metadata[member_id]': member.id,
       'metadata[amount_cents]': String(amountCents),

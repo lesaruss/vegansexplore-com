@@ -96,7 +96,7 @@ var _amInited=false;
 function showActivateModal(message){
   if(!_amInited){_buildActivateModal();_amInited=true;}
   var msg=document.getElementById('ve-pm-msg');
-  if(msg)msg.textContent=message||'Activate your Passport with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.';
+  if(msg)msg.textContent=message||'One $11 contribution, one time. It supports what we are building and unlocks the full community.';
   var e=document.getElementById('ve-pm-error');if(e){e.textContent='';e.style.display='none';}
   var modal=document.getElementById('ve-pledge-modal');
   if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
@@ -112,6 +112,10 @@ s.textContent=
 '#ve-pm-error{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:12px;color:#dc2626;font-weight:600;margin-bottom:14px;line-height:1.4;text-align:left;font-family:"Montserrat",sans-serif;}'+
 '#ve-pm-member-btn{display:block;width:100%;padding:14px;background:#22C55E;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s;}'+
 '#ve-pm-member-btn:hover{background:#16A34A;}'+
+'#ve-pm-founding-btn{display:block;width:100%;padding:14px;background:#22C55E;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;}'+
+'#ve-pm-founding-btn:hover{background:#16A34A;}#ve-pm-founding-btn:disabled{background:#9CA3AF;cursor:not-allowed;}'+
+'#ve-pm-member-btn.ve-pm-secondary{background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,0.2);}'+
+'#ve-pm-member-btn.ve-pm-secondary:hover{background:#f5f5f5;}'+
 '#ve-pm-member-btn:disabled,#ve-pm-entry-btn:disabled{background:#9CA3AF;cursor:not-allowed;}'+
 '.ve-pm-divider{display:flex;align-items:center;gap:10px;margin:18px 0 16px;}'+
 '.ve-pm-divider-line{flex:1;border-top:1px solid rgba(0,0,0,0.1);}'+
@@ -141,17 +145,14 @@ el.id='ve-pledge-modal';el.setAttribute('role','dialog');el.setAttribute('aria-m
 el.innerHTML=
 '<div id="ve-pm-box">'+
 '<button id="ve-pm-close" aria-label="Close">x</button>'+
-'<h2 id="ve-pm-title">Activate Your Passport</h2>'+
-'<p id="ve-pm-msg">Activate your Passport to unlock posting, joining chapters, following, and saving.</p>'+
+'<h2 id="ve-pm-title">Become a Founding Member</h2>'+
+'<p id="ve-pm-msg">One $11 contribution, one time. It supports what we are building and unlocks the full community.</p>'+
 '<div id="ve-pm-error" role="alert"></div>'+
-'<button type="button" id="ve-pm-member-btn">Become a Member - $11/mo</button>'+
+'<button type="button" id="ve-pm-founding-btn">Founding Membership - $11 one time</button>'+
+'<p id="ve-pm-hint">One time. It never renews.</p>'+
+'<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or go further with Passport</span><div class="ve-pm-divider-line"></div></div>'+
+'<button type="button" id="ve-pm-member-btn" class="ve-pm-secondary">Passport - $11/mo</button>'+
 '<div id="ve-pm-annual-row"><input type="checkbox" id="ve-pm-annual"><label for="ve-pm-annual">Bill annually instead - $111/yr</label></div>'+
-'<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or contribute any amount</span><div class="ve-pm-divider-line"></div></div>'+
-'<div id="ve-pm-entry-row">'+
-'<input type="number" id="ve-pm-amount" min="1" step="1" placeholder="$ amount" aria-label="Contribution amount in dollars">'+
-'<button type="button" id="ve-pm-entry-btn">Contribute</button>'+
-'</div>'+
-'<p id="ve-pm-hint">One-time, any amount. No subscription.</p>'+
 '<button type="button" id="ve-pm-guest-toggle">Not ready to contribute? Apply for a free Guest Passport</button>'+
 '<div id="ve-pm-guest-panel">'+
 '<p>Tell us in your own words why you want to join Vegans Explore. Every application is reviewed -- a real answer gets you in.</p>'+
@@ -185,17 +186,16 @@ btn.disabled=true;var orig=btn.textContent;btn.textContent='Submitting...';
 submitMissionSurvey(text).then(function(d){
 if(d&&d.ok&&d.gate==='guest'){hideActivateModal();location.reload();return;}
 btn.disabled=false;btn.textContent=orig;
-if(d&&d.error==='application_not_approved'){showPmErr('We could not approve that application. You are welcome to become a member or make a one-time contribution instead.');return;}
+if(d&&d.error==='application_not_approved'){showPmErr('We could not approve that application. You are welcome to become a Founding Member for $11, one time, instead.');return;}
 showPmErr(d&&d.error?d.error:'Something went wrong submitting your application. Please try again.');
 }).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong submitting your application. Please try again.');});
 });
-document.getElementById('ve-pm-entry-btn').addEventListener('click',function(){
-var btn=this;var input=document.getElementById('ve-pm-amount');
-var dollars=parseFloat(input.value);
-if(!dollars||dollars<0.5){showPmErr('Enter an amount of at least $0.50.');return;}
-var cents=Math.round(dollars*100);
-btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting...';
-startEntryCheckout(cents).then(function(d){
+// 2026-09-24 (Sean): Founding Membership is a flat $11, one time, never renews.
+// It replaces the any-amount contribution; ve-entry-checkout enforces the $11 floor.
+document.getElementById('ve-pm-founding-btn').addEventListener('click',function(){
+var btn=this;
+btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting to checkout...';
+startEntryCheckout(1100).then(function(d){
 if(d&&d.url){window.location.href=d.url;return;}
 btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');
 }).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong starting checkout. Please try again.');});
@@ -223,7 +223,7 @@ hideAuthModal();
 // 2026-09-17, same bug as the email path: the field was missing from the
 // insert/lookup .select(), so this check always silently failed before).
 if(d.member&&d.member.membership_status==='pending_payment'){
-showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
 }else if(_modalCb){_modalCb();}else{location.reload();}
 }).catch(function(){_showErr('Something went wrong. Please try again.');});}});window.google.accounts.id.renderButton(el,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:el.offsetWidth||336});_gBtnInited=true;}
 // Login/Create-Account are two tabs on the SAME modal (2026-08-19, V direction:
@@ -328,7 +328,7 @@ btn.disabled=false;btn.textContent='Create Account';
 if(d.error){_showErr(d.error);return;}
 hideAuthModal();
 if(d.member&&d.member.membership_status==='pending_payment'){
-showActivateModal('Your Passport is created. Activate it with a membership or a one-time contribution to unlock posting, joining chapters, following, and saving.');
+showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
 }else if(_modalCb){_modalCb();}else{location.reload();}
 }).catch(function(){btn.disabled=false;btn.textContent='Create Account';_showErr('Something went wrong. Please try again.');});
 return;

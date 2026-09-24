@@ -609,7 +609,7 @@
         // fork_pending and silently advancing the wizard past the whole
         // membership pitch even though nothing was actually joined.
         if (d.error === 'payment_required') {
-          VEAuth.showActivateModal(d.message || 'Activate your Passport with a membership, a one-time contribution, or a free Guest Passport application to join the waitlist.');
+          VEAuth.showActivateModal(d.message || 'Become a Founding Member for $11, one time, or apply for a free Guest Passport to join the waitlist.');
           return;
         }
         if (d.error) return;
@@ -890,8 +890,8 @@
       var bodyHtml, btnId, btnLabel;
       if (!isMember) {
         bodyHtml = '<ul class="drive-bullets">' +
-          '<li>Sustaining Passport -- $11/mo or $111/yr</li>' +
-          '<li>One-time contribution, any amount</li>' +
+          '<li>Founding Membership, $11 one time</li>' +
+          '<li>Sustaining Passport, $11/mo or $111/yr</li>' +
           '<li>Free Guest Passport application</li>' +
         '</ul>';
         btnId = 'joinBtn'; btnLabel = 'Get Started';
