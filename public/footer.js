@@ -29,7 +29,7 @@
       '</a>' +
       '<nav class="footer-links" aria-label="Footer navigation">' +
         '<a href="#">ABOUT</a>' +
-        '<a href="/partner">PARTNER WITH US</a>' +
+        '<a href="/partners">PARTNER WITH US</a>' +
         '<a href="#">POLICIES</a>' +
         '<a href="#">CONTACT</a>' +
       '</nav>' +

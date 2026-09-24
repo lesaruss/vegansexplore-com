@@ -40,3 +40,27 @@ Staged and not yet deployed as of 2026-09-09:
   already enforces the correct value via the `trg_stamp_ve_tenant_on_insert`
   trigger, so this change is a no-op once deployed and the two cannot
   disagree.
+
+## ve-partner-guide
+
+Backend for The Explore Season Partners Guide (`/partners` and the Explore
+Season section of `/dashboard/opportunities`). Playbook:
+`explore-season-partners-guide`, locked 2026-09-24. `verify_jwt` is **false**:
+it is a public endpoint, and a signed-in visitor's VE app token travels in
+`body.token`. Actions: `catalog` (GET), `checkout` (self-serve offers under
+$8K, Stripe Checkout on the VE account), `inquire` (question, meeting,
+reserve with a 7-day hold, notify). Every purchase or inquiry writes one
+`public.sponsors` row. Offers live in `public.ve_partner_offers` and cities
+and Community Managers in `public.ve_partner_cities`, so prices, copy and
+routing change with a row update, not a deploy. Deployed as v1 on 2026-09-24.
+
+## ve-stripe-webhook
+
+The shared Stripe webhook for the VE, LESARUSS and Meatless Muscle accounts.
+`verify_jwt` is **false** (Stripe signs the request, not Supabase). Tracked
+here from v47 (2026-09-24), which added the `partner_guide_purchase` branch
+ahead of the legacy founding-membership fallback; v47 is v46 plus that branch
+only, verified by diff against the deployed source. A buyer who pays before
+having an account has the membership waiting on the sponsors row; the
+`trg_zz_claim_partner_membership_*` triggers on `public.members` grant it at
+signup.

@@ -1650,6 +1650,11 @@
   ],
   "redirects": [
     {
+      "source": "/partner",
+      "destination": "/partners",
+      "permanent": false
+    },
+    {
       "source": "/regions/south-florida",
       "destination": "/communities/south-florida",
       "permanent": true

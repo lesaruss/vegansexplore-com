@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner with Vegans Explore | The Explore Season</title>
+  <meta name="description" content="The Explore Season is the one way to partner with Vegans Explore. Community Night tables, Goodie Bag Partners, Activation Partners and membership, starting Oct 24 in South Florida.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-orange-text:#7d4a00;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);line-height:1.6;}
+    a{color:var(--ve-green-deep);}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+
+    .hero{position:relative;min-height:620px;display:flex;align-items:center;background-image:url('/public/events/vegan-foodie-fest-2025.jpg');background-size:cover;background-position:center right;color:#fff;overflow:hidden;}
+    .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.99) 0%,rgba(0,0,0,0.95) 28%,rgba(0,0,0,0.72) 52%,rgba(0,0,0,0.28) 68%,transparent 84%);}
+    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.45) 0%,transparent 32%);}
+    .hero-inner{position:relative;z-index:1;max-width:620px;margin-left:max(32px,calc((100% - 1200px)/2));padding:72px 0;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#9be29e;margin-bottom:14px;}
+    .hero h1{font-size:clamp(34px,5vw,56px);font-weight:900;line-height:1.02;letter-spacing:-0.02em;text-transform:uppercase;margin-bottom:18px;}
+    .hero p.lede{font-size:17px;line-height:1.65;color:rgba(255,255,255,0.9);margin-bottom:28px;max-width:540px;}
+    .cta-row{display:flex;flex-wrap:wrap;gap:12px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 24px;border-radius:6px;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;}
+    .btn-primary{background:#22C55E;color:#0b2e14;}
+    .btn-primary:hover{background:#4ade80;}
+    .btn-ghost{border:1.5px solid rgba(255,255,255,0.7);color:#fff;}
+    .btn-ghost:hover{background:rgba(255,255,255,0.1);}
+
+    section.band{padding:72px 32px;}
+    section.band.alt{background:#fafafa;border-top:1px solid var(--ve-border);border-bottom:1px solid var(--ve-border);}
+    .wrap{max-width:1200px;margin:0 auto;}
+    .sec-eyebrow{font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:8px;}
+    h2{font-size:clamp(26px,3.4vw,36px);font-weight:900;line-height:1.1;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:14px;}
+    .sec-lede{font-size:16px;color:var(--ve-text-75);max-width:760px;margin-bottom:34px;}
+
+    .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:18px;}
+    .pillar{min-width:0;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:24px;}
+    .pillar-icon{width:40px;height:40px;border-radius:10px;background:var(--ve-green-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+    .pillar h3{font-size:16px;font-weight:800;margin-bottom:6px;}
+    .pillar p{font-size:14px;color:var(--ve-text-75);}
+
+    .proof{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:14px;margin-top:30px;}
+    .proof-item{min-width:0;border-left:3px solid var(--ve-orange);padding:6px 0 6px 14px;}
+    .proof-item strong{display:block;font-size:17px;font-weight:900;}
+    .proof-item span{font-size:13.5px;color:var(--ve-text-75);}
+
+    .timeline{list-style:none;display:grid;gap:12px;}
+    .tl{min-width:0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;}
+    .tl.lead{border-color:var(--ve-green-dark);box-shadow:0 6px 18px rgba(45,125,49,0.1);}
+    .tl-date{font-size:13px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .tl h3{font-size:17px;font-weight:800;margin-bottom:4px;}
+    .tl p{font-size:14px;color:var(--ve-text-75);}
+    @media (max-width:640px){.tl{grid-template-columns:minmax(0,1fr);gap:4px;}}
+
+    .faq{display:grid;gap:10px;max-width:860px;}
+    .faq details{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:0 18px;}
+    .faq summary{cursor:pointer;font-weight:800;font-size:15px;padding:16px 0;list-style:none;}
+    .faq summary::-webkit-details-marker{display:none;}
+    .faq details p{font-size:14px;color:var(--ve-text-75);padding:0 0 16px;}
+
+    @media (max-width:900px){
+      .hero{background-image:url('/public/partner/ve-partner-mobile.png');background-position:center center;align-items:flex-end;min-height:640px;}
+      .hero::before{background:rgba(0,0,0,0.32);}
+      .hero::after{display:none;}
+      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
+      section.band{padding:56px 24px;}
+    }
+    @media (max-width:480px){
+      .hero::before{background:rgba(0,0,0,0.32);}
+      .hero::after{display:none;}
+      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
+      .hero p.lede{font-size:15.5px;}
+      section.band{padding:48px 16px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">The Explore Season &middot; South Florida</p>
+      <h1>Partner with Vegans Explore.</h1>
+      <p class="lede">We are building the vegan world's home base, city by city. The Explore Season is how local businesses, brands, chefs and neighbors get involved, starting with our Launch Community Night on Saturday, October 24.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#guide">Find your way in</a>
+        <a class="btn btn-ghost" href="#season">See the season</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="band" aria-labelledby="who-h">
+      <div class="wrap">
+        <p class="sec-eyebrow">Who we are</p>
+        <h2 id="who-h">A community, not a one-night crowd.</h2>
+        <p class="sec-lede">Vegans Explore brings people together around plant-based food, the businesses that make it, and each other: a member platform online, and real nights out in every city we open. South Florida is first. Community Managers are already lined up in Orlando and North Central Florida, Philadelphia, New York and Los Angeles.</p>
+        <div class="pillars">
+          <div class="pillar">
+            <div class="pillar-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+            <h3>A person on the ground in every city</h3>
+            <p>Each city has its own Community Manager who knows the local businesses, shows up at events and makes the introductions.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 11a3 3 0 1 0 0-6"/><path d="M21 20c0-2.6-1.6-4.8-4-5.6"/></svg></div>
+            <h3>Members who come back</h3>
+            <p>Check-in at every Community Night is the membership signup, so partners meet people who return, not a crowd that disappears.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></div>
+            <h3>A report after every event</h3>
+            <p>Every partner gets a report within 7 days of each event, so you can see what your table, bag insert or activation did.</p>
+          </div>
+        </div>
+        <div class="proof" aria-label="Track record">
+          <div class="proof-item"><strong>2021 Heat night, sold out</strong><span>and Full Bloom went on to become a permanent arena vendor.</span></div>
+          <div class="proof-item"><strong>2021 Dolphins night, sold out</strong><span>Miami Dolphins, Hard Rock Stadium.</span></div>
+          <div class="proof-item"><strong>500+ activations</strong><span>brands and businesses put in front of the community.</span></div>
+          <div class="proof-item"><strong>SoFlo Vegans, 2 to 50 a month</strong><span>our South Florida community.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt" id="season" aria-labelledby="season-h">
+      <div class="wrap">
+        <p class="sec-eyebrow">The season</p>
+        <h2 id="season-h">What is happening this season.</h2>
+        <p class="sec-lede">Three Community Nights this quarter, a game night, and a carnival to open 2027. Partners who sign early are in all of it.</p>
+        <ol class="timeline">
+          <li class="tl lead"><span class="tl-date">Sat, Oct 24</span><div><h3>Launch Community Night, West Palm Beach</h3><p>Halloween weekend. A party, not a presentation: food demo, sampling, vendor tables, goodie bags, a costume contest and music all night. A sponsor stamp card sends guests to every table and into the prize drawing. Venue announced soon.</p></div></li>
+          <li class="tl"><span class="tl-date">November</span><div><h3>November Community Night</h3><p>Our second night of the season, and goodie bag pickup for everyone going to the Dolphins game with our group. Date announced soon.</p></div></li>
+          <li class="tl"><span class="tl-date">Late November</span><div><h3>Miami Dolphins game night</h3><p>A group night at Hard Rock Stadium with the community. Date being confirmed. Five Activation Partner spots only.</p></div></li>
+          <li class="tl"><span class="tl-date">December</span><div><h3>December Community Night</h3><p>The third night of the quarter. Date announced soon.</p></div></li>
+          <li class="tl"><span class="tl-date">Early 2027</span><div><h3>A South Florida carnival</h3><p>Rides, games and food with the whole community. Season partners help shape it. Details soon.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" id="guide" aria-labelledby="guide-h">
+      <div class="wrap">
+        <p class="sec-eyebrow">Partners Guide</p>
+        <h2 id="guide-h">Find your way in.</h2>
+        <p class="sec-lede">Answer a few quick questions and you will only see what fits. Anything under $8,000 you can lock in right here. Bigger partnerships start with a call with Sean.</p>
+        <div data-ve-partner-guide data-source="partners_page"></div>
+      </div>
+    </section>
+
+    <section class="band alt" aria-labelledby="faq-h">
+      <div class="wrap">
+        <p class="sec-eyebrow">Good to know</p>
+        <h2 id="faq-h">Questions partners ask.</h2>
+        <div class="faq">
+          <details><summary>How does checkout work?</summary><p>Choose an option, add your details, and you go to a secure Stripe checkout. You get a receipt by email right away, and your Community Manager follows up with next steps.</p></details>
+          <details><summary>What if I sign up later in the season?</summary><p>The price stays the same; your start date sets how long the package runs. Sign before Oct 24 and a Goodie Bag or Activation Partner package covers every event this quarter. Sign in November and it covers the events that are left.</p></details>
+          <details><summary>Can I serve or sell food at my table?</summary><p>Community Night food is sampling only, unless your business holds the right temporary food event permit. At the Dolphins game there are no sales on the grounds, and bags cannot go into the stadium, which is why bag pickup happens at the November Community Night.</p></details>
+          <details><summary>Is a partnership a donation?</summary><p>No. These are marketing partnerships with Vegans Explore: you get a table, placement in goodie bags, an activation or a custom program in return.</p></details>
+          <details><summary>My city is not live yet. Can I still get involved?</summary><p>Yes. Pick your city in the guide and leave your email. Each city opens as its Community Manager comes on and the season can support it, and you will hear first.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/public/partner-guide.js"></script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

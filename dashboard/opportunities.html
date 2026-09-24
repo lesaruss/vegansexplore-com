@@ -90,7 +90,18 @@
     html += tile('/dashboard/advertising', '&#128241;', 'linear-gradient(135deg,#ec4899,#9d174d)', 'Advertising &amp; Business', 'See what’s available: Community Partnership, TV ads, restaurant display options, and pilot-program opportunities.', { label: 'Business', cls: 'business' }, false);
     html += '</div>';
 
+    // The Explore Season: same Partners Guide component as the public /partners page.
+    html += '<p class="opp-section-title">The Explore Season</p>' +
+      '<p style="font-size:13px;color:var(--ve-text-75);margin:-4px 0 14px;">Membership, Community Night tables, goodie bags and activations for this season, all in one place.</p>' +
+      '<div data-ve-partner-guide data-source="member_platform"></div>';
+
     document.getElementById('opp-sections').innerHTML = html;
+    if (!document.getElementById('vpg-script')) {
+      var s = document.createElement('script');
+      s.id = 'vpg-script';
+      s.src = '/public/partner-guide.js';
+      document.body.appendChild(s);
+    }
   }
 
   function showDenied() {
