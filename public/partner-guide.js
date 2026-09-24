@@ -10,6 +10,10 @@
  *
  * Offers, cities and spots come from the ve-partner-guide edge function, which
  * reads public.ve_partner_offers; every checkout or inquiry writes a sponsors row.
+ *
+ * Pricing is a member benefit (Sean, 2026-09-24): a visitor who is not signed
+ * in answers the questions, then creates an account or logs in (VEAuth pop-up)
+ * and lands back on their matches with full details and prices.
  */
 (function () {
   var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-partner-guide';
@@ -112,6 +116,7 @@
   }
   function token() { try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
   function member() { try { return JSON.parse(localStorage.getItem('ve_member') || 'null') || {}; } catch (e) { return {}; } }
+  function loggedIn() { try { return window.VEAuth ? VEAuth.isLoggedIn() : !!token(); } catch (e) { return !!token(); } }
   function track(name, params) { try { if (window.gtag) window.gtag('event', name, params || {}); } catch (e) {} }
   var ICON_X = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 
@@ -146,7 +151,7 @@
     var d = document.createElement('dialog');
     d.className = 'vpg-dialog';
     d.setAttribute('aria-labelledby', 'vpg-q-title');
-    d.innerHTML = '<div class="vpg-head"><span class="vpg-head-title">Find your way in</span><div class="vpg-bar" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100"><span></span></div>' +
+    d.innerHTML = '<div class="vpg-head"><span class="vpg-head-title">Find my fit</span><div class="vpg-bar" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100"><span></span></div>' +
       '<button type="button" class="vpg-x" aria-label="Close">' + ICON_X + '</button></div>' +
       '<div class="vpg-body" aria-live="polite"></div>' +
       '<div class="vpg-foot"><button type="button" class="vpg-link" data-act="back">Back</button><button type="button" class="vpg-link" data-act="ask">Have a question instead?</button></div>';
@@ -228,7 +233,7 @@
     else if (s.step === 'budget') html = choiceStep('budget', 'What is your budget?', 'Everything under $8,000 checks out right here, no meeting needed.', BUDGETS);
     else if (s.step === 'start') html = choiceStep('start', 'When do you want to start?', 'Sign before Oct 24 and you get every event this quarter.', STARTS);
     else if (s.step === 'coming') html = comingStep();
-    else if (s.step === 'results') html = resultsStep();
+    else if (s.step === 'results') html = loggedIn() ? resultsStep() : gateStep();
     else if (s.step === 'question') html = questionStep();
     else if (s.step === 'success') html = '<h2 class="vpg-q-title" id="vpg-q-title">You are in.</h2><p class="vpg-q-sub">Your payment went through. Check your email for your receipt and what is included. The team will reach out with next steps.</p><button type="button" class="vpg-btn" data-act="close">Done</button>';
     body.innerHTML = html;
@@ -243,6 +248,35 @@
     return '<h2 class="vpg-q-title" id="vpg-q-title">' + esc(c.name) + ' is coming.</h2>' +
       '<p class="vpg-q-sub">A Community Manager is already lined up. The city opens when the season can support it. Leave your email and the team will reach out when it opens.</p>' +
       form('notify-city', 'notify', null, 'Put me on the list', true);
+  }
+
+  function gateStep() {
+    var attendee = G.state.audience === 'attendee';
+    track('pg_gate', { audience: G.state.audience });
+    return '<h2 class="vpg-q-title" id="vpg-q-title">Your matches are ready.</h2>' +
+      '<p class="vpg-q-sub">' + (attendee ? 'Join Vegans Explore to see how Founding Membership works and what it includes.'
+        : 'Members see every option that fits you, what is included and the pricing. Join Vegans Explore or log in to see yours.') + '</p>' +
+      '<div class="vpg-actions" style="margin-top:0;"><button type="button" class="vpg-btn" data-auth="signup">Join Vegans Explore</button>' +
+      '<button type="button" class="vpg-btn ghost" data-auth="login">I am a member, log in</button></div>' +
+      '<p class="vpg-hint">Rather talk first? Use "Have a question instead?" below and the team will reply by email.</p>';
+  }
+
+  // After sign-up the site may show its own activation prompt first; reopen on the
+  // visitor's matches once they are signed in and every account pop-up is closed.
+  function authThenResults(mode) {
+    saveState();
+    close();
+    if (!window.VEAuth) { location.href = '/join'; return; }
+    VEAuth.showAuthModal(mode === 'signup' ? 'Join Vegans Explore to see your matches and pricing.' : 'Log in to see your matches and pricing.', function () { open({ step: 'results' }); }, mode);
+    var shown = function (id) { var el = document.getElementById(id); return el && el.style.display !== 'none' && el.style.display !== ''; };
+    var started = Date.now();
+    var timer = setInterval(function () {
+      if (Date.now() - started > 15 * 60000) { clearInterval(timer); return; }
+      if (loggedIn() && !shown('ve-auth-modal') && !shown('ve-pledge-modal')) {
+        clearInterval(timer);
+        if (!G.dialog || !G.dialog.open) open({ step: 'results' });
+      }
+    }, 700);
   }
 
   function matches() {
@@ -357,6 +391,7 @@
       });
     });
     body.querySelectorAll('[data-act=close]').forEach(function (b) { b.addEventListener('click', close); });
+    body.querySelectorAll('[data-auth]').forEach(function (b) { b.addEventListener('click', function () { authThenResults(b.getAttribute('data-auth')); }); });
     body.querySelectorAll('form.vpg-form').forEach(function (f) {
       f.addEventListener('submit', function (e) { e.preventDefault(); submit(f); });
     });
@@ -413,8 +448,8 @@
       if (el.__vpg) return;
       el.__vpg = true;
       var src = el.getAttribute('data-source') || 'partners_page';
-      el.innerHTML = '<div class="vpg-inline"><p><strong>Find your way in</strong>Membership, Community Night tables, goodie bags and activations for this season. A few quick questions and you will see what fits.</p>' +
-        '<button type="button" class="vpg-btn" data-vpg-open data-source="' + esc(src) + '">Get started</button></div>';
+      el.innerHTML = '<div class="vpg-inline"><p><strong>Find my fit</strong>Membership, Community Night tables, goodie bags and activations for this season. A few quick questions and you will see what fits, with pricing.</p>' +
+        '<button type="button" class="vpg-btn" data-vpg-open data-source="' + esc(src) + '">Find my fit</button></div>';
     });
     document.addEventListener('click', function (e) {
       var t = e.target.closest && e.target.closest('[data-vpg-open]');
