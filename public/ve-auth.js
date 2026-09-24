@@ -130,14 +130,6 @@ s.textContent=
 '#ve-pm-close:focus-visible{outline:3px solid #22C55E;border-radius:4px;}'+
 '#ve-pm-annual-row{display:flex;align-items:center;gap:7px;margin:10px 0 2px;justify-content:center;}'+
 '#ve-pm-annual-row label{font-size:12px;color:#555;font-weight:600;font-family:"Montserrat",sans-serif;cursor:pointer;}'+
-'#ve-pm-guest-toggle{display:block;width:100%;background:none;border:none;padding:4px;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#555;text-decoration:underline;cursor:pointer;margin-top:2px;}'+
-'#ve-pm-guest-panel{display:none;text-align:left;margin-top:10px;}'+
-'#ve-pm-guest-panel p{font-size:12px;color:#666;line-height:1.5;margin-bottom:10px;}'+
-'#ve-pm-guest-text{display:block;width:100%;min-height:88px;padding:11px 13px;border:1.5px solid rgba(0,0,0,0.15);border-radius:6px;font-family:"Montserrat",sans-serif;font-size:13px;color:#1a1a1a;box-sizing:border-box;resize:vertical;margin-bottom:10px;}'+
-'#ve-pm-guest-text:focus{outline:none;border-color:#22C55E;}'+
-'#ve-pm-guest-submit{display:block;width:100%;padding:12px;background:#1a1a1a;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;}'+
-'#ve-pm-guest-submit:hover{background:#333;}'+
-'#ve-pm-guest-submit:disabled{background:#9CA3AF;cursor:not-allowed;}'+
 '@media(max-width:480px){#ve-pm-box{padding:28px 20px 22px;}}';
 document.head.appendChild(s);
 var el=document.createElement('div');
@@ -153,12 +145,6 @@ el.innerHTML=
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or go further with Passport</span><div class="ve-pm-divider-line"></div></div>'+
 '<button type="button" id="ve-pm-member-btn" class="ve-pm-secondary">Passport - $11/mo</button>'+
 '<div id="ve-pm-annual-row"><input type="checkbox" id="ve-pm-annual"><label for="ve-pm-annual">Bill annually instead - $111/yr</label></div>'+
-'<button type="button" id="ve-pm-guest-toggle">Not ready to contribute? Apply for a free Guest Passport</button>'+
-'<div id="ve-pm-guest-panel">'+
-'<p>Tell us in your own words why you want to join Vegans Explore. Every application is reviewed -- a real answer gets you in.</p>'+
-'<textarea id="ve-pm-guest-text" placeholder="Why do you want to join?" aria-label="Why do you want to join Vegans Explore"></textarea>'+
-'<button type="button" id="ve-pm-guest-submit">Submit Application</button>'+
-'</div>'+
 '</div>';
 document.body.appendChild(el);
 document.getElementById('ve-pm-close').addEventListener('click',hideActivateModal);
@@ -173,23 +159,9 @@ if(d&&d.url){window.location.href=d.url;return;}
 btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');
 }).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong starting checkout. Please try again.');});
 });
-document.getElementById('ve-pm-guest-toggle').addEventListener('click',function(){
-var panel=document.getElementById('ve-pm-guest-panel');
-var open=panel.style.display==='block';
-panel.style.display=open?'none':'block';
-this.textContent=open?'Not ready to contribute? Apply for a free Guest Passport':'Hide the application';
-});
-document.getElementById('ve-pm-guest-submit').addEventListener('click',function(){
-var btn=this;var text=document.getElementById('ve-pm-guest-text').value.trim();
-if(!text){showPmErr('Please write a short answer before submitting.');return;}
-btn.disabled=true;var orig=btn.textContent;btn.textContent='Submitting...';
-submitMissionSurvey(text).then(function(d){
-if(d&&d.ok&&d.gate==='guest'){hideActivateModal();location.reload();return;}
-btn.disabled=false;btn.textContent=orig;
-if(d&&d.error==='application_not_approved'){showPmErr('We could not approve that application. You are welcome to become a Founding Member for $11, one time, instead.');return;}
-showPmErr(d&&d.error?d.error:'Something went wrong submitting your application. Please try again.');
-}).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong submitting your application. Please try again.');});
-});
+// 2026-09-24 (Sean): the free Guest Passport application is retired from this
+// prompt; the $11 one-time Founding Membership is the way in. Existing Guest
+// Passport holders keep their access (dashboard/guest-reviews still manages them).
 // 2026-09-24 (Sean): Founding Membership is a flat $11, one time, never renews.
 // It replaces the any-amount contribution; ve-entry-checkout enforces the $11 floor.
 document.getElementById('ve-pm-founding-btn').addEventListener('click',function(){
