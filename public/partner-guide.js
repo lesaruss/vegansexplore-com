@@ -1,87 +1,110 @@
-/* The Explore Season Partners Guide component.
+/* The Explore Season Partners Guide intake.
  * One component, two homes: the public /partners page and the Opportunities
  * section inside the member platform (playbook explore-season-partners-guide,
- * locked 2026-09-24). Mount with <div data-ve-partner-guide data-source="..."></div>.
+ * locked 2026-09-24). It is a step-by-step pop-up: one question per screen,
+ * a progress bar, Back, and an X that keeps the visitor's answers.
+ *
+ *   Open it from any element with data-vpg-open, or call VEPartnerGuide.open().
+ *   <div data-ve-partner-guide data-source="..."></div> renders a small
+ *   "Get started" card for inline homes such as the member dashboard.
+ *
  * Offers, cities and spots come from the ve-partner-guide edge function, which
  * reads public.ve_partner_offers; every checkout or inquiry writes a sponsors row.
  */
 (function () {
   var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-partner-guide';
+  var STORE_KEY = 've_pg_state';
 
   var CSS = [
-    '.vpg{font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1a1a1a;}',
-    '.vpg *{box-sizing:border-box;}',
-    '.vpg-q{margin:0 0 22px;border:0;padding:0;min-width:0;}',
-    '.vpg-q legend,.vpg-label{display:block;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#2d7d31;margin:0 0 10px;padding:0;}',
-    '.vpg-chips{display:flex;flex-wrap:wrap;gap:8px;}',
-    '.vpg-chip{appearance:none;font:inherit;font-size:14px;font-weight:700;color:#1a1a1a;background:#fff;border:1.5px solid rgba(0,0,0,0.18);border-radius:100px;padding:10px 16px;cursor:pointer;min-height:44px;transition:border-color .15s,background .15s;}',
-    '.vpg-chip:hover{border-color:#2d7d31;}',
-    '.vpg-chip[aria-pressed="true"]{background:#2d7d31;border-color:#2d7d31;color:#fff;}',
-    '.vpg-chip:focus-visible,.vpg-btn:focus-visible,.vpg-input:focus-visible{outline:3px solid #F69820;outline-offset:2px;}',
-    '.vpg-chip small{font-weight:600;opacity:.8;}',
-    '.vpg-hint{font-size:13px;color:rgba(26,26,26,0.72);margin:10px 0 0;line-height:1.55;}',
-    '.vpg-results-head{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em;margin:34px 0 6px;}',
-    '.vpg-results-sub{font-size:14px;color:rgba(26,26,26,0.72);margin:0 0 18px;}',
-    '.vpg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:16px;}',
-    '.vpg-card{min-width:0;background:#fff;border:1.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:10px;}',
+    '.vpg-dialog{margin:auto;font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1a1a1a;border:0;padding:0;border-radius:16px;width:min(680px,calc(100% - 32px));max-height:min(760px,calc(100vh - 32px));box-shadow:0 24px 60px rgba(0,0,0,0.3);overflow:hidden;}',
+    '.vpg-dialog *{box-sizing:border-box;}',
+    '.vpg-dialog::backdrop{background:rgba(10,20,12,0.62);}',
+    '.vpg-dialog[open]{display:flex;flex-direction:column;}',
+    '.vpg-head{display:flex;align-items:center;gap:14px;padding:18px 20px 14px;border-bottom:1px solid rgba(0,0,0,0.08);}',
+    '.vpg-head-title{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#1f5f22;white-space:nowrap;}',
+    '.vpg-bar{flex:1;height:6px;border-radius:99px;background:#EAF7EA;overflow:hidden;min-width:0;}',
+    '.vpg-bar span{display:block;height:100%;background:#2d7d31;border-radius:99px;transition:width .25s;}',
+    '.vpg-x{appearance:none;border:0;background:none;cursor:pointer;width:44px;height:44px;margin:-8px -10px -8px 0;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#1a1a1a;flex:0 0 auto;}',
+    '.vpg-x:hover{background:#f2f2f2;}',
+    '.vpg-body{padding:26px 24px 20px;overflow-y:auto;flex:1;}',
+    '.vpg-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px 16px;border-top:1px solid rgba(0,0,0,0.08);}',
+    '.vpg-link{appearance:none;border:0;background:none;font:inherit;font-size:13px;font-weight:700;color:#1f5f22;cursor:pointer;padding:10px 4px;text-decoration:underline;text-underline-offset:3px;}',
+    '.vpg-link[hidden]{display:none;}',
+    '.vpg-q-title{font-size:24px;font-weight:900;line-height:1.2;margin:0 0 6px;letter-spacing:-0.01em;}',
+    '.vpg-q-sub{font-size:14px;line-height:1.55;color:rgba(26,26,26,0.72);margin:0 0 20px;}',
+    '.vpg-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:10px;}',
+    '.vpg-choice{appearance:none;font:inherit;text-align:left;background:#fff;border:1.5px solid rgba(0,0,0,0.16);border-radius:12px;padding:14px 16px;min-height:56px;cursor:pointer;display:flex;flex-direction:column;gap:2px;transition:border-color .15s,background .15s;}',
+    '.vpg-choice:hover{border-color:#2d7d31;background:#f7fcf7;}',
+    '.vpg-choice[aria-pressed="true"]{border-color:#2d7d31;background:#EAF7EA;}',
+    '.vpg-choice strong{font-size:15px;font-weight:800;}',
+    '.vpg-choice small{font-size:12.5px;color:rgba(26,26,26,0.68);font-weight:600;}',
+    '.vpg-dialog :focus-visible{outline:3px solid #F69820;outline-offset:2px;}',
+    '.vpg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(270px,100%),1fr));gap:14px;}',
+    '.vpg-card{min-width:0;background:#fff;border:1.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:9px;}',
     '.vpg-card.featured{border-color:#2d7d31;box-shadow:0 6px 20px rgba(45,125,49,0.12);}',
-    '.vpg-card h3{font-size:18px;font-weight:900;margin:0;line-height:1.25;}',
-    '.vpg-price{font-size:28px;font-weight:900;line-height:1;margin:2px 0 0;}',
+    '.vpg-card h3{font-size:17px;font-weight:900;margin:0;line-height:1.25;}',
+    '.vpg-price{font-size:26px;font-weight:900;line-height:1;margin:2px 0 0;}',
     '.vpg-price span{font-size:13px;font-weight:700;color:rgba(26,26,26,0.68);margin-left:6px;}',
     '.vpg-tagline{font-size:14px;line-height:1.55;color:rgba(26,26,26,0.78);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
-    '.vpg-inc{list-style:none;margin:4px 0 0;padding:0;}',
-    '.vpg-inc li{font-size:13.5px;line-height:1.5;color:#1a1a1a;padding:4px 0 4px 22px;position:relative;}',
-    '.vpg-inc li::before{content:"";position:absolute;left:2px;top:9px;width:11px;height:6px;border-left:2.5px solid #2d7d31;border-bottom:2.5px solid #2d7d31;transform:rotate(-45deg);}',
+    '.vpg-inc{list-style:none;margin:2px 0 0;padding:0;}',
+    '.vpg-inc li{font-size:13.5px;line-height:1.5;padding:3px 0 3px 22px;position:relative;}',
+    '.vpg-inc li::before{content:"";position:absolute;left:2px;top:8px;width:11px;height:6px;border-left:2.5px solid #2d7d31;border-bottom:2.5px solid #2d7d31;transform:rotate(-45deg);}',
     '.vpg-badges{display:flex;flex-wrap:wrap;gap:6px;}',
     '.vpg-badge{font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:4px 9px;border-radius:100px;background:#EAF7EA;color:#1f5f22;}',
     '.vpg-badge.warn{background:#fff3e0;color:#7d4a00;}',
     '.vpg-note{font-size:12.5px;line-height:1.5;color:#7d4a00;background:#fff8ec;border:1px solid rgba(246,152,32,0.35);border-radius:8px;padding:9px 11px;margin:2px 0 0;}',
-    '.vpg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:8px;}',
+    '.vpg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px;}',
     '.vpg-btn{appearance:none;font:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;border-radius:6px;padding:13px 18px;min-height:44px;cursor:pointer;border:1.5px solid #2d7d31;background:#2d7d31;color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}',
     '.vpg-btn:hover{background:#1f5f22;border-color:#1f5f22;}',
     '.vpg-btn.ghost{background:#fff;color:#1f5f22;}',
     '.vpg-btn.ghost:hover{background:#EAF7EA;}',
     '.vpg-btn[disabled]{opacity:.6;cursor:wait;}',
-    '.vpg-form{display:none;flex-direction:column;gap:10px;margin-top:10px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.09);}',
-    '.vpg-form.open{display:flex;}',
-    '.vpg-form label{font-size:12px;font-weight:700;color:#1a1a1a;display:flex;flex-direction:column;gap:5px;}',
+    '.vpg-form{display:none;flex-direction:column;gap:10px;margin-top:8px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.09);}',
+    '.vpg-form.open,.vpg-form.always{display:flex;}',
+    '.vpg-form.always{border-top:0;padding-top:0;margin-top:0;}',
+    '.vpg-form label{font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:5px;}',
     '.vpg-input{font:inherit;font-size:15px;padding:11px 12px;border:1.5px solid rgba(0,0,0,0.2);border-radius:6px;background:#fff;color:#1a1a1a;width:100%;min-width:0;}',
     'textarea.vpg-input{min-height:96px;resize:vertical;}',
     '.vpg-hp{position:absolute !important;left:-9999px !important;width:1px;height:1px;overflow:hidden;}',
+    '.vpg-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;}',
     '.vpg-msg{font-size:13.5px;line-height:1.55;border-radius:8px;padding:11px 13px;margin:0;}',
     '.vpg-msg.ok{background:#EAF7EA;color:#1f5f22;border:1px solid #b8ddb9;}',
     '.vpg-msg.err{background:#fdecea;color:#8a1c12;border:1px solid #f1b8b1;}',
-    '.vpg-banner{font-size:15px;line-height:1.6;border-radius:10px;padding:16px 18px;margin:0 0 24px;}',
-    '.vpg-ask{margin:40px 0 0;background:#fafafa;border:1px solid rgba(0,0,0,0.09);border-radius:12px;padding:24px;}',
-    '.vpg-ask h3{font-size:18px;font-weight:900;margin:0 0 4px;}',
-    '.vpg-ask .vpg-form{display:flex;border-top:0;padding-top:6px;}',
-    '.vpg-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px;}',
-    '.vpg-empty{font-size:14px;color:rgba(26,26,26,0.72);}',
-    '@media (max-width:480px){.vpg-card{padding:18px;}.vpg-price{font-size:24px;}.vpg-actions .vpg-btn{flex:1 1 100%;}}'
+    '.vpg-hint{font-size:13px;color:rgba(26,26,26,0.72);margin:14px 0 0;line-height:1.55;}',
+    '.vpg-inline{font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#fff;border:1.5px solid rgba(0,0,0,0.12);border-radius:14px;padding:22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;}',
+    '.vpg-inline p{margin:0;font-size:14px;line-height:1.55;color:rgba(26,26,26,0.78);max-width:560px;}',
+    '.vpg-inline strong{display:block;font-size:17px;color:#1a1a1a;margin-bottom:2px;}',
+    '@media (max-width:600px){.vpg-dialog{width:100%;max-width:100%;height:100%;max-height:100%;border-radius:0;}.vpg-body{padding:22px 18px 16px;}.vpg-q-title{font-size:21px;}.vpg-actions .vpg-btn{flex:1 1 100%;}}'
   ].join('');
 
   var AUDIENCES = [
-    ['attendee', 'I want to attend'],
-    ['local_business', 'Local business'],
-    ['national_brand', 'National brand'],
-    ['chef', 'Chef'],
-    ['nonprofit', 'Nonprofit']
+    ['attendee', 'I want to attend', 'Come to events and join the community'],
+    ['local_business', 'Local business', 'Restaurant, shop, maker or service'],
+    ['national_brand', 'National brand', 'Products sold across many markets'],
+    ['chef', 'Chef', 'Private chef, caterer or culinary pro'],
+    ['nonprofit', 'Nonprofit', 'A cause-driven organization']
   ];
-  var GOALS = [['sampling', 'Sampling'], ['visibility', 'Visibility'], ['leads', 'Leads'], ['hosting', 'Hosting guests'], ['goodwill', 'Goodwill']];
-  var BUDGETS = [['under_500', 'Under $500', 50000], ['500_2500', '$500 to $2,500', 250000], ['2500_8000', '$2,500 to $8,000', 799999], ['8k_plus', '$8,000 and up', Infinity]];
-  var STARTS = [['before_oct_24', 'Before Oct 24'], ['november', 'November'], ['december', 'December'], ['q1_2027', 'Q1 2027']];
+  var GOALS = [
+    ['sampling', 'Get my product tasted', 'Sampling in front of new people'],
+    ['visibility', 'Get seen', 'Brand visibility at events and online'],
+    ['leads', 'Get customers', 'Leads and repeat buyers'],
+    ['hosting', 'Host my people', 'Bring guests, clients or a team'],
+    ['goodwill', 'Support the movement', 'Goodwill and community impact']
+  ];
+  var BUDGETS = [['under_500', 'Under $500', '', 50000], ['500_2500', '$500 to $2,500', '', 250000], ['2500_8000', '$2,500 to $8,000', '', 799999], ['8k_plus', '$8,000 and up', 'Starts with a call with Sean', Infinity]];
+  var STARTS = [['before_oct_24', 'Before Oct 24', 'Get every event this quarter'], ['november', 'November', ''], ['december', 'December', ''], ['q1_2027', 'Early 2027', '']];
 
   var ERRORS = {
     name_required: 'Please add your name.',
     valid_email_required: 'Please add a valid email address.',
-    audience_required: 'Tell us who you are at the top of the guide first.',
+    audience_required: 'Go back to the first question and tell us who you are.',
     message_required: 'Please write your question.',
     event_choice_required: 'Pick which Community Night you want.',
-    sold_out: 'All five Activation Partner spots are taken. Ask a question below to talk through other options.',
-    meeting_requires_8k_budget: 'Meetings with Sean start at $8,000. Choose that budget above, or pick a self-serve option.',
-    already_holding: 'You already have a spot on hold. Check your email for the details.',
+    sold_out: 'All five Activation Partner spots are taken. Ask a question to talk through other options.',
     too_many_requests: 'We received several requests from this email in the last hour. Please try again later.',
-    city_not_live: 'Checkout opens when your city goes live. Leave your email and we will tell you first.'
+    city_not_live: 'Checkout opens when your city goes live. Leave your email and the team will reach out.',
+    meeting_requires_8k_budget: 'Meetings with Sean start at $8,000. Change your budget, or pick a self-serve option.',
+    already_holding: 'You already have a spot on hold. Check your email for the details.'
   };
 
   function esc(s) {
@@ -89,6 +112,16 @@
   }
   function token() { try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
   function member() { try { return JSON.parse(localStorage.getItem('ve_member') || 'null') || {}; } catch (e) { return {}; } }
+  function track(name, params) { try { if (window.gtag) window.gtag('event', name, params || {}); } catch (e) {} }
+  var ICON_X = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+
+  var G = {
+    data: null, dialog: null, source: 'partners_page', uid: 0,
+    state: { step: 'audience', audience: '', city: 'south-florida', goal: '', budget: '', start: '' }
+  };
+
+  function loadState() { try { var s = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (s && typeof s === 'object') G.state = Object.assign(G.state, s); } catch (e) {} }
+  function saveState() { try { localStorage.setItem(STORE_KEY, JSON.stringify(G.state)); } catch (e) {} }
 
   function injectCss() {
     if (document.getElementById('vpg-css')) return;
@@ -98,66 +131,124 @@
     document.head.appendChild(s);
   }
 
-  function Guide(root) {
-    this.root = root;
-    this.source = root.getAttribute('data-source') || 'partners_page';
-    this.state = { audience: root.getAttribute('data-audience') || '', city: 'south-florida', goal: '', budget: '', start: '' };
-    this.data = null;
-    this.uid = 0;
-    this.load();
+  function city() { return (G.data ? G.data.cities : []).filter(function (c) { return c.slug === G.state.city; })[0] || {}; }
+
+  // The path a visitor walks, computed from their answers so far.
+  function steps() {
+    var s = G.state, list = ['audience', 'city'];
+    if (s.audience && city().status && city().status !== 'live') return list.concat(['coming']);
+    if (s.audience === 'attendee' || s.audience === 'nonprofit') return list.concat(['results']);
+    return list.concat(['goal', 'budget', 'start', 'results']);
   }
 
-  Guide.prototype.load = function () {
-    var self = this;
-    self.root.innerHTML = '<p class="vpg-empty">Loading the season&hellip;</p>';
-    fetch(API + '?action=catalog').then(function (r) { return r.json(); }).then(function (d) {
-      if (!d || !d.offers) throw new Error('no offers');
-      self.data = d;
-      self.render();
+  function buildDialog() {
+    if (G.dialog) return G.dialog;
+    var d = document.createElement('dialog');
+    d.className = 'vpg-dialog';
+    d.setAttribute('aria-labelledby', 'vpg-q-title');
+    d.innerHTML = '<div class="vpg-head"><span class="vpg-head-title">Find your way in</span><div class="vpg-bar" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100"><span></span></div>' +
+      '<button type="button" class="vpg-x" aria-label="Close">' + ICON_X + '</button></div>' +
+      '<div class="vpg-body" aria-live="polite"></div>' +
+      '<div class="vpg-foot"><button type="button" class="vpg-link" data-act="back">Back</button><button type="button" class="vpg-link" data-act="ask">Have a question instead?</button></div>';
+    document.body.appendChild(d);
+    d.querySelector('.vpg-x').addEventListener('click', close);
+    d.querySelector('[data-act=back]').addEventListener('click', back);
+    d.querySelector('[data-act=ask]').addEventListener('click', function () { go('question'); });
+    d.addEventListener('click', function (e) { if (e.target === d) close(); }); // click on the backdrop
+    d.addEventListener('close', function () { saveState(); if (G.opener) G.opener.focus(); });
+    G.dialog = d;
+    return d;
+  }
+
+  function open(opts) {
+    opts = opts || {};
+    injectCss();
+    if (opts.source) G.source = opts.source;
+    G.opener = document.activeElement;
+    var d = buildDialog();
+    if (!d.open) d.showModal();
+    if (opts.step) G.state.step = opts.step;
+    track('pg_open', { source: G.source });
+    if (G.data) { render(); return; }
+    d.querySelector('.vpg-body').innerHTML = '<p class="vpg-q-sub">Loading the season&hellip;</p>';
+    fetch(API + '?action=catalog').then(function (r) { return r.json(); }).then(function (data) {
+      if (!data || !data.offers) throw new Error('no offers');
+      G.data = data;
+      if ((steps().indexOf(G.state.step) === -1 && ['question', 'success'].indexOf(G.state.step) === -1) || (G.state.step === 'results' && !G.state.audience)) G.state.step = 'audience';
+      render();
     }).catch(function () {
-      self.root.innerHTML = '<p class="vpg-msg err">The partner menu did not load. Refresh the page, or email <a href="mailto:contact@vegansexplore.com">contact@vegansexplore.com</a>.</p>';
+      d.querySelector('.vpg-body').innerHTML = '<p class="vpg-msg err">The partner menu did not load. Close this and try again, or email <a href="mailto:contact@vegansexplore.com">contact@vegansexplore.com</a>.</p>';
     });
-  };
+  }
 
-  Guide.prototype.chips = function (key, legend, options, hint) {
-    var s = this.state;
-    var html = '<fieldset class="vpg-q"><legend>' + legend + '</legend><div class="vpg-chips">';
-    options.forEach(function (o) {
-      html += '<button type="button" class="vpg-chip" data-key="' + key + '" data-val="' + o[0] + '" aria-pressed="' + (s[key] === o[0]) + '">' + o[1] + (o[3] ? ' <small>' + o[3] + '</small>' : '') + '</button>';
-    });
-    return html + '</div>' + (hint ? '<p class="vpg-hint">' + hint + '</p>' : '') + '</fieldset>';
-  };
+  function close() { if (G.dialog && G.dialog.open) G.dialog.close(); }
 
-  Guide.prototype.render = function () {
-    var s = this.state, d = this.data;
-    var cityOpts = d.cities.map(function (c) { return [c.slug, c.name, null, c.status === 'live' ? '' : '(coming soon)']; });
-    var html = '<div class="vpg">' + this.banner();
-    html += this.chips('audience', '1. Who are you?', AUDIENCES);
-    html += this.chips('city', '2. Which city?', cityOpts, 'South Florida is live. Each new city opens as its Community Manager comes on.');
-    if (s.audience && s.audience !== 'attendee') {
-      html += this.chips('goal', '3. What do you want most?', GOALS);
-      html += this.chips('budget', '4. Budget range', BUDGETS, 'Everything under $8,000 checks out right here, no meeting needed. $8,000 and up starts with a call with Sean.');
-      html += this.chips('start', '5. When do you want to start?', STARTS);
-    }
-    html += '<div class="vpg-results" aria-live="polite">' + this.results() + '</div>';
-    html += this.askForm();
-    html += '</div>';
-    this.root.innerHTML = html;
-    this.bind();
-  };
+  function go(step) {
+    G.state.step = step;
+    saveState();
+    track('pg_step', { step: step, audience: G.state.audience });
+    if (step === 'results') track('pg_results', { audience: G.state.audience, budget: G.state.budget });
+    render();
+  }
 
-  Guide.prototype.banner = function () {
-    var q = new URLSearchParams(location.search);
-    if (q.get('checkout') === 'success') return '<p class="vpg-banner vpg-msg ok" role="status"><strong>You are in.</strong> Your payment went through. Check your email for your receipt and what happens next.</p>';
-    if (q.get('checkout') === 'cancelled') return '<p class="vpg-banner vpg-msg err" role="status">Checkout was cancelled, so nothing was charged and your spot is not locked yet. Pick it up again below whenever you are ready.</p>';
-    return '';
-  };
+  function back() {
+    var s = G.state.step;
+    if (s === 'question' || s === 'success') { go(G.state.audience ? 'results' : 'audience'); return; }
+    var list = steps(), i = list.indexOf(s);
+    if (i > 0) go(list[i - 1]);
+  }
 
-  Guide.prototype.matches = function () {
-    var s = this.state, d = this.data;
-    var budget = BUDGETS.filter(function (b) { return b[0] === s.budget; })[0];
-    var max = budget ? budget[2] : null;
-    var list = d.offers.filter(function (o) {
+  function next() {
+    var list = steps(), i = list.indexOf(G.state.step);
+    go(list[Math.min(i + 1, list.length - 1)]);
+  }
+
+  function choiceStep(key, title, sub, options) {
+    var val = G.state[key];
+    return '<h2 class="vpg-q-title" id="vpg-q-title">' + title + '</h2>' + (sub ? '<p class="vpg-q-sub">' + sub + '</p>' : '') +
+      '<div class="vpg-choices">' + options.map(function (o) {
+        return '<button type="button" class="vpg-choice" data-key="' + key + '" data-val="' + esc(o[0]) + '" aria-pressed="' + (val === o[0]) + '"><strong>' + esc(o[1]) + '</strong>' + (o[2] ? '<small>' + esc(o[2]) + '</small>' : '') + '</button>';
+      }).join('') + '</div>';
+  }
+
+  function render() {
+    var d = G.dialog, s = G.state, body = d.querySelector('.vpg-body');
+    var list = steps(), i = list.indexOf(s.step);
+    var pct = s.step === 'success' ? 100 : (i < 0 ? 100 : Math.round((i / (list.length - 1)) * 100));
+    d.querySelector('.vpg-bar span').style.width = Math.max(pct, 6) + '%';
+    d.querySelector('.vpg-bar').setAttribute('aria-valuenow', String(pct));
+    d.querySelector('[data-act=back]').hidden = s.step === 'audience' || s.step === 'success';
+    d.querySelector('[data-act=ask]').hidden = s.step === 'question' || s.step === 'success';
+
+    var html = '';
+    if (s.step === 'audience') html = choiceStep('audience', 'Who are you?', 'We will only show you what fits.', AUDIENCES);
+    else if (s.step === 'city') html = choiceStep('city', 'Which city?', 'South Florida is live. Each new city opens as its Community Manager comes on.',
+      G.data.cities.map(function (c) { return [c.slug, c.name, c.status === 'live' ? 'Live now' : 'Coming soon']; }));
+    else if (s.step === 'goal') html = choiceStep('goal', 'What do you want most?', '', GOALS);
+    else if (s.step === 'budget') html = choiceStep('budget', 'What is your budget?', 'Everything under $8,000 checks out right here, no meeting needed.', BUDGETS);
+    else if (s.step === 'start') html = choiceStep('start', 'When do you want to start?', 'Sign before Oct 24 and you get every event this quarter.', STARTS);
+    else if (s.step === 'coming') html = comingStep();
+    else if (s.step === 'results') html = resultsStep();
+    else if (s.step === 'question') html = questionStep();
+    else if (s.step === 'success') html = '<h2 class="vpg-q-title" id="vpg-q-title">You are in.</h2><p class="vpg-q-sub">Your payment went through. Check your email for your receipt and what is included. The team will reach out with next steps.</p><button type="button" class="vpg-btn" data-act="close">Done</button>';
+    body.innerHTML = html;
+    body.scrollTop = 0;
+    bind(body);
+    var first = body.querySelector('.vpg-choice[aria-pressed="true"]') || body.querySelector('.vpg-choice, .vpg-form.always input:not([name=hp_field]), .vpg-btn');
+    if (first) first.focus({ preventScroll: true });
+  }
+
+  function comingStep() {
+    var c = city();
+    return '<h2 class="vpg-q-title" id="vpg-q-title">' + esc(c.name) + ' is coming.</h2>' +
+      '<p class="vpg-q-sub">A Community Manager is already lined up. The city opens when the season can support it. Leave your email and the team will reach out when it opens.</p>' +
+      form('notify-city', 'notify', null, 'Put me on the list', true);
+  }
+
+  function matches() {
+    var s = G.state, budget = BUDGETS.filter(function (b) { return b[0] === s.budget; })[0];
+    var max = budget ? budget[3] : null;
+    var list = G.data.offers.filter(function (o) {
       if (o.audiences.indexOf(s.audience) === -1) return false;
       if (o.exit === 'meeting') return s.budget === '8k_plus';
       if (max !== null && o.price_cents && o.price_cents > max) return false;
@@ -167,143 +258,117 @@
       var ga = s.goal && a.goals.indexOf(s.goal) !== -1 ? 0 : 1, gb = s.goal && b.goals.indexOf(s.goal) !== -1 ? 0 : 1;
       return ga - gb || a.sort - b.sort;
     });
-    var hiddenMeeting = s.budget !== '8k_plus' && d.offers.some(function (o) { return o.exit === 'meeting' && o.audiences.indexOf(s.audience) !== -1; });
-    return { list: list, hiddenMeeting: hiddenMeeting };
-  };
+    return list;
+  }
 
-  Guide.prototype.results = function () {
-    var s = this.state, d = this.data, self = this;
-    if (!s.audience) return '<p class="vpg-hint">Answer the first question to see what fits you.</p>';
-    var city = d.cities.filter(function (c) { return c.slug === s.city; })[0];
-    if (city && city.status !== 'live') {
-      return '<h3 class="vpg-results-head">' + esc(city.name) + ' is coming</h3>' +
-        '<p class="vpg-results-sub">A Community Manager is already lined up. The city opens when the numbers show it can support the season. Leave your email and the team will reach out when it opens.</p>' +
-        '<div class="vpg-grid"><div class="vpg-card featured"><h3>Get on the list</h3><p class="vpg-tagline">Tell us you are interested in ' + esc(city.name) + ' and the team will be in touch when it opens.</p>' +
-        '<div class="vpg-actions"><button type="button" class="vpg-btn" data-open="notify-city">Notify me</button></div>' +
-        this.form('notify-city', 'notify', null, 'Notify me') + '</div></div>';
-    }
-    var m = this.matches();
-    var head = s.audience === 'attendee' ? 'Your way in' : 'What fits you';
-    var sub = s.audience === 'attendee'
-      ? 'Founding Membership is the one ask for everyone: $11 one time, and you are in.'
-      : (m.list.length ? 'Options under $8,000 check out right here. $8,000 and up starts with a call with Sean.' : '');
-    var html = '<h3 class="vpg-results-head">' + head + '</h3>' + (sub ? '<p class="vpg-results-sub">' + sub + '</p>' : '');
-    if (!m.list.length) {
-      html += '<p class="vpg-empty">Nothing on the menu matches that budget yet. Try a different range, or ask a question below.</p>';
-    } else {
-      html += '<div class="vpg-grid">' + m.list.map(function (o, i) { return self.card(o, i === 0); }).join('') + '</div>';
-    }
-    if (m.hiddenMeeting) html += '<p class="vpg-hint">Planning $8,000 or more? Choose that budget to see Activation Partner and Season Partnership options.</p>';
+  function resultsStep() {
+    var s = G.state, list = matches();
+    var head = s.audience === 'attendee' ? 'Your way in' : 'Here is what fits';
+    var sub = s.audience === 'attendee' ? 'Founding Membership is the one ask for everyone: $11 one time, and you are in.'
+      : 'Options under $8,000 check out right here. $8,000 and up starts with a call with Sean.';
+    var html = '<h2 class="vpg-q-title" id="vpg-q-title">' + head + '</h2><p class="vpg-q-sub">' + sub + '</p>';
+    html += list.length ? '<div class="vpg-grid">' + list.map(function (o, i) { return card(o, i === 0); }).join('') + '</div>'
+      : '<p class="vpg-q-sub">Nothing on the menu matches that budget yet. Go back and try a different range, or ask us a question.</p>';
+    var hidden = s.budget !== '8k_plus' && G.data.offers.some(function (o) { return o.exit === 'meeting' && o.audiences.indexOf(s.audience) !== -1; });
+    if (hidden) html += '<p class="vpg-hint">Planning $8,000 or more? Go back and choose that budget to see Activation Partner and Season Partnership options.</p>';
     return html;
-  };
+  }
 
-  Guide.prototype.card = function (o, featured) {
-    var s = this.state, d = this.data;
-    var badges = '';
+  function card(o, featured) {
+    var s = G.state, d = G.data, badges = '', note = '', actions = '', forms = '';
     if (o.includes_membership) badges += '<span class="vpg-badge">Membership included</span>';
     if (o.slug === 'activation-partner') {
       var left = d.activation_spots_left;
       badges += '<span class="vpg-badge warn">' + (left > 0 ? left + ' of ' + (o.capacity || 5) + ' spots left' : 'Sold out') + '</span>';
     }
-    var note = '';
     if (o.early_sign_note) {
       note = s.start === 'before_oct_24'
         ? '<p class="vpg-note"><strong>Early sign advantage:</strong> sign before Oct 24 and you get every event in the quarter.</p>'
         : '<p class="vpg-note">' + esc(o.early_sign_note) + '</p>';
     }
-    var price = '<p class="vpg-price">' + esc(o.price_label) + (o.price_note ? '<span>' + esc(o.price_note) + '</span>' : '') + '</p>';
-    var actions = '', forms = '';
     if (o.exit === 'checkout') {
       actions = '<button type="button" class="vpg-btn" data-open="buy-' + o.slug + '">Lock it in</button>';
-      forms = this.form('buy-' + o.slug, 'checkout', o, 'Continue to secure checkout');
+      forms = form('buy-' + o.slug, 'checkout', o, 'Continue to secure checkout');
     } else if (o.exit === 'meeting') {
       var soldOut = o.slug === 'activation-partner' && d.activation_spots_left <= 0;
-      actions = '<button type="button" class="vpg-btn" data-open="meet-' + o.slug + '">Book a meeting with Sean</button>' +
+      actions = '<button type="button" class="vpg-btn" data-open="meet-' + o.slug + '">Book a call with Sean</button>' +
         (soldOut ? '' : '<button type="button" class="vpg-btn ghost" data-open="hold-' + o.slug + '">Reserve, 7-day hold</button>');
-      forms = this.form('meet-' + o.slug, 'meeting', o, 'Request my meeting') + (soldOut ? '' : this.form('hold-' + o.slug, 'reserve', o, 'Hold my spot for 7 days'));
+      forms = form('meet-' + o.slug, 'meeting', o, 'Request my call') + (soldOut ? '' : form('hold-' + o.slug, 'reserve', o, 'Hold my spot for 7 days'));
     } else {
       actions = '<button type="button" class="vpg-btn ghost" data-open="notify-' + o.slug + '">Notify me</button>';
-      forms = this.form('notify-' + o.slug, 'notify', o, 'Notify me');
+      forms = form('notify-' + o.slug, 'notify', o, 'Notify me');
     }
-    return '<article class="vpg-card' + (featured ? ' featured' : '') + '"><h3>' + esc(o.name) + '</h3>' + price +
+    return '<article class="vpg-card' + (featured ? ' featured' : '') + '"><h3>' + esc(o.name) + '</h3>' +
+      '<p class="vpg-price">' + esc(o.price_label) + (o.price_note ? '<span>' + esc(o.price_note) + '</span>' : '') + '</p>' +
       (badges ? '<div class="vpg-badges">' + badges + '</div>' : '') +
       '<p class="vpg-tagline">' + esc(o.tagline) + '</p>' +
       '<ul class="vpg-inc">' + o.includes.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>' +
       note + '<div class="vpg-actions">' + actions + '</div>' + forms + '</article>';
-  };
+  }
 
-  Guide.prototype.form = function (id, kind, offer, submitLabel) {
-    var me = member(), n = ++this.uid, business = this.state.audience !== 'attendee';
-    var f = '<form class="vpg-form" id="vpg-f-' + id + '" data-kind="' + kind + '" data-offer="' + (offer ? offer.slug : '') + '" novalidate>';
+  function questionStep() {
+    var c = city();
+    var who = G.state.audience === 'national_brand' ? 'National brand questions go straight to Sean.'
+      : (c.status === 'live' && c.manager_name && c.manager_routed
+        ? 'Your question goes to ' + esc(c.manager_name) + ', our ' + esc(c.name) + ' Community Manager, with Sean copied.'
+        : 'Your question goes to the Vegans Explore team.');
+    return '<h2 class="vpg-q-title" id="vpg-q-title">Ask us anything.</h2><p class="vpg-q-sub">' + who + ' We reply by email.</p>' + form('question', 'question', null, 'Send my question', true);
+  }
+
+  function form(id, kind, offer, submitLabel, always) {
+    var me = member(), business = G.state.audience && G.state.audience !== 'attendee';
+    var f = '<form class="vpg-form' + (always ? ' always' : '') + '" id="vpg-f-' + id + '" data-kind="' + kind + '" data-offer="' + (offer ? offer.slug : '') + '" novalidate>';
     if (kind === 'reserve') f += '<p class="vpg-hint" style="margin:0;">Your spot is held for 7 days while pricing is finalized with Sean. No payment today.</p>';
     if (kind === 'meeting') f += '<p class="vpg-hint" style="margin:0;">You will get Sean\'s calendar right after this, plus a copy by email.</p>';
     f += '<div class="vpg-row"><label>Name<input class="vpg-input" name="name" autocomplete="name" required value="' + esc(me.name || '') + '"></label>' +
       '<label>Email<input class="vpg-input" name="email" type="email" autocomplete="email" required value="' + esc(me.email || '') + '"></label></div>';
-    if (business) f += '<div class="vpg-row"><label>Business or organization<input class="vpg-input" name="company" autocomplete="organization"></label>' +
-      '<label>Phone (optional)<input class="vpg-input" name="phone" type="tel" autocomplete="tel"></label></div>';
+    if (business || kind === 'question') f += '<div class="vpg-row"><label>Business or organization' + (kind === 'question' ? ' (optional)' : '') + '<input class="vpg-input" name="company" autocomplete="organization"></label>' +
+      (kind === 'question' ? '' : '<label>Phone (optional)<input class="vpg-input" name="phone" type="tel" autocomplete="tel"></label>') + '</div>';
     if (offer && offer.event_choices && offer.event_choices.length) {
       f += '<label>Which night?<select class="vpg-input" name="event" required><option value="">Choose a Community Night</option>' +
         offer.event_choices.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('') + '</select></label>';
     }
-    f += '<label class="vpg-hp" aria-hidden="true">Leave empty<input name="hp_field" tabindex="-1" autocomplete="off" id="vpg-hp-' + n + '"></label>';
-    f += '<div class="vpg-status" role="status"></div><button type="submit" class="vpg-btn">' + submitLabel + '</button></form>';
-    return f;
-  };
+    if (kind === 'question' && !G.state.audience) {
+      f += '<label>You are a&hellip;<select class="vpg-input" name="audience" required><option value="">Choose one</option>' +
+        AUDIENCES.map(function (a) { return '<option value="' + a[0] + '">' + esc(a[1]) + '</option>'; }).join('') + '</select></label>';
+    }
+    if (kind === 'question') f += '<label>Your question<textarea class="vpg-input" name="message" required></textarea></label>';
+    f += '<label class="vpg-hp" aria-hidden="true">Leave empty<input name="hp_field" tabindex="-1" autocomplete="off" id="vpg-hp-' + (++G.uid) + '"></label>';
+    return f + '<div class="vpg-status" role="status"></div><button type="submit" class="vpg-btn">' + submitLabel + '</button></form>';
+  }
 
-  Guide.prototype.askForm = function () {
-    var s = this.state, d = this.data;
-    var city = d.cities.filter(function (c) { return c.slug === s.city; })[0] || {};
-    var who = s.audience === 'national_brand'
-      ? 'National brand questions go straight to Sean.'
-      : (city.status === 'live' && city.manager_name && city.manager_routed
-        ? 'Your question goes to ' + esc(city.manager_name) + ', our ' + esc(city.name) + ' Community Manager, with Sean copied.'
-        : 'Your question goes to the Vegans Explore team.');
-    var me = member();
-    return '<section class="vpg-ask" aria-labelledby="vpg-ask-h"><h3 id="vpg-ask-h">Ask a question</h3><p class="vpg-hint" style="margin:0 0 6px;">' + who + ' We reply by email.</p>' +
-      '<form class="vpg-form" data-kind="question" data-offer="" novalidate>' +
-      '<div class="vpg-row"><label>Name<input class="vpg-input" name="name" autocomplete="name" required value="' + esc(me.name || '') + '"></label>' +
-      '<label>Email<input class="vpg-input" name="email" type="email" autocomplete="email" required value="' + esc(me.email || '') + '"></label></div>' +
-      '<label>Business or organization (optional)<input class="vpg-input" name="company" autocomplete="organization"></label>' +
-      '<label>Your question<textarea class="vpg-input" name="message" required></textarea></label>' +
-      '<label class="vpg-hp" aria-hidden="true">Leave empty<input name="hp_field" tabindex="-1" autocomplete="off"></label>' +
-      '<div class="vpg-status" role="status"></div><button type="submit" class="vpg-btn">Send my question</button></form></section>';
-  };
-
-  Guide.prototype.bind = function () {
-    var self = this, root = this.root;
-    root.querySelectorAll('.vpg-chip').forEach(function (b) {
+  function bind(body) {
+    body.querySelectorAll('.vpg-choice').forEach(function (b) {
       b.addEventListener('click', function () {
-        var k = b.getAttribute('data-key'), v = b.getAttribute('data-val');
-        self.state[k] = self.state[k] === v && k !== 'audience' && k !== 'city' ? '' : v;
-        if (k === 'audience' && v === 'attendee') { self.state.goal = ''; self.state.budget = ''; self.state.start = ''; }
-        var y = window.scrollY;
-        self.render();
-        window.scrollTo(0, y);
-        var again = root.querySelector('.vpg-chip[data-key="' + k + '"][data-val="' + v + '"]');
-        if (again) again.focus({ preventScroll: true });
+        var k = b.getAttribute('data-key');
+        G.state[k] = b.getAttribute('data-val');
+        if (k === 'audience' && (G.state.audience === 'attendee' || G.state.audience === 'nonprofit')) { G.state.goal = ''; G.state.budget = ''; G.state.start = ''; }
+        next();
       });
     });
-    root.querySelectorAll('[data-open]').forEach(function (b) {
+    body.querySelectorAll('[data-open]').forEach(function (b) {
       b.addEventListener('click', function () {
         var f = document.getElementById('vpg-f-' + b.getAttribute('data-open'));
         if (!f) return;
-        var card = b.closest('.vpg-card');
-        if (card) card.querySelectorAll('.vpg-form.open').forEach(function (o) { if (o !== f) o.classList.remove('open'); });
+        var c = b.closest('.vpg-card');
+        if (c) c.querySelectorAll('.vpg-form.open').forEach(function (o) { if (o !== f) o.classList.remove('open'); });
         f.classList.toggle('open');
         if (f.classList.contains('open')) { var first = f.querySelector('input:not([name=hp_field]),select'); if (first) first.focus(); }
       });
     });
-    root.querySelectorAll('form.vpg-form').forEach(function (f) {
-      f.addEventListener('submit', function (e) { e.preventDefault(); self.submit(f); });
+    body.querySelectorAll('[data-act=close]').forEach(function (b) { b.addEventListener('click', close); });
+    body.querySelectorAll('form.vpg-form').forEach(function (f) {
+      f.addEventListener('submit', function (e) { e.preventDefault(); submit(f); });
     });
-  };
+  }
 
-  Guide.prototype.submit = function (f) {
-    var s = this.state, kind = f.getAttribute('data-kind'), offer = f.getAttribute('data-offer');
+  function submit(f) {
+    var s = G.state, kind = f.getAttribute('data-kind'), offer = f.getAttribute('data-offer');
     var status = f.querySelector('.vpg-status'), btn = f.querySelector('button[type=submit]');
     var val = function (n) { var el = f.querySelector('[name="' + n + '"]'); return el ? el.value.trim() : ''; };
     var show = function (cls, html) { status.innerHTML = '<p class="vpg-msg ' + cls + '">' + html + '</p>'; };
-    if (!s.audience) { show('err', ERRORS.audience_required); return; }
+    var audience = s.audience || val('audience');
+    if (!audience) { show('err', ERRORS.audience_required); return; }
     if (!val('name')) { show('err', ERRORS.name_required); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) { show('err', ERRORS.valid_email_required); return; }
     if (f.querySelector('[name=event]') && !val('event')) { show('err', ERRORS.event_choice_required); return; }
@@ -316,8 +381,8 @@
     if (val('event')) answers.event = val('event');
     var body = {
       name: val('name'), email: val('email'), company: val('company'), phone: val('phone'), message: val('message'),
-      hp_field: val('hp_field'), audience: s.audience, city: s.city, offer: offer || undefined, answers: answers,
-      source: this.source, token: token() || undefined
+      hp_field: val('hp_field'), audience: audience, city: s.city, offer: offer || undefined, answers: answers,
+      source: G.source, token: token() || undefined
     };
     var action = kind === 'checkout' ? 'checkout' : 'inquire';
     if (action === 'inquire') body.kind = kind;
@@ -328,7 +393,8 @@
       .then(function (res) {
         var j = res.j || {};
         if (!res.ok || j.error) { btn.disabled = false; show('err', ERRORS[j.error] || 'Something went wrong. Please try again, or email contact@vegansexplore.com.'); return; }
-        if (kind === 'checkout' && j.url) { window.location.href = j.url; return; }
+        track(kind === 'checkout' ? 'pg_checkout_start' : 'pg_inquire', { kind: kind, offer: offer || '' });
+        if (kind === 'checkout' && j.url) { saveState(); window.location.href = j.url; return; }
         var msg = {
           question: 'Got it. Your question is on its way, and we emailed you a copy.',
           notify: 'You are on the list. The team will reach out when it opens.',
@@ -338,13 +404,29 @@
         f.innerHTML = '<p class="vpg-msg ok" role="status">' + msg + '</p>';
       })
       .catch(function () { btn.disabled = false; show('err', 'Could not reach the server. Check your connection and try again.'); });
-  };
+  }
 
   function init() {
     injectCss();
+    loadState();
     document.querySelectorAll('[data-ve-partner-guide]').forEach(function (el) {
-      if (!el.__vpg) el.__vpg = new Guide(el);
+      if (el.__vpg) return;
+      el.__vpg = true;
+      var src = el.getAttribute('data-source') || 'partners_page';
+      el.innerHTML = '<div class="vpg-inline"><p><strong>Find your way in</strong>Membership, Community Night tables, goodie bags and activations for this season. A few quick questions and you will see what fits.</p>' +
+        '<button type="button" class="vpg-btn" data-vpg-open data-source="' + esc(src) + '">Get started</button></div>';
     });
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest && e.target.closest('[data-vpg-open]');
+      if (!t) return;
+      e.preventDefault();
+      open({ source: t.getAttribute('data-source') || G.source, step: t.getAttribute('data-vpg-step') || undefined });
+    });
+    var q = new URLSearchParams(location.search);
+    if (q.get('checkout') === 'success') open({ step: 'success' });
+    else if (q.get('checkout') === 'cancelled') open({ step: 'results' });
   }
+
+  window.VEPartnerGuide = { open: open, close: close };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

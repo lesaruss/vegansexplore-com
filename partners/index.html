@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Partner with Vegans Explore | The Explore Season</title>
-  <meta name="description" content="The Explore Season is the one way to partner with Vegans Explore. Community Night tables, Goodie Bag Partners, Activation Partners and membership, starting Oct 24 in South Florida.">
+  <meta name="description" content="Since 2016, Vegans Explore has connected plant-based businesses with the people ready to try them. Find your way into the Explore Season, starting Oct 24 in South Florida.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -16,65 +16,119 @@
     a{color:var(--ve-green-deep);}
     :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
 
-    .hero{position:relative;min-height:620px;display:flex;align-items:center;background-image:url('/public/events/vegan-foodie-fest-2025.jpg');background-size:cover;background-position:center right;color:#fff;overflow:hidden;}
-    .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.99) 0%,rgba(0,0,0,0.95) 28%,rgba(0,0,0,0.72) 52%,rgba(0,0,0,0.28) 68%,transparent 84%);}
-    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.45) 0%,transparent 32%);}
-    .hero-inner{position:relative;z-index:1;max-width:620px;margin-left:max(32px,calc((100% - 1200px)/2));padding:72px 0;}
-    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#9be29e;margin-bottom:14px;}
-    .hero h1{font-size:clamp(34px,5vw,56px);font-weight:900;line-height:1.02;letter-spacing:-0.02em;text-transform:uppercase;margin-bottom:18px;}
-    .hero p.lede{font-size:17px;line-height:1.65;color:rgba(255,255,255,0.9);margin-bottom:28px;max-width:540px;}
-    .cta-row{display:flex;flex-wrap:wrap;gap:12px;}
-    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 24px;border-radius:6px;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;}
+    /* Guided slides: one full-height panel at a time on desktop, no page scroll needed. */
+    .stage{position:relative;height:calc(100vh - 61px);min-height:560px;overflow:hidden;}
+    .slide{position:absolute;inset:0;display:none;padding:48px max(40px,calc((100% - 1200px)/2)) 96px;}
+    .slide.active{display:flex;align-items:center;}
+    .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:center;width:100%;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
+    h1,h2{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;}
+    h2{font-size:clamp(28px,3.2vw,42px);margin-bottom:18px;}
+    .lede{font-size:16px;color:var(--ve-text-75);margin-bottom:18px;max-width:520px;}
+    .points{list-style:none;display:grid;gap:10px;margin-bottom:20px;}
+    .points li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px;font-weight:600;line-height:1.45;}
+    .points li::before{content:"";flex:0 0 22px;height:22px;border-radius:50%;background:var(--ve-green-light) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/12px no-repeat;margin-top:1px;}
+    .spotlight{font-size:17px;font-weight:800;line-height:1.4;border-left:4px solid var(--ve-orange);padding:6px 0 6px 16px;max-width:520px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 26px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;}
     .btn-primary{background:#22C55E;color:#0b2e14;}
     .btn-primary:hover{background:#4ade80;}
-    .btn-ghost{border:1.5px solid rgba(255,255,255,0.7);color:#fff;}
-    .btn-ghost:hover{background:rgba(255,255,255,0.1);}
+    .btn-dark{background:var(--ve-green-dark);color:#fff;}
+    .btn-dark:hover{background:var(--ve-green-deep);}
+    .btn-link{background:none;color:var(--ve-green-deep);text-decoration:underline;text-underline-offset:3px;padding:14px 8px;letter-spacing:0.06em;}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:24px;}
 
-    section.band{padding:72px 32px;}
-    section.band.alt{background:#fafafa;border-top:1px solid var(--ve-border);border-bottom:1px solid var(--ve-border);}
-    .wrap{max-width:1200px;margin:0 auto;}
-    .sec-eyebrow{font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:8px;}
-    h2{font-size:clamp(26px,3.4vw,36px);font-weight:900;line-height:1.1;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:14px;}
-    .sec-lede{font-size:16px;color:var(--ve-text-75);max-width:760px;margin-bottom:34px;}
+    /* Slide 1: hero */
+    .slide-hero{background-image:url('/public/events/vegan-foodie-fest-2025.jpg');background-size:cover;background-position:center right;color:#fff;}
+    .slide-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.99) 0%,rgba(0,0,0,0.95) 28%,rgba(0,0,0,0.72) 52%,rgba(0,0,0,0.28) 68%,transparent 84%);}
+    .slide-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.45) 0%,transparent 32%);}
+    .hero-inner{position:relative;z-index:1;max-width:600px;}
+    .hero-inner .eyebrow{color:#9be29e;}
+    .hero-inner h1{font-size:clamp(36px,5vw,60px);margin-bottom:18px;}
+    .hero-inner .lede{color:rgba(255,255,255,0.9);font-size:17px;max-width:540px;}
 
-    .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:18px;}
-    .pillar{min-width:0;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:24px;}
-    .pillar-icon{width:40px;height:40px;border-radius:10px;background:var(--ve-green-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
-    .pillar h3{font-size:16px;font-weight:800;margin-bottom:6px;}
-    .pillar p{font-size:14px;color:var(--ve-text-75);}
+    /* Media column: video when one is set, a labeled placeholder until then */
+    .media{position:relative;border-radius:16px;overflow:hidden;background:#0f1a10;aspect-ratio:16/10;box-shadow:0 18px 40px rgba(0,0,0,0.18);}
+    .media img,.media video{width:100%;height:100%;object-fit:cover;display:block;}
+    .media.tall{aspect-ratio:4/5;max-height:calc(100vh - 220px);margin-left:auto;}
+    .media-veil{position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;text-align:center;padding:20px;}
+    .media-play{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.85);display:flex;align-items:center;justify-content:center;}
+    .media-cap{text-shadow:0 1px 3px rgba(0,0,0,0.6);font-size:12px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;}
+    .media-cap span{display:block;font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;opacity:0.85;margin-top:4px;}
 
-    .proof{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:14px;margin-top:30px;}
-    .proof-item{min-width:0;border-left:3px solid var(--ve-orange);padding:6px 0 6px 14px;}
-    .proof-item strong{display:block;font-size:17px;font-weight:900;}
-    .proof-item span{font-size:13.5px;color:var(--ve-text-75);}
+    /* Slide 3: season rows */
+    .rows{list-style:none;display:grid;gap:8px;margin-bottom:20px;}
+    .rows li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px;align-items:baseline;padding:11px 14px;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
+    .rows li.lead{border-color:var(--ve-green-dark);background:#f7fcf7;}
+    .rows b{font-size:12px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .rows span{font-size:15px;font-weight:700;}
+    .rows small{display:block;font-size:12.5px;font-weight:600;color:var(--ve-text-75);}
 
-    .timeline{list-style:none;display:grid;gap:12px;}
-    .tl{min-width:0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;}
-    .tl.lead{border-color:var(--ve-green-dark);box-shadow:0 6px 18px rgba(45,125,49,0.1);}
-    .tl-date{font-size:13px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-deep);}
-    .tl h3{font-size:17px;font-weight:800;margin-bottom:4px;}
-    .tl p{font-size:14px;color:var(--ve-text-75);}
-    @media (max-width:640px){.tl{grid-template-columns:minmax(0,1fr);gap:4px;}}
+    /* Slide 4: three ways in */
+    .ways{display:grid;gap:10px;margin-bottom:6px;}
+    .way{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--ve-border);border-radius:12px;}
+    .way b{font-size:14px;font-weight:900;}
+    .way span{font-size:14.5px;color:var(--ve-text-75);font-weight:600;}
+    .fine{font-size:13.5px;color:var(--ve-text-75);margin-top:14px;}
 
-    .faq{display:grid;gap:10px;max-width:860px;}
-    .faq details{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:0 18px;}
-    .faq summary{cursor:pointer;font-weight:800;font-size:15px;padding:16px 0;list-style:none;}
-    .faq summary::-webkit-details-marker{display:none;}
-    .faq details p{font-size:14px;color:var(--ve-text-75);padding:0 0 16px;}
+    /* Controls */
+    .controls{position:absolute;left:0;right:0;bottom:22px;z-index:5;display:flex;justify-content:center;align-items:center;gap:14px;pointer-events:none;}
+    .controls > *{pointer-events:auto;}
+    .ctrl{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.18);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1a1a1a;}
+    .ctrl[disabled]{opacity:0.35;cursor:default;}
+    .dots{display:flex;gap:8px;background:rgba(255,255,255,0.92);padding:8px 12px;border-radius:99px;}
+    .dot{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.2);border:0;cursor:pointer;padding:0;}
+    .dot[aria-current="step"]{background:var(--ve-green-dark);width:26px;border-radius:99px;}
+    .on-hero .ctrl{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.5);color:#fff;}
 
+    /* Good to know */
+    .faq-dialog{margin:auto;border:0;border-radius:16px;padding:0;width:min(620px,calc(100% - 32px));max-height:calc(100vh - 32px);box-shadow:0 24px 60px rgba(0,0,0,0.3);font-family:"Montserrat",sans-serif;}
+    .faq-dialog::backdrop{background:rgba(10,20,12,0.62);}
+    .faq-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--ve-border);}
+    .faq-head h2{font-size:20px;margin:0;}
+    .faq-x{width:44px;height:44px;border:0;background:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .faq-x:hover{background:#f2f2f2;}
+    .faq-body{padding:8px 22px 22px;}
+    .faq-body h3{font-size:15px;font-weight:800;margin:16px 0 4px;}
+    .faq-body p{font-size:14px;color:var(--ve-text-75);}
+
+    /* Short desktop screens: tighten spacing so every slide still fits above the controls. */
+    @media (min-width:901px) and (max-height:780px){
+      .slide{padding-top:24px;padding-bottom:80px;}
+      h2{font-size:clamp(26px,2.6vw,34px);margin-bottom:12px;}
+      .lede{font-size:15px;margin-bottom:12px;}
+      .points{gap:7px;margin-bottom:14px;}
+      .rows{gap:6px;margin-bottom:14px;}
+      .rows li{padding:8px 12px;}
+      .spotlight{font-size:15.5px;}
+      .way{padding:11px 14px;}
+      .cta-row{margin-top:16px;}
+      .media.tall{max-height:calc(100vh - 190px);}
+    }
+
+    /* Phones and tablets: slides stack and the page scrolls within a slide; video sits above the words. */
     @media (max-width:900px){
-      .hero{background-image:url('/public/partner/ve-partner-mobile.png');background-position:center center;align-items:flex-end;min-height:640px;}
-      .hero::before{background:rgba(0,0,0,0.32);}
-      .hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
-      section.band{padding:56px 24px;}
+      .stage{height:auto;min-height:0;overflow:visible;}
+      .slide{position:relative;inset:auto;padding:36px 24px 104px;}
+      .slide.active{display:block;}
+      .split{grid-template-columns:minmax(0,1fr);gap:24px;}
+      .split > .media{order:-1;}
+      .media.tall{aspect-ratio:16/10;max-height:none;margin:0;}
+      .slide-hero{background-image:url('/public/partner/ve-partner-mobile.png');background-position:center center;min-height:calc(100vh - 104px);display:none;padding:0;}
+      .slide-hero.active{display:flex;align-items:flex-end;}
+      .slide-hero::before{background:rgba(0,0,0,0.32);}
+      .slide-hero::after{display:none;}
+      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 96px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
+      .controls{position:fixed;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.97);border-top:1px solid var(--ve-border);}
+      .on-hero .ctrl{background:#fff;border-color:rgba(0,0,0,0.18);color:#1a1a1a;}
+      .way{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
     @media (max-width:480px){
-      .hero::before{background:rgba(0,0,0,0.32);}
-      .hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
-      .hero p.lede{font-size:15.5px;}
-      section.band{padding:48px 16px;}
+      .slide{padding:28px 16px 100px;}
+      .slide-hero::before{background:rgba(0,0,0,0.32);}
+      .slide-hero::after{display:none;}
+      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 96px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
+      .hero-inner .lede{font-size:15.5px;}
+      .rows li{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
   </style>
 </head>
@@ -83,87 +137,153 @@
 
   <script src="/public/nav.js"></script>
 
-  <header class="hero">
-    <div class="hero-inner">
-      <p class="eyebrow">The Explore Season &middot; South Florida</p>
-      <h1>Partner with Vegans Explore.</h1>
-      <p class="lede">We are building the vegan world's home base, city by city. The Explore Season is how local businesses, brands, chefs and neighbors get involved, starting with our Launch Community Night on Saturday, October 24.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="#guide">Find your way in</a>
-        <a class="btn btn-ghost" href="#season">See the season</a>
+  <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Partner with Vegans Explore">
+
+    <section class="slide slide-hero active" id="s-intro" aria-roledescription="slide" aria-label="1 of 4">
+      <div class="hero-inner">
+        <p class="eyebrow">The Explore Season &middot; South Florida</p>
+        <h1>Grow with the movement.</h1>
+        <p class="lede">Since 2016, Vegans Explore has connected plant-based businesses with the people ready to try them. This season we are opening the door wider, and there is a place for you in the room.</p>
+        <div class="cta-row"><button type="button" class="btn btn-primary" data-go="1">Find your way in</button></div>
       </div>
+    </section>
+
+    <section class="slide" id="s-who" aria-roledescription="slide" aria-label="2 of 4">
+      <div class="split">
+        <div>
+          <p class="eyebrow">Who we are</p>
+          <h2>Building plant-based community since 2016.</h2>
+          <ul class="points">
+            <li>Hundreds of businesses supported and promoted</li>
+            <li>Hundreds of events hosted and backed, on stage and behind the scenes</li>
+            <li>Content that lifts our partners and the nonprofits they champion</li>
+            <li>A Community Manager on the ground in every city we open</li>
+          </ul>
+          <p class="spotlight">Your next customers are out there. We bring them to you.</p>
+        </div>
+        <div class="media" data-video="who" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="Sean on who we are"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-season" aria-roledescription="slide" aria-label="3 of 4">
+      <div class="split">
+        <div>
+          <p class="eyebrow">This season</p>
+          <h2>We are opening the door to plant-based.</h2>
+          <p class="lede">Many people will not go vegan for the animals first. But they will try great food. We throw events non-vegans actually want to attend, and put your brand in their hands.</p>
+          <ul class="rows">
+            <li class="lead"><b>Sat, Oct 24</b><span>Launch Community Night<small>West Palm Beach, Halloween weekend</small></span></li>
+            <li><b>November</b><span>Community Night</span></li>
+            <li><b>November</b><span>Miami Dolphins game night<small>Date being confirmed</small></span></li>
+            <li><b>December</b><span>Community Night</span></li>
+          </ul>
+          <p class="spotlight">Your partnership powers the network: more Community Managers, more cities, more customers for plant-based.</p>
+        </div>
+        <div class="media" data-video="season" data-poster="/public/images/ve-panel2.png" data-cap="Sean on this season"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-partner" aria-roledescription="slide" aria-label="4 of 4">
+      <div class="split">
+        <div>
+          <p class="eyebrow">Partner with us</p>
+          <h2>Pick your way in.</h2>
+          <div class="ways">
+            <div class="way"><b>Under $8,000</b><span>Choose it and check out right here. Community Night tables start at $250.</span></div>
+            <div class="way"><b>$8,000 and up</b><span>A 30-minute call with Sean to design your activation.</span></div>
+            <div class="way"><b>Not sure yet?</b><span>Ask a question and we will point you to the right fit.</span></div>
+          </div>
+          <p class="fine">Just want to come? Founding Membership is $11 one time, and you are in.</p>
+          <div class="cta-row">
+            <button type="button" class="btn btn-dark" data-vpg-open data-source="partners_page">Get started</button>
+            <button type="button" class="btn btn-link" id="faq-open">Good to know</button>
+          </div>
+        </div>
+        <div class="media tall"><img src="/public/partner/ve-partner-mobile.png" alt="Two partners sampling their drinks under a vendor tent at a Vegans Explore event"></div>
+      </div>
+    </section>
+
+    <div class="controls on-hero" id="controls">
+      <button type="button" class="ctrl" id="prev" aria-label="Previous slide" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="dots" id="dots"></div>
+      <button type="button" class="ctrl" id="next" aria-label="Next slide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
-  </header>
-
-  <main>
-    <section class="band" aria-labelledby="who-h">
-      <div class="wrap">
-        <p class="sec-eyebrow">Who we are</p>
-        <h2 id="who-h">A community, not a one-night crowd.</h2>
-        <p class="sec-lede">Vegans Explore brings people together around plant-based food, the businesses that make it, and each other: a member platform online, and real nights out in every city we open. South Florida is first. Community Managers are already lined up in Orlando and North Central Florida, Philadelphia, New York and Los Angeles.</p>
-        <div class="pillars">
-          <div class="pillar">
-            <div class="pillar-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
-            <h3>A person on the ground, city by city</h3>
-            <p>Every city we open runs through its own Community Manager, who knows the local businesses, shows up at events and makes the introductions.</p>
-          </div>
-          <div class="pillar">
-            <div class="pillar-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 11a3 3 0 1 0 0-6"/><path d="M21 20c0-2.6-1.6-4.8-4-5.6"/></svg></div>
-            <h3>Members, not just a crowd</h3>
-            <p>Check-in at Community Night is the membership signup, so the people at your table join the community, not just the room.</p>
-          </div>
-          <div class="pillar">
-            <div class="pillar-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></div>
-            <h3>A report after every event</h3>
-            <p>Every partner gets a report within 7 days of each event, so you can see what your table, bag insert or activation did.</p>
-          </div>
-        </div>
-        <div class="proof" aria-label="Track record">
-          <div class="proof-item"><strong>2021 Heat night, sold out</strong><span>and Full Bloom went on to become a permanent arena vendor.</span></div>
-          <div class="proof-item"><strong>2021 Dolphins night, sold out</strong><span>with the Miami Dolphins.</span></div>
-          <div class="proof-item"><strong>500+ activations</strong><span>brand activations to date.</span></div>
-          <div class="proof-item"><strong>SoFlo Vegans, 2 to 50 a month</strong><span>our South Florida community.</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="band alt" id="season" aria-labelledby="season-h">
-      <div class="wrap">
-        <p class="sec-eyebrow">The season</p>
-        <h2 id="season-h">What is happening this season.</h2>
-        <p class="sec-lede">Three Community Nights and a game night this quarter. Partners who sign before Oct 24 get every event in the quarter.</p>
-        <ol class="timeline">
-          <li class="tl lead"><span class="tl-date">Sat, Oct 24</span><div><h3>Launch Community Night, West Palm Beach</h3><p>Halloween weekend. A party, not a presentation: food demo, sampling, vendor tables, goodie bags, a costume contest and a live DJ. A sponsor stamp card drives guests to partner tables and into the prize drawing. Venue announced soon.</p></div></li>
-          <li class="tl"><span class="tl-date">November</span><div><h3>November Community Night</h3><p>Our second night of the season, and goodie bag pickup for everyone going to the Dolphins game with our group. Date announced soon.</p></div></li>
-          <li class="tl"><span class="tl-date">November</span><div><h3>Miami Dolphins game night</h3><p>A community group outing to a Dolphins home game. Date being confirmed. Activation Partner spots are limited to five.</p></div></li>
-          <li class="tl"><span class="tl-date">December</span><div><h3>December Community Night</h3><p>The third night of the quarter. Date announced soon.</p></div></li>
-        </ol>
-      </div>
-    </section>
-
-    <section class="band" id="guide" aria-labelledby="guide-h">
-      <div class="wrap">
-        <p class="sec-eyebrow">Partners Guide</p>
-        <h2 id="guide-h">Find your way in.</h2>
-        <p class="sec-lede">Answer a few quick questions and you will only see what fits. Anything under $8,000 you can lock in right here. Bigger partnerships start with a call with Sean.</p>
-        <div data-ve-partner-guide data-source="partners_page"></div>
-      </div>
-    </section>
-
-    <section class="band alt" aria-labelledby="faq-h">
-      <div class="wrap">
-        <p class="sec-eyebrow">Good to know</p>
-        <h2 id="faq-h">Questions partners ask.</h2>
-        <div class="faq">
-          <details><summary>How does checkout work?</summary><p>Choose an option, add your details, and you go to a secure Stripe checkout. Stripe emails your receipt, we email a confirmation of what is included, and the team follows up with next steps.</p></details>
-          <details><summary>What if I sign up later in the season?</summary><p>The price stays the same; your start date sets how long the package runs. Sign before Oct 24 and a Goodie Bag or Activation Partner package covers every event this quarter. Sign in November and it covers the events that are left.</p></details>
-          <details><summary>Can I serve or sell food at my table?</summary><p>Community Night food is sampling only, unless your business holds the right temporary food event permit. At the Dolphins game there are no sales on the grounds, and bags cannot go into the stadium, which is why bag pickup happens at the November Community Night.</p></details>
-          <details><summary>Is a partnership a donation?</summary><p>No. These are marketing partnerships with Vegans Explore: you get a table, placement in goodie bags, an activation or a custom program in return.</p></details>
-          <details><summary>My city is not live yet. Can I still get involved?</summary><p>Yes. Pick your city in the guide and leave your email. Each city opens as its Community Manager comes on and the season can support it, and the team will reach out when yours does.</p></details>
-        </div>
-      </div>
-    </section>
   </main>
+
+  <dialog class="faq-dialog" id="faq" aria-labelledby="faq-h">
+    <div class="faq-head"><h2 id="faq-h">Good to know</h2><button type="button" class="faq-x" id="faq-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="faq-body">
+      <h3>How does checkout work?</h3>
+      <p>Pick an option and pay through secure Stripe checkout. Stripe emails your receipt, we email what is included, and the team follows up with next steps.</p>
+      <h3>What if I sign up later in the season?</h3>
+      <p>Same price, shorter run. Sign before Oct 24 and a Goodie Bag or Activation package covers every event this quarter.</p>
+      <h3>Can I serve or sell food at my table?</h3>
+      <p>Community Night food is sampling only, unless your business holds the right temporary food event permit.</p>
+      <h3>Is a partnership a donation?</h3>
+      <p>No. It is a marketing partnership: you get a table, goodie bag placement, an activation or a custom program in return.</p>
+    </div>
+  </dialog>
+
+  <script>
+    // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
+    var VIDEOS = { who: '', season: '' };
+
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+      var ids = ['intro', 'who', 'season', 'partner'];
+      var cur = 0;
+      var dots = document.getElementById('dots');
+      var controls = document.getElementById('controls');
+
+      document.querySelectorAll('.media[data-video]').forEach(function (m) {
+        var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
+        if (src) {
+          m.innerHTML = '<video controls playsinline preload="metadata" poster="' + poster + '" src="' + src + '" aria-label="' + cap + '"></video>';
+        } else {
+          m.innerHTML = '<img src="' + poster + '" alt="">' +
+            '<div class="media-veil"><div class="media-play" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>' +
+            '<p class="media-cap">Video coming soon<span>' + cap + '</span></p></div>';
+        }
+      });
+
+      slides.forEach(function (_, i) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'dot'; b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        b.addEventListener('click', function () { show(i); });
+        dots.appendChild(b);
+      });
+
+      function show(n, fromHash) {
+        cur = Math.max(0, Math.min(slides.length - 1, n));
+        slides.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
+        dots.querySelectorAll('.dot').forEach(function (d, i) { if (i === cur) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current'); });
+        document.getElementById('prev').disabled = cur === 0;
+        document.getElementById('next').disabled = cur === slides.length - 1;
+        controls.classList.toggle('on-hero', cur === 0);
+        if (!fromHash) history.replaceState(null, '', cur ? '#' + ids[cur] : location.pathname + location.search);
+        if (window.innerWidth <= 900) window.scrollTo(0, 0);
+        try { if (window.gtag) gtag('event', 'pg_slide', { slide: ids[cur] }); } catch (e) {}
+      }
+
+      document.getElementById('prev').addEventListener('click', function () { show(cur - 1); });
+      document.getElementById('next').addEventListener('click', function () { show(cur + 1); });
+      document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
+      document.addEventListener('keydown', function (e) {
+        if (document.querySelector('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+      });
+
+      var start = ids.indexOf((location.hash || '').replace('#', ''));
+      if (location.hash === '#guide') start = 3;
+      show(start > 0 ? start : 0, true);
+
+      var faq = document.getElementById('faq');
+      document.getElementById('faq-open').addEventListener('click', function () { faq.showModal(); });
+      document.getElementById('faq-close').addEventListener('click', function () { faq.close(); });
+      faq.addEventListener('click', function (e) { if (e.target === faq) faq.close(); });
+    })();
+  </script>
 
   <script src="/public/partner-guide.js"></script>
   <script src="/public/footer.js"></script>
