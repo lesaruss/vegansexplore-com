@@ -435,9 +435,15 @@
     };
     var DEFAULT_CITY = 'south-florida';
     // Stripe's return URL drops ?city, so remember it for the trip back.
+    // The remembered city is only used on the way back from checkout (?activate=);
+    // a plain link always means South Florida.
     var CITY_SLUG = (function () {
-      var slug = new URLSearchParams(location.search).get('city') || '';
-      try { if (CITIES[slug]) localStorage.setItem('ve_cm_city', slug); else slug = localStorage.getItem('ve_cm_city') || ''; } catch (e) {}
+      var qs = new URLSearchParams(location.search), slug = qs.get('city') || '';
+      try {
+        if (CITIES[slug]) localStorage.setItem('ve_cm_city', slug);
+        else if (qs.get('activate')) slug = localStorage.getItem('ve_cm_city') || '';
+        else localStorage.removeItem('ve_cm_city');
+      } catch (e) {}
       return CITIES[slug] ? slug : DEFAULT_CITY;
     })();
     var CITY = CITIES[CITY_SLUG];
