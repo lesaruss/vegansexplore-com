@@ -340,23 +340,41 @@
         join: { url: AUDIO_BASE + 'cm/join-v1.mp3', dur: 28 }
       }
     };
+    // Each city gets its own onboarding: name, first-slide background (the city's
+    // landscape banner), and, as each city is built out, its own narration clips
+    // and copy. South Florida is the locked original and the default when no
+    // ?city= is given (Sean, 2026-09-25: lock it in with South Florida, then
+    // customize the script and visuals for each new city).
+    //   clips: { welcome: { url, dur }, ... } overrides AUDIO.clips for that city.
+    //   copy:  { '#css-selector': 'replacement HTML', ... } overrides page text.
+    var CITIES = {
+      'south-florida': { name: 'South Florida', bg: '/communities/south-florida/banner.jpg', bgPos: 'center 62%' },
+      'orlando-north-central-florida': { name: 'Orlando and North Central Florida', bg: '/communities/central-florida/banner.jpg' },
+      'philadelphia': { name: 'Philadelphia', bg: '/communities/philadelphia/banner.png' },
+      'new-york': { name: 'New York', bg: '/communities/new-york/banner.jpg' },
+      'los-angeles': { name: 'Los Angeles', bg: '/communities/los-angeles/banner.jpg' }
+    };
+    var DEFAULT_CITY = 'south-florida';
+    // Stripe's return URL drops ?city, so remember it for the trip back.
+    var CITY_SLUG = (function () {
+      var slug = new URLSearchParams(location.search).get('city') || '';
+      try { if (CITIES[slug]) localStorage.setItem('ve_cm_city', slug); else slug = localStorage.getItem('ve_cm_city') || ''; } catch (e) {}
+      return CITIES[slug] ? slug : DEFAULT_CITY;
+    })();
+    var CITY = CITIES[CITY_SLUG];
+    if (CITY.clips) Object.keys(CITY.clips).forEach(function (k) { AUDIO.clips[k] = CITY.clips[k]; });
     if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
-    // Personalize with ?city=<slug> on the link sent to each new Community Manager.
-    var CITIES = { 'south-florida': 'South Florida', 'orlando-north-central-florida': 'Orlando and North Central Florida', 'philadelphia': 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles' };
     (function () {
       var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
       var ids = ['welcome', 'have', 'lead', 'role', 'season', 'grow', 'join'];
       var cur = 0;
       var q = new URLSearchParams(location.search);
 
-      // Stripe's return URL drops ?city, so remember it for the trip back.
-      var citySlug = q.get('city') || '';
-      try { if (CITIES[citySlug]) localStorage.setItem('ve_cm_city', citySlug); else citySlug = localStorage.getItem('ve_cm_city') || ''; } catch (e) {}
-      var cityName = CITIES[citySlug];
-      if (cityName) {
-        document.querySelectorAll('[data-city]').forEach(function (el) { el.textContent = cityName; });
-        document.querySelectorAll('[data-city-suffix]').forEach(function (el) { el.textContent = ', ' + cityName; });
-      }
+      document.querySelectorAll('[data-city]').forEach(function (el) { el.textContent = CITY.name; });
+      document.querySelectorAll('[data-city-suffix]').forEach(function (el) { el.textContent = ', ' + CITY.name; });
+      var hero = document.getElementById('s-welcome');
+      if (hero && CITY.bg) { hero.style.backgroundImage = "url('" + CITY.bg + "')"; hero.style.backgroundPosition = CITY.bgPos || 'center center'; }
+      if (CITY.copy) Object.keys(CITY.copy).forEach(function (sel) { document.querySelectorAll(sel).forEach(function (el) { el.innerHTML = CITY.copy[sel]; }); });
 
       document.querySelectorAll('.media[data-video]').forEach(function (m) {
         var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
