@@ -308,9 +308,25 @@
   </main>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/slide-audio.js"></script>
   <script>
     // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
     var VIDEOS = { welcome: '', have: '', lead: '', role: '', season: '', grow: '', join: '' };
+    // Narration in Sean's voice (Higgsfield, ElevenLabs engine) over a music bed from the music-beds depot.
+    var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/';
+    var AUDIO = {
+      bed: AUDIO_BASE + 'beds/sanctuary-stroll-60.wav',
+      clips: {
+        welcome: { url: AUDIO_BASE + 'cm/welcome-v1.mp3', dur: 27.52 },
+        have: { url: AUDIO_BASE + 'cm/have-v1.mp3', dur: 31.36 },
+        lead: { url: AUDIO_BASE + 'cm/lead-v1.mp3', dur: 34.16 },
+        role: { url: AUDIO_BASE + 'cm/role-v1.mp3', dur: 34.8 },
+        season: { url: AUDIO_BASE + 'cm/season-v1.mp3', dur: 30.16 },
+        grow: { url: AUDIO_BASE + 'cm/grow-v1.mp3', dur: 31.36 },
+        join: { url: AUDIO_BASE + 'cm/join-v1.mp3', dur: 28 }
+      }
+    };
+    if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
     // Personalize with ?city=<slug> on the link sent to each new Community Manager.
     var CITIES = { 'south-florida': 'South Florida', 'orlando-north-central-florida': 'Orlando and North Central Florida', 'philadelphia': 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles' };
     (function () {
@@ -334,6 +350,9 @@
         var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
         if (src) {
           m.innerHTML = '<video controls playsinline preload="metadata" poster="' + poster + '" src="' + src + '" aria-label="' + cap + '"></video>';
+        } else if (window.VESlideAudio && VESlideAudio.has(m.getAttribute('data-video'))) {
+          m.setAttribute('data-sa-key', m.getAttribute('data-video'));
+          m.innerHTML = VESlideAudio.markup(m.getAttribute('data-video'), poster, cap);
         } else {
           m.innerHTML = '<img src="' + poster + '" alt="">' +
             '<div class="media-veil"><div class="media-play" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>' +
@@ -357,6 +376,7 @@
         controls.classList.toggle('on-hero', cur === 0);
         if (!fromHash) history.replaceState(null, '', (cur ? location.pathname + location.search.replace(/[?&]activate=[^&]*/, '') + '#' + ids[cur] : location.pathname + location.search));
         if (window.innerWidth <= 900) window.scrollTo(0, 0);
+        if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
         try { if (window.gtag) gtag('event', 'cm_onboarding_slide', { slide: ids[cur] }); } catch (e) {}
       }
 

@@ -73,3 +73,16 @@ allowed). `verify_jwt` is **false**: the VE app token is verified in the
 function. Deployed as v2 on 2026-09-24 with the 1,100-cent minimum and Stripe
 receipts on. The webhook's `entry_contribution` branch activates the member
 and credits 1,100 Points.
+
+## ve-media-ingest
+
+Moves generated media into public storage (`vegan-media/onboarding-audio/`) for the guided pages.
+Jobs are rows in `ve_media_ingest_jobs` (RLS on, no policies, so only the service role can queue one);
+the function is called with `{ job_id }` and trusts nothing else.
+
+- `copy`: fetches an allowed Higgsfield CDN URL (cloudfront.net / higgsfield.ai) and stores it.
+- `bed`: cuts an excerpt from a `music-beds` WAV (`params`: `start_s`, `dur_s`, `target_rms`, `fade_s`),
+  downmixes to mono 16 kHz, levels it to a quiet target RMS with fades, and stores it as WAV.
+  The level is baked in because iOS ignores `HTMLMediaElement.volume`.
+
+The pages play these through `/public/slide-audio.js` (voice over bed, auto-advance after the first tap).

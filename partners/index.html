@@ -259,9 +259,22 @@
     </div>
   </dialog>
 
+  <script src="/public/slide-audio.js"></script>
   <script>
     // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
     var VIDEOS = { problem: '', why: '', season: '', proof: '' };
+    // Narration in Sean's voice (Higgsfield, ElevenLabs engine) over a music bed from the music-beds depot.
+    var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/';
+    var AUDIO = {
+      bed: AUDIO_BASE + 'beds/green-bites-60.wav',
+      clips: {
+        problem: { url: AUDIO_BASE + 'partners/problem-v1.mp3', dur: 23.76 },
+        why: { url: AUDIO_BASE + 'partners/why-v1.mp3', dur: 21.52 },
+        season: { url: AUDIO_BASE + 'partners/season-v1.mp3', dur: 33.84 },
+        proof: { url: AUDIO_BASE + 'partners/proof-v1.mp3', dur: 36.08 }
+      }
+    };
+    if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
 
     (function () {
       var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
@@ -274,6 +287,9 @@
         var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
         if (src) {
           m.innerHTML = '<video controls playsinline preload="metadata" poster="' + poster + '" src="' + src + '" aria-label="' + cap + '"></video>';
+        } else if (window.VESlideAudio && VESlideAudio.has(m.getAttribute('data-video'))) {
+          m.setAttribute('data-sa-key', m.getAttribute('data-video'));
+          m.innerHTML = VESlideAudio.markup(m.getAttribute('data-video'), poster, cap);
         } else {
           m.innerHTML = '<img src="' + poster + '" alt="">' +
             '<div class="media-veil"><div class="media-play" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>' +
@@ -297,6 +313,7 @@
         controls.classList.toggle('on-hero', cur === 0);
         if (!fromHash) history.replaceState(null, '', cur ? '#' + ids[cur] : location.pathname + location.search);
         if (window.innerWidth <= 900) window.scrollTo(0, 0);
+        if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
         try { if (window.gtag) gtag('event', 'pg_slide', { slide: ids[cur] }); } catch (e) {}
       }
 
