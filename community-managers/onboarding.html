@@ -77,6 +77,11 @@
     .member-price b{font-weight:900;color:var(--ve-green-deep);margin-right:6px;}
     .member-copy{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
 
+    .confirm-list{list-style:none;display:grid;gap:8px;margin:4px 0 6px;}
+    .confirm-list label{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:600;line-height:1.45;cursor:pointer;}
+    .confirm-list input{margin-top:4px;width:18px;height:18px;accent-color:var(--ve-green-dark);flex:0 0 18px;}
+    .q-field{display:grid;gap:4px;font-size:13px;font-weight:700;margin-bottom:10px;}
+    .q-field input,.q-field textarea{font:inherit;font-weight:500;font-size:15px;padding:10px 12px;border:1px solid rgba(0,0,0,0.2);border-radius:8px;width:100%;}
     /* One navigation bar at the bottom of every slide: Back left, step count center, Next right. */
     .stage-nav{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px max(40px,calc((100% - 1200px)/2)) 18px;}
     .stage-nav .step-count{margin:0;}
@@ -119,7 +124,7 @@
       .rows small{display:inline;margin-left:8px;}
     }
 
-    @media (min-width:901px) and (max-height:800px){ .slide{padding-top:44px;} }
+    @media (min-width:901px) and (max-height:800px){ .slide{padding-top:28px;} .steps{gap:4px;margin-bottom:8px;} .steps li{font-size:14px;} .rows small{font-size:12px;} #cm-decide .lede{margin-bottom:6px;} #cm-decide .fine{margin-top:2px !important;} #cm-decide .cta-row{margin-top:8px;} }
     @media (min-width:901px) and (max-height:700px){
       .slide{padding-top:12px;padding-bottom:58px;}
       .stage-nav{padding-top:6px;padding-bottom:8px;}
@@ -188,30 +193,30 @@
 
   <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Community Manager onboarding">
 
-    <section class="slide slide-hero active" id="s-welcome" aria-roledescription="slide" aria-label="1 of 7">
+    <section class="slide slide-hero active" id="s-welcome" aria-roledescription="slide" aria-label="1 of 8">
       <div class="split">
         <div class="hero-inner">
           <p class="eyebrow">Community Manager<span data-city-suffix></span></p>
           <h1>Your city is ready for you.</h1>
-          <p class="lede">For more than 10 years I built South Florida&rsquo;s Vegan community, as large, diverse and challenging as they come, to make it a global hotspot for Veganism. Now I&rsquo;m handing a city to someone I trust to give it the care it deserves. That&rsquo;s you.</p>
+          <p class="lede">For more than 10 years I built South Florida&rsquo;s Vegan community, as large, diverse and challenging as they come, to make it a global hotspot for Veganism. Now I&rsquo;m looking for someone I trust to give <span data-city>your city</span> the care it deserves. Take a few minutes and see if that&rsquo;s you.</p>
         </div>
         <div class="media hero-media" data-video="welcome" data-poster="/public/images/ve-hero-mobile.png" data-cap="Welcome"></div>
       </div>
     </section>
 
-    <section class="slide" id="s-have" aria-roledescription="slide" aria-label="2 of 7">
+    <section class="slide" id="s-have" aria-roledescription="slide" aria-label="2 of 8">
       <div class="split">
         <div>
           <p class="eyebrow">You are not starting from zero</p>
           <h2>You get what I never had.</h2>
-          <p class="lede">I learned this by trial and error. You start with a whole team, an ecosystem and a proven method: big events, plus a platform in person and online that supports individuals, nonprofit organizations, community organizations and businesses.</p>
+          <p class="lede">I learned this by trial and error. If you say yes, you start with a whole team, an ecosystem and a proven method: big events, plus a platform in person and online that supports individuals, nonprofit organizations, community organizations and businesses.</p>
           <p class="spotlight">Food opens the door. The animals are the reason we are here.</p>
         </div>
         <div class="media" data-video="have" data-poster="/public/images/ve-panel2.png" data-cap="What you get"></div>
       </div>
     </section>
 
-    <section class="slide" id="s-lead" aria-roledescription="slide" aria-label="3 of 7">
+    <section class="slide" id="s-lead" aria-roledescription="slide" aria-label="3 of 8">
       <div class="split">
         <div>
           <p class="eyebrow">What leading means</p>
@@ -228,7 +233,7 @@
       </div>
     </section>
 
-    <section class="slide" id="s-role" aria-roledescription="slide" aria-label="4 of 7">
+    <section class="slide" id="s-role" aria-roledescription="slide" aria-label="4 of 8">
       <div class="split">
         <div>
           <p class="eyebrow">Your role</p>
@@ -254,7 +259,24 @@
       </div>
     </section>
 
-    <section class="slide" id="s-season" aria-roledescription="slide" aria-label="5 of 7">
+    <section class="slide" id="s-month" aria-roledescription="slide" aria-label="5 of 8">
+      <div class="split">
+        <div>
+          <p class="eyebrow">The time commitment</p>
+          <h2>What a month looks like.</h2>
+          <p class="lede">About 3 hours a week, rarely more than 5. Flexible work you fit around your life.</p>
+          <ul class="rows">
+            <li class="lead"><b>Every week</b><span>The Community Manager check-in<small>One group call with the other Community Managers, plus answering messages from members and local businesses</small></span></li>
+            <li><b>Every month</b><span>Your city&rsquo;s events<small>Show up or send someone from your team, run our booth, and capture photos, contacts and leads</small></span></li>
+            <li class="lead"><b>In between</b><span>Grow the community<small>Invite local businesses, welcome new members and volunteers, and keep your city&rsquo;s online community active</small></span></li>
+          </ul>
+          <p class="spotlight">All of that is covered by your stipend. Managing an event or being assigned to a campaign comes with its own additional stipend.</p>
+        </div>
+        <div class="media" data-video="month" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="A month in the role"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-season" aria-roledescription="slide" aria-label="6 of 8">
       <div class="split">
         <div>
           <p class="eyebrow">The playbook</p>
@@ -272,16 +294,16 @@
       </div>
     </section>
 
-    <section class="slide" id="s-grow" aria-roledescription="slide" aria-label="6 of 7">
+    <section class="slide" id="s-grow" aria-roledescription="slide" aria-label="7 of 8">
       <div class="split">
         <div>
           <p class="eyebrow">The agreement</p>
-          <h2>Keep it thriving. Grow with us.</h2>
-          <p class="lede">The expectation: keep your community thriving and growing, and help it pay for itself by signing up members and partner businesses.</p>
+          <h2>Volunteering, with a stipend.</h2>
+          <p class="lede">This isn&rsquo;t a part-time job. It&rsquo;s volunteering, with a stipend because you go a little above and beyond what a volunteer does.</p>
           <ul class="rows">
             <li class="lead"><b>3 months</b><span>A trial to see if it&rsquo;s a fit<small>For both of us</small></span></li>
-            <li><b>$250 / month</b><span>Your stipend<small>Starts when your membership goes through, paid each month on the date you registered</small></span></li>
-            <li class="lead"><b>Plus</b><span>Performance pay<small>Earned as your region grows: more events, members and partners. We build the structure together.</small></span></li>
+            <li><b>$250 / month</b><span>Your stipend<small>Covers your regular role, about 3 hours a week. Starts when your membership goes through, paid each month on the date you registered.</small></span></li>
+            <li class="lead"><b>Plus</b><span>Additional stipends<small>When you manage an event or are assigned to a campaign, and as your region grows</small></span></li>
           </ul>
           <div class="member-box"><p class="member-copy"><b>How we&rsquo;ll know it&rsquo;s working:</b> events attended, contacts logged, warm introductions, and three qualified sponsor conversations a month.</p></div>
         </div>
@@ -289,26 +311,43 @@
       </div>
     </section>
 
-    <section class="slide" id="s-join" aria-roledescription="slide" aria-label="7 of 7">
+    <section class="slide" id="s-join" aria-roledescription="slide" aria-label="8 of 8">
       <div class="split">
         <div>
-          <p class="eyebrow">Step in</p>
-          <h2>Start where our community starts.</h2>
-          <div class="member-box" id="cm-member-box">
-            <p class="member-price"><b>Founding Membership</b> $11, one time</p>
-            <p class="member-copy">Every Community Manager starts as a member. Your contribution goes straight into what we are building, and it opens the platform you will lead from.</p>
+          <p class="eyebrow">Your decision</p>
+          <h2>Ready to lead <span data-city>your city</span>?</h2>
+          <div id="cm-decide">
+            <p class="lede">If you&rsquo;d like to join, it starts where our community starts: as a Founding Member.</p>
+            <div class="member-box" id="cm-member-box">
+              <p class="member-price"><b>Founding Membership</b> $11, one time</p>
+              <p class="member-copy">Your contribution goes straight into what we are building, and it opens the platform you will lead from.</p>
+            </div>
+            <ol class="steps" style="margin-top:14px;">
+              <li>Become a member, or log in if you already are.</li>
+              <li>Confirm you are in.</li>
+              <li>Start your Community Manager certification in your dashboard.</li>
+            </ol>
+            <div class="cta-row">
+              <button type="button" class="btn btn-dark" id="cm-join">Yes, I&rsquo;d like to join</button>
+              <button type="button" class="btn btn-link" id="cm-ask">I have a question first</button>
+            </div>
+            <p class="fine" style="margin-top:6px;">If we have already talked, use the email I have on file so your access is set up automatically.</p>
           </div>
-          <p class="fine" style="margin-top:12px;"><b>Then, your first week:</b></p>
-          <ul class="checks" style="margin-top:8px;">
-            <li>Complete your Community Manager certification in your dashboard</li>
-            <li>Walk through vegansexplore.com/partners the way a business would</li>
-            <li>Set a call with me to plan your city&rsquo;s first night</li>
-            <li>Start your list of businesses, organizations and volunteers</li>
-          </ul>
-          <div class="cta-row">
-            <button type="button" class="btn btn-dark" id="cm-join" data-member-label="Go to my dashboard">Become a member</button>
+          <form id="cm-confirm" hidden>
+            <p class="lede">Please confirm:</p>
+            <ul class="confirm-list">
+              <li><label><input type="checkbox" name="lead_city"> <span>I want to be the Vegans Explore Community Manager for <span data-city>my city</span>.</span></label></li>
+              <li><label><input type="checkbox" name="trial"> <span>I understand it starts with a three-month trial.</span></label></li>
+              <li><label><input type="checkbox" name="time"> <span>I can give about 3 hours a week, including the weekly check-in.</span></label></li>
+              <li><label><input type="checkbox" name="certification"> <span>I will complete the Community Manager certification.</span></label></li>
+            </ul>
+            <div class="cta-row"><button type="submit" class="btn btn-dark" id="cm-confirm-btn">Confirm</button><button type="button" class="btn btn-link" id="cm-ask2">I have a question first</button></div>
+            <p class="fine" id="cm-confirm-msg" role="status"></p>
+          </form>
+          <div id="cm-done" hidden>
+            <div class="member-box"><p class="member-price"><b>You&rsquo;re in.</b></p><p class="member-copy" id="cm-done-copy"></p></div>
+            <div class="cta-row"><a class="btn btn-dark" id="cm-done-btn" href="/dashboard?from=cm-onboarding">Go to my dashboard</a></div>
           </div>
-          <p class="fine" style="margin-top:6px;">Use the email I have on file. It sets up your Community Manager access automatically.</p>
         </div>
         <div class="media" data-video="join" data-poster="/public/images/ve-hero-mobile.png" data-cap="Step in"></div>
       </div>
@@ -321,23 +360,37 @@
     </nav>
   </main>
 
+  <dialog class="faq-dialog" id="cm-q" aria-labelledby="cm-q-h">
+    <div class="faq-head"><h2 id="cm-q-h">Ask our team</h2><button type="button" class="faq-x" id="cm-q-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <form class="faq-body" id="cm-q-form">
+      <p style="margin:14px 0 12px;">Anything you want to know before you decide? Send it here and it comes straight to me.</p>
+      <label class="q-field">Your name<input name="name" required maxlength="120" autocomplete="name"></label>
+      <label class="q-field">Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+      <label class="q-field">Your question<textarea name="message" required rows="4" maxlength="4000"></textarea></label>
+      <input name="hp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
+      <div class="cta-row" style="margin-top:12px;"><button type="submit" class="btn btn-dark">Send my question</button></div>
+      <p class="fine" id="cm-q-msg" role="status"></p>
+    </form>
+  </dialog>
+
   <script src="/public/ve-auth.js"></script>
   <script src="/public/slide-audio.js"></script>
   <script>
     // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
-    var VIDEOS = { welcome: '', have: '', lead: '', role: '', season: '', grow: '', join: '' };
+    var VIDEOS = { welcome: '', have: '', lead: '', role: '', month: '', season: '', grow: '', join: '' };
     // Narration in Sean's voice (Higgsfield, ElevenLabs engine) over a music bed from the music-beds depot.
     var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/';
     var AUDIO = {
       bed: AUDIO_BASE + 'beds/sanctuary-stroll-60.wav',
       clips: {
-        welcome: { url: AUDIO_BASE + 'cm/welcome-v1.mp3', dur: 27.52 },
+        welcome: { url: AUDIO_BASE + 'cm/welcome-v2.mp3', dur: 19.36 },
         have: { url: AUDIO_BASE + 'cm/have-v1.mp3', dur: 31.36 },
         lead: { url: AUDIO_BASE + 'cm/lead-v1.mp3', dur: 34.16 },
         role: { url: AUDIO_BASE + 'cm/role-v1.mp3', dur: 34.8 },
+        month: { url: AUDIO_BASE + 'cm/month-v1.mp3', dur: 38.48 },
         season: { url: AUDIO_BASE + 'cm/season-v1.mp3', dur: 30.16 },
-        grow: { url: AUDIO_BASE + 'cm/grow-v1.mp3', dur: 31.36 },
-        join: { url: AUDIO_BASE + 'cm/join-v1.mp3', dur: 28 }
+        grow: { url: AUDIO_BASE + 'cm/grow-v2.mp3', dur: 34.48 },
+        join: { url: AUDIO_BASE + 'cm/join-v2.mp3', dur: 23.76 }
       }
     };
     // Each city gets its own onboarding: name, first-slide background (the city's
@@ -366,7 +419,7 @@
     if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
     (function () {
       var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
-      var ids = ['welcome', 'have', 'lead', 'role', 'season', 'grow', 'join'];
+      var ids = ['welcome', 'have', 'lead', 'role', 'month', 'season', 'grow', 'join'];
       var cur = 0;
       var q = new URLSearchParams(location.search);
 
@@ -413,44 +466,95 @@
         if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
       });
 
-      // Membership is the first step: sign up, pay the $11 Founding Membership, then the dashboard opens up.
+      // The decision (Sean, 2026-09-25): this page recruits, the candidate decides,
+      // and registering (or logging in), paying the $11 Founding Membership and
+      // confirming is their acceptance. Invited candidates go on to the dashboard
+      // and certification; anyone else is recorded for Sean to review.
       var AUTH_API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
+      var CM_API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-community-manager';
       var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var joinBtn = document.getElementById('cm-join');
+      function track(n, p) { try { if (window.gtag) gtag('event', n, p || {}); } catch (e) {} }
       function loggedIn() { try { return !!(window.VEAuth && VEAuth.isLoggedIn()); } catch (e) { return false; } }
+      function token() { return (window.VEAuth && VEAuth.getToken()) || ''; }
       function status() {
-        var t = window.VEAuth && VEAuth.getToken();
-        if (!t) return Promise.resolve(null);
-        return fetch(AUTH_API + '?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'me', token: t }) })
+        if (!token()) return Promise.resolve(null);
+        return fetch(AUTH_API + '?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'me', token: token() }) })
           .then(function (r) { return r.json(); }).then(function (d) { return d && d.member ? d.member.membership_status : null; }).catch(function () { return null; });
       }
-      function welcomeIn() {
-        document.getElementById('cm-member-box').innerHTML = '<p class="member-price"><b>You&rsquo;re in.</b> Founding Member</p><p class="member-copy">Welcome to the team. Your dashboard is where your Community Manager certification starts.</p>';
-        joinBtn.textContent = joinBtn.getAttribute('data-member-label');
-        joinBtn.setAttribute('data-member', '1');
+      function cm(body, auth) {
+        var h = { 'Content-Type': 'application/json' }; if (auth) h.Authorization = 'Bearer ' + token();
+        return fetch(CM_API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ city: CITY_SLUG }, body)) }).then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+      }
+      function showState(which, d) {
+        document.getElementById('cm-decide').hidden = which !== 'decide';
+        document.getElementById('cm-confirm').hidden = which !== 'confirm';
+        document.getElementById('cm-done').hidden = which !== 'done';
+        if (which === 'done') {
+          var invited = d && d.invited;
+          document.getElementById('cm-done-copy').textContent = invited
+            ? 'Welcome to the team. Your Community Manager certification is waiting in your dashboard.'
+            : 'Thank you. Your confirmation is in, and we will reach out about next steps.';
+          document.getElementById('cm-done-btn').textContent = invited ? 'Go to my dashboard' : 'Go to my dashboard';
+        }
+      }
+      // Paid members: confirm (or, if already confirmed, done).
+      function afterActive() {
+        cm({ action: 'status' }, true).then(function (d) {
+          if (d && d.confirmed) showState('done', d); else showState('confirm');
+        }).catch(function () { showState('confirm'); });
       }
       function checkout() {
-        try { if (window.gtag) gtag('event', 'cm_membership_checkout', {}); } catch (e) {}
+        track('cm_membership_checkout');
         VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; }).catch(function () {});
       }
       joinBtn.addEventListener('click', function () {
-        if (joinBtn.getAttribute('data-member')) { location.href = '/dashboard?from=cm-onboarding'; return; }
-        try { if (window.gtag) gtag('event', 'cm_join', { signed_in: loggedIn() }); } catch (e) {}
+        track('cm_join', { signed_in: loggedIn() });
         if (!window.VEAuth) { location.href = '/join'; return; }
         if (!loggedIn()) {
-          VEAuth.showAuthModal('Create your account with the email I have on file, then become a Founding Member for $11, one time.', function () { status().then(function (st) { if (st === 'active') welcomeIn(); }); }, 'signup');
+          VEAuth.showAuthModal('Create your account, or log in if you already have one. Joining starts with the $11 Founding Membership, one time.', function () { status().then(function (st) { if (st === 'active') afterActive(); }); }, 'signup');
           return;
         }
-        status().then(function (st) { if (st === 'active') welcomeIn(); else checkout(); });
+        status().then(function (st) { if (st === 'active') afterActive(); else checkout(); });
+      });
+      document.getElementById('cm-confirm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = e.target, acks = {}, all = true;
+        ['lead_city', 'trial', 'time', 'certification'].forEach(function (k) { acks[k] = !!f.elements[k].checked; if (!acks[k]) all = false; });
+        var msg = document.getElementById('cm-confirm-msg');
+        if (!all) { msg.textContent = 'Please check every item to confirm.'; return; }
+        var btn = document.getElementById('cm-confirm-btn'); btn.disabled = true; msg.textContent = '';
+        cm({ action: 'confirm', acknowledgements: acks }, true).then(function (d) {
+          if (d && d.ok) { track('cm_confirmed', { invited: !!d.invited }); showState('done', d); }
+          else { btn.disabled = false; msg.textContent = d && d.error === 'membership_required' ? 'Your membership has not gone through yet. Refresh in a moment.' : 'That did not go through. Please try again.'; }
+        }).catch(function () { btn.disabled = false; msg.textContent = 'Could not connect. Please try again.'; });
+      });
+
+      // "I have a question first": straight to Sean.
+      var qd = document.getElementById('cm-q');
+      function openAsk() { track('cm_question_open'); document.getElementById('cm-q-msg').textContent = ''; qd.showModal(); }
+      document.getElementById('cm-ask').addEventListener('click', openAsk);
+      document.getElementById('cm-ask2').addEventListener('click', openAsk);
+      document.getElementById('cm-q-close').addEventListener('click', function () { qd.close(); });
+      qd.addEventListener('click', function (e) { if (e.target === qd) qd.close(); });
+      document.getElementById('cm-q-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = e.target, msg = document.getElementById('cm-q-msg'), btn = f.querySelector('button[type=submit]');
+        btn.disabled = true; msg.textContent = 'Sending...';
+        cm({ action: 'question', name: f.elements.name.value, email: f.elements.email.value, message: f.elements.message.value, hp: f.elements.hp.value }).then(function (d) {
+          btn.disabled = false;
+          if (d && d.ok) { track('cm_question_sent'); f.reset(); msg.textContent = 'Sent. We will get back to you by email.'; }
+          else msg.textContent = (d && d.error) || 'That did not send. Please try again.';
+        }).catch(function () { btn.disabled = false; msg.textContent = 'Could not connect. Please try again.'; });
       });
 
       var start = ids.indexOf((location.hash || '').replace('#', ''));
       if (q.get('activate') === 'success') {
         start = ids.length - 1;
         var tries = 0;
-        (function poll() { status().then(function (st) { if (st === 'active') welcomeIn(); else if (++tries < 12) setTimeout(poll, 1500); }); })();
+        (function poll() { status().then(function (st) { if (st === 'active') afterActive(); else if (++tries < 12) setTimeout(poll, 1500); }); })();
       } else if (loggedIn()) {
-        status().then(function (st) { if (st === 'active') welcomeIn(); });
+        status().then(function (st) { if (st === 'active') afterActive(); });
       }
       show(start > 0 ? start : 0, true);
     })();
