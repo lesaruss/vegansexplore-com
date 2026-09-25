@@ -86,3 +86,19 @@ the function is called with `{ job_id }` and trusts nothing else.
   The level is baked in because iOS ignores `HTMLMediaElement.volume`.
 
 The pages play these through `/public/slide-audio.js` (voice over bed, auto-advance after the first tap).
+
+## ve-learn
+
+Runs Guide Engine courses (`learn_courses`, `learn_modules`, `learn_pages`, `learn_progress`,
+`learn_quiz_attempts`, `learn_completions`) for Vegans Explore members. `verify_jwt` is **false**:
+the VE app token is HMAC-verified in the function exactly like ve-auth.
+
+- Course access lives in `COURSE_ACCESS` (first course: `ve-community-manager-certification`,
+  community managers only; superadmins can always open a course to review it).
+- Actions: `outline`, `page` (quiz pages are served without answers), `complete`, `quiz`
+  (graded server-side; a pass marks the page done). The certificate (`learn_completions`)
+  is issued when every page is complete, and `outline` self-heals a missed issue.
+- Course content is tracked in `supabase/seed/ve-community-manager-certification.json`
+  (reload it with the upsert in that commit's history). `/supabase/*` redirects to `/` on
+  Vercel, so the seed file (which holds quiz answers) is never served publicly.
+- Front end: `/dashboard/certification`; dashboard prompt and tile in center-console.

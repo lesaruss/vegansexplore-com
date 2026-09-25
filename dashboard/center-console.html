@@ -670,6 +670,17 @@
          Pulse, Communities, Tools). -->
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
       <p class="dash-section-title">Dashboard</p>
+      <!-- Community Manager Certification (2026-09-25, Sean): the first thing a
+           Community Manager sees. renderCmCertPrompt() shows it for community
+           managers and superadmins and fills in their progress from ve-learn. -->
+      <a href="/dashboard/certification" class="dash-tour-prompt" id="dash-cm-cert-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;">
+        <div class="dash-tour-prompt-icon">&#127891;</div>
+        <div class="dash-tour-prompt-body">
+          <div class="dash-tour-prompt-title" id="dash-cm-cert-title">Start your Community Manager certification</div>
+          <div class="dash-tour-prompt-desc" id="dash-cm-cert-desc">Your handbook as a course: nine short modules, each with a quick quiz. Pass them all to be certified.</div>
+        </div>
+        <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
+      </a>
       <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openTour(); return false;">
         <div class="dash-tour-prompt-icon">&#128075;</div>
         <div class="dash-tour-prompt-body">
@@ -1116,6 +1127,10 @@
     // a dedicated tile just for the handbook was redundant. Handbook page
     // itself still lives at /dashboard/handbook if a link is needed again.
     var grid = document.getElementById('dash-tile-grid');
+    // Certification first: it is the Community Manager's starting point.
+    var cert = document.createElement('a'); cert.className = 'dash-tile'; cert.href = '/dashboard/certification';
+    cert.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green-dark),var(--ve-green));">&#127891;</div><div class="dash-tile-body"><div class="dash-tile-title">Certification <span class="dash-tag">Start here</span></div><div class="dash-tile-desc">Your Community Manager handbook as a course. Pass every module to be certified.</div></div>';
+    if (grid.firstChild) grid.insertBefore(cert, grid.firstChild); else grid.appendChild(cert);
     var coming1 = document.createElement('a'); coming1.className = 'dash-tile coming'; coming1.href = '#';
     coming1.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128197;</div><div class="dash-tile-body"><div class="dash-tile-title">Event Management <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Post and manage events for your city\'s hub page directly from here.</div></div>';
     grid.appendChild(coming1);
@@ -1442,7 +1457,11 @@
       { key: 'sa-members', href: '/dashboard/members', embed: true, embedLabel: 'Members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every VEGANS EXPLORE registration, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/events.html', embed: true, embedLabel: 'Event Submissions', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
-      { key: 'sa-guest-reviews', href: '/dashboard/guest-reviews', embed: true, embedLabel: 'Guest Reviews', iconHtml: SA_GUEST_SVG, bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Guest Reviews', tagLabel: 'Superadmin', badgeId: 'dash-guest-reviews-pending-badge', desc: 'Review flagged and pending Guest Passport applications -- approve, follow up, or remove.', visibility: 'superadmin', defaultSection: 'superadmin' }
+      { key: 'sa-guest-reviews', href: '/dashboard/guest-reviews', embed: true, embedLabel: 'Guest Reviews', iconHtml: SA_GUEST_SVG, bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Guest Reviews', tagLabel: 'Superadmin', badgeId: 'dash-guest-reviews-pending-badge', desc: 'Review flagged and pending Guest Passport applications -- approve, follow up, or remove.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      // Community Manager Certification (2026-09-25, Sean): the handbook as a
+      // course with module quizzes and a certificate. Reuses the cm-handbook
+      // key, which ve-auth's VALID_LAYOUT_MODULES already accepts.
+      { key: 'cm-handbook', href: '/dashboard/certification', iconHtml: '&#127891;', bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Certification', tagLabel: 'Community Manager', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', visibility: 'staff', defaultSection: 'tools' }
       // cm-handbook tile removed 2026-09-08 (Sean, Fieldy field note): a
       // Community Manager's role already surfaces as a pill (dash-eyebrow
       // reads member.ve_role === 'community_manager' and shows "Community
@@ -3468,11 +3487,30 @@
     });
   }
 
+  // Community Manager Certification prompt: shown to community managers (and
+  // superadmins, to review it), with live progress from ve-learn.
+  function renderCmCertPrompt(member) {
+    var card = document.getElementById('dash-cm-cert-prompt');
+    if (!card || !(member.ve_role === 'community_manager' || member.is_superadmin)) return;
+    card.style.display = '';
+    var token = window.VEAuth && VEAuth.getToken();
+    if (!token) return;
+    fetch(SUPABASE_URL + '/functions/v1/ve-learn', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ action: 'outline', course: 've-community-manager-certification' }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.total) return;
+        var title = document.getElementById('dash-cm-cert-title'), desc = document.getElementById('dash-cm-cert-desc');
+        if (d.certificate) { title.textContent = 'You are a certified Community Manager'; desc.textContent = 'View your certificate or review the modules any time.'; }
+        else if (d.completed > 0) { title.textContent = 'Continue your Community Manager certification'; desc.textContent = d.completed + ' of ' + d.total + ' steps done. Pick up where you left off.'; }
+      }).catch(function () {});
+  }
+
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     renderStatsHero(member);
     renderMissionSurveyPrompt(member);
+    renderCmCertPrompt(member);
     renderCityPill(member);
     initViewAsControl();
     renderLeaderboard(member);
