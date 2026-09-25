@@ -1675,6 +1675,11 @@
       "permanent": true
     },
     {
+      "source": "/members",
+      "destination": "/dashboard",
+      "permanent": false
+    },
+    {
       "source": "/academy/2026-initiatives",
       "destination": "/dashboard/2026-initiatives",
       "permanent": true
