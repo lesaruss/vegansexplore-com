@@ -18,7 +18,7 @@
 
     /* Guided slides: one full-height panel at a time on desktop, no page scroll needed. */
     .stage{position:relative;height:calc(100vh - 61px);min-height:560px;overflow:hidden;}
-    .slide{position:absolute;inset:0;display:none;padding:44px max(40px,calc((100% - 1200px)/2)) 24px;}
+    .slide{position:absolute;inset:0;display:none;padding:96px max(40px,calc((100% - 1200px)/2)) 84px;}
     .slide.active{display:flex;align-items:flex-start;}
     .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:start;width:100%;}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
@@ -76,8 +76,12 @@
     .member-price b{font-weight:900;color:var(--ve-green-deep);margin-right:6px;}
     .member-copy{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
 
-    /* One control per slide: Next, a quiet Back link and the step count. */
-    .step-count{margin-left:auto;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    /* One navigation bar at the bottom of every slide: Back left, step count center, Next right. */
+    .stage-nav{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px max(40px,calc((100% - 1200px)/2)) 18px;}
+    .stage-nav .step-count{margin:0;}
+    .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count{color:#fff;}
+    .stage-nav.on-hero .btn-dark{background:#22C55E;color:#0b2e14;}
+    .step-count{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);}
     .hero-inner .step-count{color:rgba(255,255,255,0.75);}
     .hero-inner .btn-link{color:#fff;}
 
@@ -97,7 +101,7 @@
 
     /* Short desktop screens: tighten spacing so every slide still fits above the footer. */
     @media (min-width:901px) and (max-height:920px){
-      .slide{padding-top:16px;padding-bottom:12px;}
+      .slide{padding-top:60px;padding-bottom:76px;}
       h2{font-size:clamp(26px,2.6vw,34px);margin-bottom:12px;}
       .lede{font-size:15px;margin-bottom:12px;}
       .points{gap:7px;margin-bottom:14px;}
@@ -113,8 +117,14 @@
       .media.tall{max-height:calc(100vh - 190px);}
     }
 
+    @media (min-width:901px) and (max-height:800px){ .slide{padding-top:44px;} }
     @media (min-width:901px) and (max-height:700px){
-      .slide{padding-top:10px;}
+      .slide{padding-top:12px;padding-bottom:58px;}
+      .stage-nav{padding-top:6px;padding-bottom:8px;}
+      .way{padding:6px 12px;}
+      .way span{font-size:13px;line-height:1.4;}
+      .ways{gap:6px;}
+      .member-copy{font-size:12.5px;line-height:1.4;}
       h2{font-size:clamp(22px,2.2vw,28px);margin-bottom:8px;}
       .lede{font-size:14px;line-height:1.5;margin-bottom:8px;}
       .eyebrow{margin-bottom:6px;}
@@ -131,8 +141,10 @@
 
     /* Phones and tablets: slides stack and the page scrolls within a slide; video sits above the words. */
     @media (max-width:900px){
+      .stage-nav{position:fixed;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.97);border-top:1px solid var(--ve-border);}
+      .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count{color:var(--ve-green-deep);}
       .stage{height:auto;min-height:0;overflow:visible;}
-      .slide{position:relative;inset:auto;padding:28px 24px 36px;}
+      .slide{position:relative;inset:auto;padding:28px 24px 96px;}
       .slide.active{display:block;}
       .split{grid-template-columns:minmax(0,1fr);gap:24px;}
       .split > .media{order:-1;}
@@ -141,15 +153,15 @@
       .slide-hero.active{display:flex;align-items:flex-end;}
       .slide-hero::before{background:rgba(0,0,0,0.32);}
       .slide-hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
+      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 88px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
       .ways{grid-template-columns:minmax(0,1fr);}
       .way{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
     @media (max-width:480px){
-      .slide{padding:24px 16px 32px;}
+      .slide{padding:24px 16px 92px;}
       .slide-hero::before{background:rgba(0,0,0,0.32);}
       .slide-hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
+      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 84px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
       .hero-inner .lede{font-size:15.5px;}
       .rows li{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
@@ -168,7 +180,6 @@
           <p class="eyebrow">Vegans Explore &middot; South Florida</p>
           <h1>You keep selling to the same room.</h1>
           <p class="lede">Vegan festivals, Vegan groups, Vegan feeds. Most plant-based businesses are chasing the same customers. The people who would love your food are somewhere else, and an ad cannot hand them a taste.</p>
-          <div class="cta-row"><button type="button" class="btn btn-primary" data-go="1">Next</button><span class="step-count">1 of 5</span></div>
         </div>
         <div class="media hero-media" data-video="problem" data-poster="/public/images/ve-hero-mobile.png" data-cap="Why we exist"></div>
       </div>
@@ -181,7 +192,6 @@
           <h2>We started with the food, too.</h2>
           <p class="lede">Our founder came to Veganism through plant-based food first. So we throw nights non-Vegans actually want to go to, and put your food in their hands. Once they are through the door, they discover the real reason behind the Vegan message.</p>
           <p class="spotlight">Food is the way in. The animals are the reason we are here.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="2">Next</button><button type="button" class="btn btn-link" data-go="0">Back</button><span class="step-count">2 of 5</span></div>
         </div>
         <div class="media" data-video="why" data-poster="/public/images/ve-panel2.png" data-cap="How it started"></div>
       </div>
@@ -199,7 +209,6 @@
             <li><b>Sat, Dec 12</b><span>Community Night<small>Fort Lauderdale: a new county, a new crowd</small></span></li>
           </ul>
           <p class="spotlight">Big nights now, and bigger ideas right behind them.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="3">Next</button><button type="button" class="btn btn-link" data-go="1">Back</button><span class="step-count">3 of 5</span></div>
         </div>
         <div class="media" data-video="season" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="This season"></div>
       </div>
@@ -217,7 +226,6 @@
             <li>A Community Manager on the ground in every city we open</li>
           </ul>
           <p class="spotlight">Next up: Orlando, Philadelphia, New York and Los Angeles. Every partner helps open the next city.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="4">Next</button><button type="button" class="btn btn-link" data-go="2">Back</button><span class="step-count">4 of 5</span></div>
         </div>
         <div class="media" data-video="proof" data-poster="/public/images/ve-hero-mobile.png" data-cap="Who we are"></div>
       </div>
@@ -242,13 +250,17 @@
             <button type="button" class="btn btn-dark" data-vpg-join data-member-label="See my options" data-source="partners_page">Become a member</button>
             <button type="button" class="btn btn-link" data-vpg-open data-vpg-step="question" data-source="partners_page">Not sure? Ask us</button>
             <button type="button" class="btn btn-link" id="faq-open">Common questions</button>
-            <button type="button" class="btn btn-link" data-go="3">Back</button>
           </div>
         </div>
         <div class="media"><img src="/public/partner/ve-partner-mobile.png" style="object-position:center 30%" alt="Two partners sampling their drinks under a vendor tent at a Vegans Explore event"></div>
       </div>
     </section>
 
+    <nav class="stage-nav on-hero" id="stage-nav" aria-label="Slide navigation">
+      <button type="button" class="btn btn-link" id="nav-back">Back</button>
+      <span class="step-count" id="nav-count"></span>
+      <button type="button" class="btn btn-dark" id="nav-next">Next</button>
+    </nav>
   </main>
 
   <dialog class="faq-dialog" id="faq" aria-labelledby="faq-h">
@@ -307,10 +319,16 @@
         slides.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
         if (!fromHash) history.replaceState(null, '', cur ? '#' + ids[cur] : location.pathname + location.search);
         if (window.innerWidth <= 900) window.scrollTo(0, 0);
+        document.getElementById('nav-back').style.visibility = cur === 0 ? 'hidden' : '';
+        document.getElementById('nav-next').style.visibility = cur === slides.length - 1 ? 'hidden' : '';
+        document.getElementById('nav-count').textContent = (cur + 1) + ' of ' + slides.length;
+        document.getElementById('stage-nav').classList.toggle('on-hero', cur === 0);
         if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
         try { if (window.gtag) gtag('event', 'pg_slide', { slide: ids[cur] }); } catch (e) {}
       }
 
+      document.getElementById('nav-back').addEventListener('click', function () { show(cur - 1); });
+      document.getElementById('nav-next').addEventListener('click', function () { show(cur + 1); });
       document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
       document.addEventListener('keydown', function (e) {
         if (document.querySelector('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;

@@ -19,7 +19,7 @@
 
     /* Guided slides: one full-height panel at a time on desktop, no page scroll needed. */
     .stage{position:relative;height:calc(100vh - 61px);min-height:560px;overflow:hidden;}
-    .slide{position:absolute;inset:0;display:none;padding:44px max(40px,calc((100% - 1200px)/2)) 24px;}
+    .slide{position:absolute;inset:0;display:none;padding:96px max(40px,calc((100% - 1200px)/2)) 84px;}
     .slide.active{display:flex;align-items:flex-start;}
     .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:start;width:100%;}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
@@ -77,8 +77,12 @@
     .member-price b{font-weight:900;color:var(--ve-green-deep);margin-right:6px;}
     .member-copy{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
 
-    /* One control per slide: Next, a quiet Back link and the step count. */
-    .step-count{margin-left:auto;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    /* One navigation bar at the bottom of every slide: Back left, step count center, Next right. */
+    .stage-nav{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px max(40px,calc((100% - 1200px)/2)) 18px;}
+    .stage-nav .step-count{margin:0;}
+    .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count{color:#fff;}
+    .stage-nav.on-hero .btn-dark{background:#22C55E;color:#0b2e14;}
+    .step-count{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);}
     .hero-inner .step-count{color:rgba(255,255,255,0.75);}
     .hero-inner .btn-link{color:#fff;}
 
@@ -98,7 +102,7 @@
 
     /* Short desktop screens: tighten spacing so every slide still fits above the footer. */
     @media (min-width:901px) and (max-height:920px){
-      .slide{padding-top:16px;padding-bottom:12px;}
+      .slide{padding-top:60px;padding-bottom:76px;}
       h2{font-size:clamp(26px,2.6vw,34px);margin-bottom:12px;}
       .lede{font-size:15px;margin-bottom:12px;}
       .points{gap:7px;margin-bottom:14px;}
@@ -115,8 +119,14 @@
       .rows small{display:inline;margin-left:8px;}
     }
 
+    @media (min-width:901px) and (max-height:800px){ .slide{padding-top:44px;} }
     @media (min-width:901px) and (max-height:700px){
-      .slide{padding-top:10px;}
+      .slide{padding-top:12px;padding-bottom:58px;}
+      .stage-nav{padding-top:6px;padding-bottom:8px;}
+      .way{padding:6px 12px;}
+      .way span{font-size:13px;line-height:1.4;}
+      .ways{gap:6px;}
+      .member-copy{font-size:12.5px;line-height:1.4;}
       h2{font-size:clamp(22px,2.2vw,28px);margin-bottom:8px;}
       .lede{font-size:14px;line-height:1.5;margin-bottom:8px;}
       .eyebrow{margin-bottom:6px;}
@@ -133,8 +143,10 @@
 
     /* Phones and tablets: slides stack and the page scrolls within a slide; video sits above the words. */
     @media (max-width:900px){
+      .stage-nav{position:fixed;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.97);border-top:1px solid var(--ve-border);}
+      .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count{color:var(--ve-green-deep);}
       .stage{height:auto;min-height:0;overflow:visible;}
-      .slide{position:relative;inset:auto;padding:28px 24px 36px;}
+      .slide{position:relative;inset:auto;padding:28px 24px 96px;}
       .slide.active{display:block;}
       .split{grid-template-columns:minmax(0,1fr);gap:24px;}
       .split > .media{order:-1;}
@@ -143,14 +155,14 @@
       .slide-hero.active{display:flex;align-items:flex-end;}
       .slide-hero::before{background:rgba(0,0,0,0.32);}
       .slide-hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
+      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 88px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
       .way{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
     @media (max-width:480px){
-      .slide{padding:24px 16px 32px;}
+      .slide{padding:24px 16px 92px;}
       .slide-hero::before{background:rgba(0,0,0,0.32);}
       .slide-hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
+      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 84px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
       .hero-inner .lede{font-size:15.5px;}
       .rows li{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
@@ -182,7 +194,6 @@
           <p class="eyebrow">Community Manager<span data-city-suffix></span></p>
           <h1>Your city is ready for you.</h1>
           <p class="lede">For more than 10 years I built South Florida&rsquo;s Vegan community, as large, diverse and challenging as they come, to make it a global hotspot for Veganism. Now I&rsquo;m handing a city to someone I trust to give it the care it deserves. That&rsquo;s you.</p>
-          <div class="cta-row"><button type="button" class="btn btn-primary" data-go="1">Let's go</button><span class="step-count">1 of 7</span></div>
         </div>
         <div class="media hero-media" data-video="welcome" data-poster="/public/images/ve-hero-mobile.png" data-cap="Welcome"></div>
       </div>
@@ -195,7 +206,6 @@
           <h2>You get what I never had.</h2>
           <p class="lede">I learned this by trial and error. You start with a whole team, an ecosystem and a proven method: big events, plus a platform in person and online that supports individuals, nonprofit organizations, community organizations and businesses.</p>
           <p class="spotlight">Food opens the door. The animals are the reason we are here.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="2">Next</button><button type="button" class="btn btn-link" data-go="0">Back</button><span class="step-count">2 of 7</span></div>
         </div>
         <div class="media" data-video="have" data-poster="/public/images/ve-panel2.png" data-cap="What you get"></div>
       </div>
@@ -213,7 +223,6 @@
             <li>Build a community that lasts beyond any one event, or any one person</li>
           </ul>
           <p class="spotlight">Leading doesn&rsquo;t mean doing everything yourself. It means building something bigger than you.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="3">Next</button><button type="button" class="btn btn-link" data-go="1">Back</button><span class="step-count">3 of 7</span></div>
         </div>
         <div class="media" data-video="lead" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="Leading your city"></div>
       </div>
@@ -240,7 +249,6 @@
             </ul></div>
           </div>
           <p class="spotlight">You lead locally. We&rsquo;ve got your back.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="4">Next</button><button type="button" class="btn btn-link" data-go="2">Back</button><span class="step-count">4 of 7</span></div>
         </div>
         <div class="media" data-video="role" data-poster="/public/partner/ve-partner-mobile.png" data-cap="Your role"></div>
       </div>
@@ -259,7 +267,6 @@
             <li><b>Sat, Dec 12</b><span>Community Night<small>Fort Lauderdale</small></span></li>
           </ul>
           <p class="spotlight">Community Nights move around the region so every night feels fresh.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="5">Next</button><button type="button" class="btn btn-link" data-go="3">Back</button><span class="step-count">5 of 7</span></div>
         </div>
         <div class="media" data-video="season" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="A season"></div>
       </div>
@@ -277,7 +284,6 @@
             <li class="lead"><b>Plus</b><span>Performance pay<small>Earned as your region grows: more events, members and partners. We build the structure together.</small></span></li>
           </ul>
           <div class="member-box"><p class="member-copy"><b>How we&rsquo;ll know it&rsquo;s working:</b> events attended, contacts logged, warm introductions, and three qualified sponsor conversations a month.</p></div>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="6">Next</button><button type="button" class="btn btn-link" data-go="4">Back</button><span class="step-count">6 of 7</span></div>
         </div>
         <div class="media" data-video="grow" data-poster="/public/images/ve-hero-mobile.png" data-cap="Growing together"></div>
       </div>
@@ -301,8 +307,6 @@
           </ul>
           <div class="cta-row">
             <button type="button" class="btn btn-dark" id="cm-join" data-member-label="Go to my dashboard">Become a member</button>
-            <button type="button" class="btn btn-link" data-go="5">Back</button>
-            <span class="step-count">7 of 7</span>
           </div>
           <p class="fine" style="margin-top:6px;">Use the email I have on file. It sets up your Community Manager access automatically.</p>
         </div>
@@ -310,6 +314,11 @@
       </div>
     </section>
 
+    <nav class="stage-nav on-hero" id="stage-nav" aria-label="Slide navigation">
+      <button type="button" class="btn btn-link" id="nav-back">Back</button>
+      <span class="step-count" id="nav-count"></span>
+      <button type="button" class="btn btn-dark" id="nav-next">Next</button>
+    </nav>
   </main>
 
   <script src="/public/ve-auth.js"></script>
@@ -369,10 +378,16 @@
         slides.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
         if (!fromHash) history.replaceState(null, '', (cur ? location.pathname + location.search.replace(/[?&]activate=[^&]*/, '') + '#' + ids[cur] : location.pathname + location.search));
         if (window.innerWidth <= 900) window.scrollTo(0, 0);
+        document.getElementById('nav-back').style.visibility = cur === 0 ? 'hidden' : '';
+        document.getElementById('nav-next').style.visibility = cur === slides.length - 1 ? 'hidden' : '';
+        document.getElementById('nav-count').textContent = (cur + 1) + ' of ' + slides.length;
+        document.getElementById('stage-nav').classList.toggle('on-hero', cur === 0);
         if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
         try { if (window.gtag) gtag('event', 'cm_onboarding_slide', { slide: ids[cur] }); } catch (e) {}
       }
 
+      document.getElementById('nav-back').addEventListener('click', function () { show(cur - 1); });
+      document.getElementById('nav-next').addEventListener('click', function () { show(cur + 1); });
       document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
       document.addEventListener('keydown', function (e) {
         if (document.querySelector('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;

@@ -102,3 +102,12 @@ the VE app token is HMAC-verified in the function exactly like ve-auth.
   (reload it with the upsert in that commit's history). `/supabase/*` redirects to `/` on
   Vercel, so the seed file (which holds quiz answers) is never served publicly.
 - Front end: `/dashboard/certification`; dashboard prompt and tile in center-console.
+
+### ve-entry-checkout test mode (2026-09-25)
+
+Members whose email is in `ve_test_checkout_allowlist` (RLS on, no policies) get a Stripe
+TEST-mode session on the LESARUSS account's test key (`STRIPE_SECRET_KEY_ACCT_LESARUSS_TEST`,
+read from `lesaruss_secrets` only on this path; Vegans Explore has no test key on file). Pay with
+4242 4242 4242 4242. There is no test webhook, so the session returns to
+`ve-entry-checkout?test_confirm=cs_test_...`, which verifies the paid test session, activates the
+member (no points credited) and redirects back. Keep the allowlist tiny and clear it after testing.
