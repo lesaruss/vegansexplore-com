@@ -241,7 +241,7 @@
     d.querySelector('[data-act=ask]').hidden = s.step === 'question' || s.step === 'success';
 
     var html = '';
-    if (s.step === 'audience') html = choiceStep('audience', 'Who are you?', 'We will only show you what fits.', AUDIENCES);
+    if (s.step === 'audience') html = (G.welcome && isFoundingMember() ? '<p class="vpg-msg ok" style="margin-bottom:14px;">Welcome, Founding Member. Your pricing is unlocked.</p>' : '') + choiceStep('audience', 'Who are you?', 'We will only show you what fits.', AUDIENCES);
     else if (s.step === 'city') html = choiceStep('city', 'Which city?', 'South Florida is live. Each new city opens as its Community Manager comes on.',
       G.data.cities.map(function (c) { return [c.slug, c.name, c.status === 'live' ? 'Live now' : 'Coming soon']; }));
     else if (s.step === 'goal') html = choiceStep('goal', 'What do you want most?', '', GOALS);
@@ -303,6 +303,20 @@
         if (!G.dialog || !G.dialog.open) refreshMember().then(function () { if (isFoundingMember()) open({ step: 'results' }); });
       }
     }, 700);
+  }
+
+  // "Become a member": sign up (or log in), pay the $11 Founding Membership, then land
+  // in the intake with pricing unlocked. Members skip straight to the intake.
+  function join(opts) {
+    opts = opts || {};
+    if (opts.source) G.source = opts.source;
+    track('pg_join', { source: G.source, signed_in: loggedIn() });
+    if (!loggedIn()) { authThenResults('signup'); return; }
+    refreshMember().then(function () {
+      G.memberChecked = true;
+      if (isFoundingMember()) open({ step: G.state.audience ? 'results' : 'audience' });
+      else authThenResults('pay');
+    });
   }
 
   function matches() {
@@ -478,6 +492,8 @@
         '<button type="button" class="vpg-btn" data-vpg-open data-source="' + esc(src) + '">Find my fit</button></div>';
     });
     document.addEventListener('click', function (e) {
+      var j = e.target.closest && e.target.closest('[data-vpg-join]');
+      if (j) { e.preventDefault(); join({ source: j.getAttribute('data-source') || G.source }); return; }
       var t = e.target.closest && e.target.closest('[data-vpg-open]');
       if (!t) return;
       e.preventDefault();
@@ -488,15 +504,20 @@
       var tries = 0;
       (function poll() {
         refreshMember().then(function () {
-          if (isFoundingMember() || ++tries > 12) { G.memberChecked = true; open({ step: 'results' }); }
+          if (isFoundingMember() || ++tries > 12) { G.memberChecked = true; G.welcome = true; open({ step: 'results' }); }
           else setTimeout(poll, 1500);
         });
       })();
     }
     else if (q.get('checkout') === 'success') open({ step: 'success' });
     else if (q.get('checkout') === 'cancelled') open({ step: 'results' });
+    // Members see "See my options" instead of "Become a member".
+    var joins = document.querySelectorAll('[data-vpg-join][data-member-label]');
+    if (joins.length && loggedIn()) refreshMember().then(function () {
+      if (isFoundingMember()) joins.forEach(function (b) { b.textContent = b.getAttribute('data-member-label'); });
+    });
   }
 
-  window.VEPartnerGuide = { open: open, close: close };
+  window.VEPartnerGuide = { open: open, close: close, join: join };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
