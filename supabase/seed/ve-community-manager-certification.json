@@ -234,7 +234,7 @@
           "key": "keep",
           "title": "Leading online and keeping people close",
           "type": "content",
-          "content": "<p>You lead your city's online community as well as the room. Use the platform to bring your city together, online and in person, and enroll people as members and volunteers, not just attendees. Members power our points system, the app on the way and what comes next.</p><p>Once people are in, the system carries the ongoing relationship, not your memory. Automation handles the routine touchpoints. When a real human moment is needed, it surfaces in your queue. Your job is to be ready to act on what shows up in front of you.</p><h3>Churn is normal, consistency is the job</h3><p>People come and go. Do not get locked into any one person staying forever. What has to stay constant is you. Your job is to help people stay as long as they realistically can.</p><p>Because Vegans Explore is multi-city, someone leaving your city is not a pure loss: they can join another Vegans Explore community, and you gain people moving in from other cities.</p>"
+          "content": "<p>You lead your city's conversations as well as the room. Our community conversations belong on our platform, not in WhatsApp groups, and as they come online you lead your city's. Use the platform to bring your city together, online and in person, and enroll people as members and volunteers, not just attendees. Members power our points system, the app on the way and what comes next.</p><p>Once people are in, the system carries the ongoing relationship, not your memory. Automation handles the routine touchpoints. When a real human moment is needed, it surfaces in your queue. Your job is to be ready to act on what shows up in front of you.</p><h3>Churn is normal, consistency is the job</h3><p>People come and go. Do not get locked into any one person staying forever. What has to stay constant is you. Your job is to help people stay as long as they realistically can.</p><p>Because Vegans Explore is multi-city, someone leaving your city is not a pure loss: they can join another Vegans Explore community, and you gain people moving in from other cities.</p>"
         },
         {
           "key": "quiz",
@@ -429,7 +429,7 @@
           "key": "weekly",
           "title": "The weekly hot lab and your authority",
           "type": "content",
-          "content": "<p>The main structural touchpoint is a weekly check-in with all Community Managers at once, not one-on-ones. It works as a hot lab: each city reports what is working and what is not, questions get asked in front of the group, and HQ shares updates on big projects and opportunities. Longer term, a Community Coordinator, hired from within the Community Manager ranks, runs the weekly meeting, and Sean's time goes to bigger state-of-the-nation conversations.</p><p>Day to day, your authority is deliberately prescribed: what is on your plate is spelled out. It is not an open mandate to decide direction.</p><p>New ideas are welcome, and the weekly meeting is where they surface. On purpose, they are not decided or built in a silo by one city. They go to the whole group so the team can react, collaborate and build the idea together, because anything you build is part of the shared Vegans Explore ecosystem.</p>"
+          "content": "<p>The main structural touchpoint is a weekly check-in with all Community Managers at once, not one-on-ones. It works as a hot lab: each city reports what is working and what is not, questions get asked in front of the group, and HQ shares updates on big projects and opportunities. Longer term, a Community Coordinator, hired from within the Community Manager ranks, runs the weekly meeting, and Sean's time goes to bigger state-of-the-nation conversations.</p><h3>Be the first to know</h3><p>You are our eyes and ears in your city. When a Vegan restaurant opens, closes or starts adding animal products, or the community is talking about a controversy, we should hear it from you first. Come to the huddle ready to share what is happening, what you are up against and what you want to try. We celebrate the cities that grow, and we rally around the ones that need support.</p><p>Day to day, your authority is deliberately prescribed: what is on your plate is spelled out. It is not an open mandate to decide direction.</p><p>New ideas are welcome, and the weekly meeting is where they surface. On purpose, they are not decided or built in a silo by one city. They go to the whole group so the team can react, collaborate and build the idea together, because anything you build is part of the shared Vegans Explore ecosystem.</p>"
         },
         {
           "key": "quiz",
@@ -474,6 +474,16 @@
                 "Deliberately prescribed: what is on your plate is spelled out",
                 "Unlimited once certified",
                 "Decided by partners"
+              ],
+              "correctIndex": 1
+            },
+            {
+              "question": "A Vegan restaurant in your city starts adding animal products. What should happen?",
+              "options": [
+                "Wait for HQ to notice",
+                "We hear it from you first, and you bring it to the huddle",
+                "Post about it before telling anyone",
+                "Ignore it"
               ],
               "correctIndex": 1
             }
