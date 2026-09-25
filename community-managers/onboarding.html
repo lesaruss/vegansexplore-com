@@ -19,9 +19,9 @@
 
     /* Guided slides: one full-height panel at a time on desktop, no page scroll needed. */
     .stage{position:relative;height:calc(100vh - 61px);min-height:560px;overflow:hidden;}
-    .slide{position:absolute;inset:0;display:none;padding:28px max(40px,calc((100% - 1200px)/2)) 88px;}
-    .slide.active{display:flex;align-items:center;}
-    .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:center;width:100%;}
+    .slide{position:absolute;inset:0;display:none;padding:44px max(40px,calc((100% - 1200px)/2)) 24px;}
+    .slide.active{display:flex;align-items:flex-start;}
+    .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:start;width:100%;}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
     h1,h2{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;}
     h2{font-size:clamp(28px,3.2vw,42px);margin-bottom:18px;}
@@ -77,15 +77,10 @@
     .member-price b{font-weight:900;color:var(--ve-green-deep);margin-right:6px;}
     .member-copy{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
 
-    /* Controls */
-    .controls{position:absolute;left:0;right:0;bottom:22px;z-index:5;display:flex;justify-content:center;align-items:center;gap:14px;pointer-events:none;}
-    .controls > *{pointer-events:auto;}
-    .ctrl{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.18);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1a1a1a;}
-    .ctrl[disabled]{opacity:0.35;cursor:default;}
-    .dots{display:flex;gap:8px;background:rgba(255,255,255,0.92);padding:8px 12px;border-radius:99px;}
-    .dot{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.2);border:0;cursor:pointer;padding:0;}
-    .dot[aria-current="step"]{background:var(--ve-green-dark);width:26px;border-radius:99px;}
-    .on-hero .ctrl{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.5);color:#fff;}
+    /* One control per slide: Next, a quiet Back link and the step count. */
+    .step-count{margin-left:auto;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .hero-inner .step-count{color:rgba(255,255,255,0.75);}
+    .hero-inner .btn-link{color:#fff;}
 
     /* Good to know */
     .faq-dialog{margin:auto;border:0;border-radius:16px;padding:0;width:min(620px,calc(100% - 32px));max-height:calc(100vh - 32px);box-shadow:0 24px 60px rgba(0,0,0,0.3);font-family:"Montserrat",sans-serif;}
@@ -98,12 +93,12 @@
     .faq-body h3{font-size:15px;font-weight:800;margin:16px 0 4px;}
     .faq-body p{font-size:14px;color:var(--ve-text-75);}
 
-    /* Desktop: the guided page is the whole screen, so the site footer (links also in the menu) does not add a page scroll. */
-    @media (min-width:901px){ html,body{overflow:hidden;height:100%;} .ve-footer{display:none !important;} }
+    /* Desktop: nav, the guided stage and the footer share one screen, so nothing scrolls and the footer stays visible. */
+    @media (min-width:901px){ html,body{overflow:hidden;height:100%;} .page-frame{display:flex;flex-direction:column;height:100vh;} .stage{flex:1 1 auto;height:auto;min-height:0;} }
 
-    /* Short desktop screens: tighten spacing so every slide still fits above the controls. */
-    @media (min-width:901px) and (max-height:780px){
-      .slide{padding-top:12px;padding-bottom:76px;}
+    /* Short desktop screens: tighten spacing so every slide still fits above the footer. */
+    @media (min-width:901px) and (max-height:920px){
+      .slide{padding-top:16px;padding-bottom:12px;}
       h2{font-size:clamp(26px,2.6vw,34px);margin-bottom:12px;}
       .lede{font-size:15px;margin-bottom:12px;}
       .points{gap:7px;margin-bottom:14px;}
@@ -120,28 +115,42 @@
       .rows small{display:inline;margin-left:8px;}
     }
 
+    @media (min-width:901px) and (max-height:700px){
+      .slide{padding-top:10px;}
+      h2{font-size:clamp(22px,2.2vw,28px);margin-bottom:8px;}
+      .lede{font-size:14px;line-height:1.5;margin-bottom:8px;}
+      .eyebrow{margin-bottom:6px;}
+      .rows li{padding:6px 12px;}
+      .points{gap:5px;margin-bottom:10px;}
+      .points li{font-size:14px;}
+      .spotlight{font-size:14px;padding:3px 0 3px 14px;}
+      .cta-row{margin-top:10px;}
+      .btn{min-height:42px;padding:11px 22px;}
+      .member-box{margin-top:8px;padding:8px 12px;}
+      .col{padding:10px 14px;}
+      .checks{gap:4px;}
+    }
+
     /* Phones and tablets: slides stack and the page scrolls within a slide; video sits above the words. */
     @media (max-width:900px){
       .stage{height:auto;min-height:0;overflow:visible;}
-      .slide{position:relative;inset:auto;padding:36px 24px 104px;}
+      .slide{position:relative;inset:auto;padding:28px 24px 36px;}
       .slide.active{display:block;}
       .split{grid-template-columns:minmax(0,1fr);gap:24px;}
       .split > .media{order:-1;}
       .media.tall{aspect-ratio:16/10;max-height:none;margin:0;}
-      .slide-hero{background-image:url('/public/partner/ve-partner-mobile.png');background-position:center center;min-height:calc(100vh - 104px);display:none;padding:0;}
+      .slide-hero{background-image:url('/public/partner/ve-partner-mobile.png');background-position:center center;min-height:calc(100vh - 160px);display:none;padding:0;}
       .slide-hero.active{display:flex;align-items:flex-end;}
       .slide-hero::before{background:rgba(0,0,0,0.32);}
       .slide-hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 96px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
-      .controls{position:fixed;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.97);border-top:1px solid var(--ve-border);}
-      .on-hero .ctrl{background:#fff;border-color:rgba(0,0,0,0.18);color:#1a1a1a;}
+      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
       .way{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
     @media (max-width:480px){
-      .slide{padding:28px 16px 100px;}
+      .slide{padding:24px 16px 32px;}
       .slide-hero::before{background:rgba(0,0,0,0.32);}
       .slide-hero::after{display:none;}
-      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 96px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
+      .hero-inner{background:rgba(0,0,0,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
       .hero-inner .lede{font-size:15.5px;}
       .rows li{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
@@ -173,7 +182,7 @@
           <p class="eyebrow">Community Manager<span data-city-suffix></span></p>
           <h1>Your city is ready for you.</h1>
           <p class="lede">For more than 10 years I built South Florida&rsquo;s Vegan community, as large, diverse and challenging as they come, to make it a global hotspot for Veganism. Now I&rsquo;m handing a city to someone I trust to give it the care it deserves. That&rsquo;s you.</p>
-          <div class="cta-row"><button type="button" class="btn btn-primary" data-go="1">Let's go</button></div>
+          <div class="cta-row"><button type="button" class="btn btn-primary" data-go="1">Let's go</button><span class="step-count">1 of 7</span></div>
         </div>
         <div class="media hero-media" data-video="welcome" data-poster="/public/images/ve-hero-mobile.png" data-cap="Welcome"></div>
       </div>
@@ -186,7 +195,7 @@
           <h2>You get what I never had.</h2>
           <p class="lede">I learned this by trial and error. You start with a whole team, an ecosystem and a proven method: big events, plus a platform in person and online that supports individuals, nonprofit organizations, community organizations and businesses.</p>
           <p class="spotlight">Food opens the door. The animals are the reason we are here.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="2">What leading means</button></div>
+          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="2">Next</button><button type="button" class="btn btn-link" data-go="0">Back</button><span class="step-count">2 of 7</span></div>
         </div>
         <div class="media" data-video="have" data-poster="/public/images/ve-panel2.png" data-cap="What you get"></div>
       </div>
@@ -204,7 +213,7 @@
             <li>Build a community that lasts beyond any one event, or any one person</li>
           </ul>
           <p class="spotlight">Leading doesn&rsquo;t mean doing everything yourself. It means building something bigger than you.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="3">Your role</button></div>
+          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="3">Next</button><button type="button" class="btn btn-link" data-go="1">Back</button><span class="step-count">3 of 7</span></div>
         </div>
         <div class="media" data-video="lead" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="Leading your city"></div>
       </div>
@@ -231,7 +240,7 @@
             </ul></div>
           </div>
           <p class="spotlight">You lead locally. We&rsquo;ve got your back.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="4">See the playbook</button></div>
+          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="4">Next</button><button type="button" class="btn btn-link" data-go="2">Back</button><span class="step-count">4 of 7</span></div>
         </div>
         <div class="media" data-video="role" data-poster="/public/partner/ve-partner-mobile.png" data-cap="Your role"></div>
       </div>
@@ -250,7 +259,7 @@
             <li><b>Sat, Dec 12</b><span>Community Night<small>Fort Lauderdale</small></span></li>
           </ul>
           <p class="spotlight">Community Nights move around the region so every night feels fresh.</p>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="5">The agreement</button></div>
+          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="5">Next</button><button type="button" class="btn btn-link" data-go="3">Back</button><span class="step-count">5 of 7</span></div>
         </div>
         <div class="media" data-video="season" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="A season"></div>
       </div>
@@ -268,7 +277,7 @@
             <li class="lead"><b>Plus</b><span>Performance pay<small>Earned as your region grows: more events, members and partners. We build the structure together.</small></span></li>
           </ul>
           <div class="member-box"><p class="member-copy"><b>How we&rsquo;ll know it&rsquo;s working:</b> events attended, contacts logged, warm introductions, and three qualified sponsor conversations a month.</p></div>
-          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="6">Step in</button></div>
+          <div class="cta-row"><button type="button" class="btn btn-dark" data-go="6">Next</button><button type="button" class="btn btn-link" data-go="4">Back</button><span class="step-count">6 of 7</span></div>
         </div>
         <div class="media" data-video="grow" data-poster="/public/images/ve-hero-mobile.png" data-cap="Growing together"></div>
       </div>
@@ -285,14 +294,15 @@
           </div>
           <p class="fine" style="margin-top:12px;"><b>Then, your first week:</b></p>
           <ul class="checks" style="margin-top:8px;">
-            <li>Read the Community Manager Handbook in your dashboard</li>
+            <li>Complete your Community Manager certification in your dashboard</li>
             <li>Walk through vegansexplore.com/partners the way a business would</li>
             <li>Set a call with me to plan your city&rsquo;s first night</li>
             <li>Start your list of businesses, organizations and volunteers</li>
           </ul>
           <div class="cta-row">
-            <button type="button" class="btn btn-dark" id="cm-join" data-member-label="Open the handbook">Become a member</button>
-            <a class="btn btn-link" href="/dashboard/handbook" id="cm-handbook">Open the handbook</a>
+            <button type="button" class="btn btn-dark" id="cm-join" data-member-label="Go to my dashboard">Become a member</button>
+            <button type="button" class="btn btn-link" data-go="5">Back</button>
+            <span class="step-count">7 of 7</span>
           </div>
           <p class="fine" style="margin-top:6px;">Use the email I have on file. It sets up your Community Manager access automatically.</p>
         </div>
@@ -300,11 +310,6 @@
       </div>
     </section>
 
-    <div class="controls on-hero" id="controls">
-      <button type="button" class="ctrl" id="prev" aria-label="Previous slide" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <div class="dots" id="dots"></div>
-      <button type="button" class="ctrl" id="next" aria-label="Next slide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
-    </div>
   </main>
 
   <script src="/public/ve-auth.js"></script>
@@ -333,8 +338,6 @@
       var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
       var ids = ['welcome', 'have', 'lead', 'role', 'season', 'grow', 'join'];
       var cur = 0;
-      var dots = document.getElementById('dots');
-      var controls = document.getElementById('controls');
       var q = new URLSearchParams(location.search);
 
       // Stripe's return URL drops ?city, so remember it for the trip back.
@@ -360,28 +363,16 @@
         }
       });
 
-      slides.forEach(function (_, i) {
-        var b = document.createElement('button');
-        b.type = 'button'; b.className = 'dot'; b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
-        b.addEventListener('click', function () { show(i); });
-        dots.appendChild(b);
-      });
 
       function show(n, fromHash) {
         cur = Math.max(0, Math.min(slides.length - 1, n));
         slides.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
-        dots.querySelectorAll('.dot').forEach(function (d, i) { if (i === cur) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current'); });
-        document.getElementById('prev').disabled = cur === 0;
-        document.getElementById('next').disabled = cur === slides.length - 1;
-        controls.classList.toggle('on-hero', cur === 0);
         if (!fromHash) history.replaceState(null, '', (cur ? location.pathname + location.search.replace(/[?&]activate=[^&]*/, '') + '#' + ids[cur] : location.pathname + location.search));
         if (window.innerWidth <= 900) window.scrollTo(0, 0);
         if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
         try { if (window.gtag) gtag('event', 'cm_onboarding_slide', { slide: ids[cur] }); } catch (e) {}
       }
 
-      document.getElementById('prev').addEventListener('click', function () { show(cur - 1); });
-      document.getElementById('next').addEventListener('click', function () { show(cur + 1); });
       document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
       document.addEventListener('keydown', function (e) {
         if (document.querySelector('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;
@@ -389,7 +380,7 @@
         if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
       });
 
-      // Membership is the first step: sign up, pay the $11 Founding Membership, then the handbook opens up.
+      // Membership is the first step: sign up, pay the $11 Founding Membership, then the dashboard opens up.
       var AUTH_API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
       var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var joinBtn = document.getElementById('cm-join');
@@ -401,17 +392,16 @@
           .then(function (r) { return r.json(); }).then(function (d) { return d && d.member ? d.member.membership_status : null; }).catch(function () { return null; });
       }
       function welcomeIn() {
-        document.getElementById('cm-member-box').innerHTML = '<p class="member-price"><b>You&rsquo;re in.</b> Founding Member</p><p class="member-copy">Welcome to the team. Your next step is the handbook in your dashboard.</p>';
+        document.getElementById('cm-member-box').innerHTML = '<p class="member-price"><b>You&rsquo;re in.</b> Founding Member</p><p class="member-copy">Welcome to the team. Your dashboard is where your Community Manager certification starts.</p>';
         joinBtn.textContent = joinBtn.getAttribute('data-member-label');
         joinBtn.setAttribute('data-member', '1');
-        document.getElementById('cm-handbook').style.display = 'none';
       }
       function checkout() {
         try { if (window.gtag) gtag('event', 'cm_membership_checkout', {}); } catch (e) {}
         VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; }).catch(function () {});
       }
       joinBtn.addEventListener('click', function () {
-        if (joinBtn.getAttribute('data-member')) { location.href = '/dashboard/handbook'; return; }
+        if (joinBtn.getAttribute('data-member')) { location.href = '/dashboard?from=cm-onboarding'; return; }
         try { if (window.gtag) gtag('event', 'cm_join', { signed_in: loggedIn() }); } catch (e) {}
         if (!window.VEAuth) { location.href = '/join'; return; }
         if (!loggedIn()) {
