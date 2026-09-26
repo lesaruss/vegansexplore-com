@@ -54,7 +54,7 @@
   <div class="wrap">
     <p class="eyebrow">Admin</p>
     <h1>Onboarding audio import</h1>
-    <p class="sub">Pick the page, then drop the folder with your recordings. Each file is matched to its slide by the number in its name (01 to 11 for Community Managers, 01 to 05 for Partners). Listen to any clip, then upload. Volume is evened out and long silences at the ends are trimmed before anything goes live.</p>
+    <p class="sub">Pick the page, then drop the folder with your recordings. Each file is matched to its slide by the number in its name (01 to 11 for Community Managers, 01 to 06 for Partners). Listen to any clip, then upload. Volume is evened out and long silences at the ends are trimmed before anything goes live.</p>
     <div id="oa-gate" class="gate" hidden></div>
     <div id="oa-app" hidden>
       <div class="bar">
@@ -103,11 +103,12 @@
           { key: 'applied', label: 'Thank you for applying', words: ['applied', 'thank'] }
         ],
         partners: [
-          { key: 'problem', label: 'The same room', words: ['problem', 'room'] },
-          { key: 'why', label: 'Why we exist', words: ['why', 'started'] },
-          { key: 'season', label: 'This season', words: ['season'] },
-          { key: 'proof', label: 'Who we are', words: ['proof', 'who'] },
-          { key: 'invite', label: 'Choose how you show up', words: ['invite', 'join', 'show'] }
+          { key: 'problem', label: 'A bigger room', words: ['problem', 'bigger'] },
+          { key: 'why', label: 'Why it matters', words: ['why', 'matters'] },
+          { key: 'room', label: 'The room is ready', words: ['ready', 'zero'] },
+          { key: 'bring', label: 'What you bring', words: ['bring', 'offer'] },
+          { key: 'only', label: 'It only works with you', words: ['only', 'straight'] },
+          { key: 'seat', label: 'Take your seat', words: ['seat', 'join'] }
         ]
       };
       var VIEW = { cm: '/community-managers/onboarding', partners: '/partners' };

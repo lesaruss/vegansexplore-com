@@ -21,7 +21,7 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const PAGES: Record<string, string[]> = {
   cm: ['welcome', 'have', 'lead', 'role', 'month', 'pulse', 'season', 'grow', 'join', 'apply', 'applied'],
-  partners: ['problem', 'why', 'season', 'proof', 'invite'],
+  partners: ['problem', 'why', 'room', 'bring', 'only', 'seat'],
 };
 const CITIES = ['south-florida', 'orlando-north-central-florida', 'philadelphia', 'new-york', 'los-angeles'];
 const MAX_BYTES = 12 * 1024 * 1024;

@@ -4,8 +4,8 @@
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Partner with Vegans Explore | The Explore Season</title>
-  <meta name="description" content="Plant-based businesses keep selling to the same room. Vegans Explore throws nights non-Vegans actually want to attend, and puts your food in their hands. The Explore Season starts Oct 24 in South Florida.">
+  <title>Partner with Vegans Explore | South Florida</title>
+  <meta name="description" content="For South Florida businesses, fully Vegan or with a few great plant-based options. Four Community Nights this season, starting Oct 24, built for people who haven't found you yet. Take your seat.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -209,6 +209,33 @@
       .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count,.stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
       .slide{padding-bottom:8px;}
     }
+    /* Slide 6: step labels, the "new" tag, and the button with its note underneath. */
+    .step-lbl{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#c5f2c7;margin:0 0 8px;}
+    .tag-new{font-style:normal;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:#c5f2c7;color:#0b2e14;margin-left:6px;vertical-align:2px;}
+    .cta-main{display:inline-flex;flex-direction:column;align-items:flex-start;gap:4px;}
+    .cta-note{font-size:12px;font-weight:600;color:#ececec;}
+    .btn-ghost{background:rgba(0,0,0,0.35);color:#fff;border:1.5px solid rgba(255,255,255,0.7);}
+    .btn-ghost:hover{background:rgba(255,255,255,0.12);}
+    .cta-row{align-items:flex-start;}
+    /* Slide 6 carries the most, so on shorter desktop screens it tightens further
+       to keep the buttons clear of Back, the count and Next. */
+    @media (min-width:901px) and (max-height:920px){
+      #s-seat .member-box{padding:8px 14px;margin-bottom:8px !important;}
+      #s-seat .member-copy{font-size:12.5px;line-height:1.4;}
+      #s-seat .step-lbl{margin-bottom:6px;}
+      #s-seat .way{padding:6px 12px;}
+      #s-seat .way b{font-size:13px;}
+      #s-seat .way span{font-size:12.5px;line-height:1.35;}
+      #s-seat .cta-row{margin-top:10px;gap:8px;}
+      #s-seat .cta-main{flex-direction:row;align-items:center;gap:10px;}
+      #s-seat .btn{min-height:40px;padding:10px 18px;}
+      #s-seat h2{margin-bottom:10px;}
+    }
+    @media (min-width:901px) and (max-height:760px){
+      #s-seat .eyebrow{display:none;}
+      #s-seat .member-copy{font-size:12px;}
+      #s-seat .way span{font-size:12px;}
+    }
     @media (max-width:480px){ .slide-hero{padding:24px 16px 8px;} .hero-inner{margin:0;max-width:none;} .stage-nav{padding:4px 16px 28px;} .slide{padding-bottom:8px;} }
   </style>
 </head>
@@ -220,85 +247,102 @@
   <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Partner with Vegans Explore">
     <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
 
-    <section class="slide slide-hero active" id="s-problem" aria-roledescription="slide" aria-label="1 of 5">
+    <section class="slide slide-hero active" id="s-problem" aria-roledescription="slide" aria-label="1 of 6">
       <div class="split">
         <div class="hero-inner">
-          <p class="eyebrow">Vegans Explore &middot; South Florida</p>
-          <h1>You keep selling to the same room.</h1>
-          <p class="lede">Vegan festivals, Vegan groups, Vegan feeds. Most plant-based businesses are chasing the same customers. The people who would love your food are somewhere else, and an ad cannot hand them a taste.</p>
+          <p class="eyebrow">For South Florida businesses</p>
+          <h1>You built something good. It deserves a bigger room.</h1>
+          <p class="lede">Restaurants, cafes, food brands, makers, vendors and services, fully Vegan or with a few great plant-based options. You put everything into it, and it still gets lost at the same festivals, in the same groups and feeds, chasing the same customers. The people who would love what you offer are right here in South Florida. They just haven&rsquo;t found you yet.</p>
         </div>
-        <div class="media hero-media" data-video="problem" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="The same room"></div>
+        <div class="media hero-media" data-video="problem" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="A bigger room"></div>
       </div>
     </section>
 
-    <section class="slide" id="s-why" aria-roledescription="slide" aria-label="2 of 5">
+    <section class="slide" id="s-why" aria-roledescription="slide" aria-label="2 of 6">
       <div class="split">
         <div>
-          <p class="eyebrow">Why we exist</p>
-          <h2>We started with the food, too.</h2>
-          <p class="lede">I came to Veganism through plant-based food first. So we throw nights non-Vegans actually want to go to, and put your food in their hands. Once they&rsquo;re through the door, they discover the real reason behind the Vegan message.</p>
-          <p class="spotlight">Food is the way in. The animals are the reason we are here.</p>
+          <p class="eyebrow">Why it matters</p>
+          <h2>Every Vegan option on a menu is a door.</h2>
+          <p class="lede">The economy has hit our community hard, and Vegan adoption has shifted fast. Every time a Vegan option disappears from a menu, someone loses a way in. Every time a business adds one, a door opens.</p>
+          <p class="spotlight">Nobody comes to Veganism the same way. What you offer meets people where they are.</p>
         </div>
-        <div class="media" data-video="why" data-poster="/public/founder/sean-hero.jpg" data-cap="How it started"></div>
+        <div class="media" data-video="why" data-poster="/public/founder/sean-hero.jpg" data-cap="Why it matters"></div>
       </div>
     </section>
 
-    <section class="slide" id="s-season" aria-roledescription="slide" aria-label="3 of 5">
+    <section class="slide" id="s-room" aria-roledescription="slide" aria-label="3 of 6">
       <div class="split">
         <div>
-          <p class="eyebrow">This season</p>
-          <h2>This fall, the room gets bigger.</h2>
+          <p class="eyebrow">You&rsquo;re not starting from zero</p>
+          <h2>I built the room. It&rsquo;s missing you.</h2>
+          <p class="lede">For more than 10 years I&rsquo;ve built South Florida&rsquo;s Vegan community, from Palm Beach to Miami-Dade, to make it a global hotspot for Veganism. More than 500 events hosted and backed since 2016, and hundreds of plant-based businesses supported and promoted.</p>
           <ul class="rows">
-            <li class="lead"><b>Sat, Oct 24</b><span>Launch Community Night<small>West Palm Beach: food, sampling, vendors, costumes and a DJ</small></span></li>
-            <li><b>Sat, Nov 21</b><span>Community Night<small>Miami: a party or an outdoor night, shaped with our partners</small></span></li>
-            <li class="lead"><b>Sun, Nov 29</b><span>Miami Dolphins vs. New York Jets<small>Game night at Hard Rock Stadium. Jets fans welcome.</small></span></li>
-            <li><b>Sat, Dec 12</b><span>Community Night<small>Fort Lauderdale: a new county, a new crowd</small></span></li>
+            <li class="lead"><b>Sat, Oct 24</b><span>Launch Community Night<small>West Palm Beach</small></span></li>
+            <li><b>Sat, Nov 21</b><span>Community Night<small>Miami</small></span></li>
+            <li class="lead"><b>Sun, Nov 29</b><span>Miami Dolphins vs. New York Jets<small>Hard Rock Stadium</small></span></li>
+            <li><b>Sat, Dec 12</b><span>Community Night<small>Fort Lauderdale</small></span></li>
           </ul>
-          <p class="spotlight">Big nights now, and bigger ideas right behind them.</p>
+          <p class="spotlight">Four nights non-Vegans actually want to go to.</p>
         </div>
-        <div class="media" data-video="season" data-poster="/public/images/ve-panel2.png" data-cap="This season"></div>
+        <div class="media" data-video="room" data-poster="/public/images/ve-panel2.png" data-cap="The room is ready"></div>
       </div>
     </section>
 
-    <section class="slide" id="s-proof" aria-roledescription="slide" aria-label="4 of 5">
+    <section class="slide" id="s-bring" aria-roledescription="slide" aria-label="4 of 6">
       <div class="split">
         <div>
-          <p class="eyebrow">Who we are</p>
-          <h2>On stage and behind the scenes since 2016.</h2>
+          <p class="eyebrow">What you bring</p>
+          <h2>What you offer is the way in.</h2>
           <ul class="points">
-            <li>500+ events hosted and backed</li>
-            <li>Hundreds of plant-based businesses supported and promoted</li>
-            <li>Nonprofit organizations supported, with content that lifts the causes our partners champion</li>
-            <li>A Community Manager on the ground in every city we open</li>
+            <li>Your food or product, in the hands of people who haven&rsquo;t tried plant-based yet</li>
+            <li>Your menu, where one great Vegan option turns a curious guest into a regular</li>
+            <li>Your service, in front of a community looking for businesses that get them</li>
+            <li>Your table, at a night built for people who haven&rsquo;t met you yet</li>
           </ul>
-          <p class="spotlight">Next up: Orlando, Philadelphia, New York and Los Angeles. Every partner helps open the next city.</p>
+          <p class="spotlight">I can open the door. Only you can give them a reason to stay.</p>
         </div>
-        <div class="media" data-video="proof" data-poster="/public/images/ve-hero-mobile.png" data-cap="Who we are"></div>
+        <div class="media" data-video="bring" data-poster="/public/images/ve-hero-mobile.png" data-cap="What you bring"></div>
       </div>
     </section>
 
-    <section class="slide" id="s-invite" aria-roledescription="slide" aria-label="5 of 5">
+    <section class="slide" id="s-only" aria-roledescription="slide" aria-label="5 of 6">
       <div class="split">
         <div>
-          <p class="eyebrow">Join us</p>
-          <h2>Choose how you show up.</h2>
-          <div class="ways">
-            <div class="way"><b>Just come</b><span>Become a Founding Member and join us at member events.</span></div>
-            <div class="way"><b>Bring your table</b><span>Meet new customers face to face at Community Night.</span></div>
-            <div class="way"><b>Fill the bags</b><span>Put your product in our goodie bags, no table needed.</span></div>
-            <div class="way"><b>Shape the season</b><span>Design an activation with us. Five spots, one grocer only.</span></div>
+          <p class="eyebrow">Straight up</p>
+          <h2>This only works if you&rsquo;re in it.</h2>
+          <p class="lede">A Community Night without vendors is just a party. A goodie bag with nothing in it is just a bag. When you show up, people try something new, find you, and come back.</p>
+          <p class="spotlight">Lead the charge with us. You don&rsquo;t have to carry it alone.</p>
+        </div>
+        <div class="media" data-video="only" data-poster="/public/events/ve-hero-mobile.png" data-cap="It only works with you"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-seat" aria-roledescription="slide" aria-label="6 of 6">
+      <div class="split">
+        <div>
+          <p class="eyebrow">Your seat at the table</p>
+          <h2>Take your seat.</h2>
+          <div class="member-box" style="margin-top:0;margin-bottom:12px;">
+            <p class="member-price"><b>Step 1 &middot; Founding Membership</b> $11, one time</p>
+            <p class="member-copy">This is how you join. Your contribution goes straight into what we&rsquo;re building, and it unlocks full details and pricing for every option.</p>
           </div>
-          <div class="member-box">
-            <p class="member-price"><b>Founding Membership</b> $11, one time</p>
-            <p class="member-copy">Your contribution goes straight into what we are building. It unlocks full details and pricing for every option, a seat in our upcoming campaigns, member events and the whole community.</p>
+          <p class="step-lbl">Step 2 &middot; Then choose your part</p>
+          <div class="ways">
+            <div class="way"><b>Fill the bags</b><span>Your product, samples or coupons in our goodie bags, no table needed.</span></div>
+            <div class="way"><b>Bring your table</b><span>Meet new customers face to face at a Community Night.</span></div>
+            <div class="way"><b>Grow your menu <em class="tag-new">New, ask us</em></b><span>Already serve Vegan options, or want to add more? Let&rsquo;s build them with you.</span></div>
+            <div class="way"><b>Shape the season</b><span>Something bigger across the whole season. Starts with a call with me.</span></div>
           </div>
           <div class="cta-row">
-            <button type="button" class="btn btn-dark" data-vpg-join data-member-label="See my options" data-source="partners_page">Become a member</button>
-            <button type="button" class="btn btn-link" data-vpg-open data-vpg-step="question" data-source="partners_page">Not sure? Ask us</button>
+            <div class="cta-main">
+              <button type="button" class="btn btn-dark" data-vpg-join data-member-label="See my options" data-source="partners_page">Take my seat</button>
+              <span class="cta-note">$11, one time, then pick your part</span>
+            </div>
+            <button type="button" class="btn btn-ghost" data-vpg-open data-vpg-step="question" data-source="partners_page">Not sure? Ask us</button>
             <button type="button" class="btn btn-link" id="faq-open">Common questions</button>
           </div>
         </div>
-        <div class="media" data-video="invite" data-poster="/public/partner/ve-partner-mobile.png" data-cap="Choose how you show up"></div>
+        <div class="media" data-video="seat" data-poster="/public/partner/ve-partner-mobile.png" data-cap="Take your seat"></div>
       </div>
     </section>
 
@@ -326,18 +370,19 @@
   <script src="/public/slide-audio.js"></script>
   <script>
     // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
-    var VIDEOS = { problem: '', why: '', season: '', proof: '', invite: '' };
+    var VIDEOS = { problem: '', why: '', room: '', bring: '', only: '', seat: '' };
     // Narration in Sean's voice (Higgsfield, ElevenLabs engine), first person like the
     // Community Manager page. Placeholder until his own recordings replace them at
     // /admin/onboarding-audio (Page: Partners). Each slide has its own music bed.
     var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/';
     var AUDIO = {
       clips: {
-        problem: { url: AUDIO_BASE + 'partners/problem-v2.mp3', dur: 28.2, bed: AUDIO_BASE + 'beds/green-bites-60.wav' },
-        why: { url: AUDIO_BASE + 'partners/why-v2.mp3', dur: 24.2, bed: AUDIO_BASE + 'beds/sanctuary-stroll-60.wav' },
-        season: { url: AUDIO_BASE + 'partners/season-v2.mp3', dur: 34.9, bed: AUDIO_BASE + 'beds/vegan-glow-60.wav' },
-        proof: { url: AUDIO_BASE + 'partners/proof-v2.mp3', dur: 28, bed: AUDIO_BASE + 'beds/concrete-daydreams-60.wav' },
-        invite: { url: AUDIO_BASE + 'partners/invite-v1.mp3', dur: 36, bed: AUDIO_BASE + 'beds/manifesto-whisper-60.wav' }
+        problem: { url: AUDIO_BASE + 'partners/sf/problem-v1.mp3', dur: 29.5, bed: AUDIO_BASE + 'beds/green-bites-60.wav' },
+        why: { url: AUDIO_BASE + 'partners/sf/why-v1.mp3', dur: 35.5, bed: AUDIO_BASE + 'beds/sanctuary-stroll-60.wav' },
+        room: { url: AUDIO_BASE + 'partners/sf/room-v1.mp3', dur: 37.9, bed: AUDIO_BASE + 'beds/vegan-glow-60.wav' },
+        bring: { url: AUDIO_BASE + 'partners/sf/bring-v1.mp3', dur: 28.1, bed: AUDIO_BASE + 'beds/earthy-reflections-60.wav' },
+        only: { url: AUDIO_BASE + 'partners/sf/only-v1.mp3', dur: 29.9, bed: AUDIO_BASE + 'beds/concrete-daydreams-60.wav' },
+        seat: { url: AUDIO_BASE + 'partners/sf/seat-v1.mp3', dur: 31.1, bed: AUDIO_BASE + 'beds/manifesto-whisper-60.wav' }
       }
     };
     if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
@@ -348,7 +393,7 @@
 
     (function () {
       var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
-      var ids = ['problem', 'why', 'season', 'proof', 'invite'];
+      var ids = ['problem', 'why', 'room', 'bring', 'only', 'seat'];
       var cur = 0;
 
       var stageEl = document.getElementById('stage'), stageBg = document.getElementById('stage-bg');
@@ -393,7 +438,7 @@
       });
 
       var start = ids.indexOf((location.hash || '').replace('#', ''));
-      if (location.hash === '#guide') start = 4;
+      if (location.hash === '#guide') start = ids.length - 1;
       show(start > 0 ? start : 0, true);
 
       // The picture in each slide's panel, chosen at /admin/onboarding-images (Page: Partners).
