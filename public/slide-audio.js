@@ -5,7 +5,8 @@
  * volume). The first play needs a tap; after that, moving to another slide
  * starts that slide's clip, so the page plays like a guided walkthrough.
  *
- *   VESlideAudio.setup({ bed: url, clips: { key: { url, dur } } })
+ *   VESlideAudio.setup({ bed: url, clips: { key: { url, dur, bed? } } })
+ *     A clip's own bed overrides the shared one, so each slide can have its own music.
  *   VESlideAudio.markup(key, poster, caption)   -> HTML for a .media panel
  *   VESlideAudio.onSlide(key)                   -> call from the page's show()
  */
@@ -36,7 +37,9 @@
       var st = document.createElement('style'); st.id = 'sa-css'; st.textContent = CSS; document.head.appendChild(st);
     }
     S.voice = new Audio(); S.voice.preload = 'none';
-    if (S.bed) { S.bedEl = new Audio(); S.bedEl.preload = 'none'; S.bedEl.src = S.bed; }
+    // One bed element for every slide (iOS keeps it unlocked after the first tap); its source swaps per clip.
+    var anyBed = S.bed || Object.keys(S.clips).some(function (k) { return S.clips[k].bed; });
+    if (anyBed) { S.bedEl = new Audio(); S.bedEl.preload = 'none'; if (S.bed) S.bedEl.src = S.bed; }
     S.voice.addEventListener('timeupdate', progress);
     S.voice.addEventListener('ended', function () { track('slide_audio_complete', { clip: S.cur }); endBed(); ui(S.cur, false); });
     document.addEventListener('click', function (e) {
@@ -98,11 +101,16 @@
     S.voice.src = c.url;
     ui(key, true);
     track('slide_audio_play', { clip: key });
-    if (S.bedEl) { S.bedEl.currentTime = 0; S.bedEl.play().catch(function () {}); }
+    var bedUrl = c.bed || S.bed, hasBed = !!(S.bedEl && bedUrl);
+    if (hasBed) {
+      if (S.bedEl.getAttribute('src') !== bedUrl) S.bedEl.src = bedUrl;
+      try { S.bedEl.currentTime = 0; } catch (e) {}
+      S.bedEl.play().catch(function () {});
+    }
     var go = function () { S.voice.play().then(function () { S.unlocked = true; }).catch(function () { ui(key, false); }); };
     // iOS only starts media inside the tap itself, so the first play is immediate.
     // After that the element is unlocked and a short lead-in lets the bed arrive first.
-    if (!S.unlocked || !S.bedEl) go(); else S.startTimer = setTimeout(go, 700);
+    if (!S.unlocked || !hasBed) go(); else S.startTimer = setTimeout(go, 700);
   }
 
   function pause() { S.voice.pause(); if (S.bedEl) S.bedEl.pause(); ui(S.cur, false); }
