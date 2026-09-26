@@ -761,6 +761,18 @@
       }
       show(start > 0 ? start : 0, true);
 
+      // The picture in each slide's panel, chosen at /admin/onboarding-images.
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/ve_onboarding_panels?select=clip_key,url&page=eq.cm&city_slug=eq.' + encodeURIComponent(CITY_SLUG), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          (rows || []).forEach(function (row) {
+            var m = document.querySelector('.media[data-video="' + row.clip_key + '"]');
+            if (!m || !row.url) return;
+            m.setAttribute('data-poster', row.url);
+            var img = m.querySelector('img'); if (img) img.src = row.url;
+          });
+        }).catch(function () {});
+
       // Sean's own recordings, uploaded at /admin/onboarding-audio, replace the
       // placeholder narration slide by slide. Each slide keeps its own music bed.
       fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/ve_onboarding_audio?select=clip_key,url,dur&page=eq.cm&city_slug=eq.' + encodeURIComponent(CITY_SLUG), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })

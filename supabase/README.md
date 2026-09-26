@@ -141,3 +141,12 @@ ready as cities grow). `apply_audio` stores a recorded answer in the private `cm
 `apply` saves `ve_cm_candidates` (kind `application`, status `applied`, `answers` jsonb, `phone`) and
 emails Sean the answers with 7-day links to the recordings. Re-applying for the same city updates the
 row. `confirm` and `question` remain for older links but the page no longer uses them.
+
+### ve-onboarding-audio: slide images (2026-09-26)
+
+`/admin/onboarding-images` (superadmins) shows every landscape Vegans Explore illustration from
+Sean's Higgsfield history (47, embedded as CANDIDATES) plus the four already on the site. Pick a
+slide, pick a picture: `set_panel` copies a Higgsfield image into
+`vegan-media/onboarding-audio/panels/<page>/<city>/` (site paths are used as is) and upserts
+`ve_onboarding_panels` (public read). The onboarding page swaps each slide's panel image from
+that table. Pictures already on another slide are marked so nothing repeats.

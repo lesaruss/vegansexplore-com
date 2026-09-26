@@ -8,6 +8,11 @@
 //
 // POST { action: 'list', page?, city }                                   Authorization: Bearer <ve_token>
 // POST { action: 'upload', page?, city, key, audio_b64, dur, source_name }
+// POST { action: 'panels', page?, city }
+// POST { action: 'set_panel', page?, city, key, source, source_id }
+//   The image in a slide's panel (Sean, 2026-09-26: pick from a grid at
+//   /admin/onboarding-images). A Higgsfield image is copied into vegan-media so
+//   the page never depends on the CDN; a site path (/public/...) is used as is.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -66,6 +71,41 @@ Deno.serve(async (req) => {
   if (body.action === 'list') {
     const { data } = await db.from('ve_onboarding_audio').select('clip_key, url, dur, source_name, updated_at').eq('page', page).eq('city_slug', city);
     return json({ clips: data || [] });
+  }
+
+  if (body.action === 'panels') {
+    const { data } = await db.from('ve_onboarding_panels').select('clip_key, url, source_id, updated_at').eq('page', page).eq('city_slug', city);
+    return json({ panels: data || [] });
+  }
+
+  if (body.action === 'set_panel') {
+    const key = String(body.key || '');
+    if (!PAGES[page].includes(key)) return json({ error: 'bad_key' }, 400);
+    const source = String(body.source || '');
+    let url = '';
+    if (/^\/public\/[a-z0-9/_.-]+\.(png|jpe?g|webp)$/i.test(source)) {
+      url = source;
+    } else {
+      let src: URL;
+      try { src = new URL(source); } catch { return json({ error: 'bad_source' }, 400); }
+      if (src.protocol !== 'https:' || !/\.cloudfront\.net$/.test(src.hostname)) return json({ error: 'bad_source' }, 400);
+      const res = await fetch(src.toString());
+      const type = (res.headers.get('content-type') || '').split(';')[0];
+      if (!res.ok || !/^image\//.test(type)) return json({ error: 'fetch_failed' }, 502);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      if (bytes.length > 8 * 1024 * 1024) return json({ error: 'too_large' }, 400);
+      const ext = type.includes('webp') ? 'webp' : type.includes('png') ? 'png' : 'jpg';
+      const path = `onboarding-audio/panels/${page}/${city}/${key}-${Date.now()}.${ext}`;
+      const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: type, upsert: false });
+      if (up.error) return json({ error: 'upload_failed', message: up.error.message }, 500);
+      url = db.storage.from('vegan-media').getPublicUrl(path).data.publicUrl;
+    }
+    const { error } = await db.from('ve_onboarding_panels').upsert({
+      page, city_slug: city, clip_key: key, url, source_id: String(body.source_id || '').slice(0, 80) || null,
+      updated_by: memberId, updated_at: new Date().toISOString(),
+    }, { onConflict: 'page,city_slug,clip_key' });
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, key, url });
   }
 
   if (body.action === 'upload') {
