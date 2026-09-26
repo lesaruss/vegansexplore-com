@@ -98,6 +98,11 @@ function showActivateModal(message){
   var msg=document.getElementById('ve-pm-msg');
   if(msg)msg.textContent=message||'One $11 contribution, one time. It supports what we are building and unlocks the full community.';
   var e=document.getElementById('ve-pm-error');if(e){e.textContent='';e.style.display='none';}
+  // A page can set window.VE_FOUNDING_ONLY (the Community Manager page does, Sean
+  // 2026-09-26: "keep it simple, $11 one time"): benefits shown, Passport hidden.
+  var fo=!!window.VE_FOUNDING_ONLY;
+  var pp=document.getElementById('ve-pm-passport');if(pp)pp.style.display=fo?'none':'';
+  var bl=document.getElementById('ve-pm-benefits');if(bl)bl.style.display=fo?'':'none';
   var modal=document.getElementById('ve-pledge-modal');
   if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
 }
@@ -110,9 +115,9 @@ s.textContent=
 '#ve-pm-box h2{margin:0 0 6px;font-size:20px;font-weight:800;color:#1a1a1a;text-align:center;font-family:"Montserrat",sans-serif;}'+
 '#ve-pm-msg{margin:0 0 22px;font-size:13px;color:#555;text-align:center;line-height:1.5;font-family:"Montserrat",sans-serif;}'+
 '#ve-pm-error{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:12px;color:#dc2626;font-weight:600;margin-bottom:14px;line-height:1.4;text-align:left;font-family:"Montserrat",sans-serif;}'+
-'#ve-pm-member-btn{display:block;width:100%;padding:14px;background:#22C55E;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s;}'+
+'#ve-pm-member-btn{display:block;width:100%;padding:14px;background:#22C55E;color:#03170a;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s;}'+
 '#ve-pm-member-btn:hover{background:#16A34A;}'+
-'#ve-pm-founding-btn{display:block;width:100%;padding:14px;background:#22C55E;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;}'+
+'#ve-pm-founding-btn{display:block;width:100%;padding:14px;background:#22C55E;color:#03170a;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;}'+
 '#ve-pm-founding-btn:hover{background:#16A34A;}#ve-pm-founding-btn:disabled{background:#9CA3AF;cursor:not-allowed;}'+
 '#ve-pm-member-btn.ve-pm-secondary{background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,0.2);}'+
 '#ve-pm-member-btn.ve-pm-secondary:hover{background:#f5f5f5;}'+
@@ -125,11 +130,14 @@ s.textContent=
 '#ve-pm-amount:focus{outline:none;border-color:#22C55E;}'+
 '#ve-pm-entry-btn{flex:1;padding:11px 13px;background:#1a1a1a;color:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s;}'+
 '#ve-pm-entry-btn:hover{background:#333;}'+
-'#ve-pm-hint{margin:8px 0 0;font-size:11px;color:#888;text-align:center;font-family:"Montserrat",sans-serif;}'+
-'#ve-pm-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1;padding:4px;}'+
+'#ve-pm-hint{margin:8px 0 0;font-size:11px;color:#595959;text-align:center;font-family:"Montserrat",sans-serif;}'+
+'#ve-pm-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#595959;line-height:1;padding:4px;}'+
 '#ve-pm-close:focus-visible{outline:3px solid #22C55E;border-radius:4px;}'+
 '#ve-pm-annual-row{display:flex;align-items:center;gap:7px;margin:10px 0 2px;justify-content:center;}'+
 '#ve-pm-annual-row label{font-size:12px;color:#555;font-weight:600;font-family:"Montserrat",sans-serif;cursor:pointer;}'+
+'#ve-pm-benefits{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:11px;}'+
+'#ve-pm-benefits li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;font-weight:600;line-height:1.45;color:#1a1a1a;font-family:"Montserrat",sans-serif;text-align:left;}'+
+'#ve-pm-benefits svg{flex:0 0 20px;margin-top:1px;}'+
 '@media(max-width:480px){#ve-pm-box{padding:28px 20px 22px;}}';
 document.head.appendChild(s);
 var el=document.createElement('div');
@@ -140,11 +148,19 @@ el.innerHTML=
 '<h2 id="ve-pm-title">Become a Founding Member</h2>'+
 '<p id="ve-pm-msg">One $11 contribution, one time. It supports what we are building and unlocks the full community.</p>'+
 '<div id="ve-pm-error" role="alert"></div>'+
+'<ul id="ve-pm-benefits" style="display:none;">'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Support your local Vegan community</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Help us provide marketing and operational support to local Vegan businesses, nonprofits and community organizations</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Invest in the growth of Community Nights, events and the platform</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlock the full community and your member dashboard</span></li>'+
+'</ul>'+
 '<button type="button" id="ve-pm-founding-btn">Founding Membership - $11 one time</button>'+
 '<p id="ve-pm-hint">One time. It never renews.</p>'+
+'<div id="ve-pm-passport">'+
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or go further with Passport</span><div class="ve-pm-divider-line"></div></div>'+
 '<button type="button" id="ve-pm-member-btn" class="ve-pm-secondary">Passport - $11/mo</button>'+
 '<div id="ve-pm-annual-row"><input type="checkbox" id="ve-pm-annual"><label for="ve-pm-annual">Bill annually instead - $111/yr</label></div>'+
+'</div>'+
 '</div>';
 document.body.appendChild(el);
 document.getElementById('ve-pm-close').addEventListener('click',hideActivateModal);
