@@ -54,11 +54,11 @@
   <div class="wrap">
     <p class="eyebrow">Admin</p>
     <h1>Onboarding audio import</h1>
-    <p class="sub">Drop the folder with your recordings. Each file is matched to its slide by the number in its name (01 to 11). Listen to any clip, then upload. Volume is evened out and long silences at the ends are trimmed before anything goes live.</p>
+    <p class="sub">Pick the page, then drop the folder with your recordings. Each file is matched to its slide by the number in its name (01 to 11 for Community Managers, 01 to 05 for Partners). Listen to any clip, then upload. Volume is evened out and long silences at the ends are trimmed before anything goes live.</p>
     <div id="oa-gate" class="gate" hidden></div>
     <div id="oa-app" hidden>
       <div class="bar">
-        <label>Page <select id="oa-page"><option value="cm">Community Manager onboarding</option></select></label>
+        <label>Page <select id="oa-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option></select></label>
         <label>City <select id="oa-city">
           <option value="south-florida">South Florida</option>
           <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
@@ -101,8 +101,16 @@
           { key: 'join', label: 'Apply', words: ['decision', 'join', 'ask'] },
           { key: 'apply', label: 'Application welcome', words: ['application', 'apply'] },
           { key: 'applied', label: 'Thank you for applying', words: ['applied', 'thank'] }
+        ],
+        partners: [
+          { key: 'problem', label: 'The same room', words: ['problem', 'room'] },
+          { key: 'why', label: 'Why we exist', words: ['why', 'started'] },
+          { key: 'season', label: 'This season', words: ['season'] },
+          { key: 'proof', label: 'Who we are', words: ['proof', 'who'] },
+          { key: 'invite', label: 'Choose how you show up', words: ['invite', 'join', 'show'] }
         ]
       };
+      var VIEW = { cm: '/community-managers/onboarding', partners: '/partners' };
       var RATE = 32000, TARGET_RMS = 0.1, PEAK = 0.89, PAD = 0.35;
       var $ = function (id) { return document.getElementById(id); };
       var items = {}, current = {};
@@ -141,7 +149,7 @@
         $('oa-upload').disabled = !ready || Object.keys(items).some(function (k) { return items[k].uploading; });
         $('oa-upload').textContent = ready ? 'Upload ' + ready + ' and make live' : 'Upload and make live';
         var city = $('oa-city').value;
-        $('oa-view').href = '/community-managers/onboarding' + (city === 'south-florida' ? '' : '?city=' + city);
+        $('oa-view').href = VIEW[$('oa-page').value] + (city === 'south-florida' ? '' : '?city=' + city);
       }
 
       function loadCurrent() {
@@ -233,6 +241,7 @@
       drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('oa-files').click(); } });
       $('oa-files').addEventListener('change', function (e) { addFiles(Array.prototype.slice.call(e.target.files || [])); e.target.value = ''; });
       $('oa-city').addEventListener('change', function () { items = {}; loadCurrent(); });
+      $('oa-page').addEventListener('change', function () { items = {}; $('oa-msg').textContent = ''; loadCurrent(); });
 
       function b64(ab) {
         var bytes = new Uint8Array(ab), s = '', CH = 0x8000;
@@ -269,7 +278,8 @@
         }
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
         if (!m || !m.is_superadmin) { $('oa-gate').hidden = false; $('oa-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
-        var qc = new URLSearchParams(location.search).get('city');
+        var qc = new URLSearchParams(location.search).get('city'), qp = new URLSearchParams(location.search).get('page');
+        if (qp && PAGES[qp]) $('oa-page').value = qp;
         if (qc && $('oa-city').querySelector('option[value="' + qc + '"]')) $('oa-city').value = qc;
         $('oa-app').hidden = false;
         loadCurrent();

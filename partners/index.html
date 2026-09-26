@@ -165,6 +165,51 @@
       .hero-inner .lede{font-size:15.5px;}
       .rows li{grid-template-columns:minmax(0,1fr);gap:2px;}
     }
+
+    /* Matches the Community Manager page (Sean 2026-09-26): the city background
+       runs under every slide, so the whole walkthrough reads as one place, and
+       the content sits on dark glass. Contrast is AAA (7:1) on every text color. */
+    .stage{background-color:#0d130e;background-size:cover;background-position:center 62%;}
+    .stage::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.84) 38%,rgba(0,0,0,0.58) 66%,rgba(0,0,0,0.42) 100%);pointer-events:none;}
+    .stage::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.5) 0%,transparent 35%);pointer-events:none;}
+    .slide{z-index:1;color:#fff;}
+    .slide-hero{background:none !important;}
+    .slide-hero::before,.slide-hero::after{display:none;}
+    .slide h2{color:#fff;}
+    .slide .eyebrow,.hero-inner .eyebrow{color:#c5f2c7;}
+    .slide .lede,.hero-inner .lede{color:#fff;}
+    .slide .points li,.slide .spotlight,.slide .rows span,.slide .way b,.slide .member-price{color:#fff;}
+    .slide .rows li,.slide .way,.slide .member-box{background:rgba(0,0,0,0.55);border-color:rgba(255,255,255,0.22);}
+    .slide .rows li.lead{background:rgba(6,32,12,0.72);border-color:rgba(155,226,158,0.5);}
+    .slide .rows b,.slide .member-price b{color:#c5f2c7;}
+    .slide .rows small,.slide .way span,.slide .member-copy,.slide .fine{color:#ececec;}
+    .slide .points li::before{background-color:#c5f2c7;}
+    .slide .btn-link{color:#fff;}
+    .slide .btn-dark{background:#22C55E;color:#03170a;}
+    .slide .btn-dark:hover{background:#4ade80;}
+    .media{box-shadow:0 18px 40px rgba(0,0,0,0.45);}
+    .stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
+    .stage-nav .btn-dark,.stage-nav.on-hero .btn-dark{background:#22C55E;color:#03170a;}
+    .stage-nav .btn-dark:hover{background:#4ade80;}
+    /* Phones: the city image is pinned to the screen (a fixed layer), so every slide
+       frames it the same way no matter how long the slide is. */
+    .stage-bg{display:none;}
+    @media (max-width:900px){
+      .stage{background:none !important;}
+      .stage::before,.stage::after{display:none;}
+      .stage-bg{display:block;position:fixed;inset:0;z-index:-1;background-color:#0d130e;background-size:cover;background-position:center;}
+      .stage-bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.74);}
+      /* Slide 1 lays out like every other slide, so its panel shows in full. */
+      .slide-hero{min-height:0;padding:28px 24px 8px;}
+      .slide-hero.active{display:block;}
+      .hero-inner{margin:0;max-width:none;}
+      /* Back, the step count and Next sit right after the slide's content, above
+         the footer, instead of floating over the screen. */
+      .stage-nav{position:relative;left:auto;right:auto;bottom:auto;background:none;border-top:0;padding:4px 24px 32px;}
+      .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count,.stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
+      .slide{padding-bottom:8px;}
+    }
+    @media (max-width:480px){ .slide-hero{padding:24px 16px 8px;} .hero-inner{margin:0;max-width:none;} .stage-nav{padding:4px 16px 28px;} .slide{padding-bottom:8px;} }
   </style>
 </head>
 <body>
@@ -173,6 +218,7 @@
   <script src="/public/nav.js"></script>
 
   <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Partner with Vegans Explore">
+    <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
 
     <section class="slide slide-hero active" id="s-problem" aria-roledescription="slide" aria-label="1 of 5">
       <div class="split">
@@ -181,7 +227,7 @@
           <h1>You keep selling to the same room.</h1>
           <p class="lede">Vegan festivals, Vegan groups, Vegan feeds. Most plant-based businesses are chasing the same customers. The people who would love your food are somewhere else, and an ad cannot hand them a taste.</p>
         </div>
-        <div class="media hero-media" data-video="problem" data-poster="/public/images/ve-hero-mobile.png" data-cap="Why we exist"></div>
+        <div class="media hero-media" data-video="problem" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="The same room"></div>
       </div>
     </section>
 
@@ -190,10 +236,10 @@
         <div>
           <p class="eyebrow">Why we exist</p>
           <h2>We started with the food, too.</h2>
-          <p class="lede">Our founder came to Veganism through plant-based food first. So we throw nights non-Vegans actually want to go to, and put your food in their hands. Once they are through the door, they discover the real reason behind the Vegan message.</p>
+          <p class="lede">I came to Veganism through plant-based food first. So we throw nights non-Vegans actually want to go to, and put your food in their hands. Once they&rsquo;re through the door, they discover the real reason behind the Vegan message.</p>
           <p class="spotlight">Food is the way in. The animals are the reason we are here.</p>
         </div>
-        <div class="media" data-video="why" data-poster="/public/images/ve-panel2.png" data-cap="How it started"></div>
+        <div class="media" data-video="why" data-poster="/public/founder/sean-hero.jpg" data-cap="How it started"></div>
       </div>
     </section>
 
@@ -210,7 +256,7 @@
           </ul>
           <p class="spotlight">Big nights now, and bigger ideas right behind them.</p>
         </div>
-        <div class="media" data-video="season" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="This season"></div>
+        <div class="media" data-video="season" data-poster="/public/images/ve-panel2.png" data-cap="This season"></div>
       </div>
     </section>
 
@@ -252,7 +298,7 @@
             <button type="button" class="btn btn-link" id="faq-open">Common questions</button>
           </div>
         </div>
-        <div class="media"><img src="/public/partner/ve-partner-mobile.png" style="object-position:center 30%" alt="Two partners sampling their drinks under a vendor tent at a Vegans Explore event"></div>
+        <div class="media" data-video="invite" data-poster="/public/partner/ve-partner-mobile.png" data-cap="Choose how you show up"></div>
       </div>
     </section>
 
@@ -280,24 +326,34 @@
   <script src="/public/slide-audio.js"></script>
   <script>
     // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
-    var VIDEOS = { problem: '', why: '', season: '', proof: '' };
-    // Narration in Sean's voice (Higgsfield, ElevenLabs engine) over a music bed from the music-beds depot.
+    var VIDEOS = { problem: '', why: '', season: '', proof: '', invite: '' };
+    // Narration in Sean's voice (Higgsfield, ElevenLabs engine), first person like the
+    // Community Manager page. Placeholder until his own recordings replace them at
+    // /admin/onboarding-audio (Page: Partners). Each slide has its own music bed.
     var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/';
     var AUDIO = {
-      bed: AUDIO_BASE + 'beds/green-bites-60.wav',
       clips: {
-        problem: { url: AUDIO_BASE + 'partners/problem-v1.mp3', dur: 23.76 },
-        why: { url: AUDIO_BASE + 'partners/why-v1.mp3', dur: 21.52 },
-        season: { url: AUDIO_BASE + 'partners/season-v1.mp3', dur: 33.84 },
-        proof: { url: AUDIO_BASE + 'partners/proof-v1.mp3', dur: 36.08 }
+        problem: { url: AUDIO_BASE + 'partners/problem-v2.mp3', dur: 28.2, bed: AUDIO_BASE + 'beds/green-bites-60.wav' },
+        why: { url: AUDIO_BASE + 'partners/why-v2.mp3', dur: 24.2, bed: AUDIO_BASE + 'beds/sanctuary-stroll-60.wav' },
+        season: { url: AUDIO_BASE + 'partners/season-v2.mp3', dur: 34.9, bed: AUDIO_BASE + 'beds/vegan-glow-60.wav' },
+        proof: { url: AUDIO_BASE + 'partners/proof-v2.mp3', dur: 28, bed: AUDIO_BASE + 'beds/concrete-daydreams-60.wav' },
+        invite: { url: AUDIO_BASE + 'partners/invite-v1.mp3', dur: 36, bed: AUDIO_BASE + 'beds/manifesto-whisper-60.wav' }
       }
     };
     if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
+    // The live city's landscape runs under the whole walkthrough. South Florida is
+    // the first live city, so it is the partners page background.
+    var CITY_SLUG = 'south-florida', CITY_BG = '/communities/south-florida/banner.jpg';
+    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
     (function () {
       var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
       var ids = ['problem', 'why', 'season', 'proof', 'invite'];
       var cur = 0;
+
+      var stageEl = document.getElementById('stage'), stageBg = document.getElementById('stage-bg');
+      stageEl.style.backgroundImage = "url('" + CITY_BG + "')";
+      stageBg.style.backgroundImage = "url('" + CITY_BG + "')";
 
       document.querySelectorAll('.media[data-video]').forEach(function (m) {
         var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
@@ -340,6 +396,33 @@
       if (location.hash === '#guide') start = 4;
       show(start > 0 ? start : 0, true);
 
+      // The picture in each slide's panel, chosen at /admin/onboarding-images (Page: Partners).
+      var REST = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/';
+      var rq = '&page=eq.partners&city_slug=eq.' + CITY_SLUG;
+      fetch(REST + 've_onboarding_panels?select=clip_key,url' + rq, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          (rows || []).forEach(function (row) {
+            var m = document.querySelector('.media[data-video="' + row.clip_key + '"]');
+            if (!m || !row.url) return;
+            m.setAttribute('data-poster', row.url);
+            var img = m.querySelector('img'); if (img) img.src = row.url;
+          });
+        }).catch(function () {});
+      // Sean's own recordings, dropped in as a folder at /admin/onboarding-audio,
+      // replace the placeholder narration slide by slide. Each slide keeps its bed.
+      fetch(REST + 've_onboarding_audio?select=clip_key,url,dur' + rq, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          (rows || []).forEach(function (row) {
+            var c = AUDIO.clips[row.clip_key];
+            if (!c || !row.url) return;
+            c.url = row.url; if (row.dur) c.dur = +row.dur;
+            var m = document.querySelector('.media[data-sa-key="' + row.clip_key + '"]');
+            if (m && !m.classList.contains('sa-playing')) m.innerHTML = VESlideAudio.markup(row.clip_key, m.getAttribute('data-poster'), m.getAttribute('data-cap'));
+          });
+        }).catch(function () {});
+
       var faq = document.getElementById('faq');
       document.getElementById('faq-open').addEventListener('click', function () { faq.showModal(); });
       document.getElementById('faq-close').addEventListener('click', function () { faq.close(); });
@@ -347,6 +430,7 @@
     })();
   </script>
 
+  <script>window.VE_FOUNDING_ONLY = true; // membership window: $11 Founding Membership only, as on the Community Manager page</script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/partner-guide.js"></script>
   <script src="/public/footer.js"></script>
