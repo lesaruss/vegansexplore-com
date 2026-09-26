@@ -402,6 +402,11 @@
   @media (max-width:760px){ .dash-mylist-iframe.dash-tool-iframe-tall{height:1900px;} }
 
   .dash-community-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  /* Communities tab: every community, four across (Sean 2026-09-26). */
+  #dash-community-row{grid-template-columns:repeat(4,minmax(0,1fr));}
+  @media (max-width:900px){#dash-community-row{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  #dash-community-row .dash-tile.is-viewing{border-color:var(--ve-green-dark);box-shadow:0 0 0 2px var(--ve-green-dark);}
+  .dash-community-join{display:block;margin-top:8px;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-deep);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;font-family:"Montserrat",sans-serif;}
   /* Your Campaigns keeps a fixed 3-column grid regardless of item count
      (2026-09-07, Logan, Sean direction: "it should always remain three
      columns even if there's one or two things under your campaigns" --
@@ -427,7 +432,7 @@
   #dash-podcast-shows-row .dash-tile-desc{font-size:11px;}
   @media (max-width:900px){ #dash-podcast-shows-row{grid-template-columns:repeat(3,1fr);} }
   @media (max-width:480px){ #dash-podcast-shows-row{grid-template-columns:repeat(2,1fr);} }
-  .dash-thumb.guide-thumb{background-position:center top;}
+  .dash-thumb.guide-thumb{background-position:center bottom;background-size:contain !important;background-color:#fff;background-repeat:no-repeat;}
   /* --- Guides tab (2026-09-07, Sean correction): the real Guide Catalog
      from vegansexplore.com/guides, ported in-frame -- Sean specifically
      wants THIS experience (the gc-card catalog with Start/View/Notify Me),
@@ -511,8 +516,9 @@
      so no background-position can invent space. background-origin:content-box
      puts the image inside the padding box and padding-top becomes white space
      above the hair, scaling with the element instead of a fixed nudge. */
-  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-color:#fff;background-repeat:no-repeat;background-position:center top;background-origin:content-box;padding-top:14%;}
-  .dash-thumb.dash-thumb-guide{background-color:#fff;background-repeat:no-repeat;background-position:center top;background-origin:content-box;padding-top:12%;}
+  /* Guides show as a full mid shot on white (Sean 2026-09-26), not cropped. */
+  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-color:#fff;background-repeat:no-repeat;background-position:center bottom;background-size:contain;}
+  .dash-thumb.dash-thumb-guide{background-color:#fff;background-repeat:no-repeat;background-position:center bottom;background-size:contain !important;}
   .dash-modal-opt-name{padding:10px 12px;font-size:12.5px;font-weight:800;}
   .dash-modal-opt.selected{border-color:var(--ve-green);background:var(--ve-green-light);}
   .dash-modal-opt.current{border-color:var(--ve-green);background:var(--ve-green-light);}
@@ -692,6 +698,17 @@
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
+      <!-- Community Manager application status (Sean 2026-09-26: "where do I see
+           the status of my application?"). renderCmApplication() shows it to
+           anyone who has applied. -->
+      <a href="/community-managers/onboarding#join" class="dash-tour-prompt" id="dash-cm-app-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;">
+        <div class="dash-tour-prompt-icon">&#128203;</div>
+        <div class="dash-tour-prompt-body">
+          <div class="dash-tour-prompt-title" id="dash-cm-app-title">Your Community Manager application</div>
+          <div class="dash-tour-prompt-desc" id="dash-cm-app-desc"></div>
+        </div>
+        <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
+      </a>
       <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openTour(); return false;">
         <div class="dash-tour-prompt-icon">&#128075;</div>
         <div class="dash-tour-prompt-body">
@@ -821,7 +838,7 @@
     </div>
 
     <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="8" data-tab-label="Communities">
-      <p class="dash-section-title">Your Communities</p>
+      <p class="dash-section-title">Communities</p>
       <div class="dash-community-row" id="dash-community-row"></div>
     </div>
 
@@ -1335,6 +1352,10 @@
     });
   }
 
+  // Communities tab (Sean 2026-09-26): every community shows, four across, so
+  // none are out of sight. Tapping one brings it up on the dashboard (city pill,
+  // Directory, Leaderboard, Events, Campaigns, Daily Pulse). Joined ones come
+  // first and carry a Leave link; the rest carry a Join link.
   function renderCommunitySection(member) {
     currentMember = member;
     var section = document.getElementById('dash-community-section');
@@ -1342,56 +1363,40 @@
     if (!section || !row) return;
     row.innerHTML = '';
     var joined = (member.communities && member.communities.length ? member.communities : (member.home_community ? [member.home_community] : []));
+    var viewing = getActiveCity(member);
+    var slugs = Object.keys(VE_CITY_NAMES);
+    slugs.sort(function (x, y) { return (joined.indexOf(x) < 0) - (joined.indexOf(y) < 0); });
 
-    joined.forEach(function(slug) {
-      if (!VE_CITY_NAMES[slug]) return;
+    slugs.forEach(function(slug) {
+      var isJoined = joined.indexOf(slug) >= 0;
       var wrap = document.createElement('div');
       wrap.className = 'dash-community-tile';
       var tile = document.createElement('a');
-      tile.className = 'dash-tile';
+      tile.className = 'dash-tile' + (slug === viewing ? ' is-viewing' : '');
       tile.href = '/communities/' + slug;
-      var banner = VE_CITY_BANNER[slug];
       tile.innerHTML =
-        '<div class="dash-thumb" style="background-image:url(\'' + banner + '\');"></div>' +
+        '<div class="dash-thumb" style="background-image:url(\'' + VE_CITY_BANNER[slug] + '\');"></div>' +
         '<div class="dash-tile-body">' +
-          '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] + ' <span class="dash-tag live">Joined</span></div>' +
+          '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] +
+            (isJoined ? ' <span class="dash-tag live">Joined</span>' : '') +
+            (slug === viewing ? ' <span class="dash-tag">Viewing</span>' : '') + '</div>' +
         '</div>';
-      // 2026-09-08 (Sean, Fieldy field note): clicking a joined community
-      // here now brings it into view on the dashboard (top city pill,
-      // Directory, Leaderboard, Events, Campaigns, Daily Pulse) instead of
-      // navigating away to the standalone public community page.
       tile.addEventListener('click', function (e) {
         e.preventDefault();
         switchActiveCity(slug, member);
+        renderCommunitySection(currentMember);
       });
       wrap.appendChild(tile);
 
-      var remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'dash-community-change';
-      remove.textContent = 'Leave community';
-      remove.addEventListener('click', function(e) { e.preventDefault(); toggleCommunity(slug, true); });
-      wrap.appendChild(remove);
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = isJoined ? 'dash-community-change' : 'dash-community-join';
+      btn.textContent = isJoined ? 'Leave community' : 'Join community';
+      btn.addEventListener('click', function(e) { e.preventDefault(); toggleCommunity(slug, isJoined); });
+      wrap.appendChild(btn);
 
       row.appendChild(wrap);
     });
-
-    var addWrap = document.createElement('div');
-    addWrap.className = 'dash-community-tile';
-    var addTile = document.createElement('div');
-    addTile.className = 'dash-tile dash-add-tile';
-    addTile.setAttribute('role', 'button');
-    addTile.setAttribute('tabindex', '0');
-    addTile.innerHTML =
-      '<div class="dash-thumb">+</div>' +
-      '<div class="dash-tile-body">' +
-        '<div class="dash-tile-title">' + (joined.length ? 'Add Another Community' : 'Add Your Community') + '</div>' +
-        '<div class="dash-tile-desc">Pick as many cities as you want to connect with.</div>' +
-      '</div>';
-    addTile.addEventListener('click', openCommunityModal);
-    addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCommunityModal(); } });
-    addWrap.appendChild(addTile);
-    row.appendChild(addWrap);
   }
 
   // "Your Tools" customizable add/remove grid (2026-08-19, Logan, V direction):
@@ -2514,7 +2519,9 @@
     try { stored = window.localStorage.getItem(VE_ACTIVE_CITY_KEY); } catch (e) {}
     if (stored && VE_CITY_NAMES[stored]) return stored;
     var communities = (member && member.communities) || [];
-    return communities.length ? communities[0] : null;
+    if (communities.length) return communities[0];
+    // A home community picked at sign-up counts even before a Join (2026-09-26).
+    return (member && member.home_community && VE_CITY_NAMES[member.home_community]) ? member.home_community : null;
   }
   function setActiveCity(slug) {
     try { window.localStorage.setItem(VE_ACTIVE_CITY_KEY, slug); } catch (e) {}
@@ -3517,12 +3524,36 @@
       }).catch(function () {});
   }
 
+  var CM_CITY_NAMES = { 'south-florida': 'South Florida', 'orlando-north-central-florida': 'Orlando and North Central Florida', 'philadelphia': 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles' };
+  function renderCmApplication(member) {
+    var card = document.getElementById('dash-cm-app-prompt');
+    var token = window.VEAuth && VEAuth.getToken();
+    if (!card || !token) return;
+    fetch(SUPABASE_URL + '/functions/v1/ve-community-manager', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ action: 'status' }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.applied) return;
+        var city = CM_CITY_NAMES[d.application_city] || 'your city';
+        var copy = {
+          applied: ['Received', 'We have your application for ' + city + ', and we read every one. We will reach out. Tap to review or update your answers.'],
+          standby: ['On standby', 'You are on our standby list for ' + city + '. We will reach out as soon as a role opens.'],
+          selected: ['Selected', 'You have been selected for ' + city + '. Welcome to the team. Your certification is waiting in your dashboard.'],
+          declined: ['Not right now', 'Thank you for applying. We are not moving forward right now, and you stay on our list as cities grow.']
+        }[d.application_status] || ['Received', 'We have your application for ' + city + '. We will reach out.'];
+        document.getElementById('dash-cm-app-title').innerHTML = 'Your Community Manager application <span class="dash-tag live">' + copy[0] + '</span>';
+        document.getElementById('dash-cm-app-desc').textContent = copy[1];
+        if (d.application_status === 'selected') card.href = '/dashboard/certification';
+        card.style.display = '';
+      }).catch(function () {});
+  }
+
   function showDashboard(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     renderStatsHero(member);
     renderMissionSurveyPrompt(member);
     renderCmCertPrompt(member);
+    renderCmApplication(member);
     renderCityPill(member);
     initViewAsControl();
     renderLeaderboard(member);
