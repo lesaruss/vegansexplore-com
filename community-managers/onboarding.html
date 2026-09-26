@@ -199,24 +199,26 @@
     .slide-hero{background:none !important;}
     .slide-hero::before,.slide-hero::after{display:none;}
     .slide h2{color:#fff;}
-    .slide .eyebrow{color:#9be29e;}
-    .slide .lede{color:rgba(255,255,255,0.88);}
+    .slide .eyebrow{color:#c5f2c7;}
+    .slide .lede{color:#fff;}
     .slide .points li,.slide .spotlight,.slide .steps li,.slide .rows span,.slide .col li,.slide .member-price{color:#fff;}
-    .slide .rows li,.slide .col,.slide .member-box{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.16);}
-    .slide .rows li.lead{background:rgba(58,155,62,0.2);border-color:rgba(155,226,158,0.45);}
-    .slide .rows b,.slide .col h3,.slide .member-price b{color:#9be29e;}
-    .slide .rows small,.slide .member-copy,.slide .fine{color:rgba(255,255,255,0.76);}
+    .slide .rows li,.slide .col,.slide .member-box{background:rgba(0,0,0,0.55);border-color:rgba(255,255,255,0.22);}
+    .slide .rows li.lead{background:rgba(6,32,12,0.72);border-color:rgba(155,226,158,0.5);}
+    .slide .rows b,.slide .col h3,.slide .member-price b{color:#c5f2c7;}
+    .slide .rows small,.slide .member-copy,.slide .fine{color:#ececec;}
     .slide .btn-link{color:#fff;}
-    .slide .btn-dark{background:#22C55E;color:#0b2e14;}
+    .slide .btn-dark{background:#22C55E;color:#03170a;}
     .slide .btn-dark:hover{background:#4ade80;}
     .media{box-shadow:0 18px 40px rgba(0,0,0,0.45);}
     .stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
-    .stage-nav .btn-dark{background:#22C55E;color:#0b2e14;}
+    .stage-nav .btn-dark,.stage-nav.on-hero .btn-dark{background:#22C55E;color:#03170a;}
+    /* AAA: step numbers on a deeper green (7.8:1). */
+    .steps li::before{background:#1f5f22;}
     .stage-nav .btn-dark:hover{background:#4ade80;}
     /* The application: one open question at a time, typed or recorded. */
     .ap-question{font-size:clamp(20px,2vw,26px) !important;text-transform:none;letter-spacing:0;line-height:1.3;margin-bottom:14px;}
     .ap-text{display:block;width:100%;max-width:560px;font:inherit;font-size:15.5px;line-height:1.5;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.28);border-radius:10px;padding:12px 14px;resize:vertical;}
-    .ap-text::placeholder{color:rgba(255,255,255,0.5);}
+    .ap-text::placeholder{color:rgba(255,255,255,0.72);}
     #s-apply [hidden]{display:none !important;}
     .ap-rec-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;}
     .btn-rec{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.32);gap:8px;}
@@ -232,7 +234,7 @@
       .stage{background:none !important;}
       .stage::before,.stage::after{display:none;}
       .stage-bg{display:block;position:fixed;inset:0;z-index:-1;background-color:#0d130e;background-size:cover;background-position:center;}
-      .stage-bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.6);}
+      .stage-bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.74);}
       /* Slide 1 lays out like every other slide, so its video panel shows in full. */
       .slide-hero{min-height:0;padding:28px 24px 96px;}
       .slide-hero.active{display:block;}
@@ -241,6 +243,13 @@
       .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count,.stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
     }
     @media (max-width:480px){ .slide-hero{padding:24px 16px 92px;} .hero-inner{margin:0;max-width:none;} }
+    /* Phones (Sean 2026-09-26): Back, the step count and Next sit right after the
+       slide's content, above the footer, instead of floating over the screen. */
+    @media (max-width:900px){
+      .stage-nav{position:relative;left:auto;right:auto;bottom:auto;background:none;border-top:0;padding:4px 24px 32px;}
+      .slide,.slide-hero{padding-bottom:8px;}
+    }
+    @media (max-width:480px){ .stage-nav{padding:4px 16px 28px;} .slide,.slide-hero{padding-bottom:8px;} }
   </style>
 </head>
 <body>
@@ -258,7 +267,7 @@
           <h1><span data-city>South Florida</span> is ready for you.</h1>
           <p class="lede">If you care about South Florida&rsquo;s Vegan community and want to see it thrive, so do I. For more than 10 years I&rsquo;ve built it, from Palm Beach to Miami-Dade, to make it a global hotspot for Veganism. Now I&rsquo;m looking for someone I trust to lead it with me.</p>
         </div>
-        <div class="media hero-media" data-video="welcome" data-poster="/public/images/ve-hero-mobile.png" data-cap="Welcome"></div>
+        <div class="media hero-media" data-video="welcome" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/welcome.webp" data-cap="Welcome"></div>
       </div>
     </section>
 
@@ -275,7 +284,7 @@
           </ul>
           <p class="spotlight">The goal never changes: animal liberation, a world where no animal suffers or dies for food or entertainment.</p>
         </div>
-        <div class="media" data-video="have" data-poster="/public/images/ve-panel2.png" data-cap="What you get"></div>
+        <div class="media" data-video="have" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/have.webp" data-cap="What you get"></div>
       </div>
     </section>
 
@@ -292,7 +301,7 @@
           </ul>
           <p class="spotlight">Leading doesn&rsquo;t mean doing everything yourself. It means building something bigger than you.</p>
         </div>
-        <div class="media" data-video="lead" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="Leading your city"></div>
+        <div class="media" data-video="lead" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/lead.webp" data-cap="Leading your city"></div>
       </div>
     </section>
 
@@ -316,7 +325,7 @@
           </div>
           <p class="spotlight">You lead locally. We&rsquo;ve got your back.</p>
         </div>
-        <div class="media" data-video="role" data-poster="/public/partner/ve-partner-mobile.png" data-cap="Your role"></div>
+        <div class="media" data-video="role" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/role.webp" data-cap="Your role"></div>
       </div>
     </section>
 
@@ -333,7 +342,7 @@
           </ul>
           <p class="spotlight">It fits around a real life. That&rsquo;s by design.</p>
         </div>
-        <div class="media" data-video="month" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="A month in the role"></div>
+        <div class="media" data-video="month" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/month.webp" data-cap="A month in the role"></div>
       </div>
     </section>
 
@@ -350,7 +359,7 @@
           </ul>
           <p class="spotlight">Then bring it to the weekly huddle. When a city grows, we all celebrate. When a city stalls, we all rally. If it&rsquo;s still not working, we talk honestly, and sometimes the role changes hands.</p>
         </div>
-        <div class="media" data-video="pulse" data-poster="/public/images/ve-panel2.png" data-cap="Eyes and ears"></div>
+        <div class="media" data-video="pulse" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/pulse.webp" data-cap="Eyes and ears"></div>
       </div>
     </section>
 
@@ -368,7 +377,7 @@
           </ul>
           <p class="spotlight">Four dates, and you&rsquo;d be at the center of every one, welcoming the people you brought in.</p>
         </div>
-        <div class="media" data-video="season" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="A season"></div>
+        <div class="media" data-video="season" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/season.webp" data-cap="A season"></div>
       </div>
     </section>
 
@@ -385,7 +394,7 @@
           </ul>
           <div class="member-box"><p class="member-copy"><b>How we&rsquo;ll know it&rsquo;s working:</b> new members, events, contacts and warm introductions, and three qualified sponsor conversations a month. We look at it together every week and review the role each season.</p></div>
         </div>
-        <div class="media" data-video="grow" data-poster="/public/images/ve-hero-mobile.png" data-cap="Growing together"></div>
+        <div class="media" data-video="grow" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/grow.webp" data-cap="Growing together"></div>
       </div>
     </section>
 
@@ -415,7 +424,7 @@
             <div class="cta-row"><button type="button" class="btn btn-dark" id="cm-reapply">Update my answers</button><a class="btn btn-link" href="/dashboard?from=cm-onboarding">Go to my dashboard</a></div>
           </div>
         </div>
-        <div class="media" data-video="join" data-poster="/public/images/ve-hero-mobile.png" data-cap="Step in"></div>
+        <div class="media" data-video="join" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/join.webp" data-cap="Step in"></div>
       </div>
     </section>
 
@@ -454,7 +463,7 @@
             <div class="cta-row"><a class="btn btn-dark" href="/dashboard?from=cm-application">Go to my dashboard</a></div>
           </div>
         </div>
-        <div class="media" data-video="apply" data-poster="/public/images/ve-panel2.png" data-cap="Your application"></div>
+        <div class="media" data-video="apply" data-poster="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/panels/apply.webp" data-cap="Your application"></div>
       </div>
     </section>
 

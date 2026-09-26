@@ -20,7 +20,7 @@
     '.sa-play .sa-pause{display:none;}',
     '.sa-playing .sa-play .sa-go{display:none;}',
     '.sa-playing .sa-play .sa-pause{display:block;}',
-    '.sa-label{text-shadow:0 1px 3px rgba(0,0,0,0.6);font-size:12px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;}',
+    '.sa-label{background:rgba(0,0,0,0.8);padding:7px 12px;border-radius:8px;font-size:12px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;}',
     '.sa-label span{display:block;font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;opacity:0.9;margin-top:4px;}',
     '.sa-bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,0.25);}',
     '.sa-bar i{display:block;height:100%;width:0;background:#22C55E;transition:width 0.25s linear;}'

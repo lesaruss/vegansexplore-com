@@ -13,7 +13,7 @@
     '.ve-nav-login:hover{color:#22C55E;}',
     '.ve-nav-member{display:flex;align-items:center;gap:8px;cursor:pointer;position:relative;}',
     '.ve-nav-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;font-family:"Montserrat",sans-serif;letter-spacing:0.04em;}',
-    '.ve-nav-lesars{background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D;font-size:10px;font-weight:800;letter-spacing:0.08em;padding:4px 8px;border-radius:20px;white-space:nowrap;}',
+    '.ve-nav-lesars{background:#F0FDF4;border:1px solid #BBF7D0;color:#0F5C2B;font-size:10px;font-weight:800;letter-spacing:0.08em;padding:4px 8px;border-radius:20px;white-space:nowrap;}',
     '.ve-nav-member-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:180px;z-index:500;overflow:hidden;}',
     '.ve-nav-member-menu.open{display:block;}',
     '.ve-nav-member-menu a,.ve-nav-member-menu button{display:flex;align-items:center;gap:10px;padding:12px 16px;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;text-decoration:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;transition:background 0.1s;}',
@@ -45,7 +45,7 @@
     '.ve-announce{display:flex;align-items:center;gap:8px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:30px;padding:6px 14px 6px 6px;cursor:pointer;text-decoration:none;max-width:360px;min-width:0;transition:background 0.15s,border-color 0.15s;}',
     '.ve-announce:hover{background:#e3f9e7;border-color:#9fe6ac;}',
     '.ve-announce-icon{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:#F69820;display:flex;align-items:center;justify-content:center;}',
-    '.ve-announce-text{font-size:11px;font-weight:700;color:#15803D;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1;transition:opacity 0.25s;}',
+    '.ve-announce-text{font-size:11px;font-weight:700;color:#0F5C2B;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1;transition:opacity 0.25s;}',
     '.ve-announce-text.fading{opacity:0;}',
     '.ve-nav-right-wrap{display:flex;align-items:center;}',
     '@media(max-width:900px){.ve-announce{max-width:360px;} .ve-nav-right-wrap{display:none;}}',
@@ -134,7 +134,7 @@
     var tierBadge = VE_TIER_BADGE[member.ve_tier] || 'Free';
 
     desktopRight =
-      '<div class="ve-nav-member" id="ve-nav-member-chip" aria-haspopup="true" aria-expanded="false">' +
+      '<div class="ve-nav-member" id="ve-nav-member-chip" role="button" tabindex="0" aria-label="Account menu" aria-haspopup="true" aria-expanded="false">' +
         '<div class="ve-nav-avatar" style="' + avatarStyle + '">' + avatarSrc + '</div>' +
         '<span class="ve-nav-lesars">' + tierBadge + '</span>' +
         '<div class="ve-nav-member-menu" id="ve-member-menu" role="menu">' +
@@ -285,6 +285,10 @@
         e.stopPropagation();
         var open = menu.classList.toggle('open');
         chip.setAttribute('aria-expanded', String(open));
+      });
+      chip.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); chip.click(); }
+        if (e.key === 'Escape') { menu.classList.remove('open'); chip.setAttribute('aria-expanded', 'false'); }
       });
       document.addEventListener('click', function() {
         menu.classList.remove('open');
