@@ -60,3 +60,8 @@ So, here's my ask. If all of this sounds good to you, apply. It's open to every 
 *The application's welcome screen, before the questions (new)*
 
 Awesome. Thank you for taking the next step, and for wanting to lead your community. Before we finish your application, I'd like to get to know you a little. I'll ask a few questions, one at a time. There are no wrong answers. Type your answer, or tap record and just talk to me. Take your time.
+
+## 11-applied
+*Slide 9 for members who have already applied (new). Plays when they come back from the dashboard status card.*
+
+Thank you for applying to be a Community Manager. We're reviewing your application now, so please give us a little time, and we'll get back to you with our decision. And even if you aren't selected for this role, there are always ways to lead and support your community, and we'll talk through those opportunities with you. We appreciate you taking the time. Keep an eye on your dashboard for updates, or in case we need anything else from you. We look forward to staying in touch.

@@ -496,7 +496,9 @@
         season: { url: AUDIO_BASE + 'cm/sf/season-v4.mp3', dur: 31, bed: AUDIO_BASE + 'beds/vegan-glow-60.wav' },
         grow: { url: AUDIO_BASE + 'cm/sf/grow-v4.mp3', dur: 26.4, bed: AUDIO_BASE + 'beds/concrete-daydreams-60.wav' },
         join: { url: AUDIO_BASE + 'cm/sf/join-v5.mp3', dur: 29.2, bed: AUDIO_BASE + 'beds/manifesto-whisper-60.wav' },
-        apply: { url: AUDIO_BASE + 'cm/sf/apply-v1.mp3', dur: 17.2, bed: AUDIO_BASE + 'beds/earthy-reflections-v2-60.wav' }
+        apply: { url: AUDIO_BASE + 'cm/sf/apply-v1.mp3', dur: 17.2, bed: AUDIO_BASE + 'beds/earthy-reflections-v2-60.wav' },
+        // Slide 9 for someone who has already applied: thanks, and what happens next.
+        applied: { url: AUDIO_BASE + 'cm/sf/applied-v1.mp3', dur: 26.4, bed: AUDIO_BASE + 'beds/manifesto-whisper-60.wav' }
       }
     };
     // Each city gets its own onboarding: name, first-slide background (the city's
@@ -569,7 +571,7 @@
         document.getElementById('nav-next').style.visibility = cur >= MAIN - 1 ? 'hidden' : '';
         document.getElementById('nav-count').textContent = cur >= MAIN ? 'Application' : (cur + 1) + ' of ' + MAIN;
         document.getElementById('stage-nav').classList.toggle('on-hero', cur === 0);
-        if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
+        if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur] === 'join' && joinClip ? joinClip : ids[cur]);
         try { if (window.gtag) gtag('event', 'cm_onboarding_slide', { slide: ids[cur] }); } catch (e) {}
       }
 
@@ -620,8 +622,17 @@
       }
       $('cm-apply').addEventListener('click', startApply);
       $('cm-reapply').addEventListener('click', function () { openApply(); });
+      // Once someone has applied, slide 9 thanks them (Sean 2026-09-26) and its
+      // narration switches to the 'applied' clip.
+      var joinClip = null;
       function showApplied(d) {
         $('cm-decide').hidden = true; $('cm-applied').hidden = false;
+        if (joinClip !== 'applied' && window.VESlideAudio && VESlideAudio.has('applied')) {
+          joinClip = 'applied';
+          var jm = document.querySelector('.media[data-video="join"]');
+          if (jm) { jm.setAttribute('data-sa-key', 'applied'); jm.setAttribute('data-cap', 'Thank you for applying'); jm.innerHTML = VESlideAudio.markup('applied', jm.getAttribute('data-poster'), 'Thank you for applying'); }
+          if (ids[cur] === 'join') VESlideAudio.onSlide('applied');
+        }
         $('cm-applied-copy').textContent = d && d.invited
           ? 'Thank you. Your application is in, and your Community Manager certification is waiting in your dashboard.'
           : 'Thank you. Your application is in. We read every one, and we\u2019ll reach out.';
