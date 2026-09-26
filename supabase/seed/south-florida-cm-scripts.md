@@ -14,7 +14,7 @@ Name each file with its number so I can match it: `01-welcome`, `02-have`, and s
 ## 01-welcome
 *Slide: "South Florida is ready for you."*
 
-Hey, welcome. If you're hearing this, you care about South Florida's Vegan community, and you want to see it thrive. So do I. I've spent more than ten years building it, from Palm Beach to Miami-Dade. It's big, it's diverse, and it's not always easy. Now I'm looking for someone I trust to lead it with me. Over the next few minutes, I'll be straight with you. What the job is, the time it takes, the stipend, and how to say yes.
+Hey, welcome. If you're hearing this, you care about South Florida's Vegan community, and you want to see it thrive. So do I. I've spent more than ten years building it, from Palm Beach to Miami-Dade. It's big, it's diverse, and it's not always easy. My goal has always been to make it a global hotspot for Veganism. Now I'm looking for someone I trust to lead it with me. Over the next few minutes, I'll be straight with you. What the job is, the time it takes, the stipend, and how to say yes.
 
 ## 02-have
 *Slide: "You get what I never had."*
@@ -54,4 +54,4 @@ Let's talk about the agreement, straight up. This isn't a part-time job. It's vo
 ## 09-decision
 *Slide: "Ready to lead South Florida?"*
 
-So, here's my ask. Become a Founding Member. It's eleven dollars, one time, the same way every member starts. Your stipend starts once your membership goes through, and it's paid each month on the date you registered. Then confirm you're in, and your certification will be waiting in your dashboard. Got a question first? Send it right here on this page. South Florida's Vegan community needs someone to lead it. I'd love for that to be you.
+So, here's my ask. Become a Founding Member. It's eleven dollars, one time, the same way every member starts. Your stipend starts once your membership goes through. It's paid after each month, on the date you registered, so your first one comes a month in. Then confirm you're in, and your certification will be waiting in your dashboard. Got a question first? Send it right here on this page. South Florida's Vegan community needs someone to lead it. I'd love for that to be you.

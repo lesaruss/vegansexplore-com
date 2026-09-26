@@ -90,7 +90,7 @@
           "key": "terms",
           "title": "Volunteering, with a stipend",
           "type": "content",
-          "content": "<p>This is not a part-time job. It is volunteering, with a stipend because you go a little above and beyond what a volunteer does.</p><ul><li><strong>Three-month trial.</strong> So we can both see if it is a fit.</li><li><strong>$250 a month stipend.</strong> It covers your regular role, about 3 hours a week and rarely more than 5: the weekly check-in, messages, attending your city's events, and capturing photos, contacts and leads. It starts once your Founding Membership goes through and is paid each month on the date you registered.</li><li><strong>Additional stipends.</strong> Managing an event or being assigned to a campaign comes with its own additional stipend, and what you earn grows as your region grows. When a bigger campaign or project comes in, enterprise deals or sponsors, there is always a line item in that budget for the Community Manager.</li></ul><p>The expectation: keep your community thriving and growing, and help it pay for itself by signing up members and partner businesses.</p><h3>Built for the long haul</h3><p>As membership revenue in your city grows, the role grows with it, toward a full salary once it justifies a full-time position. There is one Community Manager per region, and every city also has someone working alongside you and learning from you, training to become a Community Coordinator, so no city ever has to start from zero.</p>"
+          "content": "<p>This is not a part-time job. It is volunteering, with a stipend because you go a little above and beyond what a volunteer does.</p><ul><li><strong>Three-month trial.</strong> So we can both see if it is a fit.</li><li><strong>$250 a month stipend.</strong> It covers your regular role, about 3 hours a week and rarely more than 5: the weekly check-in, messages, attending your city's events, and capturing photos, contacts and leads. It starts once your Founding Membership goes through and is paid after each month, on the date you registered, so your first stipend comes one month in.</li><li><strong>Additional stipends.</strong> Managing an event or being assigned to a campaign comes with its own additional stipend, and what you earn grows as your region grows. When a bigger campaign or project comes in, enterprise deals or sponsors, there is always a line item in that budget for the Community Manager.</li></ul><p>The expectation: keep your community thriving and growing, and help it pay for itself by signing up members and partner businesses.</p><h3>Built for the long haul</h3><p>As membership revenue in your city grows, the role grows with it, toward a full salary once it justifies a full-time position. There is one Community Manager per region, and every city also has someone working alongside you and learning from you, training to become a Community Coordinator, so no city ever has to start from zero.</p>"
         },
         {
           "key": "quiz",
@@ -112,7 +112,7 @@
               "question": "When does the $250 monthly stipend start, and when is it paid?",
               "options": [
                 "On the first of each month after the trial",
-                "Once your membership goes through, paid each month on the date you registered",
+                "It starts once your membership goes through and is paid after each month, on the date you registered",
                 "After your first event, paid quarterly",
                 "When you are certified, paid annually"
               ],
