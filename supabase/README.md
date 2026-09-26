@@ -122,3 +122,14 @@ pass `city`) chat with Claude (`claude-opus-5`, server-side refusal fallbacks on
 home community). The CM edits and publishes (`approved`), which shows it on the city page via
 `public/hub-news.js`; stories with a body open on `/news/local?id=`. Actions: `chat`, `drafts`,
 `save`, `publish`, `discard`. Voice input uses ve-auth `transcribe_audio`.
+
+## ve-onboarding-audio
+
+Sean's recorded narration for the onboarding pages. `/admin/onboarding-audio` (superadmins) takes a
+dropped folder, matches files to slides by their leading number (01-09) or slide word, and in the
+browser downmixes to mono 32 kHz, trims long silence at the ends, levels to a steady speaking volume
+(RMS 0.1, peak ceiling 0.89) and encodes 16-bit WAV. It posts each clip here (`upload`, base64),
+which stores it at `vegan-media/onboarding-audio/<page>/<city>/sean/<key>-<ts>.wav` and upserts
+`ve_onboarding_audio` (public read). The Community Manager onboarding page reads that table and
+swaps each uploaded clip in over its placeholder, keeping the slide's music bed. `verify_jwt` false;
+the VE token is HMAC-verified like ve-auth.

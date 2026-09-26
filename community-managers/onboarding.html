@@ -590,6 +590,20 @@
         status().then(function (st) { if (st === 'active') afterActive(); });
       }
       show(start > 0 ? start : 0, true);
+
+      // Sean's own recordings, uploaded at /admin/onboarding-audio, replace the
+      // placeholder narration slide by slide. Each slide keeps its own music bed.
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/ve_onboarding_audio?select=clip_key,url,dur&page=eq.cm&city_slug=eq.' + encodeURIComponent(CITY_SLUG), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          (rows || []).forEach(function (row) {
+            var c = AUDIO.clips[row.clip_key];
+            if (!c || !row.url) return;
+            c.url = row.url; if (row.dur) c.dur = +row.dur;
+            var m = document.querySelector('.media[data-sa-key="' + row.clip_key + '"]');
+            if (m && !m.classList.contains('sa-playing')) m.innerHTML = VESlideAudio.markup(row.clip_key, m.getAttribute('data-poster'), m.getAttribute('data-cap'));
+          });
+        }).catch(function () {});
     })();
   </script>
 

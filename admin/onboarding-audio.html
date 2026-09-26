@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Onboarding Audio Import | Vegans Explore</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:1000px;margin:0 auto;padding:28px 24px 56px;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:680px;margin-bottom:20px;}
+    .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px;}
+    select{font:inherit;font-size:14px;font-weight:600;padding:9px 12px;border:1px solid rgba(0,0,0,0.2);border-radius:8px;background:#fff;}
+    .drop{border:2px dashed #9cc79e;border-radius:14px;background:#fff;padding:36px 20px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s;margin-bottom:18px;}
+    .drop.over{background:var(--ve-green-light);border-color:var(--ve-green);}
+    .drop b{display:block;font-size:17px;font-weight:800;margin-bottom:4px;}
+    .drop span{font-size:13.5px;color:var(--ve-text-75);}
+    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--ve-border);border-radius:14px;overflow:hidden;}
+    th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--ve-border);font-size:13.5px;vertical-align:middle;}
+    th{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-text-75);background:#fafbfa;}
+    tr:last-child td{border-bottom:0;}
+    td.slide b{display:block;font-weight:800;}
+    td.slide small{color:var(--ve-text-75);font-weight:600;}
+    audio{width:220px;height:34px;}
+    .st{font-weight:700;font-size:12.5px;}
+    .st.ok{color:var(--ve-green-deep);}
+    .st.err{color:#a3261a;}
+    .st.wait{color:var(--ve-text-75);}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-dark);color:#fff;text-decoration:none;}
+    .btn:hover{background:var(--ve-green-deep);}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.18);}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+    .note{font-size:13px;color:var(--ve-text-75);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .gate h2{font-size:21px;font-weight:900;margin-bottom:10px;}
+    .gate p{color:var(--ve-text-75);margin-bottom:16px;}
+    @media (max-width:760px){audio{width:160px;} th:nth-child(3),td:nth-child(3){display:none;}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <div class="wrap">
+    <p class="eyebrow">Admin</p>
+    <h1>Onboarding audio import</h1>
+    <p class="sub">Drop the folder with your recordings. Each file is matched to its slide by the number in its name (01 to 09). Listen to any clip, then upload. Volume is evened out and long silences at the ends are trimmed before anything goes live.</p>
+    <div id="oa-gate" class="gate" hidden></div>
+    <div id="oa-app" hidden>
+      <div class="bar">
+        <label>Page <select id="oa-page"><option value="cm">Community Manager onboarding</option></select></label>
+        <label>City <select id="oa-city">
+          <option value="south-florida">South Florida</option>
+          <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
+          <option value="philadelphia">Philadelphia</option>
+          <option value="new-york">New York</option>
+          <option value="los-angeles">Los Angeles</option>
+        </select></label>
+      </div>
+      <div class="drop" id="oa-drop" tabindex="0" role="button" aria-label="Drop a folder of recordings, or click to choose files">
+        <b>Drop your recordings folder here</b>
+        <span>or click to choose files. WAV, MP3 or M4A.</span>
+      </div>
+      <input type="file" id="oa-files" multiple accept="audio/*,.wav,.mp3,.m4a" hidden>
+      <table>
+        <thead><tr><th>Slide</th><th>File</th><th>Length</th><th>Listen</th><th>Status</th></tr></thead>
+        <tbody id="oa-rows"></tbody>
+      </table>
+      <div class="actions">
+        <button type="button" class="btn" id="oa-upload" disabled>Upload and make live</button>
+        <a class="btn btn-ghost" id="oa-view" href="/community-managers/onboarding" target="_blank" rel="noopener">View the page</a>
+        <span class="note" id="oa-msg" role="status"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-onboarding-audio';
+      var PAGES = {
+        cm: [
+          { key: 'welcome', label: 'Welcome', words: ['welcome'] },
+          { key: 'have', label: 'You get what I never had', words: ['have'] },
+          { key: 'lead', label: 'Lead the charge', words: ['lead'] },
+          { key: 'role', label: 'Boots on the ground', words: ['role'] },
+          { key: 'month', label: 'What a month looks like', words: ['month', 'time'] },
+          { key: 'pulse', label: 'Be the first to know', words: ['pulse', 'eyes'] },
+          { key: 'season', label: 'A season', words: ['season'] },
+          { key: 'grow', label: 'The agreement', words: ['agreement', 'grow', 'stipend'] },
+          { key: 'join', label: 'Your decision', words: ['decision', 'join', 'ask'] }
+        ]
+      };
+      var RATE = 32000, TARGET_RMS = 0.1, PEAK = 0.89, PAD = 0.35;
+      var $ = function (id) { return document.getElementById(id); };
+      var items = {}, current = {};
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+      function slides() { return PAGES[$('oa-page').value]; }
+      function api(body) {
+        return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(Object.assign({ page: $('oa-page').value, city: $('oa-city').value }, body)) })
+          .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+      }
+      function fmt(s) { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+
+      // Match "01-welcome.wav", "1 Welcome.m4a", "Welcome.wav", "08 agreement take 2.wav".
+      function match(name) {
+        var base = name.toLowerCase().replace(/\.[a-z0-9]+$/, ''), list = slides();
+        var m = base.match(/^\D*?(\d{1,2})(?!\d)/);
+        if (m && +m[1] >= 1 && +m[1] <= list.length) return list[+m[1] - 1].key;
+        for (var i = 0; i < list.length; i++) if (list[i].words.some(function (w) { return base.indexOf(w) >= 0; })) return list[i].key;
+        return null;
+      }
+
+      function render() {
+        $('oa-rows').innerHTML = slides().map(function (s, i) {
+          var it = items[s.key], cur = current[s.key];
+          var st = !it ? (cur ? '<span class="st ok">Your recording is live</span>' : '<span class="st wait">Waiting for a file</span>')
+            : it.error ? '<span class="st err">' + esc(it.error) + '</span>'
+            : it.done ? '<span class="st ok">Live</span>'
+            : it.uploading ? '<span class="st wait">Uploading...</span>'
+            : it.wav ? '<span class="st wait">Ready to upload</span>' : '<span class="st wait">Processing...</span>';
+          return '<tr><td class="slide"><b>' + (i + 1) + '. ' + esc(s.label) + '</b><small>' + s.key + '</small></td>' +
+            '<td>' + (it ? esc(it.name) : cur && cur.source_name ? '<span class="note">' + esc(cur.source_name) + '</span>' : '<span class="note">None</span>') + '</td>' +
+            '<td>' + (it && it.dur ? fmt(it.dur) : cur && cur.dur ? fmt(cur.dur) : '') + '</td>' +
+            '<td>' + (it && it.url ? '<audio controls preload="none" src="' + it.url + '"></audio>' : cur ? '<audio controls preload="none" src="' + esc(cur.url) + '"></audio>' : '') + '</td>' +
+            '<td>' + st + '</td></tr>';
+        }).join('');
+        var ready = Object.keys(items).filter(function (k) { return items[k].wav && !items[k].done; }).length;
+        $('oa-upload').disabled = !ready || Object.keys(items).some(function (k) { return items[k].uploading; });
+        $('oa-upload').textContent = ready ? 'Upload ' + ready + ' and make live' : 'Upload and make live';
+        var city = $('oa-city').value;
+        $('oa-view').href = '/community-managers/onboarding' + (city === 'south-florida' ? '' : '?city=' + city);
+      }
+
+      function loadCurrent() {
+        current = {};
+        return api({ action: 'list' }).then(function (d) {
+          (d.clips || []).forEach(function (c) { current[c.clip_key] = c; });
+          render();
+        }).catch(render);
+      }
+
+      // Decode, downmix to mono at 32 kHz, trim long silence at the ends, level to a
+      // steady speaking volume with a peak ceiling, short fades, 16-bit WAV.
+      function process(file) {
+        return file.arrayBuffer().then(function (ab) {
+          var Ctx = window.AudioContext || window.webkitAudioContext, ctx = new Ctx();
+          return new Promise(function (res, rej) { ctx.decodeAudioData(ab, res, rej); }).finally(function () { try { ctx.close(); } catch (e) {} });
+        }).then(function (buf) {
+          var len = Math.ceil(buf.duration * RATE), off = new OfflineAudioContext(1, len, RATE);
+          var src = off.createBufferSource(); src.buffer = buf; src.connect(off.destination); src.start();
+          return off.startRendering();
+        }).then(function (r) {
+          var x = r.getChannelData(0), n = x.length, win = Math.round(RATE * 0.05), rmsW = [], i, j;
+          for (i = 0; i < n; i += win) { var s = 0, c = 0; for (j = i; j < Math.min(n, i + win); j++) { s += x[j] * x[j]; c++; } rmsW.push(Math.sqrt(s / c)); }
+          var gate = 0.012, first = rmsW.findIndex(function (v) { return v > gate; }), last = rmsW.length - 1;
+          while (last > 0 && rmsW[last] <= gate) last--;
+          if (first < 0) throw new Error('Sounds silent');
+          var start = Math.max(0, first * win - Math.round(PAD * RATE)), end = Math.min(n, (last + 1) * win + Math.round(PAD * RATE));
+          var act = rmsW.slice(first, last + 1).filter(function (v) { return v > gate; });
+          var rms = Math.sqrt(act.reduce(function (a, v) { return a + v * v; }, 0) / act.length);
+          var peak = 0; for (i = start; i < end; i++) peak = Math.max(peak, Math.abs(x[i]));
+          var gain = Math.min(TARGET_RMS / rms, PEAK / (peak || 1));
+          var m = end - start, out = new Int16Array(m), fade = Math.round(RATE * 0.02);
+          for (i = 0; i < m; i++) {
+            var f = Math.min(1, i / fade, (m - 1 - i) / fade);
+            var v = Math.max(-1, Math.min(1, x[start + i] * gain * f));
+            out[i] = v < 0 ? v * 0x8000 : v * 0x7fff;
+          }
+          var wav = new ArrayBuffer(44 + m * 2), dv = new DataView(wav);
+          function put(o, s) { for (var k = 0; k < s.length; k++) dv.setUint8(o + k, s.charCodeAt(k)); }
+          put(0, 'RIFF'); dv.setUint32(4, 36 + m * 2, true); put(8, 'WAVE'); put(12, 'fmt '); dv.setUint32(16, 16, true);
+          dv.setUint16(20, 1, true); dv.setUint16(22, 1, true); dv.setUint32(24, RATE, true); dv.setUint32(28, RATE * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+          put(36, 'data'); dv.setUint32(40, m * 2, true);
+          new Int16Array(wav, 44).set(out);
+          return { wav: wav, dur: m / RATE };
+        });
+      }
+
+      function addFiles(files) {
+        var audio = files.filter(function (f) { return /\.(wav|mp3|m4a|aac|aiff?)$/i.test(f.name) || /^audio\//.test(f.type); });
+        var unmatched = [];
+        audio.forEach(function (f) {
+          var key = match(f.name);
+          if (!key) { unmatched.push(f.name); return; }
+          var it = items[key] = { name: f.name };
+          process(f).then(function (p) {
+            it.wav = p.wav; it.dur = p.dur; it.url = URL.createObjectURL(new Blob([p.wav], { type: 'audio/wav' })); render();
+          }).catch(function (e) {
+            it.error = /silent/i.test(e && e.message) ? 'This file sounds silent' : 'Could not read this file. Export it as WAV or MP3.'; render();
+          });
+        });
+        $('oa-msg').textContent = unmatched.length ? 'Not matched to a slide: ' + unmatched.join(', ') + '. Start the file name with its number, like 03-lead.' : '';
+        render();
+      }
+
+      // Folder drops: walk the directory tree (Chrome, Edge, Safari, Firefox all support entries).
+      function walk(entry) {
+        return new Promise(function (res) {
+          if (entry.isFile) return entry.file(function (f) { res([f]); }, function () { res([]); });
+          if (!entry.isDirectory) return res([]);
+          var reader = entry.createReader(), all = [];
+          (function more() {
+            reader.readEntries(function (ents) {
+              if (!ents.length) return Promise.all(all.map(walk)).then(function (l) { res([].concat.apply([], l)); });
+              all = all.concat(Array.prototype.slice.call(ents)); more();
+            }, function () { res([]); });
+          })();
+        });
+      }
+      var drop = $('oa-drop');
+      ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+      ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+      drop.addEventListener('drop', function (e) {
+        var dt = e.dataTransfer, entries = [];
+        if (dt.items) for (var i = 0; i < dt.items.length; i++) { var en = dt.items[i].webkitGetAsEntry && dt.items[i].webkitGetAsEntry(); if (en) entries.push(en); }
+        if (entries.length) Promise.all(entries.map(walk)).then(function (l) { addFiles([].concat.apply([], l)); });
+        else addFiles(Array.prototype.slice.call(dt.files || []));
+      });
+      drop.addEventListener('click', function () { $('oa-files').click(); });
+      drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('oa-files').click(); } });
+      $('oa-files').addEventListener('change', function (e) { addFiles(Array.prototype.slice.call(e.target.files || [])); e.target.value = ''; });
+      $('oa-city').addEventListener('change', function () { items = {}; loadCurrent(); });
+
+      function b64(ab) {
+        var bytes = new Uint8Array(ab), s = '', CH = 0x8000;
+        for (var i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+        return btoa(s);
+      }
+      $('oa-upload').addEventListener('click', function () {
+        var keys = slides().map(function (s) { return s.key; }).filter(function (k) { return items[k] && items[k].wav && !items[k].done; });
+        var failed = 0;
+        keys.forEach(function (k) { items[k].uploading = true; items[k].error = null; });
+        render();
+        keys.reduce(function (p, k) {
+          return p.then(function () {
+            var it = items[k];
+            return api({ action: 'upload', key: k, audio_b64: b64(it.wav), dur: it.dur, source_name: it.name }).then(function (d) {
+              it.uploading = false;
+              if (d.ok) { it.done = true; current[k] = { url: d.url, dur: d.dur, source_name: it.name }; }
+              else { failed++; it.error = d._status === 403 ? 'Superadmins only' : 'Upload failed. Try again.'; }
+              render();
+            }).catch(function () { it.uploading = false; failed++; it.error = 'Could not connect. Try again.'; render(); });
+          });
+        }, Promise.resolve()).then(function () {
+          $('oa-msg').textContent = failed ? failed + ' did not upload. Hit upload again to retry them.' : 'Done. Your voice is live on the page.';
+        });
+      });
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        if (!VEAuth.isLoggedIn()) {
+          $('oa-gate').hidden = false;
+          $('oa-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="oa-signin">Sign in</button>';
+          $('oa-signin').onclick = function () { VEAuth.showAuthModal('Sign in to import onboarding audio.', function () { location.reload(); }, 'login'); };
+          return;
+        }
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!m || !m.is_superadmin) { $('oa-gate').hidden = false; $('oa-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        var qc = new URLSearchParams(location.search).get('city');
+        if (qc && $('oa-city').querySelector('option[value="' + qc + '"]')) $('oa-city').value = qc;
+        $('oa-app').hidden = false;
+        loadCurrent();
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
