@@ -2268,7 +2268,12 @@
     var levelEl = document.getElementById('dash-hero-level');
     if (pointsEl) pointsEl.textContent = (typeof member.points === 'number' ? member.points : 0).toLocaleString();
     if (lifetimeEl) lifetimeEl.textContent = (typeof member.total_points === 'number' ? member.total_points : 0).toLocaleString();
-    if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport' : 'Free';
+    // The $11 one-time Founding Membership activates membership_status without
+    // changing ve_tier, so it read "Free" (Sean 2026-09-26: "I made a payment of
+    // 11 bucks, so it should say Founding Member Passport").
+    if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport'
+      : member.membership_status === 'active' && member.membership_tier === 'guest' ? 'Guest Passport'
+      : member.membership_status === 'active' ? 'Founding Member Passport' : 'Free';
     if (levelEl) levelEl.textContent = veLevelFor(member.total_points).toLocaleString();
     var levelProgressEl = document.getElementById('dash-hero-level-progress');
     if (levelProgressEl) {
