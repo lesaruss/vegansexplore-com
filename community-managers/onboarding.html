@@ -225,13 +225,22 @@
     .btn-rec .dot{width:10px;height:10px;border-radius:50%;background:#ff5a4f;display:inline-block;}
     .btn-rec.recording .dot{background:#fff;}
     @media (min-width:901px) and (max-height:760px){ .ap-text{max-height:130px;} .ap-question{margin-bottom:8px;} }
+    /* Phones: the city image is pinned to the screen (a fixed layer), so every slide
+       frames it the same way no matter how long the slide is. */
+    .stage-bg{display:none;}
     @media (max-width:900px){
-      .stage{background-size:auto 100vh;background-repeat:no-repeat;background-position:center top;}
-      .stage::before{background:linear-gradient(to bottom,rgba(0,0,0,0.5),rgba(0,0,0,0.82) 70%,#0d130e);}
-      .stage::after{display:none;}
+      .stage{background:none !important;}
+      .stage::before,.stage::after{display:none;}
+      .stage-bg{display:block;position:fixed;inset:0;z-index:-1;background-color:#0d130e;background-size:cover;background-position:center;}
+      .stage-bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.6);}
+      /* Slide 1 lays out like every other slide, so its video panel shows in full. */
+      .slide-hero{min-height:0;padding:28px 24px 96px;}
+      .slide-hero.active{display:block;}
+      .hero-inner{margin:0;max-width:none;}
       .stage-nav{background:rgba(10,16,11,0.95);border-top-color:rgba(255,255,255,0.1);}
       .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count,.stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
     }
+    @media (max-width:480px){ .slide-hero{padding:24px 16px 92px;} .hero-inner{margin:0;max-width:none;} }
   </style>
 </head>
 <body>
@@ -240,6 +249,7 @@
   <script src="/public/nav.js"></script>
 
   <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Community Manager onboarding">
+    <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
 
     <section class="slide slide-hero active" id="s-welcome" aria-roledescription="slide" aria-label="1 of 9">
       <div class="split">
@@ -521,6 +531,8 @@
       // The city's landscape sits under the whole walkthrough (Sean, 2026-09-26).
       var stageEl = document.getElementById('stage');
       if (stageEl && CITY.bg) { stageEl.style.backgroundImage = "url('" + CITY.bg + "')"; if (CITY.bgPos && window.innerWidth > 900) stageEl.style.backgroundPosition = CITY.bgPos; }
+      var stageBg = document.getElementById('stage-bg');
+      if (stageBg && CITY.bg) stageBg.style.backgroundImage = "url('" + CITY.bg + "')";
       if (CITY.copy) Object.keys(CITY.copy).forEach(function (sel) { document.querySelectorAll(sel).forEach(function (el) { el.innerHTML = CITY.copy[sel]; }); });
 
       document.querySelectorAll('.media[data-video]').forEach(function (m) {
