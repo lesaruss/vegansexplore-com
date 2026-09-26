@@ -14,7 +14,7 @@ Name each file with its number so I can match it: `01-welcome`, `02-have`, and s
 ## 01-welcome
 *Slide: "South Florida is ready for you."*
 
-Hey, welcome. If you're hearing this, you care about South Florida's Vegan community, and you want to see it thrive. So do I. I've spent more than ten years building it, from Palm Beach to Miami-Dade. It's big, it's diverse, and it's not always easy. My goal has always been to make it a global hotspot for Veganism. Now I'm looking for someone I trust to lead it with me. Over the next few minutes, I'll be straight with you. What the job is, the time it takes, the stipend, and how to say yes.
+Hey, I'm Sean Russell, founder of Vegans Explore, and welcome. If you're hearing this, you care about South Florida's Vegan community, and you want to see it thrive. So do I. I've spent more than ten years building it, from Palm Beach to Miami-Dade. It's big, it's diverse, and it's not always easy. My goal has always been to make it a global hotspot for Veganism. Now I'm looking for someone I trust to lead it with me. Over the next few minutes, I'll be straight with you. What the job is, the time it takes, the stipend, and how to say yes.
 
 ## 02-have
 *Slide: "You get what I never had."*
