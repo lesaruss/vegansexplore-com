@@ -14,7 +14,7 @@
   function headers() { return { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }; }
 
   function fetchCommunityNews(city) {
-    return fetch(SUPABASE_URL + '/rest/v1/ve_community_news?select=id,headline,summary,url,image_url,is_pinned,published_at,source_name&status=eq.approved&city_slug=eq.' + encodeURIComponent(city) + '&order=is_pinned.desc,published_at.desc&limit=12', { headers: headers() })
+    return fetch(SUPABASE_URL + '/rest/v1/ve_community_news?select=id,headline,summary,body,url,image_url,is_pinned,published_at,source_name&status=eq.approved&city_slug=eq.' + encodeURIComponent(city) + '&order=is_pinned.desc,published_at.desc&limit=12', { headers: headers() })
       .then(function (r) { return r.json(); })
       .then(function (rows) {
         return (rows || []).map(function (n) {
@@ -22,7 +22,10 @@
             kind: 'community',
             headline: n.headline,
             summary: n.summary,
-            url: n.url,
+            // Stories written on the platform (they have a body) open on /news/local,
+            // which shows the source link; link-only items still go straight out.
+            url: n.body ? '/news/local?id=' + n.id : n.url,
+            external: !n.body && !!n.url,
             image_url: n.image_url,
             is_pinned: !!n.is_pinned,
             published_at: n.published_at,
@@ -75,7 +78,7 @@
       grid.innerHTML = items.map(function (n) {
         var d = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
         var badge = n.is_pinned ? '<span class="news-tag">Featured</span>' : (n.kind === 'pulse' ? '<span class="news-tag update">Spotlight</span>' : '');
-        var isExternal = n.kind === 'community';
+        var isExternal = n.kind === 'community' && n.external;
         return '<article class="news-card">' +
           '<div class="news-img">' +
             (n.image_url ? '<img src="' + esc(n.image_url) + '" alt="' + esc(n.headline) + '" style="width:100%;height:100%;object-fit:cover;">' : '<div class="news-img-placeholder">' + (n.is_pinned ? 'Featured' : 'Photo') + '</div>') +

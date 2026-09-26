@@ -111,3 +111,14 @@ read from `lesaruss_secrets` only on this path; Vegans Explore has no test key o
 4242 4242 4242 4242. There is no test webhook, so the session returns to
 `ve-entry-checkout?test_confirm=cs_test_...`, which verifies the paid test session, activates the
 member (no points credited) and redirects back. Keep the allowlist tiny and clear it after testing.
+
+## ve-cm-pulse-desk
+
+The Community Manager's Pulse Desk (`/dashboard/pulse-desk`). `verify_jwt` is **false**: the VE app
+token is HMAC-verified in the function like ve-auth. Community managers (and superadmins, who may
+pass `city`) chat with Claude (`claude-opus-5`, server-side refusal fallbacks on, key from
+`lesaruss_secrets.ANTHROPIC_API_KEY`); it asks follow-ups, then drafts a local story into
+`ve_community_news` as `pending` / `member_submission` for the CM's city (invite city, else
+home community). The CM edits and publishes (`approved`), which shows it on the city page via
+`public/hub-news.js`; stories with a body open on `/news/local?id=`. Actions: `chat`, `drafts`,
+`save`, `publish`, `discard`. Voice input uses ve-auth `transcribe_audio`.

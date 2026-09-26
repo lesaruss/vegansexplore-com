@@ -681,6 +681,17 @@
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
+      <!-- Pulse Desk (2026-09-26, Sean): Community Managers tell the assistant what is
+           happening in their city and review the stories it drafts. Shown with the
+           certification card, by renderCmCertPrompt(). -->
+      <a href="/dashboard/pulse-desk" class="dash-tour-prompt" id="dash-cm-pulse-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;">
+        <div class="dash-tour-prompt-icon">&#128240;</div>
+        <div class="dash-tour-prompt-body">
+          <div class="dash-tour-prompt-title">Pulse Desk: what&rsquo;s happening in your city?</div>
+          <div class="dash-tour-prompt-desc">Tell our assistant, typed or out loud. It drafts the story, you give it a final look and publish.</div>
+        </div>
+        <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
+      </a>
       <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openTour(); return false;">
         <div class="dash-tour-prompt-icon">&#128075;</div>
         <div class="dash-tour-prompt-body">
@@ -3493,6 +3504,7 @@
     var card = document.getElementById('dash-cm-cert-prompt');
     if (!card || !(member.ve_role === 'community_manager' || member.is_superadmin)) return;
     card.style.display = '';
+    var desk = document.getElementById('dash-cm-pulse-prompt'); if (desk) desk.style.display = '';
     var token = window.VEAuth && VEAuth.getToken();
     if (!token) return;
     fetch(SUPABASE_URL + '/functions/v1/ve-learn', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ action: 'outline', course: 've-community-manager-certification' }) })

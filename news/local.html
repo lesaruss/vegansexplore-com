@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local News | Vegans Explore</title>
+  <meta name="description" content="Local Vegan community news from Vegans Explore Community Managers.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#e8f5e9;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);}
+    body{background:#f5f5f5;color:var(--ve-text);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    .page-frame{width:100%;max-width:1200px;margin:0 auto;background:#fff;}
+    .breadcrumb{padding:14px 56px;border-bottom:1px solid var(--ve-border);background:#fafafa;font-size:12px;font-weight:700;}
+    .breadcrumb a{color:var(--ve-green-dark);text-decoration:none;}
+    .article{max-width:760px;margin:0 auto;padding:48px 24px 72px;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
+    h1{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1.12;letter-spacing:-0.01em;margin-bottom:14px;}
+    .meta{font-size:13px;font-weight:600;color:var(--ve-text-75);margin-bottom:24px;}
+    .article-lede{font-size:19px;font-weight:600;line-height:1.55;margin-bottom:22px;}
+    .article-p{font-size:17px;line-height:1.75;color:#2a2a2a;margin-bottom:18px;}
+    .source{display:inline-block;margin-top:8px;font-size:13px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .back{display:inline-block;margin-top:32px;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;}
+    .empty{padding:80px 24px;text-align:center;color:var(--ve-text-75);}
+    @media (max-width:640px){.breadcrumb{padding:12px 16px;}.article{padding:32px 16px 56px;}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/communities" id="crumb-city">Communities</a> &rsaquo; Local News</nav>
+  <main class="article" id="story"><p class="empty">Loading&hellip;</p></main>
+
+  <script>
+    // Local news written by Community Managers (ve_community_news, approved), often
+    // with the Pulse desk assistant. City pages link here when a story has no outside URL.
+    (function () {
+      var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+      var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var CITY_NAMES = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'orlando-north-central-florida': 'Orlando and North Central Florida', 'philadelphia': 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles' };
+      var el = document.getElementById('story');
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      var id = new URLSearchParams(location.search).get('id') || '';
+      if (!/^[0-9a-f-]{36}$/.test(id)) { el.innerHTML = '<p class="empty">That story could not be found.</p>'; return; }
+      fetch(SUPABASE_URL + '/rest/v1/ve_community_news?select=headline,summary,body,url,city_slug,source_name,published_at&status=eq.approved&id=eq.' + id, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+        .then(function (r) { return r.json(); })
+        .then(function (rows) {
+          var n = rows && rows[0];
+          if (!n) { el.innerHTML = '<p class="empty">That story could not be found.</p>'; return; }
+          var city = CITY_NAMES[n.city_slug] || '';
+          document.title = n.headline + ' | Vegans Explore';
+          var crumb = document.getElementById('crumb-city');
+          if (city) { crumb.textContent = city; crumb.href = '/communities/' + n.city_slug; }
+          var d = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
+          var paras = String(n.body || '').split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean);
+          el.innerHTML = '<p class="eyebrow">' + esc(city ? city + ' local news' : 'Local news') + '</p>' +
+            '<h1>' + esc(n.headline) + '</h1>' +
+            '<p class="meta">' + esc(d) + (n.source_name ? ' &middot; ' + esc(n.source_name) : '') + '</p>' +
+            (n.summary ? '<p class="article-lede">' + esc(n.summary) + '</p>' : '') +
+            paras.map(function (p) { return '<p class="article-p">' + esc(p) + '</p>'; }).join('') +
+            (/^https?:\/\//i.test(n.url || '') ? '<a class="source" href="' + esc(n.url) + '" target="_blank" rel="noopener noreferrer">Source &rarr;</a><br>' : '') +
+            (city ? '<a class="back" href="/communities/' + esc(n.city_slug) + '">&larr; More from ' + esc(city) + '</a>' : '');
+        })
+        .catch(function () { el.innerHTML = '<p class="empty">Could not load this story right now.</p>'; });
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

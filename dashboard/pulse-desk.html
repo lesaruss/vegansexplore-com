@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pulse Desk | Vegans Explore</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    a{color:var(--ve-green-deep);}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:1200px;margin:0 auto;padding:28px 24px 56px;}
+    .top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.1;text-transform:uppercase;letter-spacing:-0.01em;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-top:6px;max-width:620px;}
+    .back-dash{font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;}
+    .layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;align-items:start;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;}
+    .chat{display:flex;flex-direction:column;height:calc(100vh - 230px);min-height:520px;}
+    .thread{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;}
+    .msg{max-width:88%;padding:11px 14px;border-radius:14px;font-size:15px;line-height:1.5;white-space:pre-wrap;}
+    .msg.me{align-self:flex-end;background:var(--ve-green-dark);color:#fff;border-bottom-right-radius:4px;}
+    .msg.desk{align-self:flex-start;background:#f1f4f1;border-bottom-left-radius:4px;}
+    .msg.note{align-self:center;background:none;color:var(--ve-text-75);font-size:13px;font-weight:600;text-align:center;}
+    .composer{display:flex;gap:8px;padding:12px;border-top:1px solid var(--ve-border);align-items:flex-end;}
+    .composer textarea{flex:1;font:inherit;font-size:15px;padding:11px 12px;border:1px solid rgba(0,0,0,0.2);border-radius:10px;resize:none;min-height:46px;max-height:160px;}
+    .icon-btn{width:46px;height:46px;border-radius:10px;border:1px solid rgba(0,0,0,0.18);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 46px;}
+    .icon-btn.recording{background:#fdecea;border-color:#e0584a;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 20px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-dark);color:#fff;}
+    .btn:hover{background:var(--ve-green-deep);}
+    .btn:disabled{opacity:0.55;cursor:default;}
+    .btn-ghost{background:none;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.18);}
+    .btn-ghost:hover{background:#f2f5f2;}
+    .btn-link{background:none;color:#8a2c22;padding:12px 8px;letter-spacing:0.06em;}
+    .btn-link:hover{background:none;text-decoration:underline;}
+    .side{padding:20px;}
+    .side h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:12px;}
+    .editor{display:grid;gap:10px;margin-bottom:22px;}
+    .field{display:grid;gap:4px;font-size:12px;font-weight:800;letter-spacing:0.04em;}
+    .field input,.field textarea{font:inherit;font-weight:500;font-size:14.5px;padding:10px 12px;border:1px solid rgba(0,0,0,0.2);border-radius:8px;width:100%;letter-spacing:0;}
+    .field textarea{resize:vertical;}
+    .hint{font-size:12px;font-weight:600;color:var(--ve-text-75);}
+    .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .status{font-size:13px;font-weight:700;color:var(--ve-green-deep);min-height:20px;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:6px 0 18px;}
+    .list{list-style:none;display:grid;gap:8px;}
+    .item{border:1px solid var(--ve-border);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;}
+    .item b{display:block;font-size:14px;font-weight:800;line-height:1.35;}
+    .item small{font-size:12px;font-weight:600;color:var(--ve-text-75);}
+    .pill{font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:#fff4e2;color:#7d4a00;}
+    .pill.live{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .gate{max-width:560px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .gate h2{font-size:22px;font-weight:900;margin-bottom:10px;}
+    .gate p{color:var(--ve-text-75);margin-bottom:16px;}
+    @media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr);}.chat{height:70vh;min-height:440px;}}
+    @media (max-width:480px){.wrap{padding:20px 16px 40px;}.side{padding:16px;}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <p class="eyebrow">Community Manager &middot; <span id="pd-city">Your city</span></p>
+        <h1>Pulse Desk</h1>
+        <p class="sub">Tell me what&rsquo;s happening in your city, typed or out loud. I&rsquo;ll ask what I need, draft the story, and you give it a final look before it goes on your community page.</p>
+      </div>
+      <a class="back-dash" href="/dashboard">&larr; Dashboard</a>
+    </div>
+    <div id="pd-gate" class="gate" hidden></div>
+    <div class="layout" id="pd-app" hidden>
+      <section class="card chat" aria-label="Conversation with the Pulse desk">
+        <div class="thread" id="pd-thread" aria-live="polite"></div>
+        <form class="composer" id="pd-form">
+          <button type="button" class="icon-btn" id="pd-mic" aria-label="Speak instead of typing" title="Speak instead of typing">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          </button>
+          <label for="pd-input" class="visually-hidden" style="position:absolute;left:-9999px;">Message</label>
+          <textarea id="pd-input" rows="1" placeholder="What's happening? A place opening, closing, a Vegan spot adding animal products, something people are talking about..."></textarea>
+          <button type="submit" class="btn" id="pd-send">Send</button>
+        </form>
+      </section>
+      <aside class="card side" aria-label="Drafts">
+        <h2>Draft to review</h2>
+        <div id="pd-editor-wrap"><p class="empty" id="pd-editor-empty">When I have enough, your draft shows up here. Edit anything, then publish it to your community page.</p></div>
+        <h2>Your stories</h2>
+        <ul class="list" id="pd-list"></ul>
+      </aside>
+    </div>
+  </div>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-cm-pulse-desk';
+      var AUTH_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var $ = function (id) { return document.getElementById(id); };
+      var history = [], current = null, drafts = [], busy = false, citySlug = '';
+      var adminCity = new URLSearchParams(location.search).get('city') || '';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function track(n, p) { try { if (window.gtag) gtag('event', n, p || {}); } catch (e) {} }
+      function api(body) {
+        if (adminCity) body.city = adminCity;
+        return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+          .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+      }
+      function gate(html) { $('pd-app').hidden = true; var g = $('pd-gate'); g.hidden = false; g.innerHTML = html; }
+      function say(role, text) {
+        var d = document.createElement('div'); d.className = 'msg ' + role; d.textContent = text;
+        $('pd-thread').appendChild(d); $('pd-thread').scrollTop = $('pd-thread').scrollHeight; return d;
+      }
+
+      function renderEditor() {
+        var w = $('pd-editor-wrap');
+        if (!current) { w.innerHTML = '<p class="empty">When I have enough, your draft shows up here. Edit anything, then publish it to your community page.</p>'; return; }
+        w.innerHTML = '<div class="editor">' +
+          '<label class="field">Headline<input id="ed-h" maxlength="140" value="' + esc(current.headline) + '"></label>' +
+          '<label class="field">Summary <span class="hint">Shows on the card, two lines max</span><textarea id="ed-s" rows="2" maxlength="300">' + esc(current.summary) + '</textarea></label>' +
+          '<label class="field">Story<textarea id="ed-b" rows="9" maxlength="8000">' + esc(current.body) + '</textarea></label>' +
+          '<label class="field">Source link <span class="hint">Optional: the post, article or announcement</span><input id="ed-u" type="url" placeholder="https://" value="' + esc(current.url || '') + '"></label>' +
+          '<div class="row"><button type="button" class="btn" id="ed-pub">Publish</button><button type="button" class="btn btn-ghost" id="ed-save">Save draft</button><button type="button" class="btn btn-link" id="ed-del">Discard</button></div>' +
+          '<p class="status" id="ed-status" role="status"></p></div>';
+        function fields() { return { id: current.id, headline: $('ed-h').value, summary: $('ed-s').value, body: $('ed-b').value, url: $('ed-u').value }; }
+        function act(action, label) {
+          var st = $('ed-status'); st.textContent = label;
+          api(Object.assign({ action: action }, action === 'discard' ? { id: current.id } : fields())).then(function (d) {
+            if (!d.ok) { st.textContent = d.error === 'bad_url' ? 'That source link does not look right.' : d.error === 'headline_required' ? 'Add a headline first.' : 'That did not go through. Try again.'; return; }
+            track('pulse_desk_' + action);
+            if (action === 'publish') { say('note', 'Published to your community page.'); current = null; }
+            else if (action === 'discard') { say('note', 'Draft discarded.'); current = null; }
+            else { Object.assign(current, fields()); st.textContent = 'Saved.'; }
+            if (action !== 'save') renderEditor();
+            loadDrafts();
+          }).catch(function () { st.textContent = 'Could not connect. Try again.'; });
+        }
+        $('ed-pub').onclick = function () { act('publish', 'Publishing...'); };
+        $('ed-save').onclick = function () { act('save', 'Saving...'); };
+        $('ed-del').onclick = function () { if (confirm('Discard this draft?')) act('discard', 'Discarding...'); };
+      }
+
+      function renderList() {
+        var ul = $('pd-list');
+        if (!drafts.length) { ul.innerHTML = '<li class="empty">Nothing yet. Your drafts and published stories will be listed here.</li>'; return; }
+        ul.innerHTML = drafts.map(function (d, i) {
+          var live = d.status === 'approved';
+          var when = new Date(live && d.published_at ? d.published_at : d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          return '<li class="item"><div><b>' + esc(d.headline) + '</b><small>' + (live ? 'Published ' : 'Drafted ') + when + '</small></div>' +
+            (live ? '<a class="pill live" href="/news/local?id=' + d.id + '" target="_blank" rel="noopener">Live</a>' : '<button type="button" class="pill" data-open="' + i + '" style="border:0;cursor:pointer;">Review</button>') + '</li>';
+        }).join('');
+        ul.querySelectorAll('[data-open]').forEach(function (b) {
+          b.onclick = function () { current = Object.assign({}, drafts[+b.getAttribute('data-open')]); renderEditor(); };
+        });
+      }
+      function loadDrafts() { return api({ action: 'drafts' }).then(function (d) { if (d.drafts) { drafts = d.drafts; renderList(); } return d; }); }
+
+      function send(text) {
+        text = (text || '').trim();
+        if (!text || busy) return;
+        busy = true; $('pd-send').disabled = true;
+        say('me', text); history.push({ role: 'user', content: text });
+        var typing = say('note', 'Thinking...');
+        api({ action: 'chat', messages: history, draft_id: current && current.status === 'pending' ? current.id : undefined }).then(function (d) {
+          typing.remove();
+          if (d.reply) { say('desk', d.reply); history.push({ role: 'assistant', content: d.reply + (d.draft ? '\n\n[Draft: ' + d.draft.headline + '\n' + d.draft.summary + '\n\n' + d.draft.body + ']' : '') }); }
+          else say('note', d.message || 'The desk could not answer just now. Try again in a moment.');
+          if (d.draft) { current = Object.assign({ url: current && current.id === d.draft.id ? current.url : '' }, d.draft); renderEditor(); loadDrafts(); track('pulse_desk_draft'); }
+        }).catch(function () { typing.remove(); say('note', 'Could not connect. Try again.'); })
+          .then(function () { busy = false; $('pd-send').disabled = false; });
+      }
+
+      $('pd-form').addEventListener('submit', function (e) { e.preventDefault(); var t = $('pd-input').value; $('pd-input').value = ''; send(t); });
+      $('pd-input').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('pd-form').requestSubmit(); } });
+
+      // Voice: record a clip, transcribe it (ve-auth transcribe_audio, same as the Guide), send it as a message.
+      var rec = null, chunks = [], recording = false, mic = $('pd-mic');
+      mic.onclick = function () {
+        if (recording) { rec.stop(); return; }
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') { say('note', 'Voice is not supported in this browser. Type it instead.'); return; }
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+          chunks = [];
+          var type = MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+          rec = type ? new MediaRecorder(stream, { mimeType: type }) : new MediaRecorder(stream);
+          rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+          rec.onstop = function () {
+            recording = false; mic.classList.remove('recording'); mic.setAttribute('aria-label', 'Speak instead of typing');
+            stream.getTracks().forEach(function (t) { t.stop(); });
+            var blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' }), reader = new FileReader();
+            reader.onloadend = function () {
+              var b64 = String(reader.result || '').split(',')[1]; if (!b64) return;
+              var note = say('note', 'Listening back...');
+              fetch(AUTH_FN + '?action=transcribe_audio', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ action: 'transcribe_audio', audio_b64: b64, mime: blob.type || 'audio/webm' }) })
+                .then(function (r) { return r.json(); }).then(function (d) {
+                  note.remove(); var t = (d && d.text || '').trim();
+                  if (t) { track('pulse_desk_voice'); send(t); } else say('note', 'I did not catch that. Try again, or type it.');
+                }).catch(function () { note.remove(); say('note', 'Could not transcribe that. Try typing it.'); });
+            };
+            reader.readAsDataURL(blob);
+          };
+          rec.start(); recording = true; mic.classList.add('recording'); mic.setAttribute('aria-label', 'Stop recording');
+        }).catch(function () { say('note', 'I could not use the microphone. Check your browser permissions.'); });
+      };
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        if (!VEAuth.isLoggedIn()) {
+          gate('<h2>Sign in to use the Pulse Desk</h2><p>The Pulse Desk is for Vegans Explore Community Managers.</p><button type="button" class="btn" id="pd-signin">Sign in</button>');
+          $('pd-signin').onclick = function () { VEAuth.showAuthModal('Sign in to use the Pulse Desk.', function () { location.reload(); }, 'login'); };
+          return;
+        }
+        loadDrafts().then(function (d) {
+          if (d._status === 401) return gate('<h2>Sign in again</h2><p>Your session has ended.</p><button type="button" class="btn" onclick="VEAuth.showAuthModal(\'Sign in to use the Pulse Desk.\', function(){location.reload();}, \'login\')">Sign in</button>');
+          if (d._status === 403) return gate('<h2>For Community Managers</h2><p>The Pulse Desk opens once you are a Vegans Explore Community Manager.</p><a class="btn" href="/dashboard">Back to my dashboard</a>');
+          if (d.error === 'no_city') return gate('<h2>Almost there</h2><p>' + esc(d.message) + '</p>');
+          if (!d.drafts) return gate('<h2>Something went wrong</h2><p>Refresh the page to try again.</p>');
+          citySlug = d.city; $('pd-city').textContent = d.city_name;
+          $('pd-app').hidden = false;
+          say('desk', 'Hey ' + d.name + '. What’s happening in ' + d.city_name + '? Tell me anything: a place opening or closing, a Vegan spot adding animal products, an event, or something people are talking about.');
+          $('pd-input').focus();
+        }).catch(function () { gate('<h2>Could not connect</h2><p>Refresh the page to try again.</p>'); });
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
