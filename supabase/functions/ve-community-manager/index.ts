@@ -10,7 +10,13 @@
 //   already set their Community Manager role at sign-up) are 'confirmed';
 //   anyone else is 'pending_review' for Sean to decide.
 // POST { action: 'status' }  Authorization: Bearer <ve_token>
-//   Whether this member has confirmed, and whether they were invited.
+//   Whether this member has confirmed or applied, and whether they were invited.
+// POST { action: 'apply_audio', city, key, audio_b64, mime }  Authorization: Bearer <ve_token>
+//   Stores one recorded answer in the private cm-applications bucket; returns its path.
+// POST { action: 'apply', city, answers: [{key, question, text, audio_path?}], phone? }
+//   The application (Sean, 2026-09-26: open to every member, so there is always a
+//   bench ready as cities grow). Requires an active membership. Emails Sean the
+//   answers with week-long links to any recordings.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -20,6 +26,7 @@ const SEAN_EMAIL = 'contact@lesaruss.com';
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const ACKS = ['lead_city', 'trial', 'time', 'certification'];
+const AUDIO_TYPES: Record<string, string> = { 'audio/webm': 'webm', 'audio/ogg': 'ogg', 'audio/mp4': 'm4a', 'audio/mpeg': 'mp3', 'audio/wav': 'wav' };
 const CITY_NAMES: Record<string, string> = {
   'south-florida': 'South Florida', 'orlando-north-central-florida': 'Orlando and North Central Florida',
   'philadelphia': 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles',
@@ -99,7 +106,55 @@ Deno.serve(async (req) => {
 
   if (action === 'status') {
     const { data: row } = await db.from('ve_cm_candidates').select('status, city_slug, created_at').eq('member_id', memberId).eq('kind', 'confirmation').order('created_at', { ascending: false }).limit(1).maybeSingle();
-    return json({ confirmed: !!row, status: row?.status ?? null, invited, membership_status: member.membership_status });
+    const { data: app } = await db.from('ve_cm_candidates').select('status, city_slug, created_at').eq('member_id', memberId).eq('kind', 'application').order('created_at', { ascending: false }).limit(1).maybeSingle();
+    return json({ confirmed: !!row, status: row?.status ?? null, applied: !!app, application_status: app?.status ?? null, application_city: app?.city_slug ?? null, invited, membership_status: member.membership_status });
+  }
+
+  if (action === 'apply_audio') {
+    if (member.membership_status !== 'active') return json({ error: 'membership_required' }, 402);
+    const key = String(body.key || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 40);
+    const mime = String(body.mime || '').split(';')[0].trim().toLowerCase();
+    if (!key || !AUDIO_TYPES[mime]) return json({ error: 'bad_audio' }, 400);
+    let bytes: Uint8Array;
+    try {
+      const bin = atob(String(body.audio_b64 || ''));
+      bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    } catch { return json({ error: 'bad_audio' }, 400); }
+    if (bytes.length < 500 || bytes.length > 12 * 1024 * 1024) return json({ error: 'bad_size' }, 400);
+    const path = `${citySlug || 'no-city'}/${memberId}/${key}-${Date.now()}.${AUDIO_TYPES[mime]}`;
+    const up = await db.storage.from('cm-applications').upload(path, bytes, { contentType: mime, upsert: false });
+    if (up.error) return json({ error: 'upload_failed' }, 500);
+    return json({ ok: true, path });
+  }
+
+  if (action === 'apply') {
+    if (member.membership_status !== 'active') return json({ error: 'membership_required' }, 402);
+    if (!citySlug) return json({ error: 'bad_city' }, 400);
+    const raw = Array.isArray(body.answers) ? body.answers.slice(0, 20) : [];
+    const answers = raw.map((a: any) => ({
+      key: String(a?.key || '').slice(0, 40),
+      question: String(a?.question || '').slice(0, 400),
+      text: String(a?.text || '').trim().slice(0, 6000),
+      audio_path: typeof a?.audio_path === 'string' && a.audio_path.startsWith(`${citySlug || 'no-city'}/${memberId}/`) ? a.audio_path : null,
+    })).filter((a: any) => a.key && (a.text || a.audio_path));
+    if (answers.length < 3) return json({ error: 'answer_more' }, 400);
+    const phone = String(body.phone || '').replace(/[^\d+()\-. ]/g, '').slice(0, 30) || null;
+    const { data: prior } = await db.from('ve_cm_candidates').select('id').eq('member_id', memberId).eq('kind', 'application').eq('city_slug', citySlug).maybeSingle();
+    const row = { kind: 'application', member_id: memberId, email: member.email, name: member.name, city_slug: citySlug, answers, phone, invited, status: 'applied' };
+    if (prior) await db.from('ve_cm_candidates').update({ ...row, created_at: new Date().toISOString() }).eq('id', prior.id);
+    else await db.from('ve_cm_candidates').insert(row);
+    const items = await Promise.all(answers.map(async (a: any) => {
+      let listen = '';
+      if (a.audio_path) {
+        const { data } = await db.storage.from('cm-applications').createSignedUrl(a.audio_path, 7 * 24 * 3600);
+        if (data?.signedUrl) listen = ` <a href="${esc(data.signedUrl)}">Listen to the recording</a>`;
+      }
+      return `<p style="margin:14px 0 4px;"><strong>${esc(a.question)}</strong></p><p style="margin:0;">${esc(a.text || '(Recorded answer only)').replace(/\n/g, '<br>')}${listen}</p>`;
+    }));
+    await sendEmail(`${prior ? 'Updated application' : 'New application'}: Community Manager, ${cityName}, ${member.name || member.email}`,
+      `<p><strong>${esc(member.name || '')}</strong> (${esc(member.email)}${phone ? ', ' + esc(phone) : ''}) applied to be the Vegans Explore Community Manager for <strong>${esc(cityName)}</strong>.${invited ? ' They were invited, so their Community Manager access is already set up.' : ''}</p>${items.join('')}<p style="margin-top:18px;color:#666;">Recording links work for 7 days. Reply to this email to reach them.</p>`, member.email);
+    return json({ ok: true, invited, updated: !!prior });
   }
 
   if (action === 'confirm') {

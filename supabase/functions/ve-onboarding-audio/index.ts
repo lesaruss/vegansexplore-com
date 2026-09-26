@@ -15,7 +15,7 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const PAGES: Record<string, string[]> = {
-  cm: ['welcome', 'have', 'lead', 'role', 'month', 'pulse', 'season', 'grow', 'join'],
+  cm: ['welcome', 'have', 'lead', 'role', 'month', 'pulse', 'season', 'grow', 'join', 'apply'],
 };
 const CITIES = ['south-florida', 'orlando-north-central-florida', 'philadelphia', 'new-york', 'los-angeles'];
 const MAX_BYTES = 12 * 1024 * 1024;

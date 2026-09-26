@@ -189,6 +189,49 @@
     .checks li{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:600;line-height:1.4;}
     .checks li::before{content:"";flex:0 0 18px;height:18px;border:2px solid var(--ve-green-dark);border-radius:4px;margin-top:1px;}
     @media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr);}}
+
+    /* Sean 2026-09-26: the city background runs under every slide, not just the first,
+       so the whole walkthrough reads as one place. Content sits on dark glass. */
+    .stage{background-color:#0d130e;background-size:cover;background-position:center 62%;}
+    .stage::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.84) 38%,rgba(0,0,0,0.58) 66%,rgba(0,0,0,0.42) 100%);pointer-events:none;}
+    .stage::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.5) 0%,transparent 35%);pointer-events:none;}
+    .slide{z-index:1;color:#fff;}
+    .slide-hero{background:none !important;}
+    .slide-hero::before,.slide-hero::after{display:none;}
+    .slide h2{color:#fff;}
+    .slide .eyebrow{color:#9be29e;}
+    .slide .lede{color:rgba(255,255,255,0.88);}
+    .slide .points li,.slide .spotlight,.slide .steps li,.slide .rows span,.slide .col li,.slide .member-price{color:#fff;}
+    .slide .rows li,.slide .col,.slide .member-box{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.16);}
+    .slide .rows li.lead{background:rgba(58,155,62,0.2);border-color:rgba(155,226,158,0.45);}
+    .slide .rows b,.slide .col h3,.slide .member-price b{color:#9be29e;}
+    .slide .rows small,.slide .member-copy,.slide .fine{color:rgba(255,255,255,0.76);}
+    .slide .btn-link{color:#fff;}
+    .slide .btn-dark{background:#22C55E;color:#0b2e14;}
+    .slide .btn-dark:hover{background:#4ade80;}
+    .media{box-shadow:0 18px 40px rgba(0,0,0,0.45);}
+    .stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
+    .stage-nav .btn-dark{background:#22C55E;color:#0b2e14;}
+    .stage-nav .btn-dark:hover{background:#4ade80;}
+    /* The application: one open question at a time, typed or recorded. */
+    .ap-question{font-size:clamp(20px,2vw,26px) !important;text-transform:none;letter-spacing:0;line-height:1.3;margin-bottom:14px;}
+    .ap-text{display:block;width:100%;max-width:560px;font:inherit;font-size:15.5px;line-height:1.5;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.28);border-radius:10px;padding:12px 14px;resize:vertical;}
+    .ap-text::placeholder{color:rgba(255,255,255,0.5);}
+    #s-apply [hidden]{display:none !important;}
+    .ap-rec-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;}
+    .btn-rec{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.32);gap:8px;}
+    .btn-rec:hover{background:rgba(255,255,255,0.18);}
+    .btn-rec.recording{background:#b3261e;border-color:#b3261e;}
+    .btn-rec .dot{width:10px;height:10px;border-radius:50%;background:#ff5a4f;display:inline-block;}
+    .btn-rec.recording .dot{background:#fff;}
+    @media (min-width:901px) and (max-height:760px){ .ap-text{max-height:130px;} .ap-question{margin-bottom:8px;} }
+    @media (max-width:900px){
+      .stage{background-size:auto 100vh;background-repeat:no-repeat;background-position:center top;}
+      .stage::before{background:linear-gradient(to bottom,rgba(0,0,0,0.5),rgba(0,0,0,0.82) 70%,#0d130e);}
+      .stage::after{display:none;}
+      .stage-nav{background:rgba(10,16,11,0.95);border-top-color:rgba(255,255,255,0.1);}
+      .stage-nav.on-hero .btn-link,.stage-nav.on-hero .step-count,.stage-nav .btn-link,.stage-nav .step-count{color:#fff;}
+    }
   </style>
 </head>
 <body>
@@ -339,42 +382,69 @@
     <section class="slide" id="s-join" aria-roledescription="slide" aria-label="9 of 9">
       <div class="split">
         <div>
-          <p class="eyebrow">Your decision</p>
+          <p class="eyebrow">Your next step</p>
           <h2>Ready to lead <span data-city>South Florida</span>?</h2>
           <div id="cm-decide">
-            <p class="lede">If you&rsquo;d like to join, it starts where our community starts: as a Founding Member.</p>
+            <p class="lede">If all of this sounds good to you, apply. It&rsquo;s open to every member, because we&rsquo;re always building a bench of people ready to lead as our cities grow.</p>
             <div class="member-box" id="cm-member-box">
               <p class="member-price"><b>Founding Membership</b> $11, one time</p>
-              <p class="member-copy">Your contribution goes straight into what we are building, and it opens the platform you will lead from.</p>
+              <p class="member-copy">Applying starts where our community starts. If you&rsquo;re not a member yet, you&rsquo;ll join first. Your contribution goes straight into what we&rsquo;re building.</p>
             </div>
             <ol class="steps" style="margin-top:14px;">
               <li>Become a member, or log in if you already are.</li>
-              <li>Confirm you are in.</li>
-              <li>Start your Community Manager certification in your dashboard.</li>
+              <li>Answer a few questions, typed or out loud.</li>
+              <li>We read every application and reach out.</li>
             </ol>
             <div class="cta-row">
-              <button type="button" class="btn btn-dark" id="cm-join">Yes, I&rsquo;d like to join</button>
-              <button type="button" class="btn btn-link" id="cm-ask">I have a question first</button>
+              <button type="button" class="btn btn-dark" id="cm-apply">Apply</button>
             </div>
-            <p class="fine" style="margin-top:6px;">If we have already talked, use the email I have on file so your access is set up automatically.</p>
+            <p class="fine" style="margin-top:6px;">If we have already talked, use the email I have on file.</p>
           </div>
-          <form id="cm-confirm" hidden>
-            <p class="lede">Please confirm:</p>
-            <ul class="confirm-list">
-              <li><label><input type="checkbox" name="lead_city"> <span>I want to be the Vegans Explore Community Manager for <span data-city>South Florida</span>.</span></label></li>
-              <li><label><input type="checkbox" name="trial"> <span>I understand it starts with a three-month trial.</span></label></li>
-              <li><label><input type="checkbox" name="time"> <span>I can give about 3 hours a week, including the weekly huddle.</span></label></li>
-              <li><label><input type="checkbox" name="certification"> <span>I will complete the Community Manager certification.</span></label></li>
-            </ul>
-            <div class="cta-row"><button type="submit" class="btn btn-dark" id="cm-confirm-btn">Confirm</button><button type="button" class="btn btn-link" id="cm-ask2">I have a question first</button></div>
-            <p class="fine" id="cm-confirm-msg" role="status"></p>
-          </form>
-          <div id="cm-done" hidden>
-            <div class="member-box"><p class="member-price"><b>You&rsquo;re in.</b></p><p class="member-copy" id="cm-done-copy"></p></div>
-            <div class="cta-row"><a class="btn btn-dark" id="cm-done-btn" href="/dashboard?from=cm-onboarding">Go to my dashboard</a></div>
+          <div id="cm-applied" hidden>
+            <div class="member-box"><p class="member-price"><b>You&rsquo;ve applied.</b></p><p class="member-copy" id="cm-applied-copy">Thank you. Your application is in, and we&rsquo;ll reach out.</p></div>
+            <div class="cta-row"><button type="button" class="btn btn-dark" id="cm-reapply">Update my answers</button><a class="btn btn-link" href="/dashboard?from=cm-onboarding">Go to my dashboard</a></div>
           </div>
         </div>
         <div class="media" data-video="join" data-poster="/public/images/ve-hero-mobile.png" data-cap="Step in"></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-apply" aria-roledescription="slide" aria-label="Application">
+      <div class="split">
+        <div>
+          <div id="ap-intro">
+            <p class="eyebrow">Your application &middot; <span data-city>South Florida</span></p>
+            <h2>Thank you for taking the next step.</h2>
+            <p class="lede">Wanting to lead your community means a lot. Before we complete your application, we&rsquo;d like to get to know you, so we can consider you when this role opens up.</p>
+            <ul class="points">
+              <li>A few open questions, one at a time</li>
+              <li>Type your answer, or tap record and just talk</li>
+              <li>About ten minutes. Your answers save as you go</li>
+            </ul>
+            <div class="cta-row"><button type="button" class="btn btn-dark" id="ap-start">Let&rsquo;s begin</button></div>
+          </div>
+          <div id="ap-q" hidden>
+            <p class="eyebrow" id="ap-progress"></p>
+            <h2 class="ap-question" id="ap-question"></h2>
+            <label for="ap-text" style="position:absolute;left:-9999px;">Your answer</label>
+            <textarea id="ap-text" class="ap-text" rows="6" maxlength="6000" placeholder="Type your answer, or tap record below."></textarea>
+            <label for="ap-phone" style="position:absolute;left:-9999px;">Phone number</label>
+            <input id="ap-phone" class="ap-text" type="tel" autocomplete="tel" maxlength="30" placeholder="(555) 555-5555" hidden>
+            <div class="ap-rec-row" id="ap-rec-row">
+              <button type="button" class="btn btn-rec" id="ap-rec"><span class="dot" aria-hidden="true"></span><span id="ap-rec-label">Record your answer</span></button>
+              <span class="fine" id="ap-rec-status" role="status"></span>
+            </div>
+            <div class="cta-row"><button type="button" class="btn btn-link" id="ap-back">Back</button><button type="button" class="btn btn-dark" id="ap-next">Next</button></div>
+            <p class="fine" id="ap-msg" role="status"></p>
+          </div>
+          <div id="ap-done" hidden>
+            <p class="eyebrow">Application received</p>
+            <h2>Thank you.</h2>
+            <p class="lede" id="ap-done-copy"></p>
+            <div class="cta-row"><a class="btn btn-dark" href="/dashboard?from=cm-application">Go to my dashboard</a></div>
+          </div>
+        </div>
+        <div class="media" data-video="apply" data-poster="/public/images/ve-panel2.png" data-cap="Your application"></div>
       </div>
     </section>
 
@@ -385,24 +455,12 @@
     </nav>
   </main>
 
-  <dialog class="faq-dialog" id="cm-q" aria-labelledby="cm-q-h">
-    <div class="faq-head"><h2 id="cm-q-h">Ask our team</h2><button type="button" class="faq-x" id="cm-q-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
-    <form class="faq-body" id="cm-q-form">
-      <p style="margin:14px 0 12px;">Anything you want to know before you decide? Send it here and it comes straight to me.</p>
-      <label class="q-field">Your name<input name="name" required maxlength="120" autocomplete="name"></label>
-      <label class="q-field">Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>
-      <label class="q-field">Your question<textarea name="message" required rows="4" maxlength="4000"></textarea></label>
-      <input name="hp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
-      <div class="cta-row" style="margin-top:12px;"><button type="submit" class="btn btn-dark">Send my question</button></div>
-      <p class="fine" id="cm-q-msg" role="status"></p>
-    </form>
-  </dialog>
 
   <script src="/public/ve-auth.js"></script>
   <script src="/public/slide-audio.js"></script>
   <script>
     // Videos: drop each URL in when it is recorded. Empty shows the labeled placeholder.
-    var VIDEOS = { welcome: '', have: '', lead: '', role: '', month: '', pulse: '', season: '', grow: '', join: '' };
+    var VIDEOS = { welcome: '', have: '', lead: '', role: '', month: '', pulse: '', season: '', grow: '', join: '', apply: '' };
     // Narration in Sean's voice (Higgsfield, ElevenLabs engine) over a music bed from the music-beds depot.
     var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/';
     var AUDIO = {
@@ -417,7 +475,8 @@
         pulse: { url: AUDIO_BASE + 'cm/sf/pulse-v4.mp3', dur: 38.5, bed: AUDIO_BASE + 'beds/midnight-sketches-60.wav' },
         season: { url: AUDIO_BASE + 'cm/sf/season-v4.mp3', dur: 31, bed: AUDIO_BASE + 'beds/vegan-glow-60.wav' },
         grow: { url: AUDIO_BASE + 'cm/sf/grow-v4.mp3', dur: 26.4, bed: AUDIO_BASE + 'beds/concrete-daydreams-60.wav' },
-        join: { url: AUDIO_BASE + 'cm/sf/join-v4.mp3', dur: 31, bed: AUDIO_BASE + 'beds/manifesto-whisper-60.wav' }
+        join: { url: AUDIO_BASE + 'cm/sf/join-v5.mp3', dur: 29.2, bed: AUDIO_BASE + 'beds/manifesto-whisper-60.wav' },
+        apply: { url: AUDIO_BASE + 'cm/sf/apply-v1.mp3', dur: 17.2, bed: AUDIO_BASE + 'beds/earthy-reflections-v2-60.wav' }
       }
     };
     // Each city gets its own onboarding: name, first-slide background (the city's
@@ -452,14 +511,16 @@
     if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
     (function () {
       var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
-      var ids = ['welcome', 'have', 'lead', 'role', 'month', 'pulse', 'season', 'grow', 'join'];
+      var ids = ['welcome', 'have', 'lead', 'role', 'month', 'pulse', 'season', 'grow', 'join', 'apply'];
+      var MAIN = 9; // the walkthrough; 'apply' opens only from the Apply button
       var cur = 0;
       var q = new URLSearchParams(location.search);
 
       document.querySelectorAll('[data-city]').forEach(function (el) { el.textContent = CITY.name; });
       document.querySelectorAll('[data-city-suffix]').forEach(function (el) { el.textContent = ', ' + CITY.name; });
-      var hero = document.getElementById('s-welcome');
-      if (hero && CITY.bg) { hero.style.backgroundImage = "url('" + CITY.bg + "')"; hero.style.backgroundPosition = CITY.bgPos || 'center center'; }
+      // The city's landscape sits under the whole walkthrough (Sean, 2026-09-26).
+      var stageEl = document.getElementById('stage');
+      if (stageEl && CITY.bg) { stageEl.style.backgroundImage = "url('" + CITY.bg + "')"; if (CITY.bgPos && window.innerWidth > 900) stageEl.style.backgroundPosition = CITY.bgPos; }
       if (CITY.copy) Object.keys(CITY.copy).forEach(function (sel) { document.querySelectorAll(sel).forEach(function (el) { el.innerHTML = CITY.copy[sel]; }); });
 
       document.querySelectorAll('.media[data-video]').forEach(function (m) {
@@ -483,30 +544,30 @@
         if (!fromHash) history.replaceState(null, '', (cur ? location.pathname + location.search.replace(/[?&]activate=[^&]*/, '') + '#' + ids[cur] : location.pathname + location.search));
         if (window.innerWidth <= 900) window.scrollTo(0, 0);
         document.getElementById('nav-back').style.visibility = cur === 0 ? 'hidden' : '';
-        document.getElementById('nav-next').style.visibility = cur === slides.length - 1 ? 'hidden' : '';
-        document.getElementById('nav-count').textContent = (cur + 1) + ' of ' + slides.length;
+        document.getElementById('nav-next').style.visibility = cur >= MAIN - 1 ? 'hidden' : '';
+        document.getElementById('nav-count').textContent = cur >= MAIN ? 'Application' : (cur + 1) + ' of ' + MAIN;
         document.getElementById('stage-nav').classList.toggle('on-hero', cur === 0);
         if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
         try { if (window.gtag) gtag('event', 'cm_onboarding_slide', { slide: ids[cur] }); } catch (e) {}
       }
 
-      document.getElementById('nav-back').addEventListener('click', function () { show(cur - 1); });
-      document.getElementById('nav-next').addEventListener('click', function () { show(cur + 1); });
+      document.getElementById('nav-back').addEventListener('click', function () { show(cur >= MAIN ? MAIN - 1 : cur - 1); });
+      document.getElementById('nav-next').addEventListener('click', function () { if (cur < MAIN - 1) show(cur + 1); });
       document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
       document.addEventListener('keydown', function (e) {
         if (document.querySelector('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;
-        if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+        if (e.key === 'ArrowRight' && cur < MAIN - 1) { e.preventDefault(); show(cur + 1); }
+        if (e.key === 'ArrowLeft' && cur > 0) { e.preventDefault(); show(cur >= MAIN ? MAIN - 1 : cur - 1); }
       });
 
-      // The decision (Sean, 2026-09-25): this page recruits, the candidate decides,
-      // and registering (or logging in), paying the $11 Founding Membership and
-      // confirming is their acceptance. Invited candidates go on to the dashboard
-      // and certification; anyone else is recorded for Sean to review.
+      // Apply (Sean, 2026-09-26): the page recruits, and every member can apply, so
+      // there is always a bench ready as cities grow. Applying starts with the $11
+      // Founding Membership; then a short application, one open question at a time,
+      // typed or recorded.
       var AUTH_API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
       var CM_API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-community-manager';
       var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-      var joinBtn = document.getElementById('cm-join');
+      var $ = function (id) { return document.getElementById(id); };
       function track(n, p) { try { if (window.gtag) gtag('event', n, p || {}); } catch (e) {} }
       function loggedIn() { try { return !!(window.VEAuth && VEAuth.isLoggedIn()); } catch (e) { return false; } }
       function token() { return (window.VEAuth && VEAuth.getToken()) || ''; }
@@ -519,75 +580,163 @@
         var h = { 'Content-Type': 'application/json' }; if (auth) h.Authorization = 'Bearer ' + token();
         return fetch(CM_API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ city: CITY_SLUG }, body)) }).then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
       }
-      function showState(which, d) {
-        document.getElementById('cm-decide').hidden = which !== 'decide';
-        document.getElementById('cm-confirm').hidden = which !== 'confirm';
-        document.getElementById('cm-done').hidden = which !== 'done';
-        if (which === 'done') {
-          var invited = d && d.invited;
-          document.getElementById('cm-done-copy').textContent = invited
-            ? 'Welcome to the team. Your Community Manager certification is waiting in your dashboard.'
-            : 'Thank you. Your confirmation is in, and we will reach out about next steps.';
-          document.getElementById('cm-done-btn').textContent = invited ? 'Go to my dashboard' : 'Go to my dashboard';
-        }
-      }
-      // Paid members: confirm (or, if already confirmed, done).
-      function afterActive() {
-        cm({ action: 'status' }, true).then(function (d) {
-          if (d && d.confirmed) showState('done', d); else showState('confirm');
-        }).catch(function () { showState('confirm'); });
-      }
       function checkout() {
         track('cm_membership_checkout');
         VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; }).catch(function () {});
       }
-      joinBtn.addEventListener('click', function () {
-        track('cm_join', { signed_in: loggedIn() });
+      function applyOrJoin() {
+        status().then(function (st) { if (st === 'active') openApply(); else checkout(); });
+      }
+      function startApply() {
+        track('cm_apply', { signed_in: loggedIn() });
         if (!window.VEAuth) { location.href = '/join'; return; }
         if (!loggedIn()) {
-          VEAuth.showAuthModal('Create your account, or log in if you already have one. Joining starts with the $11 Founding Membership, one time.', function () { status().then(function (st) { if (st === 'active') afterActive(); }); }, 'signup');
+          VEAuth.showAuthModal('Create your account, or log in if you already have one. Applying starts with the $11 Founding Membership, one time.', applyOrJoin, 'signup');
           return;
         }
-        status().then(function (st) { if (st === 'active') afterActive(); else checkout(); });
-      });
-      document.getElementById('cm-confirm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var f = e.target, acks = {}, all = true;
-        ['lead_city', 'trial', 'time', 'certification'].forEach(function (k) { acks[k] = !!f.elements[k].checked; if (!acks[k]) all = false; });
-        var msg = document.getElementById('cm-confirm-msg');
-        if (!all) { msg.textContent = 'Please check every item to confirm.'; return; }
-        var btn = document.getElementById('cm-confirm-btn'); btn.disabled = true; msg.textContent = '';
-        cm({ action: 'confirm', acknowledgements: acks }, true).then(function (d) {
-          if (d && d.ok) { track('cm_confirmed', { invited: !!d.invited }); showState('done', d); }
-          else { btn.disabled = false; msg.textContent = d && d.error === 'membership_required' ? 'Your membership has not gone through yet. Refresh in a moment.' : 'That did not go through. Please try again.'; }
-        }).catch(function () { btn.disabled = false; msg.textContent = 'Could not connect. Please try again.'; });
-      });
+        applyOrJoin();
+      }
+      $('cm-apply').addEventListener('click', startApply);
+      $('cm-reapply').addEventListener('click', function () { openApply(); });
+      function showApplied(d) {
+        $('cm-decide').hidden = true; $('cm-applied').hidden = false;
+        $('cm-applied-copy').textContent = d && d.invited
+          ? 'Thank you. Your application is in, and your Community Manager certification is waiting in your dashboard.'
+          : 'Thank you. Your application is in. We read every one, and we\u2019ll reach out.';
+      }
 
-      // "I have a question first": straight to Sean.
-      var qd = document.getElementById('cm-q');
-      function openAsk() { track('cm_question_open'); document.getElementById('cm-q-msg').textContent = ''; qd.showModal(); }
-      document.getElementById('cm-ask').addEventListener('click', openAsk);
-      document.getElementById('cm-ask2').addEventListener('click', openAsk);
-      document.getElementById('cm-q-close').addEventListener('click', function () { qd.close(); });
-      qd.addEventListener('click', function (e) { if (e.target === qd) qd.close(); });
-      document.getElementById('cm-q-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var f = e.target, msg = document.getElementById('cm-q-msg'), btn = f.querySelector('button[type=submit]');
-        btn.disabled = true; msg.textContent = 'Sending...';
-        cm({ action: 'question', name: f.elements.name.value, email: f.elements.email.value, message: f.elements.message.value, hp: f.elements.hp.value }).then(function (d) {
+      // The questions. Open-ended, one at a time; the last two are optional.
+      var C = CITY.name;
+      var QS = [
+        { key: 'about', q: 'Tell us about yourself. Who are you, and what\u2019s your connection to ' + C + '?' },
+        { key: 'journey', q: 'How did you come to Veganism, and what keeps you here?' },
+        { key: 'experience', q: 'What work or volunteer experience have you had leading people, organizing events or building a community?' },
+        { key: 'scene', q: 'What do you know about ' + C + '\u2019s Vegan community right now? The places, the groups, the people, and what\u2019s changed.' },
+        { key: 'relationships', q: 'Which Vegan businesses, nonprofits or community groups in your area do you already know or work with?' },
+        { key: 'plans', q: 'If you led ' + C + ', what would you want to build or try in your first three months?' },
+        { key: 'time', q: 'The role is about three hours a week, plus the weekly huddle and monthly events. How does that fit your life right now?' },
+        { key: 'anything', q: 'Anything else you\u2019d like us to know?', optional: true },
+        { key: 'phone', q: 'What\u2019s the best phone number to reach you?', optional: true, phone: true }
+      ];
+      var DRAFT_KEY = 've_cm_apply_' + CITY_SLUG;
+      var ap = { i: -1, answers: {} };
+      try { var saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); if (saved && saved.answers) ap.answers = saved.answers; } catch (e) {}
+      function saveDraft() { try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers: ap.answers })); } catch (e) {} }
+      function answer(k) { return ap.answers[k] || (ap.answers[k] = { text: '', audio_path: null }); }
+      var busy = false;
+
+      function openApply() {
+        $('ap-intro').hidden = ap.i >= 0; $('ap-done').hidden = true;
+        show(ids.indexOf('apply'));
+        renderQ();
+      }
+      function renderQ() {
+        if (ap.i < 0) { $('ap-intro').hidden = false; $('ap-q').hidden = true; $('nav-back').style.visibility = ''; return; }
+        $('ap-intro').hidden = true; $('ap-q').hidden = false;
+        var item = QS[ap.i], a = answer(item.key);
+        $('ap-progress').textContent = 'Question ' + (ap.i + 1) + ' of ' + QS.length + (item.optional ? ' \u00b7 optional' : '');
+        $('ap-question').textContent = item.q;
+        $('ap-text').hidden = !!item.phone; $('ap-phone').hidden = !item.phone; $('ap-rec-row').hidden = !!item.phone;
+        if (item.phone) $('ap-phone').value = a.text; else $('ap-text').value = a.text;
+        $('ap-rec-label').textContent = a.audio_path ? 'Record again' : 'Record your answer';
+        $('ap-rec-status').textContent = a.audio_path ? 'Your recording is saved. A new one replaces it.' : '';
+        $('ap-next').textContent = ap.i === QS.length - 1 ? 'Submit my application' : 'Next';
+        $('ap-msg').textContent = '';
+        // One Back button while answering: the question's own.
+        $('nav-back').style.visibility = 'hidden';
+        if (window.innerWidth <= 900) window.scrollTo(0, 0);
+        (item.phone ? $('ap-phone') : $('ap-text')).focus({ preventScroll: true });
+      }
+      function keep() {
+        if (ap.i < 0) return;
+        var item = QS[ap.i];
+        answer(item.key).text = (item.phone ? $('ap-phone') : $('ap-text')).value;
+        saveDraft();
+      }
+      $('ap-text').addEventListener('input', keep);
+      $('ap-phone').addEventListener('input', keep);
+      $('ap-start').addEventListener('click', function () { ap.i = 0; track('cm_apply_start'); renderQ(); });
+      $('ap-back').addEventListener('click', function () { if (busy) return; keep(); ap.i -= 1; renderQ(); });
+      $('ap-next').addEventListener('click', function () {
+        if (busy) return;
+        keep();
+        var item = QS[ap.i], a = answer(item.key);
+        if (!item.optional && !a.text.trim() && !a.audio_path) { $('ap-msg').textContent = 'Type or record an answer to keep going.'; return; }
+        if (ap.i < QS.length - 1) { ap.i += 1; renderQ(); return; }
+        submit();
+      });
+      function submit() {
+        var btn = $('ap-next'); btn.disabled = true; $('ap-msg').textContent = 'Sending your application...';
+        var answers = QS.filter(function (x) { return !x.phone; }).map(function (x) { var a = answer(x.key); return { key: x.key, question: x.q, text: a.text, audio_path: a.audio_path }; });
+        cm({ action: 'apply', answers: answers, phone: answer('phone').text }, true).then(function (d) {
           btn.disabled = false;
-          if (d && d.ok) { track('cm_question_sent'); f.reset(); msg.textContent = 'Sent. We will get back to you by email.'; }
-          else msg.textContent = (d && d.error) || 'That did not send. Please try again.';
-        }).catch(function () { btn.disabled = false; msg.textContent = 'Could not connect. Please try again.'; });
+          if (!d.ok) { $('ap-msg').textContent = d.error === 'membership_required' ? 'Your membership has not gone through yet. Refresh in a moment.' : 'That did not go through. Please try again.'; return; }
+          track('cm_applied', { invited: !!d.invited });
+          try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+          $('ap-q').hidden = true; $('ap-done').hidden = false; $('nav-back').style.visibility = 'hidden';
+          $('ap-done-copy').textContent = d.invited
+            ? 'Your application is in. You already have Community Manager access, so your certification is waiting in your dashboard.'
+            : 'Your application is in. We read every one, and we\u2019ll reach out. Even if we\u2019re not filling ' + C + ' right away, you\u2019re on our list as cities grow and new roles open.';
+          showApplied(d);
+        }).catch(function () { btn.disabled = false; $('ap-msg').textContent = 'Could not connect. Please try again.'; });
+      }
+
+      // Recording: the clip is kept (private, for our team to hear) and transcribed
+      // into the answer box so the applicant can read it back and edit.
+      var rec = null, chunks = [], recording = false;
+      $('ap-rec').addEventListener('click', function () {
+        if (recording) { rec.stop(); return; }
+        if (busy) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') { $('ap-rec-status').textContent = 'Recording is not supported in this browser. Type your answer instead.'; return; }
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+          if (window.VESlideAudio) VESlideAudio.stop();
+          chunks = [];
+          var type = MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '');
+          rec = type ? new MediaRecorder(stream, { mimeType: type }) : new MediaRecorder(stream);
+          var key = QS[ap.i].key;
+          rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+          rec.onstop = function () {
+            recording = false; $('ap-rec').classList.remove('recording');
+            stream.getTracks().forEach(function (t) { t.stop(); });
+            var mime = (rec.mimeType || type || 'audio/webm').split(';')[0];
+            var blob = new Blob(chunks, { type: mime }), reader = new FileReader();
+            reader.onloadend = function () {
+              var b64 = String(reader.result || '').split(',')[1]; if (!b64) return;
+              busy = true; $('ap-next').disabled = true; $('ap-rec-status').textContent = 'Saving your recording...';
+              var upload = cm({ action: 'apply_audio', key: key, audio_b64: b64, mime: mime }, true);
+              var words = fetch(AUTH_API + '?action=transcribe_audio', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'transcribe_audio', audio_b64: b64, mime: mime }) }).then(function (r) { return r.json(); }).catch(function () { return {}; });
+              Promise.all([upload, words]).then(function (res) {
+                var a = answer(key), up = res[0], t = (res[1] && res[1].text || '').trim();
+                if (up && up.ok) a.audio_path = up.path;
+                if (t) a.text = a.text.trim() ? a.text.trim() + '\n\n' + t : t;
+                saveDraft();
+                if (QS[ap.i] && QS[ap.i].key === key) renderQ();
+                $('ap-rec-status').textContent = up && up.ok ? (t ? 'Recording saved. The words are above, edit anything you like.' : 'Recording saved.') : 'That recording did not save. Try again, or type your answer.';
+              }).catch(function () { $('ap-rec-status').textContent = 'That recording did not save. Try again, or type your answer.'; })
+                .then(function () { busy = false; $('ap-next').disabled = false; });
+            };
+            reader.readAsDataURL(blob);
+          };
+          rec.start(); recording = true;
+          $('ap-rec').classList.add('recording'); $('ap-rec-label').textContent = 'Stop recording'; $('ap-rec-status').textContent = 'Recording... tap stop when you are done.';
+        }).catch(function () { $('ap-rec-status').textContent = 'We could not use your microphone. Check your browser permissions, or type your answer.'; });
       });
 
       var start = ids.indexOf((location.hash || '').replace('#', ''));
+      var wantApply = start === ids.indexOf('apply');
+      if (wantApply || start >= MAIN) start = MAIN - 1;
+      function onActive(openIfWanted) {
+        cm({ action: 'status' }, true).then(function (d) {
+          if (d && d.applied) showApplied(d);
+          if (openIfWanted) openApply();
+        }).catch(function () { if (openIfWanted) openApply(); });
+      }
       if (q.get('activate') === 'success') {
-        start = ids.length - 1;
+        start = MAIN - 1;
         var tries = 0;
-        (function poll() { status().then(function (st) { if (st === 'active') afterActive(); else if (++tries < 12) setTimeout(poll, 1500); }); })();
+        (function poll() { status().then(function (st) { if (st === 'active') onActive(true); else if (++tries < 12) setTimeout(poll, 1500); }); })();
       } else if (loggedIn()) {
-        status().then(function (st) { if (st === 'active') afterActive(); });
+        status().then(function (st) { if (st === 'active') onActive(wantApply); });
       }
       show(start > 0 ? start : 0, true);
 

@@ -1,6 +1,6 @@
 # South Florida Community Manager page: recording scripts
 
-Nine clips, one per slide, in page order. Record each as its own file.
+Ten clips, one per slide, in page order (the tenth plays on the application screen). Record each as its own file.
 Name each file with its number so I can match it: `01-welcome`, `02-have`, and so on.
 
 **Recording notes**
@@ -51,7 +51,12 @@ Picture your first season. We open with a Community Night in West Palm Beach on 
 
 Let's talk about the agreement, straight up. This isn't a part-time job. It's volunteering, with a stipend, because you'll go a little above and beyond what a volunteer does. We start with a three-month trial, so we can both see if it's a fit. The stipend is two hundred and fifty dollars a month, and it covers the regular role. Manage an event, or get assigned to a campaign, and there's an additional stipend. And more comes as your region grows.
 
-## 09-decision
-*Slide: "Ready to lead South Florida?"*
+## 09-apply
+*Slide: "Ready to lead South Florida?" (re-record: the page now asks people to apply)*
 
-So, here's my ask. Become a Founding Member. It's eleven dollars, one time, the same way every member starts. Your stipend starts once your membership goes through. It's paid after each month, on the date you registered, so your first one comes a month in. Then confirm you're in, and your certification will be waiting in your dashboard. Got a question first? Send it right here on this page. South Florida's Vegan community needs someone to lead it. I'd love for that to be you.
+So, here's my ask. If all of this sounds good to you, apply. It's open to every member, because we're always building a bench of people who are ready to lead as our cities grow. If you're not a member yet, it starts the same way it does for everyone. Become a Founding Member. It's eleven dollars, one time. Then tap apply, and tell us about yourself. South Florida's Vegan community needs someone to lead it. I'd love for that to be you.
+
+## 10-application
+*The application's welcome screen, before the questions (new)*
+
+Awesome. Thank you for taking the next step, and for wanting to lead your community. Before we finish your application, I'd like to get to know you a little. I'll ask a few questions, one at a time. There are no wrong answers. Type your answer, or tap record and just talk to me. Take your time.

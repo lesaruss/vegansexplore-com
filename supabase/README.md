@@ -133,3 +133,11 @@ which stores it at `vegan-media/onboarding-audio/<page>/<city>/sean/<key>-<ts>.w
 `ve_onboarding_audio` (public read). The Community Manager onboarding page reads that table and
 swaps each uploaded clip in over its placeholder, keeping the slide's music bed. `verify_jwt` false;
 the VE token is HMAC-verified like ve-auth.
+
+### ve-community-manager: applications (2026-09-26)
+
+The Community Manager page ends in **Apply**, open to every active member (Sean: always keep a bench
+ready as cities grow). `apply_audio` stores a recorded answer in the private `cm-applications` bucket;
+`apply` saves `ve_cm_candidates` (kind `application`, status `applied`, `answers` jsonb, `phone`) and
+emails Sean the answers with 7-day links to the recordings. Re-applying for the same city updates the
+row. `confirm` and `question` remain for older links but the page no longer uses them.
