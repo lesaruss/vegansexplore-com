@@ -49,6 +49,11 @@
     .saved{font-size:11.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
     .linkbtn{font:inherit;font-size:12px;font-weight:700;background:none;border:0;color:#5c2a00;text-decoration:underline;cursor:pointer;align-self:flex-start;padding:4px 0;margin-right:12px;}
     .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .card.picked{outline:3px solid #8a1c12;outline-offset:-3px;}
+    .pick{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#8a1c12;cursor:pointer;}
+    .pick input{width:18px;height:18px;accent-color:#8a1c12;}
+    .btn-danger{background:#8a1c12;}
+    .btn-danger:disabled{opacity:0.5;cursor:default;}
     .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.22);}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     .gate h2{font-size:21px;margin:0 0 10px;}
@@ -113,6 +118,12 @@
         <label><input type="checkbox" id="f-arch"> Show hidden</label>
         <span class="count" id="ml-count"></span>
       </div>
+      <div class="bar" id="ml-selbar">
+        <button type="button" class="btn btn-danger" id="ml-del" disabled>Delete selected</button>
+        <button type="button" class="btn btn-ghost" id="ml-sel-all">Select all shown</button>
+        <button type="button" class="btn btn-ghost" id="ml-sel-none">Clear</button>
+        <span class="progress" id="ml-del-msg" role="status" style="margin-top:0;"></span>
+      </div>
       <div class="grid" id="ml-grid"></div>
     </div>
   </div>
@@ -134,7 +145,7 @@
       };
       var PLACE_LABELS = { miami: 'Miami', broward: 'Broward', 'palm-beach': 'Palm Beach' };
       var $ = function (id) { return document.getElementById(id); };
-      var items = [];
+      var items = [], picked = {};
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return VEMediaUpload.api(VEAuth.getToken(), body); }
       function fmt(sec) { sec = Math.round(sec || 0); return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
@@ -174,8 +185,8 @@
       }
       function card(it) {
         var uses = it.uses || [], opts = USES[it.kind] || {};
-        return '<article class="card' + (it.archived ? ' archived' : '') + '" data-id="' + it.id + '">' + preview(it) +
-          '<div class="card-body"><p class="name">' + esc(it.source_name || '') + (it.bytes ? ' &middot; ' + mb(it.bytes) : '') + '</p>' +
+        return '<article class="card' + (it.archived ? ' archived' : '') + (picked[it.id] ? ' picked' : '') + '" data-id="' + it.id + '">' + preview(it) +
+          '<div class="card-body"><label class="pick"><input type="checkbox" data-pick' + (picked[it.id] ? ' checked' : '') + '> Select to delete</label><p class="name">' + esc(it.source_name || '') + (it.bytes ? ' &middot; ' + mb(it.bytes) : '') + '</p>' +
           '<div class="uses">' + Object.keys(opts).map(function (k) { return '<button type="button" class="chip" data-use="' + k + '" aria-pressed="' + (uses.indexOf(k) >= 0) + '">' + opts[k] + '</button>'; }).join('') + '</div>' +
           '<div class="row"><select data-place aria-label="Place"><option value="">No place</option>' + Object.keys(PLACE_LABELS).map(function (k) { return '<option value="' + k + '"' + (it.place === k ? ' selected' : '') + '>' + PLACE_LABELS[k] + '</option>'; }).join('') + '</select></div>' +
           '<div class="row"><input type="text" data-labels aria-label="Labels, separated by commas" placeholder="Labels, comma separated" value="' + esc((it.labels || []).join(', ')) + '"></div>' +
@@ -186,8 +197,29 @@
       function render() {
         var list = visible();
         $('ml-count').textContent = list.length + ' of ' + items.length;
-        $('ml-grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">' + (items.length ? 'Nothing matches these filters.' : 'The library is empty. Drop your folder above.') + '</p>';
+        $('ml-grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">' + (items.length ? 'Nothing matches these filters.' : 'The library is empty. Drop your folder above, or sort your older pictures at <a href="/admin/onboarding-images">Onboarding images</a>.') + '</p>';
+        selBar();
       }
+      function selBar() {
+        var n = Object.keys(picked).length;
+        $('ml-del').disabled = !n;
+        $('ml-del').textContent = n ? 'Delete ' + n + ' selected' : 'Delete selected';
+      }
+      // Delete for good: the files leave storage too. A picture on a live slide is kept.
+      $('ml-del').onclick = function () {
+        var sel = Object.keys(picked); if (!sel.length) return;
+        if (!confirm('Delete ' + sel.length + ' for good? This removes the files from storage and cannot be undone.')) return;
+        $('ml-del').disabled = true; $('ml-del-msg').textContent = 'Deleting...';
+        api({ action: 'delete', ids: sel }).then(function (d) {
+          if (!d.deleted) { $('ml-del-msg').textContent = 'That did not delete. Try again.'; selBar(); return; }
+          var gone = {}; d.deleted.forEach(function (id) { gone[id] = 1; delete picked[id]; });
+          items = items.filter(function (it) { return !gone[it.id]; });
+          $('ml-del-msg').textContent = 'Deleted ' + d.deleted.length + '.' + (d.in_use && d.in_use.length ? ' ' + d.in_use.length + ' kept because a live slide or background uses them; pick a different one there first.' : '') + (d.ok ? '' : ' Some did not delete; try again.');
+          render();
+        }).catch(function () { $('ml-del-msg').textContent = 'Could not connect. Try again.'; selBar(); });
+      };
+      $('ml-sel-all').onclick = function () { visible().forEach(function (it) { picked[it.id] = 1; }); render(); };
+      $('ml-sel-none').onclick = function () { picked = {}; render(); };
       function find(id) { for (var i = 0; i < items.length; i++) if (items[i].id === id) return i; return -1; }
       function save(el, patch) {
         var c = el.closest('.card'), id = c.getAttribute('data-id'), msg = c.querySelector('.saved');
@@ -213,6 +245,11 @@
         if (prev) { var p = items[find(prev.getAttribute('data-prev'))]; $('ml-dlg-img').src = p.url; $('ml-dlg-cap').textContent = (p.source_name || '') + ' · ' + p.width + '×' + p.height; $('ml-dlg').showModal(); }
       });
       $('ml-grid').addEventListener('change', function (e) {
+        if (e.target.matches('[data-pick]')) {
+          var pc = e.target.closest('.card'), pid = pc.getAttribute('data-id');
+          if (e.target.checked) picked[pid] = 1; else delete picked[pid];
+          pc.classList.toggle('picked', e.target.checked); selBar(); return;
+        }
         if (e.target.matches('[data-place]')) save(e.target, { place: e.target.value || null });
         if (e.target.matches('[data-labels]')) save(e.target, { labels: e.target.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean) });
       });

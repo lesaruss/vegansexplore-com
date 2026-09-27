@@ -14,6 +14,7 @@
  *   VEMediaUpload.accepts(file)                 -> 'image' | 'audio' | 'video' | null
  *   VEMediaUpload.upload(files, token, onStep)  -> Promise<{ added, dupes, errors, items }>
  *   VEMediaUpload.bindDrop(dropEl, inputEl, onFiles)   folder drag-and-drop + click to choose
+ *   A File may carry veRef (where it came from, e.g. 'higgsfield:<id>') and veName (its label).
  */
 (function () {
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-media-library';
@@ -48,7 +49,7 @@
       return Promise.all([encode(drawAt(bmp, fw), 0.86), encode(drawAt(bmp, Math.min(480, fw)), 0.8)]).then(function (bl) {
         return Promise.all([b64(bl[0]), b64(bl[1])]);
       }).then(function (s) {
-        return api(token, { action: 'upload', sha256: r[0], width: fw, height: fh, full_b64: s[0], thumb_b64: s[1], source_name: f.webkitRelativePath || f.name });
+        return api(token, { action: 'upload', sha256: r[0], width: fw, height: fh, full_b64: s[0], thumb_b64: s[1], source_name: f.veName || f.webkitRelativePath || f.name, source_ref: f.veRef || null });
       });
     });
   }
