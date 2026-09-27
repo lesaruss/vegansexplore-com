@@ -29,13 +29,6 @@
       flex-direction: column;
       min-height: 100vh;
     }
-    .nav {
-      padding: 24px 48px;
-      border-bottom: 1px solid rgba(0,0,0,0.07);
-      display: flex;
-      align-items: center;
-    }
-    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .closed-banner {
       background: var(--ve-closed-bg);
       color: var(--ve-closed);
@@ -105,30 +98,15 @@
       gap: 8px;
     }
     .btn-primary:hover { background: var(--ve-green-dark); }
-    .footer {
-      padding: 24px 48px;
-      border-top: 1px solid rgba(0,0,0,0.07);
-      text-align: center;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--ve-text-50);
-    }
     @media (max-width: 480px) {
-      .nav { padding: 20px 24px; }
       .closed-banner { padding: 14px 24px; }
       .archive-note, .archive-title, .content-wrap { padding: 0 24px; }
-      .footer { padding: 20px 24px; }
     }
   </style>
 </head>
 <body>
 
-  <nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
-      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
-    </a>
-  </nav>
+  <script src="/public/nav.js"></script>
 
   <div class="closed-banner">
     <span class="eyebrow-tag">Closed / Archived</span>Thank You for Joining the Vegans Who Lift Academy is no longer active
@@ -158,9 +136,7 @@
     </a>
   </div>
 
-  <footer class="footer">
-    <span>Vegans Explore: Plant-based travel, worldwide. This page is preserved for reference only.</span>
-  </footer>
+  <script src="/public/footer.js"></script>
 
 </body>
 </html>

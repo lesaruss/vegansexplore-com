@@ -28,19 +28,6 @@
       min-height: 100vh;
     }
 
-    /* Nav */
-    .nav {
-      padding: 24px 48px;
-      border-bottom: 1px solid rgba(0,0,0,0.07);
-      display: flex;
-      align-items: center;
-    }
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
 
     /* Main */
     .main {
@@ -139,31 +126,15 @@
     .btn-secondary:hover { border-color: rgba(0,0,0,0.4); }
     .btn-secondary:focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
 
-    /* Footer */
-    .footer {
-      padding: 24px 48px;
-      border-top: 1px solid rgba(0,0,0,0.07);
-      text-align: center;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--ve-text-50);
-    }
 
     @media (max-width: 480px) {
-      .nav { padding: 20px 24px; }
       .main { padding: 60px 24px; }
-      .footer { padding: 20px 24px; }
     }
   </style>
 </head>
 <body>
 
-  <nav class="nav" aria-label="Site navigation">
-    <a href="/" class="nav-logo" aria-label="Vegans Explore home">
-      <img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:32px;width:auto;display:block;">
-    </a>
-  </nav>
+  <script src="/public/nav.js"></script>
 
   <main class="main">
     <div class="inner">
@@ -186,9 +157,7 @@
     </div>
   </main>
 
-  <footer class="footer">
-    <span>Vegans Explore: Plant-based travel, worldwide.</span>
-  </footer>
+  <script src="/public/footer.js"></script>
 
 </body>
 </html>
