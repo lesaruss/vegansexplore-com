@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Hunt Stamp | Vegans Explore</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:#1a1a1a;line-height:1.6;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    .wrap{max-width:520px;margin:0 auto;padding:48px 20px 64px;text-align:center;}
+    .card{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:16px;padding:28px 22px;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#1f5f22;margin-bottom:8px;}
+    h1{font-size:24px;font-weight:900;text-transform:uppercase;line-height:1.15;margin-bottom:10px;}
+    p{font-size:15px;color:rgba(26,26,26,.78);margin-bottom:16px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:0;background:#1f5f22;color:#fff;text-decoration:none;}
+    .spin{width:36px;height:36px;border-radius:50%;border:4px solid #EAF7EA;border-top-color:#1f5f22;margin:6px auto 16px;animation:s 1s linear infinite;}
+    @keyframes s{to{transform:rotate(360deg);}}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="wrap">
+    <div class="card" id="box" role="status">
+      <p class="eyebrow">The VE Hunt</p>
+      <div class="spin" aria-hidden="true"></div>
+      <h1>Stamping your Passport</h1>
+      <p>One moment.</p>
+    </div>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-hunt';
+      var code = (new URLSearchParams(location.search).get('c') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      var box = document.getElementById('box');
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function show(title, text, btn) {
+        box.innerHTML = '<p class="eyebrow">The VE Hunt</p><h1>' + esc(title) + '</h1><p>' + esc(text) + '</p>' + (btn || '');
+      }
+      function go(params) { location.replace('/hunt?' + new URLSearchParams(params).toString()); }
+      // Location is optional; it only helps flag a code that is being passed around.
+      function withLocation(cb) {
+        if (!navigator.geolocation) return cb(null);
+        var done = false, t = setTimeout(function () { if (!done) { done = true; cb(null); } }, 4000);
+        navigator.geolocation.getCurrentPosition(function (p) { if (done) return; done = true; clearTimeout(t); cb(p.coords); },
+          function () { if (done) return; done = true; clearTimeout(t); cb(null); }, { maximumAge: 300000, timeout: 3500 });
+      }
+      function scan() {
+        withLocation(function (c) {
+          fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+            body: JSON.stringify({ action: 'scan', code: code, lat: c ? c.latitude : null, lng: c ? c.longitude : null }) })
+            .then(function (r) { return r.json(); }).then(function (d) {
+              if (d.ok) return go(d.progress && d.progress.completed && d.badge_name ? { scan: 'completed', badge: d.badge_name, biz: d.business || '' } : { scan: 'stamped', biz: d.business || '' });
+              if (d.error === 'payment_required') {
+                show('Become a member to collect stamps', 'The Hunt is for Vegans Explore members. It is $11, one time.', '<button type="button" class="btn" id="pay">Become a member</button>');
+                document.getElementById('pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Become a Founding Member to collect Hunt stamps.') : (location.href = '/join'); };
+                return;
+              }
+              if (d.error === 'already_stamped') return go({ scan: 'already', biz: d.business || '' });
+              if (d.error === 'hunt_not_live') return go({ scan: 'not_live' });
+              if (d.error === 'not_authenticated') { VEAuth.clearSession && VEAuth.clearSession(); return start(); }
+              go({ scan: 'bad_code' });
+            }).catch(function () { show('That did not go through', 'Check your connection and scan the card again.'); });
+        });
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 150);
+        if (!code) return go({ scan: 'bad_code' });
+        if (!VEAuth.isLoggedIn()) {
+          show('Sign in to collect your stamp', 'Sign in to your Passport, or create one, and your stamp lands right after.', '<button type="button" class="btn" id="in">Sign in or join</button>');
+          document.getElementById('in').onclick = function () { VEAuth.showAuthModal('Sign in to collect your Hunt stamp.', function () { location.reload(); }); };
+          return;
+        }
+        scan();
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

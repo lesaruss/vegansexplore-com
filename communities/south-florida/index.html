@@ -517,10 +517,18 @@
 
   <!-- ========================= NEWS SECTION ========================= -->
   <section class="hub-section active" id="tab-news" role="tabpanel" aria-labelledby="tab-btn-news">
+        <!-- The Hunt (playbook ve-verified-tours-hunt, group C): shows only while a hunt is live. -->
+        <div id="sf-hunt" hidden style="background:#1f5f22;color:#fff;border-radius:14px;padding:18px 20px;margin:0 0 22px">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#cdeccf">The VE Hunt is on</div>
+          <div id="sf-hunt-title" style="font-size:22px;font-weight:900;line-height:1.2;margin:4px 0 6px"></div>
+          <p id="sf-hunt-sub" style="font-size:14px;color:#e6f4e7;margin:0 0 10px"></p>
+          <ul id="sf-hunt-offers" style="list-style:none;margin:0 0 12px;padding:0;font-size:13.5px"></ul>
+          <a href="/hunt" style="display:inline-flex;align-items:center;min-height:44px;padding:10px 18px;border-radius:8px;background:#fff;color:#1f5f22;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none">See the map</a>
+        </div>
         <div class="section-hdr">
           <div>
             <h2 class="section-title">Local News &amp; Updates</h2>
-            <p class="section-sub">What's happening in the South Florida vegan community.</p>
+            <p class="section-sub">What's happening in the South Florida Vegan community.</p>
           </div>
           <a href="#" class="section-action">All stories</a>
         </div>
@@ -1028,6 +1036,20 @@
     }).catch(function() { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });
   }
 
+  // The Hunt card: the live hunt and its business offers, pushed to everyone on the hub.
+  function loadSFHunt() {
+    fetch(SF_SUPABASE_URL + '/functions/v1/ve-hunt', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SF_ANON_KEY, Authorization: 'Bearer ' + SF_ANON_KEY }, body: JSON.stringify({ action: 'current' }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        var h = d && d.hunt; if (!h) return;
+        var end = new Date(h.ends_on + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        document.getElementById('sf-hunt-title').textContent = h.name + ': ' + h.area_name;
+        document.getElementById('sf-hunt-sub').textContent = (d.stops || []).length + ' stops until ' + end + '. Visit ' + h.goal + ', buy anything, scan the VE Hunt card at the register, and earn the ' + h.badge_name + ' badge and ' + Number(h.points_reward).toLocaleString() + ' Points. Members only.';
+        var offers = (d.stops || []).filter(function (s) { return s.offer_text; }).slice(0, 6);
+        document.getElementById('sf-hunt-offers').innerHTML = offers.map(function (s) { return '<li style="padding:3px 0"><b>' + sfEsc(s.name) + ':</b> ' + sfEsc(s.offer_text) + '</li>'; }).join('');
+        document.getElementById('sf-hunt').hidden = false;
+      }).catch(function () {});
+  }
+  loadSFHunt();
   loadSFNews();
   loadSFEvents();
 

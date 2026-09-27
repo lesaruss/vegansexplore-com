@@ -251,3 +251,20 @@ same day; the Depot list also re-reads near-renewal subscriptions from Stripe, a
 `ve-verified-daily` (09:17 UTC) lapses anything 3 days past renewal. Depot tab: `/admin/depot/verified`
 (tier, paid, renews, visit, shoot, notes, end, add a membership paid another way).
 Migration `ve_verified_tiers`.
+
+## ve-hunt: the Hunt (2026-09-27)
+
+Playbook `ve-verified-tours-hunt`, group C. `verify_jwt` is **false** (VE app token checked in the
+function like ve-auth). Tables (migration `ve_hunt`, all RLS on, service role only): `ve_hunts`
+(area, dates, goal default 5, badge, `points_reward` default 500, `anchor_bonus_points` default
+100, status draft/live/ended), `ve_hunt_stops` (one register-card `code` per business per hunt,
+`code_version` bumps on replace; pins geocoded through OpenStreetMap Nominatim on add, settable by
+hand), `ve_hunt_stamps` (unique per hunt, listing, member; a "cashier didn't know" report is a
+`pending` stamp until the Depot confirms), `ve_hunt_scans` (every attempt, for the odd-pattern
+flags), `ve_hunt_completions` (the month's badge). Points go through `ve_hunt_award`, which writes
+`points_ledger` + `apply_member_points_delta` like `award_points_bounty` (refs `hunt:<id>` and
+`hunt-anchor:<stop id>`, so each is paid once). A hunt is visible only while `status = 'live'` and
+today (Eastern) is inside its dates. Pages: `/hunt` (members map, Leaflet + OSM tiles), `/hunt/scan?c=`
+(what the card QR opens), `/admin/depot/hunt` (setup, stops, codes, reports, per-business counts,
+flags), `/admin/depot/hunt-card` (printable 5 x 7 register card). The South Florida hub shows a Hunt
+card with the live offers; the dashboard Badges tile counts Hunt badges.

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hunt | Vegans Explore</title>
+  <meta name="description" content="The VE Hunt: each month, visit Vegan and Vegan-friendly businesses in one part of South Florida, collect stamps in your Passport, and earn that month's badge and Points.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 64px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(26px,4vw,38px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:10px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 12px;}
+    .lede{font-size:15px;color:var(--ve-text-75);max-width:760px;margin-bottom:22px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:20px 22px;margin-bottom:16px;}
+    .progress{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;}
+    .badge-art{width:84px;height:84px;border-radius:50%;background:var(--ve-green-light);border:3px solid var(--ve-green-deep);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:11px;font-weight:900;color:var(--ve-green-deep);text-align:center;padding:6px;line-height:1.2;}
+    .badge-art img{width:100%;height:100%;object-fit:cover;}
+    .badge-art.earned{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--ve-orange);}
+    .bar{height:14px;border-radius:99px;background:#e6ece6;overflow:hidden;margin:8px 0 6px;}
+    .bar span{display:block;height:100%;background:var(--ve-green-deep);border-radius:99px;transition:width .4s;}
+    .muted{font-size:13px;color:var(--ve-text-75);}
+    .big{font-size:20px;font-weight:900;}
+    .layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start;}
+    @media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr);}}
+    #map{height:460px;border-radius:12px;border:1px solid var(--ve-border);z-index:0;}
+    @media (max-width:600px){#map{height:340px;}}
+    .stops{display:flex;flex-direction:column;gap:10px;}
+    .stop{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;padding:12px;border:1px solid var(--ve-border);border-radius:12px;background:#fff;}
+    .stop.done{border-color:var(--ve-green-dark);background:var(--ve-green-light);}
+    .stop.pending{border-color:#d9a441;background:#fff8e8;}
+    .stop-logo{width:44px;height:44px;border-radius:8px;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;background:var(--ve-green);}
+    .stop b{display:block;font-size:15px;font-weight:800;line-height:1.3;}
+    .stop b a{color:inherit;}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px;}
+    .tag{font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:#eef0ee;color:#3d443d;}
+    .tag.stamp{background:var(--ve-green-deep);color:#fff;}
+    .tag.wait{background:#f7e3b5;color:#5c3d00;}
+    .tag.anchor{background:#fde9cf;color:#6b3f00;}
+    .tag.ver{background:#1f5f22;color:#fff;}
+    .offer{font-size:13px;margin-top:4px;color:#3d443d;}
+    .offer b{display:inline;font-size:13px;}
+    .linkish{background:none;border:0;padding:0;font:inherit;font-size:12.5px;font-weight:700;color:var(--ve-green-deep);text-decoration:underline;cursor:pointer;margin-top:4px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 20px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:.55;cursor:default;}
+    .steps{counter-reset:s;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;}
+    .steps li{counter-increment:s;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:14px 14px 14px 48px;position:relative;font-size:14px;}
+    .steps li::before{content:counter(s);position:absolute;left:14px;top:13px;width:24px;height:24px;border-radius:50%;background:var(--ve-green-deep);color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
+    .badges{display:flex;flex-wrap:wrap;gap:14px;}
+    .badges figure{width:96px;text-align:center;font-size:11px;font-weight:700;}
+    .badges .badge-art{width:72px;height:72px;margin:0 auto 6px;}
+    .flash{border-radius:12px;padding:14px 16px;margin-bottom:16px;font-weight:700;}
+    .flash.ok{background:var(--ve-green-light);border:1px solid var(--ve-green-dark);color:var(--ve-green-deep);}
+    .flash.bad{background:#fbeeec;border:1px solid #d9a39c;color:#7a1a10;}
+    dialog{border:0;border-radius:14px;padding:22px;max-width:min(460px,calc(100vw - 32px));width:100%;}
+    dialog::backdrop{background:rgba(0,0,0,.45);}
+    dialog textarea{width:100%;min-height:90px;font:inherit;font-size:14px;padding:10px;border:1px solid rgba(0,0,0,.25);border-radius:8px;margin:10px 0 14px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,.25);}
+    .leaflet-popup-content{font-family:Montserrat,sans-serif;font-size:13px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="wrap">
+    <p class="eyebrow">Vegans Explore · South Florida</p>
+    <h1 id="h-title">The Hunt</h1>
+    <p class="lede" id="h-lede">Each month we pick one part of South Florida. Visit the Vegan and Vegan-friendly businesses on the map, buy anything, and scan the VE Hunt card at the register to stamp your Passport. Reach the goal and you earn that month's badge and Points.</p>
+
+    <div id="flash" class="flash" hidden role="status"></div>
+
+    <section id="gate" class="card" hidden></section>
+
+    <section id="none" class="card" hidden>
+      <h2>No hunt this month yet</h2>
+      <p class="muted">The next hunt is being set up. Check back soon, or explore the <a href="/communities/south-florida">South Florida directory</a> in the meantime.</p>
+    </section>
+
+    <div id="app" hidden>
+      <section class="card">
+        <div class="progress">
+          <div class="badge-art" id="p-badge"></div>
+          <div>
+            <div class="big" id="p-count"></div>
+            <div class="bar" aria-hidden="true"><span id="p-bar" style="width:0"></span></div>
+            <div class="muted" id="p-note"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>How it works</h2>
+        <ol class="steps">
+          <li>Visit any stop on the map and buy anything.</li>
+          <li>Ask for the VE Hunt card at the register.</li>
+          <li>Scan the QR on the card with your phone camera. Your stamp lands right away.</li>
+          <li>One stamp per business. Reach the goal before the month ends for the badge and Points.</li>
+        </ol>
+      </section>
+
+      <div class="layout">
+        <section class="card">
+          <h2>The map</h2>
+          <div id="map" role="region" aria-label="Map of this month's Hunt stops"></div>
+          <p class="muted" style="margin-top:8px">Green pins are stamped, orange pins are VE Verified. Every stop is also listed under Stops.</p>
+        </section>
+        <section class="card">
+          <h2>Stops</h2>
+          <div class="stops" id="stops"></div>
+        </section>
+      </div>
+    </div>
+
+    <section id="badges-card" class="card" hidden>
+      <h2>Your Hunt badges</h2>
+      <div class="badges" id="badges"></div>
+    </section>
+
+    <dialog id="report" aria-labelledby="r-title">
+      <h2 id="r-title">The cashier didn't know about the card?</h2>
+      <p class="muted" id="r-biz"></p>
+      <p class="muted" style="margin-top:8px">No problem. Tell us and we will call the owner. Your visit is held as pending and stamped once they confirm, so it still counts.</p>
+      <label for="r-note" class="muted" style="display:block;margin-top:10px;font-weight:700">Anything we should know? (optional)</label>
+      <textarea id="r-note" maxlength="500" placeholder="What you bought, what time, who you talked to"></textarea>
+      <div class="row"><button type="button" class="btn" id="r-send">Tell the VE team</button><button type="button" class="btn btn-ghost" id="r-cancel">Cancel</button></div>
+      <p class="muted" id="r-msg" role="status" style="margin-top:10px"></p>
+    </dialog>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-hunt';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var $ = function (id) { return document.getElementById(id); };
+      var qs = new URLSearchParams(location.search), state = null, map = null, reportStop = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body, auth) {
+        return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (auth ? VEAuth.getToken() : ANON) }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+      }
+      function day(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); }
+      var OFFER = { discount: 'Discount', prize: 'Prize', donation: 'Donation' };
+      function badgeArt(el, img, name, earned) {
+        el.className = 'badge-art' + (earned ? ' earned' : '');
+        el.innerHTML = img ? '<img src="' + esc(img) + '" alt="' + esc(name) + ' badge">' : esc(name);
+      }
+      function flash(kind, text) { var f = $('flash'); f.className = 'flash ' + kind; f.textContent = text; f.hidden = false; }
+
+      // Messages from the scan page (/hunt/scan) and the report dialog.
+      var MSG = {
+        stamped: function () { return 'Stamped' + (qs.get('biz') ? ' at ' + qs.get('biz') : '') + '. Nice work.'; },
+        completed: function () { return 'That was your last stamp. You earned ' + (qs.get('badge') || "this month's badge") + ' and your Points.'; },
+        already: function () { return 'You already have the stamp' + (qs.get('biz') ? ' for ' + qs.get('biz') : '') + '. Every business counts once per hunt.'; },
+        bad_code: function () { return 'That card code did not work. Ask the cashier for the current VE Hunt card, or use "The cashier didn’t know?" on the stop.'; },
+        not_live: function () { return 'That card is from a hunt that is not running right now.'; }
+      };
+      if (MSG[qs.get('scan')]) flash(qs.get('scan') === 'stamped' || qs.get('scan') === 'completed' ? 'ok' : 'bad', MSG[qs.get('scan')]());
+
+      function render() {
+        var h = state.hunt, stamps = {}, stamped = 0;
+        (state.stamps || []).forEach(function (s) { stamps[s.stop_id] = s.status; if (s.status === 'stamped') stamped++; });
+        $('h-title').textContent = h.name;
+        $('h-lede').textContent = h.area_name + ', ' + day(h.starts_on) + ' to ' + day(h.ends_on) + '. Visit ' + h.goal + ' stops, buy anything, and scan the VE Hunt card at the register. Reach ' + h.goal + ' and you earn the ' + h.badge_name + ' badge and ' + Number(h.points_reward).toLocaleString() + ' Points.';
+        badgeArt($('p-badge'), h.badge_image_url, h.badge_name, state.completed);
+        var shown = Math.min(stamped, h.goal);
+        $('p-count').textContent = state.completed ? 'Badge earned: ' + h.badge_name : stamped + ' of ' + h.goal + ' stamps';
+        $('p-bar').style.width = Math.round(100 * shown / h.goal) + '%';
+        var pending = (state.stamps || []).filter(function (s) { return s.status === 'pending'; }).length;
+        $('p-note').textContent = state.completed ? 'You finished this hunt. Keep visiting: every stamp still supports a local business.'
+          : (h.goal - stamped) + ' to go' + (pending ? ', plus ' + pending + ' waiting on the owner to confirm' : '') + '. The hunt ends ' + day(h.ends_on) + '.';
+        $('stops').innerHTML = state.stops.length ? state.stops.map(function (s) {
+          var st = stamps[s.id];
+          var logo = s.logo_url ? '<img class="stop-logo" src="' + esc(s.logo_url) + '" alt="">' : '<div class="stop-logo" style="background:' + esc(s.color || '#3A9B3E') + '">' + esc((s.name || 'V').charAt(0)) + '</div>';
+          return '<div class="stop ' + (st === 'stamped' ? 'done' : st === 'pending' ? 'pending' : '') + '">' + logo + '<div>' +
+            '<b><a href="/directory/' + esc(s.slug) + '">' + esc(s.name) + '</a></b>' +
+            '<div class="muted">' + esc(s.address || '') + '</div>' +
+            '<div class="tags">' + (st === 'stamped' ? '<span class="tag stamp">Stamped</span>' : st === 'pending' ? '<span class="tag wait">Waiting on the owner</span>' : '') +
+              (s.is_anchor ? '<span class="tag anchor">Anchor stop, +' + Number(h.anchor_bonus_points).toLocaleString() + ' bonus Points</span>' : '') +
+              (s.verified ? '<span class="tag ver">' + (s.tier === 'plus' ? 'VE Verified Plus' : 'VE Verified') + '</span>' : '') + '</div>' +
+            (s.offer_text ? '<div class="offer"><b>' + esc(OFFER[s.offer_type] || 'Offer') + ':</b> ' + esc(s.offer_text) + '</div>' : '') +
+            (!st ? '<button type="button" class="linkish" data-report="' + esc(s.id) + '">The cashier didn’t know?</button>' : '') +
+            '</div></div>';
+        }).join('') : '<p class="muted">Stops are being added. Check back soon.</p>';
+        drawMap(stamps);
+      }
+      function drawMap(stamps) {
+        if (!window.L) return;
+        var pts = state.stops.filter(function (s) { return s.lat != null && s.lng != null; });
+        if (!map) {
+          map = L.map('map', { scrollWheelZoom: false }).setView([26.1, -80.2], 9);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+        }
+        var bounds = [];
+        pts.forEach(function (s) {
+          var st = stamps[s.id], color = st === 'stamped' ? '#1f5f22' : st === 'pending' ? '#d9a441' : (s.verified ? '#F69820' : '#7a7a7a');
+          var m = L.circleMarker([s.lat, s.lng], { radius: s.verified || s.is_anchor ? 11 : 8, color: '#fff', weight: 2, fillColor: color, fillOpacity: 1 }).addTo(map);
+          m.bindPopup('<b>' + esc(s.name) + '</b><br>' + esc(s.address || '') + '<br>' + (st === 'stamped' ? 'Stamped' : st === 'pending' ? 'Waiting on the owner' : 'Not stamped yet') + (s.offer_text ? '<br>' + esc(s.offer_text) : ''));
+          bounds.push([s.lat, s.lng]);
+        });
+        if (bounds.length > 1) map.fitBounds(bounds, { padding: [24, 24], maxZoom: 14 });
+        else if (bounds.length === 1) map.setView(bounds[0], 14);
+      }
+      function renderBadges(list) {
+        if (!list || !list.length) { $('badges-card').hidden = true; return; }
+        $('badges').innerHTML = list.map(function (b) {
+          return '<figure><div class="badge-art earned">' + (b.image ? '<img src="' + esc(b.image) + '" alt="">' : esc(b.name)) + '</div><figcaption>' + esc(b.name) + '</figcaption></figure>';
+        }).join('');
+        $('badges-card').hidden = false;
+      }
+
+      $('stops').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-report]'); if (!b) return;
+        reportStop = state.stops.filter(function (s) { return s.id === b.getAttribute('data-report'); })[0];
+        $('r-biz').textContent = reportStop ? reportStop.name : '';
+        $('r-note').value = ''; $('r-msg').textContent = ''; $('r-send').disabled = false;
+        $('report').showModal();
+      });
+      $('r-cancel').onclick = function () { $('report').close(); };
+      $('r-send').onclick = function () {
+        if (!reportStop) return;
+        $('r-send').disabled = true; $('r-msg').textContent = 'Sending...';
+        api({ action: 'report', stop_id: reportStop.id, note: $('r-note').value }, true).then(function (d) {
+          if (!d.ok) { $('r-send').disabled = false; $('r-msg').textContent = d.error === 'already_stamped' ? 'You already have this stamp.' : 'That did not go through. Please try again.'; return; }
+          $('report').close(); flash('ok', 'Thanks. We will call ' + reportStop.name + ' and your stamp lands once they confirm.'); load();
+        }).catch(function () { $('r-send').disabled = false; $('r-msg').textContent = 'Could not connect. Please try again.'; });
+      };
+
+      function gate(html) { $('gate').innerHTML = html; $('gate').hidden = false; }
+      function load() {
+        return api({ action: 'mine' }, true).then(function (d) {
+          if (d.error === 'not_authenticated') { VEAuth.clearSession && VEAuth.clearSession(); return start(); }
+          renderBadges(d.badges);
+          if (!d.hunt) { $('none').hidden = false; return; }
+          if (!d.member) {
+            gate('<h2>The Hunt is for members</h2><p class="muted" style="margin-bottom:14px">' + esc(d.hunt.name) + ' runs in ' + esc(d.hunt.area_name) + ' until ' + esc(day(d.hunt.ends_on)) + '. Become a Founding Member ($11, one time) to join.</p><button type="button" class="btn" id="g-pay">Become a member</button>');
+            $('g-pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Become a Founding Member to join the Hunt.') : (location.href = '/join'); };
+            return;
+          }
+          state = d; $('app').hidden = false; render();
+        }).catch(function () { flash('bad', 'The Hunt did not load. Refresh to try again.'); });
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 150);
+        if (!VEAuth.isLoggedIn()) {
+          api({ action: 'current' }).then(function (d) {
+            var h = d && d.hunt;
+            gate('<h2>' + (h ? esc(h.name) + ' is on' : 'Join the Hunt') + '</h2><p class="muted" style="margin-bottom:14px">' +
+              (h ? esc(h.area_name) + ', until ' + esc(day(h.ends_on)) + '. ' + (d.stops || []).length + ' stops. ' : '') +
+              'Sign in to your Passport to see the map and collect stamps.</p><button type="button" class="btn" id="g-in">Sign in or join</button>');
+            $('g-in').onclick = function () { VEAuth.showAuthModal('Sign in to join the Hunt.', function () { location.reload(); }); };
+          }).catch(function () { gate('<h2>Join the Hunt</h2><p class="muted">Sign in to your Passport to see the map.</p>'); });
+          return;
+        }
+        load();
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

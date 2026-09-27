@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Hunt | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:820px;margin-bottom:12px;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 20px 20px;margin:0 0 16px;}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:10px 14px;align-items:end;}
+    .form label,.lbl{display:block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:4px;}
+    input,select,textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:7px 14px;border-radius:8px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;white-space:nowrap;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:var(--ve-green-light);}
+    .btn-stop{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);min-height:20px;}
+    .msg.bad{color:#8a1c12;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:12px;}
+    .bar > div{min-width:min(260px,100%);}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:10px;margin-bottom:12px;}
+    .stat{background:#f7f8f7;border-radius:10px;padding:12px 14px;}
+    .stat b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .stat span{font-size:12.5px;color:var(--ve-text-75);}
+    .tbl-wrap{overflow-x:auto;border:1px solid var(--ve-border);border-radius:12px;background:#fff;}
+    table{width:100%;border-collapse:collapse;min-width:1020px;font-size:13.5px;}
+    th{font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-75);text-align:left;padding:11px 12px;border-bottom:1px solid var(--ve-border);background:#fafbfa;white-space:nowrap;}
+    td{padding:11px 12px;border-bottom:1px solid var(--ve-border);vertical-align:top;}
+    tr:last-child td{border-bottom:0;}
+    td a{color:inherit;}
+    .code{font-family:ui-monospace,Menlo,monospace;font-weight:800;letter-spacing:.08em;}
+    .meta{font-size:12px;color:var(--ve-text-75);}
+    .pill{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:99px;white-space:nowrap;background:#eef0ee;color:#3d443d;}
+    .pill.live{background:var(--ve-green-deep);color:#fff;}
+    .pill.draft{background:#fff4e2;color:#6b3f00;}
+    .pill.pend{background:#fff4e2;color:#6b3f00;}
+    .pill.ok{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pill.no{background:#fbeeec;color:#8a1c12;}
+    .pill.ver{background:#1f5f22;color:#fff;}
+    .acts{display:flex;flex-wrap:wrap;gap:6px;}
+    .results{position:relative;}
+    .results ul{list-style:none;position:absolute;z-index:10;left:0;right:0;background:#fff;border:1px solid var(--ve-border);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.1);max-height:260px;overflow:auto;}
+    .results li button{display:block;width:100%;text-align:left;background:none;border:0;font:inherit;font-size:13px;padding:8px 10px;cursor:pointer;}
+    .results li button:hover,.results li button:focus{background:var(--ve-green-light);}
+    .rep{border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:flex-start;}
+    .rep > div:first-child{min-width:min(280px,100%);flex:1;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>The Hunt</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Each month, one area of South Florida. Set up the hunt, add the stops, print each stop's register card, and confirm "cashier didn't know" reports. Members see it at <a href="/hunt">vegansexplore.com/hunt</a>. A hunt shows to members only while its status is Live and today is inside its dates.</p>
+    <div id="h-gate" class="gate" hidden></div>
+    <div id="h-app" hidden>
+      <section class="panel">
+        <div class="bar">
+          <div><label class="lbl" for="pick">Hunt</label><select id="pick"></select></div>
+          <button type="button" class="btn btn-ghost" id="new">New hunt</button>
+        </div>
+        <div class="form" id="f">
+          <div><label for="f-name">Name</label><input id="f-name" placeholder="The October Hunt"></div>
+          <div><label for="f-area">Area</label><input id="f-area" placeholder="Wynwood and Little Haiti"></div>
+          <div><label for="f-start">Starts</label><input type="date" id="f-start"></div>
+          <div><label for="f-end">Ends</label><input type="date" id="f-end"></div>
+          <div><label for="f-goal">Stamps to earn the badge</label><input type="number" id="f-goal" min="1" max="50" value="5"></div>
+          <div><label for="f-points">Points for the badge</label><input type="number" id="f-points" min="0" value="500"></div>
+          <div><label for="f-anchor">Anchor stop bonus Points</label><input type="number" id="f-anchor" min="0" value="100"></div>
+          <div><label for="f-badge">Badge name</label><input id="f-badge" placeholder="October Explorer"></div>
+          <div><label for="f-art">Badge art (image URL)</label><input id="f-art" placeholder="https://..."></div>
+          <div><label for="f-status">Status</label><select id="f-status"><option value="draft">Draft (hidden)</option><option value="live">Live</option><option value="ended">Ended</option></select></div>
+          <div><button type="button" class="btn" id="f-save">Save hunt</button></div>
+        </div>
+        <p class="msg" id="f-msg" role="status"></p>
+      </section>
+
+      <div id="h-body" hidden>
+        <section class="panel">
+          <h2>Stops</h2>
+          <div class="stats" id="stats"></div>
+          <div class="bar">
+            <div class="results" style="flex:1"><label class="lbl" for="s-q">Add a business</label><input type="search" id="s-q" placeholder="Business name" autocomplete="off"><ul id="s-res" hidden></ul></div>
+          </div>
+          <p class="msg" id="s-msg" role="status"></p>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th scope="col">Business</th><th scope="col">Card code</th><th scope="col">Stamps</th><th scope="col">Reports</th><th scope="col">Anchor</th><th scope="col">Offer</th><th scope="col">Map pin</th><th scope="col"><span class="meta" style="font-size:10.5px">Actions</span></th></tr></thead>
+            <tbody id="stops"><tr><td colspan="8" class="meta">Loading...</td></tr></tbody>
+          </table></div>
+        </section>
+
+        <section class="panel">
+          <h2>"Cashier didn't know" reports</h2>
+          <p class="sub">A member tapped the button on a stop. Call the owner; once they confirm the visit, confirm it here and the stamp lands. Reports per business show who needs a staff refresher.</p>
+          <div id="reports"><p class="meta">Loading...</p></div>
+        </section>
+
+        <section class="panel">
+          <h2>Odd scan patterns</h2>
+          <p class="sub" id="flag-rule"></p>
+          <div id="flags"><p class="meta">Loading...</p></div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', FN = SB + '/functions/v1/ve-hunt';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      // Same cities as the South Florida hub (SF_CITIES in /communities/south-florida/index.html).
+      var SF = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
+      var $ = function (id) { return document.getElementById(id); };
+      var hunts = [], hunt = null, stops = [], stats = {};
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function msg(id, text, bad) { $(id).className = 'msg' + (bad ? ' bad' : ''); $(id).textContent = text; }
+      function monthDefaults() {
+        var n = new Date(), s = new Date(n.getFullYear(), n.getMonth() + 1, 1), e = new Date(n.getFullYear(), n.getMonth() + 2, 0);
+        var f = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+        var m = s.toLocaleDateString('en-US', { month: 'long' });
+        return { name: 'The ' + m + ' Hunt', starts_on: f(s), ends_on: f(e), badge_name: m + ' Explorer', goal: 5, points_reward: 500, anchor_bonus_points: 100, status: 'draft', area_name: '' };
+      }
+      function fillForm(h) {
+        $('f-name').value = h.name || ''; $('f-area').value = h.area_name || ''; $('f-start').value = h.starts_on || ''; $('f-end').value = h.ends_on || '';
+        $('f-goal').value = h.goal || 5; $('f-points').value = h.points_reward != null ? h.points_reward : 500; $('f-anchor').value = h.anchor_bonus_points != null ? h.anchor_bonus_points : 100;
+        $('f-badge').value = h.badge_name || ''; $('f-art').value = h.badge_image_url || ''; $('f-status').value = h.status || 'draft';
+      }
+      function renderPick() {
+        $('pick').innerHTML = hunts.length ? hunts.map(function (h) { return '<option value="' + esc(h.id) + '"' + (hunt && hunt.id === h.id ? ' selected' : '') + '>' + esc(h.name) + ' (' + esc(h.status) + ')</option>'; }).join('') : '<option value="">No hunts yet</option>';
+      }
+      function select(h) {
+        hunt = h; fillForm(h || monthDefaults()); renderPick();
+        $('h-body').hidden = !h;
+        if (h) loadHunt();
+      }
+      $('pick').addEventListener('change', function () { select(hunts.filter(function (h) { return h.id === $('pick').value; })[0] || null); });
+      $('new').onclick = function () { hunt = null; fillForm(monthDefaults()); $('h-body').hidden = true; msg('f-msg', 'New hunt: fill it in and save.'); };
+      $('f-save').onclick = function () {
+        var h = { id: hunt && hunt.id, name: $('f-name').value, area_name: $('f-area').value, starts_on: $('f-start').value, ends_on: $('f-end').value,
+          goal: +$('f-goal').value, points_reward: +$('f-points').value, anchor_bonus_points: +$('f-anchor').value, badge_name: $('f-badge').value, badge_image_url: $('f-art').value, status: $('f-status').value };
+        if (h.status === 'live' && (!hunt || hunt.status !== 'live') && !confirm('Make "' + h.name + '" live? Members see it at /hunt while today is inside its dates.')) return;
+        $('f-save').disabled = true; msg('f-msg', 'Saving...');
+        api({ action: 'admin_save_hunt', hunt: h }).then(function (d) {
+          $('f-save').disabled = false;
+          if (!d.ok) return msg('f-msg', d.error === 'missing_fields' ? 'Name, area, dates and badge name are needed.' : 'Did not save: ' + (d.message || d.error), true);
+          msg('f-msg', 'Saved.');
+          return loadHunts(d.hunt.id);
+        }).catch(function () { $('f-save').disabled = false; msg('f-msg', 'Could not connect.', true); });
+      };
+
+      function renderStops() {
+        var by = stats.by_listing || {};
+        var total = 0, rep = 0; Object.keys(by).forEach(function (k) { total += by[k].stamped; rep += by[k].reports; });
+        $('stats').innerHTML = '<div class="stat"><b>' + stops.filter(function (s) { return s.active; }).length + '</b><span>stops</span></div>' +
+          '<div class="stat"><b>' + total + '</b><span>stamps</span></div>' +
+          '<div class="stat"><b>' + (stats.completions || 0) + '</b><span>members earned the badge</span></div>' +
+          '<div class="stat"><b>' + rep + '</b><span>"cashier didn’t know" reports</span></div>';
+        if (!stops.length) { $('stops').innerHTML = '<tr><td colspan="8" class="meta">No stops yet. Add a business above.</td></tr>'; return; }
+        $('stops').innerHTML = stops.map(function (s, i) {
+          var l = s.listing || {}, b = by[s.listing_id] || { stamped: 0, pending: 0, reports: 0 };
+          var ver = l.ve_verified_tier && (!l.ve_verified_until || new Date(l.ve_verified_until) > new Date(Date.now() - 3 * 864e5));
+          return '<tr' + (s.active ? '' : ' style="opacity:.55"') + '>' +
+            '<td><b><a href="/directory/' + esc(l.slug) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a></b>' + (ver ? ' <span class="pill ver">' + (l.ve_verified_tier === 'plus' ? 'Plus' : 'Verified') + '</span>' : '') +
+              '<div class="meta">' + esc([l.address_street, l.address_city].filter(Boolean).join(', ')) + '</div>' +
+              '<div class="meta">' + esc(l.ve_contact_name || '') + (l.ve_contact_phone || l.phone ? ' &middot; ' + esc(l.ve_contact_phone || l.phone) : '') + '</div>' + (s.active ? '' : '<div class="meta">Switched off</div>') + '</td>' +
+            '<td><span class="code">' + esc(s.code) + '</span><div class="meta">card v' + s.code_version + '</div></td>' +
+            '<td>' + b.stamped + (b.pending ? '<div class="meta">' + b.pending + ' pending</div>' : '') + '</td>' +
+            '<td>' + b.reports + '</td>' +
+            '<td><label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" data-anchor="' + i + '"' + (s.is_anchor ? ' checked' : '') + ' style="width:18px;height:18px"> Anchor</label></td>' +
+            '<td style="min-width:220px"><select data-otype="' + i + '" aria-label="Offer type for ' + esc(l.name) + '"><option value="">No offer</option><option value="discount"' + (s.offer_type === 'discount' ? ' selected' : '') + '>Discount</option><option value="prize"' + (s.offer_type === 'prize' ? ' selected' : '') + '>Prize</option><option value="donation"' + (s.offer_type === 'donation' ? ' selected' : '') + '>Donation</option></select>' +
+              '<input data-otext="' + i + '" value="' + esc(s.offer_text || '') + '" placeholder="10% off for Hunt members" aria-label="Offer for ' + esc(l.name) + '" style="margin-top:6px"></td>' +
+            '<td>' + (s.latitude != null ? '<span class="pill ok">Placed</span>' : '<span class="pill no">No pin</span>') + '<div class="acts" style="margin-top:6px"><button type="button" class="btn btn-ghost" data-geo="' + i + '">' + (s.latitude != null ? 'Find again' : 'Find') + '</button><button type="button" class="btn btn-ghost" data-pin="' + i + '">Set</button></div></td>' +
+            '<td><div class="acts"><a class="btn" href="/admin/depot/hunt-card?stop=' + esc(s.id) + '&amp;hunt=' + esc(hunt.id) + '" target="_blank" rel="noopener">Print card</a><button type="button" class="btn btn-ghost" data-code="' + i + '">Replace code</button>' + (s.active ? '<button type="button" class="btn btn-stop" data-rm="' + i + '">Remove</button>' : '') + '</div><span class="msg" id="sm-' + i + '"></span></td>' +
+            '</tr>';
+        }).join('');
+      }
+      function upd(i, body) {
+        msg('sm-' + i, 'Saving...');
+        return api(Object.assign({ action: 'admin_update_stop', id: stops[i].id }, body)).then(function (d) {
+          if (!d.ok) { msg('sm-' + i, d.error === 'geocode_failed' ? 'Address not found. Use Set.' : 'Did not save.', true); return; }
+          Object.assign(stops[i], d.stop); msg('sm-' + i, 'Saved.');
+          if (body.regeocode || body.lat !== undefined) renderStops();
+        });
+      }
+      $('stops').addEventListener('change', function (e) {
+        var t = e.target, i;
+        if (t.hasAttribute('data-anchor')) { i = +t.getAttribute('data-anchor'); upd(i, { is_anchor: t.checked }); }
+        if (t.hasAttribute('data-otype')) { i = +t.getAttribute('data-otype'); upd(i, { offer_type: t.value, offer_text: document.querySelector('[data-otext="' + i + '"]').value }); }
+        if (t.hasAttribute('data-otext')) { i = +t.getAttribute('data-otext'); upd(i, { offer_type: document.querySelector('[data-otype="' + i + '"]').value, offer_text: t.value }); }
+      });
+      $('stops').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-geo],[data-pin],[data-code],[data-rm]'); if (!b) return;
+        var i;
+        if (b.hasAttribute('data-geo')) { i = +b.getAttribute('data-geo'); upd(i, { regeocode: true }); }
+        if (b.hasAttribute('data-pin')) {
+          i = +b.getAttribute('data-pin'); var s = stops[i];
+          var v = prompt('Map pin for ' + (s.listing || {}).name + ': latitude, longitude (from Google Maps, right-click the spot). Leave empty to clear.', s.latitude != null ? s.latitude + ', ' + s.longitude : '');
+          if (v === null) return;
+          var p = v.split(',').map(function (x) { return x.trim(); });
+          upd(i, v.trim() ? { lat: p[0], lng: p[1] } : { lat: null, lng: null });
+        }
+        if (b.hasAttribute('data-code')) {
+          i = +b.getAttribute('data-code');
+          if (!confirm('Replace the card code for ' + (stops[i].listing || {}).name + '? The old card stops working right away. Print and deliver the new card.')) return;
+          api({ action: 'admin_replace_code', id: stops[i].id }).then(function (d) { if (!d.ok) return msg('sm-' + i, 'Did not save.', true); Object.assign(stops[i], d.stop); renderStops(); msg('sm-' + i, 'New code. Print the new card.'); });
+        }
+        if (b.hasAttribute('data-rm')) {
+          i = +b.getAttribute('data-rm');
+          if (!confirm('Remove ' + (stops[i].listing || {}).name + ' from this hunt? If members already have its stamp, it is switched off instead so they keep it.')) return;
+          api({ action: 'admin_remove_stop', id: stops[i].id }).then(function (d) { if (!d.ok) return msg('sm-' + i, 'Did not save.', true); loadHunt(); });
+        }
+      });
+      // Add a business.
+      var qt = null;
+      $('s-q').addEventListener('input', function () {
+        clearTimeout(qt); var v = $('s-q').value.trim();
+        if (v.length < 2) { $('s-res').hidden = true; return; }
+        qt = setTimeout(function () {
+          fetch(SB + '/rest/v1/listings?select=id,name,address_city,ve_verified_tier&status=eq.approved&address_city=in.(' + SF.map(function (c) { return '"' + c + '"'; }).join(',') + ')&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=12', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+            .then(function (r) { return r.json(); }).then(function (list) {
+              var have = {}; stops.forEach(function (s) { have[s.listing_id] = 1; });
+              $('s-res').innerHTML = (list || []).map(function (l) { return '<li><button type="button" data-id="' + esc(l.id) + '"' + (have[l.id] ? ' disabled' : '') + '>' + esc(l.name) + ' &middot; ' + esc(l.address_city || '') + (l.ve_verified_tier ? ' (' + (l.ve_verified_tier === 'plus' ? 'Plus' : 'Verified') + ')' : '') + (have[l.id] ? ' (already a stop)' : '') + '</button></li>'; }).join('') || '<li class="meta" style="padding:8px 10px">No South Florida match</li>';
+              $('s-res').hidden = false;
+            });
+        }, 250);
+      });
+      $('s-res').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-id]'); if (!b || b.disabled) return;
+        $('s-res').hidden = true; $('s-q').value = ''; msg('s-msg', 'Adding and placing the pin...');
+        api({ action: 'admin_add_stop', hunt_id: hunt.id, listing_id: b.getAttribute('data-id') }).then(function (d) {
+          if (!d.ok) return msg('s-msg', d.error === 'already_a_stop' ? 'Already a stop.' : 'Did not save.', true);
+          msg('s-msg', d.geocoded ? 'Added.' : 'Added, but the address was not found on the map. Use Set on its row.', !d.geocoded);
+          loadHunt();
+        });
+      });
+
+      function renderReports(list) {
+        var pend = list.filter(function (r) { return r.status === 'pending'; });
+        var rest = list.filter(function (r) { return r.status !== 'pending'; }).slice(0, 20);
+        var row = function (r, act) {
+          var l = r.listing || {}, m = r.member || {};
+          return '<div class="rep"><div><b>' + esc(l.name) + '</b> <span class="pill ' + (r.status === 'pending' ? 'pend' : r.status === 'stamped' ? 'ok' : 'no') + '">' + (r.status === 'pending' ? 'Waiting' : r.status === 'stamped' ? 'Confirmed' : 'Turned down') + '</span>' +
+            '<div class="meta">' + esc(m.name || m.email || 'A member') + ' &middot; ' + new Date(r.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) + '</div>' +
+            (r.note ? '<div class="meta">"' + esc(r.note) + '"</div>' : '') +
+            '<div class="meta">Owner: ' + esc(l.ve_contact_name || 'not on file') + (l.ve_contact_phone || l.phone ? ', ' + esc(l.ve_contact_phone || l.phone) : '') + '</div></div>' +
+            (act ? '<div class="acts"><button type="button" class="btn" data-ok="' + esc(r.id) + '">Owner confirmed</button><button type="button" class="btn btn-stop" data-no="' + esc(r.id) + '">Turn down</button></div>' : '') + '</div>';
+        };
+        $('reports').innerHTML = (pend.length ? pend.map(function (r) { return row(r, true); }).join('') : '<p class="meta" style="margin-bottom:10px">Nothing waiting.</p>') +
+          (rest.length ? '<p class="lbl" style="margin:14px 0 8px">Earlier</p>' + rest.map(function (r) { return row(r, false); }).join('') : '');
+      }
+      $('reports').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-ok],[data-no]'); if (!b) return;
+        var ok = b.hasAttribute('data-ok');
+        b.disabled = true;
+        api({ action: 'admin_review', id: b.getAttribute(ok ? 'data-ok' : 'data-no'), decision: ok ? 'confirm' : 'reject' }).then(function (d) {
+          if (!d.ok) { b.disabled = false; alert('Did not save.'); return; }
+          loadHunt();
+        });
+      });
+      function renderFlags(d) {
+        var r = d.rule || {};
+        $('flag-rule').textContent = 'A card is flagged when it is stamped ' + r.burst + ' or more times within ' + r.window_min + ' minutes, or scanned from places more than ' + r.km + ' km apart within ' + r.travel_min + ' minutes (only for members who share their location). If one looks wrong, replace its code.';
+        var name = {}; stops.forEach(function (s) { name[s.id] = (s.listing || {}).name; });
+        $('flags').innerHTML = (d.flags || []).length ? d.flags.map(function (f) {
+          return '<div class="rep"><div><b>' + esc(name[f.stop_id] || 'A stop') + '</b><div class="meta">' + f.scans + ' stamps' + (f.burst ? ' &middot; ' + f.burst + ' within ' + r.window_min + ' minutes' : '') + (f.travel ? ' &middot; ' + f.travel.km + ' km apart around ' + new Date(f.travel.at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '') + '</div></div></div>';
+        }).join('') : '<p class="meta">Nothing odd so far.</p>';
+      }
+      function loadHunt() {
+        return Promise.all([api({ action: 'admin_stops', hunt_id: hunt.id }), api({ action: 'admin_stats', hunt_id: hunt.id }), api({ action: 'admin_reports', hunt_id: hunt.id }), api({ action: 'admin_flags', hunt_id: hunt.id })])
+          .then(function (r) { stops = r[0].stops || []; stats = r[1] || {}; renderStops(); renderReports(r[2].reports || []); renderFlags(r[3] || {}); })
+          .catch(function () { $('stops').innerHTML = '<tr><td colspan="8" class="meta">Did not load. Refresh to try again.</td></tr>'; });
+      }
+      function loadHunts(pickId) {
+        return api({ action: 'admin_hunts' }).then(function (d) {
+          hunts = d.hunts || [];
+          var h = hunts.filter(function (x) { return x.id === pickId; })[0] || hunts.filter(function (x) { return x.status === 'live'; })[0] || hunts[0] || null;
+          select(h);
+          if (!h) msg('f-msg', 'No hunts yet. The form is filled in for next month: add the area and save.');
+        });
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('h-gate').hidden = false; $('h-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="h-signin">Sign in</button>'; $('h-signin').onclick = function () { VEAuth.showAuthModal('Sign in to manage the Hunt.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('h-gate').hidden = false; $('h-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('h-app').hidden = false;
+        loadHunts();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

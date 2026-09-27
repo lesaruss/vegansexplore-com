@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Hunt Register Card | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Montserrat",sans-serif;background:#eef0ee;color:#1a1a1a;line-height:1.5;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    .tools{max-width:900px;margin:0 auto;padding:24px 16px 8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;}
+    .tools p{font-size:13px;color:rgba(26,26,26,.8);max-width:560px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border-radius:8px;font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:0;background:#1f5f22;color:#fff;}
+    .sheet{max-width:900px;margin:0 auto;padding:12px 16px 40px;display:flex;flex-wrap:wrap;gap:18px;justify-content:center;}
+    /* A 5 x 7 inch card, front and back side by side for folding or double-sided printing. */
+    .card{width:5in;height:7in;max-width:100%;background:#fff;border-radius:14px;box-shadow:0 2px 14px rgba(0,0,0,.12);padding:.4in .35in;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;position:relative;}
+    .front{background:#1f5f22;color:#fff;}
+    .word{font-size:15px;font-weight:900;letter-spacing:.24em;}
+    .tag{margin-top:6px;font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#cdeccf;}
+    .big{font-size:34px;font-weight:900;text-transform:uppercase;line-height:1.02;margin:18px 0 14px;}
+    .qr{background:#fff;padding:14px;border-radius:12px;}
+    .qr img,.qr canvas{display:block;width:2.4in !important;height:2.4in !important;}
+    .scan{margin-top:16px;font-size:16px;font-weight:800;}
+    .code{margin-top:auto;font-size:11px;letter-spacing:.14em;color:#cdeccf;}
+    .biz{font-size:12px;font-weight:700;color:#fff;margin-top:4px;}
+    .back h2{font-size:13px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#1f5f22;margin:6px 0 16px;}
+    .script{font-size:22px;font-weight:900;line-height:1.2;margin-bottom:22px;}
+    .steps{list-style:none;text-align:left;width:100%;counter-reset:s;}
+    .steps li{counter-increment:s;position:relative;padding:0 0 14px 40px;font-size:14px;}
+    .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:#1f5f22;color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
+    .note{margin-top:auto;font-size:11.5px;color:rgba(26,26,26,.8);border-top:1px solid rgba(0,0,0,.12);padding-top:10px;}
+    .err{max-width:600px;margin:40px auto;background:#fff;border-radius:12px;padding:24px;text-align:center;}
+    @media print{
+      body{background:#fff;}
+      .tools,.ve-nav,.ve-footer,nav,footer{display:none !important;}
+      .sheet{padding:0;gap:0;}
+      .card{box-shadow:none;border-radius:0;break-after:page;}
+      .front{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      @page{size:5in 7in;margin:0;}
+    }
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="tools" id="tools">
+    <p>The VE Hunt register card for <b id="t-biz">this stop</b>. Print on 5 x 7 inch card stock, front and back (two pages). It lives under the register; staff hand it over after a purchase.</p>
+    <button type="button" class="btn" onclick="window.print()">Print</button>
+  </div>
+  <div class="sheet" id="sheet" hidden>
+    <section class="card front" aria-label="Card front">
+      <div class="word">VEGANS EXPLORE</div>
+      <div class="tag">The Hunt</div>
+      <div class="big">You found a<br>Hunt stop</div>
+      <div class="qr" id="qr" role="img" aria-label="QR code that stamps your Hunt Passport"></div>
+      <div class="scan">Scan to stamp your Passport</div>
+      <div class="code">CARD <span id="c-code"></span> &middot; V<span id="c-ver"></span></div>
+      <div class="biz" id="c-biz"></div>
+    </section>
+    <section class="card back" aria-label="Card back">
+      <div class="word" style="color:#1f5f22">VEGANS EXPLORE</div>
+      <h2>For staff</h2>
+      <div class="script">"Doing the VE Hunt? Scan this after your purchase."</div>
+      <ol class="steps">
+        <li>A guest buys anything and shows you the Hunt on their phone.</li>
+        <li>Hand them this card. They scan the QR on the front.</li>
+        <li>Their Passport stamps right away. Take the card back and keep it under the register.</li>
+      </ol>
+      <p class="note">One stamp per guest per hunt, so there is nothing to track. Questions or a lost card: hello@vegansexplore.com. Each hunt gets a new card.</p>
+    </section>
+  </div>
+  <div class="err" id="err" hidden></div>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-hunt';
+      var qs = new URLSearchParams(location.search), $ = function (id) { return document.getElementById(id); };
+      function fail(t) { $('err').textContent = t; $('err').hidden = false; }
+      function start() {
+        if (!window.VEAuth || !window.QRCode) return setTimeout(start, 150);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) return fail('This page is for Vegans Explore admins. Sign in and open it from Depot > Hunt.');
+        fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'admin_stops', hunt_id: qs.get('hunt') }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            var s = (d.stops || []).filter(function (x) { return x.id === qs.get('stop'); })[0];
+            if (!s) return fail('That stop was not found. Open the card from Depot > Hunt.');
+            var name = (s.listing || {}).name || '';
+            $('t-biz').textContent = name; $('c-biz').textContent = name; $('c-code').textContent = s.code; $('c-ver').textContent = s.code_version;
+            new QRCode($('qr'), { text: 'https://vegansexplore.com/hunt/scan?c=' + s.code, width: 480, height: 480, correctLevel: QRCode.CorrectLevel.M });
+            $('sheet').hidden = false;
+          }).catch(function () { fail('Did not load. Refresh to try again.'); });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

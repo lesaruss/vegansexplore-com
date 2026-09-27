@@ -158,10 +158,9 @@
      (2026-09-07, Logan, Sean direction, next phase after the dashboard
      restructure). Sits above everything else on the dashboard, for every
      member, not just staff -- distinct from .dash-stats below, which stays
-     the Community-Manager-only City/Pending/Status row. Badges has no real
-     table behind it yet (checked live: no badges table exists), so it is
-     styled and tagged Coming Soon the same way every other unbuilt tile on
-     this page already is, rather than showing an invented number. --- */
+     the Community-Manager-only City/Pending/Status row. Badges counts the
+     member's Hunt badges (ve_hunt_completions via ve-hunt 'badges', live
+     2026-09-27) and links to /hunt. --- */
   .dash-stats-hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
   .dash-stats-hero-tile{border:1.5px solid var(--ve-border);border-radius:14px;padding:18px 16px;background:linear-gradient(180deg,#fff,#fafdfa);text-align:center;}
   .dash-stats-hero-tile.locked{opacity:0.6;}
@@ -737,10 +736,10 @@
           <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
           <div class="dash-stats-hero-label">Membership</div>
         </div>
-        <div class="dash-stats-hero-tile locked">
-          <div class="dash-stats-hero-value">--</div>
-          <div class="dash-stats-hero-label">Badges <span class="dash-tag">Coming Soon</span></div>
-        </div>
+        <a class="dash-stats-hero-tile" id="dash-hero-badges-tile" href="/hunt" style="text-decoration:none;color:inherit">
+          <div class="dash-stats-hero-value" id="dash-hero-badges">0</div>
+          <div class="dash-stats-hero-label">Hunt Badges</div>
+        </a>
       </div>
 
       <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
@@ -2255,9 +2254,8 @@
   // Front-and-center stats hero (2026-09-07, Logan, Sean direction): Points
   // comes straight from ve-auth's 'me' response (member.points, backed by
   // member_points.available_points -- wired same session). Membership shows
-  // the real tier. Badges has no table behind it yet (checked live before
-  // building this), so it stays a static Coming Soon tile rather than a
-  // fabricated number, matching every other unbuilt tile on this page.
+  // the real tier. Badges is the member's real Hunt badge count (ve-hunt
+  // 'badges', 2026-09-27), fetched below.
   // Level is driven by LIFETIME points, not the spendable balance, so
   // redeeming points can never demote a member (2026-09-06 points model,
   // rate corrected to 10,000 by Sean on 2026-09-10). Level 1 is the floor,
@@ -2282,6 +2280,12 @@
       : member.membership_status === 'active' && member.membership_tier === 'guest' ? 'Guest Passport'
       : member.membership_status === 'active' ? 'Founding Member Passport' : 'Free';
     if (levelEl) levelEl.textContent = veLevelFor(member.total_points).toLocaleString();
+    // Hunt badges (playbook ve-verified-tours-hunt group C): one per monthly Hunt completed.
+    var badgesEl = document.getElementById('dash-hero-badges');
+    if (badgesEl && window.VEAuth && VEAuth.getToken()) {
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-hunt', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'badges' }) })
+        .then(function (r) { return r.json(); }).then(function (d) { if (d && d.badges) badgesEl.textContent = d.badges.length.toLocaleString(); }).catch(function () {});
+    }
     var levelProgressEl = document.getElementById('dash-hero-level-progress');
     if (levelProgressEl) {
       var lifetimeForProgress = typeof member.total_points === 'number' && member.total_points > 0 ? member.total_points : 0;
