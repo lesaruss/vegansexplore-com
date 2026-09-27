@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Media Library | Vegans Explore</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:1200px;margin:0 auto;padding:28px 24px 56px;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin:26px 0 12px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:720px;margin-bottom:20px;}
+    .drop{border:2px dashed #9cc79e;border-radius:14px;background:#fff;padding:36px 20px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s;}
+    .drop.over{background:var(--ve-green-light);border-color:var(--ve-green);}
+    .drop b{display:block;font-size:17px;font-weight:800;margin-bottom:4px;}
+    .drop span{font-size:13.5px;color:var(--ve-text-75);}
+    .progress{margin-top:12px;font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .errs{font-size:13px;color:#8a1c12;margin-top:4px;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+    .bar label{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
+    select,input[type=text]{font:inherit;font-size:13.5px;font-weight:600;padding:8px 10px;border:1px solid rgba(0,0,0,0.22);border-radius:8px;background:#fff;color:var(--ve-text);}
+    .count{font-size:13px;font-weight:700;color:var(--ve-text-75);margin-left:auto;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0;}
+    .card.archived{opacity:0.55;}
+    .thumb{position:relative;background:#dde3dd;aspect-ratio:16/10;cursor:zoom-in;}
+    .thumb img,.thumb video{width:100%;height:100%;object-fit:contain;display:block;background:#1c241d;}
+    .thumb.audio{display:flex;align-items:center;justify-content:center;padding:28px 12px 12px;cursor:default;background:#1c241d;}
+    .thumb.audio audio{width:100%;}
+    .ori{position:absolute;left:8px;top:8px;font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(0,0,0,0.78);color:#fff;}
+    .card-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px;}
+    .name{font-size:12px;color:var(--ve-text-75);font-weight:600;word-break:break-all;}
+    .uses{display:flex;flex-wrap:wrap;gap:6px;}
+    .chip{font:inherit;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;border:1.5px solid rgba(0,0,0,0.2);background:#fff;color:var(--ve-text);cursor:pointer;min-height:32px;}
+    .chip[aria-pressed="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .row{display:flex;gap:8px;align-items:center;}
+    .row select,.row input{flex:1;min-width:0;}
+    .saved{font-size:11.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
+    .linkbtn{font:inherit;font-size:12px;font-weight:700;background:none;border:0;color:#5c2a00;text-decoration:underline;cursor:pointer;align-self:flex-start;padding:4px 0;margin-right:12px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.22);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .gate h2{font-size:21px;margin:0 0 10px;}
+    .gate p{color:var(--ve-text-75);margin-bottom:16px;}
+    .empty{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:28px;text-align:center;color:var(--ve-text-75);font-size:14px;}
+    dialog{border:0;border-radius:14px;padding:0;max-width:min(1200px,calc(100% - 32px));box-shadow:0 24px 60px rgba(0,0,0,0.35);}
+    dialog::backdrop{background:rgba(10,20,12,0.75);}
+    dialog img{display:block;max-width:100%;max-height:82vh;}
+    dialog .dlg-bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 14px;font-size:13px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <div class="wrap">
+    <p class="eyebrow">Admin</p>
+    <h1>Media library</h1>
+    <p class="sub">Every picture, sound and video we keep for Vegans Explore, in our own storage so nothing depends on Higgsfield. Drop a folder of any mix of files, then tag them below. Pictures: Background (desktop), Background (phone) or Slide. Audio: Narration or Music. Video: Slide video. Add the place where it fits.</p>
+    <p class="sub" style="margin-top:-8px;">Put them on a page: <a href="/admin/onboarding-images">slide pictures and backgrounds</a> &middot; <a href="/admin/onboarding-audio">slide narration</a></p>
+    <div id="ml-gate" class="gate" hidden></div>
+    <div id="ml-app" hidden>
+      <div class="drop" id="ml-drop" tabindex="0" role="button" aria-label="Drop a folder of images, or click to choose files">
+        <b>Drop a folder here</b>
+        <span>or click to choose files. Pictures (PNG, JPG, WebP), audio (MP3, WAV, M4A) and video (MP4, MOV, WebM, up to 50 MB each). The same file dropped twice is kept once.</span>
+      </div>
+      <input type="file" id="ml-files" multiple accept="image/png,image/jpeg,image/webp,audio/*,video/mp4,video/quicktime,video/webm" hidden>
+      <p class="progress" id="ml-progress" role="status"></p>
+      <p class="errs" id="ml-errs"></p>
+
+      <h2>The library</h2>
+      <div class="bar">
+        <label>Type <select id="f-kind">
+          <option value="all">Everything</option>
+          <option value="image">Pictures</option>
+          <option value="audio">Audio</option>
+          <option value="video">Video</option>
+        </select></label>
+        <label>Tag <select id="f-use">
+          <option value="all">Any tag</option>
+          <option value="untagged">Not tagged yet</option>
+          <option value="bg_desktop">Background (desktop)</option>
+          <option value="bg_mobile">Background (phone)</option>
+          <option value="slide">Slide pictures</option>
+          <option value="narration">Narration</option>
+          <option value="music">Music</option>
+          <option value="video">Slide video</option>
+        </select></label>
+        <label>Place <select id="f-place">
+          <option value="all">Any place</option>
+          <option value="miami">Miami</option>
+          <option value="broward">Broward</option>
+          <option value="palm-beach">Palm Beach</option>
+          <option value="none">No place</option>
+        </select></label>
+        <label>Shape <select id="f-ori">
+          <option value="all">Any shape</option>
+          <option value="landscape">Landscape</option>
+          <option value="portrait">Portrait</option>
+          <option value="square">Square</option>
+        </select></label>
+        <label><input type="checkbox" id="f-arch"> Show hidden</label>
+        <span class="count" id="ml-count"></span>
+      </div>
+      <div class="grid" id="ml-grid"></div>
+    </div>
+  </div>
+
+  <dialog id="ml-dlg" aria-label="Picture preview">
+    <img id="ml-dlg-img" alt="">
+    <div class="dlg-bar"><span id="ml-dlg-cap"></span><button type="button" class="btn btn-ghost" id="ml-dlg-close">Close</button></div>
+  </dialog>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-media-upload.js"></script>
+  <script>
+    (function () {
+      // What each kind of media can be tagged as.
+      var USES = {
+        image: { bg_desktop: 'Background (desktop)', bg_mobile: 'Background (phone)', slide: 'Slide' },
+        audio: { narration: 'Narration', music: 'Music' },
+        video: { video: 'Slide video' }
+      };
+      var PLACE_LABELS = { miami: 'Miami', broward: 'Broward', 'palm-beach': 'Palm Beach' };
+      var $ = function (id) { return document.getElementById(id); };
+      var items = [];
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return VEMediaUpload.api(VEAuth.getToken(), body); }
+      function fmt(sec) { sec = Math.round(sec || 0); return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
+      function mb(b) { return b ? (b / 1048576).toFixed(1) + ' MB' : ''; }
+
+      // ---- Upload (shared with Onboarding images, /public/ve-media-upload.js).
+      function addFiles(files) {
+        if (!files.some(VEMediaUpload.accepts)) { $('ml-progress').textContent = 'Nothing in that drop is an image, audio or video file this library keeps.'; return; }
+        $('ml-errs').textContent = '';
+        VEMediaUpload.upload(files, VEAuth.getToken(), function (i, n, f) { $('ml-progress').textContent = 'Uploading ' + i + ' of ' + n + ': ' + f.name; }).then(function (r) {
+          r.items.forEach(function (it) { items.unshift(it); });
+          render();
+          $('ml-progress').textContent = 'Done. ' + r.added + ' added' + (r.dupes ? ', ' + r.dupes + ' already in the library' : '') + (r.skipped ? ', ' + r.skipped + ' other files skipped' : '') + '.';
+          if (r.errors.length) $('ml-errs').textContent = 'Not uploaded: ' + r.errors.join(', ') + '. Try those again.';
+        });
+      }
+      VEMediaUpload.bindDrop($('ml-drop'), $('ml-files'), addFiles);
+
+      // ---- Library grid with tags.
+      function visible() {
+        var k = $('f-kind').value, u = $('f-use').value, pl = $('f-place').value, o = $('f-ori').value, arch = $('f-arch').checked;
+        return items.filter(function (it) {
+          if (it.archived && !arch) return false;
+          if (k !== 'all' && it.kind !== k) return false;
+          if (u === 'untagged' && (it.uses || []).length) return false;
+          if (u !== 'all' && u !== 'untagged' && (it.uses || []).indexOf(u) < 0) return false;
+          if (pl === 'none' && it.place) return false;
+          if (pl !== 'all' && pl !== 'none' && it.place !== pl) return false;
+          if (o !== 'all' && it.orientation !== o) return false;
+          return true;
+        });
+      }
+      function preview(it) {
+        if (it.kind === 'audio') return '<div class="thumb audio"><audio controls preload="none" src="' + esc(it.url) + '"></audio><span class="ori">audio' + (it.duration ? ' &middot; ' + fmt(it.duration) : '') + '</span></div>';
+        if (it.kind === 'video') return '<div class="thumb"><video controls muted playsinline preload="metadata" src="' + esc(it.url) + '#t=0.5"></video><span class="ori">video' + (it.duration ? ' &middot; ' + fmt(it.duration) : '') + (it.width ? ' &middot; ' + it.width + '&times;' + it.height : '') + '</span></div>';
+        return '<div class="thumb" data-prev="' + it.id + '"><img src="' + esc(it.thumb_url || it.url) + '" alt="" loading="lazy"><span class="ori">' + esc(it.orientation || 'image') + ' &middot; ' + it.width + '&times;' + it.height + '</span></div>';
+      }
+      function card(it) {
+        var uses = it.uses || [], opts = USES[it.kind] || {};
+        return '<article class="card' + (it.archived ? ' archived' : '') + '" data-id="' + it.id + '">' + preview(it) +
+          '<div class="card-body"><p class="name">' + esc(it.source_name || '') + (it.bytes ? ' &middot; ' + mb(it.bytes) : '') + '</p>' +
+          '<div class="uses">' + Object.keys(opts).map(function (k) { return '<button type="button" class="chip" data-use="' + k + '" aria-pressed="' + (uses.indexOf(k) >= 0) + '">' + opts[k] + '</button>'; }).join('') + '</div>' +
+          '<div class="row"><select data-place aria-label="Place"><option value="">No place</option>' + Object.keys(PLACE_LABELS).map(function (k) { return '<option value="' + k + '"' + (it.place === k ? ' selected' : '') + '>' + PLACE_LABELS[k] + '</option>'; }).join('') + '</select></div>' +
+          '<div class="row"><input type="text" data-labels aria-label="Labels, separated by commas" placeholder="Labels, comma separated" value="' + esc((it.labels || []).join(', ')) + '"></div>' +
+          '<p class="saved" role="status"></p>' +
+          '<div class="row"><button type="button" class="linkbtn" data-copy>Copy link</button><button type="button" class="linkbtn" data-arch>' + (it.archived ? 'Show in library again' : 'Hide from library') + '</button></div>' +
+          '</div></article>';
+      }
+      function render() {
+        var list = visible();
+        $('ml-count').textContent = list.length + ' of ' + items.length;
+        $('ml-grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">' + (items.length ? 'Nothing matches these filters.' : 'The library is empty. Drop your folder above.') + '</p>';
+      }
+      function find(id) { for (var i = 0; i < items.length; i++) if (items[i].id === id) return i; return -1; }
+      function save(el, patch) {
+        var c = el.closest('.card'), id = c.getAttribute('data-id'), msg = c.querySelector('.saved');
+        msg.textContent = 'Saving...';
+        api(Object.assign({ action: 'update', id: id }, patch)).then(function (d) {
+          if (!d.ok) { msg.textContent = 'That did not save. Try again.'; return; }
+          items[find(id)] = d.item; msg.textContent = 'Saved.';
+          if (patch.archived !== undefined) render();
+        }).catch(function () { msg.textContent = 'Could not connect. Try again.'; });
+      }
+      $('ml-grid').addEventListener('click', function (e) {
+        var chip = e.target.closest('[data-use]');
+        if (chip) {
+          var on = chip.getAttribute('aria-pressed') !== 'true'; chip.setAttribute('aria-pressed', String(on));
+          var uses = Array.prototype.map.call(chip.parentNode.querySelectorAll('[aria-pressed="true"]'), function (b) { return b.getAttribute('data-use'); });
+          save(chip, { uses: uses }); return;
+        }
+        var arch = e.target.closest('[data-arch]');
+        if (arch) { var it = items[find(arch.closest('.card').getAttribute('data-id'))]; save(arch, { archived: !it.archived }); return; }
+        var cp = e.target.closest('[data-copy]');
+        if (cp) { var ci = items[find(cp.closest('.card').getAttribute('data-id'))], m = cp.closest('.card').querySelector('.saved'); try { navigator.clipboard.writeText(ci.url).then(function () { m.textContent = 'Link copied.'; }); } catch (err) { m.textContent = ci.url; } return; }
+        var prev = e.target.closest('[data-prev]');
+        if (prev) { var p = items[find(prev.getAttribute('data-prev'))]; $('ml-dlg-img').src = p.url; $('ml-dlg-cap').textContent = (p.source_name || '') + ' · ' + p.width + '×' + p.height; $('ml-dlg').showModal(); }
+      });
+      $('ml-grid').addEventListener('change', function (e) {
+        if (e.target.matches('[data-place]')) save(e.target, { place: e.target.value || null });
+        if (e.target.matches('[data-labels]')) save(e.target, { labels: e.target.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean) });
+      });
+      ['f-kind', 'f-use', 'f-place', 'f-ori', 'f-arch'].forEach(function (id) { $(id).addEventListener('change', render); });
+      $('ml-dlg-close').onclick = function () { $('ml-dlg').close(); };
+      $('ml-dlg').addEventListener('click', function (e) { if (e.target === $('ml-dlg')) $('ml-dlg').close(); });
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        if (!VEAuth.isLoggedIn()) {
+          $('ml-gate').hidden = false;
+          $('ml-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="ml-signin">Sign in</button>';
+          $('ml-signin').onclick = function () { VEAuth.showAuthModal('Sign in to manage the media library.', function () { location.reload(); }, 'login'); };
+          return;
+        }
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!m || !m.is_superadmin) { $('ml-gate').hidden = false; $('ml-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('ml-app').hidden = false;
+        api({ action: 'list' }).then(function (d) { items = d.items || []; render(); }).catch(render);
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
