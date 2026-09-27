@@ -68,6 +68,21 @@
     .add input,.add select{font:inherit;font-size:13.5px;padding:9px 10px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);}
     .add .wide{grid-column:1/-1;}
     .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .bw{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:14px 16px;margin:0 0 16px;max-width:980px;}
+    .bw-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;}
+    .bw-state{font-size:13.5px;}
+    .bw-state b{font-weight:800;}
+    .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#c9ccc9;vertical-align:middle;}
+    .dot.on{background:var(--ve-green);}
+    .route{display:flex;gap:6px;flex-wrap:wrap;}
+    .route button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:8px 12px;min-height:40px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;}
+    .route button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .steps{margin:12px 0 0;padding-left:20px;font-size:13.5px;}
+    .steps li{margin-bottom:8px;}
+    .stn{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:10px;margin-top:10px;}
+    .stn form{border:1px solid var(--ve-border);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;}
+    .stn input{font:inherit;font-size:13px;padding:8px 10px;min-height:40px;border:1px solid rgba(0,0,0,.25);border-radius:8px;width:100%;}
+    .runs{margin-top:10px;font-size:12.5px;color:var(--ve-text-75);}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     [hidden]{display:none !important;}
   </style>
@@ -87,6 +102,31 @@
     <div id="nd-gate" class="gate" hidden></div>
     <div id="nd-app" hidden>
       <div class="stats" id="stats"></div>
+
+      <section class="bw" id="bw" aria-labelledby="bw-h">
+        <div class="bw-head">
+          <div class="bw-state"><h2 id="bw-h" style="display:inline;margin-right:8px">Background writer</h2><span id="bw-state">Checking...</span></div>
+          <div class="route" id="route" role="group" aria-label="Which station writes">
+            <button type="button" data-st="station-1" aria-pressed="false">Station 1 writes</button>
+            <button type="button" data-st="station-2" aria-pressed="false">Station 2 writes</button>
+          </div>
+        </div>
+        <p class="sub" style="margin:6px 0 0">Every 15 minutes, stories you marked <b>Write it up</b> are written on your Claude subscription by the station you pick. If that station is out of usage, the other one takes over.</p>
+        <details id="bw-setup">
+          <summary style="cursor:pointer;font-weight:800;min-height:32px;margin-top:8px">Connect a station (one time, about 2 minutes)</summary>
+          <ol class="steps">
+            <li>On the station's computer, open <a href="https://claude.ai/code/routines" target="_blank" rel="noopener">claude.ai/code/routines</a> and start a new routine. Name it <b>Dispatcher Worker</b>.</li>
+            <li>For its instructions, tap <button type="button" class="btn btn-ghost" id="bw-copy" style="min-height:34px;padding:6px 12px">Copy the instructions</button> and paste. Turn on the Supabase connector. Do not add a schedule.</li>
+            <li>Save it, open it again, choose <b>Edit</b>, then add a trigger of type <b>API</b> and <b>Generate token</b>. Copy the link and the token it shows (the token is shown only once).</li>
+            <li>Paste both below for that station and tap Connect.</li>
+          </ol>
+          <div class="stn">
+            <form data-st="station-1"><b>Station 1 (SAR-station)</b><input name="url" placeholder="https://api.anthropic.com/v1/claude_code/routines/.../fire" autocomplete="off" aria-label="Station 1 trigger link"><input name="tok" type="password" placeholder="Token" autocomplete="off" aria-label="Station 1 token"><button type="submit" class="btn">Connect Station 1</button><span class="msg" role="status"></span></form>
+            <form data-st="station-2"><b>Station 2 (V-station)</b><input name="url" placeholder="https://api.anthropic.com/v1/claude_code/routines/.../fire" autocomplete="off" aria-label="Station 2 trigger link"><input name="tok" type="password" placeholder="Token" autocomplete="off" aria-label="Station 2 token"><button type="submit" class="btn">Connect Station 2</button><span class="msg" role="status"></span></form>
+          </div>
+        </details>
+        <div class="runs" id="bw-runs"></div>
+      </section>
 
       <details class="sources" id="sources">
         <summary>Sources (<span id="src-count">0</span>)</summary>
@@ -172,7 +212,7 @@
           (l.summary ? '<p class="summary">' + esc(l.summary) + '</p>' : '') +
           '<p class="flag">Flagged: ' + esc(l.reason || '') + '</p>' +
           (l.notes && (l.status === 'drafted' || l.status === 'published') ? '<p class="notes"><b>Check before publishing:</b> ' + esc(l.notes) + '</p>' : '') +
-          (l.draft_error && l.status === 'write' ? '<p class="err">' + (/credit balance/i.test(l.draft_error) ? 'The Anthropic account that writes drafts is out of credit. Add credit in the Anthropic Console (Plans and Billing), then tap Try again. Queued drafts also retry on their own every 6 hours.' : 'The draft did not finish (' + esc(l.draft_error) + '). Try again, or dismiss it.') + '</p>' : '') +
+          (l.draft_error && l.status === 'write' ? '<p class="err">' + (/credit balance/i.test(l.draft_error) ? 'Queued for the Background writer (above). It writes this on your Claude subscription within 15 minutes once a station is connected.' : 'The draft did not finish (' + esc(l.draft_error) + '). Try again, or dismiss it.') + '</p>' : '') +
           '<div class="actions">' + actions(l) + '</div></div></article>';
       }
       function render() {
@@ -287,12 +327,53 @@
         });
       });
 
+      // ---- background writer (lesaruss-dispatch-admin) ----
+      var BW = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/lesaruss-dispatch-admin', bwPrompt = '';
+      function bw(body) { return fetch(BW, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      var SNAME = { 'station-1': 'Station 1', 'station-2': 'Station 2' };
+      function loadBw() {
+        return bw({ action: 'status' }).then(function (d) {
+          if (!d.ok) { $('bw-state').textContent = 'Could not load.'; return; }
+          bwPrompt = d.routine_prompt || '';
+          var st = d.stations || {}, any = st['station-1'] || st['station-2'];
+          $('bw-state').innerHTML = ['station-1', 'station-2'].map(function (k) { return '<span style="margin-right:12px"><span class="dot' + (st[k] ? ' on' : '') + '"></span>' + SNAME[k] + (st[k] ? ' connected' : ' not connected') + '</span>'; }).join('') +
+            (any ? '' : '<b>Not writing yet: connect a station below.</b>');
+          $('route').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-st') === d.route)); });
+          if (!any) $('bw-setup').open = true;
+          var runs = d.runs || [];
+          $('bw-runs').innerHTML = runs.length ? 'Recent runs: ' + runs.slice(0, 4).map(function (r) {
+            return esc(day(r.fired_at)) + ' ' + esc(new Date(r.fired_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })) + ' on ' + esc(SNAME[r.station] || 'a station') + ': ' + esc({ fired: 'starting', running: 'writing', done: 'done', failed: 'did not finish', fire_failed: 'could not start' }[r.status] || r.status) +
+              (r.session_url ? ' (<a href="' + esc(r.session_url) + '" target="_blank" rel="noopener">open</a>)' : '');
+          }).join(' &middot; ') : '';
+        });
+      }
+      $('route').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-st]'); if (!b) return;
+        bw({ action: 'route', station: b.getAttribute('data-st') }).then(function (d) { if (d.ok) loadBw(); else alert('That did not save.'); });
+      });
+      $('bw-copy').onclick = function () {
+        var btn = this;
+        (navigator.clipboard ? navigator.clipboard.writeText(bwPrompt) : Promise.reject()).then(function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy the instructions'; }, 2000); },
+          function () { prompt('Copy these instructions:', bwPrompt); });
+      };
+      document.querySelectorAll('.stn form').forEach(function (f) {
+        f.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var msg = f.querySelector('.msg'); msg.textContent = 'Connecting...';
+          bw({ action: 'save_station', station: f.getAttribute('data-st'), fire_url: f.url.value.trim(), token: f.tok.value.trim() }).then(function (d) {
+            if (!d.ok) { msg.textContent = { bad_url: 'That link should start with https://api.anthropic.com/v1/claude_code/routines/ and end in /fire.', bad_token: 'Paste the whole token.' }[d.error] || 'That did not save.'; return; }
+            f.reset(); msg.textContent = 'Connected. Checking for stories to write now...';
+            bw({ action: 'run_now' }).then(function (r) { msg.textContent = r.tick && r.tick.fired ? 'Connected. Writing has started.' : 'Connected.'; loadBw(); });
+          });
+        });
+      });
+
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
         if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('nd-gate').hidden = false; $('nd-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
         $('nd-app').hidden = false; syncForm();
-        loadFeeds(); load();
+        loadFeeds(); load(); loadBw();
       }
       start();
     })();

@@ -438,7 +438,12 @@ last fire in the past hour failed is skipped for the other. Secrets per station:
 `CC_ROUTINE_FIRE_URL_STATION_1` / `CC_ROUTINE_TOKEN_STATION_1` and the same with `_2`
 (unsuffixed names count as Station 1). Each run records its `station`.
 
-Setup (Sean, once per station): create the routine at claude.ai/code/routines with the prompt below, no
+Setup now happens on Depot > News Desk, "Background writer" box (edge function
+`lesaruss-dispatch-admin`: status, save_station, route, run_now; tokens are write-only through
+`lesaruss_dispatch_save_station`; the routine prompt lives in `lesaruss_dispatch_settings.routine_prompt`
+and the box has a Copy button). The manual path below still works.
+
+Manual setup (once per station): create the routine at claude.ai/code/routines with the prompt below, no
 schedule, a fresh session per run, the Supabase connector on. Add an API trigger, generate the
 token, then store two rows in `lesaruss_secrets`: `CC_ROUTINE_FIRE_URL` (the trigger's URL,
 `https://api.anthropic.com/v1/claude_code/routines/<id>/fire`) and `CC_ROUTINE_TOKEN`.
