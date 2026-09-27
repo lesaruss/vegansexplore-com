@@ -206,3 +206,17 @@ listings and listings with no vegan status are never held back.
   listings) and writes the details onto the listing; `claim_status` 'pending' means a paid
   claim is waiting. Claims live in `ve_listing_claims` (RLS on, service role only).
   Migration `directory_trust_and_claims`.
+
+### Directory editing and filters (2026-09-27)
+
+- `listings.extra_categories` (text[]): more sections a listing shows under on the city
+  hubs, beside its main `category` (migration `listing_extra_categories`, which also fixed
+  the stray spellings Restaurant, Bakery and Food Brand).
+- `ve-claims` v2 `admin_listing` (superadmins): the quick editor in `/public/ve-listing-admin.js`
+  on hub cards and listing pages sets main section, extra sections, vegan status and
+  `business_status` (OPERATIONAL / CLOSED_TEMPORARILY / CLOSED_PERMANENTLY). Permanently
+  closed listings leave the hub's default view and appear under Type > Closed.
+- City hubs gained a "Vegan" filter (100% Vegan only, Vegan-friendly, Vegan options) and a
+  label on every card.
+- Listing pages show one billboard ad: `ve-directory-listing-landscape-2` is paused and the
+  Riku (Bai spec) campaign unlinked from it.

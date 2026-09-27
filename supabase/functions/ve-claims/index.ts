@@ -22,6 +22,9 @@
 //     approve: listing claim_status 'verified' (it now shows to the public), owner set, and
 //     the details they sent written onto the listing.
 //   POST { action: 'admin_trust', enabled, min_voters }    the public directory rule
+//   POST { action: 'admin_listing', listing_id, category?, extra_categories?, vegan_status?, business_status? }
+//     The quick editor on the city hubs and listing pages (Sean, 2026-09-27): move a listing to
+//     another section or add it to more than one, set how Vegan it is, mark it closed.
 //
 // verify_jwt is false: the VE app token is checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -35,6 +38,12 @@ const FN_URL = `${SUPABASE_URL}/functions/v1/ve-claims`;
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const MIN_CENTS = 1100, MAX_CENTS = 1000000; // $11 minimum (Sean), $10,000 sanity ceiling
 const STATUSES = ['fully_vegan', 'vegan_friendly', 'vegan_options'];
+// Every section the city hubs know (CAT_MAP in /public/ve-region-directory.js).
+const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Brands', 'Catering', 'Meal Prep', 'Brands', 'Beauty and Personal Care',
+  'Clothing and Fashion', 'E-Commerce & Marketplaces', 'Fitness and Athletics', 'Health and Wellness', 'Coaches and Consultants',
+  'AI & Automation', 'Web & Development', 'Marketing & Growth', 'Business Operations', 'Branding & Creative Assets',
+  'Content Creation & Media', 'Community Partner', 'Nonprofits', 'Events and Catering', 'Media', 'Uncategorized'];
+const BUSINESS = ['OPERATIONAL', 'CLOSED_TEMPORARILY', 'CLOSED_PERMANENTLY'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -217,6 +226,24 @@ Deno.serve(async (req) => {
     const { error } = await db.from('ve_site_settings').upsert({ key: 'directory_trust', value, updated_at: new Date().toISOString(), updated_by: memberId });
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, trust: value });
+  }
+
+  if (body.action === 'admin_listing') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (body.category !== undefined) { if (!CATEGORIES.includes(String(body.category))) return json({ error: 'bad_category' }, 400); patch.category = String(body.category); }
+    if (body.extra_categories !== undefined) {
+      const main = String(patch.category ?? body.category ?? '');
+      patch.extra_categories = [...new Set((Array.isArray(body.extra_categories) ? body.extra_categories : []).map(String))]
+        .filter((c) => CATEGORIES.includes(c) && c !== main).slice(0, 6);
+    }
+    if (body.vegan_status !== undefined) { if (!STATUSES.includes(String(body.vegan_status))) return json({ error: 'bad_vegan_status' }, 400); patch.vegan_status = String(body.vegan_status); }
+    if (body.business_status !== undefined) { if (!BUSINESS.includes(String(body.business_status))) return json({ error: 'bad_business_status' }, 400); patch.business_status = String(body.business_status); }
+    const { data, error } = await db.from('listings').update(patch).eq('id', id)
+      .select('id, slug, name, category, extra_categories, vegan_status, business_status').single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, listing: data });
   }
 
   if (body.action === 'admin_review') {

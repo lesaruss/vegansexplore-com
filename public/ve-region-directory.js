@@ -93,6 +93,12 @@
     + '.vrd-root .vote-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#aaa}'
     + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:4px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
     + '.vrd-root .vote-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A}'
+    + '.vrd-root .vrd-vegan{display:inline-block;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;vertical-align:1px}'
+    + '.vrd-root .vrd-vegan-fully{background:#e3f6e7;color:#1f6b33}'
+    + '.vrd-root .vrd-vegan-friendly{background:#f0f0f0;color:#555}'
+    + '.vrd-root .vrd-vegan-options{background:#f5f1e8;color:#6b5a2e}'
+    + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
+    + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
     + '.vrd-root .vrd-vetting{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fff4e2;color:#6b3f00;white-space:nowrap}'
     + '.vrd-root .av{border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}'
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
@@ -135,11 +141,14 @@
         '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '">' +
         '<option value="">All Cities</option></select>';
     }
+    // How Vegan (Sean, 2026-09-27): let people keep to 100% Vegan places without asking anyone.
+    var veganHtml = '<span class="geo-label">Vegan</span>' +
+      '<select aria-label="Filter by how Vegan" class="sort-select" data-vrd-vegan="' + cat.key + '">' +
+      '<option value="">All</option><option value="fully">100% Vegan only</option><option value="friendly">Vegan-friendly</option><option value="options">Vegan options</option></select>';
     var typeOptions = '<option value="">All</option>' +
-      (cat.hasVF ? '<option value="vf">Vegan Friendly</option>' : '') +
       '<option value="online">Online</option>' +
       '<option value="closed">Closed</option>';
-    var typeHtml = '<span class="geo-label">Type</span>' +
+    var typeHtml = veganHtml + '<span class="geo-label">Type</span>' +
       '<select aria-label="Filter by type" class="sort-select" data-vrd-type="' + cat.key + '">' + typeOptions + '</select>';
     var perpageHtml = '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
       '<option value="24" selected>Show 24</option><option value="48">Show 48</option><option value="111">Show 111</option>' +
@@ -192,27 +201,43 @@
     return esc(l.address_city || l.address_state || '');
   }
 
+  // Every section a listing is in: its main category plus any the admin editor added.
+  function sectionsOf(l) {
+    var out = [l.category || ''];
+    (l.extra_categories || []).forEach(function (c) { if (c && out.indexOf(c) < 0) out.push(c); });
+    return out;
+  }
+  // How Vegan, as a filter key and a label on the card (fully Vegan also covers the older 'vegan').
+  var VEGAN_KEY = { fully_vegan: 'fully', vegan: 'fully', vegan_friendly: 'friendly', vegan_options: 'options' };
+  var VEGAN_LABEL = { fully: '100% Vegan', friendly: 'Vegan-friendly', options: 'Vegan options' };
+  function veganTag(l) {
+    var k = VEGAN_KEY[l.vegan_status]; if (!k) return '';
+    return ' <span class="vrd-vegan vrd-vegan-' + k + '">' + VEGAN_LABEL[k] + '</span>';
+  }
+  function adminBtn(l) { return ADMIN ? '<button type="button" class="vla-edit" data-vla="' + esc(l.id) + '" title="Admin only">Edit</button>' : ''; }
+
   function makeBrowseCard(l, idx, type) {
     var votes = (l.vote_count || 0);
-    var subcat = l.category || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '">' +
+    var subcat = sectionsOf(l).join('|');
+    var temp = l.business_status === 'CLOSED_TEMPORARILY' ? ' <span class="vrd-temp">Temporarily closed</span>' : '';
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
-      '<div class="rank-meta">' + cardMeta(l) + vettingNote(l) + '</div>' +
-      '<div class="rank-subcat">' + esc(l.category || '') + '</div></div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button></div>' +
+      '<div class="rank-meta">' + cardMeta(l) + vettingNote(l) + temp + '</div>' +
+      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + '</div></div>' +
+      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
 
   function makeClosedCard(l, idx) {
     var votes = (l.vote_count || 0);
-    var subcat = l.category || '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed" style="opacity:.7">' +
+    var subcat = sectionsOf(l).join('|');
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed" style="opacity:.7">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name" style="color:#888">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
       '<div class="rank-subcat"><span style="font-size:9px;font-weight:700;letter-spacing:.08em;color:#c00;border:1px solid #c00;border-radius:20px;padding:2px 8px;text-transform:uppercase">Permanently Closed</span></div></div>' +
-      '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span></div>' +
+      '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span>' + adminBtn(l) + '</div>' +
       '</div>';
   }
 
@@ -232,7 +257,7 @@
       var slug = card.dataset.slug;
       if (!slug) return;
       card.addEventListener('click', function (e) {
-        if (e.target.classList.contains('vote-btn') || e.target.closest('.vote-btn')) return;
+        if (e.target.closest('.vote-btn') || e.target.closest('.vla-edit')) return;
         if (config && typeof config.onOpenListing === 'function') { config.onOpenListing(slug, card.dataset.name || ''); return; }
         window.location = '/directory/' + slug;
       });
@@ -280,18 +305,25 @@
     }
   }
 
+  var LAST = null; // what was last drawn, so an admin edit can redraw in place
   function populateGrids(root, config, approved, closed) {
     closed = closed || [];
+    LAST = { root: root, config: config, approved: approved, closed: closed };
     var tabs = {}, closedTabs = {};
     CAT_CONFIG.forEach(function (c) { tabs[c.key] = []; closedTabs[c.key] = []; });
 
+    // A listing shows in the tab of each of its sections (the main one decides the default).
+    function tabsOf(l) {
+      var out = [];
+      sectionsOf(l).forEach(function (c, i) { var t = CAT_MAP[c] || (i === 0 ? 'services' : null); if (t && out.indexOf(t) < 0) out.push(t); });
+      return out;
+    }
     approved.forEach(function (l) {
-      var tab = CAT_MAP[l.category] || 'services';
-      if (tabs[tab]) tabs[tab].push(l);
+      var into = l.business_status === 'CLOSED_PERMANENTLY' ? closedTabs : tabs; // marked closed: only under Type > Closed
+      tabsOf(l).forEach(function (tab) { if (into[tab]) into[tab].push(l); });
     });
     closed.forEach(function (l) {
-      var tab = CAT_MAP[l.category] || 'services';
-      if (closedTabs[tab]) closedTabs[tab].push(l);
+      tabsOf(l).forEach(function (tab) { if (closedTabs[tab]) closedTabs[tab].push(l); });
     });
 
     CAT_CONFIG.forEach(function (cfg) {
@@ -300,7 +332,7 @@
       all.sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0); });
 
       var cards = all.map(function (l, idx) {
-        var type = (cfg.hasVF && l.vegan_status === 'vegan_friendly') ? 'vf' : (isOnline(l) ? 'online' : 'regular');
+        var type = isOnline(l) ? 'online' : 'regular';
         return makeBrowseCard(l, idx, type);
       }).join('');
       var closedCards = closedTabs[tab].map(function (l, idx) { return makeClosedCard(l, idx); }).join('');
@@ -313,6 +345,7 @@
 
     bindVoteButtons(root);
     bindCardClicks(root, config);
+    bindAdmin(root);
 
     root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, config, true); });
   }
@@ -337,6 +370,8 @@
     var county = countySel ? countySel.value : '';
     var city = citySel ? citySel.value : '';
     var type = typeSel ? typeSel.value : '';
+    var veganSel = bar ? bar.querySelector('[data-vrd-vegan]') : null;
+    var vegan = veganSel ? veganSel.value : '';
     var perpage = perpageSel ? (parseInt(perpageSel.value, 10) || 24) : 24;
     var countyMap = {};
     if (countySel) { try { countyMap = JSON.parse(countySel.dataset.cities || '{}'); } catch (e) {} }
@@ -347,7 +382,8 @@
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.rank-card'));
     var matched = [];
     cards.forEach(function (card) {
-      var subOk = (special === 'All') || (card.dataset.subcat === special);
+      var subOk = (special === 'All') || (card.dataset.subcat || '').split('|').indexOf(special) > -1;
+      var veganOk = !vegan || card.dataset.vegan === vegan;
       var geoOk = true;
       if (city) { geoOk = card.dataset.city === city; }
       else if (county && countyMap[county]) { geoOk = countyMap[county].indexOf(card.dataset.city) > -1; }
@@ -356,7 +392,7 @@
         (card.dataset.name || '').toLowerCase().indexOf(searchTerm) > -1 ||
         (card.dataset.subcat || '').toLowerCase().indexOf(searchTerm) > -1 ||
         (card.dataset.city || '').toLowerCase().indexOf(searchTerm) > -1;
-      var ok = subOk && geoOk && typeOk && searchOk;
+      var ok = subOk && veganOk && geoOk && typeOk && searchOk;
       if (ok) matched.push(card);
       else card.style.display = 'none';
     });
@@ -372,7 +408,7 @@
     });
 
     if (cards.length) {
-      var emptyText = { vf: 'No vegan-friendly listings yet.', online: 'No online-only listings for this region yet.', closed: 'No closed listings recorded.' }[type] || 'No listings match this filter yet.';
+      var emptyText = { online: 'No online-only listings for this region yet.', closed: 'No closed listings recorded.' }[type] || 'No listings match this filter yet.';
       var msg = grid.querySelector('.vrd-empty-dynamic');
       if (matched.length === 0) {
         if (!msg) { msg = document.createElement('p'); msg.className = 'vrd-empty vrd-empty-dynamic'; grid.appendChild(msg); }
@@ -462,6 +498,10 @@
       });
     });
 
+    root.querySelectorAll('[data-vrd-vegan]').forEach(function (sel) {
+      sel.addEventListener('change', function () { applyPanelFilters(sel.closest('.board-panel'), state, true); });
+    });
+
     root.querySelectorAll('[data-vrd-type]').forEach(function (sel) {
       sel.addEventListener('change', function () {
         var panel = sel.closest('.board-panel');
@@ -499,7 +539,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,is_featured,address_city,address_state,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -512,7 +552,7 @@
           withTrust(function (T) {
             TRUST = T;
             if (T) approved = approved.filter(function (l) { return window.VETrust.visible(l, T); });
-            fetchClosed(root, config, approved);
+            adminReady(function (a) { ADMIN = a; fetchClosed(root, config, approved); });
           });
         }
       })
@@ -520,6 +560,47 @@
         console.error('VE Region Directory load error', e);
         root.querySelectorAll('.rank-grid').forEach(function (g) { g.innerHTML = '<p class="vrd-empty">Couldn\'t load the directory right now.</p>'; });
       });
+  }
+
+  var ADMIN = false, adminLoading = null;
+  function adminReady(cb) {
+    var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+    if (!(m && m.is_superadmin)) return cb(false);
+    if (!adminLoading) adminLoading = new Promise(function (res) {
+      if (window.VEListingAdmin) return res();
+      var sc = document.createElement('script'); sc.src = '/public/ve-listing-admin.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+    }).then(function () { return !!(window.VEListingAdmin && VEListingAdmin.isAdmin()); });
+    adminLoading.then(cb, function () { cb(false); });
+  }
+  function bindAdmin(root) {
+    if (!ADMIN) return;
+    window.VEListingAdmin.css();
+    root.querySelectorAll('.vla-edit[data-vla]').forEach(function (b) {
+      if (b.dataset.bound) return; b.dataset.bound = '1';
+      b.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        var id = b.getAttribute('data-vla'), l = null;
+        LAST.approved.concat(LAST.closed).forEach(function (x) { if (x.id === id) l = x; });
+        if (l) window.VEListingAdmin.edit(l, function () { redraw(); });
+      });
+    });
+  }
+  // Keep the visitor's tab, pill and filters, and redraw the grids with the edited listing.
+  function redraw() {
+    if (!LAST) return;
+    var root = LAST.root, keep = {};
+    root.querySelectorAll('.board-panel').forEach(function (panel) {
+      var k = { sub: currentSubcat(panel) };
+      panel.querySelectorAll('.sort-bar select').forEach(function (sel) { k[sel.className + '|' + Object.keys(sel.dataset).join()] = sel.value; });
+      keep[panel.id] = k;
+    });
+    populateGrids(root, LAST.config, LAST.approved, LAST.closed);
+    root.querySelectorAll('.board-panel').forEach(function (panel) {
+      var k = keep[panel.id]; if (!k) return;
+      panel.querySelectorAll('.subcat-pill').forEach(function (p) { p.classList.toggle('sc-active', p.getAttribute('data-vrd-subcat') === k.sub); });
+      panel.querySelectorAll('.sort-bar select').forEach(function (sel) { var v = k[sel.className + '|' + Object.keys(sel.dataset).join()]; if (v != null) sel.value = v; });
+      applyPanelFilters(panel, null, false);
+    });
   }
 
   var TRUST = null, trustLoading = null;
@@ -537,7 +618,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,is_featured,address_city,address_state,color,vegan_status&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return config.matchListing(l) || isOnline(l); })); })

@@ -381,6 +381,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-trust.js"></script>
+<script src="/public/ve-listing-admin.js"></script>
 <script src="/public/nav.js"></script>
 
 <div id="listing-root">
@@ -867,7 +868,6 @@ function renderSidebar(l){
       '<div class="bb-header">Billboard</div>'+
       '<div class="bb-stacked">'+
         '<div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
-        '<div class="bb-placeholder" id="bb-ad-landscape-2"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
       '</div>'+
       '<div class="bb-tag">Powered by LESARUSS Advertising</div>'+
     '</div>';
@@ -1359,9 +1359,10 @@ function renderInstagramContent(veBusinessId){
     .catch(function(e){ console.warn('Instagram fetch failed', e); });
 }
 
+// One square ad on listing pages (Sean, 2026-09-27): the Shamanic Resin square. The second
+// slot (ve-directory-listing-landscape-2) is paused in ad_placements.
 var VE_BB_SLOT_ELS = {
-  've-directory-listing-landscape-1': 'bb-ad-landscape-1',
-  've-directory-listing-landscape-2': 'bb-ad-landscape-2'
+  've-directory-listing-landscape-1': 'bb-ad-landscape-1'
 };
 
 function veAdClick(placementId, campaignId){
@@ -1670,6 +1671,17 @@ if(!slug || slug === 'listing'){
       (window.VETrust ? VETrust.load() : Promise.resolve(null)).then(function(T){
       if(T && !VETrust.visible(l, T)){ showMembersOnly(l, T); return; }
       renderListing(l);
+      // Superadmins get the quick editor (section, how Vegan, open or closed).
+      if(window.VEListingAdmin && VEListingAdmin.isAdmin()){
+        var hr = document.querySelector('.listing-hero-right');
+        if(hr){
+          VEListingAdmin.css();
+          var eb = document.createElement('button'); eb.type = 'button'; eb.className = 'vla-edit'; eb.textContent = 'Edit listing (admin)';
+          eb.style.cssText = 'display:block;margin-top:10px';
+          eb.onclick = function(){ VEListingAdmin.edit(l, function(){ window.location.reload(); }); };
+          hr.appendChild(eb);
+        }
+      }
       loadBillboardAds();
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
