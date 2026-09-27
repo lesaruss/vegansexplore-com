@@ -165,6 +165,23 @@ onto white at up to 800px before the shared uploader, so see-through logos never
 `delete` now also keeps any picture a listing uses as its logo. Deployed as v9 with
 `verify_jwt=false` (unchanged).
 
+## ve-media-library: Pulse city tags (2026-09-27)
+
+The Depot's **Pulse Cities** tab (`/admin/depot/pulse-cities`, superadmins) replaces the retired
+`/admin/pulse-city-tags` page. That page wrote `ve_pulse_city_tags` from the browser with the
+anon key, but the table's insert/delete policies were for `authenticated` only, so every change
+was silently refused. Now `city_tags_list` returns every published Pulse piece with its tags and
+`city_tag { pulse_id, city_slug, on }` adds or removes one (city must be in `PULSE_CITIES`).
+`pulse_save` no longer clears every tag on a Depot piece when it is edited: it moves only the
+piece's own `city_slug` tag, so extra hubs tagged on Pulse Cities stay. Migration
+`ve_pulse_city_tags_writes_via_depot_only` drops the two write policies and revokes
+insert/update/delete from anon and authenticated; public read stays (`public/hub-news.js`).
+Deployed as v10 with `verify_jwt=false` (unchanged).
+
+The Depot's **City News** tab (`/admin/depot/news`) replaces `/admin/news-review` and uses the
+existing `ve-community-news` function (`list_pending`, `approve`, `reject`; member token in the
+body), unchanged.
+
 ## ve-votes (2026-09-27)
 
 Directory votes. Before this, the + Vote buttons on `/directory` and the city hubs only

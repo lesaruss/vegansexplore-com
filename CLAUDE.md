@@ -39,6 +39,32 @@ No exceptions. No hardcoded nav or footer markup in page files.
 - To update nav or footer site-wide: edit `/public/nav.js` or
   `/public/footer.js` only. One edit propagates to all pages instantly.
 
+### Exceptions (Sean, 2026-09-27)
+
+These pages load neither nav.js nor footer.js, on purpose. Anything not on
+this list follows the rule above. A new exception goes on this list first.
+
+- **Redirect stubs**, pages whose only job is to send the visitor elsewhere
+  (a meta refresh or `location.replace`, or a `vercel.json` redirect that
+  catches the URL before the file is served): `directory/index.html`
+  (`/directory` goes to `/communities`), `partner.html` (`/partner` goes to
+  `/partners`), `tour.html` (`/tour` goes to the archive site),
+  `guides/ve-discuss.html`, `onboarding.html`.
+- **Partner pitch decks**, standalone sales documents with their own footer,
+  some marked Confidential: `partners/community-partner.html` and everything
+  in `partners/pitches/`. The member nav and its Passport CTA do not belong
+  on them.
+- **Full-screen app shell**: `app/index.html` (the body does not scroll, so a
+  footer would never be seen).
+
+Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts;
+each hides them when embedded (`.ve-embedded .ve-nav, .ve-embedded
+.ve-footer{display:none}`). The old standalone `/admin/news-review`,
+`/admin/pulse-city-tags`, `/admin/opportunity-applications` and
+`/admin/partner-applications` pages were retired on 2026-09-27 and redirect
+to Depot > City News, Depot > Pulse Cities, `/dashboard/applications` and
+`/dashboard/partners`.
+
 ### Why this rule exists
 
 Before 2026-05-18 the site had 24 HTML pages with 5 different footer

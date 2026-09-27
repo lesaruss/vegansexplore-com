@@ -23,6 +23,11 @@
 //   published the moment it is saved; an id edits one. The body is plain text: blank lines
 //   make paragraphs, and it is escaped here, so nothing typed can inject markup.
 // POST { action: 'pulse_status', id, status }   'published' or 'archived' (take down / put back)
+// POST { action: 'city_tags_list' }                every published Pulse piece and its city tags
+// POST { action: 'city_tag', pulse_id, city_slug, on }   tag a piece into a city hub, or untag it
+//   The Depot's Pulse Cities tab (Sean, 2026-09-27: retire the old /admin pages). A tagged piece
+//   shows in that hub's Local News feed (public/hub-news.js reads ve_pulse_city_tags). This
+//   replaces /admin/pulse-city-tags, which wrote the table with the anon key and was refused.
 // POST { action: 'logo_list', region }            a region's directory listings and their logos
 // POST { action: 'logo_set', listing_id, url }    url: a library picture, or null for the initials
 // POST { action: 'logo_fetch', listing_id }       the listing's current logo from its own website, as base64
@@ -205,10 +210,12 @@ Deno.serve(async (req) => {
       video_url: video, audio_url: audio, youtube_id: yt, author: plain(body.author, 80) || null,
       updated_at: new Date().toISOString(),
     };
-    let saved: any;
+    let saved: any, before: string | null = null;
     if (body.id) {
       const id = String(body.id);
       if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+      const { data: old } = await db.from('ve_pulse_content').select('city_slug').eq('id', id).eq('origin', 'depot').maybeSingle();
+      before = old?.city_slug || null;
       const { data, error } = await db.from('ve_pulse_content').update(row).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       saved = data;
@@ -225,9 +232,10 @@ Deno.serve(async (req) => {
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       saved = data;
     }
-    // A city piece also shows on that city's hub (/communities/<city>).
-    await db.from('ve_pulse_city_tags').delete().eq('pulse_id', saved.id);
-    if (city) await db.from('ve_pulse_city_tags').insert({ pulse_id: saved.id, city_slug: city, is_pinned: false });
+    // A city piece also shows on that city's hub (/communities/<city>). Only the piece's own
+    // city tag moves; extra hubs tagged on the Pulse Cities tab stay.
+    if (before && before !== city) await db.from('ve_pulse_city_tags').delete().eq('pulse_id', saved.id).eq('city_slug', before);
+    if (city) await db.from('ve_pulse_city_tags').upsert({ pulse_id: saved.id, city_slug: city }, { onConflict: 'pulse_id,city_slug', ignoreDuplicates: true });
     return json({ ok: true, piece: saved });
   }
 
@@ -237,6 +245,26 @@ Deno.serve(async (req) => {
     const { data, error } = await db.from('ve_pulse_content').update({ status, updated_at: new Date().toISOString() }).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, piece: data });
+  }
+
+  if (body.action === 'city_tags_list') {
+    const [a, t] = await Promise.all([
+      db.from('ve_pulse_content').select('id, title, slug, category, published_at').eq('status', 'published').order('published_at', { ascending: false }).limit(1000),
+      db.from('ve_pulse_city_tags').select('pulse_id, city_slug'),
+    ]);
+    if (a.error || t.error) return json({ error: 'list_failed', message: (a.error || t.error)!.message }, 500);
+    return json({ articles: a.data || [], tags: t.data || [] });
+  }
+
+  if (body.action === 'city_tag') {
+    const id = String(body.pulse_id || ''), city = String(body.city_slug || '');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !PULSE_CITIES.includes(city)) return json({ error: 'bad_request' }, 400);
+    const q = body.on
+      ? db.from('ve_pulse_city_tags').upsert({ pulse_id: id, city_slug: city }, { onConflict: 'pulse_id,city_slug', ignoreDuplicates: true })
+      : db.from('ve_pulse_city_tags').delete().eq('pulse_id', id).eq('city_slug', city);
+    const { error } = await q;
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, pulse_id: id, city_slug: city, on: !!body.on });
   }
 
   if (body.action === 'logo_list') {

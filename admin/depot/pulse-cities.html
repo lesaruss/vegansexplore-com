@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pulse Cities | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:820px;margin-bottom:16px;}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;max-width:900px;}
+    .toolbar input,.toolbar select{font:inherit;font-size:13.5px;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;}
+    .toolbar input{flex:1;min-width:min(220px,100%);}
+    .toolbar select{max-width:100%;}
+    .count{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:10px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin-bottom:10px;max-width:900px;}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:4px;}
+    .pill{display:inline-block;padding:3px 9px;border-radius:99px;background:#eef0ee;}
+    .headline{font-size:15px;font-weight:800;line-height:1.35;margin-bottom:10px;}
+    .headline a{color:inherit;}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;}
+    .chip{font:inherit;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:8px 12px;min-height:38px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;color:var(--ve-text);}
+    .chip[aria-pressed="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .chip:disabled{opacity:.5;cursor:wait;}
+    .msg{font-size:12px;font-weight:700;color:#a61b1b;margin-top:6px;min-height:0;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:24px 0;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Pulse Cities</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Put any published Pulse piece in one or more city hubs. A tagged piece shows in that hub's Local News. Tap a city to add it, tap again to take it off. (This replaces the old /admin/pulse-city-tags page.)</p>
+    <div id="pc-gate" class="gate" hidden></div>
+    <div id="pc-app" hidden>
+      <div class="toolbar">
+        <input type="search" id="q" placeholder="Search by title" aria-label="Search by title">
+        <select id="cat" aria-label="Category"><option value="">All categories</option></select>
+        <select id="where" aria-label="Show"><option value="">All pieces</option><option value="__none">Not in any city</option></select>
+      </div>
+      <p class="count" id="count"></p>
+      <div id="cards"><p class="empty">Loading...</p></div>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-media-library';
+      var $ = function (id) { return document.getElementById(id); };
+      var HUBS = window.VE_HUBS || [], articles = [], tags = {}, SHOW = 100;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function tagged(id) { return tags[id] || (tags[id] = {}); }
+      function matches(a) {
+        var q = $('q').value.trim().toLowerCase(), cat = $('cat').value, where = $('where').value, t = tagged(a.id);
+        if (q && String(a.title || '').toLowerCase().indexOf(q) < 0) return false;
+        if (cat && a.category !== cat) return false;
+        if (where === '__none') return !Object.keys(t).length;
+        if (where) return !!t[where];
+        return true;
+      }
+      function render() {
+        var list = articles.filter(matches);
+        $('count').textContent = list.length + ' of ' + articles.length + ' pieces' + (list.length > SHOW ? ', showing the newest ' + SHOW + ' (search to narrow)' : '');
+        if (!list.length) { $('cards').innerHTML = '<p class="empty">No pieces match.</p>'; return; }
+        $('cards').innerHTML = list.slice(0, SHOW).map(function (a) {
+          var t = tagged(a.id);
+          return '<article class="card" data-id="' + esc(a.id) + '">' +
+            '<div class="meta"><span class="pill">' + esc(a.category || 'Uncategorized') + '</span><span>' + esc(a.published_at ? new Date(a.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '') + '</span></div>' +
+            '<h2 class="headline"><a href="/pulse/' + esc(a.slug) + '" target="_blank" rel="noopener">' + esc(a.title) + '</a></h2>' +
+            '<div class="chips" role="group" aria-label="City hubs">' + HUBS.map(function (h) {
+              return '<button type="button" class="chip" data-city="' + h.slug + '" aria-pressed="' + !!t[h.slug] + '">' + esc(h.name) + '</button>';
+            }).join('') + '</div><p class="msg" role="status"></p></article>';
+        }).join('');
+      }
+      $('cards').addEventListener('click', function (e) {
+        var b = e.target.closest('.chip'); if (!b) return;
+        var card = b.closest('.card'), id = card.getAttribute('data-id'), city = b.getAttribute('data-city'), on = b.getAttribute('aria-pressed') !== 'true';
+        b.disabled = true; card.querySelector('.msg').textContent = '';
+        api({ action: 'city_tag', pulse_id: id, city_slug: city, on: on }).then(function (d) {
+          if (!d.ok) throw new Error(d.error);
+          if (on) tagged(id)[city] = true; else delete tagged(id)[city];
+          b.setAttribute('aria-pressed', String(on)); b.disabled = false;
+        }).catch(function () { b.disabled = false; card.querySelector('.msg').textContent = 'Did not save. Try again.'; });
+      });
+      ['q', 'cat', 'where'].forEach(function (id) { $(id).addEventListener(id === 'q' ? 'input' : 'change', render); });
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('pc-gate').hidden = false; $('pc-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('pc-app').hidden = false;
+        $('where').insertAdjacentHTML('beforeend', HUBS.map(function (h) { return '<option value="' + h.slug + '">In ' + esc(h.name) + '</option>'; }).join(''));
+        api({ action: 'city_tags_list' }).then(function (d) {
+          if (!d.articles) throw new Error(d.error);
+          articles = d.articles; tags = {};
+          d.tags.forEach(function (t) { tagged(t.pulse_id)[t.city_slug] = true; });
+          var cats = articles.map(function (a) { return a.category; }).filter(function (c, i, all) { return c && all.indexOf(c) === i; }).sort();
+          $('cat').insertAdjacentHTML('beforeend', cats.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join(''));
+          render();
+        }).catch(function () { $('cards').innerHTML = '<p class="empty">Did not load. Refresh to try again.</p>'; });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

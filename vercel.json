@@ -1657,6 +1657,10 @@
     {"source": "/admin/media-library", "destination": "/admin/depot", "permanent": false},
     {"source": "/admin/onboarding-images", "destination": "/admin/depot/onboarding", "permanent": false},
     {"source": "/admin/onboarding-audio", "destination": "/admin/depot/narration", "permanent": false},
+    {"source": "/admin/news-review", "destination": "/admin/depot/news", "permanent": true},
+    {"source": "/admin/pulse-city-tags", "destination": "/admin/depot/pulse-cities", "permanent": true},
+    {"source": "/admin/opportunity-applications", "destination": "/dashboard/applications", "permanent": true},
+    {"source": "/admin/partner-applications", "destination": "/dashboard/partners", "permanent": true},
     {
       "source": "/partner",
       "destination": "/partners",
