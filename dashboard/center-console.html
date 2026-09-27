@@ -28,7 +28,11 @@
      console window already gives VE the traffic-light title bar HQ's window
      frame has; this fills the empty 80px band above it that HQ fills with its
      top nav. --- */
-  .ve-topnav{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:rgba(255,255,255,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--ve-border);}
+  /* 2026-09-27 (Sean: Vegans Explore's dashboard should have "the same setup
+     as the new LESARUSS HQ"): the nav moved from a fixed bar above the window
+     to the window's second row, under the title bar, exactly as HQ's did the
+     same day. Solid and in flow now; position:relative anchors its menus. */
+  .ve-topnav{position:relative;z-index:20;flex-shrink:0;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:#fff;border-bottom:1px solid var(--ve-border);}
   .ve-topnav-left{display:flex;align-items:center;gap:22px;min-width:0;flex-shrink:0;}
   .ve-topnav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
   /* The dashboard tab strip lives in the top nav (2026-09-20, Sean: "the
@@ -60,20 +64,42 @@
   .console-backdrop::before,.console-backdrop::after{content:'';position:absolute;border-radius:50%;filter:blur(70px);opacity:0.32;}
   .console-backdrop::before{width:520px;height:520px;background:var(--ve-green);top:-160px;left:-140px;}
   .console-backdrop::after{width:460px;height:460px;background:var(--ve-orange);bottom:-160px;right:-110px;}
-  .console-frame{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:1;width:96vw;height:min(760px,calc(100vh - 210px));display:flex;flex-direction:column;background:#fff;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+  /* Pulled up to 14px from the top with the nav inside it (2026-09-27), the
+     same geometry as HQ's .hq-window: centred with auto margins rather than a
+     transform, full height less room for the universal bar below. */
+  .console-frame{position:fixed;top:14px;left:0;right:0;margin:0 auto;z-index:1;width:min(96vw,1560px);height:calc(100vh - 104px);min-height:320px;display:flex;flex-direction:column;background:#fff;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
   .console-titlebar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--ve-border);background:#fafafa;flex-shrink:0;}
   .console-titlebar-dots{display:flex;gap:6px;flex-shrink:0;}
-  .console-titlebar-dots span{width:11px;height:11px;border-radius:50%;display:inline-block;}
-  .console-titlebar-dots span:nth-child(1){background:#ff5f57;}
-  .console-titlebar-dots span:nth-child(2){background:#febc2e;}
-  .console-titlebar-dots span:nth-child(3){background:#28c840;}
+  /* The traffic lights are buttons (2026-09-27), the same behaviour as HQ's:
+     green full screen, yellow back into the window, red out to the LESARUSS
+     projects page on HQ. Glyphs show on hover or focus; the hit area is
+     widened past the 11px dot. */
+  .console-light{position:relative;width:11px;height:11px;border-radius:50%;padding:0;display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;}
+  .console-light::before{content:'';position:absolute;inset:-5px -3px;}
+  .console-light svg{width:9px;height:9px;fill:none;stroke:rgba(0,0,0,0.6);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+  .console-titlebar-dots:hover .console-light svg,.console-light:focus-visible svg{opacity:1;}
+  .console-light:focus-visible{outline:2px solid var(--ve-green-dark,#15803D);outline-offset:2px;}
+  .console-light-close{background:#ff5f57;}
+  .console-light-min{background:#febc2e;}
+  .console-light-max{background:#28c840;}
+  .console-light[aria-disabled="true"]{cursor:default;}
+  .console-titlebar-dots:hover .console-light[aria-disabled="true"] svg{opacity:0;}
+  /* Full screen (green): the frame, its gutter, corners and shadow go; the
+     title bar and nav stay pinned and the body scrolls under them, with room
+     kept for the universal bar. Desktop only: on a phone the window is
+     already the page. */
+  @media (min-width:761px){
+    .console-frame.is-fullscreen{top:0;width:100%;height:100vh;min-height:0;border-radius:0;box-shadow:none;}
+    .console-frame.is-fullscreen main{padding-bottom:124px;}
+  }
   .console-titlebar-label{flex:1;text-align:center;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);}
   .console-titlebar-spacer{width:53px;flex-shrink:0;}
   .console-frame main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
   /* LESARUSS Universe dock.
-     2026-09-20: the bar's markup, CSS and behaviour moved to
-     /public/universal-bar.js, which is shared and reads the same
+     2026-09-20: the bar's markup, CSS and behaviour moved to a shared
+     script; since 2026-09-27 that is the ONE bar LESARUSS HQ serves at
+     https://hq.lesaruss.ai/shell/universal-bar.js, which reads the same
      member_dock row LESARUSS HQ writes, so the same person sees the same
      icons on both. What was here was a hardcoded four-icon row with
      hand-copied hex that had already drifted from the registry. The one
@@ -96,10 +122,10 @@
        does at this width, rather than floating fixed over the content. The
        section nav drops to its own row (the mobile select), like HQ wraps its
        primary nav below the bar at this width. */
-    .ve-topnav{position:static;height:auto;flex-wrap:wrap;row-gap:8px;padding-top:8px;padding-bottom:8px;}
+    .ve-topnav{height:auto;flex-wrap:wrap;row-gap:8px;padding-top:8px;padding-bottom:8px;}
     .ve-topnav-nav{order:3;flex:0 0 100%;}
     .ve-topnav-nav .dash-tabs-mobile{margin-bottom:0;}
-    .console-frame{position:static;transform:none;width:auto;height:auto;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
+    .console-frame{position:static;width:auto;height:auto;min-height:0;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
     /* No mobile-only dock treatment (2026-09-10, Sean, Group I: "applies
@@ -546,7 +572,11 @@
 </head>
 <body>
 <script src="/public/ve-auth.js"></script>
-<script src="/public/universal-bar.js"></script>
+<!-- The ONE LESARUSS universal bar, served by LESARUSS HQ (2026-09-27, Sean:
+     "It should be the same selector, no matter which brand I'm on"). This site
+     used to keep its own copy in /public/universal-bar.js, and the two had
+     drifted. data-lr-redeem: this site consumes ?lrsso handoffs into ve_token. -->
+<script src="https://hq.lesaruss.ai/shell/universal-bar.js" data-lr-redeem="ve_token"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/hub-news.js"></script>
 
@@ -555,9 +585,43 @@
 <!-- HQ-style top nav (2026-09-20). Matches LESARUSS HQ's shell: wordmark left,
      brand-waffle Apps button and the member avatar right. The avatar is the
      same member icon the bottom bar draws, painted from the shell member event
-     that universal-bar.js dispatches. Apps opens the same brand waffle the
-     bottom bar's plus opens, via a window event universal-bar.js listens for. -->
-<header class="ve-topnav" role="banner">
+     that universal-bar.js dispatches. Apps opens the shared bar's launcher,
+     which takes you to a brand (the bar's plus is the separate picker that
+     adds shortcuts), via a window event universal-bar.js listens for. -->
+<!-- The top nav now sits inside the console window, under its title bar
+     (2026-09-27); see .console-frame below. -->
+
+
+<!-- The LESARUSS universal bar.
+     2026-09-20 (Sean: "the icon needs to be synced on both. Right now if I go
+     to Vegans Explore logged in with my username, it's different than when I
+     go to LESARUSS HQ"). What sat here was a hardcoded four-icon row -- an
+     inert GeekFon <div>, a plus pointing at lesaruss.com, the Guide button
+     and LESARUSS HQ -- with colours copied by hand. It could not show the
+     member's own picks, because this site had no key to read them by:
+     member_dock was keyed on auth.users.id and this site does not use
+     Supabase Auth. It is keyed on members.id now, which ve-auth resolves from
+     the ve_token, so the bar is the same bar on both sites.
+
+     Everything the bar is lives in the shared universal-bar.js, per the locked
+     shared-component rule in CLAUDE.md: no dock markup in a page file. This
+     page contributes exactly one thing, the Guide button, passed in as an
+     extra -- Sean, 2026-09-10, Group I: "access to the Guide dialogue happens
+     only by clicking the dock icon itself, never a separate auto-appearing
+     bubble." -->
+<div id="lr-dock-mount"></div>
+
+<div class="console-frame" id="console-frame">
+  <div class="console-titlebar">
+    <div class="console-titlebar-dots">
+      <a class="console-light console-light-close" id="console-light-close" href="https://hq.lesaruss.ai/studio" aria-label="Close, back to all LESARUSS projects" title="Back to all LESARUSS projects"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 3l4 4M7 3l-4 4"/></svg></a>
+      <button type="button" class="console-light console-light-min" id="console-light-min" aria-label="Exit full screen" aria-disabled="true" title="Already in the window"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2.5 5h5"/></svg></button>
+      <button type="button" class="console-light console-light-max" id="console-light-max" aria-label="Full screen" aria-disabled="false" title="Full screen"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 6.5V3h3.5M7 3.5V7H3.5"/></svg></button>
+    </div>
+    <div class="console-titlebar-label">Vegans Explore &mdash; Dashboard</div>
+    <div class="console-titlebar-spacer"></div>
+  </div>
+  <header class="ve-topnav" role="banner">
   <div class="ve-topnav-left">
     <a class="ve-wordmark" id="ve-logo-home" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home"><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>
   </div>
@@ -575,33 +639,6 @@
     <button type="button" class="ve-avatar" id="ve-topnav-avatar" aria-label="Your account"></button>
   </div>
 </header>
-
-
-<!-- The LESARUSS universal bar.
-     2026-09-20 (Sean: "the icon needs to be synced on both. Right now if I go
-     to Vegans Explore logged in with my username, it's different than when I
-     go to LESARUSS HQ"). What sat here was a hardcoded four-icon row -- an
-     inert GeekFon <div>, a plus pointing at lesaruss.com, the Guide button
-     and LESARUSS HQ -- with colours copied by hand. It could not show the
-     member's own picks, because this site had no key to read them by:
-     member_dock was keyed on auth.users.id and this site does not use
-     Supabase Auth. It is keyed on members.id now, which ve-auth resolves from
-     the ve_token, so the bar is the same bar on both sites.
-
-     Everything the bar is lives in /public/universal-bar.js, per the locked
-     shared-component rule in CLAUDE.md: no dock markup in a page file. This
-     page contributes exactly one thing, the Guide button, passed in as an
-     extra -- Sean, 2026-09-10, Group I: "access to the Guide dialogue happens
-     only by clicking the dock icon itself, never a separate auto-appearing
-     bubble." -->
-<div id="lr-dock-mount"></div>
-
-<div class="console-frame">
-  <div class="console-titlebar">
-    <div class="console-titlebar-dots"><span></span><span></span><span></span></div>
-    <div class="console-titlebar-label">Vegans Explore &mdash; Dashboard</div>
-    <div class="console-titlebar-spacer"></div>
-  </div>
   <main>
   <div id="dash-gate">
     <p>Checking access&hellip;</p>
@@ -1483,7 +1520,7 @@
       // Community Manager Certification (2026-09-25, Sean): the handbook as a
       // course with module quizzes and a certificate. Reuses the cm-handbook
       // key, which ve-auth's VALID_LAYOUT_MODULES already accepts.
-      { key: 'cm-handbook', href: '/dashboard/certification', iconHtml: '&#127891;', bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Certification', tagLabel: 'Community Manager', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', visibility: 'staff', defaultSection: 'tools' }
+      { key: 'cm-handbook', href: '/dashboard/certification', iconHtml: '&#127891;', bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Certification', tagLabel: 'Community Manager', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', visibility: 'staff', defaultSection: 'tools' },
       // Passport Challenge and Tours (Sean 2026-09-27): planned for 2027, one program per
       // city, and listed for Community Managers first. Until a city launches them in the
       // Depot, these open the member pages as a preview only staff can see.
@@ -3779,6 +3816,9 @@
 
     window.LRUniversalBar.mount({
       mount: mount,
+      current: 'vegans-explore',
+      // The "you are here" ring is this brand's green, the one per-site touch.
+      accent: '#16A34A',
       extras: [guideExtra],
       getToken: function () { return window.VEAuth ? VEAuth.getToken() : null; },
     });
@@ -3832,9 +3872,70 @@
         // that just opened it, so the button appeared to do nothing. The
         // bar's own plus button stops propagation for exactly this reason.
         e.stopPropagation();
-        var expanded = apps.getAttribute('aria-expanded') === 'true';
-        apps.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-        window.dispatchEvent(new CustomEvent('lr:toggle-waffle'));
+        // Apps is the launcher: it takes you to the brand you tap (Sean,
+        // 2026-09-27). Adding a shortcut to the bar is the bar's own plus.
+        // The launcher drops from this button, and reports open/closed back
+        // so aria-expanded stays true to what is on screen.
+        window.dispatchEvent(new CustomEvent('lr:toggle-waffle', { detail: { anchor: apps } }));
+      });
+      window.addEventListener('lr:launcher-state', function (ev) {
+        apps.setAttribute('aria-expanded', ev.detail && ev.detail.open ? 'true' : 'false');
+      });
+    }
+  })();
+
+  // Traffic lights (2026-09-27, Sean: the Vegans Explore dashboard gets the
+  // same setup as LESARUSS HQ). Same behaviour as HQ's window:
+  //   green  full screen: frame, gutter and shadow go, title bar and nav stay
+  //   yellow back into the window (does nothing while already in it)
+  //   red    out to the LESARUSS projects page on HQ, signed in: mint a
+  //          one-time handoff through lr-shell, the same one the bar's .HQ
+  //          uses, and land on /studio. HQ sends anyone who is not staff to
+  //          their own home from there. Signed out, or if the mint fails, the
+  //          link still goes to HQ and HQ asks them to sign in.
+  // Full screen is remembered in localStorage, like HQ, so it survives a
+  // reload; storage can throw, and the window is the safe answer then.
+  (function initWindowLights() {
+    var frame = document.getElementById('console-frame');
+    var close = document.getElementById('console-light-close');
+    var min = document.getElementById('console-light-min');
+    var max = document.getElementById('console-light-max');
+    if (!frame || !min || !max) return;
+    var KEY = 'lr-window-mode';
+
+    function apply(full) {
+      frame.classList.toggle('is-fullscreen', full);
+      min.setAttribute('aria-disabled', full ? 'false' : 'true');
+      min.title = full ? 'Back into the window' : 'Already in the window';
+      max.setAttribute('aria-disabled', full ? 'true' : 'false');
+      max.title = full ? 'Already full screen' : 'Full screen';
+    }
+    function set(full) {
+      apply(full);
+      try { localStorage.setItem(KEY, full ? 'fullscreen' : 'window'); } catch (e) {}
+    }
+    var start = false;
+    try { start = localStorage.getItem(KEY) === 'fullscreen'; } catch (e) {}
+    apply(start);
+
+    max.addEventListener('click', function () { if (!frame.classList.contains('is-fullscreen')) set(true); });
+    min.addEventListener('click', function () { if (frame.classList.contains('is-fullscreen')) set(false); });
+
+    if (close) {
+      close.addEventListener('click', function (e) {
+        var token = window.VEAuth ? VEAuth.getToken() : null;
+        if (!token) return; // plain link: HQ asks them to sign in
+        e.preventDefault();
+        var fallback = close.href;
+        fetch(SUPABASE_URL + '/functions/v1/lr-shell?action=handoff', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ANON_KEY, 'apikey': ANON_KEY },
+          body: JSON.stringify({ token: token }),
+        }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+          window.location.href = d && d.token
+            ? 'https://hq.lesaruss.ai/api/shell/sso?lrsso=' + encodeURIComponent(d.token) + '&next=' + encodeURIComponent('/studio')
+            : fallback;
+        }).catch(function () { window.location.href = fallback; });
       });
     }
   })();
