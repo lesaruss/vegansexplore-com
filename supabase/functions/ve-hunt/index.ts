@@ -1,19 +1,25 @@
-// ve-hunt: the Vegans Explore Hunt (playbook ve-verified-tours-hunt, group C, Sean 2026-09-27).
-// Each month, one area of South Florida and a pin for every participating business. A member
-// buys anything, the cashier hands over the VE Hunt register card, the member scans its QR
-// (vegansexplore.com/hunt/scan?c=<code>) and the stamp lands. One stamp per business per member
-// per hunt. Reaching the goal (default 5) earns that month's badge and Points. "Cashier didn't
-// know?" holds the visit as pending until the owner confirms (Depot > Hunt).
+// ve-hunt: the Vegans Explore Passport Challenge (playbook ve-verified-tours-hunt, group C, Sean 2026-09-27).
+// Sean renamed "The Hunt" to the Passport Challenge on 2026-09-27; the tables and this function keep
+// their ve_hunt names, and a "hunt" in the code is one monthly challenge.
+// Each month, one area of a city hub and a pin for every participating business. A member buys
+// anything, the cashier hands over the Passport Challenge register card, the member scans its QR
+// (vegansexplore.com/passport/challenge/scan?c=<code>) and the stamp lands. One stamp per business
+// per member per challenge. Reaching the goal (default 5) earns that month's badge and Points.
+// "Cashier didn't know?" holds the visit as pending until the owner confirms (Depot > Passport Challenge).
 //
-// Public:
-//   POST { action: 'current', community? }   -> { hunt, stops }  the live hunt (for the teaser; no codes)
-// Member (Authorization: Bearer <ve_token>; the Hunt is members only, same gate as ve-votes):
+// Launch: a hub's challenge reaches members only once the hub is switched on in the Depot
+// (ve_site_settings.challenge_launch). Until then Community Managers and superadmins see it as a
+// preview (Sean 2026-09-27: planned for 2027, one program per city, listed for Community Managers first).
+//
+// Public (a signed-in Community Manager or superadmin may send the VE app token to preview):
+//   POST { action: 'current', community? }   -> { hunt, stops, launched }  the live challenge (no codes)
+// Member (Authorization: Bearer <ve_token>; members only, same gate as ve-votes):
 //   POST { action: 'mine', community? }     -> { hunt, stops, stamps, completed, badges }
 //   POST { action: 'scan', code, lat?, lng? } -> { ok, stamp, progress } or { error }
 //   POST { action: 'report', stop_id, note } -> { ok } a pending stamp the VE team confirms
-//   POST { action: 'badges' }                -> { badges } every hunt this member completed
+//   POST { action: 'badges' }                -> { badges } every challenge this member completed
 // Superadmin (the Depot):
-//   admin_hunts, admin_save_hunt, admin_stops, admin_add_stop, admin_update_stop, admin_remove_stop,
+//   admin_launch { communities } (read with admin_hunts), admin_hunts, admin_save_hunt, admin_stops, admin_add_stop, admin_update_stop, admin_remove_stop,
 //   admin_replace_code, admin_reports, admin_review { id, decision }, admin_stats, admin_flags
 //
 // verify_jwt is false: the VE app token is HMAC-verified here the same way ve-auth checks it.
@@ -27,6 +33,10 @@ const SEAN_EMAIL = 'contact@lesaruss.com';
 // Flag a code when it is stamped this many times inside FLAG_WINDOW_MIN, or scanned from two
 // places more than FLAG_KM apart inside FLAG_TRAVEL_MIN.
 const FLAG_BURST = 6, FLAG_WINDOW_MIN = 60, FLAG_KM = 40, FLAG_TRAVEL_MIN = 120;
+// Each hub's time zone, which decides when its challenge starts and ends (same slugs as /public/ve-hubs.js).
+const HUB_TZ: Record<string, string> = { 'south-florida': 'America/New_York', 'central-florida': 'America/New_York', atlanta: 'America/New_York', dmv: 'America/New_York',
+  'new-york': 'America/New_York', philadelphia: 'America/New_York', 'los-angeles': 'America/Los_Angeles', london: 'Europe/London' };
+const LAUNCH_KEY = 'challenge_launch';
 
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
@@ -72,24 +82,28 @@ async function mail(subject: string, html: string) {
   try {
     await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [SEAN_EMAIL], subject, html }) });
-  } catch (e) { console.error('hunt email failed', e); }
+  } catch (e) { console.error('challenge email failed', e); }
 }
 // OpenStreetMap geocoding for a stop's pin (listings carry no coordinates). One request per stop add.
 async function geocode(l: any): Promise<{ lat: number; lng: number } | null> {
   const q = [l.address_street, l.address_city, l.address_state, l.address_zip].filter(Boolean).join(', ');
   if (!l.address_city) return null;
   try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=${encodeURIComponent(q)}`,
-      { headers: { 'User-Agent': 'VegansExplore-Hunt/1.0 (hello@vegansexplore.com)' } });
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us,gb&q=${encodeURIComponent(q)}`,
+      { headers: { 'User-Agent': 'VegansExplore-PassportChallenge/1.0 (hello@vegansexplore.com)' } });
     const d = await r.json();
     return d?.[0] ? { lat: +d[0].lat, lng: +d[0].lon } : null;
   } catch { return null; }
 }
 
-// Today in Eastern time, which is when a South Florida hunt starts and ends.
-const todayET = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+// Today in the hub's own time zone, which is when its challenge starts and ends.
+const todayIn = (community: string) => new Date().toLocaleDateString('en-CA', { timeZone: HUB_TZ[community] || 'America/New_York' });
+async function launchedHubs(): Promise<string[]> {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', LAUNCH_KEY).maybeSingle();
+  return Array.isArray(data?.value?.communities) ? data!.value.communities : [];
+}
 async function liveHunt(community = 'south-florida') {
-  const t = todayET();
+  const t = todayIn(community);
   const { data } = await db.from('ve_hunts').select('*').eq('community_slug', community).eq('status', 'live')
     .lte('starts_on', t).gte('ends_on', t).order('starts_on', { ascending: false }).limit(1).maybeSingle();
   return data;
@@ -129,30 +143,33 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const community = plain(body.community, 60) || 'south-florida';
+  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  const memberId = token && token.split('.').length === 3 ? await verifyToken(token) : null;
+  const { data: member } = memberId ? await db.from('members').select('id, email, name, is_superadmin, membership_status, ve_role').eq('id', memberId).maybeSingle() : { data: null };
+  // Community Managers and superadmins see a hub's challenge before it launches.
+  const staff = !!(member && (member.is_superadmin || member.ve_role === 'community_manager'));
+  const launched = (await launchedHubs()).includes(community);
+  const open = launched || staff;
 
   if (body.action === 'current') {
-    const hunt = await liveHunt(community);
-    if (!hunt) return json({ hunt: null, stops: [] });
-    return json({ hunt: { id: hunt.id, name: hunt.name, area_name: hunt.area_name, starts_on: hunt.starts_on, ends_on: hunt.ends_on, goal: hunt.goal, points_reward: hunt.points_reward, badge_name: hunt.badge_name, badge_image_url: hunt.badge_image_url }, stops: await stopsFor(hunt.id) });
+    const hunt = open ? await liveHunt(community) : null;
+    if (!hunt) return json({ hunt: null, stops: [], launched, preview: staff && !launched });
+    return json({ hunt: { id: hunt.id, name: hunt.name, area_name: hunt.area_name, starts_on: hunt.starts_on, ends_on: hunt.ends_on, goal: hunt.goal, points_reward: hunt.points_reward, badge_name: hunt.badge_name, badge_image_url: hunt.badge_image_url }, stops: await stopsFor(hunt.id), launched, preview: staff && !launched });
   }
 
-  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const memberId = token ? await verifyToken(token) : null;
-  if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, email, name, is_superadmin, membership_status').eq('id', memberId).maybeSingle();
-  if (!member) return json({ error: 'not_authenticated' }, 401);
+  if (!memberId || !member) return json({ error: 'not_authenticated' }, 401);
   const paid = member.membership_status === 'active' || member.is_superadmin;
 
   if (body.action === 'badges') return json({ badges: await badgesFor(memberId) });
 
   if (body.action === 'mine') {
-    const hunt = await liveHunt(community);
+    const hunt = open ? await liveHunt(community) : null;
     const badges = await badgesFor(memberId);
-    if (!hunt) return json({ hunt: null, stops: [], stamps: [], completed: false, badges, member: paid });
+    if (!hunt) return json({ hunt: null, stops: [], stamps: [], completed: false, badges, member: paid, launched, preview: staff && !launched });
     const { data: stamps } = await db.from('ve_hunt_stamps').select('stop_id, listing_id, status, source, created_at').eq('hunt_id', hunt.id).eq('member_id', memberId);
     const { data: comp } = await db.from('ve_hunt_completions').select('completed_at').eq('hunt_id', hunt.id).eq('member_id', memberId).maybeSingle();
     return json({ hunt: { id: hunt.id, name: hunt.name, area_name: hunt.area_name, starts_on: hunt.starts_on, ends_on: hunt.ends_on, goal: hunt.goal, points_reward: hunt.points_reward, anchor_bonus_points: hunt.anchor_bonus_points, badge_name: hunt.badge_name, badge_image_url: hunt.badge_image_url },
-      stops: paid ? await stopsFor(hunt.id) : [], stamps: stamps || [], completed: !!comp, badges, member: paid });
+      stops: paid ? await stopsFor(hunt.id) : [], stamps: stamps || [], completed: !!comp, badges, member: paid, launched, preview: staff && !launched });
   }
 
   if (body.action === 'scan') {
@@ -165,10 +182,11 @@ Deno.serve(async (req) => {
     const { data: stop } = code ? await db.from('ve_hunt_stops').select('*, listing:listings(name, slug)').eq('code', code).maybeSingle() : { data: null };
     if (!stop || !stop.active) { await log({ ok: false, reason: 'bad_code' }); return json({ error: 'bad_code' }, 404); }
     const { data: hunt } = await db.from('ve_hunts').select('*').eq('id', stop.hunt_id).maybeSingle();
-    const t = todayET();
-    if (!hunt || hunt.status !== 'live' || hunt.starts_on > t || hunt.ends_on < t) { await log({ hunt_id: stop.hunt_id, stop_id: stop.id, ok: false, reason: 'hunt_not_live' }); return json({ error: 'hunt_not_live' }, 409); }
+    const t = hunt ? todayIn(hunt.community_slug) : '';
+    const hubOpen = hunt && (staff || (await launchedHubs()).includes(hunt.community_slug));
+    if (!hunt || !hubOpen || hunt.status !== 'live' || hunt.starts_on > t || hunt.ends_on < t) { await log({ hunt_id: stop.hunt_id, stop_id: stop.id, ok: false, reason: 'hunt_not_live' }); return json({ error: 'hunt_not_live' }, 409); }
     const { data: existing } = await db.from('ve_hunt_stamps').select('id, status').eq('hunt_id', hunt.id).eq('listing_id', stop.listing_id).eq('member_id', memberId).maybeSingle();
-    if (existing?.status === 'stamped') { await log({ hunt_id: hunt.id, stop_id: stop.id, ok: false, reason: 'already' }); return json({ error: 'already_stamped', business: stop.listing?.name }, 409); }
+    if (existing?.status === 'stamped') { await log({ hunt_id: hunt.id, stop_id: stop.id, ok: false, reason: 'already' }); return json({ error: 'already_stamped', business: stop.listing?.name, hub: hunt.community_slug }, 409); }
     const now = new Date().toISOString();
     // A scan settles a pending report for the same stop.
     const { error } = existing
@@ -177,7 +195,7 @@ Deno.serve(async (req) => {
     if (error) { await log({ hunt_id: hunt.id, stop_id: stop.id, ok: false, reason: 'save_failed' }); return json({ error: 'save_failed' }, 500); }
     await log({ hunt_id: hunt.id, stop_id: stop.id, ok: true });
     const progress = await afterStamp(hunt, stop, memberId);
-    return json({ ok: true, business: stop.listing?.name, anchor: stop.is_anchor, progress, badge_name: progress.completed ? hunt.badge_name : null });
+    return json({ ok: true, business: stop.listing?.name, anchor: stop.is_anchor, progress, badge_name: progress.completed ? hunt.badge_name : null, hub: hunt.community_slug });
   }
 
   if (body.action === 'report') {
@@ -185,7 +203,7 @@ Deno.serve(async (req) => {
     if (!isId(body.stop_id)) return json({ error: 'bad_id' }, 400);
     const { data: stop } = await db.from('ve_hunt_stops').select('*, listing:listings(name, slug, address_city, ve_contact_name, ve_contact_phone, ve_contact_email, phone)').eq('id', body.stop_id).eq('active', true).maybeSingle();
     if (!stop) return json({ error: 'not_found' }, 404);
-    const hunt = await liveHunt(community);
+    const hunt = open ? await liveHunt(community) : null;
     if (!hunt || hunt.id !== stop.hunt_id) return json({ error: 'hunt_not_live' }, 409);
     const note = plain(body.note, 500);
     const { data: existing } = await db.from('ve_hunt_stamps').select('id, status').eq('hunt_id', hunt.id).eq('listing_id', stop.listing_id).eq('member_id', memberId).maybeSingle();
@@ -197,12 +215,12 @@ Deno.serve(async (req) => {
       : await db.from('ve_hunt_stamps').insert({ hunt_id: hunt.id, stop_id: stop.id, listing_id: stop.listing_id, member_id: memberId, status: 'pending', source: 'report', note });
     if (error) return json({ error: 'save_failed' }, 500);
     const l = stop.listing || {};
-    const when = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' });
-    await mail(`Hunt: cashier didn't know at ${l.name || 'a stop'}`,
-      `<p>${esc(member.name || member.email || 'A member')} says the cashier at <b>${esc(l.name || '')}</b> (${esc(l.address_city || '')}) did not know about the VE Hunt, ${esc(when)} ET.</p>` +
+    const when = new Date().toLocaleString('en-US', { timeZone: HUB_TZ[hunt.community_slug] || 'America/New_York', dateStyle: 'medium', timeStyle: 'short', timeZoneName: 'short' });
+    await mail(`Passport Challenge: cashier didn't know at ${l.name || 'a stop'}`,
+      `<p>${esc(member.name || member.email || 'A member')} says the cashier at <b>${esc(l.name || '')}</b> (${esc(l.address_city || '')}) did not know about the Passport Challenge, ${esc(when)}.</p>` +
       (note ? `<p>Their note: ${esc(note)}</p>` : '') +
       `<p>Owner contact on file: ${esc(l.ve_contact_name || 'none')}${l.ve_contact_phone ? ', ' + esc(l.ve_contact_phone) : l.phone ? ', ' + esc(l.phone) : ''}${l.ve_contact_email ? ', ' + esc(l.ve_contact_email) : ''}.</p>` +
-      `<p>The visit is held as pending. Confirm it in the Depot once the owner does: <a href="https://vegansexplore.com/admin/depot/hunt">vegansexplore.com/admin/depot/hunt</a></p>`);
+      `<p>The visit is held as pending. Confirm it in the Depot once the owner does: <a href="https://vegansexplore.com/admin/depot/challenge">vegansexplore.com/admin/depot/challenge</a></p>`);
     return json({ ok: true });
   }
 
@@ -213,13 +231,20 @@ Deno.serve(async (req) => {
 
   if (body.action === 'admin_hunts') {
     const { data } = await db.from('ve_hunts').select('*').order('starts_on', { ascending: false }).limit(60);
-    return json({ hunts: data || [] });
+    return json({ hunts: data || [], launched: await launchedHubs() });
+  }
+
+  if (body.action === 'admin_launch') {
+    const list = (Array.isArray(body.communities) ? body.communities : []).map((c: unknown) => plain(c, 60)).filter((c: string) => HUB_TZ[c]);
+    const { error } = await db.from('ve_site_settings').upsert({ key: LAUNCH_KEY, value: { communities: [...new Set(list)] }, updated_at: now, updated_by: memberId });
+    if (error) return json({ error: 'save_failed', message: error.message }, 400);
+    return json({ ok: true, launched: await launchedHubs() });
   }
 
   if (body.action === 'admin_save_hunt') {
     const h = body.hunt || {};
     const row: Record<string, unknown> = {
-      community_slug: plain(h.community_slug, 60) || 'south-florida', name: plain(h.name, 120), area_name: plain(h.area_name, 120),
+      community_slug: HUB_TZ[plain(h.community_slug, 60)] ? plain(h.community_slug, 60) : 'south-florida', name: plain(h.name, 120), area_name: plain(h.area_name, 120),
       starts_on: plain(h.starts_on, 10), ends_on: plain(h.ends_on, 10), goal: Math.round(+h.goal) || 5,
       points_reward: Math.max(0, Math.round(+h.points_reward) || 0), anchor_bonus_points: Math.max(0, Math.round(+h.anchor_bonus_points) || 0),
       badge_name: plain(h.badge_name, 120), badge_image_url: /^https:\/\//.test(String(h.badge_image_url || '')) ? plain(h.badge_image_url, 500) : null,

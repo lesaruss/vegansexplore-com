@@ -1649,6 +1649,11 @@
     }
   ],
   "redirects": [
+    {"source": "/hunt/scan", "destination": "/passport/challenge/scan", "permanent": false},
+    {"source": "/hunt", "destination": "/passport/challenge", "permanent": false},
+    {"source": "/admin/depot/hunt-card", "destination": "/admin/depot/challenge-card", "permanent": false},
+    {"source": "/admin/depot/hunt-kit", "destination": "/admin/depot/challenge-kit", "permanent": false},
+    {"source": "/admin/depot/hunt", "destination": "/admin/depot/challenge", "permanent": false},
     {"source": "/admin/media-library", "destination": "/admin/depot", "permanent": false},
     {"source": "/admin/onboarding-images", "destination": "/admin/depot/onboarding", "permanent": false},
     {"source": "/admin/onboarding-audio", "destination": "/admin/depot/narration", "permanent": false},

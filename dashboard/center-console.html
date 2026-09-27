@@ -159,8 +159,8 @@
      restructure). Sits above everything else on the dashboard, for every
      member, not just staff -- distinct from .dash-stats below, which stays
      the Community-Manager-only City/Pending/Status row. Badges counts the
-     member's Hunt badges (ve_hunt_completions via ve-hunt 'badges', live
-     2026-09-27) and links to /hunt. --- */
+     member's Passport Challenge badges (ve_hunt_completions via ve-hunt 'badges', live
+     2026-09-27) and links to /passport/challenge. --- */
   .dash-stats-hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
   .dash-stats-hero-tile{border:1.5px solid var(--ve-border);border-radius:14px;padding:18px 16px;background:linear-gradient(180deg,#fff,#fafdfa);text-align:center;}
   .dash-stats-hero-tile.locked{opacity:0.6;}
@@ -736,9 +736,9 @@
           <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
           <div class="dash-stats-hero-label">Membership</div>
         </div>
-        <a class="dash-stats-hero-tile" id="dash-hero-badges-tile" href="/hunt" style="text-decoration:none;color:inherit">
+        <a class="dash-stats-hero-tile" id="dash-hero-badges-tile" href="/passport/challenge" style="text-decoration:none;color:inherit">
           <div class="dash-stats-hero-value" id="dash-hero-badges">0</div>
-          <div class="dash-stats-hero-label">Hunt Badges</div>
+          <div class="dash-stats-hero-label">Challenge Badges</div>
         </a>
       </div>
 
@@ -1484,6 +1484,11 @@
       // course with module quizzes and a certificate. Reuses the cm-handbook
       // key, which ve-auth's VALID_LAYOUT_MODULES already accepts.
       { key: 'cm-handbook', href: '/dashboard/certification', iconHtml: '&#127891;', bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Certification', tagLabel: 'Community Manager', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', visibility: 'staff', defaultSection: 'tools' }
+      // Passport Challenge and Tours (Sean 2026-09-27): planned for 2027, one program per
+      // city, and listed for Community Managers first. Until a city launches them in the
+      // Depot, these open the member pages as a preview only staff can see.
+      { key: 'cm-passport-challenge', href: '/passport/challenge', iconHtml: '&#128506;', bg: 'linear-gradient(135deg,#1f5f22,#3A9B3E)', title: 'Passport Challenge', tagLabel: 'Coming 2027', desc: 'Preview the monthly stamp challenge: a map of local Vegan spots, a stamp at each, a badge at the goal.', visibility: 'staff', defaultSection: 'tools' },
+      { key: 'cm-tours', href: '/tours', iconHtml: '&#128656;', bg: 'linear-gradient(135deg,#F69820,#d4800f)', title: 'Vegans Explore Tours', tagLabel: 'Coming 2027', desc: 'Preview the monthly tasting tour: three restaurants and an attraction, a van of up to 12 guests.', visibility: 'staff', defaultSection: 'tools' },
       // cm-handbook tile removed 2026-09-08 (Sean, Fieldy field note): a
       // Community Manager's role already surfaces as a pill (dash-eyebrow
       // reads member.ve_role === 'community_manager' and shows "Community
@@ -2280,7 +2285,8 @@
       : member.membership_status === 'active' && member.membership_tier === 'guest' ? 'Guest Passport'
       : member.membership_status === 'active' ? 'Founding Member Passport' : 'Free';
     if (levelEl) levelEl.textContent = veLevelFor(member.total_points).toLocaleString();
-    // Hunt badges (playbook ve-verified-tours-hunt group C): one per monthly Hunt completed.
+    // Passport Challenge badges (playbook ve-verified-tours-hunt group C; "The Hunt" until
+    // Sean renamed it 2026-09-27): one per monthly challenge completed.
     var badgesEl = document.getElementById('dash-hero-badges');
     if (badgesEl && window.VEAuth && VEAuth.getToken()) {
       fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-hunt', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'badges' }) })

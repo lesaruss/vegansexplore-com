@@ -1,17 +1,21 @@
 // ve-tours: Vegans Explore Tours (playbook ve-verified-tours-hunt, group B, Sean 2026-09-27).
-// Monthly in South Florida, $50 a guest, about 12 guests, three tastings in one neighborhood and
-// then an attraction. Each tour on sale is also an approved row in public.events, so it shows in
-// the city hub's Events list with a link to its booking page (/tours?id=).
+// Monthly in a city hub, $50 a guest, a van of about 12, three tastings in one neighborhood and
+// then an attraction. Each tour on sale in a launched hub is also an approved row in public.events,
+// so it shows in the hub's Events list with a link to its booking page (/tours?id=).
+//
+// Launch: a hub's tours reach the public only once the hub is switched on in the Depot
+// (ve_site_settings.tours_launch). Until then Community Managers and superadmins see them as a
+// preview (Sean 2026-09-27: planned for 2027, one program per city, listed for Community Managers first).
 //
 // Public (a signed-in visitor may send the VE app token so the booking is tied to them):
-//   POST { action: 'list', community? }  -> { tours }  on sale and upcoming, with seats left
-//   POST { action: 'get', id }            -> { tour, waiver }
+//   POST { action: 'list', community? }  -> { tours, launched, preview }  on sale and upcoming, with seats left
+//   POST { action: 'get', id }            -> { tour, waiver, launched, preview }
 //   POST { action: 'book', tour_id, buyer: { name, email, phone }, guests: [{ name, dietary, allergies }],
 //          waiver_signed_name, agree: true, return_url } -> { url }  Stripe Checkout (seats held 30 minutes)
 //   GET  ?confirm=<session id>  marks the order paid, emails the buyer and Sean, back to /tours?id=&booked=1
 // Superadmin (the Depot):
 //   admin_tours, admin_save_tour, admin_roster { tour_id }, admin_ticket { id, status | checked_in },
-//   admin_waiver (read), admin_save_waiver { text }, admin_plus { city }
+//   admin_waiver (read), admin_save_waiver { text }, admin_plus { cities, states }, admin_launch { communities }
 //
 // Ticket sales stay closed until the waiver text is saved in the Depot (Sean writes the wording).
 // verify_jwt is false: the VE app token, when sent, is HMAC-verified the same way ve-auth checks it.
@@ -25,7 +29,16 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const FN_URL = `${SUPABASE_URL}/functions/v1/ve-tours`;
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const VE_TENANT = '00000000-0000-4000-a000-000000000002';
-const MAX_GUESTS = 4;
+const MAX_GUESTS = 12; // one booking can fill the van (Sean 2026-09-27); the tour's seats still cap it
+const LAUNCH_KEY = 'tours_launch';
+// Each hub's time zone and region for the events row (same slugs as /public/ve-hubs.js).
+const HUBS: Record<string, { tz: string; state: string | null; country: string }> = {
+  'south-florida': { tz: 'America/New_York', state: 'FL', country: 'US' }, 'central-florida': { tz: 'America/New_York', state: 'FL', country: 'US' },
+  atlanta: { tz: 'America/New_York', state: 'GA', country: 'US' }, dmv: { tz: 'America/New_York', state: 'DC', country: 'US' },
+  'new-york': { tz: 'America/New_York', state: 'NY', country: 'US' }, philadelphia: { tz: 'America/New_York', state: 'PA', country: 'US' },
+  'los-angeles': { tz: 'America/Los_Angeles', state: 'CA', country: 'US' }, london: { tz: 'Europe/London', state: null, country: 'GB' },
+};
+const hub = (slug: string) => HUBS[slug] || HUBS['south-florida'];
 
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
@@ -80,26 +93,30 @@ async function waiver() {
   const v = data?.value || {};
   return v.text ? { text: String(v.text), version: String(v.version || '1') } : null;
 }
-const when = (iso: string) => new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+const when = (iso: string, slug: string) => new Date(iso).toLocaleString('en-US', { timeZone: hub(slug).tz, weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+async function launchedHubs(): Promise<string[]> {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', LAUNCH_KEY).maybeSingle();
+  return Array.isArray(data?.value?.communities) ? data!.value.communities : [];
+}
 
 async function publicTour(t: any) {
   const taken = (await db.rpc('ve_tour_seats_taken', { p_tour: t.id })).data || 0;
   const ids = (t.stops || []).map((s: any) => s.listing_id).filter(isId);
   const { data: ls } = ids.length ? await db.from('listings').select('id, name, slug, logo_url, color, ve_verified, ve_verified_tier').in('id', ids) : { data: [] };
   const byId: Record<string, any> = {}; (ls || []).forEach((l: any) => { byId[l.id] = l; });
-  return { id: t.id, title: t.title, city: t.city, neighborhood: t.neighborhood, starts_at: t.starts_at, ends_at: t.ends_at, price_cents: t.price_cents,
+  return { id: t.id, community_slug: t.community_slug, tz: hub(t.community_slug).tz, title: t.title, city: t.city, neighborhood: t.neighborhood, starts_at: t.starts_at, ends_at: t.ends_at, price_cents: t.price_cents,
     capacity: t.capacity, seats_left: Math.max(0, t.capacity - taken), status: t.status, attraction: t.attraction, pickup: t.pickup, dropoff: t.dropoff,
     rain_plan: t.rain_plan, host_name: t.host_name, description: t.description, image_url: t.image_url,
     stops: (t.stops || []).map((s: any) => { const l = byId[s.listing_id] || {}; return { name: l.name || s.name, slug: l.slug, logo_url: l.logo_url, color: l.color, tier: l.ve_verified ? l.ve_verified_tier : null }; }) };
 }
 
 // Keep the tour's events row in step: on sale shows it in the hub's Events list; draft or canceled hides it.
-async function syncEvent(t: any, authorId: string) {
-  const show = ['on_sale', 'closed', 'done'].includes(t.status);
+async function syncEvent(t: any, authorId: string, launched: string[]) {
+  const show = ['on_sale', 'closed', 'done'].includes(t.status) && launched.includes(t.community_slug);
   if (!show) { if (t.event_id) await db.from('events').update({ status: 'cancelled', updated_at: new Date().toISOString() }).eq('id', t.event_id); return t.event_id; }
   const stops = (t.stops || []).map((s: any) => s.name).filter(Boolean).join(', ');
   const row = { tenant_id: VE_TENANT, title: t.title, description: (t.description || `Three tastings in ${t.neighborhood}${stops ? ' (' + stops + ')' : ''}, then ${t.attraction || 'time to hang out together'}. About ${t.capacity} guests, with a host on board.`),
-    event_type: 'in_person', starts_at: t.starts_at, ends_at: t.ends_at, timezone: 'America/New_York', location_name: t.neighborhood, city: t.city, state: 'FL', country: 'US',
+    event_type: 'in_person', starts_at: t.starts_at, ends_at: t.ends_at, timezone: hub(t.community_slug).tz, location_name: t.neighborhood, city: t.city, state: hub(t.community_slug).state, country: hub(t.community_slug).country,
     category: 'food', capacity: t.capacity, is_free: false, price_cents: t.price_cents, ticket_url: `https://vegansexplore.com/tours?id=${t.id}`, image_url: t.image_url || null,
     status: 'approved', updated_at: new Date().toISOString() };
   if (t.event_id) { await db.from('events').update(row).eq('id', t.event_id); return t.event_id; }
@@ -123,7 +140,7 @@ async function confirm(sessionId: string): Promise<Response> {
     const r0 = rows[0], names = rows.map((r: any) => r.guest_name);
     const diet = rows.filter((r: any) => r.dietary || r.allergies).map((r: any) => `${esc(r.guest_name)}: ${esc([r.dietary, r.allergies && 'allergies: ' + r.allergies].filter(Boolean).join('; '))}`);
     await send([r0.buyer_email], `You're booked: ${t.title}`,
-      `<p>Thank you, ${esc(r0.buyer_name.split(' ')[0])}. You're booked on <b>${esc(t.title)}</b>, ${esc(when(t.starts_at))} (Eastern).</p>` +
+      `<p>Thank you, ${esc(r0.buyer_name.split(' ')[0])}. You're booked on <b>${esc(t.title)}</b>, ${esc(when(t.starts_at, t.community_slug))}.</p>` +
       `<p>Guests: ${esc(names.join(', '))}</p>` +
       (t.pickup ? `<p>Pickup: ${esc(t.pickup)}</p>` : '') + (t.dropoff ? `<p>Drop-off: ${esc(t.dropoff)}</p>` : '') +
       (t.rain_plan ? `<p>If it rains: ${esc(t.rain_plan)}</p>` : '') +
@@ -149,20 +166,29 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token && token.split('.').length === 3 ? await verifyToken(token) : null;
+  const { data: member } = memberId ? await db.from('members').select('id, is_superadmin, ve_role').eq('id', memberId).maybeSingle() : { data: null };
+  // Community Managers and superadmins see a hub's tours before it launches.
+  const staff = !!(member && (member.is_superadmin || member.ve_role === 'community_manager'));
+  const launched = await launchedHubs();
 
   if (body.action === 'list') {
-    const { data } = await db.from('ve_tours').select('*').eq('community_slug', plain(body.community, 60) || 'south-florida').eq('status', 'on_sale').gte('starts_at', new Date().toISOString()).order('starts_at').limit(12);
-    return json({ tours: await Promise.all((data || []).map(publicTour)) });
+    const slug = plain(body.community, 60);
+    const hubs = slug ? [slug] : Object.keys(HUBS);
+    const open = staff ? hubs : hubs.filter((h) => launched.includes(h));
+    const { data } = open.length ? await db.from('ve_tours').select('*').in('community_slug', open).eq('status', 'on_sale').gte('starts_at', new Date().toISOString()).order('starts_at').limit(24) : { data: [] };
+    return json({ tours: await Promise.all((data || []).map(publicTour)), launched: hubs.filter((h) => launched.includes(h)), preview: staff && hubs.some((h) => !launched.includes(h)) });
   }
   if (body.action === 'get') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
     const { data: t } = await db.from('ve_tours').select('*').eq('id', body.id).neq('status', 'draft').maybeSingle();
-    if (!t) return json({ error: 'not_found' }, 404);
-    return json({ tour: await publicTour(t), waiver: await waiver() });
+    if (!t || !(staff || launched.includes(t.community_slug))) return json({ error: 'not_found' }, 404);
+    return json({ tour: await publicTour(t), waiver: await waiver(), launched: launched.includes(t.community_slug), preview: staff && !launched.includes(t.community_slug) });
   }
 
   if (body.action === 'book') {
     if (!isId(body.tour_id)) return json({ error: 'bad_id' }, 400);
+    const { data: bt } = await db.from('ve_tours').select('community_slug').eq('id', body.tour_id).maybeSingle();
+    if (!bt || !(staff || launched.includes(bt.community_slug))) return json({ error: 'not_on_sale' }, 409);
     const w = await waiver();
     if (!w) return json({ error: 'waiver_missing' }, 409);
     const b = body.buyer || {};
@@ -208,7 +234,6 @@ Deno.serve(async (req) => {
   // ---- The Depot (superadmins only).
   if (!String(body.action || '').startsWith('admin_')) return json({ error: 'unknown_action' }, 400);
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, is_superadmin').eq('id', memberId).maybeSingle();
   if (!member?.is_superadmin) return json({ error: 'no_access' }, 403);
   const now = new Date().toISOString();
 
@@ -219,14 +244,24 @@ Deno.serve(async (req) => {
       const { data: tk } = await db.from('ve_tour_tickets').select('status').eq('tour_id', t.id);
       out.push({ ...t, paid: (tk || []).filter((x: any) => x.status === 'paid').length });
     }
-    return json({ tours: out, waiver: await waiver() });
+    return json({ tours: out, waiver: await waiver(), launched });
+  }
+
+  // Switch hubs on or off, then bring every tour's Events row in line with the new list.
+  if (body.action === 'admin_launch') {
+    const list = [...new Set((Array.isArray(body.communities) ? body.communities : []).map((c: unknown) => plain(c, 60)).filter((c: string) => HUBS[c]))];
+    const { error } = await db.from('ve_site_settings').upsert({ key: LAUNCH_KEY, value: { communities: list }, updated_at: now, updated_by: memberId });
+    if (error) return json({ error: 'save_failed', message: error.message }, 400);
+    const { data: all } = await db.from('ve_tours').select('*').in('status', ['on_sale', 'closed', 'done']);
+    for (const t of all || []) await syncEvent(t, memberId, list as string[]);
+    return json({ ok: true, launched: list });
   }
 
   if (body.action === 'admin_save_tour') {
     const t = body.tour || {};
     const stops = (Array.isArray(t.stops) ? t.stops : []).filter((s: any) => isId(s?.listing_id)).slice(0, 3).map((s: any) => ({ listing_id: s.listing_id, name: plain(s.name, 160) }));
     const row: Record<string, unknown> = {
-      title: plain(t.title, 140), city: plain(t.city, 80), neighborhood: plain(t.neighborhood, 120), starts_at: t.starts_at || null, ends_at: t.ends_at || null,
+      community_slug: HUBS[plain(t.community_slug, 60)] ? plain(t.community_slug, 60) : 'south-florida', title: plain(t.title, 140), city: plain(t.city, 80), neighborhood: plain(t.neighborhood, 120), starts_at: t.starts_at || null, ends_at: t.ends_at || null,
       price_cents: Math.max(0, Math.round(+t.price_cents)) || 5000, capacity: Math.min(60, Math.max(1, Math.round(+t.capacity) || 12)), stops,
       attraction: plain(t.attraction, 200) || null, pickup: plain(t.pickup, 300) || null, dropoff: plain(t.dropoff, 300) || null, rain_plan: plain(t.rain_plan, 500) || null,
       host_name: plain(t.host_name, 120) || null, description: plain(t.description, 1500) || null,
@@ -242,7 +277,7 @@ Deno.serve(async (req) => {
       ? await db.from('ve_tours').update(row).eq('id', t.id).select('*').single()
       : await db.from('ve_tours').insert({ ...row, created_by: memberId }).select('*').single();
     if (error) return json({ error: 'save_failed', message: error.message }, 400);
-    const eventId = await syncEvent(data, memberId);
+    const eventId = await syncEvent(data, memberId, launched);
     return json({ ok: true, tour: { ...data, event_id: eventId } });
   }
 
@@ -274,12 +309,16 @@ Deno.serve(async (req) => {
     return json({ ok: true, waiver: text ? { text, version } : null });
   }
 
-  // Plus businesses are first in line for tours in their area; Verified next.
+  // Plus businesses are first in line for tours in their area; Verified next. The page sends the
+  // hub's cities (or state) from /public/ve-hubs.js.
   if (body.action === 'admin_plus') {
-    const city = plain(body.city, 80);
-    const q = db.from('listings').select('id, name, slug, address_city, category, ve_verified_tier, ve_verified_until, ve_contact_name, ve_contact_phone, phone')
+    const cities = (Array.isArray(body.cities) ? body.cities : []).map((c: unknown) => plain(c, 80)).filter(Boolean).slice(0, 40);
+    const states = (Array.isArray(body.states) ? body.states : []).map((c: unknown) => plain(c, 4)).filter(Boolean).slice(0, 6);
+    let q = db.from('listings').select('id, name, slug, address_city, address_state, category, ve_verified_tier, ve_verified_until, ve_contact_name, ve_contact_phone, phone')
       .eq('status', 'approved').not('ve_verified_tier', 'is', null).order('name');
-    const { data } = city ? await q.eq('address_city', city) : await q;
+    if (states.length) q = q.in('address_state', states);
+    if (cities.length) q = q.in('address_city', cities);
+    const { data } = await q;
     const live = (data || []).filter((l: any) => !l.ve_verified_until || new Date(l.ve_verified_until).getTime() > Date.now() - 3 * 864e5);
     live.sort((a: any, b: any) => (b.ve_verified_tier === 'plus' ? 1 : 0) - (a.ve_verified_tier === 'plus' ? 1 : 0));
     return json({ businesses: live });

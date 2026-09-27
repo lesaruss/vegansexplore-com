@@ -252,7 +252,21 @@ same day; the Depot list also re-reads near-renewal subscriptions from Stripe, a
 (tier, paid, renews, visit, shoot, notes, end, add a membership paid another way).
 Migration `ve_verified_tiers`.
 
-## ve-hunt: the Hunt (2026-09-27)
+## ve-hunt: the Passport Challenge (2026-09-27)
+
+Renamed from "The Hunt" by Sean on 2026-09-27 (a hunt reads wrong for a Vegan organization).
+Member-facing copy and URLs say Passport Challenge (`/passport/challenge`, `/passport/challenge/scan`,
+`/admin/depot/challenge`, `-card`, `-kit`; the old `/hunt` paths redirect in `vercel.json`). The
+tables (`ve_hunt*`), this function's slug, the `points_ledger` reasons (`ve_hunt_complete`,
+`ve_hunt_anchor`) and the `hunt:`/`hunt-anchor:` refs keep their names; a "hunt" row is one monthly
+challenge. Each challenge belongs to a hub (`community_slug`, picked in the Depot; hubs listed in
+`/public/ve-hubs.js`, with each hub's time zone in the function). **Launch gate:** a hub's challenge
+reaches members only when the hub is in `ve_site_settings.challenge_launch` (`{communities: [...]}`,
+set with the Depot's Launch checkboxes, action `admin_launch`); until then members see "Coming in
+2027" and Community Managers and superadmins (`members.ve_role = 'community_manager'` or
+`is_superadmin`) see a preview. Sean's plan: 2027, one program per city, listed for Community
+Managers first (dashboard tiles `cm-passport-challenge` and `cm-tours`, visibility staff).
+
 
 Playbook `ve-verified-tours-hunt`, group C. `verify_jwt` is **false** (VE app token checked in the
 function like ve-auth). Tables (migration `ve_hunt`, all RLS on, service role only): `ve_hunts`
@@ -270,6 +284,14 @@ flags), `/admin/depot/hunt-card` (printable 5 x 7 register card). The South Flor
 card with the live offers; the dashboard Badges tile counts Hunt badges.
 
 ## ve-tours: Vegans Explore Tours (2026-09-27)
+
+Update 2026-09-27 (Sean): one booking can take up to 12 guests (the van; the tour's seats still cap
+it), each tour belongs to a hub (`community_slug`, times shown in the hub's time zone, events row
+state and country from the hub), and a hub's tours reach the public only when the hub is in
+`ve_site_settings.tours_launch` (Depot > Tours > Launch, action `admin_launch`, which also adds or
+removes each tour's Events row). Until then Community Managers and superadmins see them as a
+preview and can book to test. Planned for 2027.
+
 
 Playbook `ve-verified-tours-hunt`, group B. `verify_jwt` is **false** (VE app token checked in the
 function like ve-auth; booking works signed out too). Tables (migration `ve_tours`, RLS on, service
