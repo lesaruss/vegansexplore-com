@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Your Listing — Vegans Explore</title>
+  <meta name="description" content="Own a Vegan or Vegan-friendly business? Claim your Vegans Explore listing, complete your details, and join the community.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 24px 64px;}
+    @media (max-width:600px){.wrap{padding:28px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(26px,4vw,36px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:12px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 12px;}
+    .lede{font-size:15px;color:var(--ve-text-75);margin-bottom:24px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:22px 22px 24px;margin-bottom:16px;}
+    .biz{display:flex;gap:16px;align-items:center;}
+    .biz-logo{width:64px;height:64px;min-width:64px;border-radius:10px;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:900;background:var(--ve-green);}
+    .biz b{display:block;font-size:17px;font-weight:800;line-height:1.25;}
+    .biz span{font-size:13px;color:var(--ve-text-75);}
+    label.f{display:block;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 6px;}
+    label.f small{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    input[type=text],input[type=email],input[type=tel],input[type=url],input[type=search],input[type=number],textarea{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;color:var(--ve-text);}
+    textarea{min-height:120px;resize:vertical;}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
+    @media (max-width:600px){.row2{grid-template-columns:1fr;}}
+    .choice{display:flex;flex-direction:column;gap:8px;}
+    .choice label{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border:1px solid var(--ve-border);border-radius:10px;cursor:pointer;background:#fff;font-size:14px;}
+    .choice label:has(input:checked){border-color:var(--ve-green-dark);background:var(--ve-green-light);}
+    .choice input{margin-top:4px;width:18px;height:18px;accent-color:var(--ve-green-deep);}
+    .choice b{font-weight:800;}
+    .amounts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+    .amounts button{font:inherit;font-size:15px;font-weight:800;padding:10px 18px;border-radius:99px;border:1.5px solid rgba(0,0,0,0.2);background:#fff;cursor:pointer;min-height:44px;}
+    .amounts button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .money{position:relative;max-width:220px;}
+    .money span{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-weight:800;}
+    .money input{padding-left:26px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.55;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:14px;font-weight:700;color:var(--ve-green-deep);margin-top:12px;min-height:20px;}
+    .msg.bad{color:#8a1c12;}
+    .note{font-size:13px;color:var(--ve-text-75);}
+    .results a{display:flex;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--ve-border);color:inherit;text-decoration:none;}
+    .results a:hover b{text-decoration:underline;}
+    .results .biz-logo{width:40px;height:40px;min-width:40px;font-size:16px;border-radius:8px;}
+    .results span{font-size:12.5px;color:var(--ve-text-75);}
+    .done{text-align:center;padding:34px 22px;}
+    .done h2{font-size:18px;margin-bottom:8px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="wrap">
+    <p class="eyebrow">For businesses</p>
+    <h1>Claim your listing</h1>
+    <p class="lede">Own a Vegan or Vegan-friendly business in our directory? Claim your listing, tell the community about you, and join us. Claimed listings are marked as verified and open to everyone once we confirm them.</p>
+
+    <!-- 1. Find the business -->
+    <section class="card" id="find" hidden>
+      <h2>Find your business</h2>
+      <input type="search" id="q" placeholder="Business name" aria-label="Business name">
+      <div class="results" id="results"></div>
+    </section>
+
+    <!-- The business being claimed -->
+    <section class="card" id="biz-card" hidden>
+      <div class="biz" id="biz"></div>
+    </section>
+
+    <!-- States -->
+    <section class="card done" id="st-submitted" hidden>
+      <h2>Thank you. Your claim is in.</h2>
+      <p class="note">Your contribution went through and you are now a Founding Member. We review every claim by hand and will be in touch at the email you gave us. Once it is confirmed, your listing is marked verified and open to everyone.</p>
+      <p style="margin-top:18px"><a class="btn btn-ghost" id="st-view" href="#">View your listing</a></p>
+    </section>
+    <section class="card done" id="st-claimed" hidden>
+      <h2>This listing has already been claimed</h2>
+      <p class="note">If this is your business and you did not claim it, email us at <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> and we will sort it out.</p>
+    </section>
+    <section class="card" id="st-signin" hidden>
+      <h2>First, sign in</h2>
+      <p class="note" style="margin-bottom:14px">Sign in to your Passport, or create one in a minute, so the listing is tied to you.</p>
+      <button type="button" class="btn" id="signin">Sign in or create a Passport</button>
+    </section>
+
+    <!-- 2. The claim -->
+    <form id="claim" hidden novalidate>
+      <section class="card">
+        <h2>About you</h2>
+        <div class="row2">
+          <div><label class="f" for="c-name">Your name</label><input type="text" id="c-name" autocomplete="name" required></div>
+          <div><label class="f" for="c-role">Your role <small>(owner, manager...)</small></label><input type="text" id="c-role" autocomplete="organization-title"></div>
+          <div><label class="f" for="c-email">Email</label><input type="email" id="c-email" autocomplete="email" required></div>
+          <div><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" autocomplete="tel"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>About the business</h2>
+        <label class="f" id="vs-l">How Vegan is it?</label>
+        <div class="choice" role="radiogroup" aria-labelledby="vs-l">
+          <label><input type="radio" name="vs" value="fully_vegan"><span><b>Fully Vegan.</b> Everything we serve or sell is Vegan.</span></label>
+          <label><input type="radio" name="vs" value="vegan_friendly"><span><b>Vegan-friendly.</b> A real Vegan menu or range alongside other food.</span></label>
+          <label><input type="radio" name="vs" value="vegan_options"><span><b>Vegan options.</b> A few Vegan dishes or products.</span></label>
+        </div>
+        <label class="f" for="b-tag">One line about you <small>(optional)</small></label>
+        <input type="text" id="b-tag" maxlength="140">
+        <label class="f" for="b-desc">Tell the community about your business</label>
+        <textarea id="b-desc" maxlength="2000" required></textarea>
+        <div class="row2">
+          <div><label class="f" for="b-web">Website <small>(optional)</small></label><input type="url" id="b-web" placeholder="yourbusiness.com"></div>
+          <div><label class="f" for="b-ig">Instagram <small>(optional)</small></label><input type="text" id="b-ig" placeholder="@yourbusiness"></div>
+          <div><label class="f" for="b-phone">Business phone <small>(optional)</small></label><input type="tel" id="b-phone"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Your contribution to the cause</h2>
+        <p class="note" style="margin-bottom:14px">Vegans Explore is a community built to help people find and support Vegan businesses. Claiming your listing comes with a contribution to that work, in any amount from $11. Give what fits your business. It also makes you a Founding Member.</p>
+        <div class="amounts" id="amounts">
+          <button type="button" data-amt="11" aria-pressed="false">$11</button>
+          <button type="button" data-amt="25" aria-pressed="false">$25</button>
+          <button type="button" data-amt="50" aria-pressed="false">$50</button>
+          <button type="button" data-amt="100" aria-pressed="false">$100</button>
+        </div>
+        <label class="f" for="amt">Or enter an amount</label>
+        <div class="money"><span>$</span><input type="number" id="amt" min="11" step="1" inputmode="decimal" placeholder="11 or more"></div>
+      </section>
+
+      <button type="submit" class="btn" id="go">Continue to contribution</button>
+      <p class="msg" id="msg" role="status"></p>
+      <p class="note" style="margin-top:6px">You will finish on a secure Stripe page. We review every claim before it is marked verified.</p>
+    </form>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var FN = SB + '/functions/v1/ve-claims';
+      var COLS = 'id,slug,name,category,address_city,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status';
+      var $ = function (id) { return document.getElementById(id); };
+      var qs = new URLSearchParams(location.search), L = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function rest(q) { return fetch(SB + '/rest/v1/listings?' + q, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } }).then(function (r) { return r.json(); }); }
+      function logo(l) {
+        return l.logo_url ? '<img class="biz-logo" src="' + esc(l.logo_url) + '" alt="">' : '<div class="biz-logo" style="background:' + esc(l.color || '#3A9B3E') + '">' + esc((l.name || 'V').charAt(0).toUpperCase()) + '</div>';
+      }
+      function show(id) { ['find', 'biz-card', 'st-submitted', 'st-claimed', 'st-signin', 'claim'].forEach(function (x) { $(x).hidden = id.indexOf(x) < 0; }); }
+
+      // ---- No business picked yet: search by name.
+      var t = null;
+      $('q').addEventListener('input', function () {
+        clearTimeout(t); var v = $('q').value.trim();
+        if (v.length < 2) { $('results').innerHTML = ''; return; }
+        t = setTimeout(function () {
+          rest('select=' + COLS + '&status=eq.approved&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=12').then(function (rows) {
+            $('results').innerHTML = (rows || []).length ? rows.map(function (l) {
+              return '<a href="/claim?listing=' + encodeURIComponent(l.slug) + '">' + logo(l) + '<div><b>' + esc(l.name) + '</b><span>' + esc([l.address_city, l.category].filter(Boolean).join(' · ')) + (l.claim_status === 'verified' ? ' · already claimed' : '') + '</span></div></a>';
+            }).join('') : '<p class="note" style="margin-top:12px">No match. Not listed yet? Email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> and we will add you.</p>';
+          });
+        }, 250);
+      });
+
+      // ---- The form.
+      var amount = null;
+      $('amounts').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-amt]'); if (!b) return;
+        amount = +b.getAttribute('data-amt'); $('amt').value = '';
+        $('amounts').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      });
+      $('amt').addEventListener('input', function () {
+        amount = $('amt').value ? +$('amt').value : null;
+        $('amounts').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      });
+      function fill(l) {
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        $('c-name').value = (m && m.name) || ''; $('c-email').value = (m && m.email) || '';
+        $('b-tag').value = l.tagline || ''; $('b-desc').value = l.description || ''; $('b-web').value = l.website || '';
+        $('b-ig').value = l.instagram ? '@' + String(l.instagram).replace(/^@/, '') : ''; $('b-phone').value = l.phone || '';
+        var vs = l.vegan_status === 'vegan' ? 'fully_vegan' : l.vegan_status;
+        var r = document.querySelector('input[name=vs][value="' + vs + '"]'); if (r) r.checked = true;
+      }
+      function bad(text, el) { $('msg').className = 'msg bad'; $('msg').textContent = text; if (el) el.focus(); }
+      $('claim').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var vs = document.querySelector('input[name=vs]:checked');
+        if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
+        if (!vs) return bad('Please choose how Vegan the business is.');
+        if (!$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
+        if (!amount || amount < 11) return bad('Please choose a contribution of $11 or more.', $('amt'));
+        $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Taking you to the secure contribution page...';
+        fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({
+          action: 'start', listing_id: L.id, amount_cents: Math.round(amount * 100), return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
+          contact_name: $('c-name').value, contact_role: $('c-role').value, contact_email: $('c-email').value, contact_phone: $('c-phone').value,
+          proposed: { vegan_status: vs.value, tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }
+        }) }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.url) { location.href = d.url; return; }
+          $('go').disabled = false;
+          bad(d && d.error === 'already_claimed' ? 'This listing has already been claimed.' : d && d.error === 'invalid_amount' ? 'Please choose a contribution of $11 or more.' : 'That did not go through. Please try again.');
+        }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
+      });
+      $('signin').onclick = function () { VEAuth.showAuthModal('Sign in or create your Passport to claim your listing.', function () { location.reload(); }); };
+
+      // ---- Start.
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 150);
+        var slug = qs.get('listing');
+        if (!slug) { show(['find']); $('q').focus(); return; }
+        rest('select=' + COLS + '&status=eq.approved&slug=eq.' + encodeURIComponent(slug) + '&limit=1').then(function (rows) {
+          L = rows && rows[0];
+          if (!L) { show(['find']); return; }
+          $('biz').innerHTML = logo(L) + '<div><b>' + esc(L.name) + '</b><span>' + esc([L.address_city, L.category].filter(Boolean).join(' · ')) + '</span></div>';
+          $('st-view').href = '/directory/' + encodeURIComponent(L.slug);
+          if (qs.get('claim') === 'submitted') return show(['biz-card', 'st-submitted']);
+          if (L.claim_status === 'verified') return show(['biz-card', 'st-claimed']);
+          if (!VEAuth.isLoggedIn()) return show(['biz-card', 'st-signin']);
+          fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'mine', listing_id: L.id }) })
+            .then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (d) {
+              var c = d && d.claim;
+              if (c && (c.status === 'submitted' || c.status === 'approved')) return show(['biz-card', 'st-submitted']);
+              fill(L); show(['biz-card', 'claim']);
+              if (qs.get('claim') === 'cancelled' || qs.get('claim') === 'unpaid') { $('msg').className = 'msg bad'; $('msg').textContent = 'Your contribution was not completed, so the claim has not gone through yet. Your details are still here when you are ready.'; }
+            });
+        }).catch(function () { show(['find']); });
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

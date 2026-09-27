@@ -183,3 +183,26 @@ business. Please try again tomorrow at 9:14 PM EDT", in the visitor's own time z
 (the browser's; Eastern if it will not say). The browser side is `/public/ve-votes.js`. Migration
 `listing_votes_per_listing_per_day`. Deployed as v2 with `verify_jwt=false` (VE app
 token, checked like ve-auth). ve-auth's older `vote_listing` still works but no page uses it.
+
+## Public directory rule and ve-claims (2026-09-27)
+
+Sean: a Vegan-friendly listing (or one with Vegan options) shows to the public only once
+the community trusts it, which means votes from 10 different people (not one person ten
+times) or a business claim Sean approved. Members always see everything; fully Vegan
+listings and listings with no vegan status are never held back.
+
+- `listings.voter_count` counts distinct members who ever voted for the listing (kept by
+  `fn_listing_vote_count` next to `vote_count`).
+- `ve_site_settings` (public read) row `directory_trust` = `{ enabled, min_voters }`,
+  switched in the Depot's Claims tab. It shipped switched off.
+- `/public/ve-trust.js` applies it on the city hubs (through ve-region-directory) and the
+  listing page (members-only screen). `/directory` is admins-only, so it is not filtered.
+- `ve-claims` (v1, `verify_jwt=false`) runs `/claim`: the business completes its details
+  and makes an open-ended contribution ($11 minimum) through Stripe Checkout. The session
+  carries ve-entry-checkout's metadata (`type entry_contribution`), so ve-stripe-webhook
+  activates the membership and credits Points as usual; `claim_id` links it back.
+  `?confirm=` marks the claim submitted with what Stripe says was paid and emails Sean.
+  Approving in the Depot sets `claim_status` 'verified' (the existing value for claimed
+  listings) and writes the details onto the listing; `claim_status` 'pending' means a paid
+  claim is waiting. Claims live in `ve_listing_claims` (RLS on, service role only).
+  Migration `directory_trust_and_claims`.

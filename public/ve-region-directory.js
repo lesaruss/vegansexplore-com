@@ -93,6 +93,7 @@
     + '.vrd-root .vote-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#aaa}'
     + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:4px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
     + '.vrd-root .vote-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A}'
+    + '.vrd-root .vrd-vetting{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fff4e2;color:#6b3f00;white-space:nowrap}'
     + '.vrd-root .av{border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}'
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
     + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5EC47A}'
@@ -197,7 +198,7 @@
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
-      '<div class="rank-meta">' + cardMeta(l) + '</div>' +
+      '<div class="rank-meta">' + cardMeta(l) + vettingNote(l) + '</div>' +
       '<div class="rank-subcat">' + esc(l.category || '') + '</div></div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button></div>' +
       '</div>';
@@ -498,7 +499,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,is_featured,address_city,address_state,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,is_featured,address_city,address_state,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -506,7 +507,13 @@
         if (data && data.length === 1000) { fetchAll(root, config, offset + 1000, acc); }
         else {
           var approved = acc.filter(function (l) { return config.matchListing(l) || isOnline(l); });
-          fetchClosed(root, config, approved);
+          // The public directory rule (/public/ve-trust.js): unvetted vegan-friendly listings
+          // are for members only until 10 different people vote for them or the business claims it.
+          withTrust(function (T) {
+            TRUST = T;
+            if (T) approved = approved.filter(function (l) { return window.VETrust.visible(l, T); });
+            fetchClosed(root, config, approved);
+          });
         }
       })
       .catch(function (e) {
@@ -515,8 +522,22 @@
       });
   }
 
+  var TRUST = null, trustLoading = null;
+  function withTrust(cb) {
+    if (!trustLoading) trustLoading = new Promise(function (res) {
+      if (window.VETrust) return res();
+      var sc = document.createElement('script'); sc.src = '/public/ve-trust.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+    }).then(function () { return window.VETrust ? window.VETrust.load() : null; });
+    trustLoading.then(cb, function () { cb(null); });
+  }
+  // Members see listings still being vetted, marked so they know their vote counts.
+  function vettingNote(l) {
+    if (!TRUST || !window.VETrust || !window.VETrust.pending(l, TRUST)) return '';
+    return '<span class="vrd-vetting" title="Shows to the public once ' + TRUST.min_voters + ' different people vote for it, or the business claims it.">Members only &middot; ' + (l.voter_count || 0) + ' of ' + TRUST.min_voters + ' people</span>';
+  }
+
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,is_featured,address_city,address_state,color,vegan_status&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,is_featured,address_city,address_state,color,vegan_status&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return config.matchListing(l) || isOnline(l); })); })
