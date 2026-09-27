@@ -38,6 +38,11 @@
     .btn:disabled{opacity:0.5;cursor:default;}
     .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
     .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .drop{border:2px dashed #9cc79e;border-radius:12px;background:#fff;padding:18px 16px;text-align:center;cursor:pointer;margin:0 0 6px;}
+    .drop.over{background:#EAF7EA;border-color:#3A9B3E;}
+    .drop b{display:block;font-size:15px;font-weight:800;}
+    .drop span{font-size:13px;color:rgba(26,26,26,0.8);}
+    .errs{font-size:13px;color:#8a1c12;}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     dialog{border:0;border-radius:14px;padding:0;max-width:min(1100px,calc(100% - 32px));box-shadow:0 24px 60px rgba(0,0,0,0.35);}
     dialog::backdrop{background:rgba(10,20,12,0.7);}
@@ -69,6 +74,13 @@
         <a class="btn btn-ghost" id="im-view" href="/community-managers/onboarding" target="_blank" rel="noopener">View the page</a>
         <span class="msg" id="im-msg" role="status"></span>
       </div>
+      <div class="drop" id="im-drop" tabindex="0" role="button" aria-label="Add pictures: drop a folder of images, or click to choose files">
+        <b>Add pictures: drop a folder here</b>
+        <span>or click to choose files. PNG, JPG or WebP. They go into your library and show up below. Tag them at <a href="/admin/media-library">Image library</a>.</span>
+      </div>
+      <input type="file" id="im-files" multiple accept="image/png,image/jpeg,image/webp" hidden>
+      <p class="msg" id="im-up" role="status"></p>
+      <p class="errs" id="im-up-errs"></p>
       <h2>1. Pick a slide</h2>
       <div class="slides" id="im-slides"></div>
       <h2 id="im-grid-h">2. Choose its picture</h2>
@@ -152,6 +164,64 @@
         var slides = LIBRARY.filter(function (c) { return c.uses.indexOf('slide') >= 0; });
         return (slides.length ? slides : LIBRARY).concat(CANDIDATES);
       }
+      // ---- Add pictures to the library right here (same upload as /admin/media-library).
+      function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+      function toBlob(c, type, q) { return new Promise(function (res) { c.toBlob(res, type, q); }); }
+      // WebP where the browser can encode it; JPEG otherwise (Safari).
+      function encode(c, q) { return toBlob(c, 'image/webp', q).then(function (b) { return b && b.type === 'image/webp' ? b : toBlob(c, 'image/jpeg', q); }); }
+      function drawAt(bmp, w) { var h = Math.round(bmp.height * w / bmp.width), c = document.createElement('canvas'); c.width = w; c.height = h; var x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(bmp, 0, 0, w, h); return c; }
+      function b64(blob) { return new Promise(function (res, rej) { var r = new FileReader(); r.onload = function () { res(String(r.result).split(',')[1]); }; r.onerror = rej; r.readAsDataURL(blob); }); }
+      function prepare(file) {
+        return file.arrayBuffer().then(function (ab) { return Promise.all([crypto.subtle.digest('SHA-256', ab), createImageBitmap(new Blob([ab], { type: file.type || 'image/png' }))]); })
+          .then(function (r) {
+            var bmp = r[1], k = Math.min(1, 2400 / Math.max(bmp.width, bmp.height)), fw = Math.round(bmp.width * k), fh = Math.round(bmp.height * k);
+            return Promise.all([encode(drawAt(bmp, fw), 0.86), encode(drawAt(bmp, Math.min(480, fw)), 0.8)]).then(function (bl) {
+              return Promise.all([b64(bl[0]), b64(bl[1])]).then(function (x) { return { sha256: hex(r[0]), width: fw, height: fh, full_b64: x[0], thumb_b64: x[1] }; });
+            });
+          });
+      }
+      function addFiles(files) {
+        var imgs = files.filter(function (f) { return /\.(png|jpe?g|webp)$/i.test(f.name) || /^image\/(png|jpeg|webp)$/.test(f.type); });
+        if (!imgs.length) { $('im-up').textContent = 'No PNG, JPG or WebP files in that drop.'; return; }
+        var done = 0, added = 0, dupes = 0, errs = [];
+        $('im-up-errs').textContent = '';
+        imgs.reduce(function (p, f) {
+          return p.then(function () {
+            $('im-up').textContent = 'Adding ' + (done + 1) + ' of ' + imgs.length + '...';
+            return prepare(f).then(function (body) {
+              body.action = 'upload'; body.source_name = f.webkitRelativePath || f.name;
+              return fetch(LIB_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+            }).then(function (d) { if (d.ok && d.duplicate) dupes++; else if (d.ok) added++; else errs.push(f.name); })
+              .catch(function () { errs.push(f.name); })
+              .then(function () { done++; });
+          });
+        }, Promise.resolve()).then(function () {
+          $('im-up').textContent = 'Done. ' + added + ' added to your library' + (dupes ? ', ' + dupes + ' were already there' : '') + '.';
+          if (errs.length) $('im-up-errs').textContent = 'Not added: ' + errs.join(', ') + '. Try those again.';
+          $('im-filter').value = 'library';
+          return loadLibrary().then(render);
+        });
+      }
+      function walk(entry) {
+        return new Promise(function (res) {
+          if (entry.isFile) return entry.file(function (f) { res([f]); }, function () { res([]); });
+          if (!entry.isDirectory) return res([]);
+          var rd = entry.createReader(), acc = [];
+          (function more() { rd.readEntries(function (ents) { if (!ents.length) return Promise.all(acc.map(walk)).then(function (l) { res([].concat.apply([], l)); }); acc = acc.concat(Array.prototype.slice.call(ents)); more(); }, function () { res([]); }); })();
+        });
+      }
+      var dropEl = $('im-drop');
+      ['dragenter', 'dragover'].forEach(function (t) { dropEl.addEventListener(t, function (e) { e.preventDefault(); dropEl.classList.add('over'); }); });
+      ['dragleave', 'drop'].forEach(function (t) { dropEl.addEventListener(t, function (e) { e.preventDefault(); dropEl.classList.remove('over'); }); });
+      dropEl.addEventListener('drop', function (e) {
+        var dt = e.dataTransfer, en = [];
+        if (dt.items) for (var i = 0; i < dt.items.length; i++) { var x = dt.items[i].webkitGetAsEntry && dt.items[i].webkitGetAsEntry(); if (x) en.push(x); }
+        if (en.length) Promise.all(en.map(walk)).then(function (l) { addFiles([].concat.apply([], l)); }); else addFiles(Array.prototype.slice.call(dt.files || []));
+      });
+      dropEl.addEventListener('click', function () { $('im-files').click(); });
+      dropEl.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('im-files').click(); } });
+      $('im-files').addEventListener('change', function (e) { addFiles(Array.prototype.slice.call(e.target.files || [])); e.target.value = ''; });
+
       function loadLibrary() {
         return fetch(LIB_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'list' }) })
           .then(function (r) { return r.json(); })
