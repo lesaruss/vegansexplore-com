@@ -419,6 +419,21 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ received: true, ve_verified: true }), { headers: { 'Content-Type': 'application/json' } })
     }
 
+    // --- Any other VE product that confirms itself (added 2026-09-27, Logan; first: Tours) ---
+    // The session names its own confirm function in metadata.confirm_fn (for example ve-tours), and
+    // that function's GET ?confirm=<session id> marks it paid; the buyer's return trip runs the same
+    // code. New VE products need no change here as long as they set type 've_*' and confirm_fn.
+    if (typeof session.metadata?.type === 'string' && session.metadata.type.startsWith('ve_') && /^ve-[a-z-]+$/.test(session.metadata?.confirm_fn || '')) {
+      try {
+        const r = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/${session.metadata.confirm_fn}?confirm=${encodeURIComponent(session.id)}`, { redirect: 'manual' })
+        console.log('VE self-confirm:', session.metadata.type, session.id, r.status, r.headers.get('location'))
+      } catch (e) {
+        console.error('VE self-confirm failed:', session.metadata.type, session.id, e)
+        return new Response('VE confirm failed', { status: 500 })
+      }
+      return new Response(JSON.stringify({ received: true, confirmed_by: session.metadata.confirm_fn }), { headers: { 'Content-Type': 'application/json' } })
+    }
+
     // --- Explore Season Partners Guide purchase (ve-partner-guide sessions carry this metadata) ---
     // Added 2026-09-24 (Logan) per the locked playbook explore-season-partners-guide.
     // ve-partner-guide writes a pending public.sponsors row before sending the

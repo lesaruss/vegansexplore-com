@@ -268,3 +268,24 @@ today (Eastern) is inside its dates. Pages: `/hunt` (members map, Leaflet + OSM 
 (what the card QR opens), `/admin/depot/hunt` (setup, stops, codes, reports, per-business counts,
 flags), `/admin/depot/hunt-card` (printable 5 x 7 register card). The South Florida hub shows a Hunt
 card with the live offers; the dashboard Badges tile counts Hunt badges.
+
+## ve-tours: Vegans Explore Tours (2026-09-27)
+
+Playbook `ve-verified-tours-hunt`, group B. `verify_jwt` is **false** (VE app token checked in the
+function like ve-auth; booking works signed out too). Tables (migration `ve_tours`, RLS on, service
+role only): `ve_tours` (city, neighborhood, start/end, `price_cents` default 5000, `capacity`
+default 12, three `stops` as `[{listing_id, name}]`, attraction, pickup, drop-off, rain plan, host,
+status draft/on_sale/closed/done/canceled, `event_id`), `ve_tour_tickets` (one row per guest, with
+diet and allergy notes, the signed waiver name and version, status holding/paid/canceled/refunded,
+check-in). `ve_tour_hold` locks the tour row and inserts the guests only if seats remain; a
+`holding` seat counts for 30 minutes (`ve_tour_seats_taken`), and the Stripe session expires at 31.
+Checkout is a one-time payment on the VE Stripe account (test mode for `ve_test_checkout_allowlist`
+emails), metadata `type = ve_tour_ticket`, `confirm_fn = ve-tours`. Payment is confirmed by the
+success redirect (`ve-tours?confirm=`) and, as a backstop, by `ve-stripe-webhook`'s generic VE
+branch: any `ve_*` session whose `confirm_fn` names a `ve-*` function is handed to that function's
+`?confirm=`. Tickets stay closed until the waiver is saved (`ve_site_settings.tour_waiver`, versioned
+on every wording change). A tour needs three restaurants, the attraction, pickup, drop-off and a rain
+plan to go on sale; on sale it is mirrored as an approved `events` row (category food) so it shows
+in the South Florida hub's Events. Pages: `/tours` (list, `?id=` detail and booking),
+`/admin/depot/tours` (waiver, tour editor with Plus-first restaurant suggestions, roster with
+check-in).

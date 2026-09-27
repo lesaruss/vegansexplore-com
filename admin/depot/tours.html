@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Tours | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    h3{font-size:11px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-green-deep);margin:16px 0 8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:820px;margin-bottom:12px;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 20px 20px;margin:0 0 16px;}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:10px 14px;align-items:end;}
+    .form .wide{grid-column:1/-1;}
+    .form label,.lbl{display:block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:4px;}
+    input,select,textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;}
+    textarea{min-height:70px;resize:vertical;}
+    #w-text{min-height:200px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:7px 14px;border-radius:8px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;white-space:nowrap;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:var(--ve-green-light);}
+    .btn-stop{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);min-height:20px;margin-top:8px;}
+    .msg.bad{color:#8a1c12;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:12px;}
+    .bar > div{min-width:min(300px,100%);}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px;margin-bottom:12px;}
+    .stat{background:#f7f8f7;border-radius:10px;padding:12px 14px;}
+    .stat b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .stat span{font-size:12.5px;color:var(--ve-text-75);}
+    .slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:12px;}
+    .slot{border:1px solid var(--ve-border);border-radius:12px;padding:12px;}
+    .slot .picked{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:800;font-size:14px;min-height:38px;}
+    .results{position:relative;}
+    .results ul{list-style:none;position:absolute;z-index:10;left:0;right:0;background:#fff;border:1px solid var(--ve-border);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.1);max-height:260px;overflow:auto;}
+    .results li button{display:block;width:100%;text-align:left;background:none;border:0;font:inherit;font-size:13px;padding:8px 10px;cursor:pointer;}
+    .results li button:hover,.results li button:focus{background:var(--ve-green-light);}
+    .sugg{display:flex;flex-wrap:wrap;gap:6px;}
+    .sugg button{font:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;}
+    .sugg button:hover{background:var(--ve-green-light);}
+    .tbl-wrap{overflow-x:auto;border:1px solid var(--ve-border);border-radius:12px;background:#fff;}
+    table{width:100%;border-collapse:collapse;min-width:1000px;font-size:13.5px;}
+    th{font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-75);text-align:left;padding:11px 12px;border-bottom:1px solid var(--ve-border);background:#fafbfa;white-space:nowrap;}
+    td{padding:11px 12px;border-bottom:1px solid var(--ve-border);vertical-align:top;}
+    tr:last-child td{border-bottom:0;}
+    td a{color:inherit;}
+    .meta{font-size:12px;color:var(--ve-text-75);}
+    .pill{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:99px;white-space:nowrap;background:#eef0ee;color:#3d443d;}
+    .pill.ok{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pill.plus{background:var(--ve-orange);color:#1a1a1a;}
+    .pill.ver{background:#1f5f22;color:#fff;}
+    .pill.no{background:#fbeeec;color:#8a1c12;}
+    .pill.test{background:#fff4e2;color:#6b3f00;}
+    .acts{display:flex;flex-wrap:wrap;gap:6px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .warn{background:#fff4e2;border:1px solid #e8c48a;border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:700;color:#6b3f00;margin-bottom:12px;}
+    [hidden]{display:none !important;}
+    @media print{.ve-nav,.ve-footer,#depot-tabs,.no-print{display:none !important}.wrap{padding:0}.panel{border:0;padding:0}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow no-print">The Depot</p>
+    <h1 class="no-print">Tours</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub no-print">Monthly in South Florida: about 12 guests, $50 each, three tastings in one neighborhood, then an attraction. Build the tour here, set it On sale, and it shows at <a href="/tours">vegansexplore.com/tours</a> and in the South Florida hub's Events. VE Verified Plus businesses are first in line for tour stops, so they are listed first.</p>
+    <div id="t-gate" class="gate" hidden></div>
+    <div id="t-app" hidden>
+      <section class="panel no-print">
+        <h2>Waiver</h2>
+        <p class="sub">Every booking signs this text. Tickets stay closed until it is saved. Changing the wording starts a new version; each ticket records the version its buyer signed.</p>
+        <div class="warn" id="w-warn" hidden>No waiver saved yet, so no tour can go on sale.</div>
+        <textarea id="w-text" aria-label="Waiver text" placeholder="Paste the tour waiver wording here."></textarea>
+        <div class="bar" style="margin:10px 0 0"><button type="button" class="btn" id="w-save">Save waiver</button><span class="meta" id="w-ver"></span></div>
+        <p class="msg" id="w-msg" role="status"></p>
+      </section>
+
+      <section class="panel no-print">
+        <div class="bar">
+          <div><label class="lbl" for="pick">Tour</label><select id="pick"></select></div>
+          <button type="button" class="btn btn-ghost" id="new">New tour</button>
+          <a class="btn btn-ghost" id="view" href="/tours" target="_blank" rel="noopener" hidden>View public page</a>
+        </div>
+        <div class="form">
+          <div class="wide"><label for="f-title">Title</label><input id="f-title" placeholder="Wynwood Tasting Tour"></div>
+          <div><label for="f-city">City</label><select id="f-city"></select></div>
+          <div><label for="f-hood">Neighborhood</label><input id="f-hood" placeholder="Wynwood"></div>
+          <div><label for="f-start">Starts (Eastern)</label><input type="datetime-local" id="f-start"></div>
+          <div><label for="f-end">Ends (Eastern)</label><input type="datetime-local" id="f-end"></div>
+          <div><label for="f-price">Price a guest ($)</label><input type="number" id="f-price" min="0" step="1" value="50"></div>
+          <div><label for="f-cap">Seats</label><input type="number" id="f-cap" min="1" max="60" value="12"></div>
+          <div><label for="f-host">Host</label><input id="f-host" placeholder="Who is on board"></div>
+          <div><label for="f-status">Status</label><select id="f-status"><option value="draft">Draft (hidden)</option><option value="on_sale">On sale</option><option value="closed">Closed (sales stopped)</option><option value="done">Done</option><option value="canceled">Canceled</option></select></div>
+        </div>
+        <h3>Three restaurants</h3>
+        <div class="slots" id="slots"></div>
+        <h3>Suggested for this city (Plus first, then Verified)</h3>
+        <div class="sugg" id="sugg"><span class="meta">Pick a city.</span></div>
+        <h3>The rest of the day</h3>
+        <div class="form">
+          <div class="wide"><label for="f-attr">Attraction</label><input id="f-attr" placeholder="Wynwood Walls"></div>
+          <div><label for="f-pick">Pickup</label><input id="f-pick" placeholder="Address and what to look for"></div>
+          <div><label for="f-drop">Drop-off</label><input id="f-drop" placeholder="Address"></div>
+          <div class="wide"><label for="f-rain">Rain plan</label><textarea id="f-rain" placeholder="What happens if it rains"></textarea></div>
+          <div class="wide"><label for="f-desc">Public description (optional; one is written from the stops if empty)</label><textarea id="f-desc"></textarea></div>
+          <div><label for="f-img">Image URL (optional)</label><input id="f-img" placeholder="https://..."></div>
+          <div><label for="f-notes">Internal notes</label><input id="f-notes" placeholder="Van booking, contacts..."></div>
+          <div><button type="button" class="btn" id="f-save">Save tour</button></div>
+        </div>
+        <p class="msg" id="f-msg" role="status"></p>
+      </section>
+
+      <section class="panel" id="r-panel" hidden>
+        <div class="bar" style="justify-content:space-between">
+          <h2 style="margin:0" id="r-title">Roster</h2>
+          <div class="acts no-print"><button type="button" class="btn btn-ghost" id="r-copy">Copy guest emails</button><button type="button" class="btn btn-ghost" onclick="window.print()">Print roster</button></div>
+        </div>
+        <div class="stats" id="r-stats"></div>
+        <p class="msg" id="r-msg" role="status"></p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th scope="col">Guest</th><th scope="col">Booked by</th><th scope="col">Diet</th><th scope="col">Allergies</th><th scope="col">Waiver</th><th scope="col">Payment</th><th scope="col">Checked in</th><th scope="col" class="no-print">Actions</th></tr></thead>
+          <tbody id="roster"></tbody>
+        </table></div>
+      </section>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', FN = SB + '/functions/v1/ve-tours';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      // Same cities as the South Florida hub (SF_CITIES in /communities/south-florida/index.html).
+      var SF = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
+      var $ = function (id) { return document.getElementById(id); };
+      var tours = [], tour = null, stops = [null, null, null], tickets = [], waiver = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function msg(id, text, bad) { $(id).className = 'msg' + (bad ? ' bad' : ''); $(id).textContent = text; }
+      // datetime-local values are Eastern time, whatever the browser's zone.
+      function nyToIso(v) {
+        if (!v) return null;
+        var g = new Date(v + ':00Z');
+        var ny = new Date(g.toLocaleString('en-US', { timeZone: 'America/New_York' })), utc = new Date(g.toLocaleString('en-US', { timeZone: 'UTC' }));
+        return new Date(g.getTime() + (utc - ny)).toISOString();
+      }
+      function isoToNy(iso) { return iso ? new Date(iso).toLocaleString('sv-SE', { timeZone: 'America/New_York' }).replace(' ', 'T').slice(0, 16) : ''; }
+      function nice(iso) { return new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }); }
+      function tierPill(t) { return t === 'plus' ? '<span class="pill plus">Plus</span>' : t ? '<span class="pill ver">Verified</span>' : ''; }
+
+      $('f-city').innerHTML = SF.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');
+
+      function renderSlots() {
+        $('slots').innerHTML = stops.map(function (s, i) {
+          return '<div class="slot"><span class="lbl">Stop ' + (i + 1) + '</span>' + (s
+            ? '<div class="picked"><span>' + esc(s.name) + ' ' + tierPill(s.tier) + '</span><button type="button" class="btn btn-stop" data-clear="' + i + '">Remove</button></div>'
+            : '<div class="results"><input type="search" data-q="' + i + '" placeholder="Search a business" aria-label="Search a business for stop ' + (i + 1) + '" autocomplete="off"><ul data-res="' + i + '" hidden></ul></div>') + '</div>';
+        }).join('');
+      }
+      function place(l) {
+        if (stops.some(function (s) { return s && s.listing_id === l.id; })) return msg('f-msg', l.name + ' is already a stop.', true);
+        var i = stops.indexOf(null); if (i < 0) return msg('f-msg', 'All three stops are filled. Remove one first.', true);
+        stops[i] = { listing_id: l.id, name: l.name, tier: l.ve_verified_tier || null }; renderSlots(); msg('f-msg', '');
+      }
+      var timer, found = {};
+      $('slots').addEventListener('input', function (e) {
+        var i = e.target.getAttribute('data-q'); if (i == null) return;
+        var v = e.target.value.trim(), ul = document.querySelector('[data-res="' + i + '"]');
+        clearTimeout(timer); if (v.length < 2) { ul.hidden = true; return; }
+        timer = setTimeout(function () {
+          fetch(SB + '/rest/v1/listings?select=id,name,address_city,ve_verified_tier&status=eq.approved&address_city=in.(' + SF.map(function (c) { return '"' + c + '"'; }).join(',') + ')&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=15', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+            .then(function (r) { return r.json(); }).then(function (rows) {
+              rows = (rows || []).sort(function (a, b) { var r = function (x) { return x.ve_verified_tier === 'plus' ? 0 : x.ve_verified_tier ? 1 : 2; }; return r(a) - r(b); });
+              rows.forEach(function (l) { found[l.id] = l; });
+              ul.innerHTML = rows.length ? rows.map(function (l) { return '<li><button type="button" data-pick="' + esc(l.id) + '">' + esc(l.name) + ' <span class="meta">' + esc(l.address_city || '') + '</span> ' + tierPill(l.ve_verified_tier) + '</button></li>'; }).join('') : '<li class="meta" style="padding:8px 10px">No match in the South Florida directory.</li>';
+              ul.hidden = false;
+            });
+        }, 250);
+      });
+      document.addEventListener('click', function (e) {
+        var p = e.target.closest('[data-pick]'); if (p) { place(found[p.getAttribute('data-pick')]); return; }
+        var c = e.target.closest('[data-clear]'); if (c) { stops[+c.getAttribute('data-clear')] = null; renderSlots(); }
+      });
+
+      function loadSugg() {
+        var city = $('f-city').value; $('sugg').innerHTML = '<span class="meta">Loading...</span>';
+        api({ action: 'admin_plus', city: city }).then(function (d) {
+          var bs = d.businesses || []; bs.forEach(function (l) { found[l.id] = l; });
+          $('sugg').innerHTML = bs.length ? bs.map(function (l) { return '<button type="button" data-pick="' + esc(l.id) + '" title="' + esc([l.ve_contact_name, l.ve_contact_phone || l.phone].filter(Boolean).join(', ')) + '">' + esc(l.name) + ' ' + tierPill(l.ve_verified_tier) + '</button>'; }).join('') : '<span class="meta">No VE Verified businesses in ' + esc(city) + ' yet. Search any business above.</span>';
+        });
+      }
+      $('f-city').addEventListener('change', loadSugg);
+
+      function fill(t) {
+        t = t || {};
+        $('f-title').value = t.title || ''; $('f-city').value = t.city || 'Miami'; $('f-hood').value = t.neighborhood || '';
+        $('f-start').value = isoToNy(t.starts_at); $('f-end').value = isoToNy(t.ends_at);
+        $('f-price').value = t.price_cents != null ? t.price_cents / 100 : 50; $('f-cap').value = t.capacity || 12; $('f-host').value = t.host_name || '';
+        $('f-status').value = t.status || 'draft'; $('f-attr').value = t.attraction || ''; $('f-pick').value = t.pickup || ''; $('f-drop').value = t.dropoff || '';
+        $('f-rain').value = t.rain_plan || ''; $('f-desc').value = t.description || ''; $('f-img').value = t.image_url || ''; $('f-notes').value = t.notes || '';
+        stops = [0, 1, 2].map(function (i) { var s = (t.stops || [])[i]; return s ? { listing_id: s.listing_id, name: s.name, tier: null } : null; });
+        renderSlots(); loadSugg();
+        $('view').hidden = !t.id; if (t.id) $('view').href = '/tours?id=' + t.id;
+      }
+      function renderPick() {
+        $('pick').innerHTML = tours.length ? tours.map(function (t) { return '<option value="' + esc(t.id) + '"' + (tour && tour.id === t.id ? ' selected' : '') + '>' + esc(nice(t.starts_at)) + ': ' + esc(t.title) + ' (' + esc(t.status.replace('_', ' ')) + ', ' + t.paid + '/' + t.capacity + ')</option>'; }).join('') : '<option value="">No tours yet</option>';
+      }
+      function select(t) { tour = t; fill(t); renderPick(); $('r-panel').hidden = !t; if (t) loadRoster(); }
+      $('pick').addEventListener('change', function () { select(tours.filter(function (t) { return t.id === $('pick').value; })[0] || null); });
+      $('new').onclick = function () { select(null); msg('f-msg', 'New tour: fill it in and save as a draft.'); };
+
+      $('f-save').onclick = function () {
+        var t = { id: tour && tour.id, title: $('f-title').value, city: $('f-city').value, neighborhood: $('f-hood').value, starts_at: nyToIso($('f-start').value), ends_at: nyToIso($('f-end').value),
+          price_cents: Math.round(+$('f-price').value * 100), capacity: +$('f-cap').value, host_name: $('f-host').value, status: $('f-status').value,
+          stops: stops.filter(Boolean).map(function (s) { return { listing_id: s.listing_id, name: s.name }; }),
+          attraction: $('f-attr').value, pickup: $('f-pick').value, dropoff: $('f-drop').value, rain_plan: $('f-rain').value, description: $('f-desc').value, image_url: $('f-img').value, notes: $('f-notes').value };
+        if (t.status === 'on_sale' && (!tour || tour.status !== 'on_sale') && !confirm('Put "' + t.title + '" on sale? It shows at /tours and in the South Florida hub\'s Events right away.')) return;
+        if (t.status === 'canceled' && tour && tour.paid && !confirm('This tour has ' + tour.paid + ' paid guests. Canceling hides it, but refunds are done in Stripe. Continue?')) return;
+        $('f-save').disabled = true; msg('f-msg', 'Saving...');
+        api({ action: 'admin_save_tour', tour: t }).then(function (d) {
+          $('f-save').disabled = false;
+          if (!d.ok) return msg('f-msg', d.error === 'missing_fields' ? 'Title, city, neighborhood and start time are needed.' : d.error === 'not_ready' ? 'To go on sale it needs ' + d.need + '.' : d.error === 'waiver_missing' ? 'Save the waiver first; no tour goes on sale without it.' : 'Did not save: ' + (d.message || d.error), true);
+          msg('f-msg', 'Saved.' + (d.tour.status === 'on_sale' ? ' It is live at /tours.' : ''));
+          return load(d.tour.id);
+        }).catch(function () { $('f-save').disabled = false; msg('f-msg', 'Could not connect.', true); });
+      };
+
+      function loadRoster() {
+        $('r-title').textContent = 'Roster: ' + tour.title + ', ' + nice(tour.starts_at);
+        $('roster').innerHTML = '<tr><td colspan="8" class="meta">Loading...</td></tr>';
+        api({ action: 'admin_roster', tour_id: tour.id }).then(function (d) {
+          tickets = d.tickets || [];
+          var paid = tickets.filter(function (x) { return x.status === 'paid'; }), inn = paid.filter(function (x) { return x.checked_in_at; });
+          var notes = paid.filter(function (x) { return x.dietary || x.allergies; }).length;
+          $('r-stats').innerHTML = [[paid.length + ' / ' + tour.capacity, 'Paid seats'], [d.holding || 0, 'Held at checkout now'], [notes, 'Guests with diet or allergy notes'], [inn.length, 'Checked in'],
+            ['$' + (paid.filter(function (x) { return !x.test; }).reduce(function (a, x) { return a + x.amount_cents; }, 0) / 100).toLocaleString(), 'Collected']].map(function (s) { return '<div class="stat"><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span></div>'; }).join('');
+          $('roster').innerHTML = tickets.length ? tickets.map(function (x) {
+            var st = x.status === 'paid' ? '<span class="pill ok">Paid</span>' : '<span class="pill no">' + esc(x.status) + '</span>';
+            return '<tr><td><b>' + esc(x.guest_name) + '</b>' + (x.test ? ' <span class="pill test">Test</span>' : '') + '</td>' +
+              '<td>' + esc(x.buyer_name) + '<div class="meta"><a href="mailto:' + esc(x.buyer_email) + '">' + esc(x.buyer_email) + '</a>' + (x.buyer_phone ? '<br><a href="tel:' + esc(x.buyer_phone) + '">' + esc(x.buyer_phone) + '</a>' : '') + '</div></td>' +
+              '<td>' + esc(x.dietary || '') + '</td><td>' + (x.allergies ? '<b>' + esc(x.allergies) + '</b>' : '') + '</td>' +
+              '<td>' + esc(x.waiver_signed_name) + '<div class="meta">v' + esc(x.waiver_version) + ', ' + esc(nice(x.waiver_accepted_at)) + '</div></td>' +
+              '<td>' + st + (x.paid_at ? '<div class="meta">' + esc(nice(x.paid_at)) + '</div>' : '') + '</td>' +
+              '<td>' + (x.status === 'paid' ? '<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" style="width:20px;height:20px" data-in="' + esc(x.id) + '"' + (x.checked_in_at ? ' checked' : '') + '> Here</label>' : '') + '</td>' +
+              '<td class="no-print"><div class="acts">' + (x.status === 'paid' ? '<button type="button" class="btn btn-stop" data-st="refunded" data-id="' + esc(x.id) + '">Mark refunded</button><button type="button" class="btn btn-stop" data-st="canceled" data-id="' + esc(x.id) + '">Cancel seat</button>' : '<button type="button" class="btn btn-ghost" data-st="paid" data-id="' + esc(x.id) + '">Mark paid</button>') + '</div></td></tr>';
+          }).join('') : '<tr><td colspan="8" class="meta">No bookings yet.</td></tr>';
+        });
+      }
+      $('roster').addEventListener('change', function (e) {
+        var id = e.target.getAttribute('data-in'); if (!id) return;
+        api({ action: 'admin_ticket', id: id, checked_in: e.target.checked }).then(function (d) { if (!d.ok) { e.target.checked = !e.target.checked; msg('r-msg', 'Did not save.', true); } else loadRoster(); });
+      });
+      $('roster').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-st]'); if (!b) return;
+        var st = b.getAttribute('data-st'), words = { refunded: 'Mark this seat refunded? Do the refund itself in Stripe.', canceled: 'Cancel this seat? It frees the seat for someone else.', paid: 'Mark this seat paid? Only do this when the money arrived another way.' }[st];
+        if (!confirm(words)) return;
+        api({ action: 'admin_ticket', id: b.getAttribute('data-id'), status: st }).then(function (d) { if (!d.ok) return msg('r-msg', 'Did not save.', true); msg('r-msg', 'Saved.'); loadRoster(); load(tour.id, true); });
+      });
+      $('r-copy').onclick = function () {
+        var em = {}; tickets.forEach(function (x) { if (x.status === 'paid') em[x.buyer_email] = 1; });
+        var list = Object.keys(em).join(', ');
+        (navigator.clipboard ? navigator.clipboard.writeText(list) : Promise.reject()).then(function () { msg('r-msg', Object.keys(em).length + ' emails copied.'); }, function () { prompt('Guest emails', list); });
+      };
+
+      function showWaiver() {
+        $('w-text').value = waiver ? waiver.text : ''; $('w-warn').hidden = !!waiver;
+        $('w-ver').textContent = waiver ? 'Current version: ' + waiver.version : '';
+      }
+      $('w-save').onclick = function () {
+        var text = $('w-text').value.trim();
+        if (!text && !confirm('Clear the waiver? Ticket sales close until it is saved again.')) return;
+        $('w-save').disabled = true; msg('w-msg', 'Saving...');
+        api({ action: 'admin_save_waiver', text: text }).then(function (d) {
+          $('w-save').disabled = false;
+          if (!d.ok) return msg('w-msg', 'Did not save: ' + (d.message || d.error), true);
+          waiver = d.waiver; showWaiver(); msg('w-msg', 'Saved.');
+        }).catch(function () { $('w-save').disabled = false; msg('w-msg', 'Could not connect.', true); });
+      };
+
+      function load(keepId, quiet) {
+        return api({ action: 'admin_tours' }).then(function (d) {
+          if (d.error) { $('t-app').hidden = true; $('t-gate').textContent = 'Did not load: ' + d.error; $('t-gate').hidden = false; return; }
+          tours = d.tours || []; waiver = d.waiver; if (!quiet) showWaiver();
+          var t = tours.filter(function (x) { return x.id === keepId; })[0];
+          if (quiet) { tour = t || tour; renderPick(); return; }
+          select(t || tours[0] || null);
+        });
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 150);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('t-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; $('t-gate').hidden = false; return; }
+        $('t-app').hidden = false; load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

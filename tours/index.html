@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegans Explore Tours | South Florida</title>
+  <meta name="description" content="Vegans Explore Tours: once a month in South Florida, about 12 guests ride together to three Vegan tastings in one neighborhood, then an attraction. $50 a guest.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 64px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(26px,4vw,38px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:10px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 12px;}
+    .lede{font-size:15px;color:var(--ve-text-75);max-width:760px;margin-bottom:22px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:20px 22px;margin-bottom:16px;}
+    .muted{font-size:13px;color:var(--ve-text-75);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:16px;}
+    .tour{display:flex;flex-direction:column;background:#fff;border:1px solid var(--ve-border);border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;}
+    .tour:hover{border-color:var(--ve-green-dark);}
+    .tour-img{aspect-ratio:16/9;background:var(--ve-green-deep) center/cover no-repeat;display:flex;align-items:flex-end;padding:12px;}
+    .tour-date{background:#fff;color:var(--ve-green-deep);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border-radius:99px;padding:4px 10px;}
+    .tour-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .tour-body b{font-size:17px;font-weight:900;line-height:1.25;}
+    .tour-desc{font-size:13.5px;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .tour-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;font-weight:800;padding-top:8px;}
+    .seats{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .seats.low{background:#fde9cf;color:#6b3f00;}
+    .seats.out{background:#eef0ee;color:#3d443d;}
+    .layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start;}
+    @media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr);}}
+    .hero-img{aspect-ratio:16/7;border-radius:14px;background:var(--ve-green-deep) center/cover no-repeat;margin-bottom:16px;}
+    .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;margin-bottom:6px;}
+    .fact{background:#f7f8f7;border-radius:10px;padding:10px 12px;font-size:14px;}
+    .fact span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .stops{list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:s;}
+    .stops li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center;padding:10px;border:1px solid var(--ve-border);border-radius:12px;}
+    .logo{width:44px;height:44px;border-radius:8px;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;background:var(--ve-green);}
+    .stops b{font-size:15px;font-weight:800;}
+    .stops b a{color:inherit;}
+    .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:#1f5f22;color:#fff;margin-left:6px;vertical-align:2px;}
+    form label,.lbl{display:block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:12px 0 4px;}
+    input,select,textarea{width:100%;font:inherit;font-size:15px;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,0.28);border-radius:8px;background:#fff;}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
+    @media (max-width:480px){.two{grid-template-columns:1fr;}}
+    fieldset{border:1px solid var(--ve-border);border-radius:12px;padding:4px 14px 14px;margin-top:14px;}
+    legend{font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:0 6px;color:var(--ve-green-deep);}
+    .waiver{max-height:220px;overflow:auto;white-space:pre-wrap;font-size:13px;background:#f7f8f7;border:1px solid var(--ve-border);border-radius:8px;padding:12px;margin-top:4px;}
+    .check{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:14px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ve-text);}
+    .check input{width:22px;min-height:22px;height:22px;margin-top:1px;flex:none;}
+    .total{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:900;margin:16px 0 12px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;width:100%;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:.55;cursor:default;}
+    .err{font-size:13.5px;font-weight:700;color:#8a1c12;min-height:20px;margin-top:8px;}
+    .flash{border-radius:12px;padding:14px 16px;margin-bottom:16px;font-weight:700;}
+    .flash.ok{background:var(--ve-green-light);border:1px solid var(--ve-green-dark);color:var(--ve-green-deep);}
+    .flash.bad{background:#fbeeec;border:1px solid #d9a39c;color:#7a1a10;}
+    .steps{counter-reset:s;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;margin-bottom:22px;}
+    .steps li{counter-increment:s;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:14px 14px 14px 48px;position:relative;font-size:14px;}
+    .steps li::before{content:counter(s);position:absolute;left:14px;top:13px;width:24px;height:24px;border-radius:50%;background:var(--ve-green-deep);color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
+    .back{display:inline-block;font-size:13px;font-weight:700;color:var(--ve-green-deep);margin-bottom:14px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="wrap">
+    <div id="flash" role="status"></div>
+
+    <section id="v-list">
+      <p class="eyebrow">Vegans Explore · South Florida</p>
+      <h1>Vegans Explore Tours</h1>
+      <p class="lede">Once a month, about 12 of us ride together to three Vegan tastings in one neighborhood, then finish at a local attraction. A host is on board the whole way. $50 a guest covers the ride and every tasting.</p>
+      <ol class="steps">
+        <li>Pick a tour and book up to 4 seats. Tell us about diets and allergies.</li>
+        <li>Meet at the pickup spot. We ride together between stops.</li>
+        <li>Three tastings, then the attraction, then back to the drop-off.</li>
+      </ol>
+      <h2>Upcoming tours</h2>
+      <div class="grid" id="tours"><p class="muted">Loading tours...</p></div>
+    </section>
+
+    <section id="v-tour" hidden>
+      <a class="back" href="/tours">&larr; All tours</a>
+      <div class="hero-img" id="t-img" hidden></div>
+      <p class="eyebrow" id="t-eyebrow"></p>
+      <h1 id="t-title"></h1>
+      <p class="lede" id="t-desc"></p>
+      <div class="layout">
+        <div>
+          <div class="card">
+            <h2>The day</h2>
+            <div class="facts" id="t-facts"></div>
+          </div>
+          <div class="card">
+            <h2>The three tastings</h2>
+            <ol class="stops" id="t-stops"></ol>
+            <p class="muted" id="t-attr" style="margin-top:12px"></p>
+          </div>
+        </div>
+        <div class="card" id="book">
+          <h2>Book your seats</h2>
+          <p class="muted" id="b-seats"></p>
+          <div id="b-closed" hidden></div>
+          <form id="b-form" novalidate hidden>
+            <div class="two">
+              <div><label for="b-name">Your name</label><input id="b-name" autocomplete="name" required></div>
+              <div><label for="b-email">Email</label><input id="b-email" type="email" autocomplete="email" required></div>
+            </div>
+            <label for="b-phone">Phone (for tour-day updates)</label><input id="b-phone" type="tel" autocomplete="tel">
+            <label for="b-count">Guests</label><select id="b-count"></select>
+            <div id="b-guests"></div>
+            <fieldset>
+              <legend>Waiver</legend>
+              <div class="waiver" id="b-waiver" tabindex="0" aria-label="Tour waiver"></div>
+              <label for="b-sign">Type your full name to sign for your group</label><input id="b-sign" autocomplete="name" required>
+              <label class="check"><input type="checkbox" id="b-agree"> <span>I have read the waiver and agree to it for myself and every guest I am booking.</span></label>
+            </fieldset>
+            <div class="total"><span>Total</span><span id="b-total"></span></div>
+            <button type="submit" class="btn" id="b-go">Continue to payment</button>
+            <p class="err" id="b-err" role="alert"></p>
+            <p class="muted">Seats are held for 30 minutes while you pay. Payment is by card through Stripe.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-tours';
+      var qs = new URLSearchParams(location.search), $ = function (id) { return document.getElementById(id); };
+      var tour = null, waiver = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function money(c) { return '$' + (c / 100).toFixed(c % 100 ? 2 : 0); }
+      function when(iso, opts) { return new Date(iso).toLocaleString('en-US', Object.assign({ timeZone: 'America/New_York' }, opts)); }
+      function day(iso) { return when(iso, { weekday: 'long', month: 'long', day: 'numeric' }); }
+      function time(iso) { return when(iso, { hour: 'numeric', minute: '2-digit' }); }
+      function token() { return window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? VEAuth.getToken() : ''; }
+      function api(body) {
+        var h = { 'Content-Type': 'application/json' }, t = token(); if (t) h.Authorization = 'Bearer ' + t;
+        return fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+      }
+      function flash(text, ok) { $('flash').innerHTML = '<div class="flash ' + (ok ? 'ok' : 'bad') + '">' + esc(text) + '</div>'; }
+      function seatsPill(t) {
+        if (!t.seats_left) return '<span class="seats out">Sold out</span>';
+        return '<span class="seats' + (t.seats_left <= 3 ? ' low' : '') + '">' + t.seats_left + ' seat' + (t.seats_left > 1 ? 's' : '') + ' left</span>';
+      }
+
+      function showList() {
+        document.title = 'Vegans Explore Tours | South Florida';
+        api({ action: 'list', community: 'south-florida' }).then(function (d) {
+          var ts = d.tours || [];
+          $('tours').innerHTML = ts.length ? ts.map(function (t) {
+            var names = (t.stops || []).map(function (s) { return s.name; }).filter(Boolean).join(', ');
+            return '<a class="tour" href="/tours?id=' + esc(t.id) + '">' +
+              '<div class="tour-img"' + (t.image_url ? ' style="background-image:url(\'' + esc(t.image_url) + '\')"' : '') + '><span class="tour-date">' + esc(day(t.starts_at)) + '</span></div>' +
+              '<div class="tour-body"><b>' + esc(t.title) + '</b><span class="muted">' + esc(t.neighborhood) + ', ' + esc(t.city) + ' · ' + esc(time(t.starts_at)) + '</span>' +
+              '<p class="tour-desc">' + esc(t.description || ('Tastings at ' + names + (t.attraction ? ', then ' + t.attraction : '') + '.')) + '</p>' +
+              '<div class="tour-foot"><span>' + money(t.price_cents) + ' a guest</span>' + seatsPill(t) + '</div></div></a>';
+          }).join('') : '<div class="card" style="grid-column:1/-1"><b>The next tour is being planned.</b><p class="muted" style="margin-top:6px">Tours are announced on the <a href="/communities/south-florida">South Florida hub</a> first. While you wait, the <a href="/hunt">VE Hunt</a> runs all month.</p></div>';
+        }).catch(function () { $('tours').innerHTML = '<p class="muted">Tours did not load. Refresh to try again.</p>'; });
+      }
+
+      function showTour(id) {
+        $('v-list').hidden = true; $('v-tour').hidden = false;
+        api({ action: 'get', id: id }).then(function (d) {
+          if (!d.tour) { $('v-tour').innerHTML = '<a class="back" href="/tours">&larr; All tours</a><div class="card"><b>That tour was not found.</b><p class="muted">It may have ended. See <a href="/tours">upcoming tours</a>.</p></div>'; return; }
+          tour = d.tour; waiver = d.waiver;
+          document.title = tour.title + ' | Vegans Explore Tours';
+          if (tour.image_url) { $('t-img').style.backgroundImage = "url('" + tour.image_url.replace(/'/g, '%27') + "')"; $('t-img').hidden = false; }
+          $('t-eyebrow').textContent = 'Vegans Explore Tour · ' + tour.neighborhood + ', ' + tour.city;
+          $('t-title').textContent = tour.title;
+          $('t-desc').textContent = tour.description || '';
+          var facts = [['When', day(tour.starts_at) + ', ' + time(tour.starts_at) + (tour.ends_at ? ' to ' + time(tour.ends_at) : '') + ' (Eastern)'], ['Price', money(tour.price_cents) + ' a guest, all tastings included'],
+            ['Pickup', tour.pickup], ['Drop-off', tour.dropoff], ['If it rains', tour.rain_plan], ['Your host', tour.host_name]];
+          $('t-facts').innerHTML = facts.filter(function (f) { return f[1]; }).map(function (f) { return '<div class="fact"><span>' + esc(f[0]) + '</span>' + esc(f[1]) + '</div>'; }).join('');
+          $('t-stops').innerHTML = (tour.stops || []).map(function (s) {
+            var logo = s.logo_url ? '<img class="logo" src="' + esc(s.logo_url) + '" alt="">' : '<span class="logo" aria-hidden="true" style="background:' + esc(s.color || '#3A9B3E') + '">' + esc((s.name || '?').charAt(0)) + '</span>';
+            var name = s.slug ? '<a href="/directory/' + encodeURIComponent(s.slug) + '">' + esc(s.name) + '</a>' : esc(s.name);
+            return '<li>' + logo + '<div><b>' + name + '</b>' + (s.tier ? '<span class="tag">VE Verified</span>' : '') + '</div></li>';
+          }).join('');
+          $('t-attr').textContent = tour.attraction ? 'Then: ' + tour.attraction + '.' : '';
+          setupBooking();
+        }).catch(function () { flash('The tour did not load. Refresh to try again.'); });
+      }
+
+      function guestRows() {
+        var n = +$('b-count').value, box = $('b-guests'), old = [];
+        box.querySelectorAll('fieldset').forEach(function (f, i) { old[i] = { name: f.querySelector('[data-k=name]').value, dietary: f.querySelector('[data-k=dietary]').value, allergies: f.querySelector('[data-k=allergies]').value }; });
+        var html = '';
+        for (var i = 0; i < n; i++) {
+          var o = old[i] || { name: i === 0 ? $('b-name').value : '', dietary: '', allergies: '' };
+          html += '<fieldset><legend>Guest ' + (i + 1) + (i === 0 ? ' (you)' : '') + '</legend>' +
+            '<label for="g-n' + i + '">Name</label><input id="g-n' + i + '" data-k="name" value="' + esc(o.name) + '" required>' +
+            '<div class="two"><div><label for="g-d' + i + '">Diet notes</label><input id="g-d' + i + '" data-k="dietary" placeholder="Gluten-free, no onion..." value="' + esc(o.dietary) + '"></div>' +
+            '<div><label for="g-a' + i + '">Allergies</label><input id="g-a' + i + '" data-k="allergies" placeholder="Peanuts, tree nuts..." value="' + esc(o.allergies) + '"></div></div></fieldset>';
+        }
+        box.innerHTML = html;
+        $('b-total').textContent = money(tour.price_cents * n);
+      }
+
+      function setupBooking() {
+        var left = tour.seats_left, max = Math.min(4, left);
+        $('b-seats').textContent = left ? left + ' of ' + tour.capacity + ' seats left.' : '';
+        if (tour.status !== 'on_sale' || new Date(tour.starts_at) < new Date()) { $('b-closed').innerHTML = '<p><b>Booking is closed for this tour.</b></p><p class="muted"><a href="/tours">See upcoming tours</a>.</p>'; $('b-closed').hidden = false; return; }
+        if (!left) { $('b-closed').innerHTML = '<p><b>This tour is sold out.</b></p><p class="muted">Seats sometimes open up. Email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> to join the waitlist.</p>'; $('b-closed').hidden = false; return; }
+        if (!waiver) { $('b-closed').innerHTML = '<p><b>Tickets open soon.</b></p><p class="muted">Check back shortly, or watch the <a href="/communities/south-florida">South Florida hub</a>.</p>'; $('b-closed').hidden = false; return; }
+        var opts = ''; for (var i = 1; i <= max; i++) opts += '<option value="' + i + '">' + i + ' guest' + (i > 1 ? 's' : '') + '</option>';
+        $('b-count').innerHTML = opts;
+        $('b-waiver').textContent = waiver.text;
+        var m = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() && VEAuth.getMember ? VEAuth.getMember() : null;
+        if (m) { $('b-name').value = m.display_name || [m.first_name, m.last_name].filter(Boolean).join(' ') || ''; $('b-email').value = m.email || ''; $('b-phone').value = m.phone || ''; }
+        $('b-form').hidden = false;
+        guestRows();
+        $('b-count').onchange = guestRows;
+        $('b-name').addEventListener('input', function () { var g = $('g-n0'); if (g && (!g.value || g.dataset.auto !== '0')) { g.value = $('b-name').value; } });
+        $('b-guests').addEventListener('input', function (e) { if (e.target.id === 'g-n0') e.target.dataset.auto = '0'; });
+      }
+
+      $('b-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var err = $('b-err'); err.textContent = '';
+        var guests = []; $('b-guests').querySelectorAll('fieldset').forEach(function (f) { guests.push({ name: f.querySelector('[data-k=name]').value.trim(), dietary: f.querySelector('[data-k=dietary]').value.trim(), allergies: f.querySelector('[data-k=allergies]').value.trim() }); });
+        var buyer = { name: $('b-name').value.trim(), email: $('b-email').value.trim(), phone: $('b-phone').value.trim() };
+        if (!buyer.name) { err.textContent = 'Add your name.'; return $('b-name').focus(); }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(buyer.email)) { err.textContent = 'Add a valid email so we can send your booking.'; return $('b-email').focus(); }
+        var miss = guests.findIndex(function (g) { return !g.name; });
+        if (miss > -1) { err.textContent = 'Add a name for guest ' + (miss + 1) + '.'; return $('g-n' + miss).focus(); }
+        if (!$('b-sign').value.trim()) { err.textContent = 'Type your name to sign the waiver.'; return $('b-sign').focus(); }
+        if (!$('b-agree').checked) { err.textContent = 'Check the box to agree to the waiver.'; return $('b-agree').focus(); }
+        $('b-go').disabled = true; $('b-go').textContent = 'Holding your seats...';
+        api({ action: 'book', tour_id: tour.id, buyer: buyer, guests: guests, waiver_signed_name: $('b-sign').value.trim(), agree: true, return_url: location.origin + '/tours?id=' + tour.id })
+          .then(function (d) {
+            if (d.url) { location.href = d.url; return; }
+            $('b-go').disabled = false; $('b-go').textContent = 'Continue to payment';
+            var m = { sold_out: d.left ? 'Only ' + d.left + ' seat' + (d.left > 1 ? 's are' : ' is') + ' left. Lower the guest count and try again.' : 'This tour just sold out.',
+              not_on_sale: 'Booking just closed for this tour.', waiver_missing: 'Tickets are not open yet. Check back soon.',
+              missing_buyer: 'Add your name and a valid email.', missing_guests: 'Every guest needs a name.', waiver_required: 'Sign and agree to the waiver.' }[d.error];
+            err.textContent = m || 'That did not go through. Try again, or email hello@vegansexplore.com.';
+          }).catch(function () { $('b-go').disabled = false; $('b-go').textContent = 'Continue to payment'; err.textContent = 'Could not connect. Check your connection and try again.'; });
+      });
+
+      var b = qs.get('booked');
+      if (b === '1') flash("You're booked. A confirmation is on its way to your email with the pickup details.", true);
+      else if (b === 'cancelled') flash('Payment was canceled, so nothing was charged. Your held seats are released in 30 minutes, or book again below.');
+      else if (b === 'unpaid') flash('We could not confirm your payment. If you were charged, email hello@vegansexplore.com and we will sort it out right away.');
+      if (/^[0-9a-f-]{36}$/.test(qs.get('id') || '')) showTour(qs.get('id')); else showList();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
