@@ -434,6 +434,7 @@ body {
 <body>
 <script src="/public/nav.js"></script>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-votes.js"></script>
 <div id="dir-gate" style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 24px;font-family:'Montserrat',sans-serif;">
   <p style="font-size:13px;color:#888;">Checking access&hellip;</p>
 </div>
@@ -1139,20 +1140,6 @@ document.getElementById('city-dropdown').addEventListener('change',function(){
     }
   });
 });
-// Vote buttons
-document.querySelectorAll('.vote-btn').forEach(function(btn){
-  btn.addEventListener('click',function(e){
-    e.stopPropagation();
-    if(this.dataset.voted)return;
-    this.dataset.voted='1';
-    var r=this.closest('.rank-right');
-    var el=r?r.querySelector('.vote-count'):null;
-    if(el){var n=parseInt(el.textContent.replace(/,/g,''));el.textContent=(n+1).toLocaleString();}
-    this.textContent='Voted';
-    this.style.background='#5EC47A';this.style.color='#000';this.style.borderColor='#5EC47A';
-    this.disabled=true;
-  });
-});
 </script>
 </div><!-- /frame -->
 
@@ -1232,21 +1219,21 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
   function makeBrowseCard(l, idx) {
     var region = getRegion(l);
     var online = isOnline(l) ? '1' : '0';
-    var votes = (l.favorites_count || 0) + (l.likes_count || 0);
+    var votes = (l.vote_count || 0);
     var subcat = l.specialty || l.category || '';
     return '<div class="rank-card browse-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-region="' + esc(region) + '" data-subcat="' + esc(subcat) + '" data-online="' + online + '" data-slug="' + esc(l.slug||'') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + (online === '1' ? '<span class="online-badge">Nationwide</span>' : esc(region)) + '</div>' +
       '<div class="rank-subcat">' + esc(l.category || '') + '</div></div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn">+ Vote</button></div>' +
+      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button></div>' +
       '</div>';
   }
 
   function makeTop10Card(l, rank) {
     var region = getRegion(l);
     var online = isOnline(l) ? '1' : '0';
-    var votes = (l.favorites_count || 0) + (l.likes_count || 0);
+    var votes = (l.vote_count || 0);
     var subcat = l.specialty || l.category || '';
     var pts = Math.max(0, 111 - (rank - 1) * 5);
     var rankClass = rank <= 3 ? 'rank-num top3' : 'rank-num';
@@ -1257,7 +1244,7 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + (online === '1' ? '<span class="online-badge">Nationwide</span>' : esc(region)) + '</div>' +
       '<div class="rank-subcat">' + esc(l.category || '') + '</div></div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn">+ Vote</button></div>' +
+      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button></div>' +
       '</div>';
   }
 
@@ -1274,28 +1261,15 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     });
   }
 
-  function bindVoteButtons() {
-    document.querySelectorAll('.vote-btn').forEach(function(btn) {
-      if (btn.dataset.bound) return;
-      btn.dataset.bound = '1';
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (this.dataset.voted) return;
-        this.dataset.voted = '1';
-        var r = this.closest('.rank-right');
-        var el = r ? r.querySelector('.vote-count') : null;
-        if (el) { var n = parseInt(el.textContent.replace(/,/g,'')); el.textContent = (n+1).toLocaleString(); }
-        this.textContent = 'Voted';
-        this.style.background = '#5EC47A'; this.style.color = '#000'; this.style.borderColor = '#5EC47A';
-        this.disabled = true;
-      });
-    });
-  }
+  // Real votes (Sean 2026-09-27): /public/ve-votes.js saves each one through ve-auth,
+  // one per member per listing per day, and marks what you already voted for today.
+  function bindVoteButtons() { if (window.VEVotes) VEVotes.wire(document); }
+
 
   function makeClosedCard(l, idx) {
     var region = getRegion(l);
     var online = isOnline(l) ? '1' : '0';
-    var votes = (l.favorites_count || 0) + (l.likes_count || 0);
+    var votes = (l.vote_count || 0);
     var subcat = l.specialty || l.category || '';
     return '<div class="rank-card browse-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-region="' + esc(region) + '" data-subcat="' + esc(subcat) + '" data-online="' + online + '" data-slug="' + esc(l.slug||'') + '" style="opacity:0.7">' +
       makeAvatar(l) +
@@ -1323,7 +1297,7 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
     Object.keys(tabs).forEach(function(tab) {
       var all = tabs[tab];
       all.sort(function(a, b) {
-        return ((b.favorites_count||0)+(b.likes_count||0)) - ((a.favorites_count||0)+(a.likes_count||0));
+        return (b.vote_count||0) - (a.vote_count||0);
       });
 
       // Separate vegan-friendly from regular (food tab only)
@@ -1368,7 +1342,7 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
   var _approvedListings = [];
   function fetchAll(offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,initials,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset||0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,vote_count,is_featured,address_city,address_state,initials,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset||0);
     fetch(url, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
       .then(function(r) { return r.json(); })
       .then(function(data) {
@@ -1380,7 +1354,7 @@ document.querySelectorAll('.vote-btn').forEach(function(btn){
   }
 
   function fetchClosed() {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,initials,color&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,specialty,location,logo_url,vote_count,is_featured,address_city,address_state,initials,color&status=eq.closed&limit=1000';
     fetch(url, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
       .then(function(r) { return r.json(); })
       .then(function(data) { populateGrids(_approvedListings, data); })

@@ -379,6 +379,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <style>.ve-embedded .ve-nav{display:none !important}.ve-embedded .listing-breadcrumb{display:none !important}</style>
 <div id="frame">
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-votes.js"></script>
 <script src="/public/nav.js"></script>
 
 <div id="listing-root">
@@ -818,7 +819,7 @@ function renderSidebar(l){
     }).join('');
   }
 
-  var listingVotes = (l.favorites_count||0) + (l.likes_count||0);
+  var listingVotes = l.vote_count || 0;
   var communityCard =
     '<div class="side-card">'+
       '<div class="side-card-title">Community Support</div>'+
@@ -1004,7 +1005,7 @@ function renderListing(l){
     ? '<span class="badge-verified"><svg width="10" height="10" fill="#5EC47A" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="#5EC47A" stroke-width="2.5"/></svg>VE Verified</span>' : '';
 
   // Vote count
-  var votes = (l.favorites_count||0) + (l.likes_count||0);
+  var votes = l.vote_count || 0; // real member votes (listing_daily_votes), Sean 2026-09-27
 
   // Business status badge
   var statusBadge = '';
@@ -1180,17 +1181,24 @@ function renderListing(l){
   // the activate modal on the payment_required response.
   (function(){
     var voteBtn = document.getElementById('vote-btn');
-    if(!voteBtn || !window.VEAuth) return;
+    if(!voteBtn || !window.VEAuth || !window.VEVotes) return;
     var listingId = voteBtn.getAttribute('data-listing-id');
-    function paintVoted(){
+    // n: the new total from the server, or null to keep the number shown (already voted today).
+    function paintVoted(n, fresh){
       var badge = document.getElementById('vote-badge');
-      var newCount = ((badge ? parseInt(badge.textContent, 10) : 0) || 0) + 1;
-      voteBtn.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted!<span class="vote-badge" id="vote-badge">' + newCount + '</span>';
+      var count = n != null ? n : ((badge ? parseInt(badge.textContent, 10) : 0) || 0);
+      voteBtn.dataset.voted = '1';
+      voteBtn.title = 'You can vote for this one again tomorrow.';
+      voteBtn.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted today<span class="vote-badge" id="vote-badge">' + count + '</span>';
       voteBtn.style.background = '#2d7d31';
       var cv = document.getElementById('community-votes');
-      if(cv){ cv.textContent = (parseInt(cv.textContent)||0) + 1; }
+      if(cv){ cv.textContent = count; }
       var cl = document.getElementById('community-lesars');
-      if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
+      if(cl && fresh){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
+    }
+    // Already voted today? Show it after a refresh too.
+    if(VEAuth.isLoggedIn() && window.VEVotes){
+      VEVotes.today().then(function(d){ if(d && (d.listing_ids||[]).indexOf(listingId) >= 0) paintVoted(null); }).catch(function(){});
     }
     voteBtn.addEventListener('click', function(){
       if(voteBtn.dataset.voted) return;
@@ -1199,12 +1207,11 @@ function renderListing(l){
         return;
       }
       voteBtn.disabled = true;
-      VEAuth.voteListing(listingId).then(function(d){
+      VEVotes.cast(listingId).then(function(d){
         voteBtn.disabled = false;
-        if(d && d.error === 'already_voted_today'){ voteBtn.dataset.voted = '1'; return; }
+        if(d && d.error === 'already_voted_today'){ paintVoted(null); return; }
         if(d && d.error){ return; }
-        voteBtn.dataset.voted = '1';
-        paintVoted();
+        paintVoted(d && d.vote_count != null ? d.vote_count : null, true);
       }).catch(function(){ voteBtn.disabled = false; });
     });
   })();

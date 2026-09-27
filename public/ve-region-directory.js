@@ -192,19 +192,19 @@
   }
 
   function makeBrowseCard(l, idx, type) {
-    var votes = (l.favorites_count || 0) + (l.likes_count || 0);
+    var votes = (l.vote_count || 0);
     var subcat = l.category || '';
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
       '<div class="rank-subcat">' + esc(l.category || '') + '</div></div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn">+ Vote</button></div>' +
+      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button></div>' +
       '</div>';
   }
 
   function makeClosedCard(l, idx) {
-    var votes = (l.favorites_count || 0) + (l.likes_count || 0);
+    var votes = (l.vote_count || 0);
     var subcat = l.category || '';
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed" style="opacity:.7">' +
       makeAvatar(l) +
@@ -238,23 +238,17 @@
     });
   }
 
+  // Votes are real (Sean 2026-09-27): /public/ve-votes.js saves them through ve-auth,
+  // one per member per listing per day. Loaded on first use so no hub page needs a new tag.
+  var votesLoading = null;
   function bindVoteButtons(root) {
-    root.querySelectorAll('.vote-btn').forEach(function (btn) {
-      if (btn.dataset.bound) return;
-      btn.dataset.bound = '1';
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        if (this.dataset.voted) return;
-        this.dataset.voted = '1';
-        var r = this.closest('.rank-right');
-        var el = r ? r.querySelector('.vote-count') : null;
-        if (el) { var n = parseInt(el.textContent.replace(/,/g, '')); el.textContent = (n + 1).toLocaleString(); }
-        this.textContent = 'Voted';
-        this.style.background = '#5EC47A'; this.style.color = '#000'; this.style.borderColor = '#5EC47A';
-        this.disabled = true;
-      });
+    if (window.VEVotes) return window.VEVotes.wire(root);
+    if (!votesLoading) votesLoading = new Promise(function (res) {
+      var sc = document.createElement('script'); sc.src = '/public/ve-votes.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
     });
+    votesLoading.then(function () { if (window.VEVotes) window.VEVotes.wire(root); });
   }
+
 
   function populateGeoBar(barEl, config, listings) {
     if (!barEl) return;
@@ -302,7 +296,7 @@
     CAT_CONFIG.forEach(function (cfg) {
       var tab = cfg.key;
       var all = tabs[tab];
-      all.sort(function (a, b) { return ((b.favorites_count || 0) + (b.likes_count || 0)) - ((a.favorites_count || 0) + (a.likes_count || 0)); });
+      all.sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0); });
 
       var cards = all.map(function (l, idx) {
         var type = (cfg.hasVF && l.vegan_status === 'vegan_friendly') ? 'vf' : (isOnline(l) ? 'online' : 'regular');
@@ -504,7 +498,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,is_featured,address_city,address_state,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -522,7 +516,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,favorites_count,likes_count,is_featured,address_city,address_state,color,vegan_status&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,is_featured,address_city,address_state,color,vegan_status&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return config.matchListing(l) || isOnline(l); })); })
