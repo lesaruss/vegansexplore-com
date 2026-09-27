@@ -72,8 +72,9 @@
   .console-frame main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
   /* LESARUSS Universe dock.
-     2026-09-20: the bar's markup, CSS and behaviour moved to
-     /public/universal-bar.js, which is shared and reads the same
+     2026-09-20: the bar's markup, CSS and behaviour moved to a shared
+     script; since 2026-09-27 that is the ONE bar LESARUSS HQ serves at
+     https://hq.lesaruss.ai/shell/universal-bar.js, which reads the same
      member_dock row LESARUSS HQ writes, so the same person sees the same
      icons on both. What was here was a hardcoded four-icon row with
      hand-copied hex that had already drifted from the registry. The one
@@ -546,7 +547,11 @@
 </head>
 <body>
 <script src="/public/ve-auth.js"></script>
-<script src="/public/universal-bar.js"></script>
+<!-- The ONE LESARUSS universal bar, served by LESARUSS HQ (2026-09-27, Sean:
+     "It should be the same selector, no matter which brand I'm on"). This site
+     used to keep its own copy in /public/universal-bar.js, and the two had
+     drifted. data-lr-redeem: this site consumes ?lrsso handoffs into ve_token. -->
+<script src="https://hq.lesaruss.ai/shell/universal-bar.js" data-lr-redeem="ve_token"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/hub-news.js"></script>
 
@@ -555,8 +560,9 @@
 <!-- HQ-style top nav (2026-09-20). Matches LESARUSS HQ's shell: wordmark left,
      brand-waffle Apps button and the member avatar right. The avatar is the
      same member icon the bottom bar draws, painted from the shell member event
-     that universal-bar.js dispatches. Apps opens the same brand waffle the
-     bottom bar's plus opens, via a window event universal-bar.js listens for. -->
+     that universal-bar.js dispatches. Apps opens the shared bar's launcher,
+     which takes you to a brand (the bar's plus is the separate picker that
+     adds shortcuts), via a window event universal-bar.js listens for. -->
 <header class="ve-topnav" role="banner">
   <div class="ve-topnav-left">
     <a class="ve-wordmark" id="ve-logo-home" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home"><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>
@@ -588,7 +594,7 @@
      Supabase Auth. It is keyed on members.id now, which ve-auth resolves from
      the ve_token, so the bar is the same bar on both sites.
 
-     Everything the bar is lives in /public/universal-bar.js, per the locked
+     Everything the bar is lives in the shared universal-bar.js, per the locked
      shared-component rule in CLAUDE.md: no dock markup in a page file. This
      page contributes exactly one thing, the Guide button, passed in as an
      extra -- Sean, 2026-09-10, Group I: "access to the Guide dialogue happens
@@ -3773,6 +3779,9 @@
 
     window.LRUniversalBar.mount({
       mount: mount,
+      current: 'vegans-explore',
+      // The "you are here" ring is this brand's green, the one per-site touch.
+      accent: '#16A34A',
       extras: [guideExtra],
       getToken: function () { return window.VEAuth ? VEAuth.getToken() : null; },
     });
@@ -3826,9 +3835,14 @@
         // that just opened it, so the button appeared to do nothing. The
         // bar's own plus button stops propagation for exactly this reason.
         e.stopPropagation();
-        var expanded = apps.getAttribute('aria-expanded') === 'true';
-        apps.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-        window.dispatchEvent(new CustomEvent('lr:toggle-waffle'));
+        // Apps is the launcher: it takes you to the brand you tap (Sean,
+        // 2026-09-27). Adding a shortcut to the bar is the bar's own plus.
+        // The launcher drops from this button, and reports open/closed back
+        // so aria-expanded stays true to what is on screen.
+        window.dispatchEvent(new CustomEvent('lr:toggle-waffle', { detail: { anchor: apps } }));
+      });
+      window.addEventListener('lr:launcher-state', function (ev) {
+        apps.setAttribute('aria-expanded', ev.detail && ev.detail.open ? 'true' : 'false');
       });
     }
   })();
