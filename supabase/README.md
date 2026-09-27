@@ -426,7 +426,19 @@ Code routine billed to the Claude subscription. Migration `lesaruss_dispatch`.
 - Cron `fieldy-topicizer-2h` was unscheduled; its watermark only moves on success, so the routine
   resumes where it stopped.
 
-Setup (Sean, once): create the routine at claude.ai/code/routines with the prompt below, no
+Scope (Sean, 2026-09-27): the dispatcher is for content creation (News Desk "Write it up", and
+later the same for every brand). Everything else stays under Sean's oversight: those sources stay
+off. Explicit voice requests ("V, set this task up ...") are a separate, sparingly used path.
+
+Station routing (migration `lesaruss_dispatch_station_routing`): each station (Station 1 =
+SAR-station, Station 2 = V-station) gets its own copy of the routine on its own Claude account.
+`lesaruss_dispatch_settings.route` picks the station (`select lesaruss_dispatch_route('station-2')`
+when Sean says "route it to station two"); with `fallback` on, a station with no routine or whose
+last fire in the past hour failed is skipped for the other. Secrets per station:
+`CC_ROUTINE_FIRE_URL_STATION_1` / `CC_ROUTINE_TOKEN_STATION_1` and the same with `_2`
+(unsuffixed names count as Station 1). Each run records its `station`.
+
+Setup (Sean, once per station): create the routine at claude.ai/code/routines with the prompt below, no
 schedule, a fresh session per run, the Supabase connector on. Add an API trigger, generate the
 token, then store two rows in `lesaruss_secrets`: `CC_ROUTINE_FIRE_URL` (the trigger's URL,
 `https://api.anthropic.com/v1/claude_code/routines/<id>/fire`) and `CC_ROUTINE_TOKEN`.
