@@ -7,6 +7,7 @@
     { href: '/admin/depot', label: 'Library' },
     { href: '/admin/depot/onboarding', label: 'Onboarding' },
     { href: '/admin/depot/pulse', label: 'Pulse' },
+    { href: '/admin/depot/logos', label: 'Logos' },
     { href: '/admin/depot/narration', label: 'Import narration' }
   ];
   var CSS = '.depot-tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:2px solid rgba(0,0,0,0.09);margin:0 0 22px;}' +

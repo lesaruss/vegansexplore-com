@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Logos | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:720px;margin-bottom:12px;}
+    .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px;}
+    .bar label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    select,input[type=search]{font:inherit;font-size:14px;font-weight:600;padding:9px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background-color:#fff;color:#1a1a1a;}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;appearance:none;-webkit-appearance:none;}
+    input[type=search]{min-width:min(280px,100%);}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:#f1f5f1;}
+    .btn-quiet{background:transparent;color:#8a1c12;padding:8px 10px;}
+    .btn-quiet:hover{background:#fbeeec;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .errs{font-size:13px;color:#8a1c12;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px 18px;margin:0 0 16px;}
+    .rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:12px;}
+    .row{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px;display:flex;gap:14px;align-items:flex-start;}
+    .row.over{outline:3px dashed var(--ve-green);outline-offset:-3px;background:var(--ve-green-light);}
+    .row.busy{opacity:0.6;}
+    /* Same box the directory cards draw: a square, cropped to fill. */
+    .logo{width:72px;height:72px;min-width:72px;border-radius:8px;object-fit:cover;display:flex;align-items:center;justify-content:center;background:#dde3dd;overflow:hidden;}
+    .logo span{font-size:28px;font-weight:900;color:#fff;line-height:1;}
+    .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+    .name{font-size:14.5px;font-weight:800;line-height:1.25;}
+    .name a{color:inherit;text-decoration:none;}
+    .name a:hover{text-decoration:underline;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .tag{align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:99px;}
+    .tag-ours{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .tag-linked{background:#fff4e2;color:#6b3f00;}
+    .tag-none{background:#eef0ee;color:#4a4f4a;}
+    .acts{display:flex;flex-wrap:wrap;gap:6px;}
+    .row-msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .row-msg.bad{color:#8a1c12;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .gate h2{font-size:18px;margin-bottom:8px;}
+    .gate p{margin-bottom:16px;color:var(--ve-text-75);}
+    dialog{border:0;border-radius:14px;padding:0;width:min(1000px,calc(100% - 32px));max-height:calc(100vh - 48px);box-shadow:0 24px 60px rgba(0,0,0,0.35);}
+    dialog::backdrop{background:rgba(10,20,12,0.7);}
+    .dlg-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--ve-border);position:sticky;top:0;background:#fff;}
+    .dlg-head b{font-size:14px;font-weight:800;}
+    .pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;padding:14px 16px 18px;}
+    .pick button{border:2px solid transparent;background:#fff;border-radius:10px;padding:4px;cursor:pointer;font-family:inherit;text-align:left;box-shadow:0 1px 0 var(--ve-border);}
+    .pick button:hover{border-color:var(--ve-green-dark);}
+    .pick img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;background:#dde3dd;}
+    .pick small{display:block;font-size:11px;color:var(--ve-text-75);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px;}
+    .pick p{grid-column:1/-1;font-size:13.5px;color:var(--ve-text-75);}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  /* Inside the dashboard frame the console supplies the header, so hide the sitewide
+     nav and footer here, same as the other Depot tabs. A normal visit is unaffected. */
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Logos</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Drop a logo onto any listing (or press Upload) and it is live right away on the South Florida hub, the directory and the listing's own page. Logos land in the <a href="/admin/depot">Depot library</a>, tagged Logo, so you can reuse one from Library.</p>
+    <div id="lg-gate" class="gate" hidden></div>
+    <div id="lg-app" hidden>
+      <div class="panel" id="lg-copy" hidden>
+        <h2>Logos still linked from their own websites</h2>
+        <p class="sub" id="lg-copy-sub"></p>
+        <div class="bar" style="margin-bottom:0"><button type="button" class="btn" id="lg-copy-btn"></button><span class="msg" id="lg-copy-msg" role="status"></span></div>
+        <p class="errs" id="lg-copy-errs"></p>
+      </div>
+      <div class="bar">
+        <input type="search" id="lg-q" placeholder="Search by name or city" aria-label="Search listings">
+        <label>Show <select id="lg-f">
+          <option value="all">All listings</option>
+          <option value="none">No logo</option>
+          <option value="linked">Linked from their site</option>
+          <option value="ours">Ours</option>
+        </select></label>
+        <span class="msg" id="lg-count" role="status"></span>
+      </div>
+      <div class="rows" id="lg-rows"></div>
+    </div>
+  </div>
+  <input type="file" id="lg-file" accept="image/*" hidden>
+  <dialog id="lg-dlg" aria-labelledby="lg-dlg-t">
+    <div class="dlg-head"><b id="lg-dlg-t">Choose a logo</b><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="search" id="lg-dlg-q" placeholder="Search the library" aria-label="Search the library"><button type="button" class="btn btn-ghost" id="lg-dlg-close">Close</button></div></div>
+    <div class="pick" id="lg-pick"></div>
+  </dialog>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-media-upload.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var REGION = 'south-florida';
+      var OURS = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/';
+      var MAX_SIDE = 800; // plenty for a 72px card, even on a sharp phone screen
+      var $ = function (id) { return document.getElementById(id); };
+      var listings = [], LIB = [], busy = {}, note = {}, target = null, copying = false;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return VEMediaUpload.api(VEAuth.getToken(), body); }
+      function source(l) { return !l.logo_url ? 'none' : l.logo_url.indexOf(OURS) === 0 ? 'ours' : 'linked'; }
+      function byId(id) { for (var i = 0; i < listings.length; i++) if (listings[i].id === id) return listings[i]; return null; }
+
+      // Any picture (PNG, JPEG, WebP, SVG, GIF...) drawn onto white at a sensible size, as a PNG.
+      // White first, so a see-through logo never turns black where the library saves JPEG.
+      function toLogoFile(blob, l) {
+        return new Promise(function (res, rej) {
+          var url = URL.createObjectURL(blob), img = new Image();
+          img.onload = function () {
+            var w = img.naturalWidth || 512, h = img.naturalHeight || 512, k = Math.min(1, MAX_SIDE / Math.max(w, h));
+            var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+            var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.imageSmoothingQuality = 'high'; x.drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            c.toBlob(function (b) {
+              if (!b) return rej(new Error('encode'));
+              var f = new File([b], (l.slug || 'logo') + '-logo.png', { type: 'image/png' });
+              f.veName = l.name + ' logo'; f.veRef = 'listing-logo:' + String(l.slug || l.id).slice(0, 180);
+              res(f);
+            }, 'image/png');
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('not_an_image')); };
+          img.src = url;
+        });
+      }
+      function setLogo(l, url) {
+        return api({ action: 'logo_set', listing_id: l.id, url: url }).then(function (d) {
+          if (!d.ok) throw new Error(d.error || 'save');
+          Object.assign(l, d.listing); return d.listing;
+        });
+      }
+      function saveBlob(l, blob) {
+        return toLogoFile(blob, l).then(function (f) { return VEMediaUpload.upload([f], VEAuth.getToken()); }).then(function (r) {
+          var it = r.saved[0]; if (!it) throw new Error('upload');
+          if (!LIB.some(function (x) { return x.id === it.id; })) LIB.unshift(it);
+          return setLogo(l, it.url);
+        });
+      }
+      function work(l, label, p) {
+        busy[l.id] = 1; note[l.id] = { t: label }; renderRow(l);
+        return p().then(function () { note[l.id] = { t: 'Saved. Live now.' }; }, function (e) {
+          note[l.id] = { t: e && e.message === 'not_an_image' ? 'That file is not a picture.' : 'That did not save. Try again.', bad: 1 };
+        }).then(function () { delete busy[l.id]; renderRow(l); renderCopy(); });
+      }
+      function useFile(l, file) { work(l, 'Adding the logo...', function () { return saveBlob(l, file); }); }
+
+      function logoBox(l) {
+        var init = esc(((l.name || 'V').charAt(0)).toUpperCase()), bg = esc(l.color || '#3A9B3E');
+        var fall = '<div class="logo" style="background:' + bg + ';display:' + (l.logo_url ? 'none' : 'flex') + '"><span>' + init + '</span></div>';
+        return (l.logo_url ? '<img class="logo" src="' + esc(l.logo_url) + '" alt="" loading="lazy" data-fallback>' : '') + fall;
+      }
+      var TAGS = { ours: ['tag-ours', 'Ours'], linked: ['tag-linked', 'Linked from their site'], none: ['tag-none', 'No logo'] };
+      function rowHtml(l) {
+        var s = TAGS[source(l)], n = note[l.id], b = busy[l.id] ? ' disabled' : '';
+        return logoBox(l) + '<div class="info">' +
+          '<div class="name"><a href="/directory/' + esc(l.slug) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a></div>' +
+          '<div class="meta">' + esc(l.address_city) + (l.category ? ' &middot; ' + esc(l.category) : '') + '</div>' +
+          '<span class="tag ' + s[0] + '">' + s[1] + '</span>' +
+          '<div class="acts"><button type="button" class="btn" data-act="upload"' + b + '>Upload</button><button type="button" class="btn btn-ghost" data-act="library"' + b + '>Library</button>' +
+          (l.logo_url ? '<button type="button" class="btn btn-quiet" data-act="remove"' + b + '>Remove</button>' : '') + '</div>' +
+          (n ? '<div class="row-msg' + (n.bad ? ' bad' : '') + '" role="status">' + esc(n.t) + '</div>' : '') + '</div>';
+      }
+      function renderRow(l) {
+        var el = $('lg-rows').querySelector('[data-id="' + l.id + '"]'); if (!el) return;
+        el.className = 'row' + (busy[l.id] ? ' busy' : ''); el.innerHTML = rowHtml(l);
+      }
+      function shown() {
+        var q = $('lg-q').value.trim().toLowerCase(), f = $('lg-f').value;
+        return listings.filter(function (l) {
+          if (f !== 'all' && source(l) !== f) return false;
+          return !q || (l.name + ' ' + l.address_city + ' ' + (l.category || '')).toLowerCase().indexOf(q) >= 0;
+        });
+      }
+      function render() {
+        var list = shown(), c = { none: 0, linked: 0, ours: 0 };
+        listings.forEach(function (l) { c[source(l)]++; });
+        $('lg-count').textContent = list.length + ' shown. ' + c.ours + ' ours, ' + c.linked + ' linked, ' + c.none + ' with no logo.';
+        $('lg-rows').innerHTML = list.map(function (l) { return '<div class="row' + (busy[l.id] ? ' busy' : '') + '" data-id="' + l.id + '">' + rowHtml(l) + '</div>'; }).join('') ||
+          '<p class="sub">Nothing matches.</p>';
+        renderCopy();
+      }
+      function renderCopy() {
+        var n = listings.filter(function (l) { return source(l) === 'linked'; }).length;
+        $('lg-copy').hidden = !n && !copying && !$('lg-copy-errs').textContent;
+        $('lg-copy-sub').textContent = n + ' logo' + (n === 1 ? ' is' : 's are') + ' still loaded from the business\'s own website, so they break when that site changes. Copy them into the Depot and they are ours for good.';
+        $('lg-copy-btn').textContent = 'Copy ' + n + ' into the Depot'; $('lg-copy-btn').disabled = copying || !n;
+      }
+
+      // Copy every hotlinked logo into the library, one at a time.
+      $('lg-copy-btn').onclick = function () {
+        var todo = listings.filter(function (l) { return source(l) === 'linked'; }), failed = [], done = 0;
+        copying = true; $('lg-copy-errs').textContent = ''; renderCopy();
+        todo.reduce(function (p, l, i) {
+          return p.then(function () {
+            $('lg-copy-msg').textContent = 'Copying ' + (i + 1) + ' of ' + todo.length + ': ' + l.name;
+            return api({ action: 'logo_fetch', listing_id: l.id }).then(function (d) {
+              if (!d.ok) throw new Error(d.error);
+              var bin = atob(d.b64), a = new Uint8Array(bin.length); for (var j = 0; j < bin.length; j++) a[j] = bin.charCodeAt(j);
+              return saveBlob(l, new Blob([a], { type: d.mime }));
+            }).then(function () { done++; renderRow(l); }, function () { failed.push(l.name); });
+          });
+        }, Promise.resolve()).then(function () {
+          copying = false;
+          $('lg-copy-msg').textContent = 'Done. ' + done + ' copied.';
+          $('lg-copy-errs').textContent = failed.length ? failed.length + ' could not be copied (their site blocked it or the picture is gone), so drop a logo in by hand: ' + failed.join(', ') + '.' : '';
+          render();
+        });
+      };
+
+      // Row buttons, and drag-and-drop straight onto a row.
+      $('lg-rows').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-act]'); if (!b) return;
+        var l = byId(b.closest('.row').getAttribute('data-id')), act = b.getAttribute('data-act'); if (!l) return;
+        if (act === 'upload') { target = l; $('lg-file').click(); }
+        if (act === 'library') openPicker(l);
+        if (act === 'remove' && confirm('Remove the logo from ' + l.name + '? The card goes back to its initial.')) work(l, 'Removing...', function () { return setLogo(l, null); });
+      });
+      $('lg-rows').addEventListener('error', function (e) {
+        if (e.target.hasAttribute && e.target.hasAttribute('data-fallback')) { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }
+      }, true);
+      ['dragenter', 'dragover'].forEach(function (t) { $('lg-rows').addEventListener(t, function (e) { var r = e.target.closest('.row'); if (!r) return; e.preventDefault(); r.classList.add('over'); }); });
+      $('lg-rows').addEventListener('dragleave', function (e) { var r = e.target.closest('.row'); if (r && !r.contains(e.relatedTarget)) r.classList.remove('over'); });
+      $('lg-rows').addEventListener('drop', function (e) {
+        var r = e.target.closest('.row'); if (!r) return; e.preventDefault(); r.classList.remove('over');
+        var l = byId(r.getAttribute('data-id')), f = (e.dataTransfer.files || [])[0];
+        if (l && f && !busy[l.id]) useFile(l, f);
+      });
+      $('lg-file').addEventListener('change', function (e) { var f = e.target.files[0]; e.target.value = ''; if (f && target) useFile(target, f); });
+      $('lg-q').addEventListener('input', render);
+      $('lg-f').addEventListener('change', render);
+
+      // Choose from the library: logos first, then every other picture.
+      function openPicker(l) {
+        target = l; $('lg-dlg-t').textContent = 'Choose a logo for ' + l.name; $('lg-dlg-q').value = ''; renderPicker(); $('lg-dlg').showModal();
+      }
+      function renderPicker() {
+        var q = $('lg-dlg-q').value.trim().toLowerCase();
+        var pics = LIB.filter(function (it) { return !q || String(it.source_name || '').toLowerCase().indexOf(q) >= 0; });
+        pics.sort(function (a, b) { return ((b.uses || []).indexOf('logo') >= 0) - ((a.uses || []).indexOf('logo') >= 0); });
+        $('lg-pick').innerHTML = pics.length ? pics.map(function (it, i) {
+          return '<button type="button" data-i="' + LIB.indexOf(it) + '"><img src="' + esc(it.thumb_url || it.url) + '" alt="" loading="lazy"><small>' + esc(it.source_name || 'Picture') + '</small></button>';
+        }).join('') : '<p>No pictures in the library' + (q ? ' match that' : ' yet') + '.</p>';
+      }
+      $('lg-dlg-q').addEventListener('input', renderPicker);
+      $('lg-pick').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-i]'); if (!b || !target) return;
+        var it = LIB[+b.getAttribute('data-i')], l = target; $('lg-dlg').close();
+        work(l, 'Saving...', function () { return setLogo(l, it.url).then(function () { if ((it.uses || []).indexOf('logo') < 0) it.uses = (it.uses || []).concat('logo'); }); });
+      });
+      $('lg-dlg-close').onclick = function () { $('lg-dlg').close(); };
+      $('lg-dlg').addEventListener('click', function (e) { if (e.target === $('lg-dlg')) $('lg-dlg').close(); });
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('lg-gate').hidden = false; $('lg-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="lg-signin">Sign in</button>'; $('lg-signin').onclick = function () { VEAuth.showAuthModal('Sign in to update directory logos.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('lg-gate').hidden = false; $('lg-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('lg-app').hidden = false; $('lg-count').textContent = 'Loading...';
+        Promise.all([
+          api({ action: 'logo_list', region: REGION }).then(function (d) { if (!d.listings) throw new Error(d.error); listings = d.listings; }),
+          api({ action: 'list' }).then(function (d) { LIB = (d.items || []).filter(function (it) { return !it.archived && (it.kind || 'image') === 'image'; }); })
+        ]).then(render, function () { $('lg-count').textContent = 'The listings did not load. Refresh to try again.'; });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

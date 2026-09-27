@@ -150,3 +150,17 @@ slide, pick a picture: `set_panel` copies a Higgsfield image into
 `vegan-media/onboarding-audio/panels/<page>/<city>/` (site paths are used as is) and upserts
 `ve_onboarding_panels` (public read). The onboarding page swaps each slide's panel image from
 that table. Pictures already on another slide are marked so nothing repeats.
+
+## ve-media-library: directory logos (2026-09-27)
+
+The Depot's **Logos** tab (`/admin/depot/logos`, superadmins) updates `listings.logo_url` for
+South Florida's approved listings, the same way the Onboarding tab picks slide pictures. Every
+logo is a `ve_media_library` picture tagged `logo` (the `uses` check constraint gained `logo` in
+migration `ve_media_library_uses_add_logo`). `logo_list` returns a region's listings (cities in
+`LOGO_REGIONS`, mirroring `SF_CITIES` in `/communities/south-florida/index.html`); `logo_set`
+accepts only a library picture URL, or null to fall back to the initial, and writes
+`logo_alt_text`; `logo_fetch` downloads a logo still hotlinked from the business's own site
+(https only, 8 MB cap) so the page can copy it into the library. The browser draws every logo
+onto white at up to 800px before the shared uploader, so see-through logos never go black.
+`delete` now also keeps any picture a listing uses as its logo. Deployed as v9 with
+`verify_jwt=false` (unchanged).

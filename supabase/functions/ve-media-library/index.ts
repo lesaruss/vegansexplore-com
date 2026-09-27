@@ -23,6 +23,14 @@
 //   published the moment it is saved; an id edits one. The body is plain text: blank lines
 //   make paragraphs, and it is escaped here, so nothing typed can inject markup.
 // POST { action: 'pulse_status', id, status }   'published' or 'archived' (take down / put back)
+// POST { action: 'logo_list', region }            a region's directory listings and their logos
+// POST { action: 'logo_set', listing_id, url }    url: a library picture, or null for the initials
+// POST { action: 'logo_fetch', listing_id }       the listing's current logo from its own website, as base64
+//   The Depot's Logos tab (Sean, 2026-09-27: update directory logos "similar to how we are
+//   updating the Onboarding pages in the Depot"). A logo is a library picture tagged 'logo';
+//   setting one writes listings.logo_url, which /directory, the listing page and the region
+//   hubs all read. logo_fetch lets the page copy a logo still hotlinked from a business's
+//   site into the library, since a browser cannot read most of those across origins.
 //
 // Sean, 2026-09-27: the older Higgsfield set is reviewed once on /admin/onboarding-images.
 // The ones he keeps are uploaded here with source_ref (e.g. 'higgsfield:<id>'), the rest
@@ -33,7 +41,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
-const USES = ['bg_desktop', 'bg_mobile', 'slide', 'narration', 'music', 'video'];
+const USES = ['bg_desktop', 'bg_mobile', 'slide', 'narration', 'music', 'video', 'logo'];
 // Audio and video file types the library keeps, by extension.
 const MEDIA_EXT: Record<string, { kind: 'audio' | 'video'; mime: string }> = {
   mp3: { kind: 'audio', mime: 'audio/mpeg' }, wav: { kind: 'audio', mime: 'audio/wav' }, m4a: { kind: 'audio', mime: 'audio/mp4' },
@@ -58,6 +66,12 @@ function youtubeId(v: unknown): string | null {
   const m = t.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
   return m ? m[1] : null;
 }
+// Regions the Logos tab covers. The cities mirror SF_CITIES in /communities/south-florida/index.html.
+const LOGO_REGIONS: Record<string, string[]> = {
+  'south-florida': ['Miami', 'Miami Beach', 'North Miami', 'Aventura', 'Doral', 'Hollywood', 'Fort Lauderdale', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate', 'West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Tequesta', 'Loxahatchee'],
+};
+const LOGO_CITIES = Object.values(LOGO_REGIONS).flat();
+const LISTING_COLS = 'id, slug, name, category, address_city, logo_url, logo_alt_text, initials, color';
 const MAX_FULL = 8 * 1024 * 1024;
 const MAX_THUMB = 1024 * 1024;
 
@@ -225,6 +239,54 @@ Deno.serve(async (req) => {
     return json({ ok: true, piece: data });
   }
 
+  if (body.action === 'logo_list') {
+    const cities = LOGO_REGIONS[String(body.region || '')];
+    if (!cities) return json({ error: 'bad_region' }, 400);
+    const { data, error } = await db.from('listings').select(LISTING_COLS)
+      .eq('status', 'approved').in('address_city', cities).order('name').limit(2000);
+    if (error) return json({ error: 'list_failed', message: error.message }, 500);
+    return json({ listings: data || [], cities });
+  }
+
+  if (body.action === 'logo_set' || body.action === 'logo_fetch') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { data: listing } = await db.from('listings').select(LISTING_COLS).eq('id', id).eq('status', 'approved').maybeSingle();
+    if (!listing || !LOGO_CITIES.includes(listing.address_city)) return json({ error: 'not_found' }, 404);
+
+    if (body.action === 'logo_fetch') {
+      let u: URL;
+      try { u = new URL(String(listing.logo_url || '')); } catch { return json({ error: 'no_logo' }, 400); }
+      if (u.protocol === 'http:') u.protocol = 'https:'; // a few were saved as http://; ask for https instead
+      // Only a real https host on the open web, and never our own storage (that one is already ours).
+      if (u.protocol !== 'https:' || /^(localhost|\d+\.\d+\.\d+\.\d+|\[.*\])$/i.test(u.hostname) || u.href.startsWith(SUPABASE_URL)) return json({ error: 'bad_url' }, 400);
+      let r: Response;
+      try { r = await fetch(u.href, { redirect: 'follow', signal: AbortSignal.timeout(12000), headers: { 'User-Agent': 'Mozilla/5.0 (VegansExplore logo import)' } }); }
+      catch { return json({ error: 'fetch_failed' }, 502); }
+      if (!r.ok) return json({ error: 'fetch_failed', status: r.status }, 502);
+      const mime = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+      if (!mime.startsWith('image/')) return json({ error: 'not_an_image' }, 400);
+      const bytes = new Uint8Array(await r.arrayBuffer());
+      if (bytes.length > MAX_FULL) return json({ error: 'too_large' }, 400);
+      let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      return json({ ok: true, mime, b64: btoa(bin) });
+    }
+
+    // logo_set: a picture from the library, or null to go back to the initials.
+    let url: string | null = null;
+    if (body.url) {
+      url = String(body.url);
+      const { data: item } = await db.from('ve_media_library').select('id, uses').eq('url', url).eq('kind', 'image').maybeSingle();
+      if (!item) return json({ error: 'not_in_library' }, 400);
+      if (!(item.uses || []).includes('logo')) await db.from('ve_media_library').update({ uses: [...(item.uses || []), 'logo'], updated_at: new Date().toISOString() }).eq('id', item.id);
+    }
+    const { data: saved, error } = await db.from('listings')
+      .update({ logo_url: url, logo_alt_text: url ? `${listing.name} logo` : null, updated_at: new Date().toISOString() })
+      .eq('id', id).select(LISTING_COLS).single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, listing: saved });
+  }
+
   if (body.action === 'skip') {
     const refs = (Array.isArray(body.refs) ? body.refs : []).map(String).filter((r: string) => REF_RE.test(r)).slice(0, 500);
     if (!refs.length) return json({ error: 'no_refs' }, 400);
@@ -240,7 +302,7 @@ Deno.serve(async (req) => {
     const urls = (rows || []).map((r: any) => r.url);
     // Anything a live page uses (picture, narration, music or video) is kept.
     const inList = urls.length ? urls : ['-'];
-    const [pan, aud, mus, vid, pc, pv, pa] = await Promise.all([
+    const [pan, aud, mus, vid, pc, pv, pa, lg] = await Promise.all([
       db.from('ve_onboarding_panels').select('url').in('url', inList),
       db.from('ve_onboarding_audio').select('url').in('url', inList),
       db.from('ve_onboarding_slides').select('url:music_url').in('music_url', inList),
@@ -249,8 +311,10 @@ Deno.serve(async (req) => {
       db.from('ve_pulse_content').select('url:thumbnail_url').eq('status', 'published').in('thumbnail_url', inList),
       db.from('ve_pulse_content').select('url:video_url').eq('status', 'published').in('video_url', inList),
       db.from('ve_pulse_content').select('url:audio_url').eq('status', 'published').in('audio_url', inList),
+      // ...and any directory listing's logo.
+      db.from('listings').select('url:logo_url').in('logo_url', inList),
     ]);
-    const liveSet = new Set([pan, aud, mus, vid, pc, pv, pa].flatMap((q: any) => (q.data || []).map((r: any) => r.url)));
+    const liveSet = new Set([pan, aud, mus, vid, pc, pv, pa, lg].flatMap((q: any) => (q.data || []).map((r: any) => r.url)));
     const deleted: string[] = [], in_use: string[] = [];
     for (const r of rows || []) {
       if (liveSet.has(r.url)) { in_use.push(r.id); continue; }

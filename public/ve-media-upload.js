@@ -12,7 +12,9 @@
  *   is kept once.
  *
  *   VEMediaUpload.accepts(file)                 -> 'image' | 'audio' | 'video' | null
- *   VEMediaUpload.upload(files, token, onStep)  -> Promise<{ added, dupes, errors, items }>
+ *   VEMediaUpload.upload(files, token, onStep)  -> Promise<{ added, dupes, errors, items, saved }>
+ *     items: only the files that are new to the library. saved: the library item for every
+ *     file that went through, new or already there, in order (the Logos tab needs a dupe's url).
  *   VEMediaUpload.bindDrop(dropEl, inputEl, onFiles)   folder drag-and-drop + click to choose
  *   A File may carry veRef (where it came from, e.g. 'higgsfield:<id>') and veName (its label).
  */
@@ -84,12 +86,13 @@
   }
 
   function upload(files, token, onStep) {
-    var list = files.filter(accepts), out = { added: 0, dupes: 0, errors: [], items: [], skipped: files.length - list.length };
+    var list = files.filter(accepts), out = { added: 0, dupes: 0, errors: [], items: [], saved: [], skipped: files.length - list.length };
     return list.reduce(function (p, f, i) {
       return p.then(function () {
         if (onStep) onStep(i + 1, list.length, f);
         var kind = accepts(f);
         return (kind === 'image' ? uploadImage(f, token) : uploadMedia(f, kind, token)).then(function (d) {
+          if (d.ok && d.item) out.saved.push(d.item);
           if (d.ok && d.duplicate) out.dupes++;
           else if (d.ok) { out.added++; out.items.push(d.item); }
           else out.errors.push(f.name + (d.error === 'too_large' ? ' (over 50 MB)' : d._status === 403 ? ' (admins only)' : ''));
