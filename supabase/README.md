@@ -367,3 +367,39 @@ member must hold the listing), `?confirm=` (also reached by the webhook's generi
 `confirm_fn`), Depot `admin_orders` / `admin_order`. Pages: `/business` (the offer, v2 order), `/claim`
 (founding reserve and plan states), `/business/results`, Depot tabs Passport Partners
 (`/admin/depot/verified`) and Services. The public badge reads "VE Verified" on both tiers.
+
+## ve-news-desk: the News Desk (2026-09-27)
+
+Sean: pull Vegan outlets and each city's local news, flag anything about Vegan life in our cities
+back to June, show it on a dashboard page, and turn marked stories into Pulse articles. Page:
+Depot > News Desk (`/admin/depot/news-desk`, superadmins; the Depot opens inside the dashboard).
+
+- **Sources** are rows in `ve_news_feeds` (migration `ve_news_desk` added `scope`, `search_query`,
+  `locale`, `last_count`; `city_slug` is null only for Vegan outlets). `scope` decides the flag:
+  `vegan` (VegNews, Plant Based News, Vegconomist, Vegan Food & Living, Sentient Media) flags a
+  story that names one of our hub cities; `local` (Eater Miami/NY/Philly/Atlanta/LA/DC, Miami
+  Curated) flags a story that mentions Vegan food; `search` is a Google News RSS search per hub
+  with `intitle:vegan OR intitle:"plant-based"` plus the city names, and a story's hub moves if
+  its headline names a different hub. Sources are added, paused and removed on the page.
+- **Leads** land in `ve_news_leads` (RLS on, service role only) with `reason` (why it was
+  flagged), `headline_match`, and a status: new, write, drafting, drafted, dismissed, published.
+  Deduped by URL and by normalized title. Nothing older than 2026-06-01 (`LOOK_BACK_FROM`).
+- **Cron** `ve-news-desk-6h` (`41 */6 * * *`) posts `?cron=ingest` with `x-cron-secret`. It
+  replaced `ve-news-rss-ingest-4h`, which fed the two Miami feeds into City News; City News now
+  holds member stories only. `?cron=backfill {feed_id, month}` runs one month of one search;
+  the page's "Look back to June" button does the same through the superadmin `backfill` action.
+  The first look-back (June to September) flagged 213 stories.
+- **Drafting**: `lead_write` marks a lead and drafts in the background (`EdgeRuntime.waitUntil`)
+  with Claude (`claude-opus-5`, adaptive thinking, effort medium, server-side `fallbacks:
+  "default"` under beta `server-side-fallback-2026-07-01`, tools `web_fetch_20260209` and
+  `web_search_20260209`). The prompt requires original writing, facts only from the source,
+  capitalized Vegan, no dashes, and a credit line for the source. The draft is saved to
+  `ve_pulse_content` as `status 'draft'`, `origin 'depot'`, with the model's "check before
+  publishing" notes on the lead. Failed drafts keep the error on the lead and the cron retries
+  up to two queued drafts per run. The key is `ANTHROPIC_API_KEY` in `lesaruss_secrets`; on
+  2026-09-27 that account was out of credit (error_registry `ROOM-ANTHROPIC-CREDIT-EXHAUSTED-502`).
+- **Publishing** happens in Depot > Pulse (`/admin/depot/pulse?edit=<id>` opens a draft):
+  `ve-media-library` v12 keeps drafts as drafts on save, needs a Library cover to publish, stamps
+  `published_at`, and marks the lead `published`. `public/hub-news.js` shows only published
+  pieces, so a draft never reaches a hub.
+

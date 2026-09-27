@@ -52,6 +52,7 @@
     .row .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-right:6px;}
     .tag.live{background:#EAF7EA;color:#1f5f22;}
     .tag.down{background:#fbe9e7;color:#8a1c12;}
+    .tag.draft{background:#fff3e0;color:#7d4a00;}
     .row .btns{display:flex;gap:8px;flex-wrap:wrap;}
     .row .btn{min-height:40px;padding:8px 14px;}
     .empty-list{font-size:14px;color:var(--ve-text-75);background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:22px;text-align:center;}
@@ -121,13 +122,15 @@
         </div>
         <div class="actions">
           <button type="button" class="btn" id="pu-publish">Publish to the Pulse</button>
+          <button type="button" class="btn btn-ghost" id="pu-save-draft" hidden>Save draft</button>
           <button type="button" class="btn btn-ghost" id="pu-clear">Start a new piece</button>
           <span class="msg" id="pu-msg" role="status"></span>
         </div>
         <p class="errs" id="pu-errs" role="alert"></p>
       </section>
 
-      <h2>Published from the Depot</h2>
+      <h2>From the Depot</h2>
+      <p class="hint" style="margin:-4px 0 12px">Drafts from the News Desk wait here. Open one, check it, choose a cover picture, then publish.</p>
       <div class="list" id="pu-list"></div>
     </div>
   </div>
@@ -197,26 +200,32 @@
         $('pu-body').value = p ? toText(p.body) : '';
         cover = p && p.thumbnail_url ? { url: p.thumbnail_url, thumb: p.thumbnail_url } : null;
         renderCover(); renderMediaSelects(p && p.video_url, p && p.audio_url);
-        $('pu-form-h').textContent = p ? 'Editing: ' + p.title : 'New piece';
-        $('pu-publish').textContent = p ? 'Save changes' : 'Publish to the Pulse';
+        var draft = !!(p && p.status === 'draft');
+        $('pu-form-h').textContent = p ? (draft ? 'Draft: ' : 'Editing: ') + p.title : 'New piece';
+        $('pu-publish').textContent = p && !draft ? 'Save changes' : 'Publish to the Pulse';
+        $('pu-save-draft').hidden = !draft;
         $('pu-errs').textContent = '';
       }
       $('pu-clear').onclick = function () { fill(null); $('pu-msg').textContent = ''; $('pu-title').focus(); };
 
-      $('pu-publish').onclick = function () {
+      $('pu-publish').onclick = function () { save(true); };
+      $('pu-save-draft').onclick = function () { save(false); };
+      // publish: false only for "Save draft" on a News Desk draft (no cover needed yet).
+      function save(publish) {
         if (busy) return;
+        var draft = !!(editing && editing.status === 'draft'), going = !draft || publish;
         var missing = [];
         if (!$('pu-title').value.trim()) missing.push('a title');
         if (!$('pu-summary').value.trim()) missing.push('a summary');
-        if (!cover) missing.push('a cover picture');
+        if (going && !cover) missing.push('a cover picture');
         if (type === 'video' && !$('pu-video').value && !$('pu-youtube').value.trim()) missing.push('a video or a YouTube link');
         if (type === 'podcast' && !$('pu-audio').value && !$('pu-youtube').value.trim()) missing.push('the episode audio or a YouTube link');
         if (missing.length) { $('pu-errs').textContent = 'Add ' + missing.join(', ') + ' first.'; return; }
         $('pu-errs').textContent = ''; busy = true; $('pu-publish').disabled = true;
-        $('pu-msg').textContent = editing ? 'Saving...' : 'Publishing...';
-        api({ action: 'pulse_save', id: editing ? editing.id : undefined, content_type: type, title: $('pu-title').value, summary: $('pu-summary').value,
+        $('pu-msg').textContent = editing && (!draft || !publish) ? 'Saving...' : 'Publishing...';
+        api({ action: 'pulse_save', id: editing ? editing.id : undefined, publish: draft && publish, content_type: type, title: $('pu-title').value, summary: $('pu-summary').value,
           body_text: $('pu-body').value, category: $('pu-category').value, city_slug: $('pu-city').value || null, author: $('pu-author').value,
-          cover_url: cover.url, video_url: $('pu-video').value || null, audio_url: $('pu-audio').value || null, youtube: $('pu-youtube').value.trim() || null
+          cover_url: cover ? cover.url : null, video_url: $('pu-video').value || null, audio_url: $('pu-audio').value || null, youtube: $('pu-youtube').value.trim() || null
         }).then(function (d) {
           busy = false; $('pu-publish').disabled = false;
           if (!d.ok) {
@@ -226,27 +235,29 @@
           var wasNew = !editing, p = d.piece;
           pieces = [p].concat(pieces.filter(function (x) { return x.id !== p.id; }));
           renderList(); fill(p);
-          $('pu-msg').innerHTML = (wasNew ? 'Published. It is live' : 'Saved. It is live') + ' at <a href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">vegansexplore.com/pulse/' + esc(p.slug) + '</a>.';
+          $('pu-msg').innerHTML = p.status === 'draft' ? 'Draft saved. It is not on the Pulse yet.' :
+            ((wasNew || draft ? 'Published. It is live' : 'Saved. It is live') + ' at <a href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">vegansexplore.com/pulse/' + esc(p.slug) + '</a>.');
         }).catch(function () { busy = false; $('pu-publish').disabled = false; $('pu-msg').textContent = ''; $('pu-errs').textContent = 'Could not connect. Try again.'; });
-      };
+      }
 
       function renderList() {
         $('pu-list').innerHTML = pieces.length ? pieces.map(function (p, i) {
-          var live = p.status === 'published';
-          return '<div class="row"><img src="' + esc(p.thumbnail_url) + '" alt=""><div class="info"><b>' + esc(p.title) + '</b><small><span class="tag ' + (live ? 'live">Live' : 'down">Taken down') + '</span>' +
-            esc(TYPE[p.content_type] || p.content_type) + ' &middot; ' + esc(p.city_slug ? CITY[p.city_slug] || p.city_slug : 'National') + ' &middot; ' + esc(fmtDate(p.published_at)) + '</small></div>' +
+          var live = p.status === 'published', draft = p.status === 'draft';
+          return '<div class="row"><img src="' + esc(p.thumbnail_url || '') + '" alt=""><div class="info"><b>' + esc(p.title) + '</b><small><span class="tag ' + (live ? 'live">Live' : draft ? 'draft">Draft' : 'down">Taken down') + '</span>' +
+            esc(TYPE[p.content_type] || p.content_type) + ' &middot; ' + esc(p.city_slug ? CITY[p.city_slug] || p.city_slug : 'National') + ' &middot; ' + esc(draft ? 'Drafted ' + fmtDate(p.updated_at) : fmtDate(p.published_at)) + '</small></div>' +
             '<div class="btns">' + (live ? '<a class="btn btn-ghost" href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">View</a>' : '') +
             '<button type="button" class="btn btn-ghost" data-edit="' + i + '">Edit</button>' +
-            '<button type="button" class="btn btn-ghost" data-status="' + i + '">' + (live ? 'Take down' : 'Put back up') + '</button></div></div>';
+            '<button type="button" class="btn btn-ghost" data-status="' + i + '">' + (live ? 'Take down' : draft ? 'Publish' : 'Put back up') + '</button></div></div>';
         }).join('') : '<p class="empty-list">Nothing published from the Depot yet. Your first piece will show here.</p>';
         $('pu-list').querySelectorAll('[data-edit]').forEach(function (b) { b.onclick = function () { fill(pieces[+b.getAttribute('data-edit')]); $('pu-msg').textContent = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); }; });
         $('pu-list').querySelectorAll('[data-status]').forEach(function (b) {
           b.onclick = function () {
             var p = pieces[+b.getAttribute('data-status')], next = p.status === 'published' ? 'archived' : 'published';
+            if (next === 'published' && !p.thumbnail_url) { alert('Open "' + p.title + '" with Edit and choose a cover picture first.'); return; }
             if (next === 'archived' && !confirm('Take "' + p.title + '" down from the Pulse? You can put it back up later.')) return;
             b.disabled = true;
             api({ action: 'pulse_status', id: p.id, status: next }).then(function (d) {
-              if (d.ok) { pieces[pieces.indexOf(p)] = d.piece; renderList(); } else { b.disabled = false; alert('That did not save. Try again.'); }
+              if (d.ok) { pieces[pieces.indexOf(p)] = d.piece; renderList(); } else { b.disabled = false; alert(d.error === 'bad_cover' ? 'Choose a cover picture first (Edit).' : 'That did not save. Try again.'); }
             }).catch(function () { b.disabled = false; alert('Could not connect. Try again.'); });
           };
         });
@@ -266,7 +277,13 @@
         Promise.all([
           api({ action: 'list' }).then(function (d) { LIB = (d.items || []).filter(function (it) { return !it.archived; }); }),
           api({ action: 'pulse_list' }).then(function (d) { pieces = d.pieces || []; })
-        ]).then(function () { renderMediaSelects($('pu-video').value, $('pu-audio').value); renderList(); }, function () { $('pu-errs').textContent = 'The Library did not load. Refresh to try again.'; });
+        ]).then(function () {
+          renderMediaSelects($('pu-video').value, $('pu-audio').value); renderList();
+          // The News Desk links a draft straight here: /admin/depot/pulse?edit=<id>
+          var want = new URLSearchParams(location.search).get('edit');
+          var hit = want && pieces.filter(function (x) { return x.id === want; })[0];
+          if (hit) fill(hit);
+        }, function () { $('pu-errs').textContent = 'The Library did not load. Refresh to try again.'; });
       }
       start();
     })();

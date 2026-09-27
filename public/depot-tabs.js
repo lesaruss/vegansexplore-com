@@ -7,6 +7,7 @@
     { href: '/admin/depot', label: 'Library' },
     { href: '/admin/depot/onboarding', label: 'Onboarding' },
     { href: '/admin/depot/pulse', label: 'Pulse' },
+    { href: '/admin/depot/news-desk', label: 'News Desk' },
     { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },
     { href: '/admin/depot/news', label: 'City News' },
     { href: '/admin/depot/logos', label: 'Logos' },

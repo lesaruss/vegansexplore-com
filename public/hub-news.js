@@ -37,8 +37,9 @@
   }
 
   // Podcast episodes (rows with a podcast_show) live only on /podcast (Sean, 2026-09-27).
+  // Only published pieces: News Desk drafts and taken-down pieces never show on a hub.
   function fetchPulseSpotlights(city) {
-    return fetch(SUPABASE_URL + '/rest/v1/ve_pulse_city_tags?select=is_pinned,tagged_at,ve_pulse_content!inner(title,slug,category,summary,thumbnail_url,published_at)&ve_pulse_content.podcast_show=is.null&city_slug=eq.' + encodeURIComponent(city), { headers: headers() })
+    return fetch(SUPABASE_URL + '/rest/v1/ve_pulse_city_tags?select=is_pinned,tagged_at,ve_pulse_content!inner(title,slug,category,summary,thumbnail_url,published_at)&ve_pulse_content.podcast_show=is.null&ve_pulse_content.status=eq.published&city_slug=eq.' + encodeURIComponent(city), { headers: headers() })
       .then(function (r) { return r.json(); })
       .then(function (rows) {
         return (rows || []).filter(function (t) { return t.ve_pulse_content; }).map(function (t) {

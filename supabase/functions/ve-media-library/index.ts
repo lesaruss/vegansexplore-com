@@ -23,6 +23,10 @@
 //   published the moment it is saved; an id edits one. The body is plain text: blank lines
 //   make paragraphs, and it is escaped here, so nothing typed can inject markup.
 // POST { action: 'pulse_status', id, status }   'published' or 'archived' (take down / put back)
+//   Drafts (Sean, 2026-09-27): the News Desk (ve-news-desk) writes article drafts here with
+//   status 'draft'. pulse_save on a draft keeps it a draft unless publish: true; publishing (by
+//   either action) needs a Library cover, stamps published_at, and marks its News Desk lead
+//   'published'. A draft can be saved without a cover.
 // POST { action: 'city_tags_list' }                every published Pulse piece (not podcast episodes) and its city tags
 // POST { action: 'city_tag', pulse_id, city_slug, on }   tag a piece into a city hub, or untag it
 //   The Depot's Pulse Cities tab (Sean, 2026-09-27: retire the old /admin pages). A tagged piece
@@ -199,14 +203,15 @@ Deno.serve(async (req) => {
     if (!PULSE_TYPES.includes(type)) return json({ error: 'bad_type' }, 400);
     if (!title || !summary || !category) return json({ error: 'missing_fields' }, 400);
     if (city && !PULSE_CITIES.includes(city)) return json({ error: 'bad_city' }, 400);
-    if (!own(body.cover_url, /\.(webp|jpe?g|png)$/i)) return json({ error: 'bad_cover' }, 400);
+    const cover = body.cover_url ? String(body.cover_url) : null;
+    if (cover && !own(cover, /\.(webp|jpe?g|png)$/i)) return json({ error: 'bad_cover' }, 400);
     const video = body.video_url ? String(body.video_url) : null, audio = body.audio_url ? String(body.audio_url) : null;
     if (video && !own(video, /\.(mp4|mov|webm)$/i)) return json({ error: 'bad_video' }, 400);
     if (audio && !own(audio, /\.(mp3|wav|m4a|aac|ogg)$/i)) return json({ error: 'bad_audio' }, 400);
     const yt = youtubeId(body.youtube);
     if (body.youtube && !yt) return json({ error: 'bad_youtube' }, 400);
     const row: Record<string, unknown> = {
-      content_type: type, title, summary, body: paragraphs(text), category, city_slug: city, thumbnail_url: body.cover_url,
+      content_type: type, title, summary, body: paragraphs(text), category, city_slug: city, thumbnail_url: cover,
       video_url: video, audio_url: audio, youtube_id: yt, author: plain(body.author, 80) || null,
       updated_at: new Date().toISOString(),
     };
@@ -214,12 +219,16 @@ Deno.serve(async (req) => {
     if (body.id) {
       const id = String(body.id);
       if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
-      const { data: old } = await db.from('ve_pulse_content').select('city_slug').eq('id', id).eq('origin', 'depot').maybeSingle();
-      before = old?.city_slug || null;
+      const { data: old } = await db.from('ve_pulse_content').select('city_slug, status, published_at').eq('id', id).eq('origin', 'depot').maybeSingle();
+      if (!old) return json({ error: 'not_found' }, 404);
+      before = old.city_slug || null;
+      if (old.status === 'draft' && body.publish) { row.status = 'published'; row.published_at = old.published_at || new Date().toISOString(); }
+      if ((row.status || old.status) === 'published' && !cover) return json({ error: 'bad_cover' }, 400);
       const { data, error } = await db.from('ve_pulse_content').update(row).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       saved = data;
     } else {
+      if (!cover) return json({ error: 'bad_cover' }, 400);
       // A slug nobody has used, so the piece gets its own /pulse/<slug> page, which is also
       // its source_url (the table requires one; for Depot pieces the Pulse page is the source).
       const base = slugify(title);
@@ -236,14 +245,21 @@ Deno.serve(async (req) => {
     // city tag moves; extra hubs tagged on the Pulse Cities tab stay.
     if (before && before !== city) await db.from('ve_pulse_city_tags').delete().eq('pulse_id', saved.id).eq('city_slug', before);
     if (city) await db.from('ve_pulse_city_tags').upsert({ pulse_id: saved.id, city_slug: city }, { onConflict: 'pulse_id,city_slug', ignoreDuplicates: true });
+    if (saved.status === 'published') await db.from('ve_news_leads').update({ status: 'published' }).eq('pulse_id', saved.id);
     return json({ ok: true, piece: saved });
   }
 
   if (body.action === 'pulse_status') {
     const id = String(body.id || ''), status = String(body.status || '');
     if (!/^[0-9a-f-]{36}$/.test(id) || !['published', 'archived'].includes(status)) return json({ error: 'bad_request' }, 400);
-    const { data, error } = await db.from('ve_pulse_content').update({ status, updated_at: new Date().toISOString() }).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
+    const { data: cur } = await db.from('ve_pulse_content').select('thumbnail_url, published_at').eq('id', id).eq('origin', 'depot').maybeSingle();
+    if (!cur) return json({ error: 'not_found' }, 404);
+    if (status === 'published' && !cur.thumbnail_url) return json({ error: 'bad_cover' }, 400);
+    const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
+    if (status === 'published' && !cur.published_at) patch.published_at = new Date().toISOString();
+    const { data, error } = await db.from('ve_pulse_content').update(patch).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    if (status === 'published') await db.from('ve_news_leads').update({ status: 'published' }).eq('pulse_id', id);
     return json({ ok: true, piece: data });
   }
 

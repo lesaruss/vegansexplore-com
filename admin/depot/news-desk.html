@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>News Desk | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:16px;}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:10px;margin-bottom:16px;max-width:980px;}
+    .stat{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:10px 14px;}
+    .stat b{display:block;font-size:22px;font-weight:900;line-height:1.1;}
+    .stat span{font-size:12px;color:var(--ve-text-75);}
+    .filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+    .filters button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:40px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;}
+    .filters button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;max-width:980px;}
+    .toolbar select,.toolbar input[type=search]{font:inherit;font-size:13.5px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;max-width:100%;}
+    .toolbar input[type=search]{flex:1;min-width:min(200px,100%);}
+    .toolbar label.check{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:700;min-height:44px;}
+    .count{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:8px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:980px;display:grid;grid-template-columns:120px 1fr;gap:14px;}
+    .card.noimg{grid-template-columns:1fr;}
+    @media (max-width:600px){.card{grid-template-columns:1fr;}}
+    .card img{width:120px;aspect-ratio:16/10;object-fit:cover;border-radius:8px;background:#e7ece7;display:block;}
+    @media (max-width:600px){.card img{width:100%;}}
+    .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:4px;}
+    .pill{display:inline-block;padding:2px 8px;border-radius:99px;background:#eef0ee;white-space:nowrap;}
+    .pill.city{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pill.vegan{background:#fff3e0;color:#7d4a00;}
+    .pill.local{background:#e8f0fe;color:#1d3f8a;}
+    .pill.search{background:#f1e8fb;color:#5b2a86;}
+    .headline{font-size:15.5px;font-weight:800;line-height:1.35;margin-bottom:4px;text-transform:none;letter-spacing:0;}
+    .headline a{color:inherit;}
+    .summary{font-size:13px;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px;}
+    .flag{font-size:12.5px;color:var(--ve-green-deep);font-weight:700;margin-bottom:8px;}
+    .notes{font-size:12.5px;background:#fffaf0;border:1px solid #f3dfb8;border-radius:8px;padding:8px 10px;margin-bottom:8px;}
+    .err{font-size:12.5px;color:#a61b1b;font-weight:700;margin-bottom:8px;}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:8px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .working{font-size:12.5px;font-weight:800;color:#7d4a00;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:20px 0;}
+    details.sources{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:14px 16px;margin:0 0 18px;max-width:980px;}
+    details.sources summary{cursor:pointer;font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.06em;min-height:32px;}
+    .tbl-wrap{overflow-x:auto;margin-top:10px;}
+    table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px;}
+    th{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);text-align:left;padding:8px;border-bottom:1px solid var(--ve-border);white-space:nowrap;}
+    td{padding:8px;border-bottom:1px solid var(--ve-border);vertical-align:top;}
+    td small{display:block;color:var(--ve-text-75);word-break:break-all;}
+    .ok{color:var(--ve-green-deep);font-weight:700;}
+    .bad{color:#a61b1b;font-weight:700;}
+    .add{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:8px;margin-top:12px;align-items:end;}
+    .add label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .add input,.add select{font:inherit;font-size:13.5px;padding:9px 10px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);}
+    .add .wide{grid-column:1/-1;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>News Desk</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Stories about Vegan life in our cities, pulled every 6 hours from Vegan outlets, local outlets and Google News, going back to June. Each one says why it was flagged. Tap <b>Write it up</b> and an original Pulse article is drafted from it; the draft waits in <a href="/admin/depot/pulse">Pulse</a> for you to check, add a cover picture and publish.</p>
+    <div id="nd-gate" class="gate" hidden></div>
+    <div id="nd-app" hidden>
+      <div class="stats" id="stats"></div>
+
+      <details class="sources" id="sources">
+        <summary>Sources (<span id="src-count">0</span>)</summary>
+        <p class="sub" style="margin:8px 0 0">Vegan outlets are flagged when a story names one of our cities. Local outlets are flagged when a story mentions Vegan food. Google News searches look for Vegan headlines in each city.</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th scope="col">Source</th><th scope="col">Kind</th><th scope="col">City</th><th scope="col">Last pull</th><th scope="col">Flagged</th><th scope="col">On</th><th scope="col"></th></tr></thead>
+          <tbody id="feeds"></tbody>
+        </table></div>
+        <p style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <button type="button" class="btn btn-ghost" id="backfill">Look back to June</button>
+          <span class="msg" id="backfill-msg" role="status"></span>
+        </p>
+        <form class="add" id="add">
+          <label>Name<input id="f-name" maxlength="80" required placeholder="Philadelphia Inquirer Food"></label>
+          <label>Kind<select id="f-scope"><option value="local">Local outlet (RSS)</option><option value="vegan">Vegan outlet (RSS)</option><option value="search">Google News search</option></select></label>
+          <label>City<select id="f-city"></select></label>
+          <label class="wide" id="f-url-l">Feed address<input id="f-url" type="url" placeholder="https://example.com/feed"></label>
+          <label class="wide" id="f-q-l" hidden>Search words<input id="f-q" maxlength="300" placeholder='(intitle:vegan OR intitle:"plant-based") (Philadelphia OR Philly)'></label>
+          <div><button type="submit" class="btn">Add source</button> <span class="msg" id="add-msg" role="status"></span></div>
+        </form>
+      </details>
+
+      <div class="filters" id="status" role="group" aria-label="Show">
+        <button type="button" data-s="new" aria-pressed="true">New</button>
+        <button type="button" data-s="writing" aria-pressed="false">Being written</button>
+        <button type="button" data-s="drafted" aria-pressed="false">Drafted</button>
+        <button type="button" data-s="published" aria-pressed="false">Published</button>
+        <button type="button" data-s="dismissed" aria-pressed="false">Dismissed</button>
+        <button type="button" data-s="all" aria-pressed="false">Everything</button>
+      </div>
+      <div class="toolbar">
+        <select id="city" aria-label="City"><option value="">Every city</option></select>
+        <select id="scope" aria-label="Source"><option value="">Every source</option><option value="vegan">Vegan outlets</option><option value="local">Local outlets</option><option value="search">Google News</option></select>
+        <input type="search" id="q" placeholder="Search headlines" aria-label="Search headlines">
+        <label class="check"><input type="checkbox" id="named"> Headline names the city</label>
+      </div>
+      <p class="count" id="count"></p>
+      <div id="leads"><p class="empty">Loading...</p></div>
+      <p><button type="button" class="btn btn-ghost" id="more" hidden>Show more</button></p>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-news-desk';
+      var $ = function (id) { return document.getElementById(id); };
+      var HUBS = [], leads = [], feeds = [], status = 'new', shown = 50, poll = null, lookBack = '2026-06-01';
+      var KIND = { vegan: 'Vegan outlet', local: 'Local outlet', search: 'Google News' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function hub(slug) { var h = HUBS.filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : 'National'; }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function ago(d) { if (!d) return 'never'; var m = Math.round((Date.now() - new Date(d)) / 60000); return m < 60 ? m + ' min ago' : m < 2880 ? Math.round(m / 60) + ' hr ago' : day(d); }
+      function safe(u) { return /^https?:\/\//i.test(String(u || '')) ? u : ''; }
+
+      function renderStats(c) {
+        c = c || {};
+        var rows = [['new', 'New'], ['writing', 'Being written'], ['drafted', 'Drafts waiting'], ['published', 'Published'], ['dismissed', 'Dismissed']];
+        $('stats').innerHTML = rows.map(function (r) {
+          var n = r[0] === 'writing' ? (c.write || 0) + (c.drafting || 0) : (c[r[0]] || 0);
+          return '<div class="stat"><b>' + n + '</b><span>' + r[1] + '</span></div>';
+        }).join('');
+      }
+
+      function actions(l) {
+        var draft = l.ve_pulse_content, a = '';
+        if (l.status === 'new') a = '<button type="button" class="btn" data-write>Write it up</button><button type="button" class="btn btn-ghost" data-dismiss>Dismiss</button>';
+        else if (l.status === 'drafting' || (l.status === 'write' && !l.draft_error)) a = '<span class="working">Writing the draft. This takes a minute or two.</span>';
+        else if (l.status === 'write') a = '<button type="button" class="btn" data-write>Try again</button><button type="button" class="btn btn-ghost" data-dismiss>Dismiss</button>';
+        else if (l.status === 'drafted') a = '<a class="btn" href="/admin/depot/pulse?edit=' + esc(l.pulse_id) + '">Open the draft</a>';
+        else if (l.status === 'published') a = draft && draft.slug ? '<a class="btn btn-ghost" href="/pulse/' + esc(draft.slug) + '" target="_blank" rel="noopener">View on the Pulse</a>' : '';
+        else if (l.status === 'dismissed') a = '<button type="button" class="btn btn-ghost" data-restore>Put back in New</button>';
+        return a;
+      }
+      function card(l) {
+        var u = safe(l.url), img = safe(l.image_url), scope = (l.ve_news_feeds || {}).scope || '';
+        return '<article class="card' + (img ? '' : ' noimg') + '" data-id="' + esc(l.id) + '">' +
+          (img ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode;this.remove();c.classList.add(\'noimg\')">' : '') +
+          '<div><div class="meta"><span class="pill city">' + esc(hub(l.city_slug)) + '</span>' + (scope ? '<span class="pill ' + scope + '">' + esc(KIND[scope]) + '</span>' : '') +
+          '<span>' + esc(l.source_name || '') + '</span><span>' + esc(day(l.published_at || l.created_at)) + '</span></div>' +
+          '<h2 class="headline">' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(l.title) + '</a>' : esc(l.title)) + '</h2>' +
+          (l.summary ? '<p class="summary">' + esc(l.summary) + '</p>' : '') +
+          '<p class="flag">Flagged: ' + esc(l.reason || '') + '</p>' +
+          (l.notes && (l.status === 'drafted' || l.status === 'published') ? '<p class="notes"><b>Check before publishing:</b> ' + esc(l.notes) + '</p>' : '') +
+          (l.draft_error && l.status === 'write' ? '<p class="err">' + (/credit balance/i.test(l.draft_error) ? 'The Anthropic account that writes drafts is out of credit. Add credit in the Anthropic Console (Plans and Billing), then tap Try again. Queued drafts also retry on their own every 6 hours.' : 'The draft did not finish (' + esc(l.draft_error) + '). Try again, or dismiss it.') + '</p>' : '') +
+          '<div class="actions">' + actions(l) + '</div></div></article>';
+      }
+      function render() {
+        $('count').textContent = leads.length ? leads.length + ' stor' + (leads.length === 1 ? 'y' : 'ies') + (leads.length > shown ? ', showing ' + shown : '') : '';
+        $('leads').innerHTML = leads.length ? leads.slice(0, shown).map(card).join('') : '<p class="empty">' + (status === 'new' ? 'Nothing new right now. Sources are pulled every 6 hours.' : 'Nothing here with these filters.') + '</p>';
+        $('more').hidden = leads.length <= shown;
+        var busy = leads.some(function (l) { return l.status === 'drafting' || (l.status === 'write' && !l.draft_error); });
+        clearTimeout(poll); if (busy) poll = setTimeout(load, 8000);
+      }
+      function load() {
+        return api({ action: 'leads_list', status: status === 'all' ? '' : status, city: $('city').value, scope: $('scope').value, q: $('q').value.trim(), headline_only: $('named').checked }).then(function (d) {
+          if (!d.leads) throw new Error(d.error);
+          leads = d.leads; renderStats(d.counts);
+          if (!HUBS.length && d.hubs) { HUBS = d.hubs; fillCities(); }
+          render();
+        }).catch(function () { $('leads').innerHTML = '<p class="empty">Did not load. Refresh to try again.</p>'; });
+      }
+      function fillCities() {
+        $('city').insertAdjacentHTML('beforeend', HUBS.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join(''));
+        $('f-city').innerHTML = '<option value="">None (Vegan outlets)</option>' + HUBS.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
+      }
+
+      $('status').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-s]'); if (!b) return;
+        status = b.getAttribute('data-s'); shown = 50;
+        $('status').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        load();
+      });
+      var qTimer;
+      $('q').addEventListener('input', function () { clearTimeout(qTimer); qTimer = setTimeout(load, 300); });
+      ['city', 'scope', 'named'].forEach(function (id) { $(id).addEventListener('change', function () { shown = 50; load(); }); });
+      $('more').onclick = function () { shown += 50; render(); };
+
+      $('leads').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-write],[data-dismiss],[data-restore]'); if (!b) return;
+        var el = b.closest('.card'), id = el.getAttribute('data-id'), l = leads.filter(function (x) { return x.id === id; })[0];
+        el.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+        var req = b.hasAttribute('data-write') ? api({ action: 'lead_write', id: id }) : api({ action: 'lead_update', id: id, status: b.hasAttribute('data-dismiss') ? 'dismissed' : 'new' });
+        req.then(function (d) {
+          if (!d.ok) throw new Error(d.error);
+          if (b.hasAttribute('data-write')) { Object.assign(l, d.lead, { status: 'drafting', draft_error: null }); render(); load(); }
+          else { leads = leads.filter(function (x) { return x.id !== id; }); render(); api({ action: 'leads_list', status: 'none' }).then(function (c) { renderStats(c.counts); }); }
+        }).catch(function () { el.querySelectorAll('button').forEach(function (x) { x.disabled = false; }); alert('That did not save. Try again.'); });
+      });
+
+      // ---- sources ----
+      function renderFeeds() {
+        $('src-count').textContent = feeds.length;
+        $('feeds').innerHTML = feeds.map(function (f) {
+          var where = f.scope === 'search' ? f.search_query : f.feed_url;
+          return '<tr data-f="' + esc(f.id) + '"><td><b>' + esc(f.feed_name) + '</b><small>' + esc(where) + '</small></td><td>' + esc(KIND[f.scope]) + '</td><td>' + esc(f.city_slug ? hub(f.city_slug) : 'Every city') + '</td>' +
+            '<td>' + esc(ago(f.last_fetched_at)) + '<small class="' + (f.last_status && f.last_status !== 'ok' ? 'bad">' + esc(f.last_status) : 'ok">' + (f.last_fetched_at ? 'ok' : '')) + '</small></td>' +
+            '<td>' + (f.leads || 0) + '</td><td><input type="checkbox" data-on aria-label="Pull ' + esc(f.feed_name) + '"' + (f.is_active ? ' checked' : '') + '></td>' +
+            '<td style="white-space:nowrap"><button type="button" class="btn btn-ghost" data-pull>Pull now</button> <button type="button" class="btn btn-ghost" data-del>Remove</button></td></tr>';
+        }).join('');
+      }
+      function loadFeeds() {
+        return api({ action: 'feeds_list' }).then(function (d) {
+          if (!d.feeds) return;
+          feeds = d.feeds; lookBack = d.look_back_from || lookBack;
+          if (!HUBS.length && d.hubs) { HUBS = d.hubs; fillCities(); }
+          renderFeeds();
+        });
+      }
+      $('feeds').addEventListener('change', function (e) {
+        if (!e.target.hasAttribute('data-on')) return;
+        var id = e.target.closest('tr').getAttribute('data-f');
+        api({ action: 'feed_active', id: id, is_active: e.target.checked }).then(function (d) { if (!d.ok) { e.target.checked = !e.target.checked; alert('That did not save.'); } });
+      });
+      $('feeds').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-pull],[data-del]'); if (!b) return;
+        var tr = b.closest('tr'), id = tr.getAttribute('data-f'), f = feeds.filter(function (x) { return x.id === id; })[0];
+        if (b.hasAttribute('data-del')) {
+          if (!confirm('Remove "' + f.feed_name + '"? Stories it already flagged stay on the desk.')) return;
+          api({ action: 'feed_delete', id: id }).then(function (d) { if (d.ok) { feeds = feeds.filter(function (x) { return x.id !== id; }); renderFeeds(); } else alert('That did not save.'); });
+          return;
+        }
+        b.disabled = true; b.textContent = 'Pulling...';
+        api({ action: 'feed_pull', id: id }).then(function (d) {
+          b.disabled = false; b.textContent = 'Pull now';
+          alert(d.ok ? f.feed_name + ': ' + d.found + ' stories read, ' + d.flagged + ' flagged, ' + d.added + ' new on the desk.' + (d.status !== 'ok' ? ' Problem: ' + d.status : '') : 'That did not work.');
+          loadFeeds(); load();
+        });
+      });
+      $('backfill').onclick = function () {
+        var search = feeds.filter(function (f) { return f.scope === 'search' && f.is_active; });
+        var months = [], d = new Date(lookBack + 'T12:00:00Z'), now = new Date();
+        while (d <= now) { months.push(d.toISOString().slice(0, 7)); d.setUTCMonth(d.getUTCMonth() + 1); }
+        var jobs = []; search.forEach(function (f) { months.forEach(function (m) { jobs.push([f, m]); }); });
+        if (!jobs.length) return;
+        var i = 0, added = 0; this.disabled = true;
+        var btn = this;
+        (function next() {
+          if (i >= jobs.length) { btn.disabled = false; $('backfill-msg').textContent = 'Done. ' + added + ' new stories on the desk.'; loadFeeds(); load(); return; }
+          var j = jobs[i++]; $('backfill-msg').textContent = 'Looking back: ' + j[0].feed_name.replace('Google News: ', '') + ', ' + j[1] + ' (' + i + ' of ' + jobs.length + ')';
+          api({ action: 'backfill', feed_id: j[0].id, month: j[1] }).then(function (r) { added += r.added || 0; next(); }, next);
+        })();
+      };
+      function syncForm() {
+        var s = $('f-scope').value;
+        $('f-url-l').hidden = s === 'search'; $('f-q-l').hidden = s !== 'search';
+      }
+      $('f-scope').addEventListener('change', syncForm);
+      $('add').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var s = $('f-scope').value;
+        $('add-msg').textContent = 'Saving...';
+        api({ action: 'feed_save', feed_name: $('f-name').value, scope: s, city_slug: $('f-city').value || null, feed_url: $('f-url').value, search_query: $('f-q').value, locale: $('f-city').value === 'london' ? 'GB' : 'US' }).then(function (d) {
+          if (!d.ok) { $('add-msg').textContent = { city_required: 'Pick the city this source covers.', bad_url: 'Use the full https:// feed address.', query_required: 'Add the search words.', name_required: 'Add a name.' }[d.error] || 'That did not save.'; return; }
+          $('add-msg').textContent = 'Added. Pulling it now...'; $('add').reset(); syncForm();
+          api({ action: 'feed_pull', id: d.feed.id }).then(function (r) { $('add-msg').textContent = 'Added. ' + (r.found || 0) + ' stories read, ' + (r.added || 0) + ' flagged.' + (r.status && r.status !== 'ok' ? ' Problem: ' + r.status : ''); loadFeeds(); load(); });
+        });
+      });
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('nd-gate').hidden = false; $('nd-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('nd-app').hidden = false; syncForm();
+        loadFeeds(); load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
