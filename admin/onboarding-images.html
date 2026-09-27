@@ -59,7 +59,7 @@
   <div class="wrap">
     <p class="eyebrow">Admin</p>
     <h1>Onboarding images</h1>
-    <p class="sub">Pick a slide (or the page background), then choose its picture from your <a href="/admin/media-library">image library</a> below. It goes live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
+    <p class="sub">Pick a slide (or the page background), then choose its picture from your <a href="/admin/media-library">media library</a> below. It goes live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
     <div id="im-gate" class="gate" hidden></div>
     <div id="im-app" hidden>
       <div class="bar">
@@ -75,10 +75,10 @@
         <span class="msg" id="im-msg" role="status"></span>
       </div>
       <div class="drop" id="im-drop" tabindex="0" role="button" aria-label="Add pictures: drop a folder of images, or click to choose files">
-        <b>Add pictures: drop a folder here</b>
-        <span>or click to choose files. PNG, JPG or WebP. They go into your library and show up below. Tag them at <a href="/admin/media-library">Image library</a>.</span>
+        <b>Add to the media library: drop a folder here</b>
+        <span>or click to choose files. Pictures, audio or video. Pictures show up below; tag anything at <a href="/admin/media-library">Media library</a>.</span>
       </div>
-      <input type="file" id="im-files" multiple accept="image/png,image/jpeg,image/webp" hidden>
+      <input type="file" id="im-files" multiple accept="image/png,image/jpeg,image/webp,audio/*,video/mp4,video/quicktime,video/webm" hidden>
       <p class="msg" id="im-up" role="status"></p>
       <p class="errs" id="im-up-errs"></p>
       <h2>1. Pick a slide</h2>
@@ -102,6 +102,7 @@
   </dialog>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-media-upload.js"></script>
   <script>
     // Every Vegans Explore illustration in Sean's Higgsfield library (landscape,
     // Vegans Explore scenes only), plus the illustrations already on the site.
@@ -164,74 +165,29 @@
         var slides = LIBRARY.filter(function (c) { return c.uses.indexOf('slide') >= 0; });
         return (slides.length ? slides : LIBRARY).concat(CANDIDATES);
       }
-      // ---- Add pictures to the library right here (same upload as /admin/media-library).
-      function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
-      function toBlob(c, type, q) { return new Promise(function (res) { c.toBlob(res, type, q); }); }
-      // WebP where the browser can encode it; JPEG otherwise (Safari).
-      function encode(c, q) { return toBlob(c, 'image/webp', q).then(function (b) { return b && b.type === 'image/webp' ? b : toBlob(c, 'image/jpeg', q); }); }
-      function drawAt(bmp, w) { var h = Math.round(bmp.height * w / bmp.width), c = document.createElement('canvas'); c.width = w; c.height = h; var x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(bmp, 0, 0, w, h); return c; }
-      function b64(blob) { return new Promise(function (res, rej) { var r = new FileReader(); r.onload = function () { res(String(r.result).split(',')[1]); }; r.onerror = rej; r.readAsDataURL(blob); }); }
-      function prepare(file) {
-        return file.arrayBuffer().then(function (ab) { return Promise.all([crypto.subtle.digest('SHA-256', ab), createImageBitmap(new Blob([ab], { type: file.type || 'image/png' }))]); })
-          .then(function (r) {
-            var bmp = r[1], k = Math.min(1, 2400 / Math.max(bmp.width, bmp.height)), fw = Math.round(bmp.width * k), fh = Math.round(bmp.height * k);
-            return Promise.all([encode(drawAt(bmp, fw), 0.86), encode(drawAt(bmp, Math.min(480, fw)), 0.8)]).then(function (bl) {
-              return Promise.all([b64(bl[0]), b64(bl[1])]).then(function (x) { return { sha256: hex(r[0]), width: fw, height: fh, full_b64: x[0], thumb_b64: x[1] }; });
-            });
-          });
-      }
+      // ---- Add media to the library right here (shared uploader, /public/ve-media-upload.js).
       function addFiles(files) {
-        var imgs = files.filter(function (f) { return /\.(png|jpe?g|webp)$/i.test(f.name) || /^image\/(png|jpeg|webp)$/.test(f.type); });
-        if (!imgs.length) { $('im-up').textContent = 'No PNG, JPG or WebP files in that drop.'; return; }
-        var done = 0, added = 0, dupes = 0, errs = [];
+        if (!files.some(VEMediaUpload.accepts)) { $('im-up').textContent = 'Nothing in that drop is a picture, audio or video file.'; return; }
         $('im-up-errs').textContent = '';
-        imgs.reduce(function (p, f) {
-          return p.then(function () {
-            $('im-up').textContent = 'Adding ' + (done + 1) + ' of ' + imgs.length + '...';
-            return prepare(f).then(function (body) {
-              body.action = 'upload'; body.source_name = f.webkitRelativePath || f.name;
-              return fetch(LIB_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
-            }).then(function (d) { if (d.ok && d.duplicate) dupes++; else if (d.ok) added++; else errs.push(f.name); })
-              .catch(function () { errs.push(f.name); })
-              .then(function () { done++; });
-          });
-        }, Promise.resolve()).then(function () {
-          $('im-up').textContent = 'Done. ' + added + ' added to your library' + (dupes ? ', ' + dupes + ' were already there' : '') + '.';
-          if (errs.length) $('im-up-errs').textContent = 'Not added: ' + errs.join(', ') + '. Try those again.';
+        VEMediaUpload.upload(files, VEAuth.getToken(), function (i, n) { $('im-up').textContent = 'Adding ' + i + ' of ' + n + '...'; }).then(function (r) {
+          $('im-up').textContent = 'Done. ' + r.added + ' added to your library' + (r.dupes ? ', ' + r.dupes + ' were already there' : '') + '.';
+          if (r.errors.length) $('im-up-errs').textContent = 'Not added: ' + r.errors.join(', ') + '. Try those again.';
           $('im-filter').value = 'library';
           return loadLibrary().then(render);
         });
       }
-      function walk(entry) {
-        return new Promise(function (res) {
-          if (entry.isFile) return entry.file(function (f) { res([f]); }, function () { res([]); });
-          if (!entry.isDirectory) return res([]);
-          var rd = entry.createReader(), acc = [];
-          (function more() { rd.readEntries(function (ents) { if (!ents.length) return Promise.all(acc.map(walk)).then(function (l) { res([].concat.apply([], l)); }); acc = acc.concat(Array.prototype.slice.call(ents)); more(); }, function () { res([]); }); })();
-        });
-      }
-      var dropEl = $('im-drop');
-      ['dragenter', 'dragover'].forEach(function (t) { dropEl.addEventListener(t, function (e) { e.preventDefault(); dropEl.classList.add('over'); }); });
-      ['dragleave', 'drop'].forEach(function (t) { dropEl.addEventListener(t, function (e) { e.preventDefault(); dropEl.classList.remove('over'); }); });
-      dropEl.addEventListener('drop', function (e) {
-        var dt = e.dataTransfer, en = [];
-        if (dt.items) for (var i = 0; i < dt.items.length; i++) { var x = dt.items[i].webkitGetAsEntry && dt.items[i].webkitGetAsEntry(); if (x) en.push(x); }
-        if (en.length) Promise.all(en.map(walk)).then(function (l) { addFiles([].concat.apply([], l)); }); else addFiles(Array.prototype.slice.call(dt.files || []));
-      });
-      dropEl.addEventListener('click', function () { $('im-files').click(); });
-      dropEl.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('im-files').click(); } });
-      $('im-files').addEventListener('change', function (e) { addFiles(Array.prototype.slice.call(e.target.files || [])); e.target.value = ''; });
+      VEMediaUpload.bindDrop($('im-drop'), $('im-files'), addFiles);
 
       function loadLibrary() {
         return fetch(LIB_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'list' }) })
           .then(function (r) { return r.json(); })
           .then(function (d) {
-            LIBRARY = (d.items || []).filter(function (it) { return !it.archived; }).map(function (it) {
+            LIBRARY = (d.items || []).filter(function (it) { return !it.archived && (it.kind || 'image') === 'image'; }).map(function (it) {
               var place = { miami: 'Miami', broward: 'Broward', 'palm-beach': 'Palm Beach' }[it.place] || '';
               return { id: 'lib-' + it.id, thumb: it.thumb_url, raw: it.url, src: it.url, uses: it.uses || [], orientation: it.orientation,
                 cap: [it.source_name, place, it.orientation + ' ' + it.width + '\u00d7' + it.height].filter(Boolean).join(' \u00b7 ') };
             });
-            $('im-lib-msg').textContent = LIBRARY.length ? '' : 'Your library is empty. Add pictures at Image library.';
+            $('im-lib-msg').textContent = LIBRARY.length ? '' : 'No pictures in the library yet. Drop some above.';
           }).catch(function () { $('im-lib-msg').textContent = 'The library did not load. Refresh to try again.'; });
       }
       function api(body) {
@@ -260,7 +216,7 @@
           var tag = here ? '<span class="tag">On this one</span>' : used.length ? '<span class="tag">On ' + used.map(slotName).join(', ') + '</span>' : '';
           return '<div class="card' + (used.length && !here ? ' used' : '') + '"><img src="' + esc(c.thumb) + '" alt="" loading="lazy" data-prev="' + i + '"><div class="card-body">' + tag + '<p class="card-cap">' + esc(c.cap) + '</p>' +
             '<button type="button" class="btn" data-use="' + i + '"' + (here ? ' disabled' : '') + '>' + (here ? 'On ' + slotName(sel) : 'Use for ' + slotName(sel)) + '</button></div></div>';
-        }).join('') : '<p class="card-cap">Nothing to show here yet. Tag pictures at the Image library, or switch Show to Whole library.</p>';
+        }).join('') : '<p class="card-cap">Nothing to show here yet. Tag pictures at the Media library, or switch Show to Whole library.</p>';
         $('im-grid').querySelectorAll('[data-use]').forEach(function (b) { b.onclick = function () { use(list[+b.getAttribute('data-use')]); }; });
         $('im-grid').querySelectorAll('[data-prev]').forEach(function (im) { im.onclick = function () { openPreview(list[+im.getAttribute('data-prev')]); }; });
         var city = $('im-city').value;

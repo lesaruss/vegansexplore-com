@@ -1,14 +1,18 @@
-// ve-media-library: the Vegans Explore image library (Sean, 2026-09-27: "select and
-// choose the ones we've already created" instead of scrolling Higgsfield).
+// ve-media-library: the Vegans Explore media library (Sean, 2026-09-27: "select and
+// choose the ones we've already created" instead of scrolling Higgsfield, for
+// images, audio and video alike).
 //
-// /admin/media-library resizes each image in the browser (a web-size WebP, or JPEG
-// where the browser cannot encode WebP, plus a thumbnail) and posts it here one at a time. Files live in vegan-media/library/,
-// named by the SHA-256 of the original file so the same file never lands twice.
-// The onboarding image picker lists the library and saves a pick through
-// ve-onboarding-audio set_panel. Superadmins only.
+// Images are resized in the browser (a web-size WebP, or JPEG where the browser
+// cannot encode WebP, plus a thumbnail) and posted here. Audio and video go
+// straight to storage through a one-time signed upload URL, then are registered.
+// Files live in vegan-media/library/, named by the SHA-256 of the original file
+// so the same file never lands twice. The onboarding image picker lists the
+// library and saves a pick through ve-onboarding-audio set_panel. Superadmins only.
 //
 // POST { action: 'list' }                                                Authorization: Bearer <ve_token>
-// POST { action: 'upload', sha256, source_name, width, height, full_b64, thumb_b64 }  (WebP or JPEG)
+// POST { action: 'upload', sha256, source_name, width, height, full_b64, thumb_b64 }  images (WebP or JPEG)
+// POST { action: 'upload_url', sha256, kind, ext }                        audio / video: returns a signed upload URL
+// POST { action: 'register', sha256, kind, ext, mime, bytes, duration?, width?, height?, source_name }
 // POST { action: 'update', id, uses?, place?, labels?, archived? }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -16,7 +20,14 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
-const USES = ['bg_desktop', 'bg_mobile', 'slide'];
+const USES = ['bg_desktop', 'bg_mobile', 'slide', 'narration', 'music', 'video'];
+// Audio and video file types the library keeps, by extension.
+const MEDIA_EXT: Record<string, { kind: 'audio' | 'video'; mime: string }> = {
+  mp3: { kind: 'audio', mime: 'audio/mpeg' }, wav: { kind: 'audio', mime: 'audio/wav' }, m4a: { kind: 'audio', mime: 'audio/mp4' },
+  aac: { kind: 'audio', mime: 'audio/aac' }, ogg: { kind: 'audio', mime: 'audio/ogg' },
+  mp4: { kind: 'video', mime: 'video/mp4' }, mov: { kind: 'video', mime: 'video/quicktime' }, webm: { kind: 'video', mime: 'video/webm' },
+};
+const COLS = 'id, kind, url, thumb_url, mime, width, height, orientation, duration, bytes, source_name, uses, place, labels, archived, created_at';
 const PLACES = ['miami', 'broward', 'palm-beach'];
 const MAX_FULL = 8 * 1024 * 1024;
 const MAX_THUMB = 1024 * 1024;
@@ -79,7 +90,7 @@ Deno.serve(async (req) => {
 
   if (body.action === 'list') {
     const { data, error } = await db.from('ve_media_library')
-      .select('id, url, thumb_url, width, height, orientation, source_name, uses, place, labels, archived, created_at')
+      .select(COLS)
       .order('created_at', { ascending: false }).limit(1000);
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     return json({ items: data || [] });
@@ -110,9 +121,41 @@ Deno.serve(async (req) => {
     const thumb_url = db.storage.from('vegan-media').getPublicUrl(tp).data.publicUrl;
 
     const { data: item, error } = await db.from('ve_media_library').insert({
-      sha256: sha, url, thumb_url, width, height, orientation, bytes: full.length,
+      sha256: sha, kind: 'image', mime: TYPE[fk], url, thumb_url, width, height, orientation, bytes: full.length,
       source_name: String(body.source_name || '').slice(0, 200) || null, uploaded_by: memberId,
-    }).select('id, url, thumb_url, width, height, orientation, source_name, uses, place, labels, archived, created_at').single();
+    }).select(COLS).single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, item });
+  }
+
+  if (body.action === 'upload_url' || body.action === 'register') {
+    const sha = String(body.sha256 || '').toLowerCase();
+    if (!/^[0-9a-f]{64}$/.test(sha)) return json({ error: 'bad_sha256' }, 400);
+    const ext = String(body.ext || '').toLowerCase(), t = MEDIA_EXT[ext];
+    if (!t) return json({ error: 'unsupported_type' }, 400);
+    const { data: existing } = await db.from('ve_media_library').select(COLS).eq('sha256', sha).maybeSingle();
+    if (existing) return json({ ok: true, duplicate: true, item: existing });
+    const name = sha.slice(0, 20), path = `library/media/${name}.${ext}`;
+
+    if (body.action === 'upload_url') {
+      const { data, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path, { upsert: true });
+      if (error || !data) return json({ error: 'sign_failed', message: error?.message }, 500);
+      return json({ ok: true, signed_url: data.signedUrl, path });
+    }
+
+    // register: only after the file is really in storage.
+    const { data: found } = await db.storage.from('vegan-media').list('library/media', { search: `${name}.${ext}`, limit: 1 });
+    const obj = (found || []).find((o: any) => o.name === `${name}.${ext}`);
+    if (!obj) return json({ error: 'file_not_uploaded' }, 400);
+    const width = Math.round(Number(body.width)) || null, height = Math.round(Number(body.height)) || null;
+    const orientation = width && height ? (width / height > 1.08 ? 'landscape' : width / height < 0.93 ? 'portrait' : 'square') : null;
+    const duration = Math.round(Number(body.duration || 0) * 10) / 10 || null;
+    const url = db.storage.from('vegan-media').getPublicUrl(path).data.publicUrl;
+    const { data: item, error } = await db.from('ve_media_library').insert({
+      sha256: sha, kind: t.kind, url, thumb_url: null, mime: t.mime, width, height, orientation, duration,
+      bytes: Number(obj.metadata?.size) || Number(body.bytes) || null,
+      source_name: String(body.source_name || '').slice(0, 200) || null, uploaded_by: memberId,
+    }).select(COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, item });
   }
@@ -126,7 +169,7 @@ Deno.serve(async (req) => {
     if (body.labels !== undefined) patch.labels = cleanLabels(body.labels);
     if (body.archived !== undefined) patch.archived = !!body.archived;
     const { data: item, error } = await db.from('ve_media_library').update(patch).eq('id', id)
-      .select('id, url, thumb_url, width, height, orientation, source_name, uses, place, labels, archived, created_at').single();
+      .select(COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, item });
   }

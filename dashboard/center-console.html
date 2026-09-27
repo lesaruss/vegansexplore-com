@@ -1085,6 +1085,9 @@
   var SA_LEADS_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
   // Guest Reviews tile icon (2026-09-17, Sean + V design session: the Guest
   // Passport application review queue).
+  // Media Library tile icon (2026-09-27, Sean): pictures, audio and video we keep
+  // for every page, plus the page picture and narration tools, in one place.
+  var SA_MEDIA_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
   var SA_GUEST_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>';
 
   function loadPendingEventsCount(token) {
@@ -1474,6 +1477,10 @@
       { key: 'sa-events', href: '/admin/events.html', embed: true, embedLabel: 'Event Submissions', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-guest-reviews', href: '/dashboard/guest-reviews', embed: true, embedLabel: 'Guest Reviews', iconHtml: SA_GUEST_SVG, bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Guest Reviews', tagLabel: 'Superadmin', badgeId: 'dash-guest-reviews-pending-badge', desc: 'Review flagged and pending Guest Passport applications -- approve, follow up, or remove.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      // Media Library (2026-09-27, Sean: "make sure that it's located in my tool
+      // section so we don't lose it"). Opens the library, which links to the page
+      // picture and narration tools.
+      { key: 'sa-media', href: '/admin/media-library', embed: true, embedLabel: 'Media Library', iconHtml: SA_MEDIA_SVG, bg: 'linear-gradient(135deg,#0e7490,#155e75)', title: 'Media Library', tagLabel: 'Superadmin', desc: 'Every picture, sound and video we keep, plus slide pictures, backgrounds and narration for the guided pages.', visibility: 'superadmin', defaultSection: 'superadmin' },
       // Community Manager Certification (2026-09-25, Sean): the handbook as a
       // course with module quizzes and a certificate. Reuses the cm-handbook
       // key, which ve-auth's VALID_LAYOUT_MODULES already accepts.
