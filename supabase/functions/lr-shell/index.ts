@@ -151,11 +151,14 @@ async function verifyHandoff(token: string | undefined): Promise<{ sub: string; 
 async function shellBrands() {
   const { data } = await supabase
     .from('universe_brands')
-    .select('slug, name, mono, color, domain, dashboard_path, sso_path, is_hub, is_live')
+    .select('slug, name, mono, color, domain, dashboard_path, sso_path, icon_url, is_hub, is_live')
     .order('sort_order', { ascending: true });
   return (data ?? []).map((r: Record<string, unknown>) => ({
     slug: r.slug, name: r.name, mono: r.mono, color: r.color,
     domain: r.domain ?? null, dashboardPath: r.dashboard_path ?? null, ssoPath: r.sso_path ?? null,
+    // 2026-09-27: the brand's mark, so the shared bar draws the same logo on
+    // every brand instead of a monogram here and a logo on HQ.
+    iconUrl: r.icon_url ?? null,
     isHub: !!r.is_hub, isLive: !!r.is_live,
   }));
 }
