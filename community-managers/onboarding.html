@@ -547,7 +547,7 @@
       if (stageBg && CITY.bg) stageBg.style.backgroundImage = "url('" + CITY.bg + "')";
       if (CITY.copy) Object.keys(CITY.copy).forEach(function (sel) { document.querySelectorAll(sel).forEach(function (el) { el.innerHTML = CITY.copy[sel]; }); });
 
-      document.querySelectorAll('.media[data-video]').forEach(function (m) {
+      function renderPanel(m) {
         var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
         if (src) {
           m.innerHTML = '<video controls playsinline preload="metadata" poster="' + poster + '" src="' + src + '" aria-label="' + cap + '"></video>';
@@ -559,7 +559,8 @@
             '<div class="media-veil"><div class="media-play" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div>' +
             '<p class="media-cap">Video coming soon<span>' + cap + '</span></p></div>';
         }
-      });
+      }
+      document.querySelectorAll('.media[data-video]').forEach(renderPanel);
 
 
       function show(n, fromHash) {
@@ -773,22 +774,23 @@
       }
       show(start > 0 ? start : 0, true);
 
-      // The picture in each slide's panel, chosen at /admin/onboarding-images.
+      // The picture in each slide's panel, chosen in the Depot (/admin/depot/onboarding).
       fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/ve_onboarding_panels?select=clip_key,url&page=eq.cm&city_slug=eq.' + encodeURIComponent(CITY_SLUG), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
         .then(function (r) { return r.ok ? r.json() : []; })
         .then(function (rows) {
           (rows || []).forEach(function (row) {
-            // The page background, picked at /admin/onboarding-images (desktop and phone).
+            // The page background, picked in the Depot (desktop and phone).
             if (row.clip_key === 'bg-desktop' && row.url) { stageEl.style.backgroundImage = "url('" + row.url + "')"; return; }
             if (row.clip_key === 'bg-mobile' && row.url) { stageBg.style.backgroundImage = "url('" + row.url + "')"; return; }
             var m = document.querySelector('.media[data-video="' + row.clip_key + '"]');
             if (!m || !row.url) return;
             m.setAttribute('data-poster', row.url);
             var img = m.querySelector('img'); if (img) img.src = row.url;
+            var vid = m.querySelector('video'); if (vid) vid.poster = row.url;
           });
         }).catch(function () {});
 
-      // Sean's own recordings, uploaded at /admin/onboarding-audio, replace the
+      // Sean's own recordings, uploaded in the Depot (/admin/depot/narration), replace the
       // placeholder narration slide by slide. Each slide keeps its own music bed.
       fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/ve_onboarding_audio?select=clip_key,url,dur&page=eq.cm&city_slug=eq.' + encodeURIComponent(CITY_SLUG), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
         .then(function (r) { return r.ok ? r.json() : []; })
@@ -799,6 +801,19 @@
             c.url = row.url; if (row.dur) c.dur = +row.dur;
             var m = document.querySelector('.media[data-sa-key="' + row.clip_key + '"]');
             if (m && !m.classList.contains('sa-playing')) m.innerHTML = VESlideAudio.markup(row.clip_key, m.getAttribute('data-poster'), m.getAttribute('data-cap'));
+          });
+        }).catch(function () {});
+
+      // The rest of each slide's recipe, set in the Depot (/admin/depot/onboarding):
+      // its music bed and level, and a video (silent under the narration, or with its own sound).
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/ve_onboarding_slides?select=clip_key,music_url,music_off,music_vol,video_url,video_sound&page=eq.cm&city_slug=eq.' + encodeURIComponent(CITY_SLUG), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          (rows || []).forEach(function (row) {
+            var r = window.VESlideAudio && VESlideAudio.recipe(row.clip_key, row);
+            if (r === 'video') VIDEOS[row.clip_key] = row.video_url;
+            var m = document.querySelector('.media[data-video="' + row.clip_key + '"]');
+            if (r && m && !m.classList.contains('sa-playing')) renderPanel(m);
           });
         }).catch(function () {});
     })();

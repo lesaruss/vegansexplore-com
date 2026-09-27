@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Onboarding Audio Import | Vegans Explore</title>
+  <title>Import Narration | The Depot</title>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -54,10 +54,11 @@
   <script src="/public/nav.js"></script>
 
   <div class="wrap">
-    <p class="eyebrow">Admin</p>
-    <h1>Onboarding audio import</h1>
+    <p class="eyebrow">The Depot</p>
+    <h1>Import narration</h1>
+    <div id="depot-tabs"></div>
     <p class="sub">Pick the page, then drop the folder with your recordings. Each file is matched to its slide by the number in its name (01 to 11 for Community Managers, 01 to 06 for Partners). Listen to any clip, then upload. Volume is evened out and long silences at the ends are trimmed before anything goes live.</p>
-    <p class="sub" style="margin-top:-8px;">Everything else, music and video included, lives in the <a href="/admin/media-library">Media library</a>. Pictures and backgrounds for a page: <a href="/admin/onboarding-images">Onboarding images</a>.</p>
+    <p class="sub" style="margin-top:-8px;">Each recording also lands in the <a href="/admin/depot">Depot library</a>. To switch a slide to another take, or set its music and video, use <a href="/admin/depot/onboarding">Onboarding</a>.</p>
     <div id="oa-gate" class="gate" hidden></div>
     <div id="oa-app" hidden>
       <div class="bar">
@@ -88,6 +89,7 @@
   </div>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-onboarding-audio';

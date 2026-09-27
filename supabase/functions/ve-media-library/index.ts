@@ -15,7 +15,7 @@
 // POST { action: 'register', sha256, kind, ext, mime, bytes, duration?, width?, height?, source_name }
 // POST { action: 'update', id, uses?, place?, labels?, archived? }
 // POST { action: 'skip', refs }       older pictures Sean chose not to keep (never offered again)
-// POST { action: 'delete', ids }      removes the files and the rows; refuses any picture on a live slide
+// POST { action: 'delete', ids }      removes the files and the rows; refuses anything a live page uses
 //
 // Sean, 2026-09-27: the older Higgsfield set is reviewed once on /admin/onboarding-images.
 // The ones he keeps are uploaded here with source_ref (e.g. 'higgsfield:<id>'), the rest
@@ -155,8 +155,15 @@ Deno.serve(async (req) => {
     if (!ids.length) return json({ error: 'no_ids' }, 400);
     const { data: rows } = await db.from('ve_media_library').select('id, url, thumb_url, source_ref').in('id', ids);
     const urls = (rows || []).map((r: any) => r.url);
-    const { data: live } = await db.from('ve_onboarding_panels').select('url').in('url', urls.length ? urls : ['-']);
-    const liveSet = new Set((live || []).map((r: any) => r.url));
+    // Anything a live page uses (picture, narration, music or video) is kept.
+    const inList = urls.length ? urls : ['-'];
+    const [pan, aud, mus, vid] = await Promise.all([
+      db.from('ve_onboarding_panels').select('url').in('url', inList),
+      db.from('ve_onboarding_audio').select('url').in('url', inList),
+      db.from('ve_onboarding_slides').select('url:music_url').in('music_url', inList),
+      db.from('ve_onboarding_slides').select('url:video_url').in('video_url', inList),
+    ]);
+    const liveSet = new Set([pan, aud, mus, vid].flatMap((q: any) => (q.data || []).map((r: any) => r.url)));
     const deleted: string[] = [], in_use: string[] = [];
     for (const r of rows || []) {
       if (liveSet.has(r.url)) { in_use.push(r.id); continue; }

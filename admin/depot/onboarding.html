@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Onboarding Images | Vegans Explore</title>
+  <title>Onboarding | The Depot</title>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -51,6 +51,18 @@
     .tick input{width:20px;height:20px;accent-color:#8a1c12;}
     .review{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 18px 20px;margin:14px 0 8px;}
     .review h2{margin-top:0;}
+    .sound{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px 18px;margin:0 0 6px;}
+    .sound h2{margin-top:0;}
+    .sv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:14px 22px;margin-bottom:12px;}
+    .sv-row{display:flex;flex-direction:column;gap:6px;}
+    .sv-row > label:not(.sv-check){font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .sv-row select{width:100%;}
+    .sv-vol{display:flex;align-items:center;gap:12px;}
+    .sv-vol input{flex:1;accent-color:var(--ve-green-deep);min-height:32px;}
+    .sv-vol output{font-size:14px;font-weight:800;min-width:48px;text-align:right;}
+    .sv-check{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ve-text-75);}
+    .sv-check input{width:18px;height:18px;accent-color:var(--ve-green-deep);}
+    .sv-hint{font-size:12.5px;color:var(--ve-text-75);}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     dialog{border:0;border-radius:14px;padding:0;max-width:min(1100px,calc(100% - 32px));box-shadow:0 24px 60px rgba(0,0,0,0.35);}
     dialog::backdrop{background:rgba(10,20,12,0.7);}
@@ -65,9 +77,10 @@
   <script src="/public/nav.js"></script>
 
   <div class="wrap">
-    <p class="eyebrow">Admin</p>
-    <h1>Onboarding images</h1>
-    <p class="sub">Pick a slide (or the page background), then choose its picture from your <a href="/admin/media-library">media library</a> below. Only pictures in the library are offered. It goes live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
+    <p class="eyebrow">The Depot</p>
+    <h1>Onboarding</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Pick a slide (or the page background), then set its narration, music and video, and choose its picture. Everything comes from the <a href="/admin/depot">Depot library</a>, and every change is live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
     <div id="im-gate" class="gate" hidden></div>
     <div id="im-app" hidden>
       <div class="bar">
@@ -82,9 +95,9 @@
         <a class="btn btn-ghost" id="im-view" href="/community-managers/onboarding" target="_blank" rel="noopener">View the page</a>
         <span class="msg" id="im-msg" role="status"></span>
       </div>
-      <div class="drop" id="im-drop" tabindex="0" role="button" aria-label="Add pictures: drop a folder of images, or click to choose files">
-        <b>Add to the media library: drop a folder here</b>
-        <span>or click to choose files. Pictures, audio or video. Pictures show up below; tag anything at <a href="/admin/media-library">Media library</a>.</span>
+      <div class="drop" id="im-drop" tabindex="0" role="button" aria-label="Add to the Depot: drop a folder of pictures, audio or video, or click to choose files">
+        <b>Add to the Depot: drop a folder here</b>
+        <span>or click to choose files. Pictures, audio or video. Pictures show up below; tag anything in the <a href="/admin/depot">Library</a>.</span>
       </div>
       <input type="file" id="im-files" multiple accept="image/png,image/jpeg,image/webp,audio/*,video/mp4,video/quicktime,video/webm" hidden>
       <p class="msg" id="im-up" role="status"></p>
@@ -103,7 +116,17 @@
       </section>
       <h2>1. Pick a slide</h2>
       <div class="slides" id="im-slides"></div>
-      <h2 id="im-grid-h">2. Choose its picture</h2>
+      <section class="sound" id="im-sound" aria-labelledby="im-sound-h">
+        <h2 id="im-sound-h">2. Sound and video</h2>
+        <div class="sv-grid">
+          <div class="sv-row"><label for="sv-narr">Narration</label><select id="sv-narr"></select></div>
+          <div class="sv-row"><label for="sv-music">Music</label><select id="sv-music"></select></div>
+          <div class="sv-row"><label for="sv-vol">Music level</label><div class="sv-vol"><input type="range" id="sv-vol" min="0" max="100" step="5"><output id="sv-vol-out" for="sv-vol"></output></div><span class="sv-hint">100% is the level the page has used so far.</span></div>
+          <div class="sv-row"><label for="sv-video">Video</label><select id="sv-video"></select><label class="sv-check"><input type="checkbox" id="sv-vsound"> Play the video with its own sound, instead of the narration</label></div>
+        </div>
+        <div class="bar"><button type="button" class="btn" id="sv-hear">Hear this slide</button><span class="msg" id="sv-msg" role="status"></span></div>
+      </section>
+      <h2 id="im-grid-h">3. Choose its picture</h2>
       <div class="bar" style="margin-bottom:12px;">
         <label>Show <select id="im-filter">
           <option value="fit">What fits this slot</option>
@@ -122,6 +145,7 @@
 
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-media-upload.js"></script>
+  <script src="/public/depot-tabs.js"></script>
   <script>
     // Every Vegans Explore illustration in Sean's Higgsfield library (landscape,
     // Vegans Explore scenes only), plus the illustrations already on the site.
@@ -159,6 +183,19 @@
         PAGES[k].slides.push({ key: 'bg-mobile', label: 'Background, phone', bg: 'bg_mobile', def: '', defUrl: BG_DEFAULT });
       });
       var SLIDES = PAGES.cm.slides;
+      // What each page plays when a slide has no pick of its own. Mirrors the AUDIO
+      // table in /community-managers/onboarding.html and /partners/index.html.
+      var AB = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/';
+      function d(n, b) { return { narr: AB + n, bed: AB + 'beds/' + b + '-60.wav' }; }
+      var BUILT_IN = {
+        cm: { welcome: d('cm/sf/welcome-v4.mp3', 'sanctuary-stroll'), have: d('cm/sf/have-v4.mp3', 'earthy-reflections'), lead: d('cm/sf/lead-v4.mp3', 'vegan-rhythms'),
+          role: d('cm/sf/role-v4.mp3', 'green-bites'), month: d('cm/sf/month-v4.mp3', 'waste-not'), pulse: d('cm/sf/pulse-v4.mp3', 'midnight-sketches'),
+          season: d('cm/sf/season-v4.mp3', 'vegan-glow'), grow: d('cm/sf/grow-v4.mp3', 'concrete-daydreams'), join: d('cm/sf/join-v5.mp3', 'manifesto-whisper'),
+          apply: d('cm/sf/apply-v1.mp3', 'earthy-reflections-v2') },
+        partners: { problem: d('partners/sf/problem-v1.mp3', 'green-bites'), why: d('partners/sf/why-v1.mp3', 'sanctuary-stroll'), room: d('partners/sf/room-v1.mp3', 'vegan-glow'),
+          bring: d('partners/sf/bring-v1.mp3', 'earthy-reflections'), only: d('partners/sf/only-v1.mp3', 'concrete-daydreams'), seat: d('partners/sf/seat-v1.mp3', 'manifesto-whisper') }
+      };
+      var AUDIO_LIB = [], VIDEO_LIB = [], clips = {}, recipes = {};
       var LIB_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-media-library';
       var LIBRARY = [];
       // The older set (Higgsfield and site pictures) is reviewed once: the ones Sean keeps
@@ -210,6 +247,8 @@
             (d.skipped || []).forEach(function (r) { done[r] = 1; });
             (d.items || []).forEach(function (it) { if (it.source_ref) done[it.source_ref] = 1; });
             REVIEW = CANDIDATES.filter(function (c) { return !done[c.ref]; });
+            AUDIO_LIB = (d.items || []).filter(function (it) { return !it.archived && it.kind === 'audio'; });
+            VIDEO_LIB = (d.items || []).filter(function (it) { return !it.archived && it.kind === 'video'; });
             LIBRARY = (d.items || []).filter(function (it) { return !it.archived && (it.kind || 'image') === 'image'; }).map(function (it) {
               var place = { miami: 'Miami', broward: 'Broward', 'palm-beach': 'Palm Beach' }[it.place] || '';
               var alias = it.source_ref ? it.source_ref.replace(/^(higgsfield|site):/, '') : '';
@@ -253,7 +292,8 @@
           return '<button type="button" class="slide-tile" data-i="' + i + '" aria-pressed="' + (i === sel) + '"><img src="' + esc(st.url) + '" alt=""><b>' + (s.bg ? '' : (i + 1) + '. ') + esc(s.label) + '</b><small>' + (current[s.key] ? 'Your pick' : 'Current') + '</small></button>';
         }).join('');
         $('im-slides').querySelectorAll('.slide-tile').forEach(function (b) { b.onclick = function () { sel = +b.getAttribute('data-i'); render(); }; });
-        $('im-grid-h').textContent = '2. Choose the picture for ' + slotName(sel) + ': ' + SLIDES[sel].label;
+        $('im-grid-h').textContent = (SLIDES[sel].bg ? '2. ' : '3. ') + 'Choose the picture for ' + slotName(sel) + ': ' + SLIDES[sel].label;
+        renderSound();
         var list = shown();
         $('im-grid').innerHTML = list.length ? list.map(function (c, i) {
           var used = usedBy(c), here = used.indexOf(sel) >= 0;
@@ -277,6 +317,69 @@
           else $('im-msg').textContent = d._status === 403 ? 'Admins only.' : 'That did not save. Try again.';
         }).catch(function () { busy = false; $('im-msg').textContent = 'Could not connect. Try again.'; });
       }
+      // ---- 2. Sound and video for the chosen slide (the Depot, Phase 1).
+      var hear = { voice: new Audio(), bed: new Audio(), on: false };
+      function stopHear() { hear.voice.pause(); hear.bed.pause(); hear.on = false; $('sv-hear').textContent = 'Hear this slide'; }
+      hear.voice.addEventListener('ended', stopHear);
+      function short(n) { return String(n || 'Audio').replace(/^Narration: /, ''); }
+      function nameOf(url) { for (var i = 0; i < AUDIO_LIB.length; i++) if (AUDIO_LIB[i].url === url) return short(AUDIO_LIB[i].source_name); return url ? url.split('/').pop() : ''; }
+      function builtIn() { var b = BUILT_IN[$('im-page').value] || {}; return b[SLIDES[sel].key] || {}; }
+      function recipe() { return recipes[SLIDES[sel].key] || {}; }
+      function opt(v, t, on) { return '<option value="' + esc(v) + '"' + (on ? ' selected' : '') + '>' + esc(t) + '</option>'; }
+      function group(label, list, cur) { return list.length ? '<optgroup label="' + esc(label) + '">' + list.map(function (it) { return opt(it.url, short(it.source_name) + (it.duration ? ' (' + Math.round(it.duration) + 's)' : ''), it.url === cur); }).join('') + '</optgroup>' : ''; }
+      function renderSound() {
+        var s = SLIDES[sel], box = $('im-sound');
+        box.hidden = !!s.bg; if (s.bg) { stopHear(); return; }
+        var pg = $('im-page').value, key = s.key, bi = builtIn(), r = recipe(), c = clips[key];
+        $('im-sound-h').textContent = '2. Sound and video for ' + slotName(sel) + ': ' + s.label;
+        var narr = AUDIO_LIB.filter(function (it) { return (it.uses || []).indexOf('narration') >= 0 || !(it.uses || []).length; });
+        var mine = narr.filter(function (it) { return (it.labels || []).indexOf(pg) >= 0 && (it.labels || []).indexOf(key) >= 0; });
+        var rest = narr.filter(function (it) { return mine.indexOf(it) < 0; });
+        var curN = c && c.url ? c.url : '';
+        var known = !curN || narr.some(function (it) { return it.url === curN; });
+        $('sv-narr').innerHTML = opt('', 'Built in: ' + nameOf(bi.narr), !curN) + (known ? '' : opt(curN, 'Current: ' + (c.source_name ? short(c.source_name) : nameOf(curN)), true)) +
+          group('Takes for this slide', mine, curN) + group('Other narration', rest, curN);
+        var music = AUDIO_LIB.filter(function (it) { return (it.uses || []).indexOf('music') >= 0; });
+        var curM = r.music_off ? 'off' : (r.music_url || '');
+        $('sv-music').innerHTML = opt('', 'Built in: ' + nameOf(bi.bed), curM === '') + opt('off', 'No music on this slide', curM === 'off') + group('Music in the library', music, curM);
+        var vol = r.music_vol == null ? 100 : Math.round(+r.music_vol * 100);
+        $('sv-vol').value = vol; $('sv-vol-out').textContent = vol + '%'; $('sv-vol').disabled = curM === 'off';
+        $('sv-video').innerHTML = opt('', VIDEO_LIB.length ? 'No video' : 'No video (add videos in the Library)', !r.video_url) + group('Videos in the library', VIDEO_LIB, r.video_url || '');
+        $('sv-vsound').checked = !!r.video_sound; $('sv-vsound').disabled = !r.video_url;
+      }
+      function saveSound(body, done) {
+        var key = SLIDES[sel].key;
+        $('sv-msg').textContent = 'Saving...';
+        api(Object.assign({ key: key }, body)).then(function (d) {
+          if (!d.ok) { $('sv-msg').textContent = d._status === 403 ? 'Admins only.' : 'That did not save. Try again.'; renderSound(); return; }
+          done(d, key); $('sv-msg').textContent = 'Saved. It is live.'; renderSound();
+        }).catch(function () { $('sv-msg').textContent = 'Could not connect. Try again.'; renderSound(); });
+      }
+      function setRecipe(body) { stopHear(); saveSound(Object.assign({ action: 'set_slide' }, body), function (d, key) { recipes[key] = d.slide; }); }
+      $('sv-narr').addEventListener('change', function (e) {
+        stopHear();
+        var url = e.target.value, it = AUDIO_LIB.filter(function (x) { return x.url === url; })[0];
+        if (!url) saveSound({ action: 'clear_narration' }, function (d, key) { delete clips[key]; });
+        else saveSound({ action: 'set_narration', url: url, dur: it && it.duration, source_name: it && it.source_name }, function (d, key) { clips[key] = { url: url, dur: d.dur, source_name: it && it.source_name }; });
+      });
+      $('sv-music').addEventListener('change', function (e) {
+        var v = e.target.value;
+        setRecipe(v === 'off' ? { music_off: true } : { music_off: false, music_url: v || null });
+      });
+      $('sv-vol').addEventListener('input', function (e) { $('sv-vol-out').textContent = e.target.value + '%'; if (hear.on) hear.bed.volume = e.target.value / 100; });
+      $('sv-vol').addEventListener('change', function (e) { setRecipe({ music_vol: +e.target.value / 100 }); });
+      $('sv-video').addEventListener('change', function (e) { setRecipe(e.target.value ? { video_url: e.target.value } : { video_url: null, video_sound: false }); });
+      $('sv-vsound').addEventListener('change', function (e) { setRecipe({ video_sound: e.target.checked }); });
+      $('sv-hear').addEventListener('click', function () {
+        if (hear.on) { stopHear(); return; }
+        var bi = builtIn(), r = recipe(), c = clips[SLIDES[sel].key];
+        var voice = c && c.url ? c.url : bi.narr, bed = r.music_off ? null : (r.music_url || bi.bed);
+        if (!voice) { $('sv-msg').textContent = 'This slide has no narration yet.'; return; }
+        hear.on = true; $('sv-hear').textContent = 'Stop';
+        if (bed) { hear.bed.src = bed; hear.bed.loop = true; hear.bed.volume = r.music_vol == null ? 1 : +r.music_vol; hear.bed.currentTime = 0; hear.bed.play().catch(function () {}); }
+        hear.voice.src = voice; hear.voice.play().catch(stopHear);
+      });
+
       var importing = false;
       $('im-review-grid').addEventListener('change', function (e) {
         var i = e.target.getAttribute('data-tick'); if (i === null) return;
@@ -335,7 +438,12 @@
         current = {};
         SLIDES = PAGES[$('im-page').value].slides;
         if (sel >= SLIDES.length) sel = 0;
-        api({ action: 'panels' }).then(function (d) { (d.panels || []).forEach(function (p) { current[p.clip_key] = p; }); render(); }).catch(render);
+        clips = {}; recipes = {}; stopHear();
+        Promise.all([
+          api({ action: 'panels' }).then(function (d) { (d.panels || []).forEach(function (p) { current[p.clip_key] = p; }); }),
+          api({ action: 'list' }).then(function (d) { (d.clips || []).forEach(function (c) { clips[c.clip_key] = c; }); }),
+          api({ action: 'slides' }).then(function (d) { (d.slides || []).forEach(function (r) { recipes[r.clip_key] = r; }); })
+        ]).then(render, render);
       }
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);

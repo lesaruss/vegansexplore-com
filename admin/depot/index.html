@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Media Library | Vegans Explore</title>
+  <title>The Depot | Vegans Explore</title>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -71,9 +71,10 @@
 
   <div class="wrap">
     <p class="eyebrow">Admin</p>
-    <h1>Media library</h1>
+    <h1>The Depot</h1>
+    <div id="depot-tabs"></div>
     <p class="sub">Every picture, sound and video we keep for Vegans Explore, in our own storage so nothing depends on Higgsfield. Drop a folder of any mix of files, then tag them below. Pictures: Background (desktop), Background (phone) or Slide. Audio: Narration or Music. Video: Slide video. Add the place where it fits.</p>
-    <p class="sub" style="margin-top:-8px;">Put them on a page: <a href="/admin/onboarding-images">slide pictures and backgrounds</a> &middot; <a href="/admin/onboarding-audio">slide narration</a></p>
+    <p class="sub" style="margin-top:-8px;">Put them on a page in <a href="/admin/depot/onboarding">Onboarding</a>: each slide's picture, narration, music and video.</p>
     <div id="ml-gate" class="gate" hidden></div>
     <div id="ml-app" hidden>
       <div class="drop" id="ml-drop" tabindex="0" role="button" aria-label="Drop a folder of images, or click to choose files">
@@ -135,6 +136,7 @@
 
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-media-upload.js"></script>
+  <script src="/public/depot-tabs.js"></script>
   <script>
     (function () {
       // What each kind of media can be tagged as.
@@ -197,7 +199,7 @@
       function render() {
         var list = visible();
         $('ml-count').textContent = list.length + ' of ' + items.length;
-        $('ml-grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">' + (items.length ? 'Nothing matches these filters.' : 'The library is empty. Drop your folder above, or sort your older pictures at <a href="/admin/onboarding-images">Onboarding images</a>.') + '</p>';
+        $('ml-grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">' + (items.length ? 'Nothing matches these filters.' : 'The library is empty. Drop your folder above, or sort your older pictures in <a href="/admin/depot/onboarding">Onboarding</a>.') + '</p>';
         selBar();
       }
       function selBar() {
