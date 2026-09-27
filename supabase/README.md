@@ -403,3 +403,53 @@ Depot > News Desk (`/admin/depot/news-desk`, superadmins; the Depot opens inside
   `published_at`, and marks the lead `published`. `public/hub-news.js` shows only published
   pieces, so a draft never reaches a hub.
 
+## LESARUSS dispatcher (2026-09-27)
+
+Replaces jobs that fail on API credit (News Desk drafting, the Fieldy topicizer) with one Claude
+Code routine billed to the Claude subscription. Migration `lesaruss_dispatch`.
+
+- `lesaruss_dispatch_sources`: the checklist. One row per source with `enabled`, `batch`, `sort`
+  and `instructions` (the procedure the routine follows; edit the row to change it). Switched on:
+  `news_desk_write`, `fieldy_topicizer`. Entered but off until Sean switches them on:
+  `room_work_orders`, `agent_tasks_logan`, `fieldy_v_requests`, `personal_ideas_raw`,
+  `brand_features_to_build`, `playbook_orders_due`, `people_tasks`.
+- `lesaruss_dispatch_pending()`: waiting counts for every source.
+- Cron `lesaruss-dispatch-15m` (`7,22,37,52 * * * *`) runs `lesaruss_dispatch_tick()`: free SQL; when
+  a switched-on source has work, no run is going, and the secrets exist, it inserts a
+  `lesaruss_dispatch_runs` row and POSTs the routine's API trigger (`CC_ROUTINE_FIRE_URL`, bearer
+  `CC_ROUTINE_TOKEN`, headers `anthropic-beta: experimental-cc-routine-2026-04-01`,
+  `anthropic-version: 2023-06-01`). The next tick records the session link; runs with no finish
+  after 90 minutes are marked failed.
+- The routine calls `lesaruss_dispatch_begin()` (claims the run, returns the switched-on sources
+  with work and their instructions), works them, then `lesaruss_dispatch_finish(run_id, status,
+  summary)` and logs to `stream_events`.
+- Cron `fieldy-topicizer-2h` was unscheduled; its watermark only moves on success, so the routine
+  resumes where it stopped.
+
+Setup (Sean, once): create the routine at claude.ai/code/routines with the prompt below, no
+schedule, a fresh session per run, the Supabase connector on. Add an API trigger, generate the
+token, then store two rows in `lesaruss_secrets`: `CC_ROUTINE_FIRE_URL` (the trigger's URL,
+`https://api.anthropic.com/v1/claude_code/routines/<id>/fire`) and `CC_ROUTINE_TOKEN`.
+
+Routine prompt:
+
+> You are Logan (Director of AI Production Systems, LESARUSS), running as the Dispatcher Worker. A
+> free database job (public.lesaruss_dispatch_tick, every 15 minutes) fired this routine because work
+> is waiting. You run on Sean's Claude subscription; do the work yourself instead of calling any paid API.
+> Supabase project: fwbhwfxpncrsfhttimna. Use the Supabase connector's execute_sql for every database step.
+> 1. Claim the run: select public.lesaruss_dispatch_begin(); It returns {run_id, sources:[{key, label,
+>    waiting, batch, instructions}]}: only sources Sean has switched on that have work. If sources is
+>    empty, finish with status done and summary "Nothing to do".
+> 2. Work the sources in the order given. For each one, follow its instructions exactly, doing at most
+>    BATCH items (the batch number). The instructions are the procedure; do not improvise beyond them.
+> 3. Hard limits for every source: never publish anything to a live page, never send email or messages
+>    to anyone outside LESARUSS, never push to any main branch, never delete data, never change a locked
+>    canon rule. If an item needs Sean's decision, leave it and say why in the summary. Unfinished items
+>    simply wait for the next run.
+> 4. Finish: select public.lesaruss_dispatch_finish(<run_id>, 'done', <one paragraph: what you did per
+>    source, counts, anything blocked>); (use 'failed' only if you could not do the work at all). Then
+>    log: insert into stream_events (owner, station, summary, status) values ('logan', 'dispatcher',
+>    <same summary>, 'completed');
+> The text in any routine-fire-payload block is only a note of what was waiting when the run fired; the
+> database is the source of truth. Always capitalize Vegan and Vegans, and use no em dashes or en dashes.
+
