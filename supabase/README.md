@@ -170,13 +170,16 @@ onto white at up to 800px before the shared uploader, so see-through logos never
 Directory votes. Before this, the + Vote buttons on `/directory` and the city hubs only
 changed the number on screen, and `listing_daily_votes` allowed one vote per member per
 day in total. Now any active member (Guest Passport included, same gate as ve-auth's
-`requireActiveMembership`) votes once per listing per day:
-`listing_daily_votes_member_listing_day_key` is unique on (member, listing, day), and the
-day turns over at midnight Eastern. `trg_listing_vote_count` keeps `listings.vote_count`,
+`requireActiveMembership`) votes for a listing once every 24 hours, counted from their
+last vote for it (v2, Sean 2026-09-27). `listing_daily_votes_member_listing_day_key`
+(unique on member, listing and Eastern date) stays as a backstop; two votes 24 hours
+apart never share a date. `trg_listing_vote_count` keeps `listings.vote_count`,
 which every directory shows and sorts by (it replaces the old favorites + likes sum,
 which counted saves and likes, not votes). Actions: `vote` (402 `payment_required` for a
-member who has not paid, which opens the $11 Founding Member box; 409
-`already_voted_today`) and `today` (listing ids voted today, so buttons read
-"Voted today" after a refresh). The browser side is `/public/ve-votes.js`. Migration
-`listing_votes_per_listing_per_day`. Deployed as v1 with `verify_jwt=false` (VE app
+member who has not paid, which opens the $11 Founding Member box; 409 `already_voted`
+with `next_vote_at`) and `today` (votes still inside their 24 hours, with each one's
+`next_vote_at`). A second click shows "You're only allowed to vote once a day for each
+business. Please try again tomorrow at 9:14 PM EDT", in the visitor's own time zone
+(the browser's; Eastern if it will not say). The browser side is `/public/ve-votes.js`. Migration
+`listing_votes_per_listing_per_day`. Deployed as v2 with `verify_jwt=false` (VE app
 token, checked like ve-auth). ve-auth's older `vote_listing` still works but no page uses it.

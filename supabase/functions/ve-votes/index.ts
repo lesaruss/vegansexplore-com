@@ -1,16 +1,20 @@
-// ve-votes: directory votes (Sean, 2026-09-27). Any signed-in member votes once per listing
-// per day; the vote sticks and the count is real. Before this, the + Vote buttons on
-// /directory and the city hubs only changed the number on screen.
+// ve-votes: directory votes (Sean, 2026-09-27). Any signed-in member votes for a listing once
+// every 24 hours, counted from their last vote for it; the vote sticks and the count is real.
+// Before this, the + Vote buttons on /directory and the city hubs only changed the number on
+// screen.
 //
 // POST { action: 'vote', listing_id }   Authorization: Bearer <ve_token>
-//   -> { ok, vote_count }  |  409 already_voted_today  |  402 payment_required (not a member yet)
+//   -> { ok, vote_count, next_vote_at }
+//   |  409 { error: 'already_voted', next_vote_at }   within 24 hours of their last vote for it
+//   |  402 payment_required (not a member yet)
 // POST { action: 'today' }              Authorization: Bearer <ve_token>
-//   -> { listing_ids }  what this member has already voted for today
+//   -> { listing_ids, next: { listing_id: next_vote_at } }  votes still inside their 24 hours
 //
-// A vote is a row in listing_daily_votes (unique per member, listing and day; the day turns
-// over at midnight Eastern). The trg_listing_vote_count trigger keeps listings.vote_count,
-// which every directory shows and sorts by. verify_jwt is false: the VE app token is checked
-// here the same way ve-auth and ve-media-library check it.
+// next_vote_at is an ISO time; the browser shows it in the visitor's own time zone. A vote is
+// a row in listing_daily_votes; its unique (member, listing, vote_date) index stays as a
+// backstop (two votes 24 hours apart never share a date). The trg_listing_vote_count trigger
+// keeps listings.vote_count, which every directory shows and sorts by. verify_jwt is false:
+// the VE app token is checked here the same way ve-auth and ve-media-library check it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -44,6 +48,8 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 const todayEastern = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+const DAY_MS = 24 * 60 * 60 * 1000;
+const nextAt = (createdAt: string) => new Date(new Date(createdAt).getTime() + DAY_MS).toISOString();
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -56,9 +62,12 @@ Deno.serve(async (req) => {
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
 
   if (body.action === 'today') {
-    const { data, error } = await db.from('listing_daily_votes').select('listing_id').eq('member_id', memberId).eq('vote_date', todayEastern());
+    const since = new Date(Date.now() - DAY_MS).toISOString();
+    const { data, error } = await db.from('listing_daily_votes').select('listing_id, created_at').eq('member_id', memberId).gt('created_at', since);
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
-    return json({ listing_ids: (data || []).map((r: any) => r.listing_id) });
+    const next: Record<string, string> = {};
+    for (const r of data || []) { const n = nextAt(r.created_at); if (!next[r.listing_id] || n > next[r.listing_id]) next[r.listing_id] = n; }
+    return json({ listing_ids: Object.keys(next), next });
   }
 
   if (body.action === 'vote') {
@@ -71,13 +80,21 @@ Deno.serve(async (req) => {
     }
     const { data: listing } = await db.from('listings').select('id').eq('id', id).eq('status', 'approved').maybeSingle();
     if (!listing) return json({ error: 'not_found' }, 404);
-    const { error } = await db.from('listing_daily_votes').insert({ member_id: memberId, listing_id: id, vote_date: todayEastern() });
+    // Once every 24 hours, from their last vote for this listing.
+    const { data: last } = await db.from('listing_daily_votes').select('created_at').eq('member_id', memberId).eq('listing_id', id)
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (last && Date.now() - new Date(last.created_at).getTime() < DAY_MS) return json({ error: 'already_voted', next_vote_at: nextAt(last.created_at) }, 409);
+    const { data: row, error } = await db.from('listing_daily_votes').insert({ member_id: memberId, listing_id: id, vote_date: todayEastern() }).select('created_at').single();
     if (error) {
-      if (error.code === '23505') return json({ error: 'already_voted_today' }, 409);
+      // The date backstop, or two taps landing at once: report the vote that is already there.
+      if (error.code === '23505') {
+        const { data: again } = await db.from('listing_daily_votes').select('created_at').eq('member_id', memberId).eq('listing_id', id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+        return json({ error: 'already_voted', next_vote_at: again ? nextAt(again.created_at) : null }, 409);
+      }
       return json({ error: 'vote_failed', message: error.message }, 500);
     }
     const { data: counted } = await db.from('listings').select('vote_count').eq('id', id).maybeSingle();
-    return json({ ok: true, vote_count: counted?.vote_count ?? null });
+    return json({ ok: true, vote_count: counted?.vote_count ?? null, next_vote_at: nextAt(row.created_at) });
   }
 
   return json({ error: 'unknown_action' }, 400);

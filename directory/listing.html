@@ -1184,24 +1184,26 @@ function renderListing(l){
     if(!voteBtn || !window.VEAuth || !window.VEVotes) return;
     var listingId = voteBtn.getAttribute('data-listing-id');
     // n: the new total from the server, or null to keep the number shown (already voted today).
-    function paintVoted(n, fresh){
+    // next: when this member can vote for it again (24 hours after their last vote).
+    function paintVoted(n, fresh, next){
       var badge = document.getElementById('vote-badge');
       var count = n != null ? n : ((badge ? parseInt(badge.textContent, 10) : 0) || 0);
       voteBtn.dataset.voted = '1';
-      voteBtn.title = 'You can vote for this one again tomorrow.';
-      voteBtn.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted today<span class="vote-badge" id="vote-badge">' + count + '</span>';
+      voteBtn.dataset.next = next || '';
+      voteBtn.title = next ? 'You can vote for this one again ' + VEVotes.nextText(next) + '.' : '';
+      voteBtn.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted<span class="vote-badge" id="vote-badge">' + count + '</span>';
       voteBtn.style.background = '#2d7d31';
       var cv = document.getElementById('community-votes');
       if(cv){ cv.textContent = count; }
       var cl = document.getElementById('community-lesars');
       if(cl && fresh){ cl.textContent = (parseInt(cl.textContent)||0) + 1; }
     }
-    // Already voted today? Show it after a refresh too.
+    // Voted in the last 24 hours? Show it after a refresh too.
     if(VEAuth.isLoggedIn() && window.VEVotes){
-      VEVotes.today().then(function(d){ if(d && (d.listing_ids||[]).indexOf(listingId) >= 0) paintVoted(null); }).catch(function(){});
+      VEVotes.today().then(function(d){ var n = d && d.next && d.next[listingId]; if(VEVotes.tooSoon(n)) paintVoted(null, false, n); }).catch(function(){});
     }
     voteBtn.addEventListener('click', function(){
-      if(voteBtn.dataset.voted) return;
+      if(voteBtn.dataset.voted && VEVotes.tooSoon(voteBtn.dataset.next)){ VEVotes.notice(VEVotes.onceMessage(voteBtn.dataset.next)); return; }
       if(!VEAuth.isLoggedIn()){
         VEAuth.showAuthModal('Sign in to vote for this business.', function(){ window.location.reload(); });
         return;
@@ -1209,9 +1211,9 @@ function renderListing(l){
       voteBtn.disabled = true;
       VEVotes.cast(listingId).then(function(d){
         voteBtn.disabled = false;
-        if(d && d.error === 'already_voted_today'){ paintVoted(null); return; }
+        if(d && (d.error === 'already_voted' || d.error === 'already_voted_today')){ paintVoted(null, false, d.next_vote_at); VEVotes.notice(VEVotes.onceMessage(d.next_vote_at)); return; }
         if(d && d.error){ return; }
-        paintVoted(d && d.vote_count != null ? d.vote_count : null, true);
+        paintVoted(d && d.vote_count != null ? d.vote_count : null, true, d && d.next_vote_at);
       }).catch(function(){ voteBtn.disabled = false; });
     });
   })();
