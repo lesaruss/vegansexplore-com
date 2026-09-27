@@ -65,6 +65,9 @@
     .pill.no{background:#fbeeec;color:#8a1c12;}
     .pill.test{background:#fff4e2;color:#6b3f00;}
     .acts{display:flex;flex-wrap:wrap;gap:6px;}
+    .launch{display:flex;flex-wrap:wrap;gap:8px 18px;}
+    .launch label{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:700;min-height:40px;}
+    .launch input{width:20px;height:20px;}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     .warn{background:#fff4e2;border:1px solid #e8c48a;border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:700;color:#6b3f00;margin-bottom:12px;}
     [hidden]{display:none !important;}
@@ -82,9 +85,15 @@
     <p class="eyebrow no-print">The Depot</p>
     <h1 class="no-print">Tours</h1>
     <div id="depot-tabs"></div>
-    <p class="sub no-print">Monthly in South Florida: about 12 guests, $50 each, three tastings in one neighborhood, then an attraction. Build the tour here, set it On sale, and it shows at <a href="/tours">vegansexplore.com/tours</a> and in the South Florida hub's Events. VE Verified Plus businesses are first in line for tour stops, so they are listed first.</p>
+    <p class="sub no-print">Monthly in a city: a van of up to 12 guests, $50 each, three tastings in one neighborhood, then an attraction. Build the tour here and set it On sale; once its city is launched it shows at <a href="/tours">vegansexplore.com/tours</a> and in that hub's Events. VE Verified Plus businesses are first in line for tour stops, so they are listed first.</p>
     <div id="t-gate" class="gate" hidden></div>
     <div id="t-app" hidden>
+      <section class="panel no-print">
+        <h2>Launch</h2>
+        <p class="sub">Planned for 2027, one city at a time. Until a city is switched on, its tours stay a preview for Community Managers and superadmins (listed on their dashboard): the public sees "Coming in 2027" and nothing is added to the hub's Events.</p>
+        <div class="launch" id="launch"></div>
+        <p class="msg" id="l-msg" role="status"></p>
+      </section>
       <section class="panel no-print">
         <h2>Waiver</h2>
         <p class="sub">Every booking signs this text. Tickets stay closed until it is saved. Changing the wording starts a new version; each ticket records the version its buyer signed.</p>
@@ -102,10 +111,11 @@
         </div>
         <div class="form">
           <div class="wide"><label for="f-title">Title</label><input id="f-title" placeholder="Wynwood Tasting Tour"></div>
-          <div><label for="f-city">City</label><select id="f-city"></select></div>
+          <div><label for="f-hub">Hub</label><select id="f-hub"></select></div>
+          <div><label for="f-city">City</label><input id="f-city" list="f-cities" placeholder="Miami"><datalist id="f-cities"></datalist></div>
           <div><label for="f-hood">Neighborhood</label><input id="f-hood" placeholder="Wynwood"></div>
-          <div><label for="f-start">Starts (Eastern)</label><input type="datetime-local" id="f-start"></div>
-          <div><label for="f-end">Ends (Eastern)</label><input type="datetime-local" id="f-end"></div>
+          <div><label for="f-start">Starts (<span class="tzl">local</span>)</label><input type="datetime-local" id="f-start"></div>
+          <div><label for="f-end">Ends (<span class="tzl">local</span>)</label><input type="datetime-local" id="f-end"></div>
           <div><label for="f-price">Price a guest ($)</label><input type="number" id="f-price" min="0" step="1" value="50"></div>
           <div><label for="f-cap">Seats</label><input type="number" id="f-cap" min="1" max="60" value="12"></div>
           <div><label for="f-host">Host</label><input id="f-host" placeholder="Who is on board"></div>
@@ -113,8 +123,8 @@
         </div>
         <h3>Three restaurants</h3>
         <div class="slots" id="slots"></div>
-        <h3>Suggested for this city (Plus first, then Verified)</h3>
-        <div class="sugg" id="sugg"><span class="meta">Pick a city.</span></div>
+        <h3>Suggested for this hub (Plus first, then Verified)</h3>
+        <div class="sugg" id="sugg"><span class="meta">Pick a hub.</span></div>
         <h3>The rest of the day</h3>
         <div class="form">
           <div class="wide"><label for="f-attr">Attraction</label><input id="f-attr" placeholder="Wynwood Walls"></div>
@@ -144,30 +154,36 @@
     </div>
   </div>
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script>
     (function () {
       var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', FN = SB + '/functions/v1/ve-tours';
       var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-      // Same cities as the South Florida hub (SF_CITIES in /communities/south-florida/index.html).
-      var SF = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
       var $ = function (id) { return document.getElementById(id); };
-      var tours = [], tour = null, stops = [null, null, null], tickets = [], waiver = null;
+      var tours = [], tour = null, stops = [null, null, null], tickets = [], waiver = null, launched = [];
+      function hub() { return VE_HUB($('f-hub').value); }
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function msg(id, text, bad) { $(id).className = 'msg' + (bad ? ' bad' : ''); $(id).textContent = text; }
-      // datetime-local values are Eastern time, whatever the browser's zone.
-      function nyToIso(v) {
+      // datetime-local values are in the hub's own time zone, whatever the browser's zone.
+      function localToIso(v, tz) {
         if (!v) return null;
         var g = new Date(v + ':00Z');
-        var ny = new Date(g.toLocaleString('en-US', { timeZone: 'America/New_York' })), utc = new Date(g.toLocaleString('en-US', { timeZone: 'UTC' }));
-        return new Date(g.getTime() + (utc - ny)).toISOString();
+        var there = new Date(g.toLocaleString('en-US', { timeZone: tz })), utc = new Date(g.toLocaleString('en-US', { timeZone: 'UTC' }));
+        return new Date(g.getTime() + (utc - there)).toISOString();
       }
-      function isoToNy(iso) { return iso ? new Date(iso).toLocaleString('sv-SE', { timeZone: 'America/New_York' }).replace(' ', 'T').slice(0, 16) : ''; }
-      function nice(iso) { return new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }); }
+      function isoToLocal(iso, tz) { return iso ? new Date(iso).toLocaleString('sv-SE', { timeZone: tz }).replace(' ', 'T').slice(0, 16) : ''; }
+      function nice(iso, tz) { return new Date(iso).toLocaleString('en-US', { timeZone: tz || 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }); }
       function tierPill(t) { return t === 'plus' ? '<span class="pill plus">Plus</span>' : t ? '<span class="pill ver">Verified</span>' : ''; }
 
-      $('f-city').innerHTML = SF.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');
+      $('f-hub').innerHTML = VE_HUBS.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
+      function hubChanged() {
+        var h = hub();
+        $('f-cities').innerHTML = h.places.map(function (c) { return '<option value="' + esc(c) + '">'; }).join('');
+        document.querySelectorAll('.tzl').forEach(function (x) { x.textContent = new Date().toLocaleString('en-US', { timeZone: h.tz, timeZoneName: 'short' }).split(' ').pop(); });
+        loadSugg();
+      }
 
       function renderSlots() {
         $('slots').innerHTML = stops.map(function (s, i) {
@@ -187,11 +203,11 @@
         var v = e.target.value.trim(), ul = document.querySelector('[data-res="' + i + '"]');
         clearTimeout(timer); if (v.length < 2) { ul.hidden = true; return; }
         timer = setTimeout(function () {
-          fetch(SB + '/rest/v1/listings?select=id,name,address_city,ve_verified_tier&status=eq.approved&address_city=in.(' + SF.map(function (c) { return '"' + c + '"'; }).join(',') + ')&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=15', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+          fetch(SB + '/rest/v1/listings?select=id,name,address_city,ve_verified_tier&status=eq.approved&' + hub().filter + '&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=15', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
             .then(function (r) { return r.json(); }).then(function (rows) {
               rows = (rows || []).sort(function (a, b) { var r = function (x) { return x.ve_verified_tier === 'plus' ? 0 : x.ve_verified_tier ? 1 : 2; }; return r(a) - r(b); });
               rows.forEach(function (l) { found[l.id] = l; });
-              ul.innerHTML = rows.length ? rows.map(function (l) { return '<li><button type="button" data-pick="' + esc(l.id) + '">' + esc(l.name) + ' <span class="meta">' + esc(l.address_city || '') + '</span> ' + tierPill(l.ve_verified_tier) + '</button></li>'; }).join('') : '<li class="meta" style="padding:8px 10px">No match in the South Florida directory.</li>';
+              ul.innerHTML = rows.length ? rows.map(function (l) { return '<li><button type="button" data-pick="' + esc(l.id) + '">' + esc(l.name) + ' <span class="meta">' + esc(l.address_city || '') + '</span> ' + tierPill(l.ve_verified_tier) + '</button></li>'; }).join('') : '<li class="meta" style="padding:8px 10px">No match in the ' + esc(hub().name) + ' directory.</li>';
               ul.hidden = false;
             });
         }, 250);
@@ -202,50 +218,53 @@
       });
 
       function loadSugg() {
-        var city = $('f-city').value; $('sugg').innerHTML = '<span class="meta">Loading...</span>';
-        api({ action: 'admin_plus', city: city }).then(function (d) {
+        var h = hub(); $('sugg').innerHTML = '<span class="meta">Loading...</span>';
+        api({ action: 'admin_plus', cities: h.match.cities || [], states: h.match.states || [] }).then(function (d) {
           var bs = d.businesses || []; bs.forEach(function (l) { found[l.id] = l; });
-          $('sugg').innerHTML = bs.length ? bs.map(function (l) { return '<button type="button" data-pick="' + esc(l.id) + '" title="' + esc([l.ve_contact_name, l.ve_contact_phone || l.phone].filter(Boolean).join(', ')) + '">' + esc(l.name) + ' ' + tierPill(l.ve_verified_tier) + '</button>'; }).join('') : '<span class="meta">No VE Verified businesses in ' + esc(city) + ' yet. Search any business above.</span>';
+          $('sugg').innerHTML = bs.length ? bs.map(function (l) { return '<button type="button" data-pick="' + esc(l.id) + '" title="' + esc([l.ve_contact_name, l.ve_contact_phone || l.phone].filter(Boolean).join(', ')) + '">' + esc(l.name) + ' ' + tierPill(l.ve_verified_tier) + '</button>'; }).join('') : '<span class="meta">No VE Verified businesses in ' + esc(h.name) + ' yet. Search any business above.</span>';
         });
       }
-      $('f-city').addEventListener('change', loadSugg);
+      $('f-hub').addEventListener('change', hubChanged);
 
       function fill(t) {
         t = t || {};
-        $('f-title').value = t.title || ''; $('f-city').value = t.city || 'Miami'; $('f-hood').value = t.neighborhood || '';
-        $('f-start').value = isoToNy(t.starts_at); $('f-end').value = isoToNy(t.ends_at);
+        $('f-hub').value = t.community_slug || 'south-florida';
+        var tz = hub().tz;
+        $('f-title').value = t.title || ''; $('f-city').value = t.city || ''; $('f-hood').value = t.neighborhood || '';
+        $('f-start').value = isoToLocal(t.starts_at, tz); $('f-end').value = isoToLocal(t.ends_at, tz);
         $('f-price').value = t.price_cents != null ? t.price_cents / 100 : 50; $('f-cap').value = t.capacity || 12; $('f-host').value = t.host_name || '';
         $('f-status').value = t.status || 'draft'; $('f-attr').value = t.attraction || ''; $('f-pick').value = t.pickup || ''; $('f-drop').value = t.dropoff || '';
         $('f-rain').value = t.rain_plan || ''; $('f-desc').value = t.description || ''; $('f-img').value = t.image_url || ''; $('f-notes').value = t.notes || '';
         stops = [0, 1, 2].map(function (i) { var s = (t.stops || [])[i]; return s ? { listing_id: s.listing_id, name: s.name, tier: null } : null; });
-        renderSlots(); loadSugg();
+        renderSlots(); hubChanged();
         $('view').hidden = !t.id; if (t.id) $('view').href = '/tours?id=' + t.id;
       }
       function renderPick() {
-        $('pick').innerHTML = tours.length ? tours.map(function (t) { return '<option value="' + esc(t.id) + '"' + (tour && tour.id === t.id ? ' selected' : '') + '>' + esc(nice(t.starts_at)) + ': ' + esc(t.title) + ' (' + esc(t.status.replace('_', ' ')) + ', ' + t.paid + '/' + t.capacity + ')</option>'; }).join('') : '<option value="">No tours yet</option>';
+        $('pick').innerHTML = tours.length ? tours.map(function (t) { return '<option value="' + esc(t.id) + '"' + (tour && tour.id === t.id ? ' selected' : '') + '>' + esc(nice(t.starts_at, VE_HUB(t.community_slug).tz)) + ', ' + esc(VE_HUB(t.community_slug).name) + ': ' + esc(t.title) + ' (' + esc(t.status.replace('_', ' ')) + ', ' + t.paid + '/' + t.capacity + ')</option>'; }).join('') : '<option value="">No tours yet</option>';
       }
       function select(t) { tour = t; fill(t); renderPick(); $('r-panel').hidden = !t; if (t) loadRoster(); }
       $('pick').addEventListener('change', function () { select(tours.filter(function (t) { return t.id === $('pick').value; })[0] || null); });
       $('new').onclick = function () { select(null); msg('f-msg', 'New tour: fill it in and save as a draft.'); };
 
       $('f-save').onclick = function () {
-        var t = { id: tour && tour.id, title: $('f-title').value, city: $('f-city').value, neighborhood: $('f-hood').value, starts_at: nyToIso($('f-start').value), ends_at: nyToIso($('f-end').value),
+        var tz = hub().tz;
+        var t = { id: tour && tour.id, community_slug: $('f-hub').value, title: $('f-title').value, city: $('f-city').value, neighborhood: $('f-hood').value, starts_at: localToIso($('f-start').value, tz), ends_at: localToIso($('f-end').value, tz),
           price_cents: Math.round(+$('f-price').value * 100), capacity: +$('f-cap').value, host_name: $('f-host').value, status: $('f-status').value,
           stops: stops.filter(Boolean).map(function (s) { return { listing_id: s.listing_id, name: s.name }; }),
           attraction: $('f-attr').value, pickup: $('f-pick').value, dropoff: $('f-drop').value, rain_plan: $('f-rain').value, description: $('f-desc').value, image_url: $('f-img').value, notes: $('f-notes').value };
-        if (t.status === 'on_sale' && (!tour || tour.status !== 'on_sale') && !confirm('Put "' + t.title + '" on sale? It shows at /tours and in the South Florida hub\'s Events right away.')) return;
+        if (t.status === 'on_sale' && (!tour || tour.status !== 'on_sale') && !confirm('Put "' + t.title + '" on sale? ' + (launched.indexOf(t.community_slug) > -1 ? 'It shows at /tours and in the ' + hub().name + ' hub\'s Events right away.' : hub().name + ' is not launched yet, so only Community Managers and superadmins see it until you launch the city above.'))) return;
         if (t.status === 'canceled' && tour && tour.paid && !confirm('This tour has ' + tour.paid + ' paid guests. Canceling hides it, but refunds are done in Stripe. Continue?')) return;
         $('f-save').disabled = true; msg('f-msg', 'Saving...');
         api({ action: 'admin_save_tour', tour: t }).then(function (d) {
           $('f-save').disabled = false;
           if (!d.ok) return msg('f-msg', d.error === 'missing_fields' ? 'Title, city, neighborhood and start time are needed.' : d.error === 'not_ready' ? 'To go on sale it needs ' + d.need + '.' : d.error === 'waiver_missing' ? 'Save the waiver first; no tour goes on sale without it.' : 'Did not save: ' + (d.message || d.error), true);
-          msg('f-msg', 'Saved.' + (d.tour.status === 'on_sale' ? ' It is live at /tours.' : ''));
+          msg('f-msg', 'Saved.' + (d.tour.status === 'on_sale' ? (launched.indexOf(d.tour.community_slug) > -1 ? ' It is live at /tours.' : ' On sale as a preview until ' + VE_HUB(d.tour.community_slug).name + ' launches.') : ''));
           return load(d.tour.id);
         }).catch(function () { $('f-save').disabled = false; msg('f-msg', 'Could not connect.', true); });
       };
 
       function loadRoster() {
-        $('r-title').textContent = 'Roster: ' + tour.title + ', ' + nice(tour.starts_at);
+        $('r-title').textContent = 'Roster: ' + tour.title + ', ' + nice(tour.starts_at, VE_HUB(tour.community_slug).tz);
         $('roster').innerHTML = '<tr><td colspan="8" class="meta">Loading...</td></tr>';
         api({ action: 'admin_roster', tour_id: tour.id }).then(function (d) {
           tickets = d.tickets || [];
@@ -296,10 +315,24 @@
         }).catch(function () { $('w-save').disabled = false; msg('w-msg', 'Could not connect.', true); });
       };
 
+      function renderLaunch() {
+        $('launch').innerHTML = VE_HUBS.map(function (h) { return '<label><input type="checkbox" data-hub="' + h.slug + '"' + (launched.indexOf(h.slug) > -1 ? ' checked' : '') + '> ' + esc(h.name) + '</label>'; }).join('');
+      }
+      $('launch').addEventListener('change', function (e) {
+        var c = e.target.closest('[data-hub]'); if (!c) return;
+        var name = VE_HUB(c.getAttribute('data-hub')).name;
+        if (!confirm(c.checked ? 'Launch Tours in ' + name + '? Its tours on sale show at /tours and in the hub\'s Events right away.' : 'Take Tours out of ' + name + '? Its tours leave /tours and the hub\'s Events; bookings already paid stay in the roster.')) { c.checked = !c.checked; return; }
+        var list = []; $('launch').querySelectorAll('[data-hub]:checked').forEach(function (x) { list.push(x.getAttribute('data-hub')); });
+        msg('l-msg', 'Saving...');
+        api({ action: 'admin_launch', communities: list }).then(function (d) {
+          if (!d.ok) { c.checked = !c.checked; return msg('l-msg', 'Did not save.', true); }
+          launched = d.launched || []; renderLaunch(); msg('l-msg', launched.length ? 'Live in: ' + launched.map(function (s) { return VE_HUB(s).name; }).join(', ') + '.' : 'Not launched anywhere yet.');
+        }).catch(function () { c.checked = !c.checked; msg('l-msg', 'Could not connect.', true); });
+      });
       function load(keepId, quiet) {
         return api({ action: 'admin_tours' }).then(function (d) {
           if (d.error) { $('t-app').hidden = true; $('t-gate').textContent = 'Did not load: ' + d.error; $('t-gate').hidden = false; return; }
-          tours = d.tours || []; waiver = d.waiver; if (!quiet) showWaiver();
+          tours = d.tours || []; waiver = d.waiver; launched = d.launched || []; renderLaunch(); if (!quiet) showWaiver();
           var t = tours.filter(function (x) { return x.id === keepId; })[0];
           if (quiet) { tour = t || tour; renderPick(); return; }
           select(t || tours[0] || null);

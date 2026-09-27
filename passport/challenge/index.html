@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Hunt | Vegans Explore</title>
-  <meta name="description" content="The VE Hunt: each month, visit Vegan and Vegan-friendly businesses in one part of South Florida, collect stamps in your Passport, and earn that month's badge and Points.">
+  <title>The Passport Challenge | Vegans Explore</title>
+  <meta name="description" content="The Vegans Explore Passport Challenge: each month, visit Vegan and Vegan-friendly businesses in one part of your city, collect stamps in your Passport, and earn that month's badge and Points.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -61,6 +61,7 @@
     .flash{border-radius:12px;padding:14px 16px;margin-bottom:16px;font-weight:700;}
     .flash.ok{background:var(--ve-green-light);border:1px solid var(--ve-green-dark);color:var(--ve-green-deep);}
     .flash.bad{background:#fbeeec;border:1px solid #d9a39c;color:#7a1a10;}
+    .flash.pre{background:#fff4e2;border:1px solid #e8c48a;color:#6b3f00;font-weight:600;}
     dialog{border:0;border-radius:14px;padding:22px;max-width:min(460px,calc(100vw - 32px));width:100%;}
     dialog::backdrop{background:rgba(0,0,0,.45);}
     dialog textarea{width:100%;min-height:90px;font:inherit;font-size:14px;padding:10px;border:1px solid rgba(0,0,0,.25);border-radius:8px;margin:10px 0 14px;}
@@ -76,17 +77,24 @@
   <script src="/public/nav.js"></script>
 
   <main class="wrap">
-    <p class="eyebrow">Vegans Explore · South Florida</p>
-    <h1 id="h-title">The Hunt</h1>
-    <p class="lede" id="h-lede">Each month we pick one part of South Florida. Visit the Vegan and Vegan-friendly businesses on the map, buy anything, and scan the VE Hunt card at the register to stamp your Passport. Reach the goal and you earn that month's badge and Points.</p>
+    <p class="eyebrow" id="h-eyebrow">Vegans Explore · Passport</p>
+    <h1 id="h-title">The Passport Challenge</h1>
+    <p class="lede" id="h-lede">Each month we pick one part of the city. Visit the Vegan and Vegan-friendly businesses on the map, buy anything, and scan the Passport Challenge card at the register to stamp your Passport. Reach the goal and you earn that month's badge and Points.</p>
 
+    <div id="preview" class="flash pre" hidden role="note"><b>Community Manager preview.</b> The Passport Challenge is not open to members in this city yet; it is planned for 2027. You are seeing what members will see.</div>
     <div id="flash" class="flash" hidden role="status"></div>
+
+    <section id="soon" class="card" hidden>
+      <h2>Coming in 2027</h2>
+      <p class="muted" id="soon-text">The Passport Challenge is coming to your city: a monthly map of local Vegan spots, a stamp at every stop, and a badge and Points when you finish.</p>
+      <p style="margin-top:14px"><a class="btn" href="/passport">Get your Passport, $11</a></p>
+    </section>
 
     <section id="gate" class="card" hidden></section>
 
     <section id="none" class="card" hidden>
-      <h2>No hunt this month yet</h2>
-      <p class="muted">The next hunt is being set up. Check back soon, or explore the <a href="/communities/south-florida">South Florida directory</a> in the meantime.</p>
+      <h2>No challenge this month yet</h2>
+      <p class="muted">The next Passport Challenge is being set up. Check back soon, or explore the <a id="none-hub" href="/communities/south-florida">city directory</a> in the meantime.</p>
     </section>
 
     <div id="app" hidden>
@@ -105,7 +113,7 @@
         <h2>How it works</h2>
         <ol class="steps">
           <li>Visit any stop on the map and buy anything.</li>
-          <li>Ask for the VE Hunt card at the register.</li>
+          <li>Ask for the Passport Challenge card at the register.</li>
           <li>Scan the QR on the card with your phone camera. Your stamp lands right away.</li>
           <li>One stamp per business. Reach the goal before the month ends for the badge and Points.</li>
         </ol>
@@ -114,7 +122,7 @@
       <div class="layout">
         <section class="card">
           <h2>The map</h2>
-          <div id="map" role="region" aria-label="Map of this month's Hunt stops"></div>
+          <div id="map" role="region" aria-label="Map of this month's Passport Challenge stops"></div>
           <p class="muted" style="margin-top:8px">Green pins are stamped, orange pins are VE Verified. Every stop is also listed under Stops.</p>
         </section>
         <section class="card">
@@ -125,7 +133,7 @@
     </div>
 
     <section id="badges-card" class="card" hidden>
-      <h2>Your Hunt badges</h2>
+      <h2>Your Passport Challenge badges</h2>
       <div class="badges" id="badges"></div>
     </section>
 
@@ -141,6 +149,7 @@
   </main>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script>
     (function () {
@@ -148,8 +157,12 @@
       var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var $ = function (id) { return document.getElementById(id); };
       var qs = new URLSearchParams(location.search), state = null, map = null, reportStop = null;
+      var HUB = VE_HUB(qs.get('city') || 'south-florida');
+      $('h-eyebrow').textContent = 'Vegans Explore Passport · ' + HUB.name;
+      $('none-hub').href = '/communities/' + HUB.slug; $('none-hub').textContent = HUB.name + ' directory';
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body, auth) {
+        body.community = HUB.slug;
         return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (auth ? VEAuth.getToken() : ANON) }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
       }
       function day(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); }
@@ -160,13 +173,13 @@
       }
       function flash(kind, text) { var f = $('flash'); f.className = 'flash ' + kind; f.textContent = text; f.hidden = false; }
 
-      // Messages from the scan page (/hunt/scan) and the report dialog.
+      // Messages from the scan page (/passport/challenge/scan) and the report dialog.
       var MSG = {
         stamped: function () { return 'Stamped' + (qs.get('biz') ? ' at ' + qs.get('biz') : '') + '. Nice work.'; },
         completed: function () { return 'That was your last stamp. You earned ' + (qs.get('badge') || "this month's badge") + ' and your Points.'; },
-        already: function () { return 'You already have the stamp' + (qs.get('biz') ? ' for ' + qs.get('biz') : '') + '. Every business counts once per hunt.'; },
-        bad_code: function () { return 'That card code did not work. Ask the cashier for the current VE Hunt card, or use "The cashier didn’t know?" on the stop.'; },
-        not_live: function () { return 'That card is from a hunt that is not running right now.'; }
+        already: function () { return 'You already have the stamp' + (qs.get('biz') ? ' for ' + qs.get('biz') : '') + '. Every business counts once per challenge.'; },
+        bad_code: function () { return 'That card code did not work. Ask the cashier for the current Passport Challenge card, or use "The cashier didn’t know?" on the stop.'; },
+        not_live: function () { return 'That card is from a challenge that is not running right now.'; }
       };
       if (MSG[qs.get('scan')]) flash(qs.get('scan') === 'stamped' || qs.get('scan') === 'completed' ? 'ok' : 'bad', MSG[qs.get('scan')]());
 
@@ -174,14 +187,14 @@
         var h = state.hunt, stamps = {}, stamped = 0;
         (state.stamps || []).forEach(function (s) { stamps[s.stop_id] = s.status; if (s.status === 'stamped') stamped++; });
         $('h-title').textContent = h.name;
-        $('h-lede').textContent = h.area_name + ', ' + day(h.starts_on) + ' to ' + day(h.ends_on) + '. Visit ' + h.goal + ' stops, buy anything, and scan the VE Hunt card at the register. Reach ' + h.goal + ' and you earn the ' + h.badge_name + ' badge and ' + Number(h.points_reward).toLocaleString() + ' Points.';
+        $('h-lede').textContent = h.area_name + ', ' + day(h.starts_on) + ' to ' + day(h.ends_on) + '. Visit ' + h.goal + ' stops, buy anything, and scan the Passport Challenge card at the register. Reach ' + h.goal + ' and you earn the ' + h.badge_name + ' badge and ' + Number(h.points_reward).toLocaleString() + ' Points.';
         badgeArt($('p-badge'), h.badge_image_url, h.badge_name, state.completed);
         var shown = Math.min(stamped, h.goal);
         $('p-count').textContent = state.completed ? 'Badge earned: ' + h.badge_name : stamped + ' of ' + h.goal + ' stamps';
         $('p-bar').style.width = Math.round(100 * shown / h.goal) + '%';
         var pending = (state.stamps || []).filter(function (s) { return s.status === 'pending'; }).length;
-        $('p-note').textContent = state.completed ? 'You finished this hunt. Keep visiting: every stamp still supports a local business.'
-          : (h.goal - stamped) + ' to go' + (pending ? ', plus ' + pending + ' waiting on the owner to confirm' : '') + '. The hunt ends ' + day(h.ends_on) + '.';
+        $('p-note').textContent = state.completed ? 'You finished this challenge. Keep visiting: every stamp still supports a local business.'
+          : (h.goal - stamped) + ' to go' + (pending ? ', plus ' + pending + ' waiting on the owner to confirm' : '') + '. The challenge ends ' + day(h.ends_on) + '.';
         $('stops').innerHTML = state.stops.length ? state.stops.map(function (s) {
           var st = stamps[s.id];
           var logo = s.logo_url ? '<img class="stop-logo" src="' + esc(s.logo_url) + '" alt="">' : '<div class="stop-logo" style="background:' + esc(s.color || '#3A9B3E') + '">' + esc((s.name || 'V').charAt(0)) + '</div>';
@@ -240,29 +253,33 @@
       };
 
       function gate(html) { $('gate').innerHTML = html; $('gate').hidden = false; }
+      function soon() { $('soon-text').textContent = 'The Passport Challenge is coming to ' + HUB.name + ': a monthly map of local Vegan spots, a stamp at every stop, and a badge and Points when you finish. Your $11 Passport is your way in.'; $('soon').hidden = false; }
       function load() {
         return api({ action: 'mine' }, true).then(function (d) {
           if (d.error === 'not_authenticated') { VEAuth.clearSession && VEAuth.clearSession(); return start(); }
           renderBadges(d.badges);
+          $('preview').hidden = !d.preview;
+          if (!d.launched && !d.preview) return soon();
           if (!d.hunt) { $('none').hidden = false; return; }
           if (!d.member) {
-            gate('<h2>The Hunt is for members</h2><p class="muted" style="margin-bottom:14px">' + esc(d.hunt.name) + ' runs in ' + esc(d.hunt.area_name) + ' until ' + esc(day(d.hunt.ends_on)) + '. Become a Founding Member ($11, one time) to join.</p><button type="button" class="btn" id="g-pay">Become a member</button>');
-            $('g-pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Become a Founding Member to join the Hunt.') : (location.href = '/join'); };
+            gate('<h2>The Passport Challenge is for members</h2><p class="muted" style="margin-bottom:14px">' + esc(d.hunt.name) + ' runs in ' + esc(d.hunt.area_name) + ' until ' + esc(day(d.hunt.ends_on)) + '. Get your Passport ($11, one time) to join.</p><button type="button" class="btn" id="g-pay">Get your Passport</button>');
+            $('g-pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Get your Passport to join the Passport Challenge.') : (location.href = '/passport'); };
             return;
           }
           state = d; $('app').hidden = false; render();
-        }).catch(function () { flash('bad', 'The Hunt did not load. Refresh to try again.'); });
+        }).catch(function () { flash('bad', 'The Passport Challenge did not load. Refresh to try again.'); });
       }
       function start() {
         if (!window.VEAuth) return setTimeout(start, 150);
         if (!VEAuth.isLoggedIn()) {
           api({ action: 'current' }).then(function (d) {
+            if (!d.launched) return soon();
             var h = d && d.hunt;
-            gate('<h2>' + (h ? esc(h.name) + ' is on' : 'Join the Hunt') + '</h2><p class="muted" style="margin-bottom:14px">' +
+            gate('<h2>' + (h ? esc(h.name) + ' is on' : 'Join the Passport Challenge') + '</h2><p class="muted" style="margin-bottom:14px">' +
               (h ? esc(h.area_name) + ', until ' + esc(day(h.ends_on)) + '. ' + (d.stops || []).length + ' stops. ' : '') +
               'Sign in to your Passport to see the map and collect stamps.</p><button type="button" class="btn" id="g-in">Sign in or join</button>');
-            $('g-in').onclick = function () { VEAuth.showAuthModal('Sign in to join the Hunt.', function () { location.reload(); }); };
-          }).catch(function () { gate('<h2>Join the Hunt</h2><p class="muted">Sign in to your Passport to see the map.</p>'); });
+            $('g-in').onclick = function () { VEAuth.showAuthModal('Sign in to join the Passport Challenge.', function () { location.reload(); }); };
+          }).catch(function () { gate('<h2>Join the Passport Challenge</h2><p class="muted">Sign in to your Passport to see the map.</p>'); });
           return;
         }
         load();

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Hunt Stamp | Vegans Explore</title>
+  <title>Passport Challenge Stamp | Vegans Explore</title>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
 
   <main class="wrap">
     <div class="card" id="box" role="status">
-      <p class="eyebrow">The VE Hunt</p>
+      <p class="eyebrow">The Passport Challenge</p>
       <div class="spin" aria-hidden="true"></div>
       <h1>Stamping your Passport</h1>
       <p>One moment.</p>
@@ -42,12 +42,12 @@
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-hunt';
       var code = (new URLSearchParams(location.search).get('c') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      var box = document.getElementById('box');
+      var box = document.getElementById('box'), hub = '';
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function show(title, text, btn) {
-        box.innerHTML = '<p class="eyebrow">The VE Hunt</p><h1>' + esc(title) + '</h1><p>' + esc(text) + '</p>' + (btn || '');
+        box.innerHTML = '<p class="eyebrow">The Passport Challenge</p><h1>' + esc(title) + '</h1><p>' + esc(text) + '</p>' + (btn || '');
       }
-      function go(params) { location.replace('/hunt?' + new URLSearchParams(params).toString()); }
+      function go(params) { if (hub) params.city = hub; location.replace('/passport/challenge?' + new URLSearchParams(params).toString()); }
       // Location is optional; it only helps flag a code that is being passed around.
       function withLocation(cb) {
         if (!navigator.geolocation) return cb(null);
@@ -60,10 +60,11 @@
           fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
             body: JSON.stringify({ action: 'scan', code: code, lat: c ? c.latitude : null, lng: c ? c.longitude : null }) })
             .then(function (r) { return r.json(); }).then(function (d) {
+              if (d.hub) hub = d.hub;
               if (d.ok) return go(d.progress && d.progress.completed && d.badge_name ? { scan: 'completed', badge: d.badge_name, biz: d.business || '' } : { scan: 'stamped', biz: d.business || '' });
               if (d.error === 'payment_required') {
-                show('Become a member to collect stamps', 'The Hunt is for Vegans Explore members. It is $11, one time.', '<button type="button" class="btn" id="pay">Become a member</button>');
-                document.getElementById('pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Become a Founding Member to collect Hunt stamps.') : (location.href = '/join'); };
+                show('Get your Passport to collect stamps', 'The Passport Challenge is for Vegans Explore Passport members. It is $11, one time.', '<button type="button" class="btn" id="pay">Get your Passport</button>');
+                document.getElementById('pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Get your Passport to collect Passport Challenge stamps.') : (location.href = '/passport'); };
                 return;
               }
               if (d.error === 'already_stamped') return go({ scan: 'already', biz: d.business || '' });
@@ -78,7 +79,7 @@
         if (!code) return go({ scan: 'bad_code' });
         if (!VEAuth.isLoggedIn()) {
           show('Sign in to collect your stamp', 'Sign in to your Passport, or create one, and your stamp lands right after.', '<button type="button" class="btn" id="in">Sign in or join</button>');
-          document.getElementById('in').onclick = function () { VEAuth.showAuthModal('Sign in to collect your Hunt stamp.', function () { location.reload(); }); };
+          document.getElementById('in').onclick = function () { VEAuth.showAuthModal('Sign in to collect your Passport Challenge stamp.', function () { location.reload(); }); };
           return;
         }
         scan();

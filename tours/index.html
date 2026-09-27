@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegans Explore Tours | South Florida</title>
-  <meta name="description" content="Vegans Explore Tours: once a month in South Florida, about 12 guests ride together to three Vegan tastings in one neighborhood, then an attraction. $50 a guest.">
+  <title>Vegans Explore Tours</title>
+  <meta name="description" content="Vegans Explore Tours: once a month, a van of up to 12 guests rides together to three Vegan tastings in one neighborhood, then an attraction. $50 a guest.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -62,6 +62,7 @@
     .flash{border-radius:12px;padding:14px 16px;margin-bottom:16px;font-weight:700;}
     .flash.ok{background:var(--ve-green-light);border:1px solid var(--ve-green-dark);color:var(--ve-green-deep);}
     .flash.bad{background:#fbeeec;border:1px solid #d9a39c;color:#7a1a10;}
+    .flash.pre{background:#fff4e2;border:1px solid #e8c48a;color:#6b3f00;font-weight:600;}
     .steps{counter-reset:s;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;margin-bottom:22px;}
     .steps li{counter-increment:s;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:14px 14px 14px 48px;position:relative;font-size:14px;}
     .steps li::before{content:counter(s);position:absolute;left:14px;top:13px;width:24px;height:24px;border-radius:50%;background:var(--ve-green-deep);color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
@@ -75,14 +76,15 @@
   <script src="/public/nav.js"></script>
 
   <main class="wrap">
+    <div id="preview" class="flash pre" hidden role="note"><b>Community Manager preview.</b> Tours are not open to the public here yet; they are planned for 2027. You are seeing what guests will see.</div>
     <div id="flash" role="status"></div>
 
     <section id="v-list">
-      <p class="eyebrow">Vegans Explore · South Florida</p>
+      <p class="eyebrow">Vegans Explore</p>
       <h1>Vegans Explore Tours</h1>
-      <p class="lede">Once a month, about 12 of us ride together to three Vegan tastings in one neighborhood, then finish at a local attraction. A host is on board the whole way. $50 a guest covers the ride and every tasting.</p>
+      <p class="lede">Once a month, a van of up to 12 of us rides together to three Vegan tastings in one neighborhood, then finishes at a local attraction. A host is on board the whole way. $50 a guest covers the ride and every tasting.</p>
       <ol class="steps">
-        <li>Pick a tour and book up to 4 seats. Tell us about diets and allergies.</li>
+        <li>Pick a tour and book your seats, up to the whole van. Tell us about diets and allergies.</li>
         <li>Meet at the pickup spot. We ride together between stops.</li>
         <li>Three tastings, then the attraction, then back to the drop-off.</li>
       </ol>
@@ -144,9 +146,11 @@
       var tour = null, waiver = null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function money(c) { return '$' + (c / 100).toFixed(c % 100 ? 2 : 0); }
-      function when(iso, opts) { return new Date(iso).toLocaleString('en-US', Object.assign({ timeZone: 'America/New_York' }, opts)); }
-      function day(iso) { return when(iso, { weekday: 'long', month: 'long', day: 'numeric' }); }
-      function time(iso) { return when(iso, { hour: 'numeric', minute: '2-digit' }); }
+      // Times show in the tour city's own time zone.
+      function when(iso, tz, opts) { return new Date(iso).toLocaleString('en-US', Object.assign({ timeZone: tz || 'America/New_York' }, opts)); }
+      function day(iso, tz) { return when(iso, tz, { weekday: 'long', month: 'long', day: 'numeric' }); }
+      function time(iso, tz) { return when(iso, tz, { hour: 'numeric', minute: '2-digit' }); }
+      function zone(iso, tz) { return when(iso, tz, { timeZoneName: 'short' }).split(' ').pop(); }
       function token() { return window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? VEAuth.getToken() : ''; }
       function api(body) {
         var h = { 'Content-Type': 'application/json' }, t = token(); if (t) h.Authorization = 'Bearer ' + t;
@@ -159,17 +163,22 @@
       }
 
       function showList() {
-        document.title = 'Vegans Explore Tours | South Florida';
-        api({ action: 'list', community: 'south-florida' }).then(function (d) {
+        document.title = 'Vegans Explore Tours';
+        api({ action: 'list' }).then(function (d) {
           var ts = d.tours || [];
+          $('preview').hidden = !d.preview;
+          if (!ts.length && !(d.launched || []).length) {
+            $('tours').innerHTML = '<div class="card" style="grid-column:1/-1"><b>Coming in 2027.</b><p class="muted" style="margin-top:6px">Tours start in one city at a time. Get your <a href="/passport">$11 Passport</a> and you will hear first when one comes to yours.</p></div>';
+            return;
+          }
           $('tours').innerHTML = ts.length ? ts.map(function (t) {
             var names = (t.stops || []).map(function (s) { return s.name; }).filter(Boolean).join(', ');
             return '<a class="tour" href="/tours?id=' + esc(t.id) + '">' +
-              '<div class="tour-img"' + (t.image_url ? ' style="background-image:url(\'' + esc(t.image_url) + '\')"' : '') + '><span class="tour-date">' + esc(day(t.starts_at)) + '</span></div>' +
-              '<div class="tour-body"><b>' + esc(t.title) + '</b><span class="muted">' + esc(t.neighborhood) + ', ' + esc(t.city) + ' · ' + esc(time(t.starts_at)) + '</span>' +
+              '<div class="tour-img"' + (t.image_url ? ' style="background-image:url(\'' + esc(t.image_url) + '\')"' : '') + '><span class="tour-date">' + esc(day(t.starts_at, t.tz)) + '</span></div>' +
+              '<div class="tour-body"><b>' + esc(t.title) + '</b><span class="muted">' + esc(t.neighborhood) + ', ' + esc(t.city) + ' · ' + esc(time(t.starts_at, t.tz)) + '</span>' +
               '<p class="tour-desc">' + esc(t.description || ('Tastings at ' + names + (t.attraction ? ', then ' + t.attraction : '') + '.')) + '</p>' +
               '<div class="tour-foot"><span>' + money(t.price_cents) + ' a guest</span>' + seatsPill(t) + '</div></div></a>';
-          }).join('') : '<div class="card" style="grid-column:1/-1"><b>The next tour is being planned.</b><p class="muted" style="margin-top:6px">Tours are announced on the <a href="/communities/south-florida">South Florida hub</a> first. While you wait, the <a href="/hunt">VE Hunt</a> runs all month.</p></div>';
+          }).join('') : '<div class="card" style="grid-column:1/-1"><b>The next tour is being planned.</b><p class="muted" style="margin-top:6px">Tours are announced on your city hub first. While you wait, see if the <a href="/passport/challenge">Passport Challenge</a> is running near you.</p></div>';
         }).catch(function () { $('tours').innerHTML = '<p class="muted">Tours did not load. Refresh to try again.</p>'; });
       }
 
@@ -177,13 +186,14 @@
         $('v-list').hidden = true; $('v-tour').hidden = false;
         api({ action: 'get', id: id }).then(function (d) {
           if (!d.tour) { $('v-tour').innerHTML = '<a class="back" href="/tours">&larr; All tours</a><div class="card"><b>That tour was not found.</b><p class="muted">It may have ended. See <a href="/tours">upcoming tours</a>.</p></div>'; return; }
-          tour = d.tour; waiver = d.waiver;
+          tour = d.tour; waiver = d.waiver; $('preview').hidden = !d.preview;
           document.title = tour.title + ' | Vegans Explore Tours';
           if (tour.image_url) { $('t-img').style.backgroundImage = "url('" + tour.image_url.replace(/'/g, '%27') + "')"; $('t-img').hidden = false; }
           $('t-eyebrow').textContent = 'Vegans Explore Tour · ' + tour.neighborhood + ', ' + tour.city;
           $('t-title').textContent = tour.title;
           $('t-desc').textContent = tour.description || '';
-          var facts = [['When', day(tour.starts_at) + ', ' + time(tour.starts_at) + (tour.ends_at ? ' to ' + time(tour.ends_at) : '') + ' (Eastern)'], ['Price', money(tour.price_cents) + ' a guest, all tastings included'],
+          var tz = tour.tz;
+          var facts = [['When', day(tour.starts_at, tz) + ', ' + time(tour.starts_at, tz) + (tour.ends_at ? ' to ' + time(tour.ends_at, tz) : '') + ' ' + zone(tour.starts_at, tz)], ['Price', money(tour.price_cents) + ' a guest, all tastings included'],
             ['Pickup', tour.pickup], ['Drop-off', tour.dropoff], ['If it rains', tour.rain_plan], ['Your host', tour.host_name]];
           $('t-facts').innerHTML = facts.filter(function (f) { return f[1]; }).map(function (f) { return '<div class="fact"><span>' + esc(f[0]) + '</span>' + esc(f[1]) + '</div>'; }).join('');
           $('t-stops').innerHTML = (tour.stops || []).map(function (s) {
@@ -212,11 +222,11 @@
       }
 
       function setupBooking() {
-        var left = tour.seats_left, max = Math.min(4, left);
+        var left = tour.seats_left, max = Math.min(12, left);
         $('b-seats').textContent = left ? left + ' of ' + tour.capacity + ' seats left.' : '';
         if (tour.status !== 'on_sale' || new Date(tour.starts_at) < new Date()) { $('b-closed').innerHTML = '<p><b>Booking is closed for this tour.</b></p><p class="muted"><a href="/tours">See upcoming tours</a>.</p>'; $('b-closed').hidden = false; return; }
         if (!left) { $('b-closed').innerHTML = '<p><b>This tour is sold out.</b></p><p class="muted">Seats sometimes open up. Email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> to join the waitlist.</p>'; $('b-closed').hidden = false; return; }
-        if (!waiver) { $('b-closed').innerHTML = '<p><b>Tickets open soon.</b></p><p class="muted">Check back shortly, or watch the <a href="/communities/south-florida">South Florida hub</a>.</p>'; $('b-closed').hidden = false; return; }
+        if (!waiver) { $('b-closed').innerHTML = '<p><b>Tickets open soon.</b></p><p class="muted">Check back shortly, or watch your <a href="/communities/' + esc(tour.community_slug || 'south-florida') + '">city hub</a>.</p>'; $('b-closed').hidden = false; return; }
         var opts = ''; for (var i = 1; i <= max; i++) opts += '<option value="' + i + '">' + i + ' guest' + (i > 1 ? 's' : '') + '</option>';
         $('b-count').innerHTML = opts;
         $('b-waiver').textContent = waiver.text;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Hunt | The Depot</title>
+  <title>Passport Challenge | The Depot</title>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -57,6 +57,9 @@
     .results ul{list-style:none;position:absolute;z-index:10;left:0;right:0;background:#fff;border:1px solid var(--ve-border);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.1);max-height:260px;overflow:auto;}
     .results li button{display:block;width:100%;text-align:left;background:none;border:0;font:inherit;font-size:13px;padding:8px 10px;cursor:pointer;}
     .results li button:hover,.results li button:focus{background:var(--ve-green-light);}
+    .launch{display:flex;flex-wrap:wrap;gap:8px 18px;}
+    .launch label{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:700;min-height:40px;}
+    .launch input{width:20px;height:20px;}
     .rep{border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:flex-start;}
     .rep > div:first-child{min-width:min(280px,100%);flex:1;}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
@@ -72,18 +75,25 @@
   <script src="/public/nav.js"></script>
   <div class="wrap">
     <p class="eyebrow">The Depot</p>
-    <h1>The Hunt</h1>
+    <h1>Passport Challenge</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Each month, one area of South Florida. Set up the hunt, add the stops, print each stop's register card, and confirm "cashier didn't know" reports. Members see it at <a href="/hunt">vegansexplore.com/hunt</a>. A hunt shows to members only while its status is Live and today is inside its dates.</p>
+    <p class="sub">Each month, one area of a city. Set up the challenge, add the stops, print each stop's register card, and confirm "cashier didn't know" reports. Members see it at <a href="/passport/challenge">vegansexplore.com/passport/challenge</a> once its city is launched, while its status is Live and today is inside its dates.</p>
     <div id="h-gate" class="gate" hidden></div>
     <div id="h-app" hidden>
       <section class="panel">
+        <h2>Launch</h2>
+        <p class="sub">Planned for 2027, one city at a time. Until a city is switched on, members there see "Coming in 2027" and its challenge stays a preview for Community Managers and superadmins (listed on their dashboard).</p>
+        <div class="launch" id="launch"></div>
+        <p class="msg" id="l-msg" role="status"></p>
+      </section>
+      <section class="panel">
         <div class="bar">
-          <div><label class="lbl" for="pick">Hunt</label><select id="pick"></select></div>
-          <button type="button" class="btn btn-ghost" id="new">New hunt</button>
+          <div><label class="lbl" for="pick">Challenge</label><select id="pick"></select></div>
+          <button type="button" class="btn btn-ghost" id="new">New challenge</button>
         </div>
         <div class="form" id="f">
-          <div><label for="f-name">Name</label><input id="f-name" placeholder="The October Hunt"></div>
+          <div><label for="f-comm">City</label><select id="f-comm"></select></div>
+          <div><label for="f-name">Name</label><input id="f-name" placeholder="The October Passport Challenge"></div>
           <div><label for="f-area">Area</label><input id="f-area" placeholder="Wynwood and Little Haiti"></div>
           <div><label for="f-start">Starts</label><input type="date" id="f-start"></div>
           <div><label for="f-end">Ends</label><input type="date" id="f-end"></div>
@@ -93,7 +103,7 @@
           <div><label for="f-badge">Badge name</label><input id="f-badge" placeholder="October Explorer"></div>
           <div><label for="f-art">Badge art (image URL)</label><input id="f-art" placeholder="https://..."></div>
           <div><label for="f-status">Status</label><select id="f-status"><option value="draft">Draft (hidden)</option><option value="live">Live</option><option value="ended">Ended</option></select></div>
-          <div><button type="button" class="btn" id="f-save">Save hunt</button></div>
+          <div><button type="button" class="btn" id="f-save">Save challenge</button></div>
         </div>
         <p class="msg" id="f-msg" role="status"></p>
       </section>
@@ -101,7 +111,7 @@
       <div id="h-body" hidden>
         <section class="panel">
           <h2>Stops</h2>
-          <p class="sub">Each stop gets its register card (Print card on its row) plus the <a href="/admin/depot/hunt-kit" target="_blank" rel="noopener">onboarding kit</a>: the staff sheet, the window sticker and the staff video script.</p>
+          <p class="sub">Each stop gets its register card (Print card on its row) plus the <a href="/admin/depot/challenge-kit" target="_blank" rel="noopener">onboarding kit</a>: the staff sheet, the window sticker and the staff video script.</p>
           <div class="stats" id="stats"></div>
           <div class="bar">
             <div class="results" style="flex:1"><label class="lbl" for="s-q">Add a business</label><input type="search" id="s-q" placeholder="Business name" autocomplete="off"><ul id="s-res" hidden></ul></div>
@@ -128,15 +138,15 @@
     </div>
   </div>
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script>
     (function () {
       var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', FN = SB + '/functions/v1/ve-hunt';
       var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-      // Same cities as the South Florida hub (SF_CITIES in /communities/south-florida/index.html).
-      var SF = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
       var $ = function (id) { return document.getElementById(id); };
-      var hunts = [], hunt = null, stops = [], stats = {};
+      var hunts = [], hunt = null, stops = [], stats = {}, launched = [];
+      $('f-comm').innerHTML = VE_HUBS.map(function (h) { return '<option value="' + h.slug + '">' + h.name + '</option>'; }).join('');
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function msg(id, text, bad) { $(id).className = 'msg' + (bad ? ' bad' : ''); $(id).textContent = text; }
@@ -144,15 +154,15 @@
         var n = new Date(), s = new Date(n.getFullYear(), n.getMonth() + 1, 1), e = new Date(n.getFullYear(), n.getMonth() + 2, 0);
         var f = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
         var m = s.toLocaleDateString('en-US', { month: 'long' });
-        return { name: 'The ' + m + ' Hunt', starts_on: f(s), ends_on: f(e), badge_name: m + ' Explorer', goal: 5, points_reward: 500, anchor_bonus_points: 100, status: 'draft', area_name: '' };
+        return { name: 'The ' + m + ' Passport Challenge', community_slug: 'south-florida', starts_on: f(s), ends_on: f(e), badge_name: m + ' Explorer', goal: 5, points_reward: 500, anchor_bonus_points: 100, status: 'draft', area_name: '' };
       }
       function fillForm(h) {
-        $('f-name').value = h.name || ''; $('f-area').value = h.area_name || ''; $('f-start').value = h.starts_on || ''; $('f-end').value = h.ends_on || '';
+        $('f-comm').value = h.community_slug || 'south-florida'; $('f-name').value = h.name || ''; $('f-area').value = h.area_name || ''; $('f-start').value = h.starts_on || ''; $('f-end').value = h.ends_on || '';
         $('f-goal').value = h.goal || 5; $('f-points').value = h.points_reward != null ? h.points_reward : 500; $('f-anchor').value = h.anchor_bonus_points != null ? h.anchor_bonus_points : 100;
         $('f-badge').value = h.badge_name || ''; $('f-art').value = h.badge_image_url || ''; $('f-status').value = h.status || 'draft';
       }
       function renderPick() {
-        $('pick').innerHTML = hunts.length ? hunts.map(function (h) { return '<option value="' + esc(h.id) + '"' + (hunt && hunt.id === h.id ? ' selected' : '') + '>' + esc(h.name) + ' (' + esc(h.status) + ')</option>'; }).join('') : '<option value="">No hunts yet</option>';
+        $('pick').innerHTML = hunts.length ? hunts.map(function (h) { return '<option value="' + esc(h.id) + '"' + (hunt && hunt.id === h.id ? ' selected' : '') + '>' + esc(h.name) + ' (' + esc(h.status) + ')</option>'; }).join('') : '<option value="">No challenges yet</option>';
       }
       function select(h) {
         hunt = h; fillForm(h || monthDefaults()); renderPick();
@@ -160,11 +170,11 @@
         if (h) loadHunt();
       }
       $('pick').addEventListener('change', function () { select(hunts.filter(function (h) { return h.id === $('pick').value; })[0] || null); });
-      $('new').onclick = function () { hunt = null; fillForm(monthDefaults()); $('h-body').hidden = true; msg('f-msg', 'New hunt: fill it in and save.'); };
+      $('new').onclick = function () { hunt = null; fillForm(monthDefaults()); $('h-body').hidden = true; msg('f-msg', 'New challenge: fill it in and save.'); };
       $('f-save').onclick = function () {
-        var h = { id: hunt && hunt.id, name: $('f-name').value, area_name: $('f-area').value, starts_on: $('f-start').value, ends_on: $('f-end').value,
+        var h = { id: hunt && hunt.id, community_slug: $('f-comm').value, name: $('f-name').value, area_name: $('f-area').value, starts_on: $('f-start').value, ends_on: $('f-end').value,
           goal: +$('f-goal').value, points_reward: +$('f-points').value, anchor_bonus_points: +$('f-anchor').value, badge_name: $('f-badge').value, badge_image_url: $('f-art').value, status: $('f-status').value };
-        if (h.status === 'live' && (!hunt || hunt.status !== 'live') && !confirm('Make "' + h.name + '" live? Members see it at /hunt while today is inside its dates.')) return;
+        if (h.status === 'live' && (!hunt || hunt.status !== 'live') && !confirm('Make "' + h.name + '" live? Members in ' + VE_HUB(h.community_slug).name + ' see it at /passport/challenge while today is inside its dates' + (launched.indexOf(h.community_slug) > -1 ? '.' : ', once the city is launched above.'))) return;
         $('f-save').disabled = true; msg('f-msg', 'Saving...');
         api({ action: 'admin_save_hunt', hunt: h }).then(function (d) {
           $('f-save').disabled = false;
@@ -194,9 +204,9 @@
             '<td>' + b.reports + '</td>' +
             '<td><label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" data-anchor="' + i + '"' + (s.is_anchor ? ' checked' : '') + ' style="width:18px;height:18px"> Anchor</label></td>' +
             '<td style="min-width:220px"><select data-otype="' + i + '" aria-label="Offer type for ' + esc(l.name) + '"><option value="">No offer</option><option value="discount"' + (s.offer_type === 'discount' ? ' selected' : '') + '>Discount</option><option value="prize"' + (s.offer_type === 'prize' ? ' selected' : '') + '>Prize</option><option value="donation"' + (s.offer_type === 'donation' ? ' selected' : '') + '>Donation</option></select>' +
-              '<input data-otext="' + i + '" value="' + esc(s.offer_text || '') + '" placeholder="10% off for Hunt members" aria-label="Offer for ' + esc(l.name) + '" style="margin-top:6px"></td>' +
+              '<input data-otext="' + i + '" value="' + esc(s.offer_text || '') + '" placeholder="10% off for Passport members" aria-label="Offer for ' + esc(l.name) + '" style="margin-top:6px"></td>' +
             '<td>' + (s.latitude != null ? '<span class="pill ok">Placed</span>' : '<span class="pill no">No pin</span>') + '<div class="acts" style="margin-top:6px"><button type="button" class="btn btn-ghost" data-geo="' + i + '">' + (s.latitude != null ? 'Find again' : 'Find') + '</button><button type="button" class="btn btn-ghost" data-pin="' + i + '">Set</button></div></td>' +
-            '<td><div class="acts"><a class="btn" href="/admin/depot/hunt-card?stop=' + esc(s.id) + '&amp;hunt=' + esc(hunt.id) + '" target="_blank" rel="noopener">Print card</a><button type="button" class="btn btn-ghost" data-code="' + i + '">Replace code</button>' + (s.active ? '<button type="button" class="btn btn-stop" data-rm="' + i + '">Remove</button>' : '') + '</div><span class="msg" id="sm-' + i + '"></span></td>' +
+            '<td><div class="acts"><a class="btn" href="/admin/depot/challenge-card?stop=' + esc(s.id) + '&amp;hunt=' + esc(hunt.id) + '" target="_blank" rel="noopener">Print card</a><button type="button" class="btn btn-ghost" data-code="' + i + '">Replace code</button>' + (s.active ? '<button type="button" class="btn btn-stop" data-rm="' + i + '">Remove</button>' : '') + '</div><span class="msg" id="sm-' + i + '"></span></td>' +
             '</tr>';
         }).join('');
       }
@@ -232,7 +242,7 @@
         }
         if (b.hasAttribute('data-rm')) {
           i = +b.getAttribute('data-rm');
-          if (!confirm('Remove ' + (stops[i].listing || {}).name + ' from this hunt? If members already have its stamp, it is switched off instead so they keep it.')) return;
+          if (!confirm('Remove ' + (stops[i].listing || {}).name + ' from this challenge? If members already have its stamp, it is switched off instead so they keep it.')) return;
           api({ action: 'admin_remove_stop', id: stops[i].id }).then(function (d) { if (!d.ok) return msg('sm-' + i, 'Did not save.', true); loadHunt(); });
         }
       });
@@ -242,10 +252,10 @@
         clearTimeout(qt); var v = $('s-q').value.trim();
         if (v.length < 2) { $('s-res').hidden = true; return; }
         qt = setTimeout(function () {
-          fetch(SB + '/rest/v1/listings?select=id,name,address_city,ve_verified_tier&status=eq.approved&address_city=in.(' + SF.map(function (c) { return '"' + c + '"'; }).join(',') + ')&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=12', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+          fetch(SB + '/rest/v1/listings?select=id,name,address_city,ve_verified_tier&status=eq.approved&' + VE_HUB(hunt.community_slug).filter + '&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=12', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
             .then(function (r) { return r.json(); }).then(function (list) {
               var have = {}; stops.forEach(function (s) { have[s.listing_id] = 1; });
-              $('s-res').innerHTML = (list || []).map(function (l) { return '<li><button type="button" data-id="' + esc(l.id) + '"' + (have[l.id] ? ' disabled' : '') + '>' + esc(l.name) + ' &middot; ' + esc(l.address_city || '') + (l.ve_verified_tier ? ' (' + (l.ve_verified_tier === 'plus' ? 'Plus' : 'Verified') + ')' : '') + (have[l.id] ? ' (already a stop)' : '') + '</button></li>'; }).join('') || '<li class="meta" style="padding:8px 10px">No South Florida match</li>';
+              $('s-res').innerHTML = (list || []).map(function (l) { return '<li><button type="button" data-id="' + esc(l.id) + '"' + (have[l.id] ? ' disabled' : '') + '>' + esc(l.name) + ' &middot; ' + esc(l.address_city || '') + (l.ve_verified_tier ? ' (' + (l.ve_verified_tier === 'plus' ? 'Plus' : 'Verified') + ')' : '') + (have[l.id] ? ' (already a stop)' : '') + '</button></li>'; }).join('') || '<li class="meta" style="padding:8px 10px">No match in the ' + esc(VE_HUB(hunt.community_slug).name) + ' directory</li>';
               $('s-res').hidden = false;
             });
         }, 250);
@@ -296,18 +306,32 @@
           .then(function (r) { stops = r[0].stops || []; stats = r[1] || {}; renderStops(); renderReports(r[2].reports || []); renderFlags(r[3] || {}); })
           .catch(function () { $('stops').innerHTML = '<tr><td colspan="8" class="meta">Did not load. Refresh to try again.</td></tr>'; });
       }
+      function renderLaunch() {
+        $('launch').innerHTML = VE_HUBS.map(function (h) { return '<label><input type="checkbox" data-hub="' + h.slug + '"' + (launched.indexOf(h.slug) > -1 ? ' checked' : '') + '> ' + esc(h.name) + '</label>'; }).join('');
+      }
+      $('launch').addEventListener('change', function (e) {
+        var c = e.target.closest('[data-hub]'); if (!c) return;
+        var name = VE_HUB(c.getAttribute('data-hub')).name;
+        if (!confirm(c.checked ? 'Launch the Passport Challenge in ' + name + '? Members there see its live challenge right away.' : 'Take the Passport Challenge out of ' + name + '? Members there see "Coming in 2027" again.')) { c.checked = !c.checked; return; }
+        var list = []; $('launch').querySelectorAll('[data-hub]:checked').forEach(function (x) { list.push(x.getAttribute('data-hub')); });
+        msg('l-msg', 'Saving...');
+        api({ action: 'admin_launch', communities: list }).then(function (d) {
+          if (!d.ok) { c.checked = !c.checked; return msg('l-msg', 'Did not save.', true); }
+          launched = d.launched || []; renderLaunch(); msg('l-msg', launched.length ? 'Live in: ' + launched.map(function (s) { return VE_HUB(s).name; }).join(', ') + '.' : 'Not launched anywhere yet.');
+        }).catch(function () { c.checked = !c.checked; msg('l-msg', 'Could not connect.', true); });
+      });
       function loadHunts(pickId) {
         return api({ action: 'admin_hunts' }).then(function (d) {
-          hunts = d.hunts || [];
+          hunts = d.hunts || []; launched = d.launched || []; renderLaunch();
           var h = hunts.filter(function (x) { return x.id === pickId; })[0] || hunts.filter(function (x) { return x.status === 'live'; })[0] || hunts[0] || null;
           select(h);
-          if (!h) msg('f-msg', 'No hunts yet. The form is filled in for next month: add the area and save.');
+          if (!h) msg('f-msg', 'No challenges yet. The form is filled in for next month: add the area and save.');
         });
       }
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
-        if (!VEAuth.isLoggedIn()) { $('h-gate').hidden = false; $('h-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="h-signin">Sign in</button>'; $('h-signin').onclick = function () { VEAuth.showAuthModal('Sign in to manage the Hunt.', function () { location.reload(); }); }; return; }
+        if (!VEAuth.isLoggedIn()) { $('h-gate').hidden = false; $('h-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="h-signin">Sign in</button>'; $('h-signin').onclick = function () { VEAuth.showAuthModal('Sign in to manage the Passport Challenge.', function () { location.reload(); }); }; return; }
         if (!m || !m.is_superadmin) { $('h-gate').hidden = false; $('h-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
         $('h-app').hidden = false;
         loadHunts();
