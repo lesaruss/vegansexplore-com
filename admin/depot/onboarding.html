@@ -74,6 +74,14 @@
 <body>
   <div class="page-frame">
 
+  <script>
+  /* Inside the dashboard frame (Sean, 2026-09-27: "it should be living inside of the frame
+     we created for the dashboard"): the console already supplies the header and a
+     breadcrumb back to Your Tools, so hide the sitewide nav and footer here and tighten
+     the margins. Same pattern as /dashboard/members. A normal visit is unaffected. */
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
   <script src="/public/nav.js"></script>
 
   <div class="wrap">

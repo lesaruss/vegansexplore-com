@@ -71,13 +71,21 @@
 <body>
   <div class="page-frame">
 
+  <script>
+  /* Inside the dashboard frame (Sean, 2026-09-27: "it should be living inside of the frame
+     we created for the dashboard"): the console already supplies the header and a
+     breadcrumb back to Your Tools, so hide the sitewide nav and footer here and tighten
+     the margins. Same pattern as /dashboard/members. A normal visit is unaffected. */
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
   <script src="/public/nav.js"></script>
 
   <div class="wrap">
     <p class="eyebrow">The Depot</p>
     <h1>Pulse</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Write a piece and publish it straight to the <a href="/pulse">Pulse</a>. It goes live the moment you press Publish, with no approval step. Its picture, video and audio come from the <a href="/admin/depot">Library</a>. A piece with a city also shows on that city's page. You can edit or take down anything below at any time.</p>
+    <p class="sub">Write a piece and publish it straight to the <a href="/pulse" target="_blank" rel="noopener">Pulse</a>. It goes live the moment you press Publish, with no approval step. Its picture, video and audio come from the <a href="/admin/depot">Library</a>. A piece with a city also shows on that city's page. You can edit or take down anything below at any time.</p>
     <div id="pu-gate" class="gate" hidden></div>
     <div id="pu-app" hidden>
       <section class="panel" aria-labelledby="pu-form-h">
