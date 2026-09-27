@@ -79,7 +79,7 @@
       </section>
       <section class="panel">
         <h2>Claims</h2>
-        <p class="sub" style="margin-bottom:14px">Businesses claim from their listing page or from <a href="/claim">vegansexplore.com/claim</a>. You get an email for each one. Approving marks the listing verified, opens it to the public, and writes the details they sent onto it.</p>
+        <p class="sub" style="margin-bottom:14px">Businesses claim from their listing page or from <a href="/claim">vegansexplore.com/claim</a>. You get an email for each one. Approving confirms the claim, opens the listing to the public, and writes the details they sent onto it. A claim that came with VE Verified also shows on the Verified tab.</p>
         <div class="claims" id="claims"><p class="sub">Loading...</p></div>
       </section>
     </div>
@@ -123,8 +123,8 @@
           var changed = p.vegan_status && LABEL[p.vegan_status] !== LABEL[l.vegan_status];
           return '<div class="claim">' + logo + '<div>' +
             '<h3><a href="/directory/' + esc(l.slug) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a></h3>' +
-            '<div class="meta">' + esc(l.address_city || '') + ' &middot; claimed ' + new Date(c.created_at).toLocaleDateString() + (c.test ? ' &middot; TEST' : '') + '</div>' +
-            '<div style="margin:8px 0 4px"><span class="pill p-' + st + '">' + label + '</span>' + (c.paid_cents != null ? '<span class="money">' + money(c.paid_cents) + '</span> <span class="meta">contributed</span>' : '<span class="meta">pledged ' + money(c.contribution_cents) + ', not paid</span>') + '</div>' +
+            '<div class="meta">' + esc(l.address_city || '') + ' &middot; claimed ' + new Date(c.created_at).toLocaleDateString() + (c.test ? ' &middot; TEST' : '') + (c.tier ? ' &middot; <b>with ' + (c.tier === 'plus' ? 'VE Verified Plus' : 'VE Verified') + '</b>' : '') + '</div>' +
+            '<div style="margin:8px 0 4px"><span class="pill p-' + st + '">' + label + '</span>' + (c.paid_cents != null ? '<span class="money">' + money(c.paid_cents) + '</span> <span class="meta">' + (c.tier ? 'paid, first year' : 'contributed') + '</span>' : '<span class="meta">pledged ' + money(c.contribution_cents) + ', not paid</span>') + '</div>' +
             '<div class="meta"><b>' + esc(c.contact_name) + '</b>' + (c.contact_role ? ', ' + esc(c.contact_role) : '') + ' &middot; <a href="mailto:' + esc(c.contact_email) + '">' + esc(c.contact_email) + '</a>' + (c.contact_phone ? ' &middot; ' + esc(c.contact_phone) : '') + '</div>' +
             '<div class="meta">Says they are: <b>' + esc(LABEL[p.vegan_status] || '?') + '</b>' + (changed ? ' (listing says ' + esc(LABEL[l.vegan_status] || 'nothing') + ')' : '') + (p.website ? ' &middot; ' + esc(p.website) : '') + (p.instagram ? ' &middot; @' + esc(p.instagram) : '') + '</div>' +
             (p.tagline ? '<div class="desc"><b>' + esc(p.tagline) + '</b></div>' : '') + (p.description ? '<div class="desc">' + esc(p.description) + '</div>' : '') +
@@ -138,8 +138,8 @@
         var b = e.target.closest('[data-ok],[data-no]'); if (!b) return;
         var ok = b.hasAttribute('data-ok'), i = +b.getAttribute(ok ? 'data-ok' : 'data-no'), c = claims[i];
         var note = '';
-        if (ok && !confirm('Approve ' + (c.listing || {}).name + '? It is marked verified, opens to the public, and their details are written onto the listing.')) return;
-        if (!ok) { note = prompt('Reject this claim? Add a note for the record (optional).', ''); if (note === null) return; }
+        if (ok && !confirm('Approve ' + (c.listing || {}).name + '? The claim is confirmed, the listing opens to the public, and their details are written onto the listing.')) return;
+        if (!ok) { note = prompt('Reject this claim? Add a note for the record (optional).' + (c.tier ? ' It came with VE Verified, which stays active until you end it on the Verified tab.' : ''), ''); if (note === null) return; }
         b.disabled = true; $('cm-' + i).textContent = 'Saving...';
         api({ action: 'admin_review', id: c.id, decision: ok ? 'approve' : 'reject', note: note }).then(function (d) {
           if (!d.ok) { b.disabled = false; $('cm-' + i).textContent = 'Did not save.'; return; }

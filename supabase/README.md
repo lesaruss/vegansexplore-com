@@ -234,3 +234,20 @@ Listings tagged `lesaruss-ai-directory-candidate` still stay off the VE hubs. `v
 `admin_listing` also takes `name`, `address` (online, or street/city/state/zip; clears the
 old coordinates) and `details` (At a Glance: atmosphere, accommodations, seating flags,
 ownership). listing.html shows At a Glance only for restaurants and cafes with a storefront.
+
+## VE Verified tiers (2026-09-27)
+
+Playbook `ve-verified-tours-hunt`, group A. VE Verified ($250/yr) and VE Verified Plus
+($500/yr) are yearly Stripe **subscriptions** on the VE account, bought through `ve-claims`
+(v4): on `/claim` alongside a claim (`start` with `tier`), or by the owner of a claimed listing
+(`verified_start`). Each purchase is a `ve_verified_memberships` row (RLS on, service role only);
+trigger `trg_ve_verified_sync` keeps `listings.ve_verified_tier`, `ve_verified_until` and
+`ve_verified` (the badge: live tier AND `visit_done_at` set) in step. Plus sorts first in its hub
+section from payment (`ve-region-directory.js`). Activation runs in one place, `ve-claims
+?verified_confirm=`, which both the buyer's return trip and `ve-stripe-webhook` (v50, new
+`ve_verified` branch) call. Renewals and cancellations arrive as `invoice.payment_succeeded` and
+`customer.subscription.updated/deleted`, added to the VE endpoint `we_1TgxKpP0w5C9oZhvQ84LfHHd` the
+same day; the Depot list also re-reads near-renewal subscriptions from Stripe, and cron
+`ve-verified-daily` (09:17 UTC) lapses anything 3 days past renewal. Depot tab: `/admin/depot/verified`
+(tier, paid, renews, visit, shoot, notes, end, add a membership paid another way).
+Migration `ve_verified_tiers`.

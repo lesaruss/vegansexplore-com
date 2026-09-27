@@ -6,7 +6,8 @@ import { createClient } from 'jsr:@supabase/supabase-js@2'
 // founding-membership), the LESARUSS account (Problem Solver deposits,
 // e.g. Hugh Stewart; Coach OS subscriptions, e.g. Meatless Muscle dashboard billing;
 // TalentVangelist Audit purchases; SAR book tripwire purchases, added 2026-08-16;
-// VE Passport $11/month subscriptions, added 2026-08-17),
+// VE Passport $11/month subscriptions, added 2026-08-17; VE Verified yearly
+// subscriptions on VE's account, added 2026-09-27),
 // and now Meatless Muscle's OWN account
 // (Brooke Sellers' cookbook e-book sales, added 2026-08-13 per Sean - book sales
 // route to her Stripe directly, not the shared LESARUSS one). Each account has its
@@ -401,6 +402,21 @@ Deno.serve(async (req: Request) => {
     if (session.metadata?.kind === 'campaign_pledge') {
       console.log('Skipping legacy branch for unified campaigns/checkout session:', session.id, session.metadata.campaign_slug)
       return new Response(JSON.stringify({ received: true, ignored: 'campaign_pledge_handled_by_campaigns_webhook' }), { headers: { 'Content-Type': 'application/json' } })
+    }
+
+    // --- VE Verified / Verified Plus yearly subscription (ve-claims sessions carry this metadata) ---
+    // Added 2026-09-27 (Logan), playbook ve-verified-tours-hunt group A. Activation lives in one
+    // place, ve-claims' verified_confirm (the buyer's return trip runs the same code), so this
+    // branch just triggers it; it is idempotent on the membership's awaiting_payment status.
+    if (session.metadata?.type === 've_verified') {
+      try {
+        const r = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/ve-claims?verified_confirm=${encodeURIComponent(session.id)}`, { redirect: 'manual' })
+        console.log('ve_verified activation:', session.id, r.status, r.headers.get('location'))
+      } catch (e) {
+        console.error('ve_verified activation failed:', session.id, e)
+        return new Response('ve_verified activation failed', { status: 500 })
+      }
+      return new Response(JSON.stringify({ received: true, ve_verified: true }), { headers: { 'Content-Type': 'application/json' } })
     }
 
     // --- Explore Season Partners Guide purchase (ve-partner-guide sessions carry this metadata) ---
@@ -1301,6 +1317,39 @@ Deno.serve(async (req: Request) => {
         html: `<p style="font-family:sans-serif;"><strong>New founding member</strong><br>Name: ${name || '(not provided)'}<br>Email: ${email}<br>Stripe session: ${session.id}</p>`
       })
     })
+  }
+
+  // --- VE Verified renewals and cancellations (added 2026-09-27, Logan) ---
+  // Keyed on ve_verified_memberships.stripe_subscription_id, so these never touch Passport rows.
+  // The membership's listing summary (badge, renewal date) is kept by a trigger on that table.
+  if (event.type === 'invoice.payment_succeeded') {
+    const invoice = event.data.object as Stripe.Invoice
+    // Newer Stripe API versions move the subscription id under parent.subscription_details.
+    const subId = ((invoice as any).subscription ?? (invoice as any).parent?.subscription_details?.subscription ?? null) as string | null
+    if (subId && invoice.billing_reason === 'subscription_cycle') {
+      const line: any = (invoice as any).lines?.data?.[0]
+      const now = new Date().toISOString()
+      const patch: Record<string, unknown> = { status: 'active', last_paid_at: now, updated_at: now }
+      if (line?.period?.start) patch.current_period_start = new Date(line.period.start * 1000).toISOString()
+      if (line?.period?.end) patch.renews_at = new Date(line.period.end * 1000).toISOString()
+      const { data, error } = await supabase.from('ve_verified_memberships').update(patch).eq('stripe_subscription_id', subId).in('status', ['active', 'past_due', 'lapsed']).select('id')
+      if (error) console.error('ve_verified renewal update error:', error)
+      else if (data?.length) console.log('ve_verified renewed:', subId, patch.renews_at)
+    }
+  }
+  if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+    const sub = event.data.object as any
+    const item = sub.items?.data?.[0] || {}
+    const end = sub.current_period_end ?? item.current_period_end
+    const status = event.type === 'customer.subscription.deleted' || sub.status === 'canceled' ? 'canceled'
+      : (sub.status === 'past_due' || sub.status === 'unpaid') ? 'past_due' : (sub.status === 'active' || sub.status === 'trialing') ? 'active' : null
+    const patch: Record<string, unknown> = { cancel_at_period_end: !!sub.cancel_at_period_end, updated_at: new Date().toISOString() }
+    if (status) patch.status = status
+    if (end) patch.renews_at = new Date(end * 1000).toISOString()
+    if (status === 'canceled') patch.canceled_at = new Date((sub.canceled_at || Date.now() / 1000) * 1000).toISOString()
+    const { data, error } = await supabase.from('ve_verified_memberships').update(patch).eq('stripe_subscription_id', sub.id).neq('status', 'awaiting_payment').select('id')
+    if (error) console.error('ve_verified subscription update error:', error)
+    else if (data?.length) console.log('ve_verified subscription', event.type, sub.id, status)
   }
 
   // --- VE Passport monthly renewal branch (invoice.payment_succeeded) ---

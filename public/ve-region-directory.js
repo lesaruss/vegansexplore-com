@@ -106,6 +106,7 @@
     + '.vrd-root .vrd-vegan-fully{background:#e3f6e7;color:#1f6b33}'
     + '.vrd-root .vrd-vegan-friendly{background:#f0f0f0;color:#555}'
     + '.vrd-root .vrd-vegan-options{background:#f5f1e8;color:#6b5a2e}'
+    + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#1f5f22;color:#fff;vertical-align:2px;white-space:nowrap}'
     + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
     + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
     + '.vrd-root .vrd-vetting{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fff4e2;color:#6b3f00;white-space:nowrap}'
@@ -223,15 +224,28 @@
     var k = VEGAN_KEY[l.vegan_status]; if (!k) return '';
     return ' <span class="vrd-vegan vrd-vegan-' + k + '">' + VEGAN_LABEL[k] + '</span>';
   }
+  // VE Verified (playbook ve-verified-tours-hunt): a live paid tier (3-day grace past renewal).
+  // The badge also needs the VE visit (ve_verified); Plus gets priority placement from payment.
+  function vTier(l) {
+    if (!l.ve_verified_tier) return null;
+    if (l.ve_verified_until && new Date(l.ve_verified_until).getTime() < Date.now() - 3 * 864e5) return null;
+    return l.ve_verified_tier;
+  }
+  function isPlus(l) { return vTier(l) === 'plus'; }
+  function verifiedTag(l) {
+    var t = vTier(l); if (!t || !l.ve_verified) return '';
+    return ' <span class="vrd-verified"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>' + (t === 'plus' ? 'VE Verified Plus' : 'VE Verified') + '</span>';
+  }
+  function byPriority(a, b) { return (isPlus(b) ? 1 : 0) - (isPlus(a) ? 1 : 0); }
   function adminBtn(l) { return ADMIN ? '<button type="button" class="vla-edit" data-vla="' + esc(l.id) + '" title="Admin only">Edit</button>' : ''; }
 
   function makeBrowseCard(l, idx, type) {
     var votes = (l.vote_count || 0);
     var subcat = sectionsOf(l).join('|');
     var temp = l.business_status === 'CLOSED_TEMPORARILY' ? ' <span class="vrd-temp">Temporarily closed</span>' : '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '">' +
       makeAvatar(l) +
-      '<div class="rank-info"><div class="rank-name">' + esc(l.name) + '</div>' +
+      '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + vettingNote(l) + temp + '</div>' +
       '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + '</div></div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button>' + adminBtn(l) + '</div>' +
@@ -338,7 +352,8 @@
     CAT_CONFIG.forEach(function (cfg) {
       var tab = cfg.key;
       var all = tabs[tab];
-      all.sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0); });
+      // Plus businesses first in their section (priority placement), then by votes.
+      all.sort(function (a, b) { return byPriority(a, b) || (b.vote_count || 0) - (a.vote_count || 0); });
 
       var cards = all.map(function (l, idx) {
         var type = isOnline(l) ? 'online' : 'regular';
@@ -533,7 +548,7 @@
         var order = sel.value;
         var cards = Array.prototype.slice.call(grid.querySelectorAll('.rank-card'));
         cards.sort(function (a, b) {
-          if (order === 'votes') return parseInt(b.dataset.votes) - parseInt(a.dataset.votes);
+          if (order === 'votes') return (parseInt(b.dataset.plus || 0) - parseInt(a.dataset.plus || 0)) || parseInt(b.dataset.votes) - parseInt(a.dataset.votes);
           if (order === 'az') return a.dataset.name.localeCompare(b.dataset.name);
           if (order === 'recent') return parseInt(b.dataset.idx) - parseInt(a.dataset.idx);
           if (order === 'added') return parseInt(a.dataset.idx) - parseInt(b.dataset.idx);
@@ -548,7 +563,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status,tags&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -627,7 +642,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status,tags&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return config.matchListing(l) || isOnline(l); })); })

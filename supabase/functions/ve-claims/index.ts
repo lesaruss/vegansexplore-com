@@ -6,16 +6,30 @@
 //
 // Member (Authorization: Bearer <ve_token>):
 //   POST { action: 'start', listing_id, contact_name, contact_role, contact_email, contact_phone,
-//          proposed: { tagline, description, website, phone, instagram, vegan_status }, amount_cents, return_url }
+//          proposed: { tagline, description, website, phone, instagram, vegan_status }, amount_cents, return_url,
+//          tier?: 'verified' | 'plus' }   (tier: claim and buy VE Verified in one checkout, no amount_cents)
 //     -> { url }  Stripe Checkout. The session carries the same metadata ve-entry-checkout uses
 //        (type entry_contribution, member_id, amount_cents), so ve-stripe-webhook activates the
 //        membership and credits Points exactly as it does for the $11 Founding Membership, plus
 //        claim_id. Test accounts (ve_test_checkout_allowlist) get a Stripe test session.
-//   POST { action: 'mine', listing_id }  -> { claim } this member's latest claim on it
+//   POST { action: 'mine', listing_id }  -> { claim, verified } this member's latest claim, and the
+//     listing's live VE Verified membership if this member is its owner or bought it
+//   POST { action: 'verified_start', listing_id, tier, return_url }  -> { url }  an owner already
+//     holding the listing buys VE Verified ($250/yr) or VE Verified Plus ($500/yr)
+//
+// VE Verified (playbook ve-verified-tours-hunt, group A): a yearly Stripe SUBSCRIPTION on the VE
+// account, so renewal is automatic and the renewal date is Stripe's current_period_end. Each
+// purchase is a ve_verified_memberships row; a trigger keeps listings.ve_verified_tier /
+// ve_verified_until / ve_verified (badge: paid AND the VE visit has happened) in step.
+// ve-stripe-webhook records renewals and cancellations; the return trip and the Depot list also
+// read the subscription straight from Stripe, so a missed webhook heals itself.
+//
 // Stripe return:
 //   GET ?confirm=<session id>  checks the session is paid, marks the claim submitted with what
 //     was actually paid, activates the member (test sessions have no webhook), emails Sean,
 //     and sends the visitor back to the claim page.
+//   GET ?verified_confirm=<session id>  activates a VE Verified purchase (and the claim it came
+//     with). ve-stripe-webhook calls the same URL, so activation lives in one place.
 // Superadmin (the Depot):
 //   POST { action: 'admin_list' }                          -> { claims, trust }
 //   POST { action: 'admin_review', id, decision: 'approve' | 'reject', note? }
@@ -28,6 +42,11 @@
 //     The quick editor on the city hubs and listing pages (Sean, 2026-09-27): rename it, move it,
 //     change its sub-section (or add more in the same section), set how Vegan it is, mark it
 //     closed, and fill in the At a Glance details that restaurants and cafes show.
+//   POST { action: 'admin_verified_list' }   -> { rows } every VE Verified and Plus business (refreshed from Stripe)
+//   POST { action: 'admin_verified_mark', id, visit_done?, shoot_done?, notes? }  visit / shoot done (true, false or a date)
+//   POST { action: 'admin_verified_grant', listing_id, tier, paid_at?, renews_at?, notes? }  a membership paid
+//     outside Stripe (cash, invoice, comp). No auto-renewal; it lapses on renews_at unless extended.
+//   POST { action: 'admin_verified_end', id }   end a membership now (and cancel its Stripe subscription)
 //
 // verify_jwt is false: the VE app token is checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -56,6 +75,12 @@ const ACCOMMODATIONS = ['Dine-in', 'Takeout', 'Delivery', 'Outdoor Seating', 'Re
 const OWNED = ['is_black_owned', 'is_women_owned', 'is_latino_owned', 'is_asian_owned', 'is_immigrant_owned', 'is_veteran_owned',
   'is_family_owned', 'is_lgbtq_owned', 'is_indigenous_owned'];
 const BUSINESS = ['OPERATIONAL', 'CLOSED_TEMPORARILY', 'CLOSED_PERMANENTLY'];
+// VE Verified tiers (Sean, 2026-09-27). Yearly, renewing.
+const TIERS: Record<string, { cents: number; name: string }> = {
+  verified: { cents: 25000, name: 'VE Verified' },
+  plus: { cents: 50000, name: 'VE Verified Plus' },
+};
+const LIVE = ['active', 'past_due'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -117,6 +142,121 @@ async function mail(subject: string, html: string, replyTo?: string) {
   } catch (e) { console.error('claim email failed', e); }
 }
 
+// ---- VE Verified helpers.
+async function stripe(test: boolean, path: string, form?: URLSearchParams, method = form ? 'POST' : 'GET') {
+  const res = await fetch(`https://api.stripe.com/v1/${path}`, {
+    method, headers: { Authorization: `Bearer ${await stripeKey(test)}`, ...(form ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) },
+    body: form ? form.toString() : undefined,
+  });
+  return { ok: res.ok, body: await res.json() };
+}
+const iso = (sec: unknown) => (typeof sec === 'number' && sec > 0 ? new Date(sec * 1000).toISOString() : null);
+// A subscription's billing period; newer API versions keep it on the item rather than the subscription.
+function period(sub: any) {
+  const item = sub?.items?.data?.[0] || {};
+  return { start: iso(sub?.current_period_start ?? item.current_period_start), end: iso(sub?.current_period_end ?? item.current_period_end) };
+}
+function subStatus(s: string): string {
+  if (s === 'active' || s === 'trialing') return 'active';
+  if (s === 'past_due' || s === 'unpaid') return 'past_due';
+  if (s === 'canceled' || s === 'incomplete_expired') return 'canceled';
+  return 'awaiting_payment';
+}
+// Read a membership's subscription from Stripe and store what it says.
+async function syncFromStripe(row: any): Promise<any> {
+  if (row.source !== 'stripe' || !row.stripe_subscription_id) return row;
+  const { ok, body: sub } = await stripe(row.test, `subscriptions/${encodeURIComponent(row.stripe_subscription_id)}`);
+  if (!ok) return row;
+  const p = period(sub), now = new Date().toISOString();
+  const patch: Record<string, unknown> = { status: subStatus(sub.status), current_period_start: p.start, renews_at: p.end,
+    cancel_at_period_end: !!sub.cancel_at_period_end, canceled_at: iso(sub.canceled_at), updated_at: now };
+  if (patch.status === row.status && p.end === row.renews_at && patch.cancel_at_period_end === row.cancel_at_period_end) return row;
+  const { data } = await db.from('ve_verified_memberships').update(patch).eq('id', row.id).select('*').single();
+  return data || row;
+}
+// Create the Stripe subscription checkout for a ve_verified_memberships row.
+async function verifiedCheckout(row: any, listing: any, member: any, back: string, claimId?: string): Promise<{ url?: string; error?: string }> {
+  const t = TIERS[row.tier];
+  const params = new URLSearchParams({
+    mode: 'subscription',
+    'line_items[0][price_data][currency]': 'usd',
+    'line_items[0][price_data][product_data][name]': (row.test ? '[TEST] ' : '') + `${t.name} (yearly) - ${listing.name}`.slice(0, 120),
+    'line_items[0][price_data][unit_amount]': String(t.cents),
+    'line_items[0][price_data][recurring][interval]': 'year',
+    'line_items[0][quantity]': '1',
+    success_url: `${FN_URL}?verified_confirm={CHECKOUT_SESSION_ID}`,
+    cancel_url: withParam(back, 'verified', 'cancelled'),
+    customer_email: member.email,
+    billing_address_collection: 'auto',
+  });
+  const meta: Record<string, string> = { type: 've_verified', verified_id: row.id, listing_id: listing.id, member_id: member.id, tier: row.tier };
+  if (claimId) meta.claim_id = claimId;
+  if (row.test) meta.test = 'true';
+  for (const [k, v] of Object.entries(meta)) { params.set(`metadata[${k}]`, v); params.set(`subscription_data[metadata][${k}]`, v); }
+  const { ok, body: s } = await stripe(row.test, 'checkout/sessions', params);
+  if (!ok) { console.error('stripe error', s); return { error: s.error?.message ?? 'stripe_error' }; }
+  await db.from('ve_verified_memberships').update({ stripe_session_id: s.id, updated_at: new Date().toISOString() }).eq('id', row.id);
+  return { url: s.url };
+}
+// A fresh awaiting_payment row for this member and listing (reusing an unpaid one).
+async function verifiedRow(listingId: string, member: any, tier: string, test: boolean, contact: { name?: string; email?: string }, claimId?: string) {
+  const row = { listing_id: listingId, member_id: member.id, tier, amount_cents: TIERS[tier].cents, test, status: 'awaiting_payment', source: 'stripe',
+    contact_name: contact.name || member.name || null, contact_email: contact.email || member.email || null, claim_id: claimId || null, updated_at: new Date().toISOString() };
+  const { data: open } = await db.from('ve_verified_memberships').select('id').eq('member_id', member.id).eq('listing_id', listingId).eq('status', 'awaiting_payment').maybeSingle();
+  const { data, error } = open
+    ? await db.from('ve_verified_memberships').update({ ...row, stripe_session_id: null }).eq('id', open.id).select('*').single()
+    : await db.from('ve_verified_memberships').insert(row).select('*').single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+async function liveMembership(listingId: string) {
+  const { data } = await db.from('ve_verified_memberships').select('*').eq('listing_id', listingId).in('status', LIVE).maybeSingle();
+  return data;
+}
+// Paid: activate the membership from the Stripe session (the return trip and the webhook both land here).
+async function activateVerified(sessionId: string): Promise<{ row: any; listing: any } | null> {
+  const { data: row } = await db.from('ve_verified_memberships').select('*').eq('stripe_session_id', sessionId).maybeSingle();
+  if (!row) return null;
+  const { data: listing } = await db.from('listings').select('id, name, slug, address_city').eq('id', row.listing_id).maybeSingle();
+  if (row.status !== 'awaiting_payment') return { row, listing };
+  const { ok, body: s } = await stripe(row.test, `checkout/sessions/${encodeURIComponent(sessionId)}?expand[]=subscription`);
+  if (!ok || s.status !== 'complete' || s.metadata?.verified_id !== row.id || !s.subscription) return null;
+  const sub = typeof s.subscription === 'string' ? (await stripe(row.test, `subscriptions/${s.subscription}`)).body : s.subscription;
+  const p = period(sub), now = new Date().toISOString();
+  const { data: upd } = await db.from('ve_verified_memberships').update({
+    status: subStatus(sub.status) === 'awaiting_payment' ? 'active' : subStatus(sub.status), stripe_subscription_id: sub.id,
+    stripe_customer_id: typeof s.customer === 'string' ? s.customer : s.customer?.id ?? null,
+    paid_at: now, last_paid_at: now, current_period_start: p.start || now, renews_at: p.end, updated_at: now,
+  }).eq('id', row.id).eq('status', 'awaiting_payment').select('*').maybeSingle();
+  if (!upd) return { row, listing }; // the other path got here first
+  // A purchase makes the buyer a member, the same as a claim contribution.
+  if (row.member_id) await db.from('members').update({ membership_status: 'active', entry_paid_at: now, updated_at: now }).eq('id', row.member_id).neq('membership_status', 'active');
+  if (row.claim_id) {
+    await db.from('ve_listing_claims').update({ status: 'submitted', paid_cents: s.amount_total ?? row.amount_cents, paid_at: now, updated_at: now }).eq('id', row.claim_id).eq('status', 'awaiting_contribution');
+    await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', row.listing_id).neq('claim_status', 'verified');
+  }
+  const t = TIERS[row.tier], renew = p.end ? new Date(p.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '';
+  await mail(`${row.test ? '[TEST] ' : ''}${t.name}: ${listing?.name || 'a listing'}, $${(t.cents / 100).toFixed(0)}/yr`,
+    `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) bought <b>${t.name}</b> at $${(t.cents / 100).toFixed(0)} a year${renew ? `, renewing ${esc(renew)}` : ''}.</p>` +
+    `<p>${esc(row.contact_name || '')}<br>${esc(row.contact_email || '')}</p>` +
+    (row.claim_id ? '<p>This came with a listing claim, which is waiting for your review.</p>' : '') +
+    `<p>Next: schedule the visit and photo shoot. Track it in the Depot: <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`, row.contact_email || undefined);
+  if (row.contact_email && RESEND_KEY) {
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [row.contact_email], reply_to: 'hello@vegansexplore.com',
+          subject: `Welcome to ${t.name}`,
+          html: `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
+            `<p>Next, someone from Vegans Explore will reach out to schedule an in-person visit and your photo shoot. Your Verified badge goes on your listing once we have visited.</p>` +
+            `<p>Your membership renews yearly${renew ? ' (next on ' + esc(renew) + ')' : ''}. Questions? Reply to this email.</p>` +
+            `<p>The Vegans Explore team</p>` }),
+      });
+    } catch (e) { console.error('verified welcome email failed', e); }
+  }
+  return { row: upd, listing };
+}
+
 // ---- Stripe return: confirm the contribution and send the visitor back.
 async function confirm(sessionId: string): Promise<Response> {
   const fallback = 'https://vegansexplore.com/claim';
@@ -150,6 +290,13 @@ Deno.serve(async (req) => {
     try { return await confirm(url.searchParams.get('confirm')!); }
     catch (e) { console.error('confirm failed', e); return Response.redirect('https://vegansexplore.com/claim?claim=unpaid', 302); }
   }
+  if (req.method === 'GET' && url.searchParams.get('verified_confirm')) {
+    try {
+      const r = await activateVerified(url.searchParams.get('verified_confirm')!);
+      if (!r) return Response.redirect('https://vegansexplore.com/claim?verified=unpaid', 302);
+      return Response.redirect(`https://vegansexplore.com/claim?listing=${encodeURIComponent(r.listing?.slug || '')}&verified=active`, 302);
+    } catch (e) { console.error('verified confirm failed', e); return Response.redirect('https://vegansexplore.com/claim?verified=unpaid', 302); }
+  }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
@@ -162,7 +309,33 @@ Deno.serve(async (req) => {
   if (body.action === 'mine') {
     const { data } = await db.from('ve_listing_claims').select('id, status, paid_cents, created_at').eq('member_id', memberId).eq('listing_id', String(body.listing_id || ''))
       .neq('status', 'cancelled').order('created_at', { ascending: false }).limit(1).maybeSingle();
-    return json({ claim: data || null });
+    const lid = String(body.listing_id || '');
+    let verified = null;
+    if (/^[0-9a-f-]{36}$/.test(lid)) {
+      const { data: l } = await db.from('listings').select('owner_member_id').eq('id', lid).maybeSingle();
+      let v = await liveMembership(lid);
+      if (v && (v.member_id === memberId || l?.owner_member_id === memberId || member.is_superadmin)) {
+        v = await syncFromStripe(v);
+        verified = { tier: v.tier, status: v.status, renews_at: v.renews_at, cancel_at_period_end: v.cancel_at_period_end, visit_done: !!v.visit_done_at, source: v.source };
+      }
+      return json({ claim: data || null, verified, owner: !!l && l.owner_member_id === memberId });
+    }
+    return json({ claim: data || null, verified });
+  }
+
+  // An owner who already holds the listing buys VE Verified.
+  if (body.action === 'verified_start') {
+    const id = String(body.listing_id || ''), tier = String(body.tier || '');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !TIERS[tier]) return json({ error: 'bad_request' }, 400);
+    const { data: listing } = await db.from('listings').select('id, name, slug, owner_member_id, claimed_by_member_id, claim_status').eq('id', id).eq('status', 'approved').maybeSingle();
+    if (!listing) return json({ error: 'not_found' }, 404);
+    if (listing.owner_member_id !== memberId && listing.claimed_by_member_id !== memberId) return json({ error: 'not_owner' }, 403);
+    if (await liveMembership(id)) return json({ error: 'already_verified' }, 409);
+    const test = await isTestAccount(member.email);
+    const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
+    const row = await verifiedRow(id, member, tier, test, {});
+    const r = await verifiedCheckout(row, listing, member, back);
+    return r.url ? json({ url: r.url, test_mode: test }) : json({ error: r.error }, 400);
   }
 
   if (body.action === 'start') {
@@ -171,7 +344,10 @@ Deno.serve(async (req) => {
     const { data: listing } = await db.from('listings').select('id, name, slug, claim_status').eq('id', id).eq('status', 'approved').maybeSingle();
     if (!listing) return json({ error: 'not_found' }, 404);
     if (listing.claim_status === 'verified') return json({ error: 'already_claimed' }, 409);
-    const cents = Math.round(Number(body.amount_cents));
+    const tier = body.tier ? String(body.tier) : '';
+    if (tier && !TIERS[tier]) return json({ error: 'bad_tier' }, 400);
+    if (tier && await liveMembership(id)) return json({ error: 'already_verified' }, 409);
+    const cents = tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
     if (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
     const contact_name = plain(body.contact_name, 120), contact_email = plain(body.contact_email, 200).toLowerCase();
     if (!contact_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) return json({ error: 'missing_contact' }, 400);
@@ -185,13 +361,21 @@ Deno.serve(async (req) => {
     const test = await isTestAccount(member.email);
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = { listing_id: id, member_id: memberId, status: 'awaiting_contribution', contact_name, contact_role: plain(body.contact_role, 120),
-      contact_email, contact_phone: plain(body.contact_phone, 40), proposed, contribution_cents: cents, test, updated_at: new Date().toISOString() };
+      contact_email, contact_phone: plain(body.contact_phone, 40), proposed, contribution_cents: cents, tier: tier || null, test, updated_at: new Date().toISOString() };
     // One open claim per member and listing: reuse it if they come back before paying.
     const { data: open } = await db.from('ve_listing_claims').select('id').eq('member_id', memberId).eq('listing_id', id).eq('status', 'awaiting_contribution').maybeSingle();
     const { data: claim, error } = open
       ? await db.from('ve_listing_claims').update(row).eq('id', open.id).select('id').single()
       : await db.from('ve_listing_claims').insert(row).select('id').single();
     if (error || !claim) return json({ error: 'save_failed', message: error?.message }, 500);
+    if (tier) {
+      // Claim and VE Verified in one yearly subscription checkout; the claim is confirmed when it is paid.
+      const vrow = await verifiedRow(id, member, tier, test, { name: contact_name, email: contact_email }, claim.id);
+      const r = await verifiedCheckout(vrow, listing, member, back, claim.id);
+      if (!r.url) return json({ error: r.error }, 400);
+      await db.from('ve_listing_claims').update({ stripe_session_id: null }).eq('id', claim.id);
+      return json({ url: r.url, test_mode: test });
+    }
     const params = new URLSearchParams({
       mode: 'payment',
       'line_items[0][price_data][currency]': 'usd',
@@ -225,7 +409,7 @@ Deno.serve(async (req) => {
 
   if (body.action === 'admin_list') {
     const { data: claims, error } = await db.from('ve_listing_claims')
-      .select('id, status, contact_name, contact_role, contact_email, contact_phone, proposed, contribution_cents, paid_cents, paid_at, test, review_note, reviewed_at, created_at, listing:listings(id, name, slug, address_city, vegan_status, logo_url, claim_status), member:members(id, name, email)')
+      .select('id, status, tier, contact_name, contact_role, contact_email, contact_phone, proposed, contribution_cents, paid_cents, paid_at, test, review_note, reviewed_at, created_at, listing:listings(id, name, slug, address_city, vegan_status, logo_url, claim_status), member:members(id, name, email)')
       .neq('status', 'cancelled').order('created_at', { ascending: false }).limit(300);
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     const { data: trust } = await db.from('ve_site_settings').select('value').eq('key', 'directory_trust').maybeSingle();
@@ -278,6 +462,68 @@ Deno.serve(async (req) => {
       .select('id, slug, name, category, extra_categories, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, listing: data });
+  }
+
+  if (body.action === 'admin_verified_list') {
+    const { data: rows, error } = await db.from('ve_verified_memberships')
+      .select('*, listing:listings(id, name, slug, address_city, logo_url, color, claim_status, ve_verified), member:members(id, name, email)')
+      .neq('status', 'abandoned').order('created_at', { ascending: false }).limit(500);
+    if (error) return json({ error: 'list_failed', message: error.message }, 500);
+    // Heal anything a missed webhook left behind: live Stripe rows near or past renewal, and any flagged to cancel.
+    const soon = Date.now() + 14 * 864e5;
+    const out = [];
+    for (const r of rows || []) {
+      const stale = LIVE.includes(r.status) && r.source === 'stripe' && (!r.renews_at || new Date(r.renews_at).getTime() < soon || r.cancel_at_period_end);
+      out.push(stale ? { ...r, ...(await syncFromStripe(r)), listing: r.listing, member: r.member } : r);
+    }
+    return json({ rows: out.filter((r) => r.status !== 'awaiting_payment' || Date.now() - new Date(r.created_at).getTime() < 2 * 864e5) });
+  }
+
+  if (body.action === 'admin_verified_mark') {
+    const id = String(body.id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const when = (v: unknown) => (v === true ? new Date().toISOString() : v === false || v === null ? null : (() => { const d = new Date(String(v)); return isNaN(d.getTime()) ? undefined : d.toISOString(); })());
+    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (body.visit_done !== undefined) { const w = when(body.visit_done); if (w === undefined) return json({ error: 'bad_date' }, 400); patch.visit_done_at = w; }
+    if (body.shoot_done !== undefined) { const w = when(body.shoot_done); if (w === undefined) return json({ error: 'bad_date' }, 400); patch.shoot_done_at = w; }
+    if (body.notes !== undefined) patch.notes = plain(body.notes, 1000) || null;
+    const { data, error } = await db.from('ve_verified_memberships').update(patch).eq('id', id).select('id, visit_done_at, shoot_done_at, notes').single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, row: data });
+  }
+
+  if (body.action === 'admin_verified_grant') {
+    const id = String(body.listing_id || ''), tier = String(body.tier || '');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !TIERS[tier]) return json({ error: 'bad_request' }, 400);
+    const { data: listing } = await db.from('listings').select('id, name, owner_member_id, ve_contact_name, ve_contact_email').eq('id', id).maybeSingle();
+    if (!listing) return json({ error: 'not_found' }, 404);
+    if (await liveMembership(id)) return json({ error: 'already_verified' }, 409);
+    const paid = body.paid_at ? new Date(String(body.paid_at)) : new Date();
+    const renews = body.renews_at ? new Date(String(body.renews_at)) : new Date(new Date(paid).setFullYear(paid.getFullYear() + 1));
+    if (isNaN(paid.getTime()) || isNaN(renews.getTime()) || renews <= new Date()) return json({ error: 'bad_date' }, 400);
+    const { data, error } = await db.from('ve_verified_memberships').insert({
+      listing_id: id, member_id: listing.owner_member_id || null, tier, status: 'active', source: 'manual', amount_cents: Math.max(0, Math.round(Number(body.amount_cents ?? TIERS[tier].cents)) || 0),
+      contact_name: listing.ve_contact_name || null, contact_email: listing.ve_contact_email || null,
+      paid_at: paid.toISOString(), last_paid_at: paid.toISOString(), current_period_start: paid.toISOString(), renews_at: renews.toISOString(),
+      notes: plain(body.notes, 1000) || null, created_by: memberId,
+    }).select('id').single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, id: data.id });
+  }
+
+  if (body.action === 'admin_verified_end') {
+    const id = String(body.id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { data: row } = await db.from('ve_verified_memberships').select('*').eq('id', id).maybeSingle();
+    if (!row) return json({ error: 'not_found' }, 404);
+    if (row.source === 'stripe' && row.stripe_subscription_id && LIVE.includes(row.status)) {
+      const { ok, body: b } = await stripe(row.test, `subscriptions/${encodeURIComponent(row.stripe_subscription_id)}`, undefined, 'DELETE');
+      if (!ok && b?.error?.code !== 'resource_missing') return json({ error: b?.error?.message || 'stripe_error' }, 400);
+    }
+    const now = new Date().toISOString();
+    const { error } = await db.from('ve_verified_memberships').update({ status: 'canceled', canceled_at: now, updated_at: now }).eq('id', id);
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true });
   }
 
   if (body.action === 'admin_review') {

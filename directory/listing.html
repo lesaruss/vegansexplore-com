@@ -483,6 +483,19 @@ function getSlug(){
   return parts[parts.length-1] || '';
 }
 
+// VE Verified (playbook ve-verified-tours-hunt): ve_verified_tier is a live paid tier kept by a
+// trigger on ve_verified_memberships; ve_verified is true once VE has visited. The badge needs
+// both, and a tier past its renewal date (plus a 3-day grace for a late renewal) counts as gone.
+function verifiedTier(l){
+  if(!l || !l.ve_verified_tier) return null;
+  if(l.ve_verified_until && new Date(l.ve_verified_until).getTime() < Date.now() - 3*864e5) return null;
+  return l.ve_verified_tier;
+}
+function verifiedLabel(l){
+  var t = verifiedTier(l);
+  return t && l.ve_verified ? (t === 'plus' ? 'VE Verified Plus' : 'VE Verified') : '';
+}
+
 function fetchListing(slug){
   var url = SUPABASE_URL + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=*&limit=1';
   return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
@@ -794,13 +807,13 @@ function renderSidebar(l){
     return '<a href="'+esc(p.href)+'" target="_blank" rel="noopener" class="social-btn">'+esc(p.label)+'</a>';
   });
 
-  var verifBadge = l.ve_verified ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">VE Verified</span>' : '';
+  var verifBadge = verifiedLabel(l) ? '<span style="font-size:10px;color:#5EC47A;font-weight:800;display:block;margin-bottom:8px">'+verifiedLabel(l)+'</span>' : '';
   // Copy sharpened (2026-09-08, Logan, Sean direction): make the payoff of
   // claiming concrete -- a profile that looks like the site's best listings
   // -- rather than a vague "unlock analytics" line. Claiming itself is free;
   // it's filling the profile in afterward that produces that look, so the
   // copy says exactly that rather than implying a paid unlock.
-  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your business? Claim your listing to tell the community your story, keep your details right, and get your listing verified.</p><a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" class="claim-btn">Claim Listing</a></div></div>' : '';
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your business? Claim your listing to tell the community your story, keep your details right, and open it to everyone.</p><a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
@@ -890,6 +903,7 @@ function renderSidebar(l){
     billboardHtml+
     unlockCard+
     claimSection+
+    '<div id="ve-owner-verified"></div>'+
     '</div>';
 }
 
@@ -1011,8 +1025,8 @@ function renderListing(l){
   var avBg = l.logo_url ? '#111' : (l.color || '#2d7d31');
 
   // Badges
-  var verifiedBadge = l.ve_verified
-    ? '<span class="badge-verified"><svg width="10" height="10" fill="#5EC47A" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="#5EC47A" stroke-width="2.5"/></svg>VE Verified</span>' : '';
+  var verifiedBadge = verifiedLabel(l)
+    ? '<span class="badge-verified"><svg width="10" height="10" fill="#5EC47A" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="#5EC47A" stroke-width="2.5"/></svg>'+verifiedLabel(l)+'</span>' : '';
 
   // Vote count
   var votes = l.vote_count || 0; // real member votes (listing_daily_votes), Sean 2026-09-27
@@ -1667,6 +1681,23 @@ function renderPulse(posts, listingName){
   });
 }
 
+// Inside a claimed listing: the business that holds it is offered VE Verified, or sees its status.
+function ownerVerifiedCard(l){
+  var box = document.getElementById('ve-owner-verified');
+  if(!box || !window.VEAuth || !VEAuth.isLoggedIn()) return;
+  var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+  if(!m || (m.id !== l.owner_member_id && m.id !== l.claimed_by_member_id)) return;
+  var t = verifiedTier(l), href = '/claim?listing='+encodeURIComponent(l.slug||'');
+  var until = l.ve_verified_until ? new Date(l.ve_verified_until).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '';
+  box.innerHTML = '<div style="margin-top:14px"><div class="claim-box">'+
+    (t
+      ? '<p><b style="color:#fff">'+(t==='plus'?'VE Verified Plus':'VE Verified')+'</b>'+(until?', renews '+esc(until):'')+'. '+(l.ve_verified?'Your Verified badge is live.':'Your badge goes live after our in-person visit.')+'</p>'+
+        '<a href="'+href+'" class="claim-btn">See your membership</a>'
+      : '<p>Your listing. Become VE Verified: an in-person visit, a professional photo shoot and a Verified badge. From $250 a year.</p>'+
+        '<a href="'+href+'" class="claim-btn">Become VE Verified</a>')+
+    '</div></div>';
+}
+
 // Init
 var slug = getSlug();
 if(!slug || slug === 'listing'){
@@ -1692,6 +1723,7 @@ if(!slug || slug === 'listing'){
         }
       }
       loadBillboardAds();
+      ownerVerifiedCard(l);
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
         if(items && items.length){

@@ -52,6 +52,13 @@
     .results a:hover b{text-decoration:underline;}
     .results .biz-logo{width:40px;height:40px;min-width:40px;font-size:16px;border-radius:8px;}
     .results span{font-size:12.5px;color:var(--ve-text-75);}
+    .plans .perks{margin:6px 0 0 18px;font-size:13px;color:var(--ve-text-75);}
+    .plans .perks li{margin-bottom:2px;}
+    .plans .price{display:inline-block;font-size:12px;font-weight:800;color:var(--ve-green-deep);background:var(--ve-green-light);border-radius:99px;padding:1px 10px;margin-left:6px;}
+    .vstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:10px;margin:14px 0 4px;}
+    .vstat div{border:1px solid var(--ve-border);border-radius:10px;padding:10px 12px;}
+    .vstat small{display:block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .vstat b{font-size:15px;}
     .done{text-align:center;padding:34px 22px;}
     .done h2{font-size:18px;margin-bottom:8px;}
     [hidden]{display:none !important;}
@@ -65,7 +72,7 @@
   <main class="wrap">
     <p class="eyebrow">For businesses</p>
     <h1>Claim your listing</h1>
-    <p class="lede">Own a Vegan or Vegan-friendly business in our directory? Claim your listing, tell the community about you, and join us. Claimed listings are marked as verified and open to everyone once we confirm them.</p>
+    <p class="lede">Own a Vegan or Vegan-friendly business in our directory? Claim your listing, tell the community about you, and join us. Claimed listings open to everyone once we confirm them. Want more? Become VE Verified: an in-person visit, a photo shoot, and a Verified badge.</p>
 
     <!-- 1. Find the business -->
     <section class="card" id="find" hidden>
@@ -82,13 +89,31 @@
     <!-- States -->
     <section class="card done" id="st-submitted" hidden>
       <h2>Thank you. Your claim is in.</h2>
-      <p class="note">Your contribution went through and you are now a Founding Member. We review every claim by hand and will be in touch at the email you gave us. Once it is confirmed, your listing is marked verified and open to everyone.</p>
+      <p class="note">Your contribution went through and you are now a Founding Member. We review every claim by hand and will be in touch at the email you gave us. Once it is confirmed, your listing is open to everyone.</p>
       <p style="margin-top:18px"><a class="btn btn-ghost" id="st-view" href="#">View your listing</a></p>
     </section>
     <section class="card done" id="st-claimed" hidden>
       <h2>This listing has already been claimed</h2>
       <p class="note">If this is your business and you did not claim it, email us at <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> and we will sort it out.</p>
+      <p class="note" id="st-claimed-signin" style="margin-top:12px" hidden>Already claimed it yourself? <a href="#" id="claimed-signin">Sign in</a> to become VE Verified.</p>
     </section>
+    <section class="card done" id="st-verified" hidden>
+      <h2 id="st-verified-h">Welcome to VE Verified</h2>
+      <p class="note" id="st-verified-p">Thank you. Someone from Vegans Explore will reach out to schedule your in-person visit and photo shoot. Your Verified badge goes on your listing once we have visited.</p>
+      <div class="vstat" id="st-verified-stat"></div>
+      <p style="margin-top:18px"><a class="btn btn-ghost" id="st-verified-view" href="#">View your listing</a></p>
+      <p class="note" style="margin-top:14px">Your membership renews each year. To change or cancel it, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.</p>
+    </section>
+
+    <!-- The owner of a claimed listing: become VE Verified -->
+    <form class="card" id="upgrade" hidden novalidate>
+      <h2>Become VE Verified</h2>
+      <p class="note" style="margin-bottom:14px">You hold this listing. VE Verified means someone from Vegans Explore has been there: we visit, shoot professional photos, and put a Verified badge on your listing.</p>
+      <div class="choice plans" role="radiogroup" aria-label="Choose a VE Verified plan" id="up-plans"></div>
+      <button type="submit" class="btn" id="up-go" style="margin-top:16px">Continue to secure checkout</button>
+      <p class="msg" id="up-msg" role="status"></p>
+      <p class="note" style="margin-top:6px">Billed yearly on a secure Stripe page, and renews each year. To cancel, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.</p>
+    </form>
     <section class="card" id="st-signin" hidden>
       <h2>First, sign in</h2>
       <p class="note" style="margin-bottom:14px">Sign in to your Passport, or create one in a minute, so the listing is tied to you.</p>
@@ -127,6 +152,11 @@
       </section>
 
       <section class="card">
+        <h2>Choose how to join</h2>
+        <div class="choice plans" role="radiogroup" aria-label="Choose how to join" id="plans"></div>
+      </section>
+
+      <section class="card" id="amount-card">
         <h2>Your contribution to the cause</h2>
         <p class="note" style="margin-bottom:14px">Vegans Explore is a community built to help people find and support Vegan businesses. Claiming your listing comes with a contribution to that work, in any amount from $11. Give what fits your business. It also makes you a Founding Member.</p>
         <div class="amounts" id="amounts">
@@ -141,7 +171,7 @@
 
       <button type="submit" class="btn" id="go">Continue to contribution</button>
       <p class="msg" id="msg" role="status"></p>
-      <p class="note" style="margin-top:6px">You will finish on a secure Stripe page. We review every claim before it is marked verified.</p>
+      <p class="note" style="margin-top:6px" id="go-note">You will finish on a secure Stripe page. We review every claim before it is confirmed.</p>
     </form>
   </main>
 
@@ -159,7 +189,45 @@
       function logo(l) {
         return l.logo_url ? '<img class="biz-logo" src="' + esc(l.logo_url) + '" alt="">' : '<div class="biz-logo" style="background:' + esc(l.color || '#3A9B3E') + '">' + esc((l.name || 'V').charAt(0).toUpperCase()) + '</div>';
       }
-      function show(id) { ['find', 'biz-card', 'st-submitted', 'st-claimed', 'st-signin', 'claim'].forEach(function (x) { $(x).hidden = id.indexOf(x) < 0; }); }
+      function show(id) { ['find', 'biz-card', 'st-submitted', 'st-claimed', 'st-signin', 'st-verified', 'claim', 'upgrade'].forEach(function (x) { $(x).hidden = id.indexOf(x) < 0; }); }
+      function api(body) {
+        return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+      }
+
+      // ---- The plans (playbook ve-verified-tours-hunt, Sean 2026-09-27).
+      var PERKS = {
+        verified: ['A Verified badge on your listing and hub card, after our in-person visit', 'A professional photo shoot: about 10 edited photos for your listing, yours to keep', 'One social feature post across Vegans Explore channels', 'A standout pin on the VE Hunt map, and your Hunt offer in the monthly announcement', 'Renews yearly with refreshed photos'],
+        plus: ['Everything in VE Verified', 'A social campaign: three posts plus a short video or reel', 'A guaranteed spot on at least one Tour a year, and first right of refusal for tours in your area', 'Eligible to be the month\'s Hunt anchor stop', 'Priority placement in your section on the hub', 'Your content shoot happens on tour day, with real guests']
+      };
+      function planHtml(name, value, title, price, text, perks, checked) {
+        return '<label><input type="radio" name="' + name + '" value="' + value + '"' + (checked ? ' checked' : '') + '><span><b>' + title + '</b>' + (price ? '<span class="price">' + price + '</span>' : '') +
+          (text ? '<br>' + text : '') + (perks ? '<ul class="perks">' + perks.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') + '</span></label>';
+      }
+      $('plans').innerHTML =
+        planHtml('plan', 'claim', 'Claim your listing', 'From $11', 'A contribution to the cause, in any amount from $11. It makes you a Founding Member.', null, true) +
+        planHtml('plan', 'verified', 'VE Verified', '$250 a year', '', PERKS.verified) +
+        planHtml('plan', 'plus', 'VE Verified Plus', '$500 a year', '', PERKS.plus);
+      $('up-plans').innerHTML = planHtml('uplan', 'verified', 'VE Verified', '$250 a year', '', PERKS.verified, true) + planHtml('uplan', 'plus', 'VE Verified Plus', '$500 a year', '', PERKS.plus);
+      function plan() { var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'claim'; }
+      function syncPlan() {
+        var p = plan();
+        $('amount-card').hidden = p !== 'claim';
+        $('go').textContent = p === 'claim' ? 'Continue to contribution' : 'Continue to secure checkout';
+        $('go-note').textContent = p === 'claim' ? 'You will finish on a secure Stripe page. We review every claim before it is confirmed.'
+          : 'Billed yearly on a secure Stripe page, and renews each year (to cancel, email hello@vegansexplore.com). We review every claim before it is confirmed.';
+      }
+      $('plans').addEventListener('change', syncPlan);
+      function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''; }
+      function showVerified(v, fresh) {
+        var name = v && v.tier === 'plus' ? 'VE Verified Plus' : 'VE Verified';
+        $('st-verified-h').textContent = fresh ? 'Welcome to ' + name : 'You are ' + name;
+        $('st-verified-p').textContent = v && v.visit_done ? 'We have visited, and your Verified badge is on your listing.'
+          : 'Someone from Vegans Explore will reach out to schedule your in-person visit and photo shoot. Your Verified badge goes on your listing once we have visited.';
+        $('st-verified-stat').innerHTML = v ? '<div><small>Plan</small><b>' + name + '</b></div>' +
+          (v.renews_at ? '<div><small>' + (v.cancel_at_period_end ? 'Ends' : 'Renews') + '</small><b>' + esc(fmtDate(v.renews_at)) + '</b></div>' : '') +
+          '<div><small>Visit</small><b>' + (v.visit_done ? 'Done' : 'To be scheduled') + '</b></div>' : '';
+        show(['biz-card', 'st-verified']);
+      }
 
       // ---- No business picked yet: search by name.
       var t = null;
@@ -202,18 +270,31 @@
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
         if (!vs) return bad('Please choose how Vegan the business is.');
         if (!$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
-        if (!amount || amount < 11) return bad('Please choose a contribution of $11 or more.', $('amt'));
-        $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Taking you to the secure contribution page...';
+        var p = plan();
+        if (p === 'claim' && (!amount || amount < 11)) return bad('Please choose a contribution of $11 or more.', $('amt'));
+        $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
         fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({
-          action: 'start', listing_id: L.id, amount_cents: Math.round(amount * 100), return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
+          action: 'start', listing_id: L.id, amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, tier: p === 'claim' ? undefined : p, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
           contact_name: $('c-name').value, contact_role: $('c-role').value, contact_email: $('c-email').value, contact_phone: $('c-phone').value,
           proposed: { vegan_status: vs.value, tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }
         }) }).then(function (r) { return r.json(); }).then(function (d) {
           if (d && d.url) { location.href = d.url; return; }
           $('go').disabled = false;
-          bad(d && d.error === 'already_claimed' ? 'This listing has already been claimed.' : d && d.error === 'invalid_amount' ? 'Please choose a contribution of $11 or more.' : 'That did not go through. Please try again.');
+          bad(d && d.error === 'already_claimed' ? 'This listing has already been claimed.' : d && d.error === 'already_verified' ? 'This listing is already VE Verified.' : d && d.error === 'invalid_amount' ? 'Please choose a contribution of $11 or more.' : 'That did not go through. Please try again.');
         }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
       });
+      $('upgrade').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var t = document.querySelector('input[name=uplan]:checked');
+        if (!t) { $('up-msg').className = 'msg bad'; $('up-msg').textContent = 'Please choose a plan.'; return; }
+        $('up-go').disabled = true; $('up-msg').className = 'msg'; $('up-msg').textContent = 'Taking you to the secure checkout...';
+        api({ action: 'verified_start', listing_id: L.id, tier: t.value, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug) }).then(function (d) {
+          if (d && d.url) { location.href = d.url; return; }
+          $('up-go').disabled = false; $('up-msg').className = 'msg bad';
+          $('up-msg').textContent = d && d.error === 'already_verified' ? 'This listing is already VE Verified.' : d && d.error === 'not_owner' ? 'Only the business that holds this listing can do this.' : 'That did not go through. Please try again.';
+        }).catch(function () { $('up-go').disabled = false; $('up-msg').className = 'msg bad'; $('up-msg').textContent = 'Could not connect. Please try again.'; });
+      });
+      $('claimed-signin').onclick = function (e) { e.preventDefault(); VEAuth.showAuthModal('Sign in to manage your listing.', function () { location.reload(); }); };
       $('signin').onclick = function () { VEAuth.showAuthModal('Sign in or create your Passport to claim your listing.', function () { location.reload(); }); };
 
       // ---- Start.
@@ -225,15 +306,27 @@
           L = rows && rows[0];
           if (!L) { show(['find']); return; }
           $('biz').innerHTML = logo(L) + '<div><b>' + esc(L.name) + '</b><span>' + esc([L.address_city, L.category].filter(Boolean).join(' · ')) + '</span></div>';
-          $('st-view').href = '/directory/' + encodeURIComponent(L.slug);
+          $('st-view').href = $('st-verified-view').href = '/directory/' + encodeURIComponent(L.slug);
           if (qs.get('claim') === 'submitted') return show(['biz-card', 'st-submitted']);
-          if (L.claim_status === 'verified') return show(['biz-card', 'st-claimed']);
-          if (!VEAuth.isLoggedIn()) return show(['biz-card', 'st-signin']);
-          fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'mine', listing_id: L.id }) })
-            .then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (d) {
+          if (!VEAuth.isLoggedIn()) {
+            if (L.claim_status === 'verified') { $('st-claimed-signin').hidden = false; return show(['biz-card', 'st-claimed']); }
+            return show(['biz-card', 'st-signin']);
+          }
+          api({ action: 'mine', listing_id: L.id }).catch(function () { return {}; }).then(function (d) {
               var c = d && d.claim;
+              if (d && d.verified) return showVerified(d.verified, qs.get('verified') === 'active');
+              if (qs.get('verified') === 'active') return showVerified(null, true);
+              if (L.claim_status === 'verified') {
+                if (!d || !d.owner) return show(['biz-card', 'st-claimed']);
+                show(['biz-card', 'upgrade']);
+                if (qs.get('verified') === 'cancelled') { $('up-msg').className = 'msg bad'; $('up-msg').textContent = 'Checkout was not completed. You can try again whenever you are ready.'; }
+                return;
+              }
               if (c && (c.status === 'submitted' || c.status === 'approved')) return show(['biz-card', 'st-submitted']);
               fill(L); show(['biz-card', 'claim']);
+              var qv = qs.get('verified');
+              if (qv === 'cancelled' || qv === 'unpaid') { $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
+              if (qs.get('plan') === 'verified' || qs.get('plan') === 'plus') { var pr = document.querySelector('input[name=plan][value="' + qs.get('plan') + '"]'); if (pr) { pr.checked = true; syncPlan(); } }
               if (qs.get('claim') === 'cancelled' || qs.get('claim') === 'unpaid') { $('msg').className = 'msg bad'; $('msg').textContent = 'Your contribution was not completed, so the claim has not gone through yet. Your details are still here when you are ready.'; }
             });
         }).catch(function () { show(['find']); });
