@@ -216,7 +216,7 @@
           if (!d.deleted) { $('ml-del-msg').textContent = 'That did not delete. Try again.'; selBar(); return; }
           var gone = {}; d.deleted.forEach(function (id) { gone[id] = 1; delete picked[id]; });
           items = items.filter(function (it) { return !gone[it.id]; });
-          $('ml-del-msg').textContent = 'Deleted ' + d.deleted.length + '.' + (d.in_use && d.in_use.length ? ' ' + d.in_use.length + ' kept because a live slide or background uses them; pick a different one there first.' : '') + (d.ok ? '' : ' Some did not delete; try again.');
+          $('ml-del-msg').textContent = 'Deleted ' + d.deleted.length + '.' + (d.in_use && d.in_use.length ? ' ' + d.in_use.length + ' kept because a live page or Pulse piece uses them; change it there first.' : '') + (d.ok ? '' : ' Some did not delete; try again.');
           render();
         }).catch(function () { $('ml-del-msg').textContent = 'Could not connect. Try again.'; selBar(); });
       };

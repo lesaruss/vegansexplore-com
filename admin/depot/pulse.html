@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pulse | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 14px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:760px;margin-bottom:16px;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:20px 20px 22px;margin-bottom:22px;}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:16px 22px;}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:0;}
+    .field.wide{grid-column:1/-1;}
+    .field > label,.field > .lbl{font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .hint{font-size:12.5px;color:var(--ve-text-75);}
+    input[type=text],input[type=url],textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;color:#1a1a1a;width:100%;}
+    textarea{resize:vertical;line-height:1.55;}
+    select{font:inherit;font-size:14px;font-weight:600;padding:9px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background-color:#fff;color:#1a1a1a;width:100%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:40px;}
+    .types{display:flex;flex-wrap:wrap;gap:8px;}
+    .type{font:inherit;font-size:13px;font-weight:800;padding:9px 14px;border-radius:99px;border:1.5px solid rgba(0,0,0,0.22);background:#fff;color:var(--ve-text);cursor:pointer;min-height:40px;}
+    .type[aria-pressed="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .cover{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+    .cover img{width:200px;max-width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#dde3dd;display:block;}
+    .cover .empty{width:200px;max-width:100%;aspect-ratio:16/9;border-radius:8px;border:2px dashed #9cc79e;display:flex;align-items:center;justify-content:center;font-size:12.5px;color:var(--ve-text-75);text-align:center;padding:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:#f2f7f2;}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:18px;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg a{color:inherit;}
+    .errs{font-size:13.5px;font-weight:700;color:#8a1c12;}
+    .list{display:flex;flex-direction:column;gap:10px;}
+    .row{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:10px;flex-wrap:wrap;}
+    .row img{width:120px;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:#dde3dd;flex:0 0 auto;}
+    .row .info{flex:1;min-width:200px;}
+    .row b{display:block;font-size:14.5px;font-weight:800;line-height:1.35;}
+    .row small{display:block;font-size:12.5px;color:var(--ve-text-75);font-weight:600;}
+    .row .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-right:6px;}
+    .tag.live{background:#EAF7EA;color:#1f5f22;}
+    .tag.down{background:#fbe9e7;color:#8a1c12;}
+    .row .btns{display:flex;gap:8px;flex-wrap:wrap;}
+    .row .btn{min-height:40px;padding:8px 14px;}
+    .empty-list{font-size:14px;color:var(--ve-text-75);background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:22px;text-align:center;}
+    dialog{border:0;border-radius:14px;padding:0;width:min(1100px,calc(100% - 32px));max-height:86vh;box-shadow:0 24px 60px rgba(0,0,0,0.35);}
+    dialog::backdrop{background:rgba(10,20,12,0.7);}
+    .dlg-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--ve-border);position:sticky;top:0;background:#fff;}
+    .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;padding:14px 16px 18px;}
+    .pick{border:2px solid transparent;border-radius:10px;padding:4px;background:#fff;cursor:pointer;font-family:inherit;text-align:left;}
+    .pick:hover{border-color:#9cc79e;}
+    .pick img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px;display:block;background:#dde3dd;}
+    .pick span{display:block;font-size:11.5px;color:var(--ve-text-75);margin-top:4px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .gate h2{font-size:21px;margin:0 0 10px;text-transform:none;letter-spacing:0;color:var(--ve-text);}
+    .gate p{color:var(--ve-text-75);margin-bottom:16px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Pulse</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Write a piece and publish it straight to the <a href="/pulse">Pulse</a>. It goes live the moment you press Publish, with no approval step. Its picture, video and audio come from the <a href="/admin/depot">Library</a>. A piece with a city also shows on that city's page. You can edit or take down anything below at any time.</p>
+    <div id="pu-gate" class="gate" hidden></div>
+    <div id="pu-app" hidden>
+      <section class="panel" aria-labelledby="pu-form-h">
+        <h2 id="pu-form-h">New piece</h2>
+        <div class="form">
+          <div class="field wide"><span class="lbl" id="pu-type-l">Type</span>
+            <div class="types" role="group" aria-labelledby="pu-type-l">
+              <button type="button" class="type" data-type="article" aria-pressed="true">Article</button>
+              <button type="button" class="type" data-type="video" aria-pressed="false">Video</button>
+              <button type="button" class="type" data-type="interview" aria-pressed="false">Interview</button>
+              <button type="button" class="type" data-type="podcast" aria-pressed="false">Podcast episode</button>
+            </div>
+          </div>
+          <div class="field wide"><label for="pu-title">Title</label><input type="text" id="pu-title" maxlength="160" autocomplete="off"></div>
+          <div class="field wide"><label for="pu-summary">Summary</label><textarea id="pu-summary" rows="2" maxlength="400"></textarea><span class="hint">Cards on the Pulse show the first two lines of this.</span></div>
+          <div class="field"><label for="pu-category">Category</label><select id="pu-category">
+            <option>Community</option><option>Community Spotlight</option><option>Business Spotlight</option><option>Food &amp; Dining</option><option>Recipes</option>
+            <option>Health &amp; Nutrition</option><option>Animal Rights</option><option>Policy &amp; Advocacy</option><option>Culture &amp; Media</option>
+            <option>Founders Report</option><option>Sustainability &amp; Environment</option>
+          </select></div>
+          <div class="field"><label for="pu-city">City</label><select id="pu-city">
+            <option value="">National (every city)</option><option value="south-florida">South Florida</option><option value="central-florida">Central Florida</option>
+            <option value="new-york">New York</option><option value="philadelphia">Philadelphia</option><option value="los-angeles">Los Angeles</option>
+            <option value="atlanta">Atlanta</option><option value="dmv">DMV</option><option value="london">London</option>
+          </select></div>
+          <div class="field"><label for="pu-author">Author</label><input type="text" id="pu-author" maxlength="80" placeholder="Name shown under the title (optional)"></div>
+          <div class="field wide"><span class="lbl">Cover picture</span>
+            <div class="cover"><div id="pu-cover"></div><button type="button" class="btn btn-ghost" id="pu-cover-pick">Choose from the Library</button></div>
+          </div>
+          <div class="field"><label for="pu-video">Video</label><select id="pu-video"></select><span class="hint">Or paste a YouTube link instead:</span><input type="url" id="pu-youtube" placeholder="https://www.youtube.com/watch?v=..." aria-label="YouTube link"></div>
+          <div class="field"><label for="pu-audio">Audio</label><select id="pu-audio"></select><span class="hint">Plays under the picture, for an episode or an interview recording.</span></div>
+          <div class="field wide"><label for="pu-body">The piece</label><textarea id="pu-body" rows="12"></textarea><span class="hint">Leave a blank line to start a new paragraph.</span></div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" id="pu-publish">Publish to the Pulse</button>
+          <button type="button" class="btn btn-ghost" id="pu-clear">Start a new piece</button>
+          <span class="msg" id="pu-msg" role="status"></span>
+        </div>
+        <p class="errs" id="pu-errs" role="alert"></p>
+      </section>
+
+      <h2>Published from the Depot</h2>
+      <div class="list" id="pu-list"></div>
+    </div>
+  </div>
+
+  <dialog id="pu-dlg" aria-labelledby="pu-dlg-h">
+    <div class="dlg-head"><h2 id="pu-dlg-h" style="margin:0;">Choose the cover picture</h2><button type="button" class="btn btn-ghost" id="pu-dlg-close">Close</button></div>
+    <div class="pick-grid" id="pu-picks"></div>
+  </dialog>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-media-upload.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      var LIB = [], pieces = [], editing = null, cover = null, type = 'article', busy = false;
+      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', atlanta: 'Atlanta', dmv: 'DMV', london: 'London' };
+      var TYPE = { article: 'Article', video: 'Video', interview: 'Interview', podcast: 'Podcast episode' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return VEMediaUpload.api(VEAuth.getToken(), body); }
+      function opt(v, t, on) { return '<option value="' + esc(v) + '"' + (on ? ' selected' : '') + '>' + esc(t) + '</option>'; }
+      function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      // The stored body is escaped paragraphs; turn it back into what was typed.
+      function toText(html) {
+        var t = String(html || '').replace(/<\/p>\s*<p>/g, '\n\n').replace(/<br>/g, '\n').replace(/<\/?p>/g, '');
+        var el = document.createElement('textarea'); el.innerHTML = t; return el.value.trim();
+      }
+
+      function setType(t) {
+        type = t;
+        document.querySelectorAll('.type').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-type') === t)); });
+      }
+      document.querySelectorAll('.type').forEach(function (b) { b.onclick = function () { setType(b.getAttribute('data-type')); }; });
+
+      function renderCover() {
+        $('pu-cover').innerHTML = cover ? '<img src="' + esc(cover.thumb || cover.url) + '" alt="">' : '<div class="empty">No picture yet</div>';
+        $('pu-cover-pick').textContent = cover ? 'Change the picture' : 'Choose from the Library';
+      }
+      function renderMediaSelects(v, a) {
+        var vids = LIB.filter(function (it) { return it.kind === 'video'; });
+        var auds = LIB.filter(function (it) { return it.kind === 'audio'; });
+        $('pu-video').innerHTML = opt('', vids.length ? 'No video from the Library' : 'No videos in the Library yet', !v) + vids.map(function (it) { return opt(it.url, it.source_name || 'Video', it.url === v); }).join('');
+        $('pu-audio').innerHTML = opt('', 'No audio', !a) + auds.map(function (it) { return opt(it.url, String(it.source_name || 'Audio').replace(/^Narration: /, ''), it.url === a); }).join('');
+      }
+      function openPicker() {
+        var pics = LIB.filter(function (it) { return it.kind === 'image'; });
+        $('pu-picks').innerHTML = pics.length ? pics.map(function (it, i) {
+          return '<button type="button" class="pick" data-i="' + i + '"><img src="' + esc(it.thumb_url || it.url) + '" alt="" loading="lazy"><span>' + esc(it.source_name || '') + '</span></button>';
+        }).join('') : '<p class="hint">No pictures in the Library yet. Add some in the Library tab.</p>';
+        $('pu-picks').querySelectorAll('.pick').forEach(function (b) { b.onclick = function () { var it = pics[+b.getAttribute('data-i')]; cover = { url: it.url, thumb: it.thumb_url }; renderCover(); $('pu-dlg').close(); }; });
+        $('pu-dlg').showModal();
+      }
+      $('pu-cover-pick').onclick = openPicker;
+      $('pu-dlg-close').onclick = function () { $('pu-dlg').close(); };
+      $('pu-dlg').addEventListener('click', function (e) { if (e.target === $('pu-dlg')) $('pu-dlg').close(); });
+      $('pu-video').addEventListener('change', function () { if ($('pu-video').value) $('pu-youtube').value = ''; });
+      $('pu-youtube').addEventListener('input', function () { if ($('pu-youtube').value.trim()) $('pu-video').value = ''; });
+
+      function fill(p) {
+        editing = p || null;
+        setType(p ? p.content_type : 'article');
+        $('pu-title').value = p ? p.title : ''; $('pu-summary').value = p ? p.summary || '' : '';
+        $('pu-category').value = p && p.category ? p.category : 'Community';
+        $('pu-city').value = p && p.city_slug ? p.city_slug : '';
+        $('pu-author').value = p && p.author ? p.author : '';
+        $('pu-youtube').value = p && p.youtube_id ? 'https://www.youtube.com/watch?v=' + p.youtube_id : '';
+        $('pu-body').value = p ? toText(p.body) : '';
+        cover = p && p.thumbnail_url ? { url: p.thumbnail_url, thumb: p.thumbnail_url } : null;
+        renderCover(); renderMediaSelects(p && p.video_url, p && p.audio_url);
+        $('pu-form-h').textContent = p ? 'Editing: ' + p.title : 'New piece';
+        $('pu-publish').textContent = p ? 'Save changes' : 'Publish to the Pulse';
+        $('pu-errs').textContent = '';
+      }
+      $('pu-clear').onclick = function () { fill(null); $('pu-msg').textContent = ''; $('pu-title').focus(); };
+
+      $('pu-publish').onclick = function () {
+        if (busy) return;
+        var missing = [];
+        if (!$('pu-title').value.trim()) missing.push('a title');
+        if (!$('pu-summary').value.trim()) missing.push('a summary');
+        if (!cover) missing.push('a cover picture');
+        if (type === 'video' && !$('pu-video').value && !$('pu-youtube').value.trim()) missing.push('a video or a YouTube link');
+        if (type === 'podcast' && !$('pu-audio').value && !$('pu-youtube').value.trim()) missing.push('the episode audio or a YouTube link');
+        if (missing.length) { $('pu-errs').textContent = 'Add ' + missing.join(', ') + ' first.'; return; }
+        $('pu-errs').textContent = ''; busy = true; $('pu-publish').disabled = true;
+        $('pu-msg').textContent = editing ? 'Saving...' : 'Publishing...';
+        api({ action: 'pulse_save', id: editing ? editing.id : undefined, content_type: type, title: $('pu-title').value, summary: $('pu-summary').value,
+          body_text: $('pu-body').value, category: $('pu-category').value, city_slug: $('pu-city').value || null, author: $('pu-author').value,
+          cover_url: cover.url, video_url: $('pu-video').value || null, audio_url: $('pu-audio').value || null, youtube: $('pu-youtube').value.trim() || null
+        }).then(function (d) {
+          busy = false; $('pu-publish').disabled = false;
+          if (!d.ok) {
+            var why = { bad_youtube: 'That YouTube link did not work. Paste the full link from the video page.', bad_cover: 'Choose the cover picture from the Library.', missing_fields: 'Add a title, a summary and a category.' }[d.error];
+            $('pu-errs').textContent = d._status === 403 ? 'Admins only.' : (why || 'That did not save. Try again.'); $('pu-msg').textContent = ''; return;
+          }
+          var wasNew = !editing, p = d.piece;
+          pieces = [p].concat(pieces.filter(function (x) { return x.id !== p.id; }));
+          renderList(); fill(p);
+          $('pu-msg').innerHTML = (wasNew ? 'Published. It is live' : 'Saved. It is live') + ' at <a href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">vegansexplore.com/pulse/' + esc(p.slug) + '</a>.';
+        }).catch(function () { busy = false; $('pu-publish').disabled = false; $('pu-msg').textContent = ''; $('pu-errs').textContent = 'Could not connect. Try again.'; });
+      };
+
+      function renderList() {
+        $('pu-list').innerHTML = pieces.length ? pieces.map(function (p, i) {
+          var live = p.status === 'published';
+          return '<div class="row"><img src="' + esc(p.thumbnail_url) + '" alt=""><div class="info"><b>' + esc(p.title) + '</b><small><span class="tag ' + (live ? 'live">Live' : 'down">Taken down') + '</span>' +
+            esc(TYPE[p.content_type] || p.content_type) + ' &middot; ' + esc(p.city_slug ? CITY[p.city_slug] || p.city_slug : 'National') + ' &middot; ' + esc(fmtDate(p.published_at)) + '</small></div>' +
+            '<div class="btns">' + (live ? '<a class="btn btn-ghost" href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">View</a>' : '') +
+            '<button type="button" class="btn btn-ghost" data-edit="' + i + '">Edit</button>' +
+            '<button type="button" class="btn btn-ghost" data-status="' + i + '">' + (live ? 'Take down' : 'Put back up') + '</button></div></div>';
+        }).join('') : '<p class="empty-list">Nothing published from the Depot yet. Your first piece will show here.</p>';
+        $('pu-list').querySelectorAll('[data-edit]').forEach(function (b) { b.onclick = function () { fill(pieces[+b.getAttribute('data-edit')]); $('pu-msg').textContent = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); }; });
+        $('pu-list').querySelectorAll('[data-status]').forEach(function (b) {
+          b.onclick = function () {
+            var p = pieces[+b.getAttribute('data-status')], next = p.status === 'published' ? 'archived' : 'published';
+            if (next === 'archived' && !confirm('Take "' + p.title + '" down from the Pulse? You can put it back up later.')) return;
+            b.disabled = true;
+            api({ action: 'pulse_status', id: p.id, status: next }).then(function (d) {
+              if (d.ok) { pieces[pieces.indexOf(p)] = d.piece; renderList(); } else { b.disabled = false; alert('That did not save. Try again.'); }
+            }).catch(function () { b.disabled = false; alert('Could not connect. Try again.'); });
+          };
+        });
+      }
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        if (!VEAuth.isLoggedIn()) {
+          $('pu-gate').hidden = false;
+          $('pu-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="pu-signin">Sign in</button>';
+          $('pu-signin').onclick = function () { VEAuth.showAuthModal('Sign in to publish to the Pulse.', function () { location.reload(); }, 'login'); };
+          return;
+        }
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!m || !m.is_superadmin) { $('pu-gate').hidden = false; $('pu-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('pu-app').hidden = false; fill(null); renderList();
+        Promise.all([
+          api({ action: 'list' }).then(function (d) { LIB = (d.items || []).filter(function (it) { return !it.archived; }); }),
+          api({ action: 'pulse_list' }).then(function (d) { pieces = d.pieces || []; })
+        ]).then(function () { renderMediaSelects($('pu-video').value, $('pu-audio').value); renderList(); }, function () { $('pu-errs').textContent = 'The Library did not load. Refresh to try again.'; });
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

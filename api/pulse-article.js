@@ -98,7 +98,7 @@ module.exports = async (req, res) => {
 
   if (!post) {
     try {
-      const url = SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,summary,body,thumbnail_url&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1';
+      const url = SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1';
       const r = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY } });
       const rows = await r.json();
       if (Array.isArray(rows) && rows[0]) {
@@ -110,6 +110,11 @@ module.exports = async (req, res) => {
           excerpt: row.summary || '',
           img: row.thumbnail_url,
           youtubeId: row.youtube_id,
+          videoUrl: row.video_url,
+          audioUrl: row.audio_url,
+          author: row.author,
+          fromDepot: row.origin === 'depot',
+          date: row.published_at ? new Date(row.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '',
           body: row.body || ''
         };
       }
@@ -135,11 +140,16 @@ module.exports = async (req, res) => {
   const image = post.img || 'https://vegansexplore.com/public/pulse-ve-banner.png';
   const caption = 'Read this on VEGANS EXPLORE Pulse: ' + title;
 
-  const embedHtml = post.youtubeId
-    ? '<div style="position:relative;width:100%;aspect-ratio:16/9;margin-bottom:28px;border-radius:8px;overflow:hidden;background:#000;">'
-      + '<iframe src="https://www.youtube.com/embed/' + post.youtubeId + '" title="' + esc(title) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-      + '</div>'
-    : '';
+  // Above the article: a YouTube player, our own video or audio from the Depot, or the
+  // cover picture for an article or interview. Mirrors pulseMediaHtml() in /pulse.html.
+  const box = '<div style="position:relative;width:100%;aspect-ratio:16/9;margin-bottom:28px;border-radius:8px;overflow:hidden;background:#000;">';
+  let embedHtml = '';
+  if (post.youtubeId) embedHtml = box + '<iframe src="https://www.youtube.com/embed/' + esc(post.youtubeId) + '" title="' + esc(title) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+  else if (post.videoUrl) embedHtml = box + '<video controls playsinline preload="metadata" poster="' + esc(post.img || '') + '" src="' + esc(post.videoUrl) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;" aria-label="' + esc(title) + '"></video></div>';
+  else if (post.img && post.fromDepot) embedHtml = '<img src="' + esc(post.img) + '" alt="" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:' + (post.audioUrl ? '14px' : '28px') + ';">';
+  if (post.audioUrl) embedHtml += '<audio controls preload="metadata" src="' + esc(post.audioUrl) + '" style="display:block;width:100%;margin-bottom:28px;" aria-label="Listen: ' + esc(title) + '"></audio>';
+  if (post.fromDepot) embedHtml += '<h1 style="font-size:clamp(24px,3.4vw,34px);font-weight:900;line-height:1.15;margin:0 0 8px;">' + esc(title) + '</h1>'
+    + '<p style="font-size:13px;font-weight:700;color:rgba(26,26,26,0.72);margin:0 0 22px;">' + (post.author ? 'By ' + esc(post.author) + ' &middot; ' : '') + esc(post.date || '') + '</p>';
 
   const html = '<!DOCTYPE html>'
     + '<html lang="en"><head>'

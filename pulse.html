@@ -440,6 +440,9 @@
     if (t === 'opinion') return 'Opinion';
     if (t === 'photo') return 'Photo';
     if (t === 'video') return 'Video';
+    if (t === 'article') return 'Article';
+    if (t === 'interview') return 'Interview';
+    if (t === 'audio') return 'Listen';
     return t;
   }
 
@@ -748,6 +751,21 @@
     });
   }
 
+  // What sits above an article: a YouTube player, our own video or audio from the
+  // Depot, or the cover picture for an article or interview. Mirrors /api/pulse-article.js.
+  function pulseMediaHtml(p) {
+    var q = function (s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); };
+    var box = '<div style="position:relative;width:100%;aspect-ratio:16/9;margin-bottom:28px;border-radius:8px;overflow:hidden;background:#000;">';
+    var out = '';
+    if (p.youtubeId) out = box + '<iframe src="https://www.youtube.com/embed/' + q(p.youtubeId) + '" title="' + q(p.headline) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+    else if (p.videoUrl) out = box + '<video controls playsinline preload="metadata" poster="' + q(p.img) + '" src="' + q(p.videoUrl) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;" aria-label="' + q(p.headline) + '"></video></div>';
+    else if (p.img && p.fromDepot) out = '<img src="' + q(p.img) + '" alt="" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:' + (p.audioUrl ? '14px' : '28px') + ';">';
+    if (p.audioUrl) out += '<audio controls preload="metadata" src="' + q(p.audioUrl) + '" style="display:block;width:100%;margin-bottom:28px;" aria-label="Listen: ' + q(p.headline) + '"></audio>';
+    if (p.fromDepot) out += '<h1 style="font-size:clamp(24px,3.4vw,34px);font-weight:900;line-height:1.15;margin:0 0 8px;">' + q(p.headline) + '</h1>'
+      + '<p style="font-size:13px;font-weight:700;color:rgba(26,26,26,0.72);margin:0 0 22px;">' + (p.author ? 'By ' + q(p.author) + ' &middot; ' : '') + q(p.date) + '</p>';
+    return out;
+  }
+
   function openPost(slug, skipPushState) {
     var p = posts.filter(function(x) { return x.slug === slug; })[0];
     if (!p) return;
@@ -756,11 +774,7 @@
     trackPulseView(slug);
     document.getElementById('pulse-list-view').style.display = 'none';
     document.getElementById('pulse-detail-view').style.display = 'block';
-    var embedHtml = p.youtubeId
-      ? '<div style="position:relative;width:100%;aspect-ratio:16/9;margin-bottom:28px;border-radius:8px;overflow:hidden;background:#000;">'
-        + '<iframe src="https://www.youtube.com/embed/' + p.youtubeId + '" title="' + p.headline.replace(/"/g,'&quot;') + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-        + '</div>'
-      : '';
+    var embedHtml = pulseMediaHtml(p);
     var pageUrl = window.location.origin + '/pulse/' + p.slug;
     document.getElementById('pulse-article-mount').innerHTML = '<div class="article">' + embedHtml + p.body + shareBarHtml(p, pageUrl) + commentSectionHtml(p.slug) + '</div>';
     wireShareBarCopyButton(pageUrl);
@@ -797,14 +811,17 @@
   }
 
   function loadLivePulseContent() {
-    fetch(PULSE_SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,source_url,summary,body,city_slug,thumbnail_url,published_at&status=eq.published&order=published_at.desc', {
+    fetch(PULSE_SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,content_type,youtube_id,video_url,audio_url,author,origin,source_url,summary,body,city_slug,thumbnail_url,published_at&status=eq.published&order=published_at.desc', {
       headers: { apikey: PULSE_ANON_KEY, Authorization: 'Bearer ' + PULSE_ANON_KEY }
     }).then(function(r) { return r.json(); }).then(function(rows) {
       if (!rows || !rows.length) return;
       var live = rows.map(function(r) {
         var d = r.published_at ? new Date(r.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        // Episodes and videos show a play icon; articles and interviews from the Depot keep their own type.
+        var t = r.content_type === 'article' || r.content_type === 'interview' ? r.content_type : (!r.youtube_id && !r.video_url && r.audio_url ? 'audio' : 'video');
         return {
-          slug: r.slug, type: 'video', category: r.category, tagClass: '',
+          slug: r.slug, type: t, category: r.category, tagClass: '',
+          videoUrl: r.video_url, audioUrl: r.audio_url, author: r.author, fromDepot: r.origin === 'depot',
           headline: r.title, excerpt: r.summary || '', date: d,
           img: r.thumbnail_url, imgClass: '',
           youtubeId: r.youtube_id, cityTag: r.city_slug,

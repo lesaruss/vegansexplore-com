@@ -15,7 +15,14 @@
 // POST { action: 'register', sha256, kind, ext, mime, bytes, duration?, width?, height?, source_name }
 // POST { action: 'update', id, uses?, place?, labels?, archived? }
 // POST { action: 'skip', refs }       older pictures Sean chose not to keep (never offered again)
-// POST { action: 'delete', ids }      removes the files and the rows; refuses anything a live page uses
+// POST { action: 'delete', ids }      removes the files and the rows; refuses anything a live page or Pulse piece uses
+// POST { action: 'pulse_list' }       pieces the Depot has published to the Pulse
+// POST { action: 'pulse_save', id?, content_type, title, summary, body_text, category, city_slug?,
+//        cover_url, video_url?, youtube?, audio_url?, author? }
+//   The Depot's Pulse pipeline (Sean, 2026-09-27: "it can go straight out"). A new piece is
+//   published the moment it is saved; an id edits one. The body is plain text: blank lines
+//   make paragraphs, and it is escaped here, so nothing typed can inject markup.
+// POST { action: 'pulse_status', id, status }   'published' or 'archived' (take down / put back)
 //
 // Sean, 2026-09-27: the older Higgsfield set is reviewed once on /admin/onboarding-images.
 // The ones he keeps are uploaded here with source_ref (e.g. 'higgsfield:<id>'), the rest
@@ -37,6 +44,20 @@ const COLS = 'id, kind, url, thumb_url, mime, width, height, orientation, durati
 const PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const REF_RE = /^[a-z0-9:/._-]{1,200}$/i;
 const PLACES = ['miami', 'broward', 'palm-beach'];
+// The Pulse: what a piece can be, and the city hubs that show city pieces (/communities/*).
+const PULSE_TYPES = ['article', 'video', 'interview', 'podcast'];
+const PULSE_CITIES = ['south-florida', 'central-florida', 'new-york', 'philadelphia', 'los-angeles', 'atlanta', 'dmv', 'london'];
+const PULSE_COLS = 'id, slug, title, content_type, category, summary, body, city_slug, thumbnail_url, video_url, audio_url, youtube_id, author, status, published_at, updated_at';
+const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const paragraphs = (t: string) => t.replace(/\r\n?/g, '\n').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+  .map((p) => '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>').join('\n');
+const slugify = (t: string) => t.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'piece';
+function youtubeId(v: unknown): string | null {
+  const t = String(v || '').trim(); if (!t) return null;
+  if (/^[A-Za-z0-9_-]{11}$/.test(t)) return t;
+  const m = t.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
 const MAX_FULL = 8 * 1024 * 1024;
 const MAX_THUMB = 1024 * 1024;
 
@@ -142,6 +163,68 @@ Deno.serve(async (req) => {
     return json({ ok: true, item });
   }
 
+  if (body.action === 'pulse_list') {
+    const { data, error } = await db.from('ve_pulse_content').select(PULSE_COLS).eq('origin', 'depot').order('published_at', { ascending: false }).limit(200);
+    if (error) return json({ error: 'list_failed', message: error.message }, 500);
+    return json({ pieces: data || [] });
+  }
+
+  if (body.action === 'pulse_save') {
+    const own = (u: unknown, ext: RegExp) => typeof u === 'string' && u.startsWith(PUBLIC_PREFIX) && /^[a-z0-9/_.-]+$/i.test(u.slice(PUBLIC_PREFIX.length)) && ext.test(u);
+    const type = String(body.content_type || '');
+    // The feed cards put these straight into the page, so no angle brackets.
+    const plain = (v: unknown, n: number) => String(v || '').replace(/[<>]/g, '').trim().slice(0, n);
+    const title = plain(body.title, 160), summary = plain(body.summary, 400), category = plain(body.category, 60);
+    const text = String(body.body_text || '').trim().slice(0, 60000);
+    const city = body.city_slug ? String(body.city_slug) : null;
+    if (!PULSE_TYPES.includes(type)) return json({ error: 'bad_type' }, 400);
+    if (!title || !summary || !category) return json({ error: 'missing_fields' }, 400);
+    if (city && !PULSE_CITIES.includes(city)) return json({ error: 'bad_city' }, 400);
+    if (!own(body.cover_url, /\.(webp|jpe?g|png)$/i)) return json({ error: 'bad_cover' }, 400);
+    const video = body.video_url ? String(body.video_url) : null, audio = body.audio_url ? String(body.audio_url) : null;
+    if (video && !own(video, /\.(mp4|mov|webm)$/i)) return json({ error: 'bad_video' }, 400);
+    if (audio && !own(audio, /\.(mp3|wav|m4a|aac|ogg)$/i)) return json({ error: 'bad_audio' }, 400);
+    const yt = youtubeId(body.youtube);
+    if (body.youtube && !yt) return json({ error: 'bad_youtube' }, 400);
+    const row: Record<string, unknown> = {
+      content_type: type, title, summary, body: paragraphs(text), category, city_slug: city, thumbnail_url: body.cover_url,
+      video_url: video, audio_url: audio, youtube_id: yt, author: plain(body.author, 80) || null,
+      updated_at: new Date().toISOString(),
+    };
+    let saved: any;
+    if (body.id) {
+      const id = String(body.id);
+      if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+      const { data, error } = await db.from('ve_pulse_content').update(row).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      saved = data;
+    } else {
+      // A slug nobody has used, so the piece gets its own /pulse/<slug> page, which is also
+      // its source_url (the table requires one; for Depot pieces the Pulse page is the source).
+      const base = slugify(title);
+      const { data: taken } = await db.from('ve_pulse_content').select('slug').like('slug', base + '%');
+      const used = new Set((taken || []).map((r: any) => r.slug));
+      let slug = base; for (let n = 2; used.has(slug); n++) slug = `${base}-${n}`;
+      const now = new Date().toISOString();
+      const { data, error } = await db.from('ve_pulse_content').insert({ ...row, slug, source_url: `https://vegansexplore.com/pulse/${slug}`, status: 'published', published_at: now, created_at: now, origin: 'depot', brand_slug: 'vegans-explore', created_by: memberId })
+        .select(PULSE_COLS).single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      saved = data;
+    }
+    // A city piece also shows on that city's hub (/communities/<city>).
+    await db.from('ve_pulse_city_tags').delete().eq('pulse_id', saved.id);
+    if (city) await db.from('ve_pulse_city_tags').insert({ pulse_id: saved.id, city_slug: city, is_pinned: false });
+    return json({ ok: true, piece: saved });
+  }
+
+  if (body.action === 'pulse_status') {
+    const id = String(body.id || ''), status = String(body.status || '');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !['published', 'archived'].includes(status)) return json({ error: 'bad_request' }, 400);
+    const { data, error } = await db.from('ve_pulse_content').update({ status, updated_at: new Date().toISOString() }).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, piece: data });
+  }
+
   if (body.action === 'skip') {
     const refs = (Array.isArray(body.refs) ? body.refs : []).map(String).filter((r: string) => REF_RE.test(r)).slice(0, 500);
     if (!refs.length) return json({ error: 'no_refs' }, 400);
@@ -157,13 +240,17 @@ Deno.serve(async (req) => {
     const urls = (rows || []).map((r: any) => r.url);
     // Anything a live page uses (picture, narration, music or video) is kept.
     const inList = urls.length ? urls : ['-'];
-    const [pan, aud, mus, vid] = await Promise.all([
+    const [pan, aud, mus, vid, pc, pv, pa] = await Promise.all([
       db.from('ve_onboarding_panels').select('url').in('url', inList),
       db.from('ve_onboarding_audio').select('url').in('url', inList),
       db.from('ve_onboarding_slides').select('url:music_url').in('music_url', inList),
       db.from('ve_onboarding_slides').select('url:video_url').in('video_url', inList),
+      // ...and anything on a Pulse piece that is still up.
+      db.from('ve_pulse_content').select('url:thumbnail_url').eq('status', 'published').in('thumbnail_url', inList),
+      db.from('ve_pulse_content').select('url:video_url').eq('status', 'published').in('video_url', inList),
+      db.from('ve_pulse_content').select('url:audio_url').eq('status', 'published').in('audio_url', inList),
     ]);
-    const liveSet = new Set([pan, aud, mus, vid].flatMap((q: any) => (q.data || []).map((r: any) => r.url)));
+    const liveSet = new Set([pan, aud, mus, vid, pc, pv, pa].flatMap((q: any) => (q.data || []).map((r: any) => r.url)));
     const deleted: string[] = [], in_use: string[] = [];
     for (const r of rows || []) {
       if (liveSet.has(r.url)) { in_use.push(r.id); continue; }
