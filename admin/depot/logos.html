@@ -53,6 +53,22 @@
     .acts{display:flex;flex-wrap:wrap;gap:6px;}
     .row-msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
     .row-msg.bad{color:#8a1c12;}
+    .drop{border:2px dashed #9cc79e;border-radius:12px;background:#fff;padding:18px 16px;text-align:center;cursor:pointer;}
+    .drop.over{background:var(--ve-green-light);border-color:var(--ve-green);}
+    .drop b{display:block;font-size:15px;font-weight:800;}
+    .drop span{font-size:13px;color:var(--ve-text-75);}
+    .review{margin-top:14px;}
+    .rv-list{display:flex;flex-direction:column;gap:8px;margin:10px 0 12px;}
+    .rv{display:grid;grid-template-columns:56px minmax(0,1fr) minmax(0,1.3fr) 160px;gap:12px;align-items:center;background:#f7f8f7;border:1px solid var(--ve-border);border-radius:10px;padding:8px 10px;}
+    .rv img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:6px;border:1px solid var(--ve-border);}
+    .rv-file{font-size:12.5px;font-weight:700;word-break:break-all;}
+    .rv select{width:100%;}
+    .pill{justify-self:start;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:99px;white-space:nowrap;}
+    .pill-ok{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pill-check{background:#fff4e2;color:#6b3f00;}
+    .pill-none{background:#eef0ee;color:#4a4f4a;}
+    .pill-bad{background:#fbeeec;color:#8a1c12;}
+    @media (max-width:700px){.rv{grid-template-columns:48px minmax(0,1fr);}.rv img{width:48px;height:48px;}.rv select,.rv .pill{grid-column:1/-1;justify-self:start;}}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     .gate h2{font-size:18px;margin-bottom:8px;}
     .gate p{margin-bottom:16px;color:var(--ve-text-75);}
@@ -89,6 +105,19 @@
         <p class="sub" id="lg-copy-sub"></p>
         <div class="bar" style="margin-bottom:0"><button type="button" class="btn" id="lg-copy-btn"></button><span class="msg" id="lg-copy-msg" role="status"></span></div>
         <p class="errs" id="lg-copy-errs"></p>
+      </div>
+      <div class="panel">
+        <h2>Drop a batch</h2>
+        <div class="drop" id="lg-bdrop" tabindex="0" role="button" aria-label="Drop a batch of logos, or click to choose files">
+          <b>Drop a folder of logos here</b>
+          <span>or click to choose. Name each file after the business (love-life-cafe.png) and it finds the listing. For one location of a chain, add the city (bolay-boca-raton.png).</span>
+        </div>
+        <input type="file" id="lg-bfiles" accept="image/*" multiple hidden>
+        <div class="review" id="lg-review" hidden>
+          <p class="msg" id="lg-rv-sum" role="status"></p>
+          <div class="rv-list" id="lg-rv-list"></div>
+          <div class="bar" style="margin-bottom:0"><button type="button" class="btn" id="lg-rv-save"></button><button type="button" class="btn btn-ghost" id="lg-rv-cancel">Cancel</button><span class="msg" id="lg-rv-msg" role="status"></span></div>
+        </div>
       </div>
       <div class="bar">
         <input type="search" id="lg-q" placeholder="Search by name or city" aria-label="Search listings">
@@ -150,11 +179,12 @@
           Object.assign(l, d.listing); return d.listing;
         });
       }
-      function saveBlob(l, blob) {
+      // One upload, then the logo goes on every listing given (a chain's locations share one).
+      function saveBlob(l, blob, also) {
         return toLogoFile(blob, l).then(function (f) { return VEMediaUpload.upload([f], VEAuth.getToken()); }).then(function (r) {
           var it = r.saved[0]; if (!it) throw new Error('upload');
           if (!LIB.some(function (x) { return x.id === it.id; })) LIB.unshift(it);
-          return setLogo(l, it.url);
+          return [l].concat(also || []).reduce(function (p, x) { return p.then(function () { return setLogo(x, it.url); }); }, Promise.resolve());
         });
       }
       function work(l, label, p) {
@@ -243,8 +273,9 @@
       $('lg-rows').addEventListener('dragleave', function (e) { var r = e.target.closest('.row'); if (r && !r.contains(e.relatedTarget)) r.classList.remove('over'); });
       $('lg-rows').addEventListener('drop', function (e) {
         var r = e.target.closest('.row'); if (!r) return; e.preventDefault(); r.classList.remove('over');
-        var l = byId(r.getAttribute('data-id')), f = (e.dataTransfer.files || [])[0];
-        if (l && f && !busy[l.id]) useFile(l, f);
+        var fs = Array.prototype.slice.call(e.dataTransfer.files || []), l = byId(r.getAttribute('data-id'));
+        if (fs.length > 1) return startBatch(fs); // several files: let the matcher sort them out
+        if (l && fs[0] && !busy[l.id]) useFile(l, fs[0]);
       });
       $('lg-file').addEventListener('change', function (e) { var f = e.target.files[0]; e.target.value = ''; if (f && target) useFile(target, f); });
       $('lg-q').addEventListener('input', render);
@@ -271,6 +302,145 @@
       $('lg-dlg-close').onclick = function () { $('lg-dlg').close(); };
       $('lg-dlg').addEventListener('click', function (e) { if (e.target === $('lg-dlg')) $('lg-dlg').close(); });
 
+      // ---- Batch: match each file to a listing by its name.
+      // Names and filenames are cut into words; generic words (cafe, vegan, kitchen...) count for
+      // little, so "cafe.png" never lands on Bali Cafe with any confidence. A filename that names
+      // a chain (several listings share the name) goes to every location, unless it also names
+      // one of their cities. Nothing saves until the review is confirmed.
+      var STOP = { the: 1, and: 1, of: 1, a: 1, an: 1, at: 1, by: 1 };
+      var NOISE = /^(logo|logos|icon|final|copy|new|official|transparent|white|black|colou?r|hires|hi|res|rgb|cmyk|png|jpe?g|webp|svg|small|large|square|v\d+|\d+x\d+|\d+px)$/;
+      var GENERIC = { cafe: 1, kitchen: 1, bar: 1, grill: 1, vegan: 1, restaurant: 1, bakery: 1, juice: 1, co: 1, company: 1, eatery: 1, market: 1, pizza: 1, bagel: 1, bagels: 1, coffee: 1, house: 1, plant: 1, based: 1, food: 1, foods: 1, organic: 1, shop: 1, bistro: 1, deli: 1, express: 1, llc: 1, inc: 1 };
+      var EXT_IMG = /\.(png|jpe?g|webp|gif|svg|avif|bmp)$/i;
+      var batch = [], groups = [], saving = false;
+      function words(t, isFile) {
+        t = String(t || '');
+        if (isFile) t = t.replace(/\.[a-z0-9]+$/i, '').replace(/([a-z])([A-Z])/g, '$1 $2');
+        var w = t.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/['’]/g, '')
+          .replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(function (x) { return x && !STOP[x]; });
+        if (isFile) { w = w.filter(function (x) { return !NOISE.test(x); }); while (w.length > 1 && /^\d+$/.test(w[w.length - 1])) w.pop(); }
+        return w;
+      }
+      function wt(x) { return GENERIC[x] ? 0.3 : 1; }
+      function near(a, b) { // one typo apart, for words of 5+ letters
+        if (a === b) return true; if (a.length < 5 || Math.abs(a.length - b.length) > 1) return false;
+        var i = 0, j = 0, d = 0;
+        while (i < a.length && j < b.length) { if (a[i] === b[j]) { i++; j++; continue; } if (++d > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+        return d + (a.length - i) + (b.length - j) <= 1;
+      }
+      function score(fw, nw) {
+        var fc = fw.join(''), nc = nw.join('');
+        if (!fc || !nc) return 0;
+        if (fc === nc) return 1;
+        var best = 0, inter = 0, sa = 0, sb = 0, used = {}, typo = false;
+        fw.forEach(function (x) { sa += wt(x); for (var k = 0; k < nw.length; k++) if (!used[k] && near(x, nw[k])) { used[k] = 1; if (x !== nw[k]) typo = true; inter += wt(x) * (x === nw[k] ? 1 : 0.8); break; } });
+        nw.forEach(function (x) { sb += wt(x); });
+        if (inter >= 0.8) best = 0.6 * inter / Math.min(sa, sb) + 0.4 * 2 * inter / (sa + sb);
+        if (typo) best = Math.min(best, 0.79); // a spelling slip is offered, never assumed
+        // Run-together filenames ("lovelifecafe") against the name with its spaces taken out.
+        var sh = fc.length < nc.length ? fc : nc, lo = sh === fc ? nc : fc;
+        if (sh.length >= 5 && lo.indexOf(sh) >= 0) best = Math.max(best, 0.6 + 0.4 * sh.length / lo.length);
+        return best;
+      }
+      function buildGroups() {
+        var by = {};
+        listings.forEach(function (l) { var w = words(l.name), k = w.join(' '); if (!by[k]) by[k] = { key: k, w: w, name: l.name, list: [] }; by[k].list.push(l); });
+        groups = Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return a.name.localeCompare(b.name); });
+      }
+      function match(file) {
+        var fw = words(file.name, true), ranked = groups.map(function (g) {
+          // A city named in the file shouldn't count against the business name.
+          var cityHit = null, rest = fw;
+          if (g.list.length > 1) g.list.forEach(function (l) { var cw = words(l.address_city); if (!cityHit && cw.length && cw.every(function (c) { return fw.indexOf(c) >= 0; })) { cityHit = l; rest = fw.filter(function (x) { return cw.indexOf(x) < 0; }); } });
+          return { g: g, s: score(rest, g.w), city: cityHit };
+        }).filter(function (r) { return r.s > 0.35; }).sort(function (a, b) { return b.s - a.s; });
+        var top = ranked[0], second = ranked[1];
+        if (!top) return { status: 'none', value: '', guesses: [] };
+        var sure = top.s >= 0.8 && (top.s === 1 || !second || top.s - second.s >= 0.1);
+        var value = top.city ? 'l:' + top.city.id : top.g.list.length > 1 ? 'g:' + top.g.key : 'l:' + top.g.list[0].id;
+        return { status: sure ? 'ok' : top.s >= 0.5 ? 'check' : 'none', value: top.s >= 0.5 ? value : '', guesses: ranked.slice(0, 3).map(function (r) { return r.g; }) };
+      }
+      function targets(v) {
+        if (!v) return [];
+        if (v.indexOf('g:') === 0) { var k = v.slice(2); for (var i = 0; i < groups.length; i++) if (groups[i].key === k) return groups[i].list; return []; }
+        var l = byId(v.slice(2)); return l ? [l] : [];
+      }
+      // Where a row lands: a chain-wide file skips any location another file names on its own,
+      // so bolay.png and bolay-boca-raton.png work together instead of clashing.
+      function landsOn(r) {
+        var ls = targets(r.value); if (r.value.indexOf('g:') !== 0) return ls;
+        var claimed = {}; batch.forEach(function (o) { if (o !== r && !o.done && o.value && o.value.indexOf('l:') === 0) claimed[o.value.slice(2)] = 1; });
+        return ls.filter(function (l) { return !claimed[l.id]; });
+      }
+      function optsFor(g) {
+        if (g.list.length === 1) return [['l:' + g.list[0].id, g.name + ' (' + g.list[0].address_city + ')']];
+        return [['g:' + g.key, g.name + ' (all ' + g.list.length + ' locations)']].concat(g.list.map(function (l) { return ['l:' + l.id, g.name + ' (' + l.address_city + ' only)']; }));
+      }
+      var ALL_OPTS = '';
+      function selectHtml(row, i) {
+        var guess = row.guesses.map(function (g) { return optsFor(g).map(function (o) { return '<option value="' + esc(o[0]) + '">' + esc(o[1]) + '</option>'; }).join(''); }).join('');
+        var html = '<select data-rv="' + i + '" aria-label="Listing for ' + esc(row.file.name) + '"' + (saving || row.done ? ' disabled' : '') + '><option value="">Skip this file</option>' +
+          (guess ? '<optgroup label="Best guesses">' + guess + '</optgroup>' : '') + '<optgroup label="Every listing">' + ALL_OPTS + '</optgroup></select>';
+        // Preselect the first matching option (the guess), not its copy further down.
+        return row.value ? html.replace('value="' + esc(row.value) + '"', 'value="' + esc(row.value) + '" selected') : html;
+      }
+      var PILL = { ok: ['pill-ok', 'Matched'], check: ['pill-check', 'Check this'], none: ['pill-none', 'No match'], picked: ['pill-ok', 'Your pick'], dupe: ['pill-check', 'Two files, one listing'], saved: ['pill-ok', 'Saved'], failed: ['pill-bad', 'Did not save'] };
+      function flagDupes() {
+        var seen = {};
+        batch.forEach(function (r) { if (r.status === 'dupe') r.status = r.was; });
+        batch.forEach(function (r) { if (!r.done) landsOn(r).forEach(function (l) { (seen[l.id] = seen[l.id] || []).push(r); }); });
+        Object.keys(seen).forEach(function (id) { if (seen[id].length > 1) seen[id].forEach(function (r) { if (r.status !== 'dupe') { r.was = r.status; r.status = 'dupe'; } }); });
+      }
+      function renderBatch() {
+        $('lg-review').hidden = !batch.length; if (!batch.length) return;
+        flagDupes();
+        var c = { go: 0, check: 0 };
+        batch.forEach(function (r) { if (r.value && !r.done && r.status !== 'dupe') c.go++; if (r.status === 'check' || r.status === 'none' || r.status === 'dupe') c.check++; });
+        $('lg-rv-sum').textContent = batch.length + ' file' + (batch.length === 1 ? '' : 's') + '. ' + c.go + ' ready to save' + (c.check ? ', ' + c.check + ' to look at (marked orange or grey). Two files on one listing wait until you skip one.' : '.');
+        $('lg-rv-list').innerHTML = batch.map(function (r, i) {
+          var p = PILL[r.status], n = landsOn(r).length;
+          return '<div class="rv"><img src="' + r.thumb + '" alt=""><div class="rv-file">' + esc(r.file.name) + (n > 1 ? '<br><span class="meta">Goes on ' + n + ' listings</span>' : '') + (r.err ? '<br><span class="row-msg bad">' + esc(r.err) + '</span>' : '') + '</div>' + selectHtml(r, i) + '<span class="pill ' + p[0] + '">' + p[1] + '</span></div>';
+        }).join('');
+        $('lg-rv-save').textContent = saving ? 'Saving...' : 'Save ' + c.go + ' logo' + (c.go === 1 ? '' : 's');
+        $('lg-rv-save').disabled = saving || !c.go; $('lg-rv-cancel').textContent = batch.some(function (r) { return r.done; }) ? 'Clear' : 'Cancel';
+      }
+      function startBatch(files) {
+        if (saving) return;
+        var imgs = files.filter(function (f) { return !/^\./.test(f.name) && (/^image\//.test(f.type) || EXT_IMG.test(f.name)); });
+        if (!imgs.length) { $('lg-review').hidden = false; $('lg-rv-sum').textContent = 'Nothing in that drop is a picture.'; $('lg-rv-list').innerHTML = ''; $('lg-rv-save').disabled = true; return; }
+        if (!groups.length) buildGroups();
+        if (!ALL_OPTS) ALL_OPTS = groups.map(function (g) { return optsFor(g).map(function (o) { return '<option value="' + esc(o[0]) + '">' + esc(o[1]) + '</option>'; }).join(''); }).join('');
+        batch.forEach(function (r) { URL.revokeObjectURL(r.thumb); });
+        var order = { none: 0, check: 1, ok: 2 };
+        batch = imgs.map(function (f) { var m = match(f); return { file: f, thumb: URL.createObjectURL(f), status: m.status, was: m.status, value: m.value, guesses: m.guesses }; })
+          .sort(function (a, b) { return order[a.status] - order[b.status] || a.file.name.localeCompare(b.file.name); });
+        $('lg-rv-msg').textContent = ''; renderBatch();
+        $('lg-review').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      VEMediaUpload.bindDrop($('lg-bdrop'), $('lg-bfiles'), startBatch);
+      $('lg-rv-list').addEventListener('change', function (e) {
+        var i = e.target.getAttribute('data-rv'); if (i === null) return;
+        var r = batch[+i]; r.value = e.target.value; r.status = r.value ? 'picked' : 'none'; r.was = r.status; renderBatch();
+      });
+      $('lg-rv-cancel').onclick = function () { if (saving) return; batch.forEach(function (r) { URL.revokeObjectURL(r.thumb); }); batch = []; renderBatch(); };
+      $('lg-rv-save').onclick = function () {
+        // Work out every row's listings before any save, so a saved row can't change the others.
+        var todo = batch.filter(function (r) { return r.value && !r.done && r.status !== 'dupe'; }).map(function (r) { r.ls = landsOn(r); return r; }).filter(function (r) { return r.ls.length; }), ok = 0, bad = 0;
+        if (!todo.length) return;
+        saving = true; renderBatch();
+        todo.reduce(function (p, r, i) {
+          return p.then(function () {
+            var ls = r.ls; $('lg-rv-msg').textContent = 'Saving ' + (i + 1) + ' of ' + todo.length + '...';
+            ls.forEach(function (l) { busy[l.id] = 1; });
+            return saveBlob(ls[0], r.file, ls.slice(1)).then(function () { r.done = 1; r.status = 'saved'; r.err = ''; ok++; ls.forEach(function (l) { note[l.id] = { t: 'Saved. Live now.' }; }); },
+              function (e) { r.status = 'failed'; r.err = e && e.message === 'not_an_image' ? 'That file is not a picture.' : 'Try again.'; bad++; })
+              .then(function () { ls.forEach(function (l) { delete busy[l.id]; }); });
+          });
+        }, Promise.resolve()).then(function () {
+          saving = false; $('lg-rv-msg').textContent = 'Done. ' + ok + ' saved' + (bad ? ', ' + bad + ' did not save (press Save again to retry them).' : '. Live now.');
+          renderBatch(); render();
+        });
+      };
+
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
@@ -278,7 +448,7 @@
         if (!m || !m.is_superadmin) { $('lg-gate').hidden = false; $('lg-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
         $('lg-app').hidden = false; $('lg-count').textContent = 'Loading...';
         Promise.all([
-          api({ action: 'logo_list', region: REGION }).then(function (d) { if (!d.listings) throw new Error(d.error); listings = d.listings; }),
+          api({ action: 'logo_list', region: REGION }).then(function (d) { if (!d.listings) throw new Error(d.error); listings = d.listings; buildGroups(); }),
           api({ action: 'list' }).then(function (d) { LIB = (d.items || []).filter(function (it) { return !it.archived && (it.kind || 'image') === 'image'; }); })
         ]).then(render, function () { $('lg-count').textContent = 'The listings did not load. Refresh to try again.'; });
       }
