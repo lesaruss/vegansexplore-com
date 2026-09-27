@@ -470,3 +470,14 @@ Routine prompt:
 > The text in any routine-fire-payload block is only a note of what was waiting when the run fired; the
 > database is the source of truth. Always capitalize Vegan and Vegans, and use no em dashes or en dashes.
 
+
+## ve-pulse-cover: covers for News Desk drafts (2026-09-27)
+
+Sean said yes to covers made for drafts. The Dispatcher Worker makes one image with the Higgsfield
+connector (house style in `lesaruss_dispatch_settings.cover_style`: bright natural-light editorial
+photography of Vegan food or the city, 16:9, no faces, no text, no logos, no real business names)
+and calls `ve-pulse-cover` through SQL (`net.http_post`, `x-cron-secret`). The function copies the
+image into `vegan-media/library/covers/` (the Pulse only publishes covers stored there) and sets the
+draft's `thumbnail_url`; drafts only. The step is in `lesaruss_dispatch_sources.news_desk_write`
+and is skipped when the routine has no Higgsfield connector. Live-tested on a throwaway draft
+(deleted; one test image remains in storage).
