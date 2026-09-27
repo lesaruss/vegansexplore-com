@@ -210,8 +210,11 @@
       .slide{padding-bottom:8px;}
     }
     /* Slide 1 headline: smaller than the default hero size (Sean 2026-09-27), two lines. */
-    .hero-inner h1{font-size:clamp(26px,2.4vw,36px);}
-    @media (max-width:480px){ .hero-inner h1{font-size:26px;} .h1-br{display:none;} }
+    /* Sized so the paragraph under it ends level with the bottom of the video on desktop. */
+    .hero-inner h1{font-size:48px;line-height:1.1;margin-bottom:39px;}
+    @media (min-width:901px) and (max-width:1199px){ .hero-inner h1{font-size:clamp(30px,3.3vw,40px);margin-bottom:18px;} }
+    @media (max-width:900px){ .hero-inner h1{font-size:34px;margin-bottom:16px;} }
+    @media (max-width:480px){ .hero-inner h1{font-size:28px;} }
     /* Slide 6: step labels, the "new" tag, and the button with its note underneath. */
     .step-lbl{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#c5f2c7;margin:0 0 8px;}
     .tag-new{font-style:normal;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:#c5f2c7;color:#0b2e14;margin-left:6px;vertical-align:2px;}
@@ -254,7 +257,7 @@
       <div class="split">
         <div class="hero-inner">
           <p class="eyebrow">For South Florida businesses</p>
-          <h1>You built something good.<br class="h1-br"> It deserves a bigger room.</h1>
+          <h1>You built something good. It deserves a bigger room.</h1>
           <p class="lede">Restaurants, cafes, food brands, makers, vendors and services, fully Vegan or with a few great plant-based options. You put everything into it, and it still gets lost at the same festivals, in the same groups and feeds, chasing the same customers. The people who would love what you offer are right here in South Florida. They just haven&rsquo;t found you yet.</p>
         </div>
         <div class="media hero-media" data-video="problem" data-poster="/public/events/vegan-foodie-fest-2025.jpg" data-cap="A bigger room"></div>
@@ -389,9 +392,12 @@
       }
     };
     if (window.VESlideAudio) VESlideAudio.setup(AUDIO);
-    // The live city's landscape runs under the whole walkthrough. South Florida is
-    // the first live city, so it is the partners page background.
-    var CITY_SLUG = 'south-florida', CITY_BG = '/communities/south-florida/banner.jpg';
+    // Each entry point has its own South Florida background (Sean 2026-09-27):
+    // Community Managers Miami, Partners Palm Beach, Members Broward. Desktop takes
+    // the landscape image, phones the portrait one.
+    // TODO(Palm Beach): swap both paths for the Palm Beach horizontal and vertical.
+    var CITY_SLUG = 'south-florida';
+    var BG = { desktop: '/communities/south-florida/banner.jpg', mobile: '/communities/south-florida/banner.jpg' };
     var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
     (function () {
@@ -400,8 +406,8 @@
       var cur = 0;
 
       var stageEl = document.getElementById('stage'), stageBg = document.getElementById('stage-bg');
-      stageEl.style.backgroundImage = "url('" + CITY_BG + "')";
-      stageBg.style.backgroundImage = "url('" + CITY_BG + "')";
+      stageEl.style.backgroundImage = "url('" + BG.desktop + "')";
+      stageBg.style.backgroundImage = "url('" + BG.mobile + "')";
 
       document.querySelectorAll('.media[data-video]').forEach(function (m) {
         var src = VIDEOS[m.getAttribute('data-video')], poster = m.getAttribute('data-poster'), cap = m.getAttribute('data-cap');
