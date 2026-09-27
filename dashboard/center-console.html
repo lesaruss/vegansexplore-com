@@ -2810,24 +2810,23 @@
   // one of the member's joined communities, plus untagged/national content.
   // A member in no community yet sees national content only, never every
   // city's local stories mixed together.
-  // Unified catchall (2026-09-07, Sean direction: "we need to have all of
-  // the content filtered into here" after merging Podcast into Pulse) --
-  // no content_type filter, so every published row lands in this one grid,
-  // podcast episodes included, exactly like the old followed-shows-only
-  // episode grid this replaces. A row with a youtube_id still opens the
-  // real embedded on-platform player (same Watch modal Podcast used) so
-  // that experience isn't lost in the merge; everything else links out to
-  // its Pulse article or original source.
+  // Podcast episodes out (2026-09-27, Sean: move the podcast articles
+  // "exclusively" to the podcast page; the Pulse is for original city
+  // content, "coming soon" until there is some). This reverses the
+  // 2026-09-07 merge: rows with a podcast_show are left out here and on
+  // /pulse and the hub feeds; /podcast and its show pages still list them.
+  // A row with a youtube_id (a Depot video) opens the embedded Watch modal;
+  // everything else links to its Pulse article or original source.
   function renderDailyPulse(member) {
     var grid = document.getElementById('dash-pulse-grid');
     if (!grid) return;
     var active = getActiveCity(member);
-    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,summary,thumbnail_url,city_slug,published_at,podcast_show,youtube_id,source_url&status=eq.published&order=published_at.desc&limit=120', {
+    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,summary,thumbnail_url,city_slug,published_at,podcast_show,youtube_id,source_url&status=eq.published&podcast_show=is.null&order=published_at.desc&limit=120', {
       headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
     }).then(function (r) { return r.json(); }).then(function (rows) {
       var posts = (rows || []).filter(function (p) { return !p.city_slug || p.city_slug === active; }).slice(0, 24);
       if (!posts.length) {
-        grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">No Pulse posts yet.</p>';
+        grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Coming soon: original stories from your city. Episodes are on the <a href="/podcast" style="color:var(--ve-green-dark);">podcast page</a>.</p>';
         return;
       }
       grid.innerHTML = '';
@@ -2875,12 +2874,12 @@
     var grid = document.getElementById('dash-home-pulse-grid');
     if (!grid) return;
     var active = getActiveCity(member);
-    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,summary,thumbnail_url,city_slug,published_at,podcast_show,youtube_id,source_url&status=eq.published&order=published_at.desc&limit=120', {
+    fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,summary,thumbnail_url,city_slug,published_at,podcast_show,youtube_id,source_url&status=eq.published&podcast_show=is.null&order=published_at.desc&limit=120', {
       headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
     }).then(function (r) { return r.json(); }).then(function (rows) {
       var posts = (rows || []).filter(function (p) { return !p.city_slug || p.city_slug === active; }).slice(0, 4);
       if (!posts.length) {
-        grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">No Pulse posts yet.</p>';
+        grid.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Coming soon: original stories from your city. Episodes are on the <a href="/podcast" style="color:var(--ve-green-dark);">podcast page</a>.</p>';
         return;
       }
       grid.innerHTML = '';

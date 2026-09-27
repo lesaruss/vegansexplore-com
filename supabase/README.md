@@ -182,6 +182,17 @@ The Depot's **City News** tab (`/admin/depot/news`) replaces `/admin/news-review
 existing `ve-community-news` function (`list_pending`, `approve`, `reject`; member token in the
 body), unchanged.
 
+## Pulse: podcast episodes live on /podcast only (2026-09-27)
+
+Sean: move the podcast "articles" to the podcast page exclusively; the Pulse is for original city
+content, "coming soon" until there is some. A `ve_pulse_content` row with a `podcast_show` is an
+episode. `/pulse`, the dashboard Pulse grids (`dashboard/center-console.html`) and the hub Local
+News feeds (`public/hub-news.js`, via `ve_pulse_content!inner` + `podcast_show=is.null`) now leave
+episodes out, and `ve-media-library` `city_tags_list` (v11) no longer offers them for tagging.
+`/podcast`, the show pages and `/pulse/<slug>` (`api/pulse-article.js`) still serve every episode.
+The nine June pre-launch posts built into `pulse.html` (Higgsfield images) are off the feed too
+(`archived`), still reachable by their old links. Each empty feed says coming soon.
+
 ## ve-votes (2026-09-27)
 
 Directory votes. Before this, the + Vote buttons on `/directory` and the city hubs only

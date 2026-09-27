@@ -287,7 +287,7 @@
       <div class="pulse-top-row">
         <div class="pulse-title-group">
           <div class="pulse-board-title">Daily Pulse</div>
-          <div class="pulse-board-count" id="pulseCount">9 posts</div>
+          <div class="pulse-board-count" id="pulseCount"></div>
         </div>
         <input class="pulse-search" id="pulseSearch" type="search" placeholder="Search the Pulse..." aria-label="Search posts" oninput="onPulseFilterInput()">
       </div>
@@ -434,6 +434,9 @@
       body: '<div class="article-eyebrow">The Story</div><h2 class="article-h1">63 Cities. 2,800+ Listings. Before the Platform Even Existed.</h2><p class="article-lede">Most platforms launch and then go find their content. VEGANS EXPLORE was built the other way around. The work started years before a single line of platform code was written - people on the ground in cities around the world, cataloging the Vegan world one listing at a time.</p><div class="article-section-head">How the Work Started</div><p class="article-p">It began as a personal project. The Vegan community had restaurants, markets, events, and spaces worth knowing about - and no single place to find them that wasn\'t outdated, incomplete, or buried inside a platform that treated Vegan content as a niche. The response was to start building the list. City by city. Category by category.</p><div class="article-section-head">63 Cities Later</div><p class="article-p">By the time the platform was ready to launch, 63 cities had been cataloged and over 2,800 businesses verified. The work happened across South Florida, New York, London, Atlanta, LA, and everywhere in between. Not scraped - researched, visited, verified, and documented by people who actually knew the communities they were mapping.</p><div class="article-section-head">Why It Matters That You\'re Here</div><p class="article-p">The Vegan Explorer program - which opens to Founding Members on July 13 - is how the catalog grows beyond what any single team could build. You take what was started and extend it into every block of every city that isn\'t on the list yet. The 63 cities are the proof of concept. What happens next is the real work.</p>'
     }
   ];
+  // Sean, 2026-09-27: the Pulse is for original city stories. These June pre-launch posts (and
+  // their AI images) are off the feed; /pulse/<slug> still opens them for old links.
+  posts.forEach(function(p) { p.archived = true; });
 
   function typeLabel(t) {
     if (t === 'news') return 'News';
@@ -489,6 +492,10 @@
     wrap.innerHTML = html;
   }
 
+  var PULSE_COMING_SOON = '<strong style="display:block;font-size:15px;color:var(--ve-text);margin-bottom:6px;">Coming soon</strong>'
+    + 'Original stories from each city: events worth your weekend, Vegan businesses in the spotlight, and what is new in the Directory.'
+    + '<br>Looking for episodes? They live on <a href="/podcast" style="color:var(--ve-green-dark);">the Vegans Explore podcast page</a>.';
+
   function filterPulse() {
     var query = (document.getElementById('pulseSearch').value || '').toLowerCase().trim();
     var cat = document.getElementById('categorySelect').value;
@@ -498,6 +505,7 @@
     var pagination = document.getElementById('pulsePagination');
 
     var filtered = posts.filter(function(p) {
+      if (p.archived) return false;
       var matchCat = cat === 'all' || p.category === cat;
       var matchQ = !query || p.headline.toLowerCase().indexOf(query) !== -1
         || p.category.toLowerCase().indexOf(query) !== -1
@@ -519,6 +527,8 @@
 
     list.innerHTML = '';
     if (filtered.length === 0) {
+      var anyPosts = posts.some(function(p) { return !p.archived; });
+      empty.innerHTML = anyPosts ? 'No posts match your search.' : PULSE_COMING_SOON;
       empty.style.display = 'block';
       list.style.display = 'none';
       count.textContent = '0 posts';
@@ -802,7 +812,9 @@
   filterPulse();
   updatePulseBarPassportButton();
 
-  /* ==================== LIVE CONTENT: ve_pulse_content (podcast/video episodes) ==================== */
+  /* ==================== LIVE CONTENT: ve_pulse_content (original pieces, not podcast episodes) ====================
+     Sean, 2026-09-27: podcast episodes live only on /podcast and its show pages. A row with a
+     podcast_show is an episode, so the feed asks for podcast_show=is.null. */
   var PULSE_SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var PULSE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
@@ -811,7 +823,7 @@
   }
 
   function loadLivePulseContent() {
-    fetch(PULSE_SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,content_type,youtube_id,video_url,audio_url,author,origin,source_url,summary,body,city_slug,thumbnail_url,published_at&status=eq.published&order=published_at.desc', {
+    fetch(PULSE_SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,content_type,youtube_id,video_url,audio_url,author,origin,source_url,summary,body,city_slug,thumbnail_url,published_at&status=eq.published&podcast_show=is.null&order=published_at.desc', {
       headers: { apikey: PULSE_ANON_KEY, Authorization: 'Bearer ' + PULSE_ANON_KEY }
     }).then(function(r) { return r.json(); }).then(function(rows) {
       if (!rows || !rows.length) return;

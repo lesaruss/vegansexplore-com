@@ -23,7 +23,7 @@
 //   published the moment it is saved; an id edits one. The body is plain text: blank lines
 //   make paragraphs, and it is escaped here, so nothing typed can inject markup.
 // POST { action: 'pulse_status', id, status }   'published' or 'archived' (take down / put back)
-// POST { action: 'city_tags_list' }                every published Pulse piece and its city tags
+// POST { action: 'city_tags_list' }                every published Pulse piece (not podcast episodes) and its city tags
 // POST { action: 'city_tag', pulse_id, city_slug, on }   tag a piece into a city hub, or untag it
 //   The Depot's Pulse Cities tab (Sean, 2026-09-27: retire the old /admin pages). A tagged piece
 //   shows in that hub's Local News feed (public/hub-news.js reads ve_pulse_city_tags). This
@@ -249,7 +249,7 @@ Deno.serve(async (req) => {
 
   if (body.action === 'city_tags_list') {
     const [a, t] = await Promise.all([
-      db.from('ve_pulse_content').select('id, title, slug, category, published_at').eq('status', 'published').order('published_at', { ascending: false }).limit(1000),
+      db.from('ve_pulse_content').select('id, title, slug, category, published_at').eq('status', 'published').is('podcast_show', null).order('published_at', { ascending: false }).limit(1000),
       db.from('ve_pulse_city_tags').select('pulse_id, city_slug'),
     ]);
     if (a.error || t.error) return json({ error: 'list_failed', message: (a.error || t.error)!.message }, 500);

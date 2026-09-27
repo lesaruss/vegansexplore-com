@@ -36,8 +36,9 @@
       .catch(function () { return []; });
   }
 
+  // Podcast episodes (rows with a podcast_show) live only on /podcast (Sean, 2026-09-27).
   function fetchPulseSpotlights(city) {
-    return fetch(SUPABASE_URL + '/rest/v1/ve_pulse_city_tags?select=is_pinned,tagged_at,ve_pulse_content(title,slug,category,summary,thumbnail_url,published_at)&city_slug=eq.' + encodeURIComponent(city), { headers: headers() })
+    return fetch(SUPABASE_URL + '/rest/v1/ve_pulse_city_tags?select=is_pinned,tagged_at,ve_pulse_content!inner(title,slug,category,summary,thumbnail_url,published_at)&ve_pulse_content.podcast_show=is.null&city_slug=eq.' + encodeURIComponent(city), { headers: headers() })
       .then(function (r) { return r.json(); })
       .then(function (rows) {
         return (rows || []).filter(function (t) { return t.ve_pulse_content; }).map(function (t) {
@@ -71,7 +72,7 @@
       items = items.slice(0, 12);
 
       if (!items.length) {
-        grid.innerHTML = '<p class="hub-dir-empty">No local news yet. Check back soon.</p>';
+        grid.innerHTML = '<p class="hub-dir-empty">Local stories are coming soon.</p>';
         return;
       }
 
