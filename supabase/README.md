@@ -220,3 +220,17 @@ listings and listings with no vegan status are never held back.
   label on every card.
 - Listing pages show one billboard ad: `ve-directory-listing-landscape-2` is paused and the
   Riku (Bai spec) campaign unlinked from it.
+
+### Directory sections v2 (2026-09-27)
+
+Five main sections, each with its own sub-sections (`listings.category` holds the
+sub-section): Food (Restaurants, Bakeries & Cafes, Food Trucks & Vendors, Markets, Food
+Brands, Catering, Meal Prep), Products, Services (now including Marketing & Growth,
+Branding & Creative Assets, Content Creation & Media, Web & Development, AI & Automation,
+Business Operations), Media (Podcasts, YouTube, News Outlets, Documentaries & Films, Books,
+Media) and Community (Community Partner, Nonprofits, Events). Migration
+`directory_sections_v2` moved the Media listings by specialty and split Events and Catering.
+Listings tagged `lesaruss-ai-directory-candidate` still stay off the VE hubs. `ve-claims` v3
+`admin_listing` also takes `name`, `address` (online, or street/city/state/zip; clears the
+old coordinates) and `details` (At a Glance: atmosphere, accommodations, seating flags,
+ownership). listing.html shows At a Glance only for restaurants and cafes with a storefront.

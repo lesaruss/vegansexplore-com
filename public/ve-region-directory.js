@@ -20,31 +20,40 @@
   // 'events'/'media' below -- so they simply don't render on any VE region
   // page rather than being lost. Community stays nonprofits (+ existing
   // community-partner orgs); Products stays products.
+  // Sections (Sean, 2026-09-27): five main sections, each with sub-sections that make sense
+  // for it. listings.category holds the sub-section. Keep in step with SECTIONS in
+  // /public/ve-listing-admin.js and CATEGORIES in supabase/functions/ve-claims.
+  // AI & Automation and the other agency sub-sections sit under Services now, but the SaaS
+  // tools tagged 'lesaruss-ai-directory-candidate' (2026-09-07) stay off the VE hubs.
   var CAT_MAP = {
-    'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Brands': 'food', 'Catering': 'food', 'Meal Prep': 'food',
-    'Brands': 'products', 'Beauty and Personal Care': 'products', 'Clothing and Fashion': 'products',
-    'E-Commerce & Marketplaces': 'products', 'Fitness and Athletics': 'products',
-    'Health and Wellness': 'services', 'Coaches and Consultants': 'services',
-    'AI & Automation': 'lesaruss_ai', 'Web & Development': 'lesaruss_ai', 'Marketing & Growth': 'lesaruss_ai',
-    'Business Operations': 'lesaruss_ai', 'Branding & Creative Assets': 'lesaruss_ai', 'Content Creation & Media': 'lesaruss_ai',
-    'Community Partner': 'community', 'Nonprofits': 'community',
-    'Events and Catering': 'events',
-    'Media': 'media', 'Uncategorized': 'media'
+    'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food',
+    'Food Brands': 'food', 'Catering': 'food', 'Meal Prep': 'food',
+    'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
+    'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
+    'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services',
+    'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services',
+    'AI & Automation': 'services', 'Business Operations': 'services',
+    'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
+    'Community Partner': 'community', 'Nonprofits': 'community', 'Events': 'community',
+    'Uncategorized': 'hidden'
   };
 
   var CAT_CONFIG = [
     { key: 'food', label: 'Food', hasVF: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Brands', 'Catering', 'Meal Prep'] },
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Catering', 'Meal Prep'] },
     { key: 'products', label: 'Products', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
-      subcats: ['Beauty and Personal Care', 'Clothing and Fashion', 'E-Commerce & Marketplaces', 'Fitness and Athletics', 'Brands'] },
+      subcats: ['Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces'] },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
-      subcats: ['Health and Wellness', 'Coaches and Consultants'] },
+      subcats: ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations'] },
+    { key: 'media', label: 'Media', hasVF: false,
+      icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10a7 7 0 0014 0"></path><line x1="12" x2="12" y1="17" y2="22"></line></svg>',
+      subcats: ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media'] },
     { key: 'community', label: 'Community', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
-      subcats: ['Community Partner', 'Nonprofits'] }
+      subcats: ['Community Partner', 'Nonprofits', 'Events'] }
   ];
 
   var CSS = ''
@@ -539,14 +548,14 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status,tags&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         acc = acc.concat(data || []);
         if (data && data.length === 1000) { fetchAll(root, config, offset + 1000, acc); }
         else {
-          var approved = acc.filter(function (l) { return config.matchListing(l) || isOnline(l); });
+          var approved = acc.filter(function (l) { return (config.matchListing(l) || isOnline(l)) && (l.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0; });
           // The public directory rule (/public/ve-trust.js): unvetted vegan-friendly listings
           // are for members only until 10 different people vote for them or the business claims it.
           withTrust(function (T) {
@@ -618,7 +627,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,address_city,address_state,color,vegan_status,tags&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return config.matchListing(l) || isOnline(l); })); })

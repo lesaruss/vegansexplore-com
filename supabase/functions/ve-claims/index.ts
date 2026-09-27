@@ -22,9 +22,12 @@
 //     approve: listing claim_status 'verified' (it now shows to the public), owner set, and
 //     the details they sent written onto the listing.
 //   POST { action: 'admin_trust', enabled, min_voters }    the public directory rule
-//   POST { action: 'admin_listing', listing_id, category?, extra_categories?, vegan_status?, business_status? }
-//     The quick editor on the city hubs and listing pages (Sean, 2026-09-27): move a listing to
-//     another section or add it to more than one, set how Vegan it is, mark it closed.
+//   POST { action: 'admin_listing', listing_id, category?, extra_categories?, vegan_status?, business_status?,
+//          name?, address?: { online, street, city, state, zip }, details?: { atmosphere, accommodations,
+//          indoor_seating, late_hours, high_speed_wifi, owned: [...] } }
+//     The quick editor on the city hubs and listing pages (Sean, 2026-09-27): rename it, move it,
+//     change its sub-section (or add more in the same section), set how Vegan it is, mark it
+//     closed, and fill in the At a Glance details that restaurants and cafes show.
 //
 // verify_jwt is false: the VE app token is checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -38,11 +41,20 @@ const FN_URL = `${SUPABASE_URL}/functions/v1/ve-claims`;
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const MIN_CENTS = 1100, MAX_CENTS = 1000000; // $11 minimum (Sean), $10,000 sanity ceiling
 const STATUSES = ['fully_vegan', 'vegan_friendly', 'vegan_options'];
-// Every section the city hubs know (CAT_MAP in /public/ve-region-directory.js).
-const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Brands', 'Catering', 'Meal Prep', 'Brands', 'Beauty and Personal Care',
-  'Clothing and Fashion', 'E-Commerce & Marketplaces', 'Fitness and Athletics', 'Health and Wellness', 'Coaches and Consultants',
-  'AI & Automation', 'Web & Development', 'Marketing & Growth', 'Business Operations', 'Branding & Creative Assets',
-  'Content Creation & Media', 'Community Partner', 'Nonprofits', 'Events and Catering', 'Media', 'Uncategorized'];
+// Every sub-section the city hubs know (CAT_MAP in /public/ve-region-directory.js), by section.
+const CATEGORIES = [
+  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Catering', 'Meal Prep',
+  'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
+  'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
+  'Web & Development', 'AI & Automation', 'Business Operations',
+  'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
+  'Community Partner', 'Nonprofits', 'Events', 'Uncategorized'];
+// At a Glance, which listing.html shows for restaurants and cafes.
+const ATMOSPHERES = ['casual', 'upscale', 'fine-dining', 'fast-casual', 'bar-lounge'];
+const ACCOMMODATIONS = ['Dine-in', 'Takeout', 'Delivery', 'Outdoor Seating', 'Reservations', 'WiFi', 'Parking', 'Dog-Friendly',
+  'Wheelchair Accessible', 'BYOB', 'Live Music', 'Family-Friendly', 'Catering'];
+const OWNED = ['is_black_owned', 'is_women_owned', 'is_latino_owned', 'is_asian_owned', 'is_immigrant_owned', 'is_veteran_owned',
+  'is_family_owned', 'is_lgbtq_owned', 'is_indigenous_owned'];
 const BUSINESS = ['OPERATIONAL', 'CLOSED_TEMPORARILY', 'CLOSED_PERMANENTLY'];
 
 const cors = {
@@ -240,8 +252,30 @@ Deno.serve(async (req) => {
     }
     if (body.vegan_status !== undefined) { if (!STATUSES.includes(String(body.vegan_status))) return json({ error: 'bad_vegan_status' }, 400); patch.vegan_status = String(body.vegan_status); }
     if (body.business_status !== undefined) { if (!BUSINESS.includes(String(body.business_status))) return json({ error: 'bad_business_status' }, 400); patch.business_status = String(body.business_status); }
+    if (body.name !== undefined) { const n = plain(body.name, 160); if (!n) return json({ error: 'bad_name' }, 400); patch.name = n; }
+    if (body.address) {
+      const a = body.address;
+      if (a.online) Object.assign(patch, { address_street: null, address_city: null, address_state: null, address_zip: null, location: 'Online', latitude: null, longitude: null });
+      else {
+        const city = plain(a.city, 80), state = plain(a.state, 40).toUpperCase();
+        if (!city) return json({ error: 'bad_city' }, 400);
+        // The map pin follows the street address (listing.html links to Google Maps by address);
+        // the old coordinates would point at the old place, so they go.
+        Object.assign(patch, { address_street: plain(a.street, 160) || null, address_city: city, address_state: state || null, address_zip: plain(a.zip, 12) || null,
+          location: city + (state ? ', ' + state : ''), latitude: null, longitude: null });
+      }
+    }
+    if (body.details) {
+      const d = body.details;
+      patch.atmosphere = ATMOSPHERES.includes(String(d.atmosphere)) ? String(d.atmosphere) : null;
+      patch.accommodations = (Array.isArray(d.accommodations) ? d.accommodations : []).map(String).filter((x: string) => ACCOMMODATIONS.includes(x));
+      for (const k of ['indoor_seating', 'late_hours', 'high_speed_wifi']) patch[k] = !!d[k];
+      const owned = (Array.isArray(d.owned) ? d.owned : []).map(String);
+      for (const k of OWNED) patch[k] = owned.includes(k);
+      patch.lgbtq_friendly = owned.includes('is_lgbtq_owned'); // At a Glance reads this one for LGBTQ+-Owned
+    }
     const { data, error } = await db.from('listings').update(patch).eq('id', id)
-      .select('id, slug, name, category, extra_categories, vegan_status, business_status').single();
+      .select('id, slug, name, category, extra_categories, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, listing: data });
   }

@@ -465,8 +465,15 @@ document.addEventListener('DOMContentLoaded', function(){
 var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
 var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
-var FOOD_CATS = ['Restaurants','Bakeries & Cafes','Food Brands','Catering','Meal Prep'];
-var MEDIA_CATS = ['Media','Content Creation & Media'];
+// Sections (Sean, 2026-09-27); keep in step with /public/ve-region-directory.js.
+var FOOD_CATS = ['Restaurants','Bakeries & Cafes','Food Trucks & Vendors','Markets','Food Brands','Catering','Meal Prep'];
+var MEDIA_CATS = ['Podcasts','YouTube','News Outlets','Documentaries & Films','Books','Media'];
+// At a Glance (atmosphere, seating, amenities, accessibility, ownership) is for places you sit down in.
+var DINING_CATS = ['Restaurants','Bakeries & Cafes'];
+function isDining(l){
+  if(!l.address_city && !l.address_state) return false;
+  return [l.category].concat(l.extra_categories || []).some(function(c){ return DINING_CATS.indexOf(c) !== -1; });
+}
 var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 function esc(s){ return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
@@ -711,13 +718,15 @@ function renderAtAGlance(l){
       c('Service Animal Friendly', false),
     ]},
     { label:'Ownership', items:[
-      c('LGBTQ+-Owned',          !!l.lgbtq_friendly,    'community'),
+      c('LGBTQ+-Owned',          !!(l.lgbtq_friendly || l.is_lgbtq_owned), 'community'),
       c('Black-Owned',           !!l.is_black_owned,    'community'),
       c('Women-Owned',           !!l.is_women_owned,    'community'),
       c('Latino/Hispanic-Owned', !!l.is_latino_owned,   'community'),
       c('Asian-Owned',           !!l.is_asian_owned,    'community'),
       c('Immigrant-Owned',       !!l.is_immigrant_owned,'community'),
       c('Veteran-Owned',         !!l.is_veteran_owned,  'community'),
+      c('Indigenous-Owned',      !!l.is_indigenous_owned, 'community'),
+      c('Family-Owned',          !!l.is_family_owned,   'community'),
     ]}
   ];
 
@@ -738,7 +747,7 @@ function renderAtAGlance(l){
     return '<div class="section"><h2 class="section-title">At a Glance</h2>'+
       '<div style="text-align:center;padding:20px;background:var(--ve-surface);border-radius:8px;border:1px solid var(--ve-border)">'+
         '<p style="font-size:12px;color:var(--ve-text-50);line-height:1.65;margin-bottom:12px">Atmosphere, seating, accessibility, and community attributes appear here once this business is claimed.</p>'+
-        '<a href="/intake" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;border:1px solid var(--ve-green);padding:8px 16px;border-radius:4px;background:var(--ve-green-light);display:inline-block">Own this business? Add details</a>'+
+        '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;border:1px solid var(--ve-green);padding:8px 16px;border-radius:4px;background:var(--ve-green-light);display:inline-block">Own this business? Add details</a>'+
       '</div>'+
     '</div>';
   }
@@ -753,7 +762,7 @@ function renderAtAGlance(l){
   html += '</div>';
 
   var footer = coldStart
-    ? '<div style="margin-top:14px;text-align:center"><a href="/intake" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none">Own this business? Add missing details</a></div>'
+    ? '<div style="margin-top:14px;text-align:center"><a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none">Own this business? Add missing details</a></div>'
     : '';
 
   return '<div class="section"><h2 class="section-title">At a Glance</h2>'+html+footer+'</div>';
@@ -791,7 +800,7 @@ function renderSidebar(l){
   // -- rather than a vague "unlock analytics" line. Claiming itself is free;
   // it's filling the profile in afterward that produces that look, so the
   // copy says exactly that rather than implying a paid unlock.
-  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your business? Claim this listing for free to add your photos, video, and story, and build a profile like our featured listings.</p><a href="/intake" class="claim-btn">Claim Listing</a></div></div>' : '';
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your business? Claim your listing to tell the community your story, keep your details right, and get your listing verified.</p><a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
@@ -1043,7 +1052,7 @@ function renderListing(l){
   }
 
   if(catType === 'food'){
-    overviewContent += renderAtAGlance(l);
+    if(isDining(l)) overviewContent += renderAtAGlance(l);
     if(l.google_hours_json){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }
