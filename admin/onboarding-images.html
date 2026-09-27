@@ -46,6 +46,11 @@
     .drop b{display:block;font-size:15px;font-weight:800;}
     .drop span{font-size:13px;color:rgba(26,26,26,0.8);}
     .errs{font-size:13px;color:#8a1c12;}
+    .card.drop-me{opacity:0.5;outline:3px solid #8a1c12;outline-offset:-3px;}
+    .tick{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#8a1c12;cursor:pointer;min-height:32px;}
+    .tick input{width:20px;height:20px;accent-color:#8a1c12;}
+    .review{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 18px 20px;margin:14px 0 8px;}
+    .review h2{margin-top:0;}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     dialog{border:0;border-radius:14px;padding:0;max-width:min(1100px,calc(100% - 32px));box-shadow:0 24px 60px rgba(0,0,0,0.35);}
     dialog::backdrop{background:rgba(10,20,12,0.7);}
@@ -62,7 +67,7 @@
   <div class="wrap">
     <p class="eyebrow">Admin</p>
     <h1>Onboarding images</h1>
-    <p class="sub">Pick a slide (or the page background), then choose its picture from your <a href="/admin/media-library">media library</a> below. It goes live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
+    <p class="sub">Pick a slide (or the page background), then choose its picture from your <a href="/admin/media-library">media library</a> below. Only pictures in the library are offered. It goes live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
     <div id="im-gate" class="gate" hidden></div>
     <div id="im-app" hidden>
       <div class="bar">
@@ -84,6 +89,18 @@
       <input type="file" id="im-files" multiple accept="image/png,image/jpeg,image/webp,audio/*,video/mp4,video/quicktime,video/webm" hidden>
       <p class="msg" id="im-up" role="status"></p>
       <p class="errs" id="im-up-errs"></p>
+      <section class="review" id="im-review" hidden>
+        <h2 id="im-review-h">Sort your older pictures</h2>
+        <p class="sub">These older pictures came from Higgsfield and the site, and they are not in the library yet. Tick any you don't want, then press the green button. Everything you didn't tick is copied into your media library at full size, and the ticked ones won't be offered again. Nothing is deleted from Higgsfield itself, and a slide that already shows a ticked picture keeps it until you pick another.</p>
+        <div class="bar" style="margin-bottom:12px;">
+          <button type="button" class="btn" id="im-keep">Keep the rest</button>
+          <button type="button" class="btn btn-ghost" id="im-tick-all">Tick all</button>
+          <button type="button" class="btn btn-ghost" id="im-tick-none">Clear ticks</button>
+          <span class="msg" id="im-review-msg" role="status"></span>
+        </div>
+        <p class="errs" id="im-review-errs"></p>
+        <div class="grid" id="im-review-grid"></div>
+      </section>
       <h2>1. Pick a slide</h2>
       <div class="slides" id="im-slides"></div>
       <h2 id="im-grid-h">2. Choose its picture</h2>
@@ -91,7 +108,6 @@
         <label>Show <select id="im-filter">
           <option value="fit">What fits this slot</option>
           <option value="library">Whole library</option>
-          <option value="older">Older Higgsfield set</option>
         </select></label>
         <span class="msg" id="im-lib-msg"></span>
       </div>
@@ -145,19 +161,24 @@
       var SLIDES = PAGES.cm.slides;
       var LIB_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-media-library';
       var LIBRARY = [];
-      // Older Higgsfield candidates keep working; they send their thumbnail, which the
-      // server copies into storage. Library pictures send their full-size file.
-      CANDIDATES.forEach(function (c) { c.src = c.thumb; c.older = true; });
+      // The older set (Higgsfield and site pictures) is reviewed once: the ones Sean keeps
+      // are copied into the library with a source_ref, the rest are skipped. The picker
+      // itself only offers library pictures (Sean, 2026-09-27).
+      CANDIDATES.forEach(function (c) { c.ref = (/^site-/.test(c.id) ? 'site:' : 'higgsfield:') + c.id; });
+      var REVIEW = [], TICK_KEY = 've_im_review_ticks', ticks = {};
+      try { ticks = JSON.parse(localStorage.getItem(TICK_KEY) || '{}') || {}; } catch (e) { ticks = {}; }
+      function saveTicks() { try { localStorage.setItem(TICK_KEY, JSON.stringify(ticks)); } catch (e) {} }
       var $ = function (id) { return document.getElementById(id); };
       var sel = 0, current = {}, busy = false, preview = null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function all() { return LIBRARY.concat(CANDIDATES); }
+      // A library picture copied from the older set still counts as the older id a slide saved.
+      function ids(c) { return c.alias ? [c.id, c.alias] : [c.id]; }
       function byId(id) { var a = all(); for (var i = 0; i < a.length; i++) if (a[i].id === id) return a[i]; return null; }
       // What the grid shows: for a background slot, library pictures tagged for that
       // background (or, if none are tagged yet, landscape or portrait by shape).
       function shown() {
         var f = $('im-filter').value, s = SLIDES[sel];
-        if (f === 'older') return CANDIDATES;
         if (f === 'library') return LIBRARY;
         if (s.bg) {
           var tagged = LIBRARY.filter(function (c) { return c.uses.indexOf(s.bg) >= 0; });
@@ -166,7 +187,7 @@
           return LIBRARY.filter(function (c) { return c.orientation === shape; });
         }
         var slides = LIBRARY.filter(function (c) { return c.uses.indexOf('slide') >= 0; });
-        return (slides.length ? slides : LIBRARY).concat(CANDIDATES);
+        return slides.length ? slides : LIBRARY;
       }
       // ---- Add media to the library right here (shared uploader, /public/ve-media-upload.js).
       function addFiles(files) {
@@ -185,12 +206,17 @@
         return fetch(LIB_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'list' }) })
           .then(function (r) { return r.json(); })
           .then(function (d) {
+            var done = {};
+            (d.skipped || []).forEach(function (r) { done[r] = 1; });
+            (d.items || []).forEach(function (it) { if (it.source_ref) done[it.source_ref] = 1; });
+            REVIEW = CANDIDATES.filter(function (c) { return !done[c.ref]; });
             LIBRARY = (d.items || []).filter(function (it) { return !it.archived && (it.kind || 'image') === 'image'; }).map(function (it) {
               var place = { miami: 'Miami', broward: 'Broward', 'palm-beach': 'Palm Beach' }[it.place] || '';
-              return { id: 'lib-' + it.id, thumb: it.thumb_url, raw: it.url, src: it.url, uses: it.uses || [], orientation: it.orientation,
+              var alias = it.source_ref ? it.source_ref.replace(/^(higgsfield|site):/, '') : '';
+              return { id: 'lib-' + it.id, alias: alias, thumb: it.thumb_url, raw: it.url, src: it.url, uses: it.uses || [], orientation: it.orientation,
                 cap: [it.source_name, place, it.orientation + ' ' + it.width + '\u00d7' + it.height].filter(Boolean).join(' \u00b7 ') };
             });
-            $('im-lib-msg').textContent = LIBRARY.length ? '' : 'No pictures in the library yet. Drop some above.';
+            $('im-lib-msg').textContent = LIBRARY.length ? '' : REVIEW.length ? 'No pictures in the library yet. Sort the older pictures above, or drop new ones.' : 'No pictures in the library yet. Drop some above.';
           }).catch(function () { $('im-lib-msg').textContent = 'The library did not load. Refresh to try again.'; });
       }
       function api(body) {
@@ -204,9 +230,24 @@
         return { url: s.defUrl || PANEL_BASE + s.key + '.webp', id: s.def };
       }
       function slotName(i) { return SLIDES[i].bg ? 'the background' : 'slide ' + (i + 1); }
-      function usedBy(id) { var out = []; SLIDES.forEach(function (s, i) { if (slideState(s).id === id) out.push(i); }); return out; }
+      function usedBy(c) { var k = ids(c), out = []; SLIDES.forEach(function (s, i) { if (k.indexOf(slideState(s).id) >= 0) out.push(i); }); return out; }
 
+      function renderReview() {
+        $('im-review').hidden = !REVIEW.length;
+        if (!REVIEW.length) return;
+        var n = REVIEW.filter(function (c) { return ticks[c.ref]; }).length, keep = REVIEW.length - n;
+        $('im-review-h').textContent = 'Sort your older pictures: ' + REVIEW.length + ' to go';
+        $('im-keep').textContent = keep ? 'Keep the rest: add ' + keep + ' to the library' + (n ? ', drop ' + n : '') : 'Drop all ' + n;
+        $('im-keep').disabled = importing;
+        $('im-review-grid').innerHTML = REVIEW.map(function (c, i) {
+          var used = usedBy(c), off = !!ticks[c.ref];
+          return '<div class="card' + (off ? ' drop-me' : '') + '"><img src="' + esc(c.thumb) + '" alt="" loading="lazy" data-rprev="' + i + '"><div class="card-body">' +
+            (used.length ? '<span class="tag">On ' + used.map(slotName).join(', ') + ' now</span>' : '') + '<p class="card-cap">' + esc(c.cap) + '</p>' +
+            '<label class="tick"><input type="checkbox" data-tick="' + i + '"' + (off ? ' checked' : '') + (importing ? ' disabled' : '') + '> Don\'t keep</label></div></div>';
+        }).join('');
+      }
       function render() {
+        renderReview();
         $('im-slides').innerHTML = SLIDES.map(function (s, i) {
           var st = slideState(s);
           return '<button type="button" class="slide-tile" data-i="' + i + '" aria-pressed="' + (i === sel) + '"><img src="' + esc(st.url) + '" alt=""><b>' + (s.bg ? '' : (i + 1) + '. ') + esc(s.label) + '</b><small>' + (current[s.key] ? 'Your pick' : 'Current') + '</small></button>';
@@ -215,7 +256,7 @@
         $('im-grid-h').textContent = '2. Choose the picture for ' + slotName(sel) + ': ' + SLIDES[sel].label;
         var list = shown();
         $('im-grid').innerHTML = list.length ? list.map(function (c, i) {
-          var used = usedBy(c.id), here = used.indexOf(sel) >= 0;
+          var used = usedBy(c), here = used.indexOf(sel) >= 0;
           var tag = here ? '<span class="tag">On this one</span>' : used.length ? '<span class="tag">On ' + used.map(slotName).join(', ') + '</span>' : '';
           return '<div class="card' + (used.length && !here ? ' used' : '') + '"><img src="' + esc(c.thumb) + '" alt="" loading="lazy" data-prev="' + i + '"><div class="card-body">' + tag + '<p class="card-cap">' + esc(c.cap) + '</p>' +
             '<button type="button" class="btn" data-use="' + i + '"' + (here ? ' disabled' : '') + '>' + (here ? 'On ' + slotName(sel) : 'Use for ' + slotName(sel)) + '</button></div></div>';
@@ -227,7 +268,7 @@
       }
       function use(c) {
         if (busy || !c) return;
-        var s = SLIDES[sel], taken = usedBy(c.id).filter(function (u) { return u !== sel; });
+        var s = SLIDES[sel], taken = usedBy(c).filter(function (u) { return u !== sel; });
         if (taken.length && !SLIDES[sel].bg && !SLIDES[taken[0]].bg && !confirm('That picture is on slide ' + (taken[0] + 1) + '. Use it here too?')) return;
         busy = true; $('im-msg').textContent = 'Saving ' + slotName(sel) + '...';
         api({ action: 'set_panel', key: s.key, source: c.src, source_id: c.id }).then(function (d) {
@@ -236,8 +277,52 @@
           else $('im-msg').textContent = d._status === 403 ? 'Admins only.' : 'That did not save. Try again.';
         }).catch(function () { busy = false; $('im-msg').textContent = 'Could not connect. Try again.'; });
       }
-      function openPreview(c) {
+      var importing = false;
+      $('im-review-grid').addEventListener('change', function (e) {
+        var i = e.target.getAttribute('data-tick'); if (i === null) return;
+        var c = REVIEW[+i]; if (e.target.checked) ticks[c.ref] = 1; else delete ticks[c.ref];
+        saveTicks(); renderReview();
+      });
+      $('im-review-grid').addEventListener('click', function (e) { var i = e.target.getAttribute('data-rprev'); if (i !== null) openPreview(REVIEW[+i], true); });
+      $('im-tick-all').onclick = function () { REVIEW.forEach(function (c) { ticks[c.ref] = 1; }); saveTicks(); renderReview(); };
+      $('im-tick-none').onclick = function () { REVIEW.forEach(function (c) { delete ticks[c.ref]; }); saveTicks(); renderReview(); };
+      // Fetch the full-size original (falling back to Higgsfield's smaller copy), then send it
+      // through the same uploader as a drop, marked with where it came from.
+      function fetchFile(c) {
+        function get(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); }); }
+        return get(c.raw).catch(function () { return get(c.thumb); }).then(function (b) {
+          var ext = /png/.test(b.type) ? 'png' : /webp/.test(b.type) ? 'webp' : 'jpg';
+          var f = new File([b], c.ref.replace(/[^a-z0-9-]+/gi, '-') + '.' + ext, { type: b.type || 'image/' + ext });
+          f.veRef = c.ref; f.veName = (/^site:/.test(c.ref) ? 'Site: ' : 'Higgsfield: ') + c.cap;
+          return f;
+        });
+      }
+      $('im-keep').onclick = function () {
+        if (importing) return;
+        var drop = REVIEW.filter(function (c) { return ticks[c.ref]; }), keep = REVIEW.filter(function (c) { return !ticks[c.ref]; });
+        if (!confirm((keep.length ? 'Copy ' + keep.length + ' pictures into the library' : 'Copy nothing') + (drop.length ? ' and drop ' + drop.length + ' for good' : '') + '?')) return;
+        importing = true; $('im-review-errs').textContent = ''; renderReview();
+        var failed = [], added = 0, token = VEAuth.getToken();
+        var p = drop.length ? VEMediaUpload.api(token, { action: 'skip', refs: drop.map(function (c) { return c.ref; }) }).then(function (d) { if (!d.ok) throw new Error('skip'); }) : Promise.resolve();
+        p.then(function () {
+          return keep.reduce(function (q, c, i) {
+            return q.then(function () {
+              $('im-review-msg').textContent = 'Copying ' + (i + 1) + ' of ' + keep.length + '...';
+              return fetchFile(c).then(function (f) { return VEMediaUpload.upload([f], token); })
+                .then(function (r) { if (r.errors.length) failed.push(c); else added++; })
+                .catch(function () { failed.push(c); });
+            });
+          }, Promise.resolve());
+        }).then(function () {
+          importing = false;
+          $('im-review-msg').textContent = 'Done. ' + added + ' copied into the library' + (drop.length ? ', ' + drop.length + ' dropped' : '') + '.';
+          if (failed.length) $('im-review-errs').textContent = failed.length + ' did not copy. Press the button again to retry them.';
+          return loadLibrary().then(render);
+        }).catch(function () { importing = false; $('im-review-msg').textContent = 'That did not save. Try again.'; renderReview(); });
+      };
+      function openPreview(c, reviewing) {
         preview = c; $('im-dlg-img').src = c.raw; $('im-dlg-cap').textContent = c.cap;
+        $('im-dlg-use').hidden = !!reviewing;
         $('im-dlg-use').textContent = 'Use for ' + slotName(sel); $('im-dlg').showModal();
       }
       $('im-dlg-close').onclick = function () { $('im-dlg').close(); };

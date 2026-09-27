@@ -14,6 +14,12 @@
 // POST { action: 'upload_url', sha256, kind, ext }                        audio / video: returns a signed upload URL
 // POST { action: 'register', sha256, kind, ext, mime, bytes, duration?, width?, height?, source_name }
 // POST { action: 'update', id, uses?, place?, labels?, archived? }
+// POST { action: 'skip', refs }       older pictures Sean chose not to keep (never offered again)
+// POST { action: 'delete', ids }      removes the files and the rows; refuses any picture on a live slide
+//
+// Sean, 2026-09-27: the older Higgsfield set is reviewed once on /admin/onboarding-images.
+// The ones he keeps are uploaded here with source_ref (e.g. 'higgsfield:<id>'), the rest
+// are skipped, and from then on pages pick only from this library.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -27,7 +33,9 @@ const MEDIA_EXT: Record<string, { kind: 'audio' | 'video'; mime: string }> = {
   aac: { kind: 'audio', mime: 'audio/aac' }, ogg: { kind: 'audio', mime: 'audio/ogg' },
   mp4: { kind: 'video', mime: 'video/mp4' }, mov: { kind: 'video', mime: 'video/quicktime' }, webm: { kind: 'video', mime: 'video/webm' },
 };
-const COLS = 'id, kind, url, thumb_url, mime, width, height, orientation, duration, bytes, source_name, uses, place, labels, archived, created_at';
+const COLS = 'id, kind, url, thumb_url, mime, width, height, orientation, duration, bytes, source_name, uses, place, labels, archived, source_ref, created_at';
+const PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
+const REF_RE = /^[a-z0-9:/._-]{1,200}$/i;
 const PLACES = ['miami', 'broward', 'palm-beach'];
 const MAX_FULL = 8 * 1024 * 1024;
 const MAX_THUMB = 1024 * 1024;
@@ -93,14 +101,20 @@ Deno.serve(async (req) => {
       .select(COLS)
       .order('created_at', { ascending: false }).limit(1000);
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
-    return json({ items: data || [] });
+    const { data: skips } = await db.from('ve_media_import_skips').select('source_ref');
+    return json({ items: data || [], skipped: (skips || []).map((r: any) => r.source_ref) });
   }
 
   if (body.action === 'upload') {
     const sha = String(body.sha256 || '').toLowerCase();
     if (!/^[0-9a-f]{64}$/.test(sha)) return json({ error: 'bad_sha256' }, 400);
-    const { data: existing } = await db.from('ve_media_library').select('id, url, thumb_url').eq('sha256', sha).maybeSingle();
-    if (existing) return json({ ok: true, duplicate: true, item: existing });
+    const ref = REF_RE.test(String(body.source_ref || '')) ? String(body.source_ref) : null;
+    const { data: existing } = await db.from('ve_media_library').select(COLS).eq('sha256', sha).maybeSingle();
+    if (existing) {
+      // Same file already here: remember where it came from so the review counts it as kept.
+      if (ref && !existing.source_ref) await db.from('ve_media_library').update({ source_ref: ref }).eq('id', existing.id);
+      return json({ ok: true, duplicate: true, item: { ...existing, source_ref: existing.source_ref || ref } });
+    }
 
     const full = b64ToBytes(String(body.full_b64 || '')), thumb = b64ToBytes(String(body.thumb_b64 || ''));
     const fk = full && kind(full), tk = thumb && kind(thumb);
@@ -122,10 +136,41 @@ Deno.serve(async (req) => {
 
     const { data: item, error } = await db.from('ve_media_library').insert({
       sha256: sha, kind: 'image', mime: TYPE[fk], url, thumb_url, width, height, orientation, bytes: full.length,
-      source_name: String(body.source_name || '').slice(0, 200) || null, uploaded_by: memberId,
+      source_name: String(body.source_name || '').slice(0, 200) || null, source_ref: ref, uploaded_by: memberId,
     }).select(COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, item });
+  }
+
+  if (body.action === 'skip') {
+    const refs = (Array.isArray(body.refs) ? body.refs : []).map(String).filter((r: string) => REF_RE.test(r)).slice(0, 500);
+    if (!refs.length) return json({ error: 'no_refs' }, 400);
+    const { error } = await db.from('ve_media_import_skips').upsert(refs.map((r: string) => ({ source_ref: r, skipped_by: memberId })), { onConflict: 'source_ref' });
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, skipped: refs.length });
+  }
+
+  if (body.action === 'delete') {
+    const ids = (Array.isArray(body.ids) ? body.ids : []).map(String).filter((i: string) => /^[0-9a-f-]{36}$/.test(i)).slice(0, 500);
+    if (!ids.length) return json({ error: 'no_ids' }, 400);
+    const { data: rows } = await db.from('ve_media_library').select('id, url, thumb_url, source_ref').in('id', ids);
+    const urls = (rows || []).map((r: any) => r.url);
+    const { data: live } = await db.from('ve_onboarding_panels').select('url').in('url', urls.length ? urls : ['-']);
+    const liveSet = new Set((live || []).map((r: any) => r.url));
+    const deleted: string[] = [], in_use: string[] = [];
+    for (const r of rows || []) {
+      if (liveSet.has(r.url)) { in_use.push(r.id); continue; }
+      const paths = [r.url, r.thumb_url].filter((u: string) => u && u.startsWith(PUBLIC_PREFIX + 'library/')).map((u: string) => u.slice(PUBLIC_PREFIX.length));
+      if (paths.length) {
+        const rm = await db.storage.from('vegan-media').remove(paths);
+        if (rm.error) return json({ error: 'delete_failed', message: rm.error.message, deleted, in_use }, 500);
+      }
+      const { error } = await db.from('ve_media_library').delete().eq('id', r.id);
+      if (error) return json({ error: 'delete_failed', message: error.message, deleted, in_use }, 500);
+      if (r.source_ref) await db.from('ve_media_import_skips').upsert({ source_ref: r.source_ref, skipped_by: memberId }, { onConflict: 'source_ref' });
+      deleted.push(r.id);
+    }
+    return json({ ok: true, deleted, in_use });
   }
 
   if (body.action === 'upload_url' || body.action === 'register') {
