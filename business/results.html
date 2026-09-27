@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Your Quarter | Vegans Explore</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:860px;margin:0 auto;padding:40px 24px 64px;}
+    @media (max-width:600px){.wrap{padding:28px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(24px,4vw,36px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:6px;}
+    .period{font-size:15px;color:var(--ve-text-75);margin-bottom:22px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:12px;}
+    .stat{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;}
+    .stat b{display:block;font-size:34px;font-weight:900;line-height:1.1;color:var(--ve-green-deep);}
+    .stat span{font-size:13.5px;color:var(--ve-text-75);font-weight:600;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:20px 22px;margin-top:16px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,.25);}
+    .muted{font-size:13.5px;color:var(--ve-text-75);}
+    .msg{font-weight:700;margin-top:10px;min-height:20px;color:var(--ve-green-deep);}
+    .gate{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:28px;text-align:center;}
+    @media print{.ve-nav,.ve-footer,.no-print{display:none !important;}body{background:#fff;}}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <main class="wrap">
+    <div id="gate" class="gate" hidden></div>
+    <div id="sheet" hidden>
+      <p class="eyebrow" id="r-plan">Your quarter with Vegans Explore</p>
+      <h1 id="r-biz"></h1>
+      <p class="period" id="r-period"></p>
+      <div class="grid" id="r-grid"></div>
+      <div class="card">
+        <p class="muted">Stamps count every Passport Challenge stamp at your register this quarter. First-time visitors are members whose first-ever stamp with you landed this quarter. Tour guests are paid guests on Vegans Explore Tours that stopped with you.</p>
+      </div>
+      <div class="card no-print" id="commit" hidden>
+        <p style="font-weight:800;margin-bottom:6px">Keep your pin, get a quarter free</p>
+        <p class="muted" style="margin-bottom:12px">From your next renewal, pay for three quarters and get the fourth on us.</p>
+        <button type="button" class="btn" id="commit-go">Keep my pin, get a quarter free</button>
+        <p class="msg" id="commit-msg" role="status"></p>
+      </div>
+      <p class="no-print" style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-ghost" onclick="window.print()">Print</button><a class="btn btn-ghost" id="r-plan-link" href="/claim">Your plan</a></p>
+    </div>
+  </main>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims';
+      var $ = function (id) { return document.getElementById(id); }, id = new URLSearchParams(location.search).get('id') || '';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function day(d) { return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+      function gate(html) { $('gate').innerHTML = html; $('gate').hidden = false; }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 150);
+        if (!VEAuth.isLoggedIn()) {
+          gate('<p style="margin-bottom:14px">Sign in with the account that holds your listing to see your results.</p><button type="button" class="btn" id="in">Sign in</button>');
+          $('in').onclick = function () { VEAuth.showAuthModal('Sign in to see your results.', function () { location.reload(); }); };
+          return;
+        }
+        api({ action: 'results', id: id }).then(function (d) {
+          if (!d.sheet) return gate('<p>That results sheet was not found, or it belongs to another business. Questions: <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a></p>');
+          var s = d.sheet, x = s.data || {}, l = s.listing || {};
+          document.title = 'Your Quarter: ' + (l.name || '') + ' | Vegans Explore';
+          $('r-plan').textContent = (d.tier_name || 'Passport') + ' results';
+          $('r-biz').textContent = l.name || '';
+          $('r-period').textContent = day(s.period_start) + ' to ' + day(s.period_end);
+          $('r-plan-link').href = '/claim?listing=' + encodeURIComponent(l.slug || '');
+          var rows = [['stamps', 'Passport Challenge stamps'], ['members', 'Members who stamped'], ['first_time', 'First-time visitors'], ['challenges', 'Challenge months on the map'], ['tour_guests', 'Tour guests'], ['reports', '"Cashier didn\'t know" reports']];
+          $('r-grid').innerHTML = rows.map(function (r) { return '<div class="stat"><b>' + Number(x[r[0]] || 0).toLocaleString() + '</b><span>' + esc(r[1]) + '</span></div>'; }).join('');
+          if (d.can_commit) {
+            $('commit').hidden = false;
+            $('commit-go').onclick = function () {
+              if (!confirm('Switch to four quarters for the price of three? From your next renewal you are billed once a year for three quarters.')) return;
+              this.disabled = true;
+              api({ action: 'commit_year', listing_id: l.id }).then(function (r) {
+                $('commit-msg').textContent = r.ok ? 'Done. From your next renewal you pay $' + Math.round(r.yearly_cents / 100) + ' for the year.' : 'That did not go through. Please email hello@vegansexplore.com.';
+              });
+            };
+          }
+          $('sheet').hidden = false;
+        }).catch(function () { gate('<p>Did not load. Refresh to try again.</p>'); });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

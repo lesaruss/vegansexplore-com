@@ -203,7 +203,7 @@
             '<div class="muted">' + esc(s.address || '') + '</div>' +
             '<div class="tags">' + (st === 'stamped' ? '<span class="tag stamp">Stamped</span>' : st === 'pending' ? '<span class="tag wait">Waiting on the owner</span>' : '') +
               (s.is_anchor ? '<span class="tag anchor">Anchor stop, +' + Number(h.anchor_bonus_points).toLocaleString() + ' bonus Points</span>' : '') +
-              (s.verified ? '<span class="tag ver">' + (s.tier === 'plus' ? 'VE Verified Plus' : 'VE Verified') + '</span>' : '') + '</div>' +
+              (s.verified ? '<span class="tag ver">VE Verified</span>' : '') + '</div>' +
             (s.offer_text ? '<div class="offer"><b>' + esc(OFFER[s.offer_type] || 'Offer') + ':</b> ' + esc(s.offer_text) + '</div>' : '') +
             (!st ? '<button type="button" class="linkish" data-report="' + esc(s.id) + '">The cashier didn’t know?</button>' : '') +
             '</div></div>';

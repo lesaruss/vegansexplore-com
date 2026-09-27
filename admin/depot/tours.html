@@ -85,7 +85,7 @@
     <p class="eyebrow no-print">The Depot</p>
     <h1 class="no-print">Tours</h1>
     <div id="depot-tabs"></div>
-    <p class="sub no-print">Monthly in a city: a van of up to 12 guests, $50 each, three tastings in one neighborhood, then an attraction. Build the tour here and set it On sale; once its city is launched it shows at <a href="/tours">vegansexplore.com/tours</a> and in that hub's Events. VE Verified Plus businesses are first in line for tour stops, so they are listed first.</p>
+    <p class="sub no-print">Monthly in a city: a van of up to 12 guests, $50 each, three tastings in one neighborhood, then an attraction. Build the tour here and set it On sale; once its city is launched it shows at <a href="/tours">vegansexplore.com/tours</a> and in that hub's Events. Passport Anchor businesses are first in line for tour stops, so they are listed first.</p>
     <div id="t-gate" class="gate" hidden></div>
     <div id="t-app" hidden>
       <section class="panel no-print">
@@ -123,7 +123,7 @@
         </div>
         <h3>Three restaurants</h3>
         <div class="slots" id="slots"></div>
-        <h3>Suggested for this hub (Plus first, then Verified)</h3>
+        <h3>Suggested for this hub (Anchor first, then Stop)</h3>
         <div class="sugg" id="sugg"><span class="meta">Pick a hub.</span></div>
         <h3>The rest of the day</h3>
         <div class="form">
@@ -175,7 +175,7 @@
       }
       function isoToLocal(iso, tz) { return iso ? new Date(iso).toLocaleString('sv-SE', { timeZone: tz }).replace(' ', 'T').slice(0, 16) : ''; }
       function nice(iso, tz) { return new Date(iso).toLocaleString('en-US', { timeZone: tz || 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }); }
-      function tierPill(t) { return t === 'plus' ? '<span class="pill plus">Plus</span>' : t ? '<span class="pill ver">Verified</span>' : ''; }
+      function tierPill(t) { return t === 'plus' ? '<span class="pill plus">Anchor</span>' : t ? '<span class="pill ver">Stop</span>' : ''; }
 
       $('f-hub').innerHTML = VE_HUBS.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
       function hubChanged() {
@@ -221,7 +221,7 @@
         var h = hub(); $('sugg').innerHTML = '<span class="meta">Loading...</span>';
         api({ action: 'admin_plus', cities: h.match.cities || [], states: h.match.states || [] }).then(function (d) {
           var bs = d.businesses || []; bs.forEach(function (l) { found[l.id] = l; });
-          $('sugg').innerHTML = bs.length ? bs.map(function (l) { return '<button type="button" data-pick="' + esc(l.id) + '" title="' + esc([l.ve_contact_name, l.ve_contact_phone || l.phone].filter(Boolean).join(', ')) + '">' + esc(l.name) + ' ' + tierPill(l.ve_verified_tier) + '</button>'; }).join('') : '<span class="meta">No VE Verified businesses in ' + esc(h.name) + ' yet. Search any business above.</span>';
+          $('sugg').innerHTML = bs.length ? bs.map(function (l) { return '<button type="button" data-pick="' + esc(l.id) + '" title="' + esc([l.ve_contact_name, l.ve_contact_phone || l.phone].filter(Boolean).join(', ')) + '">' + esc(l.name) + ' ' + tierPill(l.ve_verified_tier) + '</button>'; }).join('') : '<span class="meta">No Passport partners in ' + esc(h.name) + ' yet. Search any business above.</span>';
         });
       }
       $('f-hub').addEventListener('change', hubChanged);

@@ -9,7 +9,8 @@
     { href: '/admin/depot/pulse', label: 'Pulse' },
     { href: '/admin/depot/logos', label: 'Logos' },
     { href: '/admin/depot/claims', label: 'Claims' },
-    { href: '/admin/depot/verified', label: 'Verified' },
+    { href: '/admin/depot/verified', label: 'Passport Partners' },
+    { href: '/admin/depot/services', label: 'Services' },
     { href: '/admin/depot/challenge', label: 'Passport Challenge' },
     { href: '/admin/depot/tours', label: 'Tours' },
     { href: '/admin/depot/narration', label: 'Import narration' }

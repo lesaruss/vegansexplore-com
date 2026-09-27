@@ -14,15 +14,30 @@
 //        claim_id. Test accounts (ve_test_checkout_allowlist) get a Stripe test session.
 //   POST { action: 'mine', listing_id }  -> { claim, verified } this member's latest claim, and the
 //     listing's live VE Verified membership if this member is its owner or bought it
-//   POST { action: 'verified_start', listing_id, tier, return_url }  -> { url }  an owner already
-//     holding the listing buys VE Verified ($250/yr) or VE Verified Plus ($500/yr)
+//   POST { action: 'verified_start', listing_id, tier, return_url }  -> { url } or { reserved }  an owner
+//     already holding the listing takes Passport Stop ($250 a quarter) or Passport Anchor ($500 a quarter)
+//   POST { action: 'founding_checkout', listing_id, return_url }  -> { url }  a founding spot whose billing
+//     the Depot has opened: subscribe now, first charge on the business's first Challenge month
+//   POST { action: 'commit_year', listing_id }  four quarters for the price of three, offered at renewal
+//   POST { action: 'results', id } / { action: 'results_list', listing_id }  quarterly results sheets
+// Public (no sign-in):
+//   POST { action: 'offer', listing_id? }  -> { hub, founding: { open, full, cap, taken }, extra }
 //
-// VE Verified (playbook ve-verified-tours-hunt, group A): a yearly Stripe SUBSCRIPTION on the VE
-// account, so renewal is automatic and the renewal date is Stripe's current_period_end. Each
-// purchase is a ve_verified_memberships row; a trigger keeps listings.ve_verified_tier /
-// ve_verified_until / ve_verified (badge: paid AND the VE visit has happened) in step.
-// ve-stripe-webhook records renewals and cancellations; the return trip and the Depot list also
-// read the subscription straight from Stripe, so a missed webhook heals itself.
+// Business Offer v2 (playbook ve-verified-tours-hunt, locked by Sean 2026-09-27 after a panel):
+// Passport Stop ($250) and Passport Anchor ($500) are QUARTERLY Stripe subscriptions on the VE account
+// (internal tier keys stay 'verified' and 'plus'). The Verified badge is earned by the in-person visit
+// and comes with both tiers; it is never sold on its own. Each purchase is a ve_verified_memberships
+// row; a trigger keeps listings.ve_verified_tier / ve_verified_until / ve_verified (badge: paid AND
+// visited) in step. ve-stripe-webhook records renewals and cancellations; the return trip and the
+// Depot list also read the subscription from Stripe, so a missed webhook heals itself.
+// Founding spots: while a hub's Passport Challenge is not launched (ve-hunt's challenge_launch), a
+// business reserves for free (status 'reserved', price locked in amount_cents), capped per hub
+// (ve_site_settings.founding_caps, else the stops on the hub's first Challenge). The Depot opens
+// billing with the first Challenge month (bill_from); the subscription starts then, via a trial.
+// Four quarters for three is offered from the first results sheet on (or 60 days in): the
+// subscription moves to a yearly price of 3x the locked quarterly amount from the next renewal.
+// Results sheets: a daily cron (GET ?cron=results, x-cron-secret) writes one per completed quarter
+// (every 3 months from paid_at) from ve_results_data() and emails it to the business and Sean.
 //
 // Stripe return:
 //   GET ?confirm=<session id>  checks the session is paid, marks the claim submitted with what
@@ -47,6 +62,10 @@
 //   POST { action: 'admin_verified_grant', listing_id, tier, paid_at?, renews_at?, notes? }  a membership paid
 //     outside Stripe (cash, invoice, comp). No auto-renewal; it lapses on renews_at unless extended.
 //   POST { action: 'admin_verified_end', id }   end a membership now (and cancel its Stripe subscription)
+//   POST { action: 'admin_founding_open', id, bill_from }  open billing for a founding spot (emails the business)
+//   POST { action: 'admin_offer_settings', caps?, extras? }  founding caps per hub, each quarter's extra
+//   POST { action: 'admin_results', membership_id }  sheets so far plus the current quarter to date
+//   POST { action: 'admin_results_send', id }  email a sheet again
 //
 // verify_jwt is false: the VE app token is checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -75,11 +94,29 @@ const ACCOMMODATIONS = ['Dine-in', 'Takeout', 'Delivery', 'Outdoor Seating', 'Re
 const OWNED = ['is_black_owned', 'is_women_owned', 'is_latino_owned', 'is_asian_owned', 'is_immigrant_owned', 'is_veteran_owned',
   'is_family_owned', 'is_lgbtq_owned', 'is_indigenous_owned'];
 const BUSINESS = ['OPERATIONAL', 'CLOSED_TEMPORARILY', 'CLOSED_PERMANENTLY'];
-// VE Verified tiers (Sean, 2026-09-27). Yearly, renewing.
+// Business Offer v2 tiers (Sean, 2026-09-27). Quarterly, renewing. Keys are the stored tier values.
 const TIERS: Record<string, { cents: number; name: string }> = {
-  verified: { cents: 25000, name: 'VE Verified' },
-  plus: { cents: 50000, name: 'VE Verified Plus' },
+  verified: { cents: 25000, name: 'Passport Stop' },
+  plus: { cents: 50000, name: 'Passport Anchor' },
 };
+// The city hubs, matching /public/ve-hubs.js (a listing is in a hub when its city and state fit).
+const HUBS: Record<string, { name: string; cities?: string[]; states?: string[] }> = {
+  'south-florida': { name: 'South Florida', cities: ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'] },
+  'central-florida': { name: 'Central Florida', states: ['FL'], cities: ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala'] },
+  atlanta: { name: 'Atlanta', states: ['GA'] }, dmv: { name: 'DMV', states: ['DC', 'MD', 'VA'] }, 'new-york': { name: 'New York', states: ['NY'] },
+  philadelphia: { name: 'Philadelphia', states: ['PA'] }, 'los-angeles': { name: 'Los Angeles', cities: ['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park'] },
+  london: { name: 'London', cities: ['London'] },
+};
+function hubOf(l: any): string | null {
+  for (const [slug, h] of Object.entries(HUBS)) {
+    if (h.cities && !h.cities.includes(l?.address_city)) continue;
+    if (h.states && !h.states.includes(String(l?.address_state || '').toUpperCase())) continue;
+    if (!h.cities && !h.states) continue;
+    return slug;
+  }
+  return null;
+}
+const monthsLater = (d: Date, n: number) => { const x = new Date(d); x.setUTCMonth(x.getUTCMonth() + n); return x; };
 const LIVE = ['active', 'past_due'];
 
 const cors = {
@@ -180,9 +217,11 @@ async function verifiedCheckout(row: any, listing: any, member: any, back: strin
   const params = new URLSearchParams({
     mode: 'subscription',
     'line_items[0][price_data][currency]': 'usd',
-    'line_items[0][price_data][product_data][name]': (row.test ? '[TEST] ' : '') + `${t.name} (yearly) - ${listing.name}`.slice(0, 120),
-    'line_items[0][price_data][unit_amount]': String(t.cents),
-    'line_items[0][price_data][recurring][interval]': 'year',
+    'line_items[0][price_data][product_data][name]': (row.test ? '[TEST] ' : '') + `${t.name} (quarterly)${row.founding ? ', founding' : ''} - ${listing.name}`.slice(0, 120),
+    // A founding spot pays the price it reserved at; everyone else pays today's tier price.
+    'line_items[0][price_data][unit_amount]': String(row.founding && row.amount_cents ? row.amount_cents : t.cents),
+    'line_items[0][price_data][recurring][interval]': 'month',
+    'line_items[0][price_data][recurring][interval_count]': '3',
     'line_items[0][quantity]': '1',
     success_url: `${FN_URL}?verified_confirm={CHECKOUT_SESSION_ID}`,
     cancel_url: withParam(back, 'verified', 'cancelled'),
@@ -192,7 +231,13 @@ async function verifiedCheckout(row: any, listing: any, member: any, back: strin
   const meta: Record<string, string> = { type: 've_verified', verified_id: row.id, listing_id: listing.id, member_id: member.id, tier: row.tier };
   if (claimId) meta.claim_id = claimId;
   if (row.test) meta.test = 'true';
+  if (row.founding) meta.founding = 'true';
   for (const [k, v] of Object.entries(meta)) { params.set(`metadata[${k}]`, v); params.set(`subscription_data[metadata][${k}]`, v); }
+  // Founding: the card is saved now and the first quarter is charged on the first Challenge month.
+  if (row.founding && row.bill_from) {
+    const at = Math.floor(new Date(row.bill_from + 'T12:00:00Z').getTime() / 1000);
+    if (at > Math.floor(Date.now() / 1000) + 3 * 86400) params.set('subscription_data[trial_end]', String(at));
+  }
   const { ok, body: s } = await stripe(row.test, 'checkout/sessions', params);
   if (!ok) { console.error('stripe error', s); return { error: s.error?.message ?? 'stripe_error' }; }
   await db.from('ve_verified_memberships').update({ stripe_session_id: s.id, updated_at: new Date().toISOString() }).eq('id', row.id);
@@ -213,12 +258,111 @@ async function liveMembership(listingId: string) {
   const { data } = await db.from('ve_verified_memberships').select('*').eq('listing_id', listingId).in('status', LIVE).maybeSingle();
   return data;
 }
+async function reservedMembership(listingId: string) {
+  const { data } = await db.from('ve_verified_memberships').select('*').eq('listing_id', listingId).eq('status', 'reserved').maybeSingle();
+  return data;
+}
+async function setting(key: string) {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', key).maybeSingle();
+  return data?.value || {};
+}
+// Founding window for a hub: open until its Passport Challenge launches; capped per hub.
+async function foundingState(hub: string | null) {
+  if (!hub) return { open: false, full: false, cap: null as number | null, taken: 0 };
+  const launched = (await setting('challenge_launch')).communities || [];
+  const set = +(await setting('founding_caps'))[hub];
+  let cap: number | null = Number.isFinite(set) && set > 0 ? set : null;
+  if (cap === null) {
+    const { data: first } = await db.from('ve_hunts').select('id').eq('community_slug', hub).order('starts_on').limit(1).maybeSingle();
+    if (first) { const { count } = await db.from('ve_hunt_stops').select('id', { count: 'exact', head: true }).eq('hunt_id', first.id); cap = count || null; }
+  }
+  const { count: taken } = await db.from('ve_verified_memberships').select('id', { count: 'exact', head: true }).eq('founding', true).eq('hub', hub)
+    .in('status', ['reserved', 'awaiting_payment', 'active', 'past_due']);
+  const open = !launched.includes(hub);
+  return { open, full: open && cap !== null && (taken || 0) >= cap, cap, taken: taken || 0 };
+}
+// A free founding reservation (price locked at today's tier price).
+async function reserve(listing: any, member: any, tier: string, hub: string, test: boolean, contact: { name?: string; email?: string }, claimId?: string) {
+  const row = { listing_id: listing.id, member_id: member.id, tier, amount_cents: TIERS[tier].cents, test, status: 'reserved', source: 'stripe', founding: true, hub,
+    contact_name: contact.name || member.name || null, contact_email: contact.email || member.email || null, claim_id: claimId || null, updated_at: new Date().toISOString() };
+  const { data, error } = await db.from('ve_verified_memberships').insert(row).select('*').single();
+  if (error) throw new Error(error.message);
+  const t = TIERS[tier];
+  await mail(`${test ? '[TEST] ' : ''}Founding spot reserved: ${listing.name}, ${t.name}`,
+    `<p><b>${esc(listing.name)}</b> reserved a founding <b>${t.name}</b> spot in ${esc(HUBS[hub]?.name || hub)} at $${(t.cents / 100).toFixed(0)} a quarter, locked.</p>` +
+    `<p>${esc(row.contact_name || '')}<br>${esc(row.contact_email || '')}</p>` + (claimId ? '<p>It came with a listing claim; the claim is confirmed when the first payment goes through.</p>' : '') +
+    `<p>Open their billing when their first Challenge month is set: <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`, row.contact_email || undefined);
+  await sendTo(row.contact_email, `Your founding ${t.name} spot is reserved`,
+    `<p>Thank you${listing.name ? ', ' + esc(listing.name) : ''}. Your founding <b>${t.name}</b> spot in ${esc(HUBS[hub]?.name || hub)} is reserved, and your price is locked at $${(t.cents / 100).toFixed(0)} a quarter for as long as you stay.</p>` +
+    `<p>You pay nothing until your first Passport Challenge month starts. We will email you before then to set up billing and schedule your visit.</p>` +
+    `<p>Our promise: if your pin, register kit and staff training aren't ready before your month starts, that month is on us. Anything else we deliver that isn't right, we make it right.</p><p>The Vegans Explore team</p>`);
+  return data;
+}
+async function sendTo(to: string | null, subject: string, html: string) {
+  if (!to || !RESEND_KEY) return;
+  try {
+    await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [to], reply_to: 'hello@vegansexplore.com', subject, html }) });
+  } catch (e) { console.error('business email failed', e); }
+}
+// Four quarters for three: from the first results sheet, or once the business is 60 days in.
+async function canCommit(row: any): Promise<boolean> {
+  if (!row || row.source !== 'stripe' || !LIVE.includes(row.status) || row.committed_at || !row.stripe_subscription_id) return false;
+  if (row.paid_at && Date.now() - new Date(row.paid_at).getTime() >= 60 * 864e5) return true;
+  const { count } = await db.from('ve_results_sheets').select('id', { count: 'exact', head: true }).eq('membership_id', row.id);
+  return (count || 0) > 0;
+}
+const QUARTER_LABEL = (d = new Date()) => `${d.getUTCFullYear()}-Q${Math.floor(d.getUTCMonth() / 3) + 1}`;
+async function currentExtra() {
+  const extras = await setting('quarter_extras');
+  const e = extras[QUARTER_LABEL()];
+  return e && e.title ? { quarter: QUARTER_LABEL(), title: String(e.title), text: String(e.text || '') } : null;
+}
+// Write (or find) the results sheet for one completed quarter, and email it once.
+async function resultsSheet(row: any, start: Date, end: Date, send: boolean) {
+  const { data: have } = await db.from('ve_results_sheets').select('*').eq('membership_id', row.id).eq('period_end', end.toISOString()).maybeSingle();
+  let sheet = have;
+  if (!sheet) {
+    const { data: d } = await db.rpc('ve_results_data', { p_listing: row.listing_id, p_from: start.toISOString(), p_to: end.toISOString() });
+    const { data: ins } = await db.from('ve_results_sheets').insert({ membership_id: row.id, listing_id: row.listing_id, period_start: start.toISOString(), period_end: end.toISOString(), data: d || {} })
+      .select('*').maybeSingle();
+    sheet = ins;
+  }
+  if (sheet && send && !sheet.sent_at) {
+    const { data: l } = await db.from('listings').select('name').eq('id', row.listing_id).maybeSingle();
+    const link = `https://vegansexplore.com/business/results?id=${sheet.id}`, d = sheet.data || {};
+    const commit = await canCommit(row);
+    const body = `<p>Your ${esc(TIERS[row.tier]?.name || 'Passport')} results for ${esc(l?.name || 'your business')}, ${new Date(sheet.period_start).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} to ${new Date(sheet.period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}:</p>` +
+      `<p>Passport Challenge stamps: <b>${d.stamps ?? 0}</b><br>Members who stamped: <b>${d.members ?? 0}</b><br>First-time visitors: <b>${d.first_time ?? 0}</b><br>Tour guests: <b>${d.tour_guests ?? 0}</b></p>` +
+      `<p>The full sheet: <a href="${link}">${link}</a></p>` +
+      (commit ? `<p>Keep your pin and get a quarter free: switch to four quarters for the price of three from your next renewal. It is one click on the sheet.</p>` : '') + '<p>The Vegans Explore team</p>';
+    await sendTo(row.contact_email, `Your quarter with Vegans Explore: ${l?.name || ''}`.trim(), body);
+    await mail(`${row.test ? '[TEST] ' : ''}Results sheet sent: ${l?.name || row.listing_id}`, body);
+    await db.from('ve_results_sheets').update({ sent_at: new Date().toISOString() }).eq('id', sheet.id);
+  }
+  return sheet;
+}
+async function runResultsCron() {
+  const { data: rows } = await db.from('ve_verified_memberships').select('*').in('status', LIVE).not('paid_at', 'is', null);
+  let made = 0;
+  for (const r of rows || []) {
+    const paid = new Date(r.paid_at);
+    for (let k = 1; k <= 40; k++) {
+      const end = monthsLater(paid, 3 * k);
+      if (end.getTime() > Date.now()) break;
+      const { data: have } = await db.from('ve_results_sheets').select('id, sent_at').eq('membership_id', r.id).eq('period_end', end.toISOString()).maybeSingle();
+      if (have?.sent_at) continue;
+      await resultsSheet(r, monthsLater(paid, 3 * (k - 1)), end, true); made++;
+    }
+  }
+  return made;
+}
 // Paid: activate the membership from the Stripe session (the return trip and the webhook both land here).
 async function activateVerified(sessionId: string): Promise<{ row: any; listing: any } | null> {
   const { data: row } = await db.from('ve_verified_memberships').select('*').eq('stripe_session_id', sessionId).maybeSingle();
   if (!row) return null;
   const { data: listing } = await db.from('listings').select('id, name, slug, address_city').eq('id', row.listing_id).maybeSingle();
-  if (row.status !== 'awaiting_payment') return { row, listing };
+  if (row.status !== 'awaiting_payment' && row.status !== 'reserved') return { row, listing };
   const { ok, body: s } = await stripe(row.test, `checkout/sessions/${encodeURIComponent(sessionId)}?expand[]=subscription`);
   if (!ok || s.status !== 'complete' || s.metadata?.verified_id !== row.id || !s.subscription) return null;
   const sub = typeof s.subscription === 'string' ? (await stripe(row.test, `subscriptions/${s.subscription}`)).body : s.subscription;
@@ -227,7 +371,7 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
     status: subStatus(sub.status) === 'awaiting_payment' ? 'active' : subStatus(sub.status), stripe_subscription_id: sub.id,
     stripe_customer_id: typeof s.customer === 'string' ? s.customer : s.customer?.id ?? null,
     paid_at: now, last_paid_at: now, current_period_start: p.start || now, renews_at: p.end, updated_at: now,
-  }).eq('id', row.id).eq('status', 'awaiting_payment').select('*').maybeSingle();
+  }).eq('id', row.id).in('status', ['awaiting_payment', 'reserved']).select('*').maybeSingle();
   if (!upd) return { row, listing }; // the other path got here first
   // A purchase makes the buyer a member, the same as a claim contribution.
   if (row.member_id) await db.from('members').update({ membership_status: 'active', entry_paid_at: now, updated_at: now }).eq('id', row.member_id).neq('membership_status', 'active');
@@ -236,8 +380,10 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
     await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', row.listing_id).neq('claim_status', 'verified');
   }
   const t = TIERS[row.tier], renew = p.end ? new Date(p.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '';
-  await mail(`${row.test ? '[TEST] ' : ''}${t.name}: ${listing?.name || 'a listing'}, $${(t.cents / 100).toFixed(0)}/yr`,
-    `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) bought <b>${t.name}</b> at $${(t.cents / 100).toFixed(0)} a year${renew ? `, renewing ${esc(renew)}` : ''}.</p>` +
+  const price = ((row.founding && row.amount_cents ? row.amount_cents : t.cents) / 100).toFixed(0);
+  const trial = sub.status === 'trialing';
+  await mail(`${row.test ? '[TEST] ' : ''}${t.name}: ${listing?.name || 'a listing'}, $${price}/quarter${row.founding ? ' (founding)' : ''}`,
+    `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) ${trial ? 'set up billing for' : 'bought'} <b>${t.name}</b> at $${price} a quarter${row.founding ? ', founding price' : ''}${renew ? `, ${trial ? 'first charge' : 'renewing'} ${esc(renew)}` : ''}.</p>` +
     `<p>${esc(row.contact_name || '')}<br>${esc(row.contact_email || '')}</p>` +
     (row.claim_id ? '<p>This came with a listing claim, which is waiting for your review.</p>' : '') +
     `<p>Next: schedule the visit and photo shoot. Track it in the Depot: <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`, row.contact_email || undefined);
@@ -248,8 +394,9 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
         body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [row.contact_email], reply_to: 'hello@vegansexplore.com',
           subject: `Welcome to ${t.name}`,
           html: `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
-            `<p>Next, someone from Vegans Explore will reach out to schedule an in-person visit and your photo shoot. Your Verified badge goes on your listing once we have visited.</p>` +
-            `<p>Your membership renews yearly${renew ? ' (next on ' + esc(renew) + ')' : ''}. Questions? Reply to this email.</p>` +
+            `<p>Next, someone from Vegans Explore will reach out to schedule an in-person visit and your photo shoot. The Verified badge goes on your listing once we have visited: Verified means we visited, and it can't be bought.</p>` +
+            `<p>${trial ? 'Your first quarter is charged on ' + esc(renew) + ', when your first Passport Challenge month starts' : 'Your membership renews every quarter' + (renew ? ' (next on ' + esc(renew) + ')' : '')}. Every quarter you get a results sheet showing who came through your door. Questions? Reply to this email.</p>` +
+            `<p>Our promise: if your pin, register kit and staff training aren't ready before your month starts, that month is on us. Anything else we deliver that isn't right, we make it right.</p>` +
             `<p>The Vegans Explore team</p>` }),
       });
     } catch (e) { console.error('verified welcome email failed', e); }
@@ -297,9 +444,26 @@ Deno.serve(async (req) => {
       return Response.redirect(`https://vegansexplore.com/claim?listing=${encodeURIComponent(r.listing?.slug || '')}&verified=active`, 302);
     } catch (e) { console.error('verified confirm failed', e); return Response.redirect('https://vegansexplore.com/claim?verified=unpaid', 302); }
   }
+  if (url.searchParams.get('cron') === 'results') {
+    const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'CRON_SECRET').maybeSingle();
+    if (!sec?.value || req.headers.get('x-cron-secret') !== sec.value) return json({ error: 'forbidden' }, 403);
+    return json({ ok: true, sheets: await runResultsCron() });
+  }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
+
+  // Public: what a listing can take today (founding spot or a paid quarter) and this quarter's extra.
+  if (body.action === 'offer') {
+    let hub: string | null = HUBS[String(body.hub || '')] ? String(body.hub) : null;
+    if (/^[0-9a-f-]{36}$/.test(String(body.listing_id || ''))) {
+      const { data: l } = await db.from('listings').select('address_city, address_state').eq('id', body.listing_id).maybeSingle();
+      hub = hubOf(l);
+    }
+    const f = await foundingState(hub);
+    return json({ hub, hub_name: hub ? HUBS[hub].name : null, founding: f, extra: await currentExtra(), tiers: TIERS });
+  }
+
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
@@ -313,10 +477,13 @@ Deno.serve(async (req) => {
     let verified = null;
     if (/^[0-9a-f-]{36}$/.test(lid)) {
       const { data: l } = await db.from('listings').select('owner_member_id').eq('id', lid).maybeSingle();
-      let v = await liveMembership(lid);
+      let v = (await liveMembership(lid)) || (await reservedMembership(lid));
       if (v && (v.member_id === memberId || l?.owner_member_id === memberId || member.is_superadmin)) {
-        v = await syncFromStripe(v);
-        verified = { tier: v.tier, status: v.status, renews_at: v.renews_at, cancel_at_period_end: v.cancel_at_period_end, visit_done: !!v.visit_done_at, source: v.source };
+        if (v.status !== 'reserved') v = await syncFromStripe(v);
+        const { data: sheets } = await db.from('ve_results_sheets').select('id, period_start, period_end').eq('membership_id', v.id).order('period_end', { ascending: false }).limit(8);
+        verified = { tier: v.tier, name: TIERS[v.tier]?.name, status: v.status, renews_at: v.renews_at, cancel_at_period_end: v.cancel_at_period_end, visit_done: !!v.visit_done_at, source: v.source,
+          founding: !!v.founding, amount_cents: v.amount_cents, bill_from: v.bill_from, billing_open: !!v.billing_opened_at, committed: !!v.committed_at,
+          can_commit: await canCommit(v), sheets: sheets || [] };
       }
       return json({ claim: data || null, verified, owner: !!l && l.owner_member_id === memberId });
     }
@@ -327,11 +494,18 @@ Deno.serve(async (req) => {
   if (body.action === 'verified_start') {
     const id = String(body.listing_id || ''), tier = String(body.tier || '');
     if (!/^[0-9a-f-]{36}$/.test(id) || !TIERS[tier]) return json({ error: 'bad_request' }, 400);
-    const { data: listing } = await db.from('listings').select('id, name, slug, owner_member_id, claimed_by_member_id, claim_status').eq('id', id).eq('status', 'approved').maybeSingle();
+    const { data: listing } = await db.from('listings').select('id, name, slug, owner_member_id, claimed_by_member_id, claim_status, address_city, address_state').eq('id', id).eq('status', 'approved').maybeSingle();
     if (!listing) return json({ error: 'not_found' }, 404);
     if (listing.owner_member_id !== memberId && listing.claimed_by_member_id !== memberId) return json({ error: 'not_owner' }, 403);
     if (await liveMembership(id)) return json({ error: 'already_verified' }, 409);
+    if (await reservedMembership(id)) return json({ error: 'already_reserved' }, 409);
     const test = await isTestAccount(member.email);
+    const hub = hubOf(listing), f = await foundingState(hub);
+    if (f.open) {
+      if (f.full) return json({ error: 'founding_full', hub }, 409);
+      await reserve(listing, member, tier, hub!, test, {});
+      return json({ reserved: true, hub });
+    }
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = await verifiedRow(id, member, tier, test, {});
     const r = await verifiedCheckout(row, listing, member, back);
@@ -341,12 +515,15 @@ Deno.serve(async (req) => {
   if (body.action === 'start') {
     const id = String(body.listing_id || '');
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
-    const { data: listing } = await db.from('listings').select('id, name, slug, claim_status').eq('id', id).eq('status', 'approved').maybeSingle();
+    const { data: listing } = await db.from('listings').select('id, name, slug, claim_status, address_city, address_state').eq('id', id).eq('status', 'approved').maybeSingle();
     if (!listing) return json({ error: 'not_found' }, 404);
     if (listing.claim_status === 'verified') return json({ error: 'already_claimed' }, 409);
     const tier = body.tier ? String(body.tier) : '';
     if (tier && !TIERS[tier]) return json({ error: 'bad_tier' }, 400);
     if (tier && await liveMembership(id)) return json({ error: 'already_verified' }, 409);
+    if (tier && await reservedMembership(id)) return json({ error: 'already_reserved' }, 409);
+    const hub = tier ? hubOf(listing) : null, f = tier ? await foundingState(hub) : { open: false, full: false };
+    if (tier && f.open && f.full) return json({ error: 'founding_full', hub }, 409);
     const cents = tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
     if (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
     const contact_name = plain(body.contact_name, 120), contact_email = plain(body.contact_email, 200).toLowerCase();
@@ -368,8 +545,13 @@ Deno.serve(async (req) => {
       ? await db.from('ve_listing_claims').update(row).eq('id', open.id).select('id').single()
       : await db.from('ve_listing_claims').insert(row).select('id').single();
     if (error || !claim) return json({ error: 'save_failed', message: error?.message }, 500);
+    if (tier && f.open) {
+      // Founding spot with a claim: reserved free; the claim is confirmed with the first payment.
+      await reserve(listing, member, tier, hub!, test, { name: contact_name, email: contact_email }, claim.id);
+      return json({ reserved: true, hub });
+    }
     if (tier) {
-      // Claim and VE Verified in one yearly subscription checkout; the claim is confirmed when it is paid.
+      // Claim and a Passport tier in one quarterly subscription checkout; the claim is confirmed when it is paid.
       const vrow = await verifiedRow(id, member, tier, test, { name: contact_name, email: contact_email }, claim.id);
       const r = await verifiedCheckout(vrow, listing, member, back, claim.id);
       if (!r.url) return json({ error: r.error }, 400);
@@ -401,6 +583,61 @@ Deno.serve(async (req) => {
     if (!sres.ok) { console.error('stripe error', s); return json({ error: s.error?.message ?? 'stripe_error' }, 400); }
     await db.from('ve_listing_claims').update({ stripe_session_id: s.id }).eq('id', claim.id);
     return json({ url: s.url, test_mode: test });
+  }
+
+  // A founding spot whose billing the Depot opened: subscribe now, first charge on the first Challenge month.
+  if (body.action === 'founding_checkout') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const row = await reservedMembership(id);
+    const { data: listing } = await db.from('listings').select('id, name, slug, owner_member_id').eq('id', id).maybeSingle();
+    if (!row || !listing) return json({ error: 'not_found' }, 404);
+    if (row.member_id !== memberId && listing.owner_member_id !== memberId && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
+    if (!row.billing_opened_at) return json({ error: 'billing_not_open' }, 409);
+    const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
+    const r = await verifiedCheckout(row, listing, member, back, row.claim_id || undefined);
+    return r.url ? json({ url: r.url, test_mode: row.test }) : json({ error: r.error }, 400);
+  }
+
+  // Four quarters for the price of three, from the next renewal.
+  if (body.action === 'commit_year') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const row = await liveMembership(id);
+    const { data: listing } = await db.from('listings').select('owner_member_id').eq('id', id).maybeSingle();
+    if (!row) return json({ error: 'not_found' }, 404);
+    if (row.member_id !== memberId && listing?.owner_member_id !== memberId && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
+    if (!(await canCommit(row))) return json({ error: 'not_eligible' }, 409);
+    const { ok, body: sub } = await stripe(row.test, `subscriptions/${encodeURIComponent(row.stripe_subscription_id)}`);
+    const item = sub?.items?.data?.[0];
+    if (!ok || !item) return json({ error: 'stripe_error' }, 400);
+    const product = typeof item.price?.product === 'string' ? item.price.product : item.price?.product?.id;
+    const quarterly = item.price?.unit_amount || row.amount_cents || TIERS[row.tier].cents;
+    const pr = await stripe(row.test, 'prices', new URLSearchParams({ currency: 'usd', product, unit_amount: String(quarterly * 3), 'recurring[interval]': 'year',
+      nickname: `${TIERS[row.tier].name}, four quarters for three` }));
+    if (!pr.ok) return json({ error: pr.body?.error?.message || 'stripe_error' }, 400);
+    const up = await stripe(row.test, `subscriptions/${encodeURIComponent(row.stripe_subscription_id)}`, new URLSearchParams({
+      'items[0][id]': item.id, 'items[0][price]': pr.body.id, proration_behavior: 'none', 'metadata[committed]': 'four_for_three' }));
+    if (!up.ok) return json({ error: up.body?.error?.message || 'stripe_error' }, 400);
+    const now = new Date().toISOString();
+    await db.from('ve_verified_memberships').update({ committed_at: now, updated_at: now }).eq('id', row.id);
+    await mail(`${row.test ? '[TEST] ' : ''}Four for three: ${id}`, `<p>A ${esc(TIERS[row.tier].name)} business switched to four quarters for the price of three ($${(quarterly * 3 / 100).toFixed(0)} a year) from its next renewal.</p>`);
+    return json({ ok: true, yearly_cents: quarterly * 3 });
+  }
+
+  // Results sheets: the business that holds the listing, or a superadmin.
+  if (body.action === 'results' || body.action === 'results_list') {
+    const q = body.action === 'results'
+      ? db.from('ve_results_sheets').select('*, membership:ve_verified_memberships(tier, member_id, listing_id), listing:listings(id, name, slug, owner_member_id, logo_url)').eq('id', String(body.id || ''))
+      : db.from('ve_results_sheets').select('id, period_start, period_end, data, membership:ve_verified_memberships(tier, member_id), listing:listings(id, name, slug, owner_member_id)').eq('listing_id', String(body.listing_id || '')).order('period_end', { ascending: false });
+    const { data } = await q;
+    const list = (data || []).filter((x: any) => member.is_superadmin || x.listing?.owner_member_id === memberId || x.membership?.member_id === memberId);
+    if (body.action === 'results') {
+      if (!list[0]) return json({ error: 'not_found' }, 404);
+      const lv = await liveMembership(list[0].listing_id);
+      return json({ sheet: list[0], tier_name: TIERS[list[0].membership?.tier]?.name, can_commit: lv ? await canCommit(lv) : false });
+    }
+    return json({ sheets: list });
   }
 
   // ---- The Depot (superadmins only).
@@ -476,7 +713,69 @@ Deno.serve(async (req) => {
       const stale = LIVE.includes(r.status) && r.source === 'stripe' && (!r.renews_at || new Date(r.renews_at).getTime() < soon || r.cancel_at_period_end);
       out.push(stale ? { ...r, ...(await syncFromStripe(r)), listing: r.listing, member: r.member } : r);
     }
-    return json({ rows: out.filter((r) => r.status !== 'awaiting_payment' || Date.now() - new Date(r.created_at).getTime() < 2 * 864e5) });
+    const caps = await setting('founding_caps'), extras = await setting('quarter_extras');
+    const hubs = [];
+    for (const h of Object.keys(HUBS)) hubs.push({ slug: h, name: HUBS[h].name, ...(await foundingState(h)), set_cap: Number.isFinite(+caps[h]) && +caps[h] > 0 ? +caps[h] : null });
+    return json({ rows: out.filter((r) => r.status !== 'awaiting_payment' || Date.now() - new Date(r.created_at).getTime() < 2 * 864e5), hubs, extras, quarter: QUARTER_LABEL() });
+  }
+
+  if (body.action === 'admin_founding_open') {
+    const id = String(body.id || ''), from = String(body.bill_from || '');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !/^\d{4}-\d{2}-\d{2}$/.test(from)) return json({ error: 'bad_request' }, 400);
+    const { data: row } = await db.from('ve_verified_memberships').select('*, listing:listings(name, slug)').eq('id', id).eq('status', 'reserved').maybeSingle();
+    if (!row) return json({ error: 'not_found' }, 404);
+    const now = new Date().toISOString();
+    await db.from('ve_verified_memberships').update({ bill_from: from, billing_opened_at: now, updated_at: now }).eq('id', id);
+    const link = `https://vegansexplore.com/claim?listing=${encodeURIComponent(row.listing?.slug || '')}&founding=start`;
+    const day = new Date(from + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    await sendTo(row.contact_email, `Your founding ${TIERS[row.tier].name} spot starts ${day}`,
+      `<p>Good news: your first Passport Challenge month in ${esc(HUBS[row.hub]?.name || '')} starts ${esc(day)}.</p>` +
+      `<p>Set up billing here: <a href="${link}">${link}</a>. Your card is saved today and your first quarter, at your founding price of $${(row.amount_cents / 100).toFixed(0)}, is charged on ${esc(day)}.</p>` +
+      `<p>We will be in touch to schedule your visit, photo shoot and staff training before your month starts. If they aren't ready in time, that month is on us.</p><p>The Vegans Explore team</p>`);
+    return json({ ok: true, link });
+  }
+
+  if (body.action === 'admin_offer_settings') {
+    const now = new Date().toISOString();
+    if (body.caps !== undefined) {
+      const caps: Record<string, number> = {};
+      for (const [k, v] of Object.entries(body.caps || {})) if (HUBS[k] && Number.isFinite(+(v as number)) && +(v as number) > 0) caps[k] = Math.min(500, Math.round(+(v as number)));
+      await db.from('ve_site_settings').upsert({ key: 'founding_caps', value: caps, updated_at: now, updated_by: memberId });
+    }
+    if (body.extras !== undefined) {
+      const extras: Record<string, { title: string; text: string }> = {};
+      for (const [k, v] of Object.entries(body.extras || {})) {
+        const e = v as any;
+        if (/^\d{4}-Q[1-4]$/.test(k) && plain(e?.title, 120)) extras[k] = { title: plain(e.title, 120), text: plain(e.text, 600) };
+      }
+      await db.from('ve_site_settings').upsert({ key: 'quarter_extras', value: extras, updated_at: now, updated_by: memberId });
+    }
+    return json({ ok: true, caps: await setting('founding_caps'), extras: await setting('quarter_extras') });
+  }
+
+  if (body.action === 'admin_results') {
+    const id = String(body.membership_id || '');
+    const { data: row } = await db.from('ve_verified_memberships').select('*').eq('id', id).maybeSingle();
+    if (!row) return json({ error: 'not_found' }, 404);
+    const { data: sheets } = await db.from('ve_results_sheets').select('*').eq('membership_id', id).order('period_end', { ascending: false });
+    let current = null;
+    if (row.paid_at) {
+      const paid = new Date(row.paid_at); let k = 0;
+      while (monthsLater(paid, 3 * (k + 1)).getTime() <= Date.now() && k < 40) k++;
+      const from = monthsLater(paid, 3 * k), to = monthsLater(paid, 3 * (k + 1));
+      const { data: d } = await db.rpc('ve_results_data', { p_listing: row.listing_id, p_from: from.toISOString(), p_to: new Date().toISOString() });
+      current = { period_start: from.toISOString(), period_end: to.toISOString(), data: d };
+    }
+    return json({ sheets: sheets || [], current });
+  }
+
+  if (body.action === 'admin_results_send') {
+    const { data: sh } = await db.from('ve_results_sheets').select('*').eq('id', String(body.id || '')).maybeSingle();
+    if (!sh) return json({ error: 'not_found' }, 404);
+    const { data: row } = await db.from('ve_verified_memberships').select('*').eq('id', sh.membership_id).single();
+    await db.from('ve_results_sheets').update({ sent_at: null }).eq('id', sh.id);
+    await resultsSheet(row, new Date(sh.period_start), new Date(sh.period_end), true);
+    return json({ ok: true });
   }
 
   if (body.action === 'admin_verified_mark') {
@@ -499,7 +798,7 @@ Deno.serve(async (req) => {
     if (!listing) return json({ error: 'not_found' }, 404);
     if (await liveMembership(id)) return json({ error: 'already_verified' }, 409);
     const paid = body.paid_at ? new Date(String(body.paid_at)) : new Date();
-    const renews = body.renews_at ? new Date(String(body.renews_at)) : new Date(new Date(paid).setFullYear(paid.getFullYear() + 1));
+    const renews = body.renews_at ? new Date(String(body.renews_at)) : monthsLater(paid, 3);
     if (isNaN(paid.getTime()) || isNaN(renews.getTime()) || renews <= new Date()) return json({ error: 'bad_date' }, 400);
     const { data, error } = await db.from('ve_verified_memberships').insert({
       listing_id: id, member_id: listing.owner_member_id || null, tier, status: 'active', source: 'manual', amount_cents: Math.max(0, Math.round(Number(body.amount_cents ?? TIERS[tier].cents)) || 0),

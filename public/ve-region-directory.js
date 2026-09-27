@@ -234,7 +234,7 @@
   function isPlus(l) { return vTier(l) === 'plus'; }
   function verifiedTag(l) {
     var t = vTier(l); if (!t || !l.ve_verified) return '';
-    return ' <span class="vrd-verified"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>' + (t === 'plus' ? 'VE Verified Plus' : 'VE Verified') + '</span>';
+    return ' <span class="vrd-verified"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>VE Verified</span>';
   }
   function byPriority(a, b) { return (isPlus(b) ? 1 : 0) - (isPlus(a) ? 1 : 0); }
   function adminBtn(l) { return ADMIN ? '<button type="button" class="vla-edit" data-vla="' + esc(l.id) + '" title="Admin only">Edit</button>' : ''; }

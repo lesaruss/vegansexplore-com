@@ -52,6 +52,7 @@
     .s-past_due{background:#fff4e2;color:#6b3f00;}
     .s-canceled,.s-lapsed{background:#fbeeec;color:#8a1c12;}
     .s-awaiting_payment{background:#eef0ee;color:#4a4f4a;}
+    .s-reserved{background:#fff4e2;color:#6b3f00;}
     .done-cell{display:flex;flex-direction:column;gap:4px;align-items:flex-start;}
     .done-yes{font-weight:800;color:var(--ve-green-deep);}
     .done-old{font-weight:800;color:#6b3f00;}
@@ -80,9 +81,9 @@
   <script src="/public/nav.js"></script>
   <div class="wrap">
     <p class="eyebrow">The Depot</p>
-    <h1>VE Verified</h1>
+    <h1>Passport Partners</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Every VE Verified ($250 a year) and Verified Plus ($500 a year) business. Businesses buy from <a href="/claim">vegansexplore.com/claim</a> or from their own listing page, and renew automatically through Stripe. The Verified badge goes on the listing once you mark the visit done; Plus businesses sit first in their hub section from the day they pay.</p>
+    <p class="sub">Every Passport Stop ($250 a quarter) and Passport Anchor ($500 a quarter) business (Business Offer v2). Businesses join from <a href="/business">vegansexplore.com/business</a>, <a href="/claim">/claim</a> or their own listing page and renew every quarter through Stripe. Before a city's Passport Challenge launches they reserve a founding spot for free; open their billing here once their first Challenge month is set. The Verified badge goes on the listing once you mark the visit done (Verified means we visited; it can't be bought). Anchor businesses sit first in their hub section from the day they pay.</p>
     <div id="vf-gate" class="gate" hidden></div>
     <div id="vf-app" hidden>
       <section class="panel"><div class="stats" id="stats"></div></section>
@@ -90,6 +91,7 @@
         <h2>Businesses</h2>
         <div class="filters" id="filters" role="group" aria-label="Show">
           <button type="button" data-f="live" aria-pressed="true">Current</button>
+          <button type="button" data-f="founding" aria-pressed="false">Founding spots</button>
           <button type="button" data-f="todo" aria-pressed="false">Visit or shoot to do</button>
           <button type="button" data-f="renew" aria-pressed="false">Renewing in 30 days</button>
           <button type="button" data-f="all" aria-pressed="false">Everything</button>
@@ -98,6 +100,26 @@
           <thead><tr><th scope="col">Business</th><th scope="col">Tier</th><th scope="col">Status</th><th scope="col">Paid</th><th scope="col">Renews</th><th scope="col">Visit</th><th scope="col">Shoot</th><th scope="col">Notes</th><th scope="col"><span class="meta" style="font-size:10.5px">Actions</span></th></tr></thead>
           <tbody id="rows"><tr><td colspan="9" class="meta">Loading...</td></tr></tbody>
         </table></div>
+        <p class="msg" id="rows-msg" role="status"></p>
+      </section>
+      <section class="panel" id="res-panel" hidden>
+        <h2 id="res-h">Results sheets</h2>
+        <div id="res-body"></div>
+      </section>
+      <section class="panel">
+        <h2>Founding spots by city</h2>
+        <p class="sub" style="margin-bottom:10px">Open until a city's Passport Challenge launches (Depot &gt; Passport Challenge &gt; Launch). The cap defaults to the stops on the city's first Challenge map; set a number to override it.</p>
+        <div class="tbl-wrap"><table style="min-width:640px">
+          <thead><tr><th scope="col">City</th><th scope="col">Window</th><th scope="col">Taken</th><th scope="col">Cap</th></tr></thead>
+          <tbody id="caps"></tbody>
+        </table></div>
+        <p style="margin-top:10px"><button type="button" class="btn" id="caps-save">Save caps</button> <span class="msg" id="caps-msg" role="status"></span></p>
+      </section>
+      <section class="panel">
+        <h2>This quarter's extra</h2>
+        <p class="sub" style="margin-bottom:10px">Each quarter can carry a different extra on top of the base plans (a seasonal feature, an event, a themed Challenge). It shows on /business and in the owner's plan, announced as news.</p>
+        <div class="grant" id="extras"></div>
+        <p style="margin-top:10px"><button type="button" class="btn" id="extras-save">Save extras</button> <span class="msg" id="extras-msg" role="status"></span></p>
       </section>
       <section class="panel">
         <details class="addnew">
@@ -105,7 +127,7 @@
           <p class="sub" style="margin:10px 0 12px">For a membership paid by cash, invoice or as a gift. It does not renew by itself: it lapses on the renewal date unless you add it again.</p>
           <div class="grant">
             <div class="results"><label for="g-q">Business</label><input type="search" id="g-q" placeholder="Business name" autocomplete="off"><ul id="g-res" hidden></ul></div>
-            <div><label for="g-tier">Tier</label><select id="g-tier"><option value="verified">VE Verified, $250</option><option value="plus">VE Verified Plus, $500</option></select></div>
+            <div><label for="g-tier">Plan</label><select id="g-tier"><option value="verified">Passport Stop, $250</option><option value="plus">Passport Anchor, $500</option></select></div>
             <div><label for="g-paid">Paid on</label><input type="date" id="g-paid"></div>
             <div><label for="g-renews">Renews on</label><input type="date" id="g-renews"></div>
             <div><label for="g-amt">Amount paid ($)</label><input type="number" id="g-amt" min="0" step="1"></div>
@@ -123,13 +145,14 @@
       var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', FN = SB + '/functions/v1/ve-claims';
       var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var $ = function (id) { return document.getElementById(id); };
-      var rows = [], filter = 'live', LIVE = { active: 1, past_due: 1 };
-      var STATUS = { active: 'Active', past_due: 'Payment due', canceled: 'Canceled', lapsed: 'Lapsed', awaiting_payment: 'Checkout not finished' };
+      var rows = [], hubs = [], extras = {}, quarter = '', filter = 'live', LIVE = { active: 1, past_due: 1 };
+      var STATUS = { active: 'Active', past_due: 'Payment due', canceled: 'Canceled', lapsed: 'Lapsed', awaiting_payment: 'Checkout not finished', reserved: 'Founding, reserved' };
+      var TNAME = { verified: 'Stop', plus: 'Anchor' };
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function ymd(d) { var x = new Date(d); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }
-      // Done "this term": a visit or shoot counts for the membership year it happened in.
+      // Done "this term": a visit or shoot counts for the billing period it happened in.
       function doneState(at, r) {
         if (!at) return 'no';
         return r.current_period_start && new Date(at) < new Date(r.current_period_start) ? 'old' : 'yes';
@@ -140,17 +163,19 @@
       function renderStats() {
         var live = rows.filter(function (r) { return LIVE[r.status]; });
         var plus = live.filter(function (r) { return r.tier === 'plus'; }).length;
-        var yearly = live.reduce(function (a, r) { return a + (r.amount_cents || 0); }, 0);
+        var quarterly = live.filter(function (r) { return r.source === 'stripe'; }).reduce(function (a, r) { return a + (r.amount_cents || 0); }, 0);
+        var reserved = rows.filter(function (r) { return r.status === 'reserved'; });
         $('stats').innerHTML =
-          '<div class="stat"><b>' + (live.length - plus) + '</b><span>VE Verified</span></div>' +
-          '<div class="stat"><b>' + plus + '</b><span>VE Verified Plus</span></div>' +
-          '<div class="stat"><b>$' + Math.round(yearly / 100).toLocaleString() + '</b><span>a year, current memberships</span></div>' +
+          '<div class="stat"><b>' + (live.length - plus) + '</b><span>Passport Stop</span></div>' +
+          '<div class="stat"><b>' + plus + '</b><span>Passport Anchor</span></div>' +
+          '<div class="stat"><b>$' + Math.round(quarterly / 100).toLocaleString() + '</b><span>a quarter, Stripe plans</span></div>' +
+          '<div class="stat"><b>' + reserved.length + '</b><span>founding spots reserved</span></div>' +
           '<div class="stat"><b>' + live.filter(todo).length + '</b><span>visits or shoots to do</span></div>' +
           '<div class="stat"><b>' + live.filter(renewingSoon).length + '</b><span>renewing in 30 days</span></div>';
       }
       function doneCell(r, i, kind) {
         var at = r[kind + '_done_at'], st = doneState(at, r);
-        var txt = st === 'yes' ? '<span class="done-yes">Done ' + esc(day(at)) + '</span>' : st === 'old' ? '<span class="done-old">Last year (' + esc(day(at)) + ')</span>' : '<span class="done-no">Not yet</span>';
+        var txt = st === 'yes' ? '<span class="done-yes">Done ' + esc(day(at)) + '</span>' : st === 'old' ? '<span class="done-old">Earlier term (' + esc(day(at)) + ')</span>' : '<span class="done-no">Not yet</span>';
         return '<div class="done-cell">' + txt + (LIVE[r.status] ? (st === 'yes'
           ? '<button type="button" class="linkish" data-undo="' + kind + '" data-i="' + i + '">Undo</button>'
           : '<button type="button" class="btn btn-ghost" data-mark="' + kind + '" data-i="' + i + '">Mark done</button>') : '') + '</div>';
@@ -160,6 +185,7 @@
         var list = rows.map(function (r, i) { return { r: r, i: i }; }).filter(function (x) {
           var r = x.r;
           if (filter === 'live') return LIVE[r.status];
+          if (filter === 'founding') return r.founding && (r.status === 'reserved' || LIVE[r.status]);
           if (filter === 'todo') return todo(r);
           if (filter === 'renew') return renewingSoon(r);
           return true;
@@ -168,7 +194,7 @@
           var d = (LIVE[b.r.status] ? 1 : 0) - (LIVE[a.r.status] ? 1 : 0); if (d) return d;
           return (a.r.renews_at || '9') < (b.r.renews_at || '9') ? -1 : 1; // soonest renewal first
         });
-        if (!list.length) { $('rows').innerHTML = '<tr><td colspan="9" class="meta">' + (rows.length ? 'Nothing here with this filter.' : 'No VE Verified businesses yet.') + '</td></tr>'; return; }
+        if (!list.length) { $('rows').innerHTML = '<tr><td colspan="9" class="meta">' + (rows.length ? 'Nothing here with this filter.' : 'No Passport partners yet.') + '</td></tr>'; return; }
         $('rows').innerHTML = list.map(function (x) {
           var r = x.r, i = x.i, l = r.listing || {}, m = r.member || {};
           var logo = l.logo_url ? '<img class="logo" src="' + esc(l.logo_url) + '" alt="">' : '<div class="logo" style="background:' + esc(l.color || '#3A9B3E') + '">' + esc((l.name || 'V').charAt(0)) + '</div>';
@@ -176,17 +202,19 @@
           if (r.status === 'active' && r.cancel_at_period_end) status = 'Ends at renewal';
           return '<tr>' +
             '<td><div class="biz">' + logo + '<div><b><a href="/directory/' + esc(l.slug) + '" target="_blank" rel="noopener">' + esc(l.name || 'Listing') + '</a></b>' +
-              '<div class="meta">' + esc(l.address_city || '') + (r.test ? ' &middot; TEST' : '') + (r.source === 'manual' ? ' &middot; paid another way' : '') + '</div>' +
+              '<div class="meta">' + esc(l.address_city || '') + (r.test ? ' &middot; TEST' : '') + (r.source === 'manual' ? ' &middot; paid another way' : '') + (r.founding ? ' &middot; founding' : '') + (r.committed_at ? ' &middot; four for three' : '') + '</div>' +
               '<div class="meta">' + esc(r.contact_name || m.name || '') + (r.contact_email || m.email ? ' &middot; <a href="mailto:' + esc(r.contact_email || m.email) + '">' + esc(r.contact_email || m.email) + '</a>' : '') + '</div>' +
               (LIVE[r.status] && !l.ve_verified ? '<div class="meta">Badge shows after the visit</div>' : '') + '</div></div></td>' +
-            '<td><span class="pill t-' + r.tier + '">' + (r.tier === 'plus' ? 'Plus' : 'Verified') + '</span><div class="meta">$' + Math.round((r.amount_cents || 0) / 100) + '/yr</div></td>' +
-            '<td><span class="pill s-' + esc(r.status) + '">' + esc(status) + '</span></td>' +
+            '<td><span class="pill t-' + r.tier + '">' + TNAME[r.tier] + '</span><div class="meta">$' + Math.round((r.amount_cents || 0) / 100) + (r.source === 'manual' ? ' paid' : r.committed_at ? '/qtr, billed yearly' : '/quarter') + '</div></td>' +
+            '<td><span class="pill s-' + esc(r.status) + '">' + esc(status) + '</span>' + (r.status === 'reserved' ? '<div class="meta">' + (r.bill_from ? 'First month ' + esc(day(r.bill_from + 'T12:00:00')) + (r.billing_opened_at ? ', billing open' : '') : 'First month not set') + '</div>' : '') + '</td>' +
             '<td>' + esc(day(r.paid_at)) + (r.last_paid_at && r.paid_at && day(r.last_paid_at) !== day(r.paid_at) ? '<div class="meta">last ' + esc(day(r.last_paid_at)) + '</div>' : '') + '</td>' +
             '<td>' + esc(day(r.renews_at)) + '</td>' +
             '<td>' + doneCell(r, i, 'visit') + '</td>' +
             '<td>' + doneCell(r, i, 'shoot') + '</td>' +
             '<td><textarea class="note" data-note="' + i + '" aria-label="Notes for ' + esc(l.name || 'this business') + '">' + esc(r.notes || '') + '</textarea><span class="msg" id="nm-' + i + '"></span></td>' +
-            '<td>' + (LIVE[r.status] ? '<button type="button" class="btn btn-stop" data-end="' + i + '">End</button>' : '') + '</td>' +
+            '<td><div style="display:flex;flex-direction:column;gap:6px">' + (r.status === 'reserved' ? '<button type="button" class="btn" data-open="' + i + '">' + (r.billing_opened_at ? 'Resend billing' : 'Open billing') + '</button>' : '') +
+              (r.paid_at ? '<button type="button" class="btn btn-ghost" data-res="' + i + '">Results</button>' : '') +
+              (LIVE[r.status] ? '<button type="button" class="btn btn-stop" data-end="' + i + '">End</button>' : '') + '</div></td>' +
             '</tr>';
         }).join('');
       }
@@ -197,6 +225,23 @@
         render();
       });
       $('rows').addEventListener('click', function (e) {
+        var ob = e.target.closest('[data-open]');
+        if (ob) {
+          var orow = rows[+ob.getAttribute('data-open')];
+          var v = prompt('First Passport Challenge month for ' + ((orow.listing || {}).name || 'this business') + ': the date billing starts (YYYY-MM-DD). They get an email to save their card; the first quarter is charged on this date at their founding price.', orow.bill_from || '');
+          if (!v) return;
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(v.trim())) { alert('Use the format YYYY-MM-DD.'); return; }
+          ob.disabled = true;
+          api({ action: 'admin_founding_open', id: orow.id, bill_from: v.trim() }).then(function (d) {
+            ob.disabled = false;
+            if (!d.ok) { alert('Did not save: ' + (d.error || '')); return; }
+            $('rows-msg').className = 'msg'; $('rows-msg').textContent = 'Billing opened. The business was emailed this link: ' + d.link;
+            load();
+          });
+          return;
+        }
+        var rb = e.target.closest('[data-res]');
+        if (rb) { showResults(rows[+rb.getAttribute('data-res')]); return; }
         var b = e.target.closest('[data-mark],[data-undo],[data-end]'); if (!b) return;
         var i = +(b.getAttribute('data-i') || b.getAttribute('data-end')), r = rows[i], body = { id: r.id };
         if (b.hasAttribute('data-end')) {
@@ -233,7 +278,7 @@
         qt = setTimeout(function () {
           fetch(SB + '/rest/v1/listings?select=id,name,address_city,ve_verified_tier&status=eq.approved&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=10', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
             .then(function (r) { return r.json(); }).then(function (list) {
-              $('g-res').innerHTML = (list || []).map(function (l) { return '<li><button type="button" data-id="' + esc(l.id) + '" data-name="' + esc(l.name) + '">' + esc(l.name) + (l.address_city ? ' &middot; ' + esc(l.address_city) : '') + (l.ve_verified_tier ? ' (already ' + (l.ve_verified_tier === 'plus' ? 'Plus' : 'Verified') + ')' : '') + '</button></li>'; }).join('') || '<li class="meta" style="padding:8px 10px">No match</li>';
+              $('g-res').innerHTML = (list || []).map(function (l) { return '<li><button type="button" data-id="' + esc(l.id) + '" data-name="' + esc(l.name) + '">' + esc(l.name) + (l.address_city ? ' &middot; ' + esc(l.address_city) : '') + (l.ve_verified_tier ? ' (already ' + (l.ve_verified_tier === 'plus' ? 'Anchor' : 'Stop') + ')' : '') + '</button></li>'; }).join('') || '<li class="meta" style="padding:8px 10px">No match</li>';
               $('g-res').hidden = false;
             });
         }, 250);
@@ -248,7 +293,7 @@
       $('g-tier').addEventListener('change', syncGrantDefaults);
       $('g-paid').addEventListener('change', function () {
         if (!$('g-paid').value) return;
-        var d = new Date($('g-paid').value + 'T12:00:00'); d.setFullYear(d.getFullYear() + 1); $('g-renews').value = ymd(d);
+        var d = new Date($('g-paid').value + 'T12:00:00'); d.setMonth(d.getMonth() + 3); $('g-renews').value = ymd(d);
       });
       $('g-go').onclick = function () {
         if (!pick) { $('g-msg').className = 'msg bad'; $('g-msg').textContent = 'Pick a business from the list.'; return; }
@@ -261,19 +306,73 @@
         }).catch(function () { $('g-go').disabled = false; $('g-msg').className = 'msg bad'; $('g-msg').textContent = 'Could not connect.'; });
       };
 
+      // Results sheets for one business: sheets so far and the current quarter to date.
+      function statLine(x) { x = x || {}; return (x.stamps || 0) + ' stamps, ' + (x.members || 0) + ' members, ' + (x.first_time || 0) + ' first-time, ' + (x.tour_guests || 0) + ' Tour guests, ' + (x.reports || 0) + ' reports'; }
+      function showResults(r) {
+        $('res-panel').hidden = false; $('res-h').textContent = 'Results sheets: ' + ((r.listing || {}).name || '');
+        $('res-body').innerHTML = '<p class="meta">Loading...</p>';
+        api({ action: 'admin_results', membership_id: r.id }).then(function (d) {
+          var html = d.current ? '<p><b>This quarter so far</b> (' + esc(day(d.current.period_start)) + ' to ' + esc(day(d.current.period_end)) + '): ' + esc(statLine(d.current.data)) + '</p>' : '';
+          html += (d.sheets || []).length ? d.sheets.map(function (s) {
+            return '<div class="meta" style="padding:8px 0;border-bottom:1px solid rgba(0,0,0,.08)"><a href="/business/results?id=' + esc(s.id) + '" target="_blank" rel="noopener"><b>' + esc(day(s.period_start)) + ' to ' + esc(day(s.period_end)) + '</b></a>: ' + esc(statLine(s.data)) +
+              ' &middot; ' + (s.sent_at ? 'sent ' + esc(day(s.sent_at)) : 'not sent') + ' <button type="button" class="linkish" data-send="' + esc(s.id) + '">Send again</button></div>';
+          }).join('') : '<p class="meta">No completed quarters yet. The first sheet is written three months after the first payment, and emailed to the business.</p>';
+          $('res-body').innerHTML = html;
+          $('res-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+      $('res-body').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-send]'); if (!b) return;
+        b.disabled = true;
+        api({ action: 'admin_results_send', id: b.getAttribute('data-send') }).then(function (d) { b.textContent = d.ok ? 'Sent' : 'Did not send'; });
+      });
+
+      function renderCaps() {
+        $('caps').innerHTML = hubs.map(function (h) {
+          return '<tr><td><b>' + esc(h.name) + '</b></td><td>' + (h.open ? (h.full ? '<span class="pill s-past_due">Open, full</span>' : '<span class="pill s-active">Open</span>') : '<span class="pill">Launched</span>') + '</td>' +
+            '<td>' + h.taken + '</td><td><input type="number" min="1" max="500" style="width:110px" data-cap="' + esc(h.slug) + '" value="' + (h.set_cap || '') + '" placeholder="' + (h.cap ? h.cap + ' (map)' : 'no map yet') + '" aria-label="Cap for ' + esc(h.name) + '"></td></tr>';
+        }).join('');
+      }
+      $('caps-save').onclick = function () {
+        var caps = {}; document.querySelectorAll('[data-cap]').forEach(function (x) { if (x.value) caps[x.getAttribute('data-cap')] = +x.value; });
+        $('caps-msg').textContent = 'Saving...';
+        api({ action: 'admin_offer_settings', caps: caps }).then(function (d) { $('caps-msg').textContent = d.ok ? 'Saved.' : 'Did not save.'; if (d.ok) load(); });
+      };
+      function quarters() {
+        var m = /^(\d{4})-Q([1-4])$/.exec(quarter) || [0, new Date().getFullYear(), 1], y = +m[1], q = +m[2], out = [];
+        for (var i = 0; i < 4; i++) { out.push(y + '-Q' + q); q++; if (q > 4) { q = 1; y++; } }
+        return out;
+      }
+      function renderExtras() {
+        $('extras').innerHTML = quarters().map(function (k, i) {
+          var e = extras[k] || {};
+          return '<div><label for="ex-t-' + i + '">' + esc(k) + (i === 0 ? ' (now)' : '') + ': title</label><input id="ex-t-' + i + '" data-ext="' + esc(k) + '" value="' + esc(e.title || '') + '" placeholder="A themed Challenge">' +
+            '<label for="ex-d-' + i + '" style="margin-top:6px">Details</label><input id="ex-d-' + i + '" data-exd="' + esc(k) + '" value="' + esc(e.text || '') + '"></div>';
+        }).join('');
+      }
+      $('extras-save').onclick = function () {
+        var out = {}; Object.keys(extras).forEach(function (k) { out[k] = extras[k]; });
+        document.querySelectorAll('[data-ext]').forEach(function (x) {
+          var k = x.getAttribute('data-ext'), d = document.querySelector('[data-exd="' + k + '"]');
+          if (x.value.trim()) out[k] = { title: x.value.trim(), text: d ? d.value.trim() : '' }; else delete out[k];
+        });
+        $('extras-msg').textContent = 'Saving...';
+        api({ action: 'admin_offer_settings', extras: out }).then(function (d) { $('extras-msg').textContent = d.ok ? 'Saved.' : 'Did not save.'; if (d.ok) extras = d.extras || out; });
+      };
+
       function load() {
         return api({ action: 'admin_verified_list' }).then(function (d) {
           if (!d.rows) throw new Error(d.error);
-          rows = d.rows; render();
+          rows = d.rows; hubs = d.hubs || []; extras = d.extras || {}; quarter = d.quarter || ''; render(); renderCaps(); renderExtras();
         }).catch(function () { $('rows').innerHTML = '<tr><td colspan="9" class="meta">Did not load. Refresh to try again.</td></tr>'; });
       }
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
-        if (!VEAuth.isLoggedIn()) { $('vf-gate').hidden = false; $('vf-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="vf-signin">Sign in</button>'; $('vf-signin').onclick = function () { VEAuth.showAuthModal('Sign in to see VE Verified businesses.', function () { location.reload(); }); }; return; }
+        if (!VEAuth.isLoggedIn()) { $('vf-gate').hidden = false; $('vf-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="vf-signin">Sign in</button>'; $('vf-signin').onclick = function () { VEAuth.showAuthModal('Sign in to see Passport partners.', function () { location.reload(); }); }; return; }
         if (!m || !m.is_superadmin) { $('vf-gate').hidden = false; $('vf-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
         $('vf-app').hidden = false;
-        var today = new Date(); $('g-paid').value = ymd(today); var nx = new Date(today); nx.setFullYear(nx.getFullYear() + 1); $('g-renews').value = ymd(nx); syncGrantDefaults();
+        var today = new Date(); $('g-paid').value = ymd(today); var nx = new Date(today); nx.setMonth(nx.getMonth() + 3); $('g-renews').value = ymd(nx); syncGrantDefaults();
         load();
       }
       start();

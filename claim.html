@@ -60,6 +60,9 @@
     .vstat small{display:block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);}
     .vstat b{font-size:15px;}
     .done{text-align:center;padding:34px 22px;}
+    .guarantee{margin-top:10px;padding:10px 12px;border-left:4px solid var(--ve-green-deep);background:var(--ve-green-light);border-radius:6px;text-align:left;}
+    .founding-note{margin-bottom:12px;padding:10px 12px;border:1px solid #e8c48a;background:#fff4e2;border-radius:8px;color:#6b3f00;font-weight:600;}
+    .sheets a{display:block;padding:8px 0;border-bottom:1px solid var(--ve-border);color:var(--ve-green-deep);font-weight:700;}
     .done h2{font-size:18px;margin-bottom:8px;}
     [hidden]{display:none !important;}
   </style>
@@ -72,7 +75,7 @@
   <main class="wrap">
     <p class="eyebrow">For businesses</p>
     <h1>Claim your listing</h1>
-    <p class="lede">Own a Vegan or Vegan-friendly business in our directory? Claim your listing, tell the community about you, and join us. Claimed listings open to everyone once we confirm them. Want more? Become VE Verified: an in-person visit, a photo shoot, and a Verified badge.</p>
+    <p class="lede">Own a Vegan or Vegan-friendly business in our directory? Claim your listing, tell the community about you, and join us. Claimed listings open to everyone once we confirm them. Want more? Be a stop on the map Vegans are walking: become a Passport Stop or Passport Anchor, and every quarter we show you exactly who came. <a href="/business">See how it works</a>.</p>
 
     <!-- 1. Find the business -->
     <section class="card" id="find" hidden>
@@ -95,24 +98,31 @@
     <section class="card done" id="st-claimed" hidden>
       <h2>This listing has already been claimed</h2>
       <p class="note">If this is your business and you did not claim it, email us at <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> and we will sort it out.</p>
-      <p class="note" id="st-claimed-signin" style="margin-top:12px" hidden>Already claimed it yourself? <a href="#" id="claimed-signin">Sign in</a> to become VE Verified.</p>
+      <p class="note" id="st-claimed-signin" style="margin-top:12px" hidden>Already claimed it yourself? <a href="#" id="claimed-signin">Sign in</a> to become a Passport Stop.</p>
     </section>
     <section class="card done" id="st-verified" hidden>
-      <h2 id="st-verified-h">Welcome to VE Verified</h2>
-      <p class="note" id="st-verified-p">Thank you. Someone from Vegans Explore will reach out to schedule your in-person visit and photo shoot. Your Verified badge goes on your listing once we have visited.</p>
+      <h2 id="st-verified-h">Welcome</h2>
+      <p class="note" id="st-verified-p"></p>
       <div class="vstat" id="st-verified-stat"></div>
+      <div id="st-actions" style="margin-top:16px"></div>
+      <p class="msg" id="st-msg" role="status"></p>
+      <div id="st-sheets" style="margin-top:10px;text-align:left"></div>
       <p style="margin-top:18px"><a class="btn btn-ghost" id="st-verified-view" href="#">View your listing</a></p>
-      <p class="note" style="margin-top:14px">Your membership renews each year. To change or cancel it, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.</p>
+      <p class="note" style="margin-top:14px" id="st-renew-note">Your plan renews every quarter. To change or cancel it, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.</p>
+      <p class="note guarantee">If your pin, register kit and staff training aren't ready before your month starts, that month is on us. Anything else we deliver that isn't right, we make it right.</p>
     </section>
 
-    <!-- The owner of a claimed listing: become VE Verified -->
+    <!-- The owner of a claimed listing: become a Passport Stop or Anchor -->
     <form class="card" id="upgrade" hidden novalidate>
-      <h2>Become VE Verified</h2>
-      <p class="note" style="margin-bottom:14px">You hold this listing. VE Verified means someone from Vegans Explore has been there: we visit, shoot professional photos, and put a Verified badge on your listing.</p>
-      <div class="choice plans" role="radiogroup" aria-label="Choose a VE Verified plan" id="up-plans"></div>
+      <h2>Be a stop on the map</h2>
+      <p class="note" style="margin-bottom:14px">You hold this listing. Passport members come to your counter, buy something and get stamped, and every quarter we show you exactly who came. The Verified badge comes with both plans once we have visited: Verified means we visited, and it can't be bought.</p>
+      <p class="note founding-note" id="up-founding" hidden></p>
+      <div class="choice plans" role="radiogroup" aria-label="Choose a plan" id="up-plans"></div>
       <button type="submit" class="btn" id="up-go" style="margin-top:16px">Continue to secure checkout</button>
       <p class="msg" id="up-msg" role="status"></p>
-      <p class="note" style="margin-top:6px">Billed yearly on a secure Stripe page, and renews each year. To cancel, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.</p>
+      <p class="note" style="margin-top:6px" id="up-note">Billed every quarter on a secure Stripe page. To cancel, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.</p>
+      <p class="note guarantee">If your pin, register kit and staff training aren't ready before your month starts, that month is on us. Anything else we deliver that isn't right, we make it right.</p>
+      <p class="note" style="margin-top:10px">Need just one thing? <a href="/business#services">Book a photo shoot, a reel or one month on the map</a>.</p>
     </form>
     <section class="card" id="st-signin" hidden>
       <h2>First, sign in</h2>
@@ -153,7 +163,9 @@
 
       <section class="card">
         <h2>Choose how to join</h2>
+        <p class="note founding-note" id="c-founding" hidden></p>
         <div class="choice plans" role="radiogroup" aria-label="Choose how to join" id="plans"></div>
+        <p class="note guarantee" id="c-guarantee" hidden>If your pin, register kit and staff training aren't ready before your month starts, that month is on us. Anything else we deliver that isn't right, we make it right.</p>
       </section>
 
       <section class="card" id="amount-card">
@@ -181,7 +193,7 @@
       var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
       var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var FN = SB + '/functions/v1/ve-claims';
-      var COLS = 'id,slug,name,category,address_city,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status';
+      var COLS = 'id,slug,name,category,address_city,address_state,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status';
       var $ = function (id) { return document.getElementById(id); };
       var qs = new URLSearchParams(location.search), L = null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -194,38 +206,95 @@
         return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
       }
 
-      // ---- The plans (playbook ve-verified-tours-hunt, Sean 2026-09-27).
+      // ---- The plans (Business Offer v2, playbook ve-verified-tours-hunt, Sean 2026-09-27).
       var PERKS = {
-        verified: ['A Verified badge on your listing and hub card, after our in-person visit', 'A professional photo shoot: about 10 edited photos for your listing, yours to keep', 'One social feature post across Vegans Explore channels', 'A standout pin on the Passport Challenge map, and your offer in the monthly announcement', 'Renews yearly with refreshed photos'],
-        plus: ['Everything in VE Verified', 'A social campaign: three posts plus a short video or reel', 'A guaranteed spot on at least one Tour a year, and first right of refusal for tours in your area', 'Eligible to be the month\'s Passport Challenge anchor stop', 'Priority placement in your section on the hub', 'Your content shoot happens on tour day, with real guests']
+        verified: ['A Passport Challenge stop all three months of the quarter: members come in, buy and get stamped', 'The register kit: card, staff sheet, staff video and window sticker', 'Our in-person visit, and the Verified badge that comes with it', 'A photo shoot in your first quarter (about 10 edited photos, yours to keep), then a lighter refresh', 'One social feature post', 'A results sheet every quarter showing who came through your door'],
+        plus: ['Everything in Passport Stop', 'The anchor stop one month of the quarter, with bonus Points for members', 'A Tour slot in the quarter wherever Tours run', 'A social campaign: three posts and a short reel', 'The featured spot in your section on the hub']
       };
+      var TNAME = { verified: 'Passport Stop', plus: 'Passport Anchor' }, OFFER = { founding: { open: false } };
       function planHtml(name, value, title, price, text, perks, checked) {
         return '<label><input type="radio" name="' + name + '" value="' + value + '"' + (checked ? ' checked' : '') + '><span><b>' + title + '</b>' + (price ? '<span class="price">' + price + '</span>' : '') +
           (text ? '<br>' + text : '') + (perks ? '<ul class="perks">' + perks.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') + '</span></label>';
       }
-      $('plans').innerHTML =
-        planHtml('plan', 'claim', 'Claim your listing', 'From $11', 'A contribution to the cause, in any amount from $11. It makes you a Founding Member.', null, true) +
-        planHtml('plan', 'verified', 'VE Verified', '$250 a year', '', PERKS.verified) +
-        planHtml('plan', 'plus', 'VE Verified Plus', '$500 a year', '', PERKS.plus);
-      $('up-plans').innerHTML = planHtml('uplan', 'verified', 'VE Verified', '$250 a year', '', PERKS.verified, true) + planHtml('uplan', 'plus', 'VE Verified Plus', '$500 a year', '', PERKS.plus);
+      function founding() { return OFFER.founding && OFFER.founding.open; }
+      function renderPlans() {
+        var f = founding(), full = f && OFFER.founding.full;
+        var keep = document.querySelector('input[name=plan]:checked'), keepU = document.querySelector('input[name=uplan]:checked');
+        keep = keep && keep.value; keepU = keepU && keepU.value;
+        var price = function (c) { return '$' + c + ' a quarter' + (f ? ', founding: reserve free' : ''); };
+        var tiers = full ? '' : planHtml('plan', 'verified', 'Passport Stop', price(250), '', PERKS.verified) + planHtml('plan', 'plus', 'Passport Anchor', price(500), '', PERKS.plus);
+        $('plans').innerHTML = planHtml('plan', 'claim', 'Claim your listing', 'From $11', 'A contribution to the cause, in any amount from $11. It makes you a Founding Member.', null, true) + tiers;
+        $('up-plans').innerHTML = full ? '' : planHtml('uplan', 'verified', 'Passport Stop', price(250), '', PERKS.verified, true) + planHtml('uplan', 'plus', 'Passport Anchor', price(500), '', PERKS.plus);
+        var note = !f ? '' : full ? 'Founding spots in ' + OFFER.hub_name + ' are full for now. Email hello@vegansexplore.com and we will let you know when a spot opens.'
+          : 'Founding spots in ' + OFFER.hub_name + ': the Passport Challenge launches there in 2027. Reserve now and pay nothing until your first Challenge month starts; your founding price stays locked as long as you stay.';
+        ['c-founding', 'up-founding'].forEach(function (id) { $(id).textContent = note; $(id).hidden = !note; });
+        [['plan', keep], ['uplan', keepU]].forEach(function (k) { var r = k[1] && document.querySelector('input[name=' + k[0] + '][value="' + k[1] + '"]'); if (r) r.checked = true; });
+        $('up-go').hidden = !!full;
+        $('up-go').textContent = f ? 'Reserve my founding spot' : 'Continue to secure checkout';
+        $('up-note').textContent = f ? 'No card needed today. We email you before your first Challenge month to set up billing.' : 'Billed every quarter on a secure Stripe page. To cancel, email hello@vegansexplore.com.';
+        syncPlan();
+      }
       function plan() { var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'claim'; }
       function syncPlan() {
-        var p = plan();
+        var p = plan(), f = founding();
         $('amount-card').hidden = p !== 'claim';
-        $('go').textContent = p === 'claim' ? 'Continue to contribution' : 'Continue to secure checkout';
+        $('c-guarantee').hidden = p === 'claim';
+        $('go').textContent = p === 'claim' ? 'Continue to contribution' : f ? 'Reserve my founding spot' : 'Continue to secure checkout';
         $('go-note').textContent = p === 'claim' ? 'You will finish on a secure Stripe page. We review every claim before it is confirmed.'
-          : 'Billed yearly on a secure Stripe page, and renews each year (to cancel, email hello@vegansexplore.com). We review every claim before it is confirmed.';
+          : f ? 'No card needed today. Your claim is confirmed with your first payment, when your first Challenge month starts. We review every claim.'
+          : 'Billed every quarter on a secure Stripe page (to cancel, email hello@vegansexplore.com). We review every claim before it is confirmed.';
       }
+      renderPlans();
       $('plans').addEventListener('change', syncPlan);
       function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''; }
+      function money(c) { return '$' + Math.round(c / 100); }
       function showVerified(v, fresh) {
-        var name = v && v.tier === 'plus' ? 'VE Verified Plus' : 'VE Verified';
-        $('st-verified-h').textContent = fresh ? 'Welcome to ' + name : 'You are ' + name;
+        var name = (v && (v.name || TNAME[v.tier])) || 'Passport Stop';
+        $('st-actions').innerHTML = ''; $('st-sheets').innerHTML = ''; $('st-msg').textContent = '';
+        if (v && v.status === 'reserved') {
+          $('st-verified-h').textContent = 'Your founding ' + name + ' spot is reserved';
+          $('st-verified-p').textContent = v.billing_open
+            ? 'Your first Passport Challenge month is set. Save your card now and your first quarter is charged on ' + fmtDate(v.bill_from + 'T12:00:00Z') + ', at your founding price.'
+            : 'You pay nothing until your first Passport Challenge month starts. We will email you before then to set up billing and schedule your visit.';
+          $('st-verified-stat').innerHTML = '<div><small>Plan</small><b>' + esc(name) + '</b></div><div><small>Founding price, locked</small><b>' + money(v.amount_cents) + ' a quarter</b></div>' +
+            '<div><small>First month</small><b>' + (v.bill_from ? esc(fmtDate(v.bill_from + 'T12:00:00Z')) : 'To be set') + '</b></div>';
+          if (v.billing_open) {
+            $('st-actions').innerHTML = '<button type="button" class="btn" id="st-bill">Set up billing</button>';
+            $('st-bill').onclick = function () {
+              this.disabled = true; $('st-msg').textContent = 'Taking you to the secure checkout...';
+              api({ action: 'founding_checkout', listing_id: L.id, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug) }).then(function (d) {
+                if (d && d.url) { location.href = d.url; return; }
+                $('st-bill').disabled = false; $('st-msg').className = 'msg bad'; $('st-msg').textContent = 'That did not go through. Please try again.';
+              });
+            };
+          }
+          $('st-renew-note').textContent = 'Once billing starts, your plan renews every quarter at your founding price.';
+          return show(['biz-card', 'st-verified']);
+        }
+        $('st-verified-h').textContent = fresh ? 'Welcome, ' + name : 'You are a ' + name;
         $('st-verified-p').textContent = v && v.visit_done ? 'We have visited, and your Verified badge is on your listing.'
-          : 'Someone from Vegans Explore will reach out to schedule your in-person visit and photo shoot. Your Verified badge goes on your listing once we have visited.';
-        $('st-verified-stat').innerHTML = v ? '<div><small>Plan</small><b>' + name + '</b></div>' +
-          (v.renews_at ? '<div><small>' + (v.cancel_at_period_end ? 'Ends' : 'Renews') + '</small><b>' + esc(fmtDate(v.renews_at)) + '</b></div>' : '') +
+          : 'Someone from Vegans Explore will reach out to schedule your in-person visit, photo shoot and staff training. Your Verified badge goes on your listing once we have visited.';
+        $('st-verified-stat').innerHTML = v ? '<div><small>Plan</small><b>' + esc(name) + (v.committed ? ', four for three' : '') + '</b></div>' +
+          (v.renews_at ? '<div><small>' + (v.cancel_at_period_end ? 'Ends' : 'Next charge') + '</small><b>' + esc(fmtDate(v.renews_at)) + '</b></div>' : '') +
           '<div><small>Visit</small><b>' + (v.visit_done ? 'Done' : 'To be scheduled') + '</b></div>' : '';
+        if (v && v.can_commit) {
+          $('st-actions').innerHTML = '<p class="note" style="margin-bottom:10px">Keep your pin and get a quarter free: from your next renewal, pay for three quarters and get the fourth on us.</p><button type="button" class="btn" id="st-commit">Keep my pin, get a quarter free</button>';
+          $('st-commit').onclick = function () {
+            if (!confirm('Switch to four quarters for the price of three? From your next renewal you are billed once a year for three quarters.')) return;
+            this.disabled = true;
+            api({ action: 'commit_year', listing_id: L.id }).then(function (d) {
+              $('st-msg').className = d && d.ok ? 'msg' : 'msg bad';
+              $('st-msg').textContent = d && d.ok ? 'Done. From your next renewal you pay ' + money(d.yearly_cents) + ' for the year.' : 'That did not go through. Please email hello@vegansexplore.com.';
+              if (d && d.ok) $('st-actions').innerHTML = '';
+            });
+          };
+        }
+        if (v && v.sheets && v.sheets.length) {
+          $('st-sheets').innerHTML = '<h2 style="margin-top:8px">Your results sheets</h2><div class="sheets">' + v.sheets.map(function (s) {
+            return '<a href="/business/results?id=' + encodeURIComponent(s.id) + '">' + esc(fmtDate(s.period_start)) + ' to ' + esc(fmtDate(s.period_end)) + '</a>';
+          }).join('') + '</div>';
+        }
+        $('st-renew-note').innerHTML = (v && v.committed ? 'Your plan renews once a year (four quarters for three).' : 'Your plan renews every quarter.') + ' To change or cancel it, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.';
         show(['biz-card', 'st-verified']);
       }
 
@@ -237,7 +306,7 @@
         t = setTimeout(function () {
           rest('select=' + COLS + '&status=eq.approved&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=12').then(function (rows) {
             $('results').innerHTML = (rows || []).length ? rows.map(function (l) {
-              return '<a href="/claim?listing=' + encodeURIComponent(l.slug) + '">' + logo(l) + '<div><b>' + esc(l.name) + '</b><span>' + esc([l.address_city, l.category].filter(Boolean).join(' · ')) + (l.claim_status === 'verified' ? ' · already claimed' : '') + '</span></div></a>';
+              return '<a href="/claim?listing=' + encodeURIComponent(l.slug) + (/^(verified|plus)$/.test(qs.get('plan') || '') ? '&plan=' + qs.get('plan') : '') + '">' + logo(l) + '<div><b>' + esc(l.name) + '</b><span>' + esc([l.address_city, l.category].filter(Boolean).join(' · ')) + (l.claim_status === 'verified' ? ' · already claimed' : '') + '</span></div></a>';
             }).join('') : '<p class="note" style="margin-top:12px">No match. Not listed yet? Email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> and we will add you.</p>';
           });
         }, 250);
@@ -279,19 +348,21 @@
           proposed: { vegan_status: vs.value, tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }
         }) }).then(function (r) { return r.json(); }).then(function (d) {
           if (d && d.url) { location.href = d.url; return; }
+          if (d && d.reserved) { location.href = '/claim?listing=' + encodeURIComponent(L.slug) + '&verified=reserved'; return; }
           $('go').disabled = false;
-          bad(d && d.error === 'already_claimed' ? 'This listing has already been claimed.' : d && d.error === 'already_verified' ? 'This listing is already VE Verified.' : d && d.error === 'invalid_amount' ? 'Please choose a contribution of $11 or more.' : 'That did not go through. Please try again.');
+          bad(d && d.error === 'already_claimed' ? 'This listing has already been claimed.' : d && d.error === 'already_verified' ? 'This listing already has a Passport plan.' : d && d.error === 'already_reserved' ? 'A founding spot is already reserved for this listing.' : d && d.error === 'founding_full' ? 'Founding spots here are full for now. Email hello@vegansexplore.com and we will let you know when one opens.' : d && d.error === 'invalid_amount' ? 'Please choose a contribution of $11 or more.' : 'That did not go through. Please try again.');
         }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
       });
       $('upgrade').addEventListener('submit', function (e) {
         e.preventDefault();
         var t = document.querySelector('input[name=uplan]:checked');
         if (!t) { $('up-msg').className = 'msg bad'; $('up-msg').textContent = 'Please choose a plan.'; return; }
-        $('up-go').disabled = true; $('up-msg').className = 'msg'; $('up-msg').textContent = 'Taking you to the secure checkout...';
+        $('up-go').disabled = true; $('up-msg').className = 'msg'; $('up-msg').textContent = founding() ? 'Reserving your founding spot...' : 'Taking you to the secure checkout...';
         api({ action: 'verified_start', listing_id: L.id, tier: t.value, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug) }).then(function (d) {
           if (d && d.url) { location.href = d.url; return; }
+          if (d && d.reserved) { location.href = '/claim?listing=' + encodeURIComponent(L.slug) + '&verified=reserved'; return; }
           $('up-go').disabled = false; $('up-msg').className = 'msg bad';
-          $('up-msg').textContent = d && d.error === 'already_verified' ? 'This listing is already VE Verified.' : d && d.error === 'not_owner' ? 'Only the business that holds this listing can do this.' : 'That did not go through. Please try again.';
+          $('up-msg').textContent = d && d.error === 'already_verified' ? 'This listing already has a Passport plan.' : d && d.error === 'already_reserved' ? 'A founding spot is already reserved for this listing.' : d && d.error === 'founding_full' ? 'Founding spots here are full for now. Email hello@vegansexplore.com.' : d && d.error === 'not_owner' ? 'Only the business that holds this listing can do this.' : 'That did not go through. Please try again.';
         }).catch(function () { $('up-go').disabled = false; $('up-msg').className = 'msg bad'; $('up-msg').textContent = 'Could not connect. Please try again.'; });
       });
       $('claimed-signin').onclick = function (e) { e.preventDefault(); VEAuth.showAuthModal('Sign in to manage your listing.', function () { location.reload(); }); };
@@ -307,6 +378,9 @@
           if (!L) { show(['find']); return; }
           $('biz').innerHTML = logo(L) + '<div><b>' + esc(L.name) + '</b><span>' + esc([L.address_city, L.category].filter(Boolean).join(' · ')) + '</span></div>';
           $('st-view').href = $('st-verified-view').href = '/directory/' + encodeURIComponent(L.slug);
+          // What this listing can take today: a founding spot (before its city's Challenge launches) or a paid quarter.
+          fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'offer', listing_id: L.id }) })
+            .then(function (r) { return r.json(); }).then(function (o) { if (o && o.founding) { OFFER = o; renderPlans(); } }).catch(function () {});
           if (qs.get('claim') === 'submitted') return show(['biz-card', 'st-submitted']);
           if (!VEAuth.isLoggedIn()) {
             if (L.claim_status === 'verified') { $('st-claimed-signin').hidden = false; return show(['biz-card', 'st-claimed']); }
@@ -315,10 +389,18 @@
           api({ action: 'mine', listing_id: L.id }).catch(function () { return {}; }).then(function (d) {
               var c = d && d.claim;
               if (d && d.verified) return showVerified(d.verified, qs.get('verified') === 'active');
+              if (qs.get('verified') === 'reserved') {
+                showVerified(null, true);
+                $('st-verified-h').textContent = 'Your founding spot is reserved';
+                $('st-verified-p').textContent = 'You pay nothing until your first Passport Challenge month starts, and your founding price is locked. We will email you before then to set up billing and schedule your visit.';
+                $('st-renew-note').textContent = 'Once billing starts, your plan renews every quarter at your founding price.';
+                return;
+              }
               if (qs.get('verified') === 'active') return showVerified(null, true);
               if (L.claim_status === 'verified') {
                 if (!d || !d.owner) return show(['biz-card', 'st-claimed']);
                 show(['biz-card', 'upgrade']);
+                if (/^(verified|plus)$/.test(qs.get('plan') || '')) { var ur = document.querySelector('input[name=uplan][value="' + qs.get('plan') + '"]'); if (ur) ur.checked = true; }
                 if (qs.get('verified') === 'cancelled') { $('up-msg').className = 'msg bad'; $('up-msg').textContent = 'Checkout was not completed. You can try again whenever you are ready.'; }
                 return;
               }

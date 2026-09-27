@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Be a Stop on the Map | Vegans Explore for Businesses</title>
+  <meta name="description" content="Passport members visit Vegan and Vegan-friendly businesses, buy something and get stamped at the register. Join a quarter at a time, and every quarter we show you exactly who came.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    a{color:var(--ve-green-deep);}
+    .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 72px;}
+    @media (max-width:600px){.wrap{padding:28px 16px 56px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(28px,4.6vw,48px);font-weight:900;text-transform:uppercase;line-height:1.05;margin-bottom:12px;max-width:860px;}
+    h2{font-size:clamp(20px,2.6vw,26px);font-weight:900;text-transform:uppercase;line-height:1.15;margin-bottom:10px;}
+    h3{font-size:16px;font-weight:800;line-height:1.3;}
+    .sub{font-size:clamp(17px,2vw,21px);font-weight:800;color:var(--ve-green-deep);margin-bottom:12px;}
+    .lede{font-size:16px;color:var(--ve-text-75);max-width:760px;margin-bottom:22px;}
+    section{margin-top:44px;}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;text-align:center;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:.55;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:var(--ve-green-light);}
+    .steps{list-style:none;counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:12px;}
+    .steps li{counter-increment:s;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 18px 18px 60px;position:relative;font-size:15px;}
+    .steps li::before{content:counter(s);position:absolute;left:18px;top:17px;width:30px;height:30px;border-radius:50%;background:var(--ve-green-deep);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;}
+    .steps b{display:block;margin-bottom:2px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:22px;}
+    .invite{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:start;}
+    @media (max-width:820px){.invite{grid-template-columns:minmax(0,1fr);}}
+    .invite select{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;margin:6px 0 10px;min-height:46px;}
+    .status{border-radius:10px;padding:12px 14px;font-weight:700;font-size:14px;}
+    .status.open{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .status.full{background:#fff4e2;color:#6b3f00;}
+    .status.live{background:#eef3fb;color:#1c3d6b;}
+    .guarantee{background:var(--ve-green-deep);color:#fff;border-radius:14px;padding:24px;}
+    .guarantee h2{color:#fff;}
+    .guarantee p{font-size:16px;max-width:820px;}
+    .guarantee p + p{margin-top:8px;color:#d9eeda;font-size:14.5px;}
+    .tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:16px;}
+    .tier{background:#fff;border:1px solid var(--ve-border);border-radius:16px;padding:24px;display:flex;flex-direction:column;}
+    .tier.anchor{border:2px solid var(--ve-green-deep);}
+    .tier .price{font-size:30px;font-weight:900;margin:6px 0 2px;}
+    .tier .price small{font-size:14px;font-weight:700;color:var(--ve-text-75);}
+    .tier .fnote{font-size:13px;font-weight:700;color:#6b3f00;background:#fff4e2;border-radius:8px;padding:6px 10px;margin:6px 0 10px;}
+    .tier ul{margin:10px 0 18px 18px;font-size:14.5px;color:var(--ve-text-75);flex:1;}
+    .tier li{margin-bottom:5px;}
+    .pill{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .badge-note{margin-top:14px;font-size:14px;color:var(--ve-text-75);}
+    .extra{margin-top:16px;border:1px dashed var(--ve-green-dark);border-radius:12px;padding:14px 16px;background:#fff;}
+    .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:12px;}
+    .svc{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:6px;}
+    .svc .p{font-size:22px;font-weight:900;}
+    .svc p{font-size:14px;color:var(--ve-text-75);flex:1;}
+    .svc.trial{border:2px solid var(--ve-orange);}
+    .sample{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:10px;margin-top:12px;}
+    .sample div{border:1px solid var(--ve-border);border-radius:10px;padding:12px 14px;background:#fafbfa;}
+    .sample b{display:block;font-size:13px;color:var(--ve-text-75);font-weight:700;}
+    .sample span{font-size:20px;font-weight:900;color:rgba(26,26,26,.28);}
+    .flash{border-radius:12px;padding:14px 16px;margin-bottom:18px;font-weight:700;}
+    .flash.ok{background:var(--ve-green-light);border:1px solid var(--ve-green-dark);color:var(--ve-green-deep);}
+    .flash.bad{background:#fbeeec;border:1px solid #d9a39c;color:#7a1a10;}
+    .muted{font-size:13px;color:var(--ve-text-75);}
+    dialog{border:0;border-radius:14px;padding:22px;max-width:min(480px,calc(100vw - 32px));width:100%;}
+    dialog::backdrop{background:rgba(0,0,0,.45);}
+    dialog label{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:12px 0 4px;}
+    dialog select,dialog textarea{width:100%;font:inherit;font-size:15px;padding:10px 12px;border:1px solid rgba(0,0,0,.25);border-radius:8px;}
+    dialog textarea{min-height:80px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="wrap">
+    <div id="flash" role="status"></div>
+
+    <p class="eyebrow">Vegans Explore for businesses</p>
+    <h1>Be a stop on the map Vegans are walking.</h1>
+    <p class="sub">See exactly who came.</p>
+    <p class="lede">Vegans Explore gets the community out with something new every month: the Passport Challenge, Tours and events. Passport members come to your counter, buy something and get stamped. You join a quarter at a time, and every quarter we show you who came through your door.</p>
+    <div class="btns">
+      <a class="btn" href="#tiers">Reserve my founding spot</a>
+      <button type="button" class="btn btn-ghost" data-book="challenge_month">Start with one month, $100</button>
+      <button type="button" class="btn btn-ghost" data-book="photo_shoot">Book a photo shoot</button>
+    </div>
+
+    <section aria-labelledby="how-h">
+      <h2 id="how-h">How the Passport Challenge works</h2>
+      <ol class="steps">
+        <li><b>A map of one neighborhood.</b>Each month, Passport members get a map of one part of the city with a pin for every stop.</li>
+        <li><b>They come to you and buy.</b>A member buys anything, and your cashier hands over the Passport Challenge card from under the register.</li>
+        <li><b>Stamped at your register.</b>They scan the card and the stamp lands in their Passport. Five stamps earn the month's badge and Points.</li>
+        <li><b>You see who came.</b>Every quarter you get a results sheet: members who stamped with you, first-time visitors and Tour guests.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="invite-h">
+      <div class="invite">
+        <div>
+          <h2 id="invite-h">We're choosing the first businesses on the map</h2>
+          <p class="lede" style="margin-bottom:0">The Passport Challenge launches in 2027, one city at a time. Founding businesses reserve a spot now and pay nothing until their first Challenge month starts, and the founding price stays locked as long as they stay. Spots in each city are limited to the stops on its first map.</p>
+        </div>
+        <div class="card">
+          <label for="hub" class="muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ve-green-deep)">Your city</label>
+          <select id="hub"></select>
+          <div id="hub-status" class="status open" role="status">Checking...</div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="g-h">
+      <div class="guarantee">
+        <h2 id="g-h">Our guarantee</h2>
+        <p>If your pin, register kit and staff training aren't ready before your month starts, that month is on us.</p>
+        <p>Anything else we deliver that isn't done right, we make it right. Our reputation is the community's reputation, and a bad job hurts the community and, in the end, the animals.</p>
+      </div>
+    </section>
+
+    <section id="tiers" aria-labelledby="t-h">
+      <h2 id="t-h">Join a quarter at a time</h2>
+      <div class="tiers">
+        <div class="tier">
+          <span class="pill">Passport Stop</span>
+          <div class="price">$250 <small>a quarter</small></div>
+          <div class="fnote" data-fnote hidden>Founding spot: reserve free, pay from your first Challenge month</div>
+          <ul>
+            <li>A Passport Challenge stop all three months of the quarter</li>
+            <li>The register kit: card, staff sheet, staff video and window sticker</li>
+            <li>Our in-person visit, and the Verified badge that comes with it</li>
+            <li>A photo shoot in your first quarter (about 10 edited photos, yours to keep), then a lighter refresh each quarter</li>
+            <li>One social feature post</li>
+            <li>A results sheet every quarter</li>
+          </ul>
+          <a class="btn" href="/claim?plan=verified" data-tier-btn>Reserve my founding spot</a>
+        </div>
+        <div class="tier anchor">
+          <span class="pill">Passport Anchor</span>
+          <div class="price">$500 <small>a quarter</small></div>
+          <div class="fnote" data-fnote hidden>Founding spot: reserve free, pay from your first Challenge month</div>
+          <ul>
+            <li>Everything in Passport Stop</li>
+            <li>The anchor stop one month of the quarter, with bonus Points for members</li>
+            <li>A Tour slot in the quarter wherever Tours run</li>
+            <li>A social campaign: three posts and a short reel</li>
+            <li>The featured spot in your section on the hub</li>
+          </ul>
+          <a class="btn" href="/claim?plan=plus" data-tier-btn>Reserve my founding spot</a>
+        </div>
+      </div>
+      <p class="badge-note"><b>Verified means we visited. It can't be bought.</b> The Verified badge comes with both plans once we have been to your business.</p>
+      <p class="badge-note">Stay a quarter and see your results. Keep going and you can take four quarters for the price of three.</p>
+      <div class="extra" id="extra" hidden></div>
+    </section>
+
+    <section id="services" aria-labelledby="s-h">
+      <h2 id="s-h">Need just one thing?</h2>
+      <p class="lede">Services you already need, from people who know Vegan food and stand behind their work. Book one on its own, no quarter needed.</p>
+      <div class="services" id="svc-list"><p class="muted">Loading...</p></div>
+    </section>
+
+    <section aria-labelledby="r-h">
+      <h2 id="r-h">What your results sheet shows</h2>
+      <p class="lede" style="margin-bottom:0">A sample of the sheet every Passport business gets each quarter. Your numbers fill it in.</p>
+      <div class="card" style="margin-top:12px">
+        <p class="muted"><b>Sample</b> · Your business · one quarter</p>
+        <div class="sample">
+          <div><b>Passport Challenge stamps</b><span>Your number</span></div>
+          <div><b>Members who stamped</b><span>Your number</span></div>
+          <div><b>First-time visitors</b><span>Your number</span></div>
+          <div><b>Challenge months you were on the map</b><span>Your number</span></div>
+          <div><b>Tour guests</b><span>Your number</span></div>
+          <div><b>"Cashier didn't know" reports</b><span>Your number</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="c-h">
+      <h2 id="c-h">Ready?</h2>
+      <p class="lede">Launching 2027, one city at a time. Claim your listing if you haven't yet, then pick your plan.</p>
+      <div class="btns">
+        <a class="btn" href="#tiers">Reserve my founding spot</a>
+        <button type="button" class="btn btn-ghost" data-book="challenge_month">Start with one month, $100</button>
+        <a class="btn btn-ghost" href="mailto:hello@vegansexplore.com?subject=Passport%20Challenge%20for%20my%20business">Talk to us first</a>
+      </div>
+    </section>
+
+    <dialog id="book" aria-labelledby="b-title">
+      <h2 id="b-title" style="font-size:18px"></h2>
+      <p class="muted" id="b-desc"></p>
+      <div id="b-body"></div>
+      <p class="muted" id="b-msg" role="status" style="margin-top:10px"></p>
+      <div class="btns" style="margin-top:14px"><button type="button" class="btn" id="b-go">Continue to secure checkout</button><button type="button" class="btn btn-ghost" id="b-cancel">Cancel</button></div>
+    </dialog>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script>
+    (function () {
+      var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', CLAIMS = SB + '/functions/v1/ve-claims', SERVICES = SB + '/functions/v1/ve-services';
+      var $ = function (id) { return document.getElementById(id); };
+      var qs = new URLSearchParams(location.search), catalog = {}, pick = null, myListings = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function post(url, body, auth) {
+        var h = { 'Content-Type': 'application/json' }; if (auth) h.Authorization = 'Bearer ' + VEAuth.getToken();
+        return fetch(url, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+      }
+      function flash(text, ok) { $('flash').innerHTML = '<div class="flash ' + (ok ? 'ok' : 'bad') + '">' + esc(text) + '</div>'; }
+
+      var b = qs.get('booked');
+      if (b === 'cancelled') flash('Checkout was not completed, so nothing was charged. Book again whenever you are ready.');
+      else if (b === 'unpaid') flash('We could not confirm that payment. If you were charged, email hello@vegansexplore.com and we will sort it out.');
+      else if (b) flash('Booked. We will reach out to schedule it. A confirmation is on its way to your email.', true);
+
+      // Founding status by city.
+      $('hub').innerHTML = VE_HUBS.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
+      function hubStatus() {
+        var slug = $('hub').value, st = $('hub-status');
+        st.className = 'status open'; st.textContent = 'Checking...';
+        post(CLAIMS, { action: 'offer', hub: slug }).then(function (o) {
+          var f = o.founding || {}, name = o.hub_name || VE_HUB(slug).name;
+          var foundingOpen = f.open && !f.full;
+          document.querySelectorAll('[data-fnote]').forEach(function (x) { x.hidden = !foundingOpen; });
+          document.querySelectorAll('[data-tier-btn]').forEach(function (x) { x.textContent = foundingOpen ? 'Reserve my founding spot' : f.open ? 'Join the waitlist' : 'Start my quarter'; });
+          if (!f.open) { st.className = 'status live'; st.textContent = 'The Passport Challenge is live in ' + name + '. Plans start right away.'; }
+          else if (f.full) { st.className = 'status full'; st.textContent = 'Founding spots in ' + name + ' are full for now. Email hello@vegansexplore.com to join the waitlist.'; }
+          else { st.className = 'status open'; st.textContent = 'Founding spots are open in ' + name + (f.cap ? ': ' + Math.max(0, f.cap - f.taken) + ' of ' + f.cap + ' left.' : '.'); }
+          if (o.extra) { $('extra').innerHTML = '<b>This quarter\'s extra: ' + esc(o.extra.title) + '</b>' + (o.extra.text ? '<p class="muted" style="margin-top:4px">' + esc(o.extra.text) + '</p>' : ''); $('extra').hidden = false; }
+        }).catch(function () { st.textContent = 'Could not load. Refresh to try again.'; });
+      }
+      $('hub').addEventListener('change', hubStatus);
+      document.querySelectorAll('[data-tier-btn]').forEach(function (a) {
+        a.addEventListener('click', function (e) { if (a.textContent === 'Join the waitlist') { e.preventDefault(); location.href = 'mailto:hello@vegansexplore.com?subject=Founding%20spot%20waitlist%20(' + encodeURIComponent(VE_HUB($('hub').value).name) + ')'; } });
+      });
+
+      // A la carte.
+      post(SERVICES, { action: 'catalog' }).then(function (d) {
+        (d.services || []).forEach(function (s) { catalog[s.id] = s; });
+        var order = ['challenge_month', 'photo_shoot', 'reel', 'social_post', 'event_table'];
+        $('svc-list').innerHTML = order.filter(function (k) { return catalog[k]; }).map(function (k) {
+          var s = catalog[k];
+          return '<div class="svc' + (k === 'challenge_month' ? ' trial' : '') + '">' + (k === 'challenge_month' ? '<span class="pill" style="align-self:flex-start">The easy way to try it</span>' : '') +
+            '<h3>' + esc(s.name) + '</h3><div class="p">$' + Math.round(s.cents / 100) + '</div><p>' + esc(s.desc) + '</p>' +
+            '<button type="button" class="btn btn-ghost" data-book="' + esc(k) + '">' + (k === 'challenge_month' ? 'Start with one month' : 'Book this') + '</button></div>';
+        }).join('');
+      }).catch(function () { $('svc-list').innerHTML = '<p class="muted">Could not load. Refresh to try again.</p>'; });
+
+      function openBook(id) {
+        pick = catalog[id]; if (!pick) return;
+        pick.id = id;
+        $('b-title').textContent = pick.name + ', $' + Math.round(pick.cents / 100);
+        $('b-desc').textContent = pick.desc; $('b-msg').textContent = ''; $('b-go').disabled = false; $('b-go').hidden = false;
+        if (!VEAuth.isLoggedIn()) {
+          $('b-body').innerHTML = '<p class="muted" style="margin-top:10px">Sign in to your Passport first, so the booking is tied to your business.</p>';
+          $('b-go').textContent = 'Sign in or join';
+          $('b-go').onclick = function () { $('book').close(); VEAuth.showAuthModal('Sign in to book for your business.', function () { location.href = '/business?book=' + id; }); };
+          return $('book').showModal();
+        }
+        $('b-go').textContent = 'Continue to secure checkout'; $('b-go').onclick = go;
+        $('b-body').innerHTML = '<p class="muted" style="margin-top:10px">Loading your listings...</p>';
+        $('book').showModal();
+        (myListings ? Promise.resolve({ listings: myListings }) : post(SERVICES, { action: 'mine' }, true)).then(function (d) {
+          myListings = d.listings || [];
+          if (!myListings.length) {
+            $('b-body').innerHTML = '<p class="muted" style="margin-top:10px">Services are booked for a business you hold on Vegans Explore. <a href="/claim">Claim your listing</a> first (from $11), then come back.</p>';
+            $('b-go').hidden = true; return;
+          }
+          $('b-body').innerHTML = '<label for="b-listing">For</label><select id="b-listing">' + myListings.map(function (l) { return '<option value="' + esc(l.id) + '">' + esc(l.name) + (l.address_city ? ', ' + esc(l.address_city) : '') + '</option>'; }).join('') + '</select>' +
+            '<label for="b-notes">Anything we should know? (optional)</label><textarea id="b-notes" maxlength="600" placeholder="Best days and times, what you want featured"></textarea>';
+        }).catch(function () { $('b-body').innerHTML = '<p class="muted">Could not load. Try again.</p>'; });
+      }
+      function go() {
+        var sel = $('b-listing'); if (!sel) return;
+        $('b-go').disabled = true; $('b-msg').textContent = 'Taking you to the secure checkout...';
+        post(SERVICES, { action: 'order', service: pick.id, listing_id: sel.value, notes: ($('b-notes') || {}).value || '', return_url: location.origin + '/business' }, true).then(function (d) {
+          if (d.url) { location.href = d.url; return; }
+          $('b-go').disabled = false; $('b-msg').textContent = d.error === 'not_owner' ? 'Only the business that holds this listing can book for it.' : 'That did not go through. Please try again.';
+        }).catch(function () { $('b-go').disabled = false; $('b-msg').textContent = 'Could not connect. Please try again.'; });
+      }
+      $('b-cancel').onclick = function () { $('book').close(); };
+      document.addEventListener('click', function (e) { var t = e.target.closest('[data-book]'); if (t) { if (!catalog[t.getAttribute('data-book')]) return; openBook(t.getAttribute('data-book')); } });
+
+      function start() {
+        if (!window.VEAuth || !window.VE_HUBS) return setTimeout(start, 150);
+        hubStatus();
+        var want = qs.get('book');
+        if (want) { var tries = 0; (function wait() { if (catalog[want]) return openBook(want); if (tries++ < 30) setTimeout(wait, 150); })(); }
+      }
+      start();
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

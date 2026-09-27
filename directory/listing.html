@@ -493,7 +493,8 @@ function verifiedTier(l){
 }
 function verifiedLabel(l){
   var t = verifiedTier(l);
-  return t && l.ve_verified ? (t === 'plus' ? 'VE Verified Plus' : 'VE Verified') : '';
+  // The badge means VE visited (Business Offer v2): the same "VE Verified" on both Passport tiers.
+  return t && l.ve_verified ? 'VE Verified' : '';
 }
 
 function fetchListing(slug){
@@ -1681,7 +1682,7 @@ function renderPulse(posts, listingName){
   });
 }
 
-// Inside a claimed listing: the business that holds it is offered VE Verified, or sees its status.
+// Inside a claimed listing: the business that holds it is offered Passport Stop or Anchor, or sees its plan.
 function ownerVerifiedCard(l){
   var box = document.getElementById('ve-owner-verified');
   if(!box || !window.VEAuth || !VEAuth.isLoggedIn()) return;
@@ -1691,10 +1692,10 @@ function ownerVerifiedCard(l){
   var until = l.ve_verified_until ? new Date(l.ve_verified_until).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '';
   box.innerHTML = '<div style="margin-top:14px"><div class="claim-box">'+
     (t
-      ? '<p><b style="color:#fff">'+(t==='plus'?'VE Verified Plus':'VE Verified')+'</b>'+(until?', renews '+esc(until):'')+'. '+(l.ve_verified?'Your Verified badge is live.':'Your badge goes live after our in-person visit.')+'</p>'+
-        '<a href="'+href+'" class="claim-btn">See your membership</a>'
-      : '<p>Your listing. Become VE Verified: an in-person visit, a professional photo shoot and a Verified badge. From $250 a year.</p>'+
-        '<a href="'+href+'" class="claim-btn">Become VE Verified</a>')+
+      ? '<p><b style="color:#fff">'+(t==='plus'?'Passport Anchor':'Passport Stop')+'</b>'+(until?', next charge '+esc(until):'')+'. '+(l.ve_verified?'Your Verified badge is live.':'Your Verified badge goes live after our in-person visit.')+'</p>'+
+        '<a href="'+href+'" class="claim-btn">See your plan and results</a>'
+      : '<p>Your listing. Be a stop on the map Vegans are walking: Passport members come in, buy and get stamped, and every quarter we show you who came. From $250 a quarter.</p>'+
+        '<a href="/business" class="claim-btn">See how it works</a>')+
     '</div></div>';
 }
 

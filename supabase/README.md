@@ -311,3 +311,31 @@ plan to go on sale; on sale it is mirrored as an approved `events` row (category
 in the South Florida hub's Events. Pages: `/tours` (list, `?id=` detail and booking),
 `/admin/depot/tours` (waiver, tour editor with Plus-first restaurant suggestions, roster with
 check-in).
+
+## Business Offer v2 (2026-09-27)
+
+Locked by Sean after a panel (playbook `ve-verified-tours-hunt`, group G). Supersedes the yearly
+VE Verified pricing above; internal tier keys stay `verified` (Passport Stop, $250 a quarter) and
+`plus` (Passport Anchor, $500 a quarter). Migration `ve_business_offer_v2`:
+- `ve_verified_memberships`: status `reserved` (a free founding spot: no badge, no placement), `founding`,
+  `hub`, `bill_from`, `billing_opened_at`, `committed_at`; one reserved row per listing.
+- `ve_service_orders` (a la carte, `ve-services`), `ve_results_sheets` (one per membership per completed
+  quarter), `ve_results_data(listing, from, to)` (Challenge stamps, members, first-time visitors, reports,
+  Challenge months, Tour guests; offer redemptions are not tracked yet).
+- `ve_site_settings`: `founding_caps` ({hub: n}; default is the stop count of the hub's first Challenge)
+  and `quarter_extras` ({"2027-Q1": {title, text}}).
+
+`ve-claims` (quarterly `interval=month, interval_count=3` subscriptions): before a hub's Challenge
+launches (`challenge_launch`), `start`/`verified_start` with a tier reserve a founding spot instead of
+charging, price locked in `amount_cents`; the Depot's `admin_founding_open` sets `bill_from` and emails
+the business, whose `founding_checkout` saves the card with a Stripe trial to `bill_from`.
+`commit_year` (four quarters for three) moves the subscription item to a new yearly price of 3x the
+quarterly amount from the next renewal; offered from the first results sheet or 60 days in. Public
+`offer` returns a listing's or hub's founding state and the quarter's extra. Results sheets: pg_cron
+`ve-results-daily` calls `ve-claims?cron=results` with `x-cron-secret` (`lesaruss_secrets.CRON_SECRET`),
+which writes each completed quarter (every 3 months from `paid_at`) and emails it to the business and Sean;
+the business reads it at `/business/results?id=`. `ve-services`: catalog, `order` (one-time Checkout, the
+member must hold the listing), `?confirm=` (also reached by the webhook's generic `ve_*` branch via
+`confirm_fn`), Depot `admin_orders` / `admin_order`. Pages: `/business` (the offer, v2 order), `/claim`
+(founding reserve and plan states), `/business/results`, Depot tabs Passport Partners
+(`/admin/depot/verified`) and Services. The public badge reads "VE Verified" on both tiers.
