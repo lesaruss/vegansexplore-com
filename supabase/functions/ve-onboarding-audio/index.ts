@@ -15,6 +15,14 @@
 //   the page never depends on the CDN; a site path (/public/...) or an image-library
 //   file (vegan-media/library/) is used as is. Keys bg-desktop and bg-mobile set
 //   the page's background (Sean, 2026-09-27: a different background per entry point).
+// POST { action: 'slides', page?, city }
+// POST { action: 'set_slide', page?, city, key, music_url?, music_off?, music_vol?, video_url?, video_sound? }
+//   The rest of a slide's recipe (the Depot, Phase 1, 2026-09-27): its music bed and
+//   level, and an optional video. Omitted fields stay as they are; null resets one to
+//   the page's built-in choice. Files must already be in our own storage (vegan-media).
+// POST { action: 'set_narration', page?, city, key, url, dur, source_name }
+// POST { action: 'clear_narration', page?, city, key }
+//   Pick a narration take from the Depot for a slide, or go back to the page's built-in one.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -29,6 +37,10 @@ const PAGES: Record<string, string[]> = {
 // (portrait). These take a picture, never narration.
 const BG_KEYS = ['bg-desktop', 'bg-mobile'];
 const LIBRARY_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/library/`;
+const MEDIA_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
+// A file already in our own storage, as the Depot lists it.
+const ownFile = (u: unknown, ext: RegExp) => typeof u === 'string' && u.startsWith(MEDIA_PREFIX) && /^[a-z0-9/_.-]+$/i.test(u.slice(MEDIA_PREFIX.length)) && ext.test(u);
+const AUDIO_EXT = /\.(mp3|wav|m4a|aac|ogg)$/i, VIDEO_EXT = /\.(mp4|mov|webm)$/i;
 const CITIES = ['south-florida', 'orlando-north-central-florida', 'philadelphia', 'new-york', 'los-angeles'];
 const MAX_BYTES = 12 * 1024 * 1024;
 
@@ -83,6 +95,54 @@ Deno.serve(async (req) => {
   if (body.action === 'panels') {
     const { data } = await db.from('ve_onboarding_panels').select('clip_key, url, source_id, updated_at').eq('page', page).eq('city_slug', city);
     return json({ panels: data || [] });
+  }
+
+  if (body.action === 'slides') {
+    const { data } = await db.from('ve_onboarding_slides').select('clip_key, music_url, music_off, music_vol, video_url, video_sound, updated_at').eq('page', page).eq('city_slug', city);
+    return json({ slides: data || [] });
+  }
+
+  if (body.action === 'set_slide') {
+    const key = String(body.key || '');
+    if (!PAGES[page].includes(key)) return json({ error: 'bad_key' }, 400);
+    const patch: Record<string, unknown> = { page, city_slug: city, clip_key: key, updated_by: memberId, updated_at: new Date().toISOString() };
+    if (body.music_url !== undefined) {
+      if (body.music_url !== null && !ownFile(body.music_url, AUDIO_EXT)) return json({ error: 'bad_music' }, 400);
+      patch.music_url = body.music_url;
+    }
+    if (body.music_off !== undefined) patch.music_off = !!body.music_off;
+    if (body.music_vol !== undefined) {
+      const v = body.music_vol === null ? null : Number(body.music_vol);
+      if (v !== null && !(v >= 0 && v <= 1)) return json({ error: 'bad_volume' }, 400);
+      patch.music_vol = v === null ? null : Math.round(v * 100) / 100;
+    }
+    if (body.video_url !== undefined) {
+      if (body.video_url !== null && !ownFile(body.video_url, VIDEO_EXT)) return json({ error: 'bad_video' }, 400);
+      patch.video_url = body.video_url;
+    }
+    if (body.video_sound !== undefined) patch.video_sound = !!body.video_sound;
+    const { data, error } = await db.from('ve_onboarding_slides').upsert(patch, { onConflict: 'page,city_slug,clip_key' })
+      .select('clip_key, music_url, music_off, music_vol, video_url, video_sound, updated_at').single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, slide: data });
+  }
+
+  if (body.action === 'set_narration' || body.action === 'clear_narration') {
+    const key = String(body.key || '');
+    if (!PAGES[page].includes(key)) return json({ error: 'bad_key' }, 400);
+    if (body.action === 'clear_narration') {
+      const { error } = await db.from('ve_onboarding_audio').delete().eq('page', page).eq('city_slug', city).eq('clip_key', key);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true, key });
+    }
+    if (!ownFile(body.url, AUDIO_EXT)) return json({ error: 'bad_audio' }, 400);
+    const dur = Math.round(Number(body.dur || 0) * 10) / 10 || null;
+    const { error } = await db.from('ve_onboarding_audio').upsert({
+      page, city_slug: city, clip_key: key, url: body.url, dur, source_name: String(body.source_name || '').slice(0, 200) || null,
+      uploaded_by: memberId, updated_at: new Date().toISOString(),
+    }, { onConflict: 'page,city_slug,clip_key' });
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, key, url: body.url, dur });
   }
 
   if (body.action === 'set_panel') {
@@ -140,6 +200,13 @@ Deno.serve(async (req) => {
       uploaded_by: memberId, updated_at: new Date().toISOString(),
     }, { onConflict: 'page,city_slug,clip_key' });
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    // Every recording also lands in the Depot, so it can be picked again later.
+    const hex = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))).map((x) => x.toString(16).padStart(2, '0')).join('');
+    await db.from('ve_media_library').insert({
+      sha256: hex, kind: 'audio', mime: 'audio/wav', url, bytes: bytes.length, duration: dur, uses: ['narration'],
+      labels: [page, key], source_name: `Narration: ${page === 'cm' ? 'Community Manager' : 'Partners'}, ${key}, Sean's recording`,
+      source_ref: `audio:${path.slice('onboarding-audio/'.length)}`, uploaded_by: memberId,
+    });
     return json({ ok: true, key, url, dur });
   }
 
