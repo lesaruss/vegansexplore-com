@@ -54,7 +54,7 @@
   <div class="wrap">
     <p class="eyebrow">Admin</p>
     <h1>Onboarding images</h1>
-    <p class="sub">Pick a slide, then choose its picture from your Vegans Explore illustrations below. It goes live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
+    <p class="sub">Pick a slide (or the page background), then choose its picture from your <a href="/admin/media-library">image library</a> below. It goes live on the page right away. Tap any picture to see it large. Pictures already on another slide are marked, so nothing repeats.</p>
     <div id="im-gate" class="gate" hidden></div>
     <div id="im-app" hidden>
       <div class="bar">
@@ -72,6 +72,14 @@
       <h2>1. Pick a slide</h2>
       <div class="slides" id="im-slides"></div>
       <h2 id="im-grid-h">2. Choose its picture</h2>
+      <div class="bar" style="margin-bottom:12px;">
+        <label>Show <select id="im-filter">
+          <option value="fit">What fits this slot</option>
+          <option value="library">Whole library</option>
+          <option value="older">Older Higgsfield set</option>
+        </select></label>
+        <span class="msg" id="im-lib-msg"></span>
+      </div>
       <div class="grid" id="im-grid"></div>
     </div>
   </div>
@@ -112,11 +120,50 @@
         { key: 'only', label: 'It only works with you', def: 'site-events-hero', defUrl: '/public/events/ve-hero-mobile.png' },
         { key: 'seat', label: 'Take your seat', def: 'site-partner', defUrl: '/public/partner/ve-partner-mobile.png' }
       ] };
+      // Every page also has its background, desktop (landscape) and phone (portrait).
+      var BG_DEFAULT = '/communities/south-florida/banner.jpg';
+      Object.keys(PAGES).forEach(function (k) {
+        PAGES[k].slides.push({ key: 'bg-desktop', label: 'Background, desktop', bg: 'bg_desktop', def: '', defUrl: BG_DEFAULT });
+        PAGES[k].slides.push({ key: 'bg-mobile', label: 'Background, phone', bg: 'bg_mobile', def: '', defUrl: BG_DEFAULT });
+      });
       var SLIDES = PAGES.cm.slides;
+      var LIB_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-media-library';
+      var LIBRARY = [];
+      // Older Higgsfield candidates keep working; they send their thumbnail, which the
+      // server copies into storage. Library pictures send their full-size file.
+      CANDIDATES.forEach(function (c) { c.src = c.thumb; c.older = true; });
       var $ = function (id) { return document.getElementById(id); };
       var sel = 0, current = {}, busy = false, preview = null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-      function byId(id) { for (var i = 0; i < CANDIDATES.length; i++) if (CANDIDATES[i].id === id) return CANDIDATES[i]; return null; }
+      function all() { return LIBRARY.concat(CANDIDATES); }
+      function byId(id) { var a = all(); for (var i = 0; i < a.length; i++) if (a[i].id === id) return a[i]; return null; }
+      // What the grid shows: for a background slot, library pictures tagged for that
+      // background (or, if none are tagged yet, landscape or portrait by shape).
+      function shown() {
+        var f = $('im-filter').value, s = SLIDES[sel];
+        if (f === 'older') return CANDIDATES;
+        if (f === 'library') return LIBRARY;
+        if (s.bg) {
+          var tagged = LIBRARY.filter(function (c) { return c.uses.indexOf(s.bg) >= 0; });
+          if (tagged.length) return tagged;
+          var shape = s.bg === 'bg_desktop' ? 'landscape' : 'portrait';
+          return LIBRARY.filter(function (c) { return c.orientation === shape; });
+        }
+        var slides = LIBRARY.filter(function (c) { return c.uses.indexOf('slide') >= 0; });
+        return (slides.length ? slides : LIBRARY).concat(CANDIDATES);
+      }
+      function loadLibrary() {
+        return fetch(LIB_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'list' }) })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            LIBRARY = (d.items || []).filter(function (it) { return !it.archived; }).map(function (it) {
+              var place = { miami: 'Miami', broward: 'Broward', 'palm-beach': 'Palm Beach' }[it.place] || '';
+              return { id: 'lib-' + it.id, thumb: it.thumb_url, raw: it.url, src: it.url, uses: it.uses || [], orientation: it.orientation,
+                cap: [it.source_name, place, it.orientation + ' ' + it.width + '\u00d7' + it.height].filter(Boolean).join(' \u00b7 ') };
+            });
+            $('im-lib-msg').textContent = LIBRARY.length ? '' : 'Your library is empty. Add pictures at Image library.';
+          }).catch(function () { $('im-lib-msg').textContent = 'The library did not load. Refresh to try again.'; });
+      }
       function api(body) {
         return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(Object.assign({ page: $('im-page').value, city: $('im-city').value }, body)) })
           .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
@@ -127,46 +174,49 @@
         if (c) return { url: c.url, id: c.source_id };
         return { url: s.defUrl || PANEL_BASE + s.key + '.webp', id: s.def };
       }
+      function slotName(i) { return SLIDES[i].bg ? 'the background' : 'slide ' + (i + 1); }
       function usedBy(id) { var out = []; SLIDES.forEach(function (s, i) { if (slideState(s).id === id) out.push(i); }); return out; }
 
       function render() {
         $('im-slides').innerHTML = SLIDES.map(function (s, i) {
           var st = slideState(s);
-          return '<button type="button" class="slide-tile" data-i="' + i + '" aria-pressed="' + (i === sel) + '"><img src="' + esc(st.url) + '" alt=""><b>' + (i + 1) + '. ' + esc(s.label) + '</b><small>' + (current[s.key] ? 'Your pick' : 'Current') + '</small></button>';
+          return '<button type="button" class="slide-tile" data-i="' + i + '" aria-pressed="' + (i === sel) + '"><img src="' + esc(st.url) + '" alt=""><b>' + (s.bg ? '' : (i + 1) + '. ') + esc(s.label) + '</b><small>' + (current[s.key] ? 'Your pick' : 'Current') + '</small></button>';
         }).join('');
         $('im-slides').querySelectorAll('.slide-tile').forEach(function (b) { b.onclick = function () { sel = +b.getAttribute('data-i'); render(); }; });
-        $('im-grid-h').textContent = '2. Choose the picture for slide ' + (sel + 1) + ': ' + SLIDES[sel].label;
-        $('im-grid').innerHTML = CANDIDATES.map(function (c, i) {
+        $('im-grid-h').textContent = '2. Choose the picture for ' + slotName(sel) + ': ' + SLIDES[sel].label;
+        var list = shown();
+        $('im-grid').innerHTML = list.length ? list.map(function (c, i) {
           var used = usedBy(c.id), here = used.indexOf(sel) >= 0;
-          var tag = here ? '<span class="tag">On this slide</span>' : used.length ? '<span class="tag">On slide ' + used.map(function (u) { return u + 1; }).join(', ') + '</span>' : '';
+          var tag = here ? '<span class="tag">On this one</span>' : used.length ? '<span class="tag">On ' + used.map(slotName).join(', ') + '</span>' : '';
           return '<div class="card' + (used.length && !here ? ' used' : '') + '"><img src="' + esc(c.thumb) + '" alt="" loading="lazy" data-prev="' + i + '"><div class="card-body">' + tag + '<p class="card-cap">' + esc(c.cap) + '</p>' +
-            '<button type="button" class="btn" data-use="' + i + '"' + (here ? ' disabled' : '') + '>' + (here ? 'On slide ' + (sel + 1) : 'Use for slide ' + (sel + 1)) + '</button></div></div>';
-        }).join('');
-        $('im-grid').querySelectorAll('[data-use]').forEach(function (b) { b.onclick = function () { use(CANDIDATES[+b.getAttribute('data-use')]); }; });
-        $('im-grid').querySelectorAll('[data-prev]').forEach(function (im) { im.onclick = function () { openPreview(CANDIDATES[+im.getAttribute('data-prev')]); }; });
+            '<button type="button" class="btn" data-use="' + i + '"' + (here ? ' disabled' : '') + '>' + (here ? 'On ' + slotName(sel) : 'Use for ' + slotName(sel)) + '</button></div></div>';
+        }).join('') : '<p class="card-cap">Nothing to show here yet. Tag pictures at the Image library, or switch Show to Whole library.</p>';
+        $('im-grid').querySelectorAll('[data-use]').forEach(function (b) { b.onclick = function () { use(list[+b.getAttribute('data-use')]); }; });
+        $('im-grid').querySelectorAll('[data-prev]').forEach(function (im) { im.onclick = function () { openPreview(list[+im.getAttribute('data-prev')]); }; });
         var city = $('im-city').value;
         $('im-view').href = PAGES[$('im-page').value].view + (city === 'south-florida' ? '' : '?city=' + city) + '#' + SLIDES[sel].key;
       }
       function use(c) {
         if (busy || !c) return;
         var s = SLIDES[sel], taken = usedBy(c.id).filter(function (u) { return u !== sel; });
-        if (taken.length && !confirm('That picture is on slide ' + (taken[0] + 1) + '. Use it here too?')) return;
-        busy = true; $('im-msg').textContent = 'Saving slide ' + (sel + 1) + '...';
-        api({ action: 'set_panel', key: s.key, source: c.thumb, source_id: c.id }).then(function (d) {
+        if (taken.length && !SLIDES[sel].bg && !SLIDES[taken[0]].bg && !confirm('That picture is on slide ' + (taken[0] + 1) + '. Use it here too?')) return;
+        busy = true; $('im-msg').textContent = 'Saving ' + slotName(sel) + '...';
+        api({ action: 'set_panel', key: s.key, source: c.src, source_id: c.id }).then(function (d) {
           busy = false;
-          if (d.ok) { current[s.key] = { url: d.url, source_id: c.id }; $('im-msg').textContent = 'Slide ' + (sel + 1) + ' updated. It is live.'; render(); }
+          if (d.ok) { current[s.key] = { url: d.url, source_id: c.id }; $('im-msg').textContent = slotName(sel).charAt(0).toUpperCase() + slotName(sel).slice(1) + ' updated. It is live.'; render(); }
           else $('im-msg').textContent = d._status === 403 ? 'Admins only.' : 'That did not save. Try again.';
         }).catch(function () { busy = false; $('im-msg').textContent = 'Could not connect. Try again.'; });
       }
       function openPreview(c) {
         preview = c; $('im-dlg-img').src = c.raw; $('im-dlg-cap').textContent = c.cap;
-        $('im-dlg-use').textContent = 'Use for slide ' + (sel + 1); $('im-dlg').showModal();
+        $('im-dlg-use').textContent = 'Use for ' + slotName(sel); $('im-dlg').showModal();
       }
       $('im-dlg-close').onclick = function () { $('im-dlg').close(); };
       $('im-dlg-use').onclick = function () { $('im-dlg').close(); use(preview); };
       $('im-dlg').addEventListener('click', function (e) { if (e.target === $('im-dlg')) $('im-dlg').close(); });
       $('im-city').addEventListener('change', load);
       $('im-page').addEventListener('change', function () { sel = 0; load(); });
+      $('im-filter').addEventListener('change', render);
       function load() {
         current = {};
         SLIDES = PAGES[$('im-page').value].slides;
@@ -182,7 +232,7 @@
         if (qp && PAGES[qp]) { $('im-page').value = qp; SLIDES = PAGES[qp].slides; }
         if (qc && $('im-city').querySelector('option[value="' + qc + '"]')) $('im-city').value = qc;
         if (qsl >= 1 && qsl <= SLIDES.length) sel = qsl - 1;
-        $('im-app').hidden = false; load();
+        $('im-app').hidden = false; loadLibrary().then(load);
       }
       start();
     })();

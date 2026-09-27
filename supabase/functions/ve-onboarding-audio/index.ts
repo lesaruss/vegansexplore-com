@@ -12,7 +12,9 @@
 // POST { action: 'set_panel', page?, city, key, source, source_id }
 //   The image in a slide's panel (Sean, 2026-09-26: pick from a grid at
 //   /admin/onboarding-images). A Higgsfield image is copied into vegan-media so
-//   the page never depends on the CDN; a site path (/public/...) is used as is.
+//   the page never depends on the CDN; a site path (/public/...) or an image-library
+//   file (vegan-media/library/) is used as is. Keys bg-desktop and bg-mobile set
+//   the page's background (Sean, 2026-09-27: a different background per entry point).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -23,6 +25,10 @@ const PAGES: Record<string, string[]> = {
   cm: ['welcome', 'have', 'lead', 'role', 'month', 'pulse', 'season', 'grow', 'join', 'apply', 'applied'],
   partners: ['problem', 'why', 'room', 'bring', 'only', 'seat'],
 };
+// Picture-only keys every page has: its background, desktop (landscape) and phone
+// (portrait). These take a picture, never narration.
+const BG_KEYS = ['bg-desktop', 'bg-mobile'];
+const LIBRARY_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/library/`;
 const CITIES = ['south-florida', 'orlando-north-central-florida', 'philadelphia', 'new-york', 'los-angeles'];
 const MAX_BYTES = 12 * 1024 * 1024;
 
@@ -81,10 +87,13 @@ Deno.serve(async (req) => {
 
   if (body.action === 'set_panel') {
     const key = String(body.key || '');
-    if (!PAGES[page].includes(key)) return json({ error: 'bad_key' }, 400);
+    if (!PAGES[page].includes(key) && !BG_KEYS.includes(key)) return json({ error: 'bad_key' }, 400);
     const source = String(body.source || '');
     let url = '';
     if (/^\/public\/[a-z0-9/_.-]+\.(png|jpe?g|webp)$/i.test(source)) {
+      url = source;
+    } else if (source.startsWith(LIBRARY_PREFIX) && /^[a-z0-9]+\.(webp|jpg)$/.test(source.slice(LIBRARY_PREFIX.length))) {
+      // Already in our own storage (the image library), so it is used as is.
       url = source;
     } else {
       let src: URL;

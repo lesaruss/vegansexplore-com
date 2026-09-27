@@ -457,6 +457,9 @@
         .then(function (r) { return r.ok ? r.json() : []; })
         .then(function (rows) {
           (rows || []).forEach(function (row) {
+            // The page background, picked at /admin/onboarding-images (desktop and phone).
+            if (row.clip_key === 'bg-desktop' && row.url) { stageEl.style.backgroundImage = "url('" + row.url + "')"; return; }
+            if (row.clip_key === 'bg-mobile' && row.url) { stageBg.style.backgroundImage = "url('" + row.url + "')"; return; }
             var m = document.querySelector('.media[data-video="' + row.clip_key + '"]');
             if (!m || !row.url) return;
             m.setAttribute('data-poster', row.url);
