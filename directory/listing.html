@@ -243,7 +243,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .mobile-sticky-btn.primary{background:var(--ve-green);color:#fff}
   .mobile-sticky-btn.primary:hover{background:var(--ve-green-dark)}
   .mobile-sticky-btn.secondary{background:var(--ve-green-light);color:#2d7d31;border:1px solid #c8e6c9}
-  #listing-root{padding-bottom:80px}
+  /* Keep the fixed action bar from covering the end of the page (the shared footer). */
+  body:has(.mobile-sticky){padding-bottom:80px}
 }
 
 /* UNLOCK SECTION */
@@ -376,7 +377,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
    a normal top-level visit to /directory/[slug] is unaffected. */
 try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
 </script>
-<style>.ve-embedded .ve-nav{display:none !important}.ve-embedded .listing-breadcrumb{display:none !important}</style>
+<style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded .listing-breadcrumb{display:none !important}</style>
 <div id="frame">
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
@@ -1766,5 +1767,6 @@ if(!slug || slug === 'listing'){
   <div class="article-body-wrap" id="article-content"></div>
 </div>
 
+<script src="/public/footer.js"></script>
 </body>
 </html>
