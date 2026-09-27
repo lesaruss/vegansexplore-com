@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Hunt Onboarding Kit | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Montserrat",sans-serif;background:#eef0ee;color:#1a1a1a;line-height:1.55;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    .tools{max-width:900px;margin:0 auto;padding:24px 16px 8px;}
+    .tools h1{font-size:clamp(22px,3vw,30px);font-weight:900;text-transform:uppercase;margin-bottom:6px;}
+    .tools p{font-size:14px;color:rgba(26,26,26,.8);margin-bottom:12px;max-width:720px;}
+    .pick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+    .pick button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;min-height:44px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;}
+    .pick button[aria-pressed="true"]{background:#1f5f22;color:#fff;border-color:#1f5f22;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border-radius:8px;font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:0;background:#1f5f22;color:#fff;}
+    .page{max-width:900px;margin:0 auto;padding:12px 16px 40px;display:flex;justify-content:center;}
+    /* Staff sheet: US Letter. */
+    .sheet{width:8.5in;max-width:100%;min-height:11in;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.12);padding:.6in .6in;}
+    .sheet .word{font-size:13px;font-weight:900;letter-spacing:.24em;color:#1f5f22;}
+    .sheet h2{font-size:34px;font-weight:900;text-transform:uppercase;line-height:1.05;margin:10px 0 8px;}
+    .sheet .lead{font-size:16px;color:#333;margin-bottom:22px;}
+    .sheet h3{font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#1f5f22;margin:22px 0 10px;}
+    .sheet ol{list-style:none;counter-reset:s;}
+    .sheet ol li{counter-increment:s;position:relative;padding:0 0 14px 44px;font-size:15px;}
+    .sheet ol li::before{content:counter(s);position:absolute;left:0;top:-2px;width:30px;height:30px;border-radius:50%;background:#1f5f22;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;}
+    .say{background:#EAF7EA;border-left:5px solid #1f5f22;border-radius:8px;padding:14px 16px;font-size:18px;font-weight:800;margin:8px 0 4px;}
+    .qa{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px;}
+    .qa div{border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;font-size:14px;}
+    .qa b{display:block;margin-bottom:4px;}
+    .foot{margin-top:24px;border-top:1px solid rgba(0,0,0,.12);padding-top:12px;font-size:12.5px;color:#444;}
+    /* Window sticker: 6 x 6 inch square. */
+    .sticker{width:min(6in,100%);aspect-ratio:1/1;border-radius:50%;background:#1f5f22;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 2px 14px rgba(0,0,0,.18);border:.12in solid #fff;outline:.04in solid #1f5f22;padding:.5in;}
+    .sticker .word{font-size:16px;font-weight:900;letter-spacing:.26em;}
+    .sticker .big{font-size:48px;font-weight:900;text-transform:uppercase;line-height:1;margin:14px 0;}
+    .sticker .small{font-size:15px;font-weight:700;color:#e6f4e7;}
+    .sticker .url{margin-top:16px;font-size:14px;font-weight:800;letter-spacing:.06em;background:#fff;color:#1f5f22;border-radius:99px;padding:6px 16px;}
+    /* Video script: screen only. */
+    .script{width:100%;max-width:820px;background:#fff;border-radius:14px;box-shadow:0 2px 14px rgba(0,0,0,.08);padding:24px;}
+    .script h2{font-size:14px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#1f5f22;margin-bottom:10px;}
+    .script table{width:100%;border-collapse:collapse;font-size:14px;}
+    .script th,.script td{text-align:left;vertical-align:top;padding:10px 8px;border-bottom:1px solid rgba(0,0,0,.1);}
+    .script th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#555;}
+    .script td:first-child{white-space:nowrap;font-weight:800;color:#1f5f22;}
+    .err{max-width:600px;margin:40px auto;background:#fff;border-radius:12px;padding:24px;text-align:center;}
+    @media (max-width:640px){.sheet h2{font-size:26px}.sticker .big{font-size:34px}}
+    @media print{
+      body{background:#fff;}
+      .tools,.ve-nav,.ve-footer,nav,footer{display:none !important;}
+      .page{padding:0;}
+      .sheet,.sticker{box-shadow:none;}
+      .sticker{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      .say{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    }
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="tools">
+    <h1>Hunt onboarding kit</h1>
+    <p>What each Hunt stop gets alongside its register card (printed from Depot &gt; Hunt). Pick a piece, then print. The staff sheet prints on US Letter; the sticker is a 6 inch circle for the front window.</p>
+    <div class="pick" id="pick" role="group" aria-label="Kit piece">
+      <button type="button" data-p="sheet" aria-pressed="true">Staff sheet</button>
+      <button type="button" data-p="sticker" aria-pressed="false">Window sticker</button>
+      <button type="button" data-p="video" aria-pressed="false">60-second video script</button>
+    </div>
+    <button type="button" class="btn" id="print" onclick="window.print()">Print</button>
+  </div>
+
+  <div class="page" id="p-sheet">
+    <section class="sheet" aria-label="Staff sheet">
+      <div class="word">VEGANS EXPLORE</div>
+      <h2>We're a VE Hunt stop</h2>
+      <p class="lead">Each month, Vegans Explore members visit a set of Vegan and Vegan-friendly businesses in one part of South Florida and collect a stamp at each one. This month, that includes us. Every stamp is a real guest who bought something here.</p>
+      <h3>When a guest mentions the Hunt</h3>
+      <ol>
+        <li>They buy anything, as usual.</li>
+        <li>They show you the Hunt on their phone. Hand them the VE Hunt card from under the register.</li>
+        <li>They scan the QR code on the front. The stamp lands on their phone right away.</li>
+        <li>Take the card back and put it under the register.</li>
+      </ol>
+      <h3>What to say</h3>
+      <div class="say">"Doing the VE Hunt? Scan this after your purchase."</div>
+      <h3>Good to know</h3>
+      <div class="qa">
+        <div><b>Do I need to track anything?</b>No. Each guest can only stamp once per business per hunt, and it is all on their phone.</div>
+        <div><b>Do they need to buy something?</b>Yes. The card comes out after a purchase. Who gets the card is the business's call.</div>
+        <div><b>The card is missing or damaged?</b>Email hello@vegansexplore.com. We send a new card, and the old code stops working.</div>
+        <div><b>A guest says it did not work?</b>They can tap "The cashier didn't know?" in the app. We call the owner to confirm, and their stamp still counts.</div>
+      </div>
+      <p class="foot">Keep the card out of sight so it only goes to paying guests. A new card comes with each monthly hunt. Questions: hello@vegansexplore.com</p>
+    </section>
+  </div>
+
+  <div class="page" id="p-sticker" hidden>
+    <section class="sticker" aria-label="Window sticker">
+      <div class="word">VEGANS EXPLORE</div>
+      <div class="big">We're a VE Hunt stop</div>
+      <div class="small">Buy anything, scan our card, stamp your Passport</div>
+      <div class="url">vegansexplore.com/hunt</div>
+    </section>
+  </div>
+
+  <div class="page" id="p-video" hidden>
+    <section class="script" aria-label="Staff training video script">
+      <h2>60-second staff training video: script</h2>
+      <p style="font-size:14px;color:#444;margin-bottom:14px">For a vertical (9:16) video shot at a real Hunt stop on tour day or during the VE visit. About 150 spoken words.</p>
+      <table>
+        <thead><tr><th scope="col">Time</th><th scope="col">On screen</th><th scope="col">Voice</th></tr></thead>
+        <tbody>
+          <tr><td>0:00</td><td>A guest walks up to the counter with a phone showing the Hunt map.</td><td>"This month, your business is a stop on the Vegans Explore Hunt."</td></tr>
+          <tr><td>0:06</td><td>Map on the phone, pins lighting up.</td><td>"Members visit Vegan and Vegan-friendly spots in one part of South Florida and collect a stamp at each one."</td></tr>
+          <tr><td>0:14</td><td>Guest pays at the register.</td><td>"Here's all you do. First, they buy anything, like any other guest."</td></tr>
+          <tr><td>0:20</td><td>Staff pulls the green card from under the register.</td><td>"When they mention the Hunt, grab the VE Hunt card from under the register."</td></tr>
+          <tr><td>0:27</td><td>Guest scans the QR; the stamp appears on the phone.</td><td>"They scan the QR code. The stamp lands on their phone right away."</td></tr>
+          <tr><td>0:34</td><td>Card goes back under the register.</td><td>"Take the card back and keep it out of sight. It's only for paying guests."</td></tr>
+          <tr><td>0:40</td><td>Close-up of the back of the card.</td><td>"Nothing to track. Each guest can only stamp once, and the back of the card has the whole script."</td></tr>
+          <tr><td>0:48</td><td>Staff smiling, saying the line to camera.</td><td>"Just say: Doing the VE Hunt? Scan this after your purchase."</td></tr>
+          <tr><td>0:54</td><td>VE window sticker on the door; wordmark.</td><td>"Every stamp is a real guest who found you through Vegans Explore. Thanks for being a stop."</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="err" id="err" hidden></div>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      $('pick').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-p]'); if (!b) return;
+        var p = b.getAttribute('data-p');
+        $('pick').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        ['sheet', 'sticker', 'video'].forEach(function (k) { $('p-' + k).hidden = k !== p; });
+        $('print').hidden = p === 'video';
+      });
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 150);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) {
+          ['p-sheet', 'p-sticker', 'p-video'].forEach(function (k) { $(k).hidden = true; });
+          document.querySelector('.tools').hidden = true;
+          $('err').textContent = 'This page is for Vegans Explore admins. Sign in and open it from Depot > Hunt.'; $('err').hidden = false;
+        }
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
