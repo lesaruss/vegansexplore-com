@@ -488,3 +488,30 @@ and is skipped when the routine has no Higgsfield connector. Live-tested on a th
 Note (2026-09-28): `stream_events.station` only accepted a fixed list, so the worker's final log line
 (`station = 'dispatcher'`) and the dispatch-admin "connected" line were being rejected. Migration
 `stream_events_allow_dispatcher_station` adds `dispatcher` to the list.
+
+## The Depot Inbox and Sources (2026-09-28)
+
+Sean approved the content engine plan (playbook `the-depot`): one path from idea to published
+piece. Depot > **Inbox** (`/admin/depot/inbox`) replaces News Desk and City News, and Depot >
+**Sources** (`/admin/depot/sources`) holds the feeds. `/admin/depot/news-desk`,
+`/admin/depot/news` and `/admin/news-review` redirect to the Inbox.
+
+- **One queue.** Migration `ve_depot_inbox` makes `ve_news_leads` the Inbox: new columns `origin`
+  (`feed`, `link`, `member`, `city_news`), `community_news_id`, `submitted_by_name`, `sean_note`
+  (Sean's line for the writer, or what to change on a sent-back draft), `needs_line`,
+  `decided_at`, and status `shared`. Trigger `ve_community_news_to_inbox` copies every pending
+  `ve_community_news` row (member stories from the hubs) into the Inbox; the 31 City News stories
+  that were waiting moved in. Deny and Approve close the linked City News row; Share approves it.
+- **ve-news-desk v4** (`verify_jwt=false`, unchanged): `inbox_list`, `link_add` (reads the pasted
+  page's og tags; a page behind a login or robot check, such as most Facebook posts, lands with
+  `needs_line` and cannot be approved until Sean adds one line), `lead_note`, `lead_write`
+  (Approve), `lead_deny`, `lead_share` (a link on a city hub's Local News, no write-up),
+  `ready_publish` (needs a Library cover, sets the city tag), `ready_send_back`. `feeds_list`
+  now returns sent, approved, denied and waiting per source from `ve_news_inbox_stats()`
+  (migration `ve_depot_inbox_stats`, service role only). A source is shown as weak under 10%
+  approved after 20 suggestions.
+- **Writing is the Background writer's job only.** v4 removed the paid-API drafting
+  (`ANTHROPIC_API_KEY`, `draftLead`) from Approve and from the 6-hour cron. Approved stories wait
+  at status `write` for the Dispatcher Worker; `lesaruss_dispatch_sources.news_desk_write` now
+  reads `sean_note` and revises the same draft when a lead with a `pulse_id` is sent back.
+- The Background writer box (stations and routing) moved to the bottom of the Inbox.

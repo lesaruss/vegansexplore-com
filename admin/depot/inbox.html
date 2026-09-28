@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Inbox | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:16px;}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:10px;margin-bottom:16px;max-width:980px;}
+    .stat{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:10px 14px;}
+    .stat b{display:block;font-size:22px;font-weight:900;line-height:1.1;}
+    .stat span{font-size:12px;color:var(--ve-text-75);}
+    .filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+    .filters button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:40px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;}
+    .filters button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;max-width:980px;}
+    .toolbar select,.toolbar input[type=search]{font:inherit;font-size:13.5px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;max-width:100%;}
+    .toolbar input[type=search]{flex:1;min-width:min(200px,100%);}
+    .toolbar label.check{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:700;min-height:44px;}
+    .count{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:8px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:980px;display:grid;grid-template-columns:120px 1fr;gap:14px;}
+    .card.noimg{grid-template-columns:1fr;}
+    @media (max-width:600px){.card{grid-template-columns:1fr;}}
+    .card img{width:120px;aspect-ratio:16/10;object-fit:cover;border-radius:8px;background:#e7ece7;display:block;}
+    @media (max-width:600px){.card img{width:100%;}}
+    .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:4px;}
+    .pill{display:inline-block;padding:2px 8px;border-radius:99px;background:#eef0ee;white-space:nowrap;}
+    .pill.city{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pill.vegan{background:#fff3e0;color:#7d4a00;}
+    .pill.local{background:#e8f0fe;color:#1d3f8a;}
+    .pill.search{background:#f1e8fb;color:#5b2a86;}
+    .headline{font-size:15.5px;font-weight:800;line-height:1.35;margin-bottom:4px;text-transform:none;letter-spacing:0;}
+    .headline a{color:inherit;}
+    .summary{font-size:13px;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px;}
+    .flag{font-size:12.5px;color:var(--ve-green-deep);font-weight:700;margin-bottom:8px;}
+    .notes{font-size:12.5px;background:#fffaf0;border:1px solid #f3dfb8;border-radius:8px;padding:8px 10px;margin-bottom:8px;}
+    .err{font-size:12.5px;color:#a61b1b;font-weight:700;margin-bottom:8px;}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:8px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .working{font-size:12.5px;font-weight:800;color:#7d4a00;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:20px 0;}
+    details.sources{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:14px 16px;margin:0 0 18px;max-width:980px;}
+    details.sources summary{cursor:pointer;font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.06em;min-height:32px;}
+    .tbl-wrap{overflow-x:auto;margin-top:10px;}
+    table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px;}
+    th{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);text-align:left;padding:8px;border-bottom:1px solid var(--ve-border);white-space:nowrap;}
+    td{padding:8px;border-bottom:1px solid var(--ve-border);vertical-align:top;}
+    td small{display:block;color:var(--ve-text-75);word-break:break-all;}
+    .ok{color:var(--ve-green-deep);font-weight:700;}
+    .bad{color:#a61b1b;font-weight:700;}
+    .add{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:8px;margin-top:12px;align-items:end;}
+    .add label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .add input,.add select{font:inherit;font-size:13.5px;padding:9px 10px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);}
+    .add .wide{grid-column:1/-1;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .bw{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:14px 16px;margin:0 0 16px;max-width:980px;}
+    .bw-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;}
+    .bw-state{font-size:13.5px;}
+    .bw-state b{font-weight:800;}
+    .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#c9ccc9;vertical-align:middle;}
+    .dot.on{background:var(--ve-green);}
+    .route{display:flex;gap:6px;flex-wrap:wrap;}
+    .route button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:8px 12px;min-height:40px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;}
+    .route button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .steps{margin:12px 0 0;padding-left:20px;font-size:13.5px;}
+    .steps li{margin-bottom:8px;}
+    .stn{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:10px;margin-top:10px;}
+    .stn form{border:1px solid var(--ve-border);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;}
+    .stn input{font:inherit;font-size:13px;padding:8px 10px;min-height:40px;border:1px solid rgba(0,0,0,.25);border-radius:8px;width:100%;}
+    .runs{margin-top:10px;font-size:12.5px;color:var(--ve-text-75);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .paste{background:#fff;border:2px solid var(--ve-green);border-radius:14px;padding:14px 16px;margin:0 0 16px;max-width:980px;}
+    .paste form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .paste input[type=url]{font:inherit;font-size:15px;padding:10px 12px;min-height:48px;border:1px solid rgba(0,0,0,.3);border-radius:8px;flex:1;min-width:min(260px,100%);}
+    .paste select{font:inherit;font-size:13.5px;padding:9px 11px;min-height:48px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;max-width:100%;}
+    .paste .btn{min-height:48px;}
+    .paste p{font-size:12.5px;color:var(--ve-text-75);margin-top:6px;}
+    .pill.link{background:#1f5f22;color:#fff;}
+    .pill.member{background:#F69820;color:#1a1a1a;}
+    .pill.city_news{background:#e8f0fe;color:#1d3f8a;}
+    .card.top{border:2px solid var(--ve-green);}
+    .line{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+    .line input{font:inherit;font-size:13.5px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.3);border-radius:8px;flex:1;min-width:min(220px,100%);}
+    .ask{font-size:12.5px;background:#fff3e0;border:1px solid #f3dfb8;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-weight:700;color:#5c3600;}
+    .mine{font-size:12.5px;background:var(--ve-green-light);border-radius:8px;padding:8px 10px;margin-bottom:8px;}
+    .card select.city{font:inherit;font-size:12px;font-weight:700;padding:6px 30px 6px 8px;min-height:36px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;}
+    .btn-deny{background:#fff;color:#8a1c12;border:1px solid #8a1c12;}
+    .btn-link{background:none;border:0;color:#1d3f8a;text-decoration:underline;padding:9px 6px;min-height:42px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;}
+    .ready-cover{width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#e7ece7;display:block;margin-bottom:8px;}
+    .nocover{font-size:12.5px;color:#8a1c12;font-weight:700;margin-bottom:8px;}
+
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Inbox</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every story idea in one place: links you paste, stories members send from their hub, and what our <a href="/admin/depot/sources">Sources</a> flag. <b>Approve</b> and it is written up as a Pulse draft; <b>Deny</b> and it is gone. Finished drafts come back under <b>Ready</b> for you to publish or send back. Nothing goes live without your tap.</p>
+    <div id="ib-gate" class="gate" hidden></div>
+    <div id="ib-app" hidden>
+      <section class="paste" aria-labelledby="paste-h">
+        <h2 id="paste-h" style="margin-bottom:8px">Paste a link</h2>
+        <form id="paste">
+          <input type="url" id="p-url" required placeholder="Paste any link: a Facebook post, Eventbrite, any website" aria-label="Link to a story" autocomplete="off">
+          <select id="p-city" aria-label="City"><option value="">City: work it out</option></select>
+          <button type="submit" class="btn">Add to Inbox</button>
+        </form>
+        <p id="p-msg" role="status">The Depot reads the page and works out the story. If a page cannot be read, the card asks you for one line.</p>
+      </section>
+
+      <div class="filters" id="lanes" role="group" aria-label="Show">
+        <button type="button" data-l="decide" aria-pressed="true">To decide <span data-c="decide"></span></button>
+        <button type="button" data-l="ready" aria-pressed="false">Ready <span data-c="ready"></span></button>
+        <button type="button" data-l="writing" aria-pressed="false">Being written <span data-c="writing"></span></button>
+        <button type="button" data-l="done" aria-pressed="false">Done <span data-c="done"></span></button>
+      </div>
+      <div class="toolbar">
+        <select id="city" aria-label="City"><option value="">Every city</option></select>
+        <select id="from" aria-label="Where it came from"><option value="">From anywhere</option><option value="link">Your links</option><option value="member">Members</option><option value="city_news">City News</option><option value="feed">Sources</option></select>
+        <input type="search" id="q" placeholder="Search headlines" aria-label="Search headlines">
+      </div>
+      <p class="count" id="count"></p>
+      <div id="cards"><p class="empty">Loading...</p></div>
+      <p><button type="button" class="btn btn-ghost" id="more" hidden>Show more</button></p>
+
+      <details class="bw" id="bw-wrap"><summary style="cursor:pointer;font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.06em;min-height:32px">Background writer: <span id="bw-short">checking</span></summary><section id="bw" aria-labelledby="bw-h">
+        <div class="bw-head">
+          <div class="bw-state"><h2 id="bw-h" style="display:inline;margin-right:8px">Background writer</h2><span id="bw-state">Checking...</span></div>
+          <div class="route" id="route" role="group" aria-label="Which station writes">
+            <button type="button" data-st="station-1" aria-pressed="false">Station 1 writes</button>
+            <button type="button" data-st="station-2" aria-pressed="false">Station 2 writes</button>
+          </div>
+        </div>
+        <p class="sub" style="margin:6px 0 0">Every 15 minutes, stories you approved are written on your Claude subscription by the station you pick. If that station is out of usage, the other one takes over.</p>
+        <details id="bw-setup">
+          <summary style="cursor:pointer;font-weight:800;min-height:32px;margin-top:8px">Connect a station (one time, about 2 minutes)</summary>
+          <ol class="steps">
+            <li>On the station's computer, open <a href="https://claude.ai/code/routines" target="_blank" rel="noopener">claude.ai/code/routines</a> and start a new routine. Name it <b>Dispatcher Worker</b>.</li>
+            <li>For its instructions, tap <button type="button" class="btn btn-ghost" id="bw-copy" style="min-height:34px;padding:6px 12px">Copy the instructions</button> and paste. Turn on the Supabase connector. Do not add a schedule.</li>
+            <li>Save it, open it again, choose <b>Edit</b>, then add a trigger of type <b>API</b> and <b>Generate token</b>. Copy the link and the token it shows (the token is shown only once).</li>
+            <li>Paste both below for that station and tap Connect.</li>
+          </ol>
+          <div class="stn">
+            <form data-st="station-1"><b>Station 1 (SAR-station)</b><input name="url" placeholder="https://api.anthropic.com/v1/claude_code/routines/.../fire" autocomplete="off" aria-label="Station 1 trigger link"><input name="tok" type="password" placeholder="Token" autocomplete="off" aria-label="Station 1 token"><button type="submit" class="btn">Connect Station 1</button><span class="msg" role="status"></span></form>
+            <form data-st="station-2"><b>Station 2 (V-station)</b><input name="url" placeholder="https://api.anthropic.com/v1/claude_code/routines/.../fire" autocomplete="off" aria-label="Station 2 trigger link"><input name="tok" type="password" placeholder="Token" autocomplete="off" aria-label="Station 2 token"><button type="submit" class="btn">Connect Station 2</button><span class="msg" role="status"></span></form>
+          </div>
+        </details>
+        <div class="runs" id="bw-runs"></div>
+      </section></details>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-news-desk';
+      var $ = function (id) { return document.getElementById(id); };
+      var HUBS = [], data = { decide: [], writing: [], ready: [], done: [], counts: {} }, lane = 'decide', shown = 30, poll = null;
+      var FROM = { link: 'Your link', member: 'Member', city_news: 'City News' };
+      var KIND = { vegan: 'Vegan outlet', local: 'Local outlet', search: 'Google News' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function hub(slug) { var h = HUBS.filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : 'No city'; }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function safe(u) { return /^https?:\/\//i.test(String(u || '')) ? u : ''; }
+      function find(id) { var all = data.decide.concat(data.writing, data.ready, data.done); return all.filter(function (x) { return x.id === id; })[0]; }
+      function cityPick(l) {
+        return '<select class="city" data-city aria-label="City for this story"><option value="">No city</option>' + HUBS.map(function (h) { return '<option value="' + h.slug + '"' + (l.city_slug === h.slug ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('') + '</select>';
+      }
+      function from(l) {
+        if (l.origin !== 'feed') return '<span class="pill ' + l.origin + '">' + FROM[l.origin] + '</span>';
+        var scope = (l.ve_news_feeds || {}).scope;
+        return scope ? '<span class="pill ' + scope + '">' + esc(KIND[scope]) + '</span>' : '';
+      }
+      function head(l, img) {
+        var u = safe(l.url);
+        return (img ? '<img src="' + esc(img) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var c=this.parentNode;this.remove();c.classList.add(\'noimg\')">' : '') +
+          '<div><div class="meta"><span class="pill city">' + esc(hub(l.city_slug)) + '</span>' + from(l) +
+          '<span>' + esc(l.origin === 'member' ? (l.submitted_by_name || 'A member') : (l.source_name || '')) + '</span><span>' + esc(day(l.published_at || l.created_at)) + '</span></div>' +
+          '<h2 class="headline">' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(l.title) + '</a>' : esc(l.title)) + '</h2>';
+      }
+      function cardDecide(l, i) {
+        var img = safe(l.image_url);
+        return '<article class="card' + (img ? '' : ' noimg') + (i === 0 ? ' top' : '') + '" data-id="' + esc(l.id) + '">' + head(l, img) +
+          (l.summary ? '<p class="summary">' + esc(l.summary) + '</p>' : '') +
+          '<p class="flag">Why it is here: ' + esc(l.reason || '') + '</p>' +
+          (l.needs_line ? '<p class="ask">The page could not be read. Tell the writer the story in one line.</p>' : '') +
+          (l.sean_note ? '<p class="mine"><b>Your line:</b> ' + esc(l.sean_note) + '</p>' : '') +
+          '<div class="line"' + (l.needs_line || l.origin === 'link' ? '' : ' hidden') + ' data-linebox><input type="text" maxlength="400" data-line placeholder="One line about the story (optional unless asked)" aria-label="One line about the story" value="' + esc(l.sean_note || '') + '"></div>' +
+          '<div class="actions"><button type="button" class="btn" data-approve>Approve</button><button type="button" class="btn btn-deny" data-deny>Deny</button>' + cityPick(l) +
+          (safe(l.url) ? '<button type="button" class="btn-link" data-share>Share to the hub as a link</button>' : '') +
+          (l.needs_line || l.origin === 'link' ? '' : '<button type="button" class="btn-link" data-addline>Add a line</button>') +
+          '</div></div></article>';
+      }
+      function cardReady(l) {
+        var p = l.ve_pulse_content || {}, cover = safe(p.thumbnail_url);
+        return '<article class="card noimg" data-id="' + esc(l.id) + '"><div>' +
+          '<div class="meta"><span class="pill city">' + esc(hub(p.city_slug || l.city_slug)) + '</span><span>Draft ' + esc(day(l.drafted_at)) + '</span><span>From: ' + esc(l.source_name || '') + '</span></div>' +
+          (cover ? '<img class="ready-cover" src="' + esc(cover) + '" alt="Cover picture for this draft" loading="lazy">' : '<p class="nocover">No cover yet. Open the draft to pick one from the Library before publishing.</p>') +
+          '<h2 class="headline">' + esc(p.title || l.title) + '</h2>' +
+          (p.summary ? '<p class="summary">' + esc(p.summary) + '</p>' : '') +
+          (l.notes ? '<p class="notes"><b>Check before publishing:</b> ' + esc(l.notes) + '</p>' : '') +
+          '<div class="line" data-backbox hidden><input type="text" maxlength="600" data-back placeholder="What should change?" aria-label="What should change in this draft"><button type="button" class="btn" data-sendback>Send back</button></div>' +
+          '<div class="actions"><button type="button" class="btn" data-publish' + (cover ? '' : ' disabled') + '>Publish</button><button type="button" class="btn btn-ghost" data-backopen>Send back</button>' +
+          '<a class="btn btn-ghost" href="/admin/depot/pulse?edit=' + esc(l.pulse_id) + '">Open the draft</a>' +
+          (safe(l.url) ? '<a class="btn-link" href="' + esc(safe(l.url)) + '" target="_blank" rel="noopener noreferrer">Original story</a>' : '') +
+          '</div></div></article>';
+      }
+      function cardWriting(l) {
+        return '<article class="card noimg" data-id="' + esc(l.id) + '">' + head(l, '') +
+          (l.sean_note ? '<p class="mine"><b>Your note:</b> ' + esc(l.sean_note) + '</p>' : '') +
+          (l.draft_error ? '<p class="err">The writer left a note: ' + esc(l.draft_error) + '</p>' : '<p class="working">Being written by the Background writer. It checks every 15 minutes.</p>') +
+          '<div class="actions">' + (l.draft_error ? '<button type="button" class="btn btn-deny" data-deny>Deny</button>' : '') + '</div></div></article>';
+      }
+      function cardDone(l) {
+        var p = l.ve_pulse_content || {}, what = { published: 'Published on the Pulse', shared: 'Shared to the ' + hub(l.city_slug) + ' hub as a link', dismissed: 'Denied' }[l.status] || l.status;
+        return '<article class="card noimg" data-id="' + esc(l.id) + '">' + head(l, '') +
+          '<p class="flag">' + esc(what) + (l.decided_at ? ', ' + esc(day(l.decided_at)) : '') + '</p><div class="actions">' +
+          (l.status === 'published' && p.slug ? '<a class="btn btn-ghost" href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">View on the Pulse</a>' : '') +
+          (l.status === 'dismissed' ? '<button type="button" class="btn btn-ghost" data-restore>Put back</button>' : '') +
+          '</div></div></article>';
+      }
+      function list() {
+        var arr = data[lane] || [], f = $('from').value, q = $('q').value.trim().toLowerCase();
+        return arr.filter(function (l) { return (!f || l.origin === f) && (!q || String(l.title || '').toLowerCase().indexOf(q) >= 0); });
+      }
+      function render() {
+        var c = data.counts || {};
+        document.querySelectorAll('[data-c]').forEach(function (s) { var n = c[s.getAttribute('data-c')]; s.textContent = n ? '(' + n + ')' : ''; });
+        var arr = list(), fn = { decide: cardDecide, ready: cardReady, writing: cardWriting, done: cardDone }[lane];
+        $('count').textContent = arr.length ? arr.length + ' stor' + (arr.length === 1 ? 'y' : 'ies') + (arr.length > shown ? ', showing ' + shown : '') : '';
+        var empty = { decide: 'Nothing to decide. Paste a link above, or wait for the next pull (every 6 hours).', ready: 'No drafts waiting. Approved stories show up here once they are written.', writing: 'Nothing being written right now.', done: 'Nothing here yet.' }[lane];
+        $('cards').innerHTML = arr.length ? arr.slice(0, shown).map(fn).join('') : '<p class="empty">' + empty + '</p>';
+        $('more').hidden = arr.length <= shown;
+        clearTimeout(poll); if (data.writing.length) poll = setTimeout(load, 60000);
+      }
+      function load() {
+        return api({ action: 'inbox_list', city: $('city').value }).then(function (d) {
+          if (!d.decide) throw new Error(d.error);
+          data = d;
+          if (!HUBS.length && d.hubs) { HUBS = d.hubs; fillCities(); }
+          render();
+        }).catch(function () { $('cards').innerHTML = '<p class="empty">Did not load. Refresh to try again.</p>'; });
+      }
+      function fillCities() {
+        var opts = HUBS.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
+        $('city').insertAdjacentHTML('beforeend', opts); $('p-city').insertAdjacentHTML('beforeend', opts);
+      }
+      // Take a decided card off the list; the next one moves up.
+      function drop(id, to) {
+        ['decide', 'writing', 'ready', 'done'].forEach(function (k) { data[k] = data[k].filter(function (x) { return x.id !== id; }); });
+        if (to) { data[to.lane].unshift(to.lead); }
+        api({ action: 'inbox_list', city: $('city').value }).then(function (d) { if (d.counts) { data.counts = d.counts; render(); } });
+        render();
+      }
+
+      $('paste').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var btn = this.querySelector('button'); btn.disabled = true; $('p-msg').textContent = 'Reading the page...';
+        api({ action: 'link_add', url: $('p-url').value.trim(), city_slug: $('p-city').value }).then(function (d) {
+          btn.disabled = false;
+          if (!d.ok) { $('p-msg').textContent = d.error === 'bad_url' ? 'That does not look like a web link. Paste the whole address, starting with https://' : 'That did not save. Try again.'; return; }
+          $('p-url').value = '';
+          $('p-msg').textContent = d.already ? 'That link is already in the Inbox (' + ({ new: 'waiting for you', write: 'being written', drafting: 'being written', drafted: 'ready', published: 'published', shared: 'shared', dismissed: 'denied' }[d.lead.status] || d.lead.status) + ').' :
+            d.readable ? 'Added to the top of the Inbox: ' + d.lead.title : 'Added. We could not read the page (' + d.why + '), so the card asks you for one line.';
+          if (!d.already) { lane = 'decide'; syncLanes(); load(); }
+        }).catch(function () { btn.disabled = false; $('p-msg').textContent = 'Could not connect. Try again.'; });
+      });
+
+      function syncLanes() { $('lanes').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-l') === lane)); }); }
+      $('lanes').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-l]'); if (!b) return;
+        lane = b.getAttribute('data-l'); shown = 30; syncLanes(); render();
+      });
+      $('city').addEventListener('change', function () { shown = 30; load(); });
+      $('from').addEventListener('change', function () { shown = 30; render(); });
+      var qT; $('q').addEventListener('input', function () { clearTimeout(qT); qT = setTimeout(render, 200); });
+      $('more').onclick = function () { shown += 30; render(); };
+
+      function busy(el, on) { el.querySelectorAll('button').forEach(function (x) { x.disabled = on; }); }
+      function fail(el, msg) { busy(el, false); var p = el.querySelector('.actions'); var m = el.querySelector('.msg') || document.createElement('span'); m.className = 'msg'; m.setAttribute('role', 'status'); m.style.color = '#8a1c12'; m.textContent = msg; p.appendChild(m); }
+      $('cards').addEventListener('change', function (e) {
+        if (!e.target.hasAttribute('data-city')) return;
+        var el = e.target.closest('.card'), id = el.getAttribute('data-id'), l = find(id);
+        api({ action: 'lead_update', id: id, city_slug: e.target.value }).then(function (d) { if (d.ok) l.city_slug = d.lead.city_slug; else fail(el, 'That did not save.'); });
+      });
+      $('cards').addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b || b.hasAttribute('data-city')) return;
+        var el = b.closest('.card'); if (!el) return;
+        var id = el.getAttribute('data-id'), l = find(id), line = el.querySelector('[data-line]');
+        if (b.hasAttribute('data-addline')) { el.querySelector('[data-linebox]').hidden = false; line.focus(); b.remove(); return; }
+        if (b.hasAttribute('data-backopen')) { el.querySelector('[data-backbox]').hidden = false; el.querySelector('[data-back]').focus(); return; }
+        if (b.hasAttribute('data-approve')) {
+          var note = line ? line.value.trim() : '';
+          if (l.needs_line && !note) { el.querySelector('[data-linebox]').hidden = false; line.focus(); fail(el, 'Add one line first: the writer cannot read that page.'); return; }
+          busy(el, true);
+          api(Object.assign({ action: 'lead_write', id: id }, note && note !== (l.sean_note || '') ? { note: note } : {})).then(function (d) {
+            if (!d.ok) return fail(el, d.error === 'needs_line' ? 'Add one line first: the writer cannot read that page.' : 'That did not save. Try again.');
+            drop(id, { lane: 'writing', lead: d.lead });
+          }, function () { fail(el, 'Could not connect. Try again.'); });
+          return;
+        }
+        if (b.hasAttribute('data-deny')) {
+          busy(el, true);
+          api({ action: 'lead_deny', id: id }).then(function (d) { if (!d.ok) return fail(el, 'That did not save. Try again.'); drop(id, { lane: 'done', lead: d.lead }); }, function () { fail(el, 'Could not connect. Try again.'); });
+          return;
+        }
+        if (b.hasAttribute('data-share')) {
+          var city = el.querySelector('[data-city]').value;
+          if (!city) { fail(el, 'Pick the city hub first.'); el.querySelector('[data-city]').focus(); return; }
+          if (!confirm('Share this link on the ' + hub(city) + ' hub, without writing it up?')) return;
+          busy(el, true);
+          api({ action: 'lead_share', id: id, city_slug: city }).then(function (d) { if (!d.ok) return fail(el, 'That did not save. Try again.'); drop(id, { lane: 'done', lead: d.lead }); }, function () { fail(el, 'Could not connect. Try again.'); });
+          return;
+        }
+        if (b.hasAttribute('data-publish')) {
+          if (!confirm('Publish this to the Pulse now?')) return;
+          busy(el, true);
+          api({ action: 'ready_publish', id: id }).then(function (d) {
+            if (!d.ok) return fail(el, d.error === 'needs_cover' ? 'Pick a cover from the Library first (Open the draft).' : 'That did not publish. Try again.');
+            drop(id, { lane: 'done', lead: d.lead });
+          }, function () { fail(el, 'Could not connect. Try again.'); });
+          return;
+        }
+        if (b.hasAttribute('data-sendback')) {
+          var why = el.querySelector('[data-back]').value.trim();
+          if (!why) { fail(el, 'Say what should change.'); return; }
+          busy(el, true);
+          api({ action: 'ready_send_back', id: id, note: why }).then(function (d) { if (!d.ok) return fail(el, 'That did not save. Try again.'); drop(id, { lane: 'writing', lead: d.lead }); }, function () { fail(el, 'Could not connect. Try again.'); });
+          return;
+        }
+        if (b.hasAttribute('data-restore')) {
+          busy(el, true);
+          api({ action: 'lead_update', id: id, status: 'new' }).then(function (d) { if (!d.ok) return fail(el, 'That did not save.'); drop(id, { lane: 'decide', lead: d.lead }); }, function () { fail(el, 'Could not connect. Try again.'); });
+        }
+      });
+
+      // ---- background writer (lesaruss-dispatch-admin) ----
+      var BW = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/lesaruss-dispatch-admin', bwPrompt = '';
+      function bw(body) { return fetch(BW, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      var SNAME = { 'station-1': 'Station 1', 'station-2': 'Station 2' };
+      function loadBw() {
+        return bw({ action: 'status' }).then(function (d) {
+          if (!d.ok) { $('bw-state').textContent = 'Could not load.'; return; }
+          bwPrompt = d.routine_prompt || '';
+          var st = d.stations || {}, any = st['station-1'] || st['station-2'];
+          $('bw-state').innerHTML = ['station-1', 'station-2'].map(function (k) { return '<span style="margin-right:12px"><span class="dot' + (st[k] ? ' on' : '') + '"></span>' + SNAME[k] + (st[k] ? ' connected' : ' not connected') + '</span>'; }).join('') +
+            (any ? '' : '<b>Not writing yet: connect a station below.</b>');
+          $('bw-short').textContent = any ? (SNAME[d.route] || 'a station') + ' writes' : 'not connected';
+          $('route').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-st') === d.route)); });
+          if (!any) { $('bw-setup').open = true; $('bw-wrap').open = true; }
+          var runs = d.runs || [];
+          $('bw-runs').innerHTML = runs.length ? 'Recent runs: ' + runs.slice(0, 4).map(function (r) {
+            return esc(day(r.fired_at)) + ' ' + esc(new Date(r.fired_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })) + ' on ' + esc(SNAME[r.station] || 'a station') + ': ' + esc({ fired: 'starting', running: 'writing', done: 'done', failed: 'did not finish', fire_failed: 'could not start' }[r.status] || r.status) +
+              (r.session_url ? ' (<a href="' + esc(r.session_url) + '" target="_blank" rel="noopener">open</a>)' : '');
+          }).join(' &middot; ') : '';
+        });
+      }
+      $('route').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-st]'); if (!b) return;
+        bw({ action: 'route', station: b.getAttribute('data-st') }).then(function (d) { if (d.ok) loadBw(); else alert('That did not save.'); });
+      });
+      $('bw-copy').onclick = function () {
+        var btn = this;
+        (navigator.clipboard ? navigator.clipboard.writeText(bwPrompt) : Promise.reject()).then(function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy the instructions'; }, 2000); },
+          function () { prompt('Copy these instructions:', bwPrompt); });
+      };
+      document.querySelectorAll('.stn form').forEach(function (f) {
+        f.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var msg = f.querySelector('.msg'); msg.textContent = 'Connecting...';
+          bw({ action: 'save_station', station: f.getAttribute('data-st'), fire_url: f.url.value.trim(), token: f.tok.value.trim() }).then(function (d) {
+            if (!d.ok) { msg.textContent = { bad_url: 'That link should start with https://api.anthropic.com/v1/claude_code/routines/ and end in /fire.', bad_token: 'Paste the whole token.' }[d.error] || 'That did not save.'; return; }
+            f.reset(); msg.textContent = 'Connected. Checking for stories to write now...';
+            bw({ action: 'run_now' }).then(function (r) { msg.textContent = r.tick && r.tick.fired ? 'Connected. Writing has started.' : 'Connected.'; loadBw(); });
+          });
+        });
+      });
+
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('ib-gate').hidden = false; $('ib-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('ib-app').hidden = false;
+        if (/[?&]lane=ready/.test(location.search)) { lane = 'ready'; syncLanes(); }
+        load(); loadBw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

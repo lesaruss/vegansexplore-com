@@ -9,21 +9,33 @@
 //                  Vegan food or living (vegan, plant-based, meatless, dairy-free, ...).
 //   scope 'search' a Google News search for one hub (search_query, with intitle: so the headline is
 //                  about Vegan food). The same search, run month by month, is how the desk looks back to June.
-// Flagged stories land in ve_news_leads with the reason they were flagged. Marking one "write it
-// up" drafts an original Pulse article with Claude (it reads the source with web fetch), saved as
-// a draft in ve_pulse_content for Sean to finish in Depot > Pulse and publish.
+// Flagged stories land in ve_news_leads with the reason they were flagged.
 //
-// Cron (x-cron-secret):  POST ?cron=ingest   pull every active feed; retry drafts that failed
+// The Depot Inbox (Sean, 2026-09-28, content engine plan): ve_news_leads is the one queue for every
+// story idea. origin says where it came from: 'feed' (the sources above), 'link' (Sean pasted a
+// link), 'member' (a member sent it from a hub) or 'city_news' (a City News story that was waiting).
+// Member and City News stories arrive through the ve_community_news_to_inbox trigger and keep a
+// community_news_id, so Deny and Share close that row too. Approve marks a story 'write'; the
+// Background writer (lesaruss_dispatch_sources.news_desk_write, a Claude routine on Sean's
+// subscription) writes it as a Pulse draft. Drafts come back to the Ready lane: Publish, or Send back
+// with a note (the writer then revises the same draft). Nothing a routine writes goes live without
+// Sean's Publish tap.
+//
+// Cron (x-cron-secret):  POST ?cron=ingest   pull every active feed
 //                        POST ?cron=backfill { feed_id, month }   one month of one Google News search
 // Superadmin (Authorization: Bearer <ve_token>), POST { action, ... }:
-//   leads_list { status?, city?, scope?, q?, headline_only? }   lead_update { id, status?, notes? }
-//   lead_write { id }            mark and start drafting (runs in the background; poll leads_list)
-//   feeds_list                   feed_save { id?, feed_name, scope, city_slug?, feed_url?, search_query?, locale?, is_active? }
-//   feed_delete { id }           feed_pull { id }             backfill { feed_id, month: 'YYYY-MM' }
+//   inbox_list { city? }         the Inbox: decide, being written, ready, done, plus counts
+//   link_add { url, city_slug?, note? }   paste any link: the page is read for its title, summary and picture
+//   lead_note { id, note }       Sean's line for the writer (also what a page that could not be read needs)
+//   lead_update { id, status?, notes?, city_slug? }   lead_write { id, note? }  (Approve)
+//   lead_deny { id }             lead_share { id, city_slug? }  share to a city hub as a link, no write-up
+//   ready_publish { id }         publish the lead's draft (needs a Library cover)
+//   ready_send_back { id, note } back to the writer with what to change
+//   leads_list { status?, city?, scope?, q?, headline_only? }
+//   feeds_list (with sent, approved, denied, untouched per source)
+//   feed_save { id?, feed_name, scope, city_slug?, feed_url?, search_query?, locale?, is_active? }
+//   feed_active { id, is_active }   feed_delete { id }   feed_pull { id }   backfill { feed_id, month: 'YYYY-MM' }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
-import Anthropic from 'npm:@anthropic-ai/sdk';
-
-declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -49,7 +61,7 @@ const HUB_RES = HUBS.map((h) => ({ ...h, re: h.terms.map((t) => new RegExp('(?<!
 const hubName = (slug: string | null) => HUBS.find((h) => h.slug === slug)?.name || 'National';
 const VEGAN_RE = /\b(vegan(?:s|ism)?|plant[- ]based|meat[- ]?free|meatless|dairy[- ]free|animal[- ]free|vegetarian)\b/gi;
 const CATEGORIES = ['Community', 'Community Spotlight', 'Business Spotlight', 'Food & Dining', 'Recipes', 'Health & Nutrition', 'Animal Rights', 'Policy & Advocacy', 'Culture & Media', 'Sustainability & Environment'];
-const LEAD_STATUSES = ['new', 'write', 'drafting', 'drafted', 'dismissed', 'published'];
+const LEAD_STATUSES = ['new', 'write', 'drafting', 'drafted', 'dismissed', 'published', 'shared'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -217,91 +229,52 @@ async function pullFeed(feed: any, month?: string): Promise<{ found: number; fla
   return { found, flagged, added, status };
 }
 
-// ---------- drafting ----------
-const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const paragraphs = (t: string) => t.replace(/\r\n?/g, '\n').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
-  .map((p) => '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>').join('\n');
+// ---------- text ----------
 const plain = (v: unknown, n: number) => String(v || '').replace(/[<>]/g, '').replace(/\s*[—–]\s*/g, ', ').trim().slice(0, n);
-const slugify = (t: string) => t.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'piece';
+const COVER_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/library/`;
 
-const WRITER = `You write for the Pulse, the news section of Vegans Explore, a membership platform and directory for Vegans in city hubs (South Florida, Central Florida, New York, Philadelphia, Los Angeles, Atlanta, the DMV and London).
-Write an original short article for our readers based on the source story you are given. Rules:
-- Read the source first with web fetch. If the link will not open (Google News links often redirect), use web search to find the original story, then fetch it.
-- Use only facts you read in the source or confirm with a search. Never invent names, dates, prices, addresses or quotes. If something is unclear, leave it out and list it in "notes".
-- Write it fresh in your own words, in a warm, direct voice for Vegans living in or visiting that city. Do not copy sentences from the source. Short quotes are fine only if attributed.
-- Lead with why it matters to a Vegan in that city: where, when, what to order or do. Close by pointing readers to find Vegan spots nearby in the Vegans Explore Directory.
-- Credit the source in the last paragraph in plain words, for example: "First reported by VegNews." Include the source link in that paragraph.
-- Always capitalize Vegan and Vegans. Never use em dashes or en dashes. No emoji, no hashtags, no markdown, no headings. Plain paragraphs separated by a blank line.
-- Length: 250 to 450 words.
-When you are done, reply with only a JSON object, no other text:
-{"title": "headline, under 90 characters", "summary": "one or two sentences for the card, under 220 characters", "category": one of ${JSON.stringify(CATEGORIES)}, "body": "the article, paragraphs separated by \\n\\n", "notes": "what to double check before publishing, or empty"}`;
-
-async function draftLead(id: string, memberId: string | null): Promise<void> {
-  const { data: lead } = await db.from('ve_news_leads').select('*').eq('id', id).maybeSingle();
-  if (!lead || !['write', 'drafting'].includes(lead.status)) return;
-  await db.from('ve_news_leads').update({ status: 'drafting', draft_error: null }).eq('id', id);
-  try {
-    const apiKey = await secret('ANTHROPIC_API_KEY');
-    if (!apiKey) throw new Error('no_anthropic_key');
-    const client = new Anthropic({ apiKey });
-    const ask = `Source story to write up for the ${hubName(lead.city_slug)} hub:
-Headline: ${lead.title}
-Outlet: ${lead.source_name || 'unknown'}
-Link: ${lead.url}
-Published: ${lead.published_at ? String(lead.published_at).slice(0, 10) : 'unknown'}
-${lead.summary ? 'Feed summary: ' + lead.summary + '\n' : ''}Why we flagged it: ${lead.reason}`;
-    const messages: any[] = [{ role: 'user', content: ask }];
-    let final: any = null;
-    for (let turn = 0; turn < 6; turn++) {
-      const res: any = await client.beta.messages.create({
-        model: 'claude-opus-5',
-        max_tokens: 16000,
-        betas: ['server-side-fallback-2026-07-01'],
-        fallbacks: 'default',
-        thinking: { type: 'adaptive' },
-        output_config: { effort: 'medium' },
-        system: WRITER,
-        tools: [
-          { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 4 },
-          { type: 'web_search_20260209', name: 'web_search', max_uses: 4 },
-        ],
-        messages,
-      } as any);
-      if (res.stop_reason === 'pause_turn') { messages.push({ role: 'assistant', content: res.content }); continue; }
-      final = res; break;
-    }
-    if (!final) throw new Error('draft_did_not_finish');
-    if (final.stop_reason === 'refusal') throw new Error('model_declined');
-    const text = (final.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('\n');
-    const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('no_json_in_reply');
-    const out = JSON.parse(m[0]);
-    const title = plain(out.title, 160), summary = plain(out.summary, 400);
-    const body = String(out.body || '').replace(/\s*[—–]\s*/g, ', ').trim().slice(0, 20000);
-    if (!title || !summary || body.length < 200) throw new Error('draft_too_thin');
-    const category = CATEGORIES.includes(out.category) ? out.category : 'Community';
-
-    const base = slugify(title);
-    const { data: taken } = await db.from('ve_pulse_content').select('slug').like('slug', base + '%');
-    const used = new Set((taken || []).map((r: any) => r.slug));
-    let slug = base; for (let n = 2; used.has(slug); n++) slug = `${base}-${n}`;
-    const now = new Date().toISOString();
-    const { data: piece, error } = await db.from('ve_pulse_content').insert({
-      content_type: 'article', status: 'draft', origin: 'depot', brand_slug: 'vegans-explore', slug,
-      source_url: `https://vegansexplore.com/pulse/${slug}`, title, summary, category, body: paragraphs(body),
-      city_slug: lead.city_slug, author: 'Vegans Explore', created_at: now, updated_at: now, created_by: memberId,
-    }).select('id, slug').single();
-    if (error) throw new Error('save_failed: ' + error.message);
-    const notes = plain(out.notes, 1500);
-    await db.from('ve_news_leads').update({ status: 'drafted', pulse_id: piece.id, drafted_at: now, draft_error: null, notes: notes || lead.notes }).eq('id', id);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error('ve-news-desk draft failed', id, msg);
-    await db.from('ve_news_leads').update({ status: 'write', draft_error: msg.slice(0, 300) }).eq('id', id);
+// ---------- reading a pasted link ----------
+function meta(html: string, keys: string[]): string | null {
+  for (const k of keys) {
+    const re1 = new RegExp(`<meta[^>]+(?:property|name)=["']${k}["'][^>]*content=["']([^"']*)["']`, 'i');
+    const re2 = new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]*(?:property|name)=["']${k}["']`, 'i');
+    const m = html.match(re1) || html.match(re2);
+    if (m && m[1].trim()) return decode(m[1]);
   }
+  return null;
+}
+// Pages that answer with a login wall or a robot check instead of the story.
+const WALL_RE = /(log ?in|sign ?in|sign up|create an account|join facebook|are you a robot|captcha|access denied|just a moment|attention required)/i;
+async function readPage(link: string): Promise<{ readable: boolean; title: string | null; summary: string | null; image: string | null; site: string | null; published: string | null; why: string | null }> {
+  const out = { readable: false, title: null as string | null, summary: null as string | null, image: null as string | null, site: null as string | null, published: null as string | null, why: null as string | null };
+  try {
+    const res = await fetch(link, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36', Accept: 'text/html,application/xhtml+xml' }, signal: AbortSignal.timeout(12000) });
+    if (!res.ok) { out.why = `the page answered ${res.status}`; return out; }
+    if (!/html/i.test(res.headers.get('content-type') || '')) { out.why = 'the link is not a web page'; return out; }
+    const html = (await res.text()).slice(0, 600000);
+    const docTitle = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1];
+    out.title = meta(html, ['og:title', 'twitter:title']) || (docTitle ? decode(docTitle) : null);
+    out.summary = meta(html, ['og:description', 'twitter:description', 'description']);
+    const img = meta(html, ['og:image', 'og:image:url', 'twitter:image']);
+    out.image = img && /^https:\/\//i.test(img) ? img : null;
+    out.site = meta(html, ['og:site_name']);
+    const pub = meta(html, ['article:published_time', 'og:published_time', 'datePublished', 'pubdate']);
+    const d = pub ? new Date(pub) : null;
+    out.published = d && !isNaN(d.getTime()) ? d.toISOString() : null;
+    if (out.title) out.title = stripHtml(out.title).slice(0, 300);
+    if (out.summary) out.summary = stripHtml(out.summary).slice(0, 500);
+    const host = new URL(res.url || link).hostname.replace(/^www\./, '');
+    if (!out.title || out.title.length < 6) out.why = 'the page has no headline we can read';
+    else if (/(^|\.)(facebook|instagram|fb)\.com$/i.test(host) && (!out.summary || WALL_RE.test(out.title))) out.why = 'Facebook shows this post only to people who are logged in';
+    else if (WALL_RE.test(out.title) && !out.summary) out.why = 'the page shows a login or robot check instead of the story';
+    out.readable = !out.why;
+  } catch (e) {
+    out.why = e instanceof Error && /timed? ?out|abort/i.test(e.message) ? 'the page took too long to answer' : 'the page would not open';
+  }
+  return out;
 }
 
-const LEAD_COLS = 'id, feed_id, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(slug, status), ve_news_feeds(scope, feed_name)';
+const LEAD_COLS = 'id, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug), ve_news_feeds(scope, feed_name)';
 const FEED_COLS = 'id, city_slug, feed_name, feed_url, scope, search_query, locale, is_active, last_fetched_at, last_status, last_count, notes, created_at';
 
 Deno.serve(async (req) => {
@@ -315,11 +288,8 @@ Deno.serve(async (req) => {
     const { data: feeds } = await db.from('ve_news_feeds').select(FEED_COLS).eq('is_active', true);
     const results: unknown[] = [];
     for (const f of feeds || []) results.push({ feed: f.feed_name, ...(await pullFeed(f)) });
-    // Drafts stuck or failed: put back in line and try one more.
-    await db.from('ve_news_leads').update({ status: 'write' }).eq('status', 'drafting').lt('marked_at', new Date(Date.now() - 20 * 60000).toISOString());
-    const { data: retry } = await db.from('ve_news_leads').select('id').eq('status', 'write').lt('marked_at', new Date(Date.now() - 10 * 60000).toISOString()).order('marked_at').limit(2);
-    for (const r of retry || []) EdgeRuntime.waitUntil(draftLead(r.id, null));
-    return json({ ok: true, results, retried: (retry || []).length });
+    // Writing is the Background writer's job (lesaruss_dispatch_tick), not this function's.
+    return json({ ok: true, results });
   }
 
   let body: any = {};
@@ -369,27 +339,164 @@ Deno.serve(async (req) => {
       patch.status = body.status;
     }
     if (body.notes !== undefined) patch.notes = plain(body.notes, 1500) || null;
+    if (body.city_slug !== undefined) {
+      if (body.city_slug && !HUB_SLUGS.includes(body.city_slug)) return json({ error: 'bad_city' }, 400);
+      patch.city_slug = body.city_slug || null;
+    }
+    if (body.status === 'new') patch.decided_at = null;
     const { data, error } = await db.from('ve_news_leads').update(patch).eq('id', body.id).select(LEAD_COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, lead: data });
   }
 
+  // Approve: the story goes to the Background writer, which picks up every 'write' lead.
   if (body.action === 'lead_write') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-    const { data, error } = await db.from('ve_news_leads').update({ status: 'write', marked_at: new Date().toISOString(), draft_error: null })
+    const now = new Date().toISOString();
+    const patch: Record<string, unknown> = { status: 'write', marked_at: now, decided_at: now, draft_error: null };
+    if (body.note !== undefined) { patch.sean_note = plain(body.note, 1500) || null; if (patch.sean_note) patch.needs_line = false; }
+    // A page we could not read needs Sean's one line before the writer can do anything with it.
+    const { data: cur } = await db.from('ve_news_leads').select('needs_line, sean_note').eq('id', body.id).maybeSingle();
+    if (cur?.needs_line && !cur.sean_note && !patch.sean_note) return json({ error: 'needs_line' }, 409);
+    const { data, error } = await db.from('ve_news_leads').update(patch)
       .eq('id', body.id).in('status', ['new', 'write', 'dismissed']).select(LEAD_COLS).single();
     if (error || !data) return json({ error: 'not_available' }, 409);
-    EdgeRuntime.waitUntil(draftLead(body.id, memberId));
-    return json({ ok: true, lead: { ...data, status: 'drafting' } });
+    if (data.community_news_id) await db.from('ve_community_news').update({ status: 'rejected', reviewed_by: 'the-depot', reviewed_at: now, rejection_reason: 'Approved in the Depot Inbox to be written up as a Pulse piece' }).eq('id', data.community_news_id).eq('status', 'pending');
+    return json({ ok: true, lead: data });
+  }
+
+  if (body.action === 'inbox_list') {
+    const city = HUB_SLUGS.includes(body.city) ? body.city : null;
+    const pick = (statuses: string[], order: string, limit: number) => {
+      let q = db.from('ve_news_leads').select(LEAD_COLS).in('status', statuses);
+      if (city) q = q.eq('city_slug', city);
+      return q.order(order, { ascending: false, nullsFirst: false }).limit(limit);
+    };
+    const [dec, wri, rdy, done, stats] = await Promise.all([
+      pick(['new'], 'published_at', 600), pick(['write', 'drafting'], 'marked_at', 200), pick(['drafted'], 'drafted_at', 200),
+      pick(['published', 'shared', 'dismissed'], 'decided_at', 60),
+      db.rpc('ve_news_inbox_stats'),
+    ]);
+    const err = dec.error || wri.error || rdy.error || done.error || stats.error;
+    if (err) return json({ error: 'list_failed', message: err.message }, 500);
+    // Sean's own links and member stories first, then the newest feed stories.
+    const rank: Record<string, number> = { link: 0, member: 1, city_news: 2, feed: 3 };
+    const decide = (dec.data || []).sort((a: any, b: any) => (rank[a.origin] - rank[b.origin]) || String(b.published_at || b.created_at).localeCompare(String(a.published_at || a.created_at)));
+    const counts = stats.data?.counts || {};
+    return json({ decide, writing: wri.data || [], ready: rdy.data || [], done: done.data || [], counts, hubs: HUBS.map(({ slug, name }) => ({ slug, name })) });
+  }
+
+  if (body.action === 'link_add') {
+    let u: URL;
+    try { u = new URL(String(body.url || '').trim()); } catch { return json({ error: 'bad_url' }, 400); }
+    if (!/^https?:$/.test(u.protocol) || /^(localhost|.*\.local|\d+\.\d+\.\d+\.\d+|\[.*\])$/i.test(u.hostname) || !u.hostname.includes('.')) return json({ error: 'bad_url' }, 400);
+    u.hash = '';
+    const link = u.href;
+    const { data: dups } = await db.from('ve_news_leads').select(LEAD_COLS).eq('url', link).limit(1);
+    if (dups && dups.length) return json({ ok: true, already: true, lead: dups[0] });
+    const city = body.city_slug && HUB_SLUGS.includes(body.city_slug) ? body.city_slug : null;
+    const note = plain(body.note, 1500) || null;
+    const page = await readPage(link);
+    const host = u.hostname.replace(/^www\./, '');
+    const title = page.readable ? page.title! : (page.title && page.title.length >= 6 && !WALL_RE.test(page.title) ? page.title : `Link from ${host}`);
+    const guess = city || cityHits(title + ' ' + (page.summary || ''))[0]?.slug || null;
+    const row = {
+      origin: 'link', source_name: page.site || host, title: title.slice(0, 300), title_key: titleKey(title + ' ' + link).slice(0, 200), url: link,
+      summary: page.readable ? page.summary : null, image_url: page.readable ? page.image : null, published_at: page.published || new Date().toISOString(),
+      city_slug: guess, status: 'new', sean_note: note, needs_line: !page.readable && !note,
+      reason: page.readable ? 'You pasted this link' : `You pasted this link. We could not read the page (${page.why}), so the writer needs one line from you about the story`,
+      matched_terms: [], headline_match: false,
+    };
+    const { data, error } = await db.from('ve_news_leads').insert(row).select(LEAD_COLS).single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, lead: data, readable: page.readable, why: page.why });
+  }
+
+  if (body.action === 'lead_note') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const note = plain(body.note, 1500) || null;
+    const patch: Record<string, unknown> = { sean_note: note };
+    if (note) patch.needs_line = false;
+    const { data, error } = await db.from('ve_news_leads').update(patch).eq('id', body.id).select(LEAD_COLS).single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, lead: data });
+  }
+
+  if (body.action === 'lead_deny') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const now = new Date().toISOString();
+    const { data, error } = await db.from('ve_news_leads').update({ status: 'dismissed', decided_at: now }).eq('id', body.id).in('status', ['new', 'write']).select(LEAD_COLS).single();
+    if (error || !data) return json({ error: 'not_available' }, 409);
+    if (data.community_news_id) await db.from('ve_community_news').update({ status: 'rejected', reviewed_by: 'the-depot', reviewed_at: now, rejection_reason: 'Denied in the Depot Inbox' }).eq('id', data.community_news_id).eq('status', 'pending');
+    return json({ ok: true, lead: data });
+  }
+
+  // Share to a city hub as a link, without writing it up: the story shows in that hub's Local News
+  // (public/hub-news.js reads approved ve_community_news rows).
+  if (body.action === 'lead_share') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data: lead } = await db.from('ve_news_leads').select(LEAD_COLS).eq('id', body.id).maybeSingle();
+    if (!lead || !['new', 'dismissed'].includes(lead.status)) return json({ error: 'not_available' }, 409);
+    const city = body.city_slug && HUB_SLUGS.includes(body.city_slug) ? body.city_slug : lead.city_slug;
+    if (!city) return json({ error: 'city_required' }, 400);
+    if (!/^https?:\/\//i.test(lead.url || '')) return json({ error: 'no_link' }, 400);
+    const now = new Date().toISOString();
+    let cnId = lead.community_news_id;
+    if (cnId) {
+      const { error } = await db.from('ve_community_news').update({ status: 'approved', city_slug: city, reviewed_by: 'the-depot', reviewed_at: now, published_at: now }).eq('id', cnId);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    } else {
+      const { data: cn, error } = await db.from('ve_community_news').insert({
+        city_slug: city, headline: plain(lead.title, 200), summary: lead.summary ? plain(lead.summary, 500) : null, url: lead.url, image_url: /^https:\/\//i.test(lead.image_url || '') ? lead.image_url : null,
+        source_type: 'manual', source_name: lead.source_name, status: 'approved', reviewed_by: 'the-depot', reviewed_at: now, published_at: now,
+      }).select('id').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      cnId = cn.id;
+    }
+    const { data, error } = await db.from('ve_news_leads').update({ status: 'shared', city_slug: city, decided_at: now, community_news_id: cnId }).eq('id', body.id).select(LEAD_COLS).single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, lead: data });
+  }
+
+  // Ready lane: publish the draft the writer made. Same rules as Depot > Pulse (ve-media-library):
+  // a cover from our own Library, published_at stamped, and the piece's city tag so it shows on that hub.
+  if (body.action === 'ready_publish') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data: lead } = await db.from('ve_news_leads').select('id, status, pulse_id').eq('id', body.id).maybeSingle();
+    if (!lead?.pulse_id || lead.status !== 'drafted') return json({ error: 'not_available' }, 409);
+    const { data: piece } = await db.from('ve_pulse_content').select('id, status, thumbnail_url, city_slug, published_at, slug').eq('id', lead.pulse_id).eq('origin', 'depot').maybeSingle();
+    if (!piece) return json({ error: 'not_found' }, 404);
+    if (!piece.thumbnail_url || !String(piece.thumbnail_url).startsWith(COVER_PREFIX)) return json({ error: 'needs_cover' }, 409);
+    const now = new Date().toISOString();
+    const { error } = await db.from('ve_pulse_content').update({ status: 'published', published_at: piece.published_at || now, updated_at: now }).eq('id', piece.id);
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    if (piece.city_slug && HUB_SLUGS.includes(piece.city_slug)) await db.from('ve_pulse_city_tags').upsert({ pulse_id: piece.id, city_slug: piece.city_slug }, { onConflict: 'pulse_id,city_slug', ignoreDuplicates: true });
+    const { data, error: e2 } = await db.from('ve_news_leads').update({ status: 'published', decided_at: now }).eq('id', body.id).select(LEAD_COLS).single();
+    if (e2) return json({ error: 'save_failed', message: e2.message }, 500);
+    return json({ ok: true, lead: data, slug: piece.slug });
+  }
+
+  // Send back: the writer revises the same draft, following Sean's note.
+  if (body.action === 'ready_send_back') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const note = plain(body.note, 1500);
+    if (!note) return json({ error: 'note_required' }, 400);
+    const { data, error } = await db.from('ve_news_leads').update({ status: 'write', sean_note: note, marked_at: new Date().toISOString(), draft_error: null })
+      .eq('id', body.id).eq('status', 'drafted').select(LEAD_COLS).single();
+    if (error || !data) return json({ error: 'not_available' }, 409);
+    return json({ ok: true, lead: data });
   }
 
   if (body.action === 'feeds_list') {
     const { data, error } = await db.from('ve_news_feeds').select(FEED_COLS).order('scope').order('city_slug', { nullsFirst: true }).order('feed_name');
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
-    const { data: leads } = await db.from('ve_news_leads').select('feed_id');
-    const per: Record<string, number> = {};
-    for (const l of leads || []) if (l.feed_id) per[l.feed_id] = (per[l.feed_id] || 0) + 1;
-    return json({ feeds: (data || []).map((f: any) => ({ ...f, leads: per[f.id] || 0 })), hubs: HUBS.map(({ slug, name }) => ({ slug, name })), look_back_from: LOOK_BACK_FROM });
+    // Sent, approved (any yes), denied and untouched per source, counted in SQL (ve_news_inbox_stats).
+    const { data: stats } = await db.rpc('ve_news_inbox_stats');
+    const blank = { sent: 0, approved: 0, denied: 0, untouched: 0 };
+    const per: Record<string, typeof blank> = {};
+    for (const t of stats?.by_source || []) per[t.key] = { sent: t.sent, approved: t.approved, denied: t.denied, untouched: t.untouched };
+    const other = { link: per.link || blank, member: per.member || blank, city_news: per.city_news || blank };
+    return json({ feeds: (data || []).map((f: any) => ({ ...f, ...(per[f.id] || blank), leads: (per[f.id] || blank).sent })), other, hubs: HUBS.map(({ slug, name }) => ({ slug, name })), look_back_from: LOOK_BACK_FROM });
   }
 
   if (body.action === 'feed_save') {

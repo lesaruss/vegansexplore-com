@@ -62,8 +62,9 @@ each hides them when embedded (`.ve-embedded .ve-nav, .ve-embedded
 .ve-footer{display:none}`). The old standalone `/admin/news-review`,
 `/admin/pulse-city-tags`, `/admin/opportunity-applications` and
 `/admin/partner-applications` pages were retired on 2026-09-27 and redirect
-to Depot > City News, Depot > Pulse Cities, `/dashboard/applications` and
-`/dashboard/partners`.
+to Depot > Inbox, Depot > Pulse Cities, `/dashboard/applications` and
+`/dashboard/partners`. Depot > News Desk and Depot > City News were merged into
+Depot > Inbox and Depot > Sources on 2026-09-28; their old URLs redirect to the Inbox.
 
 ### Why this rule exists
 

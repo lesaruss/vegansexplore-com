@@ -1,15 +1,16 @@
 /* The Depot's tab bar (Sean, 2026-09-27): one place for a brand's media, with its
  * features as tabs. Put <div id="depot-tabs"></div> where the tabs go and load this.
  * A new Depot feature is one more entry in TABS.
+ * Inbox and Sources (Sean, 2026-09-28, content engine plan) replaced News Desk and City News.
  */
 (function () {
   var TABS = [
+    { href: '/admin/depot/inbox', label: 'Inbox' },
     { href: '/admin/depot', label: 'Library' },
     { href: '/admin/depot/onboarding', label: 'Onboarding' },
     { href: '/admin/depot/pulse', label: 'Pulse' },
-    { href: '/admin/depot/news-desk', label: 'News Desk' },
+    { href: '/admin/depot/sources', label: 'Sources' },
     { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },
-    { href: '/admin/depot/news', label: 'City News' },
     { href: '/admin/depot/logos', label: 'Logos' },
     { href: '/admin/depot/claims', label: 'Claims' },
     { href: '/admin/depot/verified', label: 'Passport Partners' },
