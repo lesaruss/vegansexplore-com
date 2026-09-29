@@ -538,3 +538,14 @@ default `vegans-explore`, foreign key to `brands.slug`, indexed) to `ve_media_li
 Every existing row is Vegans Explore; the default keeps the live pages and functions writing
 correctly with no code change. Next: the main Depot in HQ (lesaruss-hq) reads these tables across
 brands, and each brand's Depot is the same Depot with the brand filter fixed.
+
+## One Depot engine, step 2: the main Depot in HQ (2026-09-29)
+
+`ve-news-desk` v5 serves HQ's Depot (`hq.lesaruss.ai/depot`, repo lesaruss-hq,
+`app/(shell)/depot`) as well as this site's. HQ's server calls it with the header
+`x-lesaruss-admin: <LESARUSS_ADMIN_TOKEN>` (checked against `lesaruss_secrets`), and sends
+`brand` to work one brand or nothing to see every brand. This site's pages send no brand and
+get Vegans Explore, exactly as before. `inbox_list` also returns `by_brand` (stories waiting per
+brand); `link_add` and `feed_save` save under the brand given; sharing to a city hub is
+Vegans Explore only. `ve_news_inbox_stats(p_brand)` counts one brand or all. The Background
+writer now saves each draft under its story's brand.

@@ -21,6 +21,12 @@
 // with a note (the writer then revises the same draft). Nothing a routine writes goes live without
 // Sean's Publish tap.
 //
+// One engine for every brand (Sean, 2026-09-29): every lead and feed carries brand_slug. The main
+// Depot in HQ (lesaruss-hq /depot) calls this same function from its server with the header
+// x-lesaruss-admin: <LESARUSS_ADMIN_TOKEN>, and passes brand (a brands.slug) to see one brand, or
+// no brand to see all of them. A brand site's own Depot passes its brand. New links and feeds are
+// saved under the brand given (default vegans-explore). Sharing to a city hub is Vegans Explore only.
+//
 // Cron (x-cron-secret):  POST ?cron=ingest   pull every active feed
 //                        POST ?cron=backfill { feed_id, month }   one month of one Google News search
 // Superadmin (Authorization: Bearer <ve_token>), POST { action, ... }:
@@ -274,8 +280,8 @@ async function readPage(link: string): Promise<{ readable: boolean; title: strin
   return out;
 }
 
-const LEAD_COLS = 'id, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug), ve_news_feeds(scope, feed_name)';
-const FEED_COLS = 'id, city_slug, feed_name, feed_url, scope, search_query, locale, is_active, last_fetched_at, last_status, last_count, notes, created_at';
+const LEAD_COLS = 'id, brand_slug, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug), ve_news_feeds(scope, feed_name)';
+const FEED_COLS = 'id, brand_slug, city_slug, feed_name, feed_url, scope, search_query, locale, is_active, last_fetched_at, last_status, last_count, notes, created_at';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -307,15 +313,34 @@ Deno.serve(async (req) => {
     return json({ ok: true, feed: feed.feed_name, month, ...(await pullFeed(feed, month)) });
   }
 
-  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const memberId = token ? await verifyToken(token) : null;
-  if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, is_superadmin').eq('id', memberId).maybeSingle();
-  if (!member?.is_superadmin) return json({ error: 'no_access' }, 403);
+  // Staff: a Vegans Explore superadmin token, or HQ's server calling with the admin key.
+  const adminKey = req.headers.get('x-lesaruss-admin');
+  let hq = false;
+  if (adminKey) {
+    const want = await secret('LESARUSS_ADMIN_TOKEN');
+    if (!want || adminKey !== want) return json({ error: 'not_authenticated' }, 401);
+    hq = true;
+  } else {
+    const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+    const memberId = token ? await verifyToken(token) : null;
+    if (!memberId) return json({ error: 'not_authenticated' }, 401);
+    const { data: member } = await db.from('members').select('id, is_superadmin').eq('id', memberId).maybeSingle();
+    if (!member?.is_superadmin) return json({ error: 'no_access' }, 403);
+  }
   const isId = (v: unknown) => /^[0-9a-f-]{36}$/.test(String(v || ''));
+  // brand: one brand's Depot, or (from HQ only) every brand when left out. A brand site without a
+  // brand is Vegans Explore, as it always was.
+  let brand: string | null = null;
+  if (body.brand) {
+    const { data: b } = await db.from('brands').select('slug').eq('slug', String(body.brand)).maybeSingle();
+    if (!b) return json({ error: 'bad_brand' }, 400);
+    brand = b.slug;
+  } else if (!hq) brand = 'vegans-explore';
+  const saveBrand = brand || 'vegans-explore';
 
   if (body.action === 'leads_list') {
     let q = db.from('ve_news_leads').select(LEAD_COLS);
+    if (brand) q = q.eq('brand_slug', brand);
     if (body.status === 'writing') q = q.in('status', ['write', 'drafting']);
     else if (LEAD_STATUSES.includes(body.status)) q = q.eq('status', body.status);
     if (HUB_SLUGS.includes(body.city)) q = q.eq('city_slug', body.city);
@@ -325,7 +350,9 @@ Deno.serve(async (req) => {
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     let leads = data || [];
     if (['vegan', 'local', 'search'].includes(body.scope)) leads = leads.filter((l: any) => l.ve_news_feeds?.scope === body.scope);
-    const { data: all } = await db.from('ve_news_leads').select('status');
+    let allQ = db.from('ve_news_leads').select('status');
+    if (brand) allQ = allQ.eq('brand_slug', brand);
+    const { data: all } = await allQ;
     const counts: Record<string, number> = {};
     for (const r of all || []) counts[r.status] = (counts[r.status] || 0) + 1;
     return json({ leads, counts, hubs: HUBS.map(({ slug, name }) => ({ slug, name })) });
@@ -369,13 +396,14 @@ Deno.serve(async (req) => {
     const city = HUB_SLUGS.includes(body.city) ? body.city : null;
     const pick = (statuses: string[], order: string, limit: number) => {
       let q = db.from('ve_news_leads').select(LEAD_COLS).in('status', statuses);
+      if (brand) q = q.eq('brand_slug', brand);
       if (city) q = q.eq('city_slug', city);
       return q.order(order, { ascending: false, nullsFirst: false }).limit(limit);
     };
     const [dec, wri, rdy, done, stats] = await Promise.all([
       pick(['new'], 'published_at', 600), pick(['write', 'drafting'], 'marked_at', 200), pick(['drafted'], 'drafted_at', 200),
       pick(['published', 'shared', 'dismissed'], 'decided_at', 60),
-      db.rpc('ve_news_inbox_stats'),
+      db.rpc('ve_news_inbox_stats', { p_brand: brand }),
     ]);
     const err = dec.error || wri.error || rdy.error || done.error || stats.error;
     if (err) return json({ error: 'list_failed', message: err.message }, 500);
@@ -383,7 +411,7 @@ Deno.serve(async (req) => {
     const rank: Record<string, number> = { link: 0, member: 1, city_news: 2, feed: 3 };
     const decide = (dec.data || []).sort((a: any, b: any) => (rank[a.origin] - rank[b.origin]) || String(b.published_at || b.created_at).localeCompare(String(a.published_at || a.created_at)));
     const counts = stats.data?.counts || {};
-    return json({ decide, writing: wri.data || [], ready: rdy.data || [], done: done.data || [], counts, hubs: HUBS.map(({ slug, name }) => ({ slug, name })) });
+    return json({ brand, by_brand: stats.data?.by_brand || {}, decide, writing: wri.data || [], ready: rdy.data || [], done: done.data || [], counts, hubs: HUBS.map(({ slug, name }) => ({ slug, name })) });
   }
 
   if (body.action === 'link_add') {
@@ -392,16 +420,16 @@ Deno.serve(async (req) => {
     if (!/^https?:$/.test(u.protocol) || /^(localhost|.*\.local|\d+\.\d+\.\d+\.\d+|\[.*\])$/i.test(u.hostname) || !u.hostname.includes('.')) return json({ error: 'bad_url' }, 400);
     u.hash = '';
     const link = u.href;
-    const { data: dups } = await db.from('ve_news_leads').select(LEAD_COLS).eq('url', link).limit(1);
+    const { data: dups } = await db.from('ve_news_leads').select(LEAD_COLS).eq('url', link).eq('brand_slug', saveBrand).limit(1);
     if (dups && dups.length) return json({ ok: true, already: true, lead: dups[0] });
     const city = body.city_slug && HUB_SLUGS.includes(body.city_slug) ? body.city_slug : null;
     const note = plain(body.note, 1500) || null;
     const page = await readPage(link);
     const host = u.hostname.replace(/^www\./, '');
     const title = page.readable ? page.title! : (page.title && page.title.length >= 6 && !WALL_RE.test(page.title) ? page.title : `Link from ${host}`);
-    const guess = city || cityHits(title + ' ' + (page.summary || ''))[0]?.slug || null;
+    const guess = city || (saveBrand === 'vegans-explore' ? cityHits(title + ' ' + (page.summary || ''))[0]?.slug : null) || null;
     const row = {
-      origin: 'link', source_name: page.site || host, title: title.slice(0, 300), title_key: titleKey(title + ' ' + link).slice(0, 200), url: link,
+      origin: 'link', brand_slug: saveBrand, source_name: page.site || host, title: title.slice(0, 300), title_key: titleKey(title + ' ' + link).slice(0, 200), url: link,
       summary: page.readable ? page.summary : null, image_url: page.readable ? page.image : null, published_at: page.published || new Date().toISOString(),
       city_slug: guess, status: 'new', sean_note: note, needs_line: !page.readable && !note,
       reason: page.readable ? 'You pasted this link' : `You pasted this link. We could not read the page (${page.why}), so the writer needs one line from you about the story`,
@@ -437,6 +465,8 @@ Deno.serve(async (req) => {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
     const { data: lead } = await db.from('ve_news_leads').select(LEAD_COLS).eq('id', body.id).maybeSingle();
     if (!lead || !['new', 'dismissed'].includes(lead.status)) return json({ error: 'not_available' }, 409);
+    // City hubs are Vegans Explore's.
+    if (lead.brand_slug !== 'vegans-explore') return json({ error: 'hubs_are_vegans_explore' }, 400);
     const city = body.city_slug && HUB_SLUGS.includes(body.city_slug) ? body.city_slug : lead.city_slug;
     if (!city) return json({ error: 'city_required' }, 400);
     if (!/^https?:\/\//i.test(lead.url || '')) return json({ error: 'no_link' }, 400);
@@ -488,10 +518,12 @@ Deno.serve(async (req) => {
   }
 
   if (body.action === 'feeds_list') {
-    const { data, error } = await db.from('ve_news_feeds').select(FEED_COLS).order('scope').order('city_slug', { nullsFirst: true }).order('feed_name');
+    let fq = db.from('ve_news_feeds').select(FEED_COLS);
+    if (brand) fq = fq.eq('brand_slug', brand);
+    const { data, error } = await fq.order('scope').order('city_slug', { nullsFirst: true }).order('feed_name');
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     // Sent, approved (any yes), denied and untouched per source, counted in SQL (ve_news_inbox_stats).
-    const { data: stats } = await db.rpc('ve_news_inbox_stats');
+    const { data: stats } = await db.rpc('ve_news_inbox_stats', { p_brand: brand });
     const blank = { sent: 0, approved: 0, denied: 0, untouched: 0 };
     const per: Record<string, typeof blank> = {};
     for (const t of stats?.by_source || []) per[t.key] = { sent: t.sent, approved: t.approved, denied: t.denied, untouched: t.untouched };
@@ -503,10 +535,11 @@ Deno.serve(async (req) => {
     const scope = String(body.scope || '');
     if (!['vegan', 'local', 'search'].includes(scope)) return json({ error: 'bad_scope' }, 400);
     const city = body.city_slug ? String(body.city_slug) : null;
-    if (scope !== 'vegan' && !HUB_SLUGS.includes(city || '')) return json({ error: 'city_required' }, 400);
+    // City hubs are Vegans Explore's; another brand's feed has no city.
+    if (saveBrand === 'vegans-explore' && scope !== 'vegan' && !HUB_SLUGS.includes(city || '')) return json({ error: 'city_required' }, 400);
     const name = plain(body.feed_name, 80);
     if (!name) return json({ error: 'name_required' }, 400);
-    const row: Record<string, unknown> = { feed_name: name, scope, city_slug: scope === 'vegan' ? null : city, locale: body.locale === 'GB' ? 'GB' : 'US' };
+    const row: Record<string, unknown> = { brand_slug: saveBrand, feed_name: name, scope, city_slug: scope === 'vegan' || saveBrand !== 'vegans-explore' ? null : city, locale: body.locale === 'GB' ? 'GB' : 'US' };
     if (scope === 'search') {
       const q = String(body.search_query || '').trim().slice(0, 300);
       if (!q) return json({ error: 'query_required' }, 400);
