@@ -21,11 +21,13 @@
   ];
   // Sean, 2026-09-29: a drop-down to the right of the page title instead of a row of tabs,
   // so the pages feel less busy. The current page is the selected option.
-  var CSS = '.depot-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:18px;}' +
-    '.depot-head h1{margin-bottom:0 !important;}' +
-    '.depot-go{display:flex;align-items:center;gap:8px;}' +
-    '.depot-go span{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(26,26,26,0.8);}' +
-    '.depot-go select{font:inherit;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;min-height:44px;padding:8px 40px 8px 14px;border:1.5px solid #1f5f22;border-radius:99px;background-color:#fff;cursor:pointer;max-width:100%;' +
+  // Sean, 2026-09-29: the drop-down sits on the far right, "Go to" on one line. Its styles are
+  // !important where a page styles every select (Pulse sets select{width:100%}).
+  var CSS = '.depot-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin-bottom:18px;}' +
+    '.depot-head h1{margin-bottom:0 !important;min-width:0;}' +
+    '.depot-go{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-left:auto;}' +
+    '.depot-go span{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(26,26,26,0.8);white-space:nowrap;}' +
+    '.depot-go select{width:auto !important;flex:0 0 auto;font:inherit;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;min-height:44px;padding:8px 40px 8px 14px;border:1.5px solid #1f5f22;border-radius:99px;background-color:#fff;cursor:pointer;max-width:100%;' +
     '-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%231f5f22\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:12px 8px;}' +
     '.depot-go select:hover{background-color:#EAF7EA;}';
   function mount() {
@@ -48,4 +50,43 @@
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+
+  // Inside the dashboard (Sean, 2026-09-29: the Pulse page "gets cut off" at The piece): the
+  // dashboard shows a Depot page in a fixed-height frame inside its own scrolling panel, two
+  // scrolls stacked, so a tall page looked cut off at the frame's edge. The page now tells the
+  // dashboard its height and the frame grows to fit, one scroll. The dashboard in turn says which
+  // part of the frame is on screen, so a pop-up (dialog) opens where Sean is looking, and a
+  // jump to the top (window.scrollTo) scrolls the dashboard instead of the frame.
+  var embedded = false;
+  try { embedded = window.self !== window.top && window.parent.location.origin === location.origin; } catch (e) {}
+  if (embedded) {
+    var root = document.documentElement, lastH = 0;
+    root.classList.add('ve-autosize');
+    var st2 = document.createElement('style');
+    st2.textContent = '.ve-autosize dialog[open]{position:absolute;inset:auto 0 auto 0;margin:0 auto;top:calc(var(--ve-view-top,0px) + 24px);max-height:calc(var(--ve-view-h,100vh) - 48px) !important;overflow:auto;}';
+    document.head.appendChild(st2);
+    var send = function () {
+      var h = Math.ceil(Math.max(document.body ? document.body.scrollHeight : 0, root.scrollHeight));
+      // Ignore the frame's own height echoing back, so the sizes never climb.
+      if (Math.abs(h - lastH) < 2) return;
+      lastH = h; window.parent.postMessage({ type: 've-frame-height', h: h }, location.origin);
+    };
+    var watch = function () {
+      send();
+      if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+      window.addEventListener('load', send);
+    };
+    if (document.body) watch(); else document.addEventListener('DOMContentLoaded', watch);
+    window.addEventListener('message', function (e) {
+      if (e.origin !== location.origin || !e.data || e.data.type !== 've-frame-view') return;
+      root.style.setProperty('--ve-view-top', Math.max(0, Math.round(e.data.top)) + 'px');
+      root.style.setProperty('--ve-view-h', Math.max(200, Math.round(e.data.height)) + 'px');
+    });
+    var ownScroll = window.scrollTo.bind(window);
+    window.scrollTo = function (a, b) {
+      var top = a && typeof a === 'object' ? a.top : b;
+      if (typeof top !== 'number') return ownScroll(a, b);
+      window.parent.postMessage({ type: 've-frame-scroll', top: top, smooth: !!(a && a.behavior === 'smooth') }, location.origin);
+    };
+  }
 })();

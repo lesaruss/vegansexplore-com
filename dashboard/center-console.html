@@ -3282,6 +3282,37 @@
     try { window.scrollTo(0, 0); } catch (e) {}
   }
   window.openConsoleFrame = openConsoleFrame;
+  // A page inside the frame can size it (the Depot pages do, /public/depot-tabs.js), so a tall
+  // page scrolls with the dashboard instead of inside a fixed-height box (Sean, 2026-09-29).
+  // The page is told which part of it is on screen, so its pop-ups open in view.
+  function consoleFrameFor(src) {
+    var f = document.querySelector('#dash-console-host iframe');
+    return f && f.contentWindow === src ? f : null;
+  }
+  function consoleScroller() {
+    var m = document.querySelector('.console-frame main');
+    return m && m.scrollHeight > m.clientHeight + 1 && getComputedStyle(m).overflowY !== 'visible' ? m : null;
+  }
+  function tellFrameView() {
+    var f = document.querySelector('#dash-console-host iframe.ve-sized'); if (!f || !f.contentWindow) return;
+    var r = f.getBoundingClientRect(), m = consoleScroller(), vt = 0, vb = window.innerHeight;
+    if (m) { var mr = m.getBoundingClientRect(); vt = Math.max(0, mr.top); vb = Math.min(vb, mr.bottom); }
+    try { f.contentWindow.postMessage({ type: 've-frame-view', top: Math.max(0, vt - r.top), height: Math.max(0, Math.min(vb, r.bottom) - Math.max(vt, r.top)) }, location.origin); } catch (e) {}
+  }
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data) return;
+    var f = consoleFrameFor(e.source); if (!f) return;
+    if (e.data.type === 've-frame-height') {
+      var h = Math.max(440, Math.min(40000, Math.round(+e.data.h || 0)));
+      f.classList.add('ve-sized'); f.style.height = h + 'px'; f.setAttribute('scrolling', 'no');
+      tellFrameView();
+    } else if (e.data.type === 've-frame-scroll') {
+      var m = consoleScroller(), r = f.getBoundingClientRect(), y = r.top + (+e.data.top || 0) - (m ? m.getBoundingClientRect().top : 0) - 12;
+      (m || window).scrollBy({ top: y, behavior: e.data.smooth ? 'smooth' : 'auto' });
+    }
+  });
+  window.addEventListener('scroll', tellFrameView, true);
+  window.addEventListener('resize', tellFrameView);
   function closeConsoleFrame() {
     var content = document.getElementById('dash-content');
     var detail = document.getElementById('dash-console-detail');
