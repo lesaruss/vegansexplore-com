@@ -37,6 +37,7 @@
 //   lead_deny { id }             lead_share { id, city_slug? }  share to a city hub as a link, no write-up
 //   ready_publish { id }         publish the lead's draft (needs a Library cover)
 //   ready_send_back { id, note } back to the writer with what to change
+//   pulse_preview { pulse_id }   a one-hour link to the piece on its real article page, draft or not
 //   leads_list { status?, city?, scope?, q?, headline_only? }
 //   feeds_list (with sent, approved, denied, untouched per source)
 //   feed_save { id?, feed_name, scope, city_slug?, feed_url?, search_query?, locale?, is_active? }
@@ -515,6 +516,17 @@ Deno.serve(async (req) => {
       .eq('id', body.id).eq('status', 'drafted').select(LEAD_COLS).single();
     if (error || !data) return json({ error: 'not_available' }, 409);
     return json({ ok: true, lead: data });
+  }
+
+  // Preview (Sean, 2026-09-29): a one-hour link that shows a piece, draft or not, on the real
+  // article page (api/pulse-article.js reads public.ve_pulse_preview(token)). Both Depots use it.
+  if (body.action === 'pulse_preview') {
+    if (!isId(body.pulse_id)) return json({ error: 'bad_id' }, 400);
+    const { data: piece } = await db.from('ve_pulse_content').select('id, slug, brand_slug').eq('id', body.pulse_id).maybeSingle();
+    if (!piece?.slug || (brand && piece.brand_slug && piece.brand_slug !== brand)) return json({ error: 'not_found' }, 404);
+    const { data, error } = await db.from('ve_pulse_previews').insert({ pulse_id: piece.id }).select('token').single();
+    if (error || !data) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true, url: `https://vegansexplore.com/pulse/${encodeURIComponent(piece.slug)}?preview=${data.token}` });
   }
 
   if (body.action === 'feeds_list') {

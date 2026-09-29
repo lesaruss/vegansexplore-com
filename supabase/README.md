@@ -549,3 +549,27 @@ get Vegans Explore, exactly as before. `inbox_list` also returns `by_brand` (sto
 brand); `link_add` and `feed_save` save under the brand given; sharing to a city hub is
 Vegans Explore only. `ve_news_inbox_stats(p_brand)` counts one brand or all. The Background
 writer now saves each draft under its story's brand.
+
+### Depot Preview (Sean, 2026-09-29)
+
+"A preview button so I can see a mockup of how the actual article would look in a lightbox."
+Preview shows a piece, draft or not, on its real article page, inside a lightbox with a
+Desktop / Phone toggle. It is on the Inbox Ready lane and every Pulse tab row, here and in
+HQ's Depot (hq.lesaruss.ai/depot).
+
+- `ve_pulse_previews` (migration `ve_pulse_previews`): one row per preview link, token uuid,
+  one-hour expiry. `ve_pulse_preview(p_token)` (security definer, granted to anon) returns the
+  piece for a live token.
+- `api/pulse-article.js`: `/pulse/<slug>?preview=<token>` renders the piece with an orange
+  "Preview: not published yet" bar, `noindex`, and `Cache-Control: private, no-store`. A wrong,
+  expired or other piece's token is a 404.
+- **ve-news-desk v6** (`verify_jwt=false`, unchanged): `pulse_preview { pulse_id }` makes the
+  link and returns `url`. HQ's Depot makes its link from its own server (actions.ts).
+- `public/depot-preview.js`: the lightbox. Any button with `data-preview="<pulse id>"` opens it.
+  It uses a native dialog, so inside the dashboard frame depot-tabs.js places it on screen.
+- HQ shows vegansexplore.com in a frame, so HQ's CSP `frame-src` lists it (lesaruss-hq
+  next.config.ts; error_registry HQ-CSP-FRAME-SRC).
+
+Same day: Inbox, Sources and Pulse Cities dropped their 900 to 1100px caps on cards, stats and
+toolbars, so every Depot tab is full width. Only the intro line under each title keeps a
+reading width.

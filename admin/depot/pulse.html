@@ -143,6 +143,7 @@
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-media-upload.js"></script>
   <script src="/public/depot-tabs.js"></script>
+  <script src="/public/depot-preview.js"></script>
   <script>
     (function () {
       var $ = function (id) { return document.getElementById(id); };
@@ -246,6 +247,7 @@
           return '<div class="row"><img src="' + esc(p.thumbnail_url || '') + '" alt=""><div class="info"><b>' + esc(p.title) + '</b><small><span class="tag ' + (live ? 'live">Live' : draft ? 'draft">Draft' : 'down">Taken down') + '</span>' +
             esc(TYPE[p.content_type] || p.content_type) + ' &middot; ' + esc(p.city_slug ? CITY[p.city_slug] || p.city_slug : 'National') + ' &middot; ' + esc(draft ? 'Drafted ' + fmtDate(p.updated_at) : fmtDate(p.published_at)) + '</small></div>' +
             '<div class="btns">' + (live ? '<a class="btn btn-ghost" href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">View</a>' : '') +
+            '<button type="button" class="btn btn-ghost" data-preview="' + esc(p.id) + '" data-preview-title="' + esc(p.title) + '">Preview</button>' +
             '<button type="button" class="btn btn-ghost" data-edit="' + i + '">Edit</button>' +
             '<button type="button" class="btn btn-ghost" data-status="' + i + '">' + (live ? 'Take down' : draft ? 'Publish' : 'Put back up') + '</button></div></div>';
         }).join('') : '<p class="empty-list">Nothing published from the Depot yet. Your first piece will show here.</p>';
