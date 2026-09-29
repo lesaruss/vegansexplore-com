@@ -573,3 +573,29 @@ HQ's Depot (hq.lesaruss.ai/depot).
 Same day: Inbox, Sources and Pulse Cities dropped their 900 to 1100px caps on cards, stats and
 toolbars, so every Depot tab is full width. Only the intro line under each title keeps a
 reading width.
+
+### Real photos, with permission and credit (Sean, 2026-09-29, BOSS "source reliable photos")
+
+"Real business, real photo, with permission and credit; otherwise their logo card; illustrations
+only for general topics, labelled." Migration `depot_photo_provenance`:
+
+- `ve_media_library.credit`, `.license`, `.source_page_url`. license is one of owner_upload,
+  press_kit, permission, own, open_license, logo_card, logo, illustration. Higgsfield pictures
+  were backfilled as illustration, listing logos as logo.
+- `ve_pulse_content.cover_credit`, `.cover_license`, `.names_business`, `.business_listing_id`.
+  Trigger `ve_pulse_cover_provenance` copies the Library's credit whenever the cover changes (the
+  writer's own `library/covers/` pictures are illustrations) and sets names_business for Food &
+  Dining and Business Spotlight. Trigger `ve_pulse_cover_rule` refuses to publish a piece with
+  names_business whose cover is an illustration or has no recorded right (`needs_real_photo`).
+  It lives in the database so both Depots, Depot > Pulse and the writer all follow it.
+- **ve-media-library v14**: upload, register and update take license, credit, source_page_url;
+  `listing_search`, `pulse_cover`; publish errors come back as `needs_real_photo`.
+  **ve-news-desk v7**: the Ready lane gets each draft's cover credit; `ready_publish` returns
+  `needs_real_photo`.
+- `public/depot-cover.js`: the Cover dialog (Inbox Ready cards, Depot > Pulse). A real photo with
+  what lets us use it and its credit, or the business's logo card drawn in the browser from the
+  logo on its listing. Library cards edit credit, license and source page.
+- `api/pulse-article.js`: a credit line under the cover ("Photo: Courtesy of X", "X logo",
+  or "Illustration").
+- Never: a photo from the source article, a photo copied off a website without a press grant,
+  Google Maps or Yelp photos (`listings.google_photos` are Google users' photos).

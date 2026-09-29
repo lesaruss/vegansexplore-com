@@ -281,7 +281,7 @@ async function readPage(link: string): Promise<{ readable: boolean; title: strin
   return out;
 }
 
-const LEAD_COLS = 'id, brand_slug, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug), ve_news_feeds(scope, feed_name)';
+const LEAD_COLS = 'id, brand_slug, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug, cover_credit, cover_license, names_business, business_listing_id), ve_news_feeds(scope, feed_name)';
 const FEED_COLS = 'id, brand_slug, city_slug, feed_name, feed_url, scope, search_query, locale, is_active, last_fetched_at, last_status, last_count, notes, created_at';
 
 Deno.serve(async (req) => {
@@ -500,7 +500,8 @@ Deno.serve(async (req) => {
     if (!piece.thumbnail_url || !String(piece.thumbnail_url).startsWith(COVER_PREFIX)) return json({ error: 'needs_cover' }, 409);
     const now = new Date().toISOString();
     const { error } = await db.from('ve_pulse_content').update({ status: 'published', published_at: piece.published_at || now, updated_at: now }).eq('id', piece.id);
-    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    // The database refuses a piece about a business whose cover is an illustration.
+    if (error) return /needs_real_photo/.test(error.message) ? json({ error: 'needs_real_photo' }, 409) : json({ error: 'save_failed', message: error.message }, 500);
     if (piece.city_slug && HUB_SLUGS.includes(piece.city_slug)) await db.from('ve_pulse_city_tags').upsert({ pulse_id: piece.id, city_slug: piece.city_slug }, { onConflict: 'pulse_id,city_slug', ignoreDuplicates: true });
     const { data, error: e2 } = await db.from('ve_news_leads').update({ status: 'published', decided_at: now }).eq('id', body.id).select(LEAD_COLS).single();
     if (e2) return json({ error: 'save_failed', message: e2.message }, 500);

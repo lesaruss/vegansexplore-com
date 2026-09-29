@@ -13,7 +13,12 @@
 // POST { action: 'upload', sha256, source_name, width, height, full_b64, thumb_b64 }  images (WebP or JPEG)
 // POST { action: 'upload_url', sha256, kind, ext }                        audio / video: returns a signed upload URL
 // POST { action: 'register', sha256, kind, ext, mime, bytes, duration?, width?, height?, source_name }
-// POST { action: 'update', id, uses?, place?, labels?, archived? }
+// POST { action: 'update', id, uses?, place?, labels?, archived?, license?, credit?, source_page_url? }
+//   upload and register take license, credit and source_page_url too. license says what lets us
+//   use the picture (LICENSES below); credit is the line under a cover ("Courtesy of X").
+// POST { action: 'listing_search', q | id }         approved directory listings by name, or one by id (for a cover)
+// POST { action: 'pulse_cover', id, url, listing_id? }   put a Library picture on a Depot piece as its
+//   cover (the database copies its credit), and say which business the piece is about
 // POST { action: 'skip', refs }       older pictures Sean chose not to keep (never offered again)
 // POST { action: 'delete', ids }      removes the files and the rows; refuses anything a live page or Pulse piece uses
 // POST { action: 'pulse_list' }       pieces the Depot has published to the Pulse
@@ -57,14 +62,27 @@ const MEDIA_EXT: Record<string, { kind: 'audio' | 'video'; mime: string }> = {
   aac: { kind: 'audio', mime: 'audio/aac' }, ogg: { kind: 'audio', mime: 'audio/ogg' },
   mp4: { kind: 'video', mime: 'video/mp4' }, mov: { kind: 'video', mime: 'video/quicktime' }, webm: { kind: 'video', mime: 'video/webm' },
 };
-const COLS = 'id, kind, url, thumb_url, mime, width, height, orientation, duration, bytes, source_name, uses, place, labels, archived, source_ref, created_at';
+const COLS = 'id, kind, url, thumb_url, mime, width, height, orientation, duration, bytes, source_name, uses, place, labels, archived, source_ref, credit, license, source_page_url, created_at';
+// Where a picture came from and what lets us use it (Sean, 2026-09-29, BOSS "source reliable
+// photos"). The same list is checked in the database; see the depot_photo_provenance migration.
+const LICENSES = ['owner_upload', 'press_kit', 'permission', 'own', 'open_license', 'logo_card', 'logo', 'illustration'];
+const provenance = (b: any) => {
+  const out: Record<string, unknown> = {};
+  if (b.license !== undefined) out.license = LICENSES.includes(String(b.license)) ? String(b.license) : null;
+  if (b.credit !== undefined) out.credit = String(b.credit || '').replace(/[<>]/g, '').trim().slice(0, 160) || null;
+  if (b.source_page_url !== undefined) out.source_page_url = /^https:\/\/[^\s<>"]+$/i.test(String(b.source_page_url || '')) ? String(b.source_page_url).slice(0, 500) : null;
+  return out;
+};
+// The database refuses to publish a piece about a business with an illustration for a cover.
+const saveError = (error: { message: string }) => /needs_real_photo/.test(error.message)
+  ? json({ error: 'needs_real_photo' }, 409) : json({ error: 'save_failed', message: error.message }, 500);
 const PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const REF_RE = /^[a-z0-9:/._-]{1,200}$/i;
 const PLACES = ['miami', 'broward', 'palm-beach'];
 // The Pulse: what a piece can be, and the city hubs that show city pieces (/communities/*).
 const PULSE_TYPES = ['article', 'video', 'interview', 'podcast'];
 const PULSE_CITIES = ['south-florida', 'central-florida', 'new-york', 'philadelphia', 'los-angeles', 'atlanta', 'dmv', 'london'];
-const PULSE_COLS = 'id, slug, title, content_type, category, summary, body, city_slug, thumbnail_url, video_url, audio_url, youtube_id, author, status, published_at, updated_at';
+const PULSE_COLS = 'id, slug, title, content_type, category, summary, body, city_slug, thumbnail_url, video_url, audio_url, youtube_id, author, status, published_at, updated_at, cover_credit, cover_license, names_business, business_listing_id';
 const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const paragraphs = (t: string) => t.replace(/\r\n?/g, '\n').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
   .map((p) => '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>').join('\n');
@@ -179,7 +197,7 @@ Deno.serve(async (req) => {
 
     const { data: item, error } = await db.from('ve_media_library').insert({
       sha256: sha, kind: 'image', mime: TYPE[fk], url, thumb_url, width, height, orientation, bytes: full.length,
-      source_name: String(body.source_name || '').slice(0, 200) || null, source_ref: ref, uploaded_by: memberId,
+      source_name: String(body.source_name || '').slice(0, 200) || null, source_ref: ref, uploaded_by: memberId, ...provenance(body),
     }).select(COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, item });
@@ -214,6 +232,7 @@ Deno.serve(async (req) => {
       video_url: video, audio_url: audio, youtube_id: yt, author: plain(body.author, 80) || null,
       updated_at: new Date().toISOString(),
     };
+    if (typeof body.names_business === 'boolean') row.names_business = body.names_business;
     let saved: any, before: string | null = null;
     if (body.id) {
       const id = String(body.id);
@@ -224,7 +243,7 @@ Deno.serve(async (req) => {
       if (old.status === 'draft' && body.publish) { row.status = 'published'; row.published_at = old.published_at || new Date().toISOString(); }
       if ((row.status || old.status) === 'published' && !cover) return json({ error: 'bad_cover' }, 400);
       const { data, error } = await db.from('ve_pulse_content').update(row).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
-      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      if (error) return saveError(error);
       saved = data;
     } else {
       if (!cover) return json({ error: 'bad_cover' }, 400);
@@ -237,7 +256,7 @@ Deno.serve(async (req) => {
       const now = new Date().toISOString();
       const { data, error } = await db.from('ve_pulse_content').insert({ ...row, slug, source_url: `https://vegansexplore.com/pulse/${slug}`, status: 'published', published_at: now, created_at: now, origin: 'depot', brand_slug: 'vegans-explore', created_by: memberId })
         .select(PULSE_COLS).single();
-      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      if (error) return saveError(error);
       saved = data;
     }
     // A city piece also shows on that city's hub (/communities/<city>). Only the piece's own
@@ -246,6 +265,36 @@ Deno.serve(async (req) => {
     if (city) await db.from('ve_pulse_city_tags').upsert({ pulse_id: saved.id, city_slug: city }, { onConflict: 'pulse_id,city_slug', ignoreDuplicates: true });
     if (saved.status === 'published') await db.from('ve_news_leads').update({ status: 'published' }).eq('pulse_id', saved.id);
     return json({ ok: true, piece: saved });
+  }
+
+  if (body.action === 'listing_search') {
+    if (/^[0-9a-f-]{36}$/.test(String(body.id || ''))) {
+      const { data } = await db.from('listings').select(LISTING_COLS).eq('id', String(body.id)).eq('status', 'approved').limit(1);
+      return json({ listings: data || [] });
+    }
+    const q = String(body.q || '').replace(/[%_,()]/g, ' ').trim().slice(0, 60);
+    if (q.length < 2) return json({ listings: [] });
+    const { data, error } = await db.from('listings').select(LISTING_COLS).eq('status', 'approved').ilike('name', `%${q}%`).order('name').limit(12);
+    if (error) return json({ error: 'list_failed', message: error.message }, 500);
+    return json({ listings: data || [] });
+  }
+
+  // A cover for a Depot piece (Sean, 2026-09-29): a real photo with its credit, or the business's
+  // logo card, both already in the Library. Naming a listing marks the piece as about a business.
+  if (body.action === 'pulse_cover') {
+    const id = String(body.id || ''), url = String(body.url || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { data: item } = await db.from('ve_media_library').select('id').eq('url', url).eq('kind', 'image').maybeSingle();
+    if (!item) return json({ error: 'not_in_library' }, 400);
+    const patch: Record<string, unknown> = { thumbnail_url: url, updated_at: new Date().toISOString() };
+    if (body.listing_id) {
+      const lid = String(body.listing_id);
+      if (!/^[0-9a-f-]{36}$/.test(lid)) return json({ error: 'bad_listing' }, 400);
+      patch.business_listing_id = lid; patch.names_business = true;
+    }
+    const { data, error } = await db.from('ve_pulse_content').update(patch).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
+    if (error) return saveError(error);
+    return json({ ok: true, piece: data });
   }
 
   if (body.action === 'pulse_status') {
@@ -257,7 +306,7 @@ Deno.serve(async (req) => {
     const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
     if (status === 'published' && !cur.published_at) patch.published_at = new Date().toISOString();
     const { data, error } = await db.from('ve_pulse_content').update(patch).eq('id', id).eq('origin', 'depot').select(PULSE_COLS).single();
-    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    if (error) return saveError(error);
     if (status === 'published') await db.from('ve_news_leads').update({ status: 'published' }).eq('pulse_id', id);
     return json({ ok: true, piece: data });
   }
@@ -401,7 +450,7 @@ Deno.serve(async (req) => {
     const { data: item, error } = await db.from('ve_media_library').insert({
       sha256: sha, kind: t.kind, url, thumb_url: null, mime: t.mime, width, height, orientation, duration,
       bytes: Number(obj.metadata?.size) || Number(body.bytes) || null,
-      source_name: String(body.source_name || '').slice(0, 200) || null, uploaded_by: memberId,
+      source_name: String(body.source_name || '').slice(0, 200) || null, uploaded_by: memberId, ...provenance(body),
     }).select(COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, item });
@@ -415,9 +464,13 @@ Deno.serve(async (req) => {
     if (body.place !== undefined) patch.place = PLACES.includes(String(body.place)) ? String(body.place) : null;
     if (body.labels !== undefined) patch.labels = cleanLabels(body.labels);
     if (body.archived !== undefined) patch.archived = !!body.archived;
+    Object.assign(patch, provenance(body));
     const { data: item, error } = await db.from('ve_media_library').update(patch).eq('id', id)
       .select(COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    // A piece using this picture as its cover shows the new credit too.
+    if (patch.license !== undefined || patch.credit !== undefined)
+      await db.from('ve_pulse_content').update({ cover_license: item.license, cover_credit: item.credit }).eq('thumbnail_url', item.url);
     return json({ ok: true, item });
   }
 

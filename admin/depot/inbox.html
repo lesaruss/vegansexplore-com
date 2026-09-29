@@ -102,6 +102,8 @@
     .card select.city{font:inherit;font-size:12px;font-weight:700;padding:6px 30px 6px 8px;min-height:36px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;}
     .btn-deny{background:#fff;color:#8a1c12;border:1px solid #8a1c12;}
     .btn-link{background:none;border:0;color:#1d3f8a;text-decoration:underline;padding:9px 6px;min-height:42px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;}
+    .cover-credit{font-size:12px;color:var(--ve-text-75);margin:-2px 0 8px;}
+    .needs-photo{font-size:13px;line-height:1.5;background:#fff4e5;border:1px solid #f0b35a;border-radius:8px;padding:8px 10px;margin:0 0 10px;color:#5c3a00;}
     .ready-cover{width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#e7ece7;display:block;margin-bottom:8px;}
     .nocover{font-size:12.5px;color:#8a1c12;font-weight:700;margin-bottom:8px;}
 
@@ -175,6 +177,7 @@
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script src="/public/depot-preview.js"></script>
+  <script src="/public/depot-cover.js"></script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-news-desk';
@@ -216,16 +219,22 @@
           (l.needs_line || l.origin === 'link' ? '' : '<button type="button" class="btn-link" data-addline>Add a line</button>') +
           '</div></div></article>';
       }
+      // A piece about a business needs a real, credited photo or the business's logo card
+      // (Sean, 2026-09-29). The database enforces it too.
+      function needsPhoto(p) { return !!(p && p.names_business && (!p.cover_license || p.cover_license === 'illustration')); }
       function cardReady(l) {
         var p = l.ve_pulse_content || {}, cover = safe(p.thumbnail_url);
         return '<article class="card noimg" data-id="' + esc(l.id) + '"><div>' +
           '<div class="meta"><span class="pill city">' + esc(hub(p.city_slug || l.city_slug)) + '</span><span>Draft ' + esc(day(l.drafted_at)) + '</span><span>From: ' + esc(l.source_name || '') + '</span></div>' +
-          (cover ? '<img class="ready-cover" src="' + esc(cover) + '" alt="Cover picture for this draft" loading="lazy">' : '<p class="nocover">No cover yet. Open the draft to pick one from the Library before publishing.</p>') +
+          (cover ? '<img class="ready-cover" src="' + esc(cover) + '" alt="Cover picture for this draft" loading="lazy">' : '<p class="nocover">No cover yet. Pick one with Cover before publishing.</p>') +
+          (cover ? '<p class="cover-credit">' + (p.cover_license === 'illustration' ? 'Illustration' : p.cover_credit ? esc(p.cover_credit) : 'Credit not recorded') + '</p>' : '') +
+          (needsPhoto(p) ? '<p class="needs-photo"><b>Needs a real photo.</b> This piece is about a business, so it goes out with a real photo we may use, credited, or their logo card. Use Cover.</p>' : '') +
           '<h2 class="headline">' + esc(p.title || l.title) + '</h2>' +
           (p.summary ? '<p class="summary">' + esc(p.summary) + '</p>' : '') +
           (l.notes ? '<p class="notes"><b>Check before publishing:</b> ' + esc(l.notes) + '</p>' : '') +
           '<div class="line" data-backbox hidden><input type="text" maxlength="600" data-back placeholder="What should change?" aria-label="What should change in this draft"><button type="button" class="btn" data-sendback>Send back</button></div>' +
-          '<div class="actions"><button type="button" class="btn" data-publish' + (cover ? '' : ' disabled') + '>Publish</button><button type="button" class="btn btn-ghost" data-backopen>Send back</button>' +
+          '<div class="actions"><button type="button" class="btn" data-publish' + (cover && !needsPhoto(p) ? '' : ' disabled') + '>Publish</button><button type="button" class="btn btn-ghost" data-backopen>Send back</button>' +
+          '<button type="button" class="btn btn-ghost" data-cover="' + esc(l.pulse_id) + '" data-cover-title="' + esc(p.title || l.title) + '" data-cover-listing="' + esc(p.business_listing_id || '') + '">Cover</button>' +
           '<button type="button" class="btn btn-ghost" data-preview="' + esc(l.pulse_id) + '" data-preview-title="' + esc(p.title || l.title) + '">Preview</button>' +
           '<a class="btn btn-ghost" href="/admin/depot/pulse?edit=' + esc(l.pulse_id) + '">Open the draft</a>' +
           (safe(l.url) ? '<a class="btn-link" href="' + esc(safe(l.url)) + '" target="_blank" rel="noopener noreferrer">Original story</a>' : '') +
@@ -259,6 +268,7 @@
         $('more').hidden = arr.length <= shown;
         clearTimeout(poll); if (data.writing.length) poll = setTimeout(load, 60000);
       }
+      window.veDepotReload = function () { return load(); };
       function load() {
         return api({ action: 'inbox_list', city: $('city').value }).then(function (d) {
           if (!d.decide) throw new Error(d.error);
@@ -342,7 +352,7 @@
           if (!confirm('Publish this to the Pulse now?')) return;
           busy(el, true);
           api({ action: 'ready_publish', id: id }).then(function (d) {
-            if (!d.ok) return fail(el, d.error === 'needs_cover' ? 'Pick a cover from the Library first (Open the draft).' : 'That did not publish. Try again.');
+            if (!d.ok) return fail(el, d.error === 'needs_cover' ? 'Pick a cover first (Cover).' : d.error === 'needs_real_photo' ? 'This piece is about a business: it needs a real, credited photo or their logo card. Use Cover.' : 'That did not publish. Try again.');
             drop(id, { lane: 'done', lead: d.lead });
           }, function () { fail(el, 'Could not connect. Try again.'); });
           return;

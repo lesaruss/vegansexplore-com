@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
       const headers = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
       const r = preview
         ? await fetch(SUPABASE_URL + '/rest/v1/rpc/ve_pulse_preview', { method: 'POST', headers: headers, body: JSON.stringify({ p_token: previewToken }) })
-        : await fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1', { headers: headers });
+        : await fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url,cover_credit,cover_license&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1', { headers: headers });
       const rows = await r.json();
       if (Array.isArray(rows) && rows[0] && (!preview || rows[0].slug === slug)) {
         const row = rows[0];
@@ -127,7 +127,9 @@ module.exports = async (req, res) => {
           author: row.author,
           fromDepot: row.origin === 'depot',
           date: row.published_at || preview ? new Date(row.published_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '',
-          body: row.body || ''
+          body: row.body || '',
+          coverCredit: row.cover_credit || '',
+          coverLicense: row.cover_license || ''
         };
       }
     } catch (e) {
@@ -176,7 +178,13 @@ module.exports = async (req, res) => {
   let embedHtml = '';
   if (post.youtubeId) embedHtml = box + '<iframe src="https://www.youtube.com/embed/' + esc(post.youtubeId) + '" title="' + esc(title) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
   else if (post.videoUrl) embedHtml = box + '<video controls playsinline preload="metadata" poster="' + esc(post.img || '') + '" src="' + esc(post.videoUrl) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;" aria-label="' + esc(title) + '"></video></div>';
-  else if (post.img && post.fromDepot) embedHtml = '<img src="' + esc(post.img) + '" alt="" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:' + (post.audioUrl ? '14px' : '28px') + ';">';
+  else if (post.img && post.fromDepot) {
+    // The cover's credit (Sean, 2026-09-29): who the photo is from, or that it is an illustration.
+    const credit = post.coverLicense === 'illustration' ? 'Illustration'
+      : post.coverCredit ? (/^(photo|courtesy|illustration)\b/i.test(post.coverCredit) || / logo$/i.test(post.coverCredit) ? post.coverCredit : 'Photo: ' + post.coverCredit) : '';
+    embedHtml = '<img src="' + esc(post.img) + '" alt="" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:' + (credit ? '6px' : post.audioUrl ? '14px' : '28px') + ';">'
+      + (credit ? '<p class="cover-credit" style="margin-bottom:' + (post.audioUrl ? '14px' : '24px') + ';">' + esc(credit) + '</p>' : '');
+  }
   if (post.audioUrl) embedHtml += '<audio controls preload="metadata" src="' + esc(post.audioUrl) + '" style="display:block;width:100%;margin-bottom:28px;" aria-label="Listen: ' + esc(title) + '"></audio>';
   if (post.fromDepot) embedHtml += '<h1 style="font-size:clamp(24px,3.4vw,34px);font-weight:900;line-height:1.15;margin:0 0 8px;">' + esc(title) + '</h1>'
     + '<p style="font-size:13px;font-weight:700;color:rgba(26,26,26,0.72);margin:0 0 22px;">' + (post.author ? 'By ' + esc(post.author) + ' &middot; ' : '') + esc(post.date || '') + '</p>';
@@ -260,6 +268,7 @@ module.exports = async (req, res) => {
     + '.article-p{font-size:14px;font-weight:400;color:var(--ve-text-75);line-height:1.8;margin-bottom:16px;}'
     + '.article > p:not([class]):not([style]){font-size:14px;font-weight:400;color:var(--ve-text-75);line-height:1.8;margin:0 0 18px;}'
     + '.article a:not([class]){color:var(--ve-green-dark);font-weight:700;text-decoration:underline;text-underline-offset:3px;}'
+    + '.cover-credit{font-size:11.5px;font-weight:600;color:var(--ve-text-50);text-align:right;line-height:1.4;}'
     + '.article-source{font-size:12.5px;font-weight:600;color:var(--ve-text-50);line-height:1.6;margin:22px 0 0;}'
     + '.article-list{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:12px;}'
     + '.article-list li{display:flex;align-items:flex-start;gap:12px;font-size:13px;color:var(--ve-text-75);line-height:1.65;}'

@@ -57,6 +57,8 @@
     .row .btn{min-height:40px;padding:8px 14px;}
     .empty-list{font-size:14px;color:var(--ve-text-75);background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:22px;text-align:center;}
     dialog{border:0;border-radius:14px;padding:0;width:min(1100px,calc(100% - 32px));max-height:86vh;box-shadow:0 24px 60px rgba(0,0,0,0.35);}
+    label.check{display:flex;gap:10px;align-items:center;font-weight:700;font-size:14px;min-height:44px;cursor:pointer;}
+    label.check input{width:20px;height:20px;}
     dialog::backdrop{background:rgba(10,20,12,0.7);}
     .dlg-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--ve-border);position:sticky;top:0;background:#fff;}
     .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;padding:14px 16px 18px;}
@@ -114,8 +116,10 @@
           </select></div>
           <div class="field"><label for="pu-author">Author</label><input type="text" id="pu-author" maxlength="80" placeholder="Name shown under the title (optional)"></div>
           <div class="field wide"><span class="lbl">Cover picture</span>
-            <div class="cover"><div id="pu-cover"></div><button type="button" class="btn btn-ghost" id="pu-cover-pick">Choose from the Library</button></div>
+            <div class="cover"><div id="pu-cover"></div><button type="button" class="btn btn-ghost" id="pu-cover-pick">Choose from the Library</button><button type="button" class="btn btn-ghost" id="pu-cover-real" hidden>A real photo or their logo card</button></div>
+            <span class="hint" id="pu-cover-credit"></span>
           </div>
+          <div class="field wide"><label class="check"><input type="checkbox" id="pu-biz"> This piece is about a specific business (a restaurant, a shop, a brand)</label><span class="hint">Then it needs a real photo we may use, credited, or the business's logo card. Never an illustration.</span></div>
           <div class="field"><label for="pu-video">Video</label><select id="pu-video"></select><span class="hint">Or paste a YouTube link instead:</span><input type="url" id="pu-youtube" placeholder="https://www.youtube.com/watch?v=..." aria-label="YouTube link"></div>
           <div class="field"><label for="pu-audio">Audio</label><select id="pu-audio"></select><span class="hint">Plays under the picture, for an episode or an interview recording.</span></div>
           <div class="field wide"><label for="pu-body">The piece</label><textarea id="pu-body" rows="12"></textarea><span class="hint">Leave a blank line to start a new paragraph.</span></div>
@@ -144,6 +148,7 @@
   <script src="/public/ve-media-upload.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script src="/public/depot-preview.js"></script>
+  <script src="/public/depot-cover.js"></script>
   <script>
     (function () {
       var $ = function (id) { return document.getElementById(id); };
@@ -166,9 +171,25 @@
       }
       document.querySelectorAll('.type').forEach(function (b) { b.onclick = function () { setType(b.getAttribute('data-type')); }; });
 
+      // Where the cover came from (Sean, 2026-09-29): the Library's credit, or "Illustration".
+      var LIC = { owner_upload: 'sent by the business', press_kit: 'from their press page', permission: 'used with their permission', own: 'our own photo', open_license: 'open license', logo_card: 'their logo card', logo: 'their logo', illustration: 'Illustration' };
+      function coverInfo() {
+        if (!cover) return null;
+        var it = LIB.filter(function (x) { return x.url === cover.url; })[0];
+        if (it) return { license: it.license, credit: it.credit };
+        if (editing && editing.thumbnail_url === cover.url) return { license: editing.cover_license, credit: editing.cover_credit };
+        return { license: /\/library\/covers\//.test(cover.url) ? 'illustration' : null, credit: null };
+      }
       function renderCover() {
         $('pu-cover').innerHTML = cover ? '<img src="' + esc(cover.thumb || cover.url) + '" alt="">' : '<div class="empty">No picture yet</div>';
         $('pu-cover-pick').textContent = cover ? 'Change the picture' : 'Choose from the Library';
+        $('pu-cover-real').hidden = !editing;
+        $('pu-cover-real').setAttribute('data-cover', editing ? editing.id : '');
+        $('pu-cover-real').setAttribute('data-cover-title', editing ? editing.title : '');
+        $('pu-cover-real').setAttribute('data-cover-listing', editing && editing.business_listing_id || '');
+        var ci = coverInfo();
+        $('pu-cover-credit').textContent = !ci ? '' : ci.license === 'illustration' ? 'Illustration. Fine for a general piece, not for one about a business.'
+          : (ci.credit ? ci.credit : 'Credit not recorded. Add it in the Library') + (ci.license ? ' (' + LIC[ci.license] + ')' : '');
       }
       function renderMediaSelects(v, a) {
         var vids = LIB.filter(function (it) { return it.kind === 'video'; });
@@ -199,6 +220,7 @@
         $('pu-author').value = p && p.author ? p.author : '';
         $('pu-youtube').value = p && p.youtube_id ? 'https://www.youtube.com/watch?v=' + p.youtube_id : '';
         $('pu-body').value = p ? toText(p.body) : '';
+        $('pu-biz').checked = !!(p && p.names_business);
         cover = p && p.thumbnail_url ? { url: p.thumbnail_url, thumb: p.thumbnail_url } : null;
         renderCover(); renderMediaSelects(p && p.video_url, p && p.audio_url);
         var draft = !!(p && p.status === 'draft');
@@ -226,11 +248,12 @@
         $('pu-msg').textContent = editing && (!draft || !publish) ? 'Saving...' : 'Publishing...';
         api({ action: 'pulse_save', id: editing ? editing.id : undefined, publish: draft && publish, content_type: type, title: $('pu-title').value, summary: $('pu-summary').value,
           body_text: $('pu-body').value, category: $('pu-category').value, city_slug: $('pu-city').value || null, author: $('pu-author').value,
+          names_business: $('pu-biz').checked,
           cover_url: cover ? cover.url : null, video_url: $('pu-video').value || null, audio_url: $('pu-audio').value || null, youtube: $('pu-youtube').value.trim() || null
         }).then(function (d) {
           busy = false; $('pu-publish').disabled = false;
           if (!d.ok) {
-            var why = { bad_youtube: 'That YouTube link did not work. Paste the full link from the video page.', bad_cover: 'Choose the cover picture from the Library.', missing_fields: 'Add a title, a summary and a category.' }[d.error];
+            var why = { bad_youtube: 'That YouTube link did not work. Paste the full link from the video page.', bad_cover: 'Choose the cover picture from the Library.', missing_fields: 'Add a title, a summary and a category.', needs_real_photo: 'This piece is about a business, so it needs a real photo we may use, credited, or their logo card. Use "A real photo or their logo card".' }[d.error];
             $('pu-errs').textContent = d._status === 403 ? 'Admins only.' : (why || 'That did not save. Try again.'); $('pu-msg').textContent = ''; return;
           }
           var wasNew = !editing, p = d.piece;
@@ -259,7 +282,7 @@
             if (next === 'archived' && !confirm('Take "' + p.title + '" down from the Pulse? You can put it back up later.')) return;
             b.disabled = true;
             api({ action: 'pulse_status', id: p.id, status: next }).then(function (d) {
-              if (d.ok) { pieces[pieces.indexOf(p)] = d.piece; renderList(); } else { b.disabled = false; alert(d.error === 'bad_cover' ? 'Choose a cover picture first (Edit).' : 'That did not save. Try again.'); }
+              if (d.ok) { pieces[pieces.indexOf(p)] = d.piece; renderList(); } else { b.disabled = false; alert(d.error === 'bad_cover' ? 'Choose a cover picture first (Edit).' : d.error === 'needs_real_photo' ? 'This piece is about a business: it needs a real, credited photo or their logo card first (Edit, then A real photo or their logo card).' : 'That did not save. Try again.'); }
             }).catch(function () { b.disabled = false; alert('Could not connect. Try again.'); });
           };
         });
@@ -280,6 +303,16 @@
           api({ action: 'list' }).then(function (d) { LIB = (d.items || []).filter(function (it) { return !it.archived; }); }),
           api({ action: 'pulse_list' }).then(function (d) { pieces = d.pieces || []; })
         ]).then(function () {
+          // After the Cover dialog saves: fresh Library and pieces, and the open piece refilled.
+          window.veDepotReload = function () {
+            return Promise.all([
+              api({ action: 'list' }).then(function (d) { LIB = (d.items || []).filter(function (it) { return !it.archived; }); }),
+              api({ action: 'pulse_list' }).then(function (d) { pieces = d.pieces || []; })
+            ]).then(function () {
+              renderList();
+              if (editing) { var p = pieces.filter(function (x) { return x.id === editing.id; })[0]; if (p) { cover = p.thumbnail_url ? { url: p.thumbnail_url, thumb: p.thumbnail_url } : null; editing = p; $('pu-biz').checked = !!p.names_business; renderCover(); } }
+            });
+          };
           renderMediaSelects($('pu-video').value, $('pu-audio').value); renderList();
           // The News Desk links a draft straight here: /admin/depot/pulse?edit=<id>
           var want = new URLSearchParams(location.search).get('edit');

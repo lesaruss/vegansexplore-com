@@ -53,7 +53,7 @@
       return Promise.all([encode(drawAt(bmp, fw), 0.86), encode(drawAt(bmp, Math.min(480, fw)), 0.8)]).then(function (bl) {
         return Promise.all([b64(bl[0]), b64(bl[1])]);
       }).then(function (s) {
-        return api(token, { action: 'upload', sha256: r[0], width: fw, height: fh, full_b64: s[0], thumb_b64: s[1], source_name: f.veName || f.webkitRelativePath || f.name, source_ref: f.veRef || null });
+        return api(token, { action: 'upload', sha256: r[0], width: fw, height: fh, full_b64: s[0], thumb_b64: s[1], source_name: f.veName || f.webkitRelativePath || f.name, source_ref: f.veRef || null, license: f.veLicense, credit: f.veCredit, source_page_url: f.veSourcePage });
       });
     });
   }
