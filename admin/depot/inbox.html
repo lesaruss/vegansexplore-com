@@ -102,6 +102,11 @@
     .card select.city{font:inherit;font-size:12px;font-weight:700;padding:6px 30px 6px 8px;min-height:36px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;}
     .btn-deny{background:#fff;color:#8a1c12;border:1px solid #8a1c12;}
     .btn-link{background:none;border:0;color:#1d3f8a;text-decoration:underline;padding:9px 6px;min-height:42px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;}
+    .outreach-line{font-size:12.5px;color:var(--ve-text-75);margin:0 0 8px;line-height:1.6;}
+    .outreach-line .pill{margin-right:2px;}
+    .pill.spot-track{background:#e6f4e7;color:#1f5f2a;}
+    .pill.news-track{background:#fff4e5;color:#5c3a00;}
+    .outreach-line .bad{color:#8a1c1c;font-weight:700;}
     .cover-credit{font-size:12px;color:var(--ve-text-75);margin:-2px 0 8px;}
     .needs-photo{font-size:13px;line-height:1.5;background:#fff4e5;border:1px solid #f0b35a;border-radius:8px;padding:8px 10px;margin:0 0 10px;color:#5c3a00;}
     .ready-cover{width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#e7ece7;display:block;margin-bottom:8px;}
@@ -178,6 +183,7 @@
   <script src="/public/depot-tabs.js"></script>
   <script src="/public/depot-preview.js"></script>
   <script src="/public/depot-cover.js"></script>
+  <script src="/public/depot-outreach.js"></script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-news-desk';
@@ -221,6 +227,19 @@
       }
       // A piece about a business needs a real, credited photo or the business's logo card
       // (Sean, 2026-09-29). The database enforces it too.
+      // The heads-up to who the piece is about, and when it goes live (Sean, 2026-09-29).
+      function outreachOf(p) { var o = p && p.ve_pulse_outreach; return Array.isArray(o) ? o[0] || null : o || null; }
+      function when(iso) { return new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+      function outreachLine(p, live) {
+        var o = outreachOf(p), bits = [];
+        bits.push(p.track === 'news' ? '<span class="pill news-track">News</span>' : '<span class="pill spot-track">Spotlight</span>');
+        if (!live) bits.push(p.publish_at ? '<b>Goes live ' + esc(when(p.publish_at)) + '</b>' : 'Not scheduled');
+        bits.push(!o || o.status === 'draft' ? 'Heads-up not sent' + (o && o.contact_email ? ' (to ' + esc(o.contact_email) + ')' : o ? ', no email yet' : '')
+          : o.status === 'sent' ? 'Heads-up sent to ' + esc(o.contact_email) + ', waiting on them'
+          : o.status === 'replied' ? 'They replied'
+          : o.status === 'failed' ? '<span class="bad">Heads-up did not go</span>' : 'Heads-up skipped');
+        return '<p class="outreach-line">' + bits.join(' &middot; ') + '</p>';
+      }
       function needsPhoto(p) { return !!(p && p.names_business && (!p.cover_license || p.cover_license === 'illustration')); }
       function cardReady(l) {
         var p = l.ve_pulse_content || {}, cover = safe(p.thumbnail_url);
@@ -228,6 +247,8 @@
           '<div class="meta"><span class="pill city">' + esc(hub(p.city_slug || l.city_slug)) + '</span><span>Draft ' + esc(day(l.drafted_at)) + '</span><span>From: ' + esc(l.source_name || '') + '</span></div>' +
           (cover ? '<img class="ready-cover" src="' + esc(cover) + '" alt="Cover picture for this draft" loading="lazy">' : '<p class="nocover">No cover yet. Pick one with Cover before publishing.</p>') +
           (cover ? '<p class="cover-credit">' + (p.cover_license === 'illustration' ? 'Illustration' : p.cover_credit ? esc(p.cover_credit) : 'Credit not recorded') + '</p>' : '') +
+          outreachLine(p, false) +
+          (l.draft_error ? '<p class="needs-photo">' + esc(l.draft_error) + '</p>' : '') +
           (needsPhoto(p) ? '<p class="needs-photo"><b>Needs a real photo.</b> This piece is about a business, so it goes out with a real photo we may use, credited, or their logo card. Use Cover.</p>' : '') +
           '<h2 class="headline">' + esc(p.title || l.title) + '</h2>' +
           (p.summary ? '<p class="summary">' + esc(p.summary) + '</p>' : '') +
@@ -235,6 +256,7 @@
           '<div class="line" data-backbox hidden><input type="text" maxlength="600" data-back placeholder="What should change?" aria-label="What should change in this draft"><button type="button" class="btn" data-sendback>Send back</button></div>' +
           '<div class="actions"><button type="button" class="btn" data-publish' + (cover && !needsPhoto(p) ? '' : ' disabled') + '>Publish</button><button type="button" class="btn btn-ghost" data-backopen>Send back</button>' +
           '<button type="button" class="btn btn-ghost" data-cover="' + esc(l.pulse_id) + '" data-cover-title="' + esc(p.title || l.title) + '" data-cover-listing="' + esc(p.business_listing_id || '') + '">Cover</button>' +
+          '<button type="button" class="btn btn-ghost" data-outreach="' + esc(l.pulse_id) + '" data-outreach-title="' + esc(p.title || l.title) + '">Heads-up</button>' +
           '<button type="button" class="btn btn-ghost" data-preview="' + esc(l.pulse_id) + '" data-preview-title="' + esc(p.title || l.title) + '">Preview</button>' +
           '<a class="btn btn-ghost" href="/admin/depot/pulse?edit=' + esc(l.pulse_id) + '">Open the draft</a>' +
           (safe(l.url) ? '<a class="btn-link" href="' + esc(safe(l.url)) + '" target="_blank" rel="noopener noreferrer">Original story</a>' : '') +
@@ -249,8 +271,10 @@
       function cardDone(l) {
         var p = l.ve_pulse_content || {}, what = { published: 'Published on the Pulse', shared: 'Shared to the ' + hub(l.city_slug) + ' hub as a link', dismissed: 'Denied' }[l.status] || l.status;
         return '<article class="card noimg" data-id="' + esc(l.id) + '">' + head(l, '') +
-          '<p class="flag">' + esc(what) + (l.decided_at ? ', ' + esc(day(l.decided_at)) : '') + '</p><div class="actions">' +
+          '<p class="flag">' + esc(what) + (l.decided_at ? ', ' + esc(day(l.decided_at)) : '') + '</p>' +
+          (l.status === 'published' && l.pulse_id ? outreachLine(p, true) : '') + '<div class="actions">' +
           (l.status === 'published' && p.slug ? '<a class="btn btn-ghost" href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">View on the Pulse</a>' : '') +
+          (l.status === 'published' && l.pulse_id ? '<button type="button" class="btn btn-ghost" data-outreach="' + esc(l.pulse_id) + '" data-outreach-title="' + esc(p.title || l.title) + '" data-outreach-live>Heads-up</button>' : '') +
           (l.status === 'dismissed' ? '<button type="button" class="btn btn-ghost" data-restore>Put back</button>' : '') +
           '</div></div></article>';
       }

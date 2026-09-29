@@ -606,3 +606,28 @@ only for general topics, labelled." Migration `depot_photo_provenance`:
   listing has one, else Instagram or website). Nothing is sent from the Depot.
 - Never: a photo from the source article, a photo copied off a website without a press grant,
   Google Maps or Yelp photos (`listings.google_photos` are Google users' photos).
+
+### Heads-up outreach and scheduled publishing (Sean, 2026-09-29, the newsroom gold standard)
+
+"Find who the subject is, research their email, and then send them a preview ... same day."
+Newsrooms confirm facts and ask for comment with a deadline; they do not give the subject a veto.
+Migration `depot_outreach_and_schedule`:
+
+- `ve_pulse_content.track` ('spotlight' | 'news'), `.publish_at`, `.updated_note`, `.updated_note_at`.
+- `ve_pulse_outreach`, one per piece: contact name, email, channel, link, where it was found,
+  subject, body, status (draft, sent, replied, skipped, failed), Resend id. Service role only.
+- `ve_depot_publish_due()` on pg_cron `ve-depot-publish-due` every 5 minutes: publishes drafts whose
+  publish_at has passed, with the Ready lane's rules (Library cover, the real-photo rule, city tag,
+  lead marked published). One that cannot go has its time cleared and the reason on its lead.
+- **ve-news-desk v10**: `outreach_get` (drafts the email from the template when there is none),
+  `outreach_save` (redraft rewrites it for the track), `outreach_send` (Resend from
+  hello@vegansexplore.com, replies to hello@ and contact@lesaruss.com; `{{preview_link}}` becomes a
+  two-week preview link, `{{go_live}}` the go-live time; sending schedules a draft with no time for
+  5pm local; a News email with a preview link is refused), `outreach_mark`, `piece_schedule`,
+  `piece_update_note`. Preview links from these emails last 14 days.
+- `public/depot-outreach.js`: the Heads-up dialog (Inbox Ready cards, and Done cards for live pieces).
+- `api/pulse-article.js`: the "Updated" line under the date, and "Something wrong, or want this
+  taken down? Email us" under every Depot piece.
+- The writer (news_desk_write step 7) sets the track and saves the contact it found, only an
+  address the business publishes, with where it was found. It never sends or schedules. The writer
+  was paused on 2026-09-29 until Sean resumes it.

@@ -38,6 +38,16 @@
 //   ready_publish { id }         publish the lead's draft (needs a Library cover)
 //   ready_send_back { id, note } back to the writer with what to change
 //   pulse_preview { pulse_id }   a one-hour link to the piece on its real article page, draft or not
+//   Outreach (Sean, 2026-09-29, the newsroom gold standard): every piece tells its subject.
+//   outreach_get { pulse_id }    the heads-up for a piece (drafted from the template if there is none)
+//   outreach_save { pulse_id, contact_name?, contact_email?, contact_channel?, contact_url?, subject?, body? }
+//   outreach_send { pulse_id }   send it (Resend, from hello@vegansexplore.com, replies to Sean). Sending is
+//                                Sean's go: a draft with no time is scheduled for 5pm local. Spotlight:
+//                                the preview link, the go-live time, a fact check and a photo request.
+//                                News: a request for comment with a deadline, never the draft.
+//   outreach_mark { pulse_id, status: 'replied' | 'skipped', reply_note? }
+//   piece_schedule { pulse_id, publish_at?, track? }   when a draft goes live on its own (every 5 min)
+//   piece_update_note { pulse_id, note }   the "Updated" line on a live piece (a correction, their photo)
 //   leads_list { status?, city?, scope?, q?, headline_only? }
 //   feeds_list (with sent, approved, denied, untouched per source)
 //   feed_save { id?, feed_name, scope, city_slug?, feed_url?, search_query?, locale?, is_active? }
@@ -240,6 +250,63 @@ async function pullFeed(feed: any, month?: string): Promise<{ found: number; fla
 const plain = (v: unknown, n: number) => String(v || '').replace(/[<>]/g, '').replace(/\s*[—–]\s*/g, ', ').trim().slice(0, n);
 const COVER_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/library/`;
 
+// ---------- outreach: telling the subject (Sean, 2026-09-29) ----------
+const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
+// Replies reach Sean: the Vegans Explore inbox and the address the site already sends his notices to.
+const REPLY_TO = ['hello@vegansexplore.com', 'contact@lesaruss.com'];
+const CITY_TZ: Record<string, string> = { 'los-angeles': 'America/Los_Angeles', london: 'Europe/London' };
+const tzFor = (city: string | null) => CITY_TZ[city || ''] || 'America/New_York';
+const OUT_COLS = 'id, pulse_id, brand_slug, business_listing_id, contact_name, contact_email, contact_channel, contact_url, contact_source, subject, body, status, sent_at, resend_id, error, reply_note, created_at, updated_at';
+// The wall-clock parts of an instant in a time zone.
+function zoned(d: Date, tz: string) {
+  const p: Record<string, string> = {};
+  for (const x of new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).formatToParts(d)) p[x.type] = x.value;
+  return { y: +p.year, m: +p.month, d: +p.day, h: +p.hour, min: +p.minute };
+}
+// The instant that is 17:00 on a given local day in tz.
+function fivePm(y: number, m: number, d: number, tz: string): Date {
+  let t = Date.UTC(y, m - 1, d, 17, 0);
+  for (let i = 0; i < 2; i++) { const z = zoned(new Date(t), tz); t -= (Date.UTC(z.y, z.m - 1, z.d, z.h, z.min) - Date.UTC(y, m - 1, d, 17, 0)); }
+  return new Date(t);
+}
+// Default go-live: 5pm local today, or tomorrow when that is less than two hours away.
+function defaultPublishAt(city: string | null): Date {
+  const tz = tzFor(city), now = new Date(), z = zoned(now, tz);
+  let at = fivePm(z.y, z.m, z.d, tz);
+  if (at.getTime() - now.getTime() < 2 * 3600e3) { const t = new Date(Date.UTC(z.y, z.m - 1, z.d + 1)); at = fivePm(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate(), tz); }
+  return at;
+}
+function whenText(at: Date, city: string | null): string {
+  const tz = tzFor(city), a = zoned(at, tz), n = zoned(new Date(), tz);
+  const time = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit' }).format(at);
+  const zone = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' }).formatToParts(at).find((x) => x.type === 'timeZoneName')?.value || '';
+  const dayDiff = Math.round((Date.UTC(a.y, a.m - 1, a.d) - Date.UTC(n.y, n.m - 1, n.d)) / 864e5);
+  const day = dayDiff === 0 ? 'today' : dayDiff === 1 ? 'tomorrow' : new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long', month: 'long', day: 'numeric' }).format(at);
+  return `${day} at ${time} ${zone}`.trim();
+}
+// The heads-up, in Sean's voice. When it is sent, {{preview_link}} becomes a two-week preview link and
+// {{go_live}} the piece's publish time as it stands then ("today at 5:00 PM EDT").
+function outreachTemplate(track: string, o: { name: string | null; business: string | null; city: string | null; title: string; when: string }) {
+  const hi = o.name ? `Hi ${o.name.split(' ')[0]},` : o.business ? `Hi ${o.business} team,` : 'Hi there,';
+  const where = o.city ? ` in and visiting ${hubName(o.city)}` : '';
+  if (track === 'news') {
+    return {
+      subject: 'Request for comment from Vegans Explore',
+      body: `${hi}\n\nI'm Sean with Vegans Explore, a community for Vegans living${where}. We're publishing a story ${o.when}: "${o.title}".\n\nWe'd like to include your side. If you'd like to comment, please reply before then. If your reply comes after it's published, we'll add your comment to the story.\n\nThank you,\nSean A. Russell\nVegans Explore\nvegansexplore.com`,
+    };
+  }
+  const who = o.business || 'you';
+  return {
+    subject: `Vegans Explore is featuring ${o.business || 'you'}`,
+    body: `${hi}\n\nI'm Sean with Vegans Explore, a community for Vegans living${where}. We're featuring ${who} on the Vegans Explore Pulse and wanted you to see it first:\n\n{{preview_link}}\n\nIt goes live ${o.when}. Two quick things, if you have a moment:\n\n1. Did we get anything wrong? Hours, prices, names, anything at all. Just reply and we'll fix it.\n2. Would you like to send a photo or two? We'll run them with the piece, credited to you. Replying with photos attached tells us we have your permission to use them for this story.\n\nThat's it. Thank you for what you're building.\n\nSean A. Russell\nVegans Explore\nvegansexplore.com`,
+  };
+}
+const htmlEsc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function emailHtml(text: string): string {
+  return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px">' +
+    text.split(/\n\s*\n/).map((p) => '<p style="margin:0 0 14px">' + htmlEsc(p).replace(/(https:\/\/[^\s<]+)/g, '<a href="$1" style="color:#1f5f2a;font-weight:bold">$1</a>').replace(/\n/g, '<br>') + '</p>').join('') + '</div>';
+}
+
 // ---------- reading a pasted link ----------
 function meta(html: string, keys: string[]): string | null {
   for (const k of keys) {
@@ -281,7 +348,7 @@ async function readPage(link: string): Promise<{ readable: boolean; title: strin
   return out;
 }
 
-const LEAD_COLS = 'id, brand_slug, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug, cover_credit, cover_license, names_business, business_listing_id), ve_news_feeds(scope, feed_name)';
+const LEAD_COLS = 'id, brand_slug, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug, cover_credit, cover_license, names_business, business_listing_id, track, publish_at, updated_note, ve_pulse_outreach(id, contact_name, contact_email, contact_channel, contact_url, contact_source, subject, status, sent_at, error)), ve_news_feeds(scope, feed_name)';
 const FEED_COLS = 'id, brand_slug, city_slug, feed_name, feed_url, scope, search_query, locale, is_active, last_fetched_at, last_status, last_count, notes, created_at';
 
 Deno.serve(async (req) => {
@@ -528,6 +595,145 @@ Deno.serve(async (req) => {
     const { data, error } = await db.from('ve_pulse_previews').insert({ pulse_id: piece.id }).select('token').single();
     if (error || !data) return json({ error: 'save_failed' }, 500);
     return json({ ok: true, url: `https://vegansexplore.com/pulse/${encodeURIComponent(piece.slug)}?preview=${data.token}` });
+  }
+
+  // ---------- outreach and scheduling ----------
+  if (['outreach_get', 'outreach_save', 'outreach_send', 'outreach_mark', 'piece_schedule', 'piece_update_note'].includes(body.action)) {
+    if (!isId(body.pulse_id)) return json({ error: 'bad_id' }, 400);
+    const { data: piece } = await db.from('ve_pulse_content').select('id, slug, title, status, city_slug, brand_slug, track, publish_at, business_listing_id, origin').eq('id', body.pulse_id).maybeSingle();
+    if (!piece || piece.origin !== 'depot' || (brand && piece.brand_slug && piece.brand_slug !== brand)) return json({ error: 'not_found' }, 404);
+    const now = new Date().toISOString();
+
+    if (body.action === 'piece_schedule') {
+      if (piece.status !== 'draft') return json({ error: 'not_a_draft' }, 409);
+      const patch: Record<string, unknown> = { updated_at: now };
+      if (body.track !== undefined) { if (!['spotlight', 'news'].includes(body.track)) return json({ error: 'bad_track' }, 400); patch.track = body.track; }
+      if (body.publish_at !== undefined) {
+        if (body.publish_at === null) patch.publish_at = null;
+        else { const d = new Date(String(body.publish_at)); if (isNaN(d.getTime())) return json({ error: 'bad_time' }, 400); patch.publish_at = d.toISOString(); }
+      }
+      const { data, error } = await db.from('ve_pulse_content').update(patch).eq('id', piece.id).select('id, track, publish_at').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true, piece: data });
+    }
+
+    if (body.action === 'piece_update_note') {
+      const note = plain(body.note, 300) || null;
+      const { data, error } = await db.from('ve_pulse_content').update({ updated_note: note, updated_note_at: note ? now : null }).eq('id', piece.id).select('id, updated_note, updated_note_at').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true, piece: data });
+    }
+
+    let { data: out } = await db.from('ve_pulse_outreach').select(OUT_COLS).eq('pulse_id', piece.id).maybeSingle();
+    if (!out) {
+      // First look: draft it from the listing (if the piece names one) and the template.
+      let listing: any = null;
+      if (piece.business_listing_id) ({ data: listing } = await db.from('listings').select('id, name, email, website, instagram, ve_contact_name, ve_contact_email').eq('id', piece.business_listing_id).maybeSingle());
+      const email = listing?.ve_contact_email || listing?.email || null;
+      const t = outreachTemplate(piece.track, { name: listing?.ve_contact_name || null, business: listing?.name || null, city: piece.city_slug, title: piece.title, when: '{{go_live}}' });
+      const row = {
+        pulse_id: piece.id, brand_slug: piece.brand_slug || 'vegans-explore', business_listing_id: listing?.id || null,
+        contact_name: listing?.ve_contact_name || null, contact_email: email,
+        contact_channel: email ? 'email' : listing?.instagram ? 'instagram' : listing?.website ? 'website' : 'none',
+        contact_url: email ? null : listing?.instagram ? `https://instagram.com/${String(listing.instagram).replace(/^@/, '')}` : listing?.website || null,
+        contact_source: listing ? 'Directory listing' : null, subject: t.subject, body: t.body,
+      };
+      ({ data: out } = await db.from('ve_pulse_outreach').insert(row).select(OUT_COLS).single());
+    }
+    if (!out) return json({ error: 'save_failed' }, 500);
+    // The writer may save just the contact it found; the email itself comes from the template.
+    if (out.status === 'draft' && (!out.subject || !out.body)) {
+      let business: string | null = null;
+      if (out.business_listing_id) { const { data: l } = await db.from('listings').select('name').eq('id', out.business_listing_id).maybeSingle(); business = l?.name || null; }
+      const t = outreachTemplate(piece.track, { name: out.contact_name, business, city: piece.city_slug, title: piece.title, when: '{{go_live}}' });
+      const { data: filled } = await db.from('ve_pulse_outreach').update({ subject: out.subject || t.subject, body: out.body || t.body, updated_at: now }).eq('id', out.id).select(OUT_COLS).single();
+      if (filled) out = filled;
+    }
+
+    if (body.action === 'outreach_get') {
+      const { data: p2 } = await db.from('ve_pulse_content').select('track, publish_at, updated_note').eq('id', piece.id).single();
+      // suggested_publish_at: what Send will schedule when no time is set (5pm local, see defaultPublishAt).
+      return json({ ok: true, outreach: out, track: p2?.track, publish_at: p2?.publish_at, updated_note: p2?.updated_note || null, suggested_publish_at: defaultPublishAt(piece.city_slug).toISOString() });
+    }
+
+    if (body.action === 'outreach_save') {
+      const patch: Record<string, unknown> = { updated_at: now };
+      if (body.contact_name !== undefined) patch.contact_name = plain(body.contact_name, 120) || null;
+      if (body.contact_email !== undefined) {
+        const e = String(body.contact_email || '').trim().toLowerCase();
+        if (e && !/^[^\s@<>"]+@[^\s@<>"]+\.[a-z]{2,}$/i.test(e)) return json({ error: 'bad_email' }, 400);
+        patch.contact_email = e || null;
+        if (e) patch.contact_channel = 'email';
+      }
+      if (body.contact_channel !== undefined) { if (!['email', 'instagram', 'website', 'none'].includes(body.contact_channel)) return json({ error: 'bad_channel' }, 400); patch.contact_channel = body.contact_channel; }
+      if (body.contact_url !== undefined) patch.contact_url = /^https:\/\/[^\s<>"]+$/i.test(String(body.contact_url || '')) ? String(body.contact_url).slice(0, 500) : null;
+      if (body.subject !== undefined) patch.subject = String(body.subject || '').replace(/[<>\r\n]/g, ' ').trim().slice(0, 160) || null;
+      if (body.body !== undefined) patch.body = String(body.body || '').replace(/\r\n?/g, '\n').slice(0, 6000) || null;
+      if (body.redraft) {
+        const { data: p2 } = await db.from('ve_pulse_content').select('track').eq('id', piece.id).single();
+        let business: string | null = null;
+        if (out.business_listing_id) { const { data: l } = await db.from('listings').select('name').eq('id', out.business_listing_id).maybeSingle(); business = l?.name || null; }
+        const t = outreachTemplate(p2?.track || 'spotlight', { name: (patch.contact_name as string) ?? out.contact_name, business, city: piece.city_slug, title: piece.title, when: '{{go_live}}' });
+        patch.subject = t.subject; patch.body = t.body;
+      }
+      const { data, error } = await db.from('ve_pulse_outreach').update(patch).eq('id', out.id).select(OUT_COLS).single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true, outreach: data });
+    }
+
+    if (body.action === 'outreach_mark') {
+      if (!['replied', 'skipped'].includes(body.status)) return json({ error: 'bad_status' }, 400);
+      const { data, error } = await db.from('ve_pulse_outreach').update({ status: body.status, reply_note: plain(body.reply_note, 1000) || out.reply_note, updated_at: now }).eq('id', out.id).select(OUT_COLS).single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true, outreach: data });
+    }
+
+    // outreach_send
+    if (out.status === 'sent' || out.status === 'replied') return json({ error: 'already_sent' }, 409);
+    if (!out.contact_email) return json({ error: 'no_email' }, 400);
+    if (!out.subject || !out.body) return json({ error: 'empty' }, 400);
+    if ((piece.brand_slug || 'vegans-explore') !== 'vegans-explore') return json({ error: 'brand_not_ready' }, 400);
+    if (!RESEND_KEY) return json({ error: 'not_configured' }, 500);
+    // Sending is Sean's go: a draft with no time yet is scheduled for the default (5pm local),
+    // saved only once the email has gone.
+    const schedule = piece.status === 'draft' && !piece.publish_at;
+    if (schedule) piece.publish_at = defaultPublishAt(piece.city_slug).toISOString();
+    let text = out.body;
+    const goLive = piece.status === 'published' ? null : piece.publish_at ? whenText(new Date(piece.publish_at), piece.city_slug) : null;
+    text = text.replace('It goes live {{go_live}}.', piece.status === 'published' ? "It's live now." : goLive ? `It goes live ${goLive}.` : 'It goes live in the next day or two.');
+    text = text.split('{{go_live}}').join(goLive || 'soon');
+    if (piece.track === 'news') {
+      // The gold standard: a News subject never gets the draft.
+      if (/\{\{preview_link\}\}|\/pulse\/[^\s]*\?preview=/.test(text)) return json({ error: 'news_no_preview' }, 400);
+    } else if (text.includes('{{preview_link}}')) {
+      let link = `https://vegansexplore.com/pulse/${encodeURIComponent(piece.slug)}`;
+      if (piece.status !== 'published') {
+        const { data: tok, error: te } = await db.from('ve_pulse_previews').insert({ pulse_id: piece.id, expires_at: new Date(Date.now() + 14 * 864e5).toISOString() }).select('token').single();
+        if (te || !tok) return json({ error: 'save_failed' }, 500);
+        link += `?preview=${tok.token}`;
+      }
+      text = text.split('{{preview_link}}').join(link);
+    }
+    let res: Response, sent: any = {};
+    try {
+      res = await fetch('https://api.resend.com/emails', {
+        method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: 'Sean A. Russell at Vegans Explore <hello@vegansexplore.com>', to: [out.contact_email], reply_to: REPLY_TO, subject: out.subject, text, html: emailHtml(text) }),
+      });
+      sent = await res.json().catch(() => ({}));
+    } catch (e) {
+      await db.from('ve_pulse_outreach').update({ status: 'failed', error: 'could not reach Resend', updated_at: now }).eq('id', out.id);
+      return json({ error: 'send_failed' }, 502);
+    }
+    if (!res.ok || !sent.id) {
+      const why = String(sent.message || sent.name || `http_${res.status}`).slice(0, 300);
+      await db.from('ve_pulse_outreach').update({ status: 'failed', error: why, updated_at: now }).eq('id', out.id);
+      return json({ error: 'send_failed', message: why }, 502);
+    }
+    if (schedule) await db.from('ve_pulse_content').update({ publish_at: piece.publish_at }).eq('id', piece.id);
+    const { data, error } = await db.from('ve_pulse_outreach').update({ status: 'sent', sent_at: now, resend_id: String(sent.id), error: null, body: text, updated_at: now }).eq('id', out.id).select(OUT_COLS).single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, outreach: data });
   }
 
   if (body.action === 'feeds_list') {

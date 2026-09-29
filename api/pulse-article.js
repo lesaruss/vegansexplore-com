@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
       const headers = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
       const r = preview
         ? await fetch(SUPABASE_URL + '/rest/v1/rpc/ve_pulse_preview', { method: 'POST', headers: headers, body: JSON.stringify({ p_token: previewToken }) })
-        : await fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url,cover_credit,cover_license&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1', { headers: headers });
+        : await fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url,cover_credit,cover_license,updated_note,updated_note_at&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1', { headers: headers });
       const rows = await r.json();
       if (Array.isArray(rows) && rows[0] && (!preview || rows[0].slug === slug)) {
         const row = rows[0];
@@ -129,7 +129,9 @@ module.exports = async (req, res) => {
           date: row.published_at || preview ? new Date(row.published_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '',
           body: row.body || '',
           coverCredit: row.cover_credit || '',
-          coverLicense: row.cover_license || ''
+          coverLicense: row.cover_license || '',
+          updatedNote: row.updated_note || '',
+          updatedAt: row.updated_note_at || null
         };
       }
     } catch (e) {
@@ -187,7 +189,9 @@ module.exports = async (req, res) => {
   }
   if (post.audioUrl) embedHtml += '<audio controls preload="metadata" src="' + esc(post.audioUrl) + '" style="display:block;width:100%;margin-bottom:28px;" aria-label="Listen: ' + esc(title) + '"></audio>';
   if (post.fromDepot) embedHtml += '<h1 style="font-size:clamp(24px,3.4vw,34px);font-weight:900;line-height:1.15;margin:0 0 8px;">' + esc(title) + '</h1>'
-    + '<p style="font-size:13px;font-weight:700;color:rgba(26,26,26,0.72);margin:0 0 22px;">' + (post.author ? 'By ' + esc(post.author) + ' &middot; ' : '') + esc(post.date || '') + '</p>';
+    + '<p style="font-size:13px;font-weight:700;color:rgba(26,26,26,0.72);margin:0 0 ' + (post.updatedNote ? '8px' : '22px') + ';">' + (post.author ? 'By ' + esc(post.author) + ' &middot; ' : '') + esc(post.date || '') + '</p>'
+    // Updated (Sean, 2026-09-29): what changed after the subject replied, the way newsrooms mark it.
+    + (post.updatedNote ? '<p class="article-updated">Updated' + (post.updatedAt ? ' ' + esc(new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' })) : '') + ': ' + esc(post.updatedNote) + '</p>' : '');
 
   const html = '<!DOCTYPE html>'
     + '<html lang="en"><head>'
@@ -268,6 +272,8 @@ module.exports = async (req, res) => {
     + '.article-p{font-size:14px;font-weight:400;color:var(--ve-text-75);line-height:1.8;margin-bottom:16px;}'
     + '.article > p:not([class]):not([style]){font-size:14px;font-weight:400;color:var(--ve-text-75);line-height:1.8;margin:0 0 18px;}'
     + '.article a:not([class]){color:var(--ve-green-dark);font-weight:700;text-decoration:underline;text-underline-offset:3px;}'
+    + '.article-updated{font-size:12.5px;font-weight:600;color:var(--ve-text-75);background:#f4f7f4;border-left:3px solid var(--ve-green);padding:6px 10px;margin:0 0 22px;line-height:1.5;}'
+    + '.article-change{font-size:12px;color:var(--ve-text-50);margin:14px 0 0;line-height:1.5;}'
     + '.cover-credit{font-size:11.5px;font-weight:600;color:var(--ve-text-50);text-align:right;line-height:1.4;}'
     + '.article-source{font-size:12.5px;font-weight:600;color:var(--ve-text-50);line-height:1.6;margin:22px 0 0;}'
     + '.article-list{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:12px;}'
@@ -334,6 +340,8 @@ module.exports = async (req, res) => {
     + '<div class="pulse-list-wrap"><div class="pulse-content-row">'
     + '<div class="pulse-main">'
     + '<div class="article">' + embedHtml + post.body + sourceHtml
+    // Anyone can ask for a change or a removal (Sean, 2026-09-29).
+    + (post.fromDepot ? '<p class="article-change">Something wrong, or want this taken down? <a href="mailto:hello@vegansexplore.com?subject=' + encodeURIComponent('Change request: ' + post.headline) + '">Email us</a> and we will fix it.</p>' : '')
     + '<div class="share-bar">'
     + '<textarea id="captionInput" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;"></textarea>'
     + '<div class="share-label">Share this article</div>'
