@@ -527,3 +527,14 @@ in `/public/ve-media-upload.js` (`logoFile`, `setLogo`) and the Logos tab uses i
 `ve-media-library` v13 (`verify_jwt=false`, unchanged) accepts `logo_set` / `logo_fetch` for any
 approved listing in any city (v12 allowed only South Florida). The Logos tab stays for bulk work
 (3,408 of 3,659 listings had no logo) until it moves to the Businesses tile as Missing logos.
+
+## One Depot engine, step 1: a brand on every record (2026-09-29)
+
+Sean: the main Depot lives in HQ and feeds every brand; each brand's Depot is the same system
+filtered to that brand. Migration `depot_brand_on_every_record` adds `brand_slug` (not null,
+default `vegans-explore`, foreign key to `brands.slug`, indexed) to `ve_media_library`,
+`ve_news_leads`, `ve_news_feeds`, `ve_onboarding_slides`, `ve_onboarding_panels` and
+`ve_onboarding_audio`, and ties the existing `ve_pulse_content.brand_slug` to the same registry.
+Every existing row is Vegans Explore; the default keeps the live pages and functions writing
+correctly with no code change. Next: the main Depot in HQ (lesaruss-hq) reads these tables across
+brands, and each brand's Depot is the same Depot with the brand filter fixed.
