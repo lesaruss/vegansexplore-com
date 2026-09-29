@@ -1061,8 +1061,11 @@ function renderListing(l){
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
 
-  // Photos right after About
-  var overviewPhotoHtml = renderPhotos(l.google_photos, 'ov');
+  // Photos right after About. Not listings.google_photos (Sean, 2026-09-29, BOSS "source reliable
+  // photos"): those are Google Maps users' photos, which we have no right to show. Only photos the
+  // business or Vegans Explore own go here; the column is kept, just not shown.
+  var ownPhotos = [];
+  var overviewPhotoHtml = renderPhotos(ownPhotos, 'ov');
   if(overviewPhotoHtml){
     overviewContent += '<div class="section"><h2 class="section-title">Photos</h2>'+overviewPhotoHtml+'</div>';
   }
@@ -1086,7 +1089,7 @@ function renderListing(l){
   // Unlock section lives in sidebar for unclaimed listings
 
   // PHOTOS tab content — 2-col grid with lightbox
-  var photoHtml = renderPhotos(l.google_photos, 'tab-photos', true);
+  var photoHtml = renderPhotos(ownPhotos, 'tab-photos', true);
   var photosTabContent = photoHtml
     ? '<div style="padding:32px 40px 40px">'+photoHtml+'</div>'
     : lockedTab('photos');
@@ -1094,7 +1097,7 @@ function renderListing(l){
   // SEO: title, OG tags, schema.org
   var _ogTitle = esc(l.name) + ' — VEGANS EXPLORE';
   var _ogDesc = ((l.description || l.tagline || '')+(l.address_city ? ' · '+l.address_city+(l.address_state?', '+l.address_state:'') : '')).substring(0,200) || 'Find the best Vegan-friendly businesses on VEGANS EXPLORE.';
-  var _ogImg = (l.google_photos && l.google_photos[0]) || l.logo_url || 'https://vegansexplore.com/public/og-default.png';
+  var _ogImg = l.logo_url || 'https://vegansexplore.com/public/og-default.png';
   document.title = _ogTitle;
   var _metaMap = {'og-title':_ogTitle,'og-description':_ogDesc,'og-image':_ogImg,'meta-description':_ogDesc};
   Object.keys(_metaMap).forEach(function(id){ var el=document.getElementById(id); if(el) el.setAttribute('content',_metaMap[id]); });
@@ -1105,7 +1108,7 @@ function renderListing(l){
     'description':l.description||l.tagline||undefined,
     'url':window.location.href,
     'telephone':l.phone||undefined,
-    'image':l.logo_url||(l.google_photos&&l.google_photos[0])||undefined,
+    'image':l.logo_url||undefined,
     'address':l.address_city?{'@type':'PostalAddress','streetAddress':l.address_street||undefined,'addressLocality':l.address_city,'addressRegion':l.address_state,'addressCountry':'US'}:undefined,
     'sameAs':[l.instagram?'https://instagram.com/'+l.instagram.replace('@',''):null,l.facebook||null,l.twitter?'https://twitter.com/'+l.twitter:null].filter(Boolean)
   };
@@ -1364,7 +1367,7 @@ function renderInstagramContent(veBusinessId){
         }
       }
 
-      // ── Photos tab — merge Instagram photos below google_photos ────────────
+      // ── Photos tab — Instagram photos (the business's own posts) ────────────
       var photoEl = document.getElementById('tab-photos');
       if(photoEl && photos.length){
         var igUrls = photos.filter(function(p){ return !!p.thumbnail_url; }).map(function(p){ return p.thumbnail_url; });
