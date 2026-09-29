@@ -147,6 +147,24 @@ module.exports = async (req, res) => {
   }
 
   const pageUrl = 'https://vegansexplore.com/pulse/' + post.slug;
+  // Depot pieces (Sean, 2026-09-29): the Background writer ends every piece with
+  // "First reported by <Source>: <url>". That line becomes the source's name as a link, in a
+  // smaller line under the article, and any other bare link in the text becomes clickable.
+  let sourceHtml = '';
+  if (post.fromDepot) {
+    const credit = /<p>\s*((?:First|Originally) reported by|Source:?)\s+([^<]+?)\s*:\s*(https?:\/\/[^\s<"]+?)[.,]?\s*<\/p>\s*$/i;
+    const m = post.body.match(credit);
+    if (m) {
+      post.body = post.body.slice(0, m.index);
+      sourceHtml = '<p class="article-source">' + m[1] + ' <a href="' + m[3] + '" target="_blank" rel="noopener">' + m[2] + '</a></p>';
+    }
+    post.body = post.body.replace(/(^|[\s(>])(https?:\/\/[^\s<"']+?)([.,;:!?)]*)(?=[\s<]|$)/g, function (_, pre, url, tail) {
+      let label = url;
+      try { label = new URL(url.replace(/&amp;/g, '&')).hostname.replace(/^www\./, ''); } catch (e) {}
+      return pre + '<a href="' + url + '" target="_blank" rel="noopener">' + label + '</a>' + tail;
+    });
+  }
+
   const title = post.headline;
   const description = (post.excerpt || '').slice(0, 200);
   const image = post.img || 'https://vegansexplore.com/public/pulse-ve-banner.png';
@@ -219,16 +237,16 @@ module.exports = async (req, res) => {
     + '.mb-breadcrumb .current{color:rgba(255,255,255,0.85);}'
     + '@media (max-width:640px){.member-bar{padding:14px 24px;flex-direction:column;align-items:flex-start;}}'
     + '.pulse-list-wrap{padding:28px 40px 64px;}'
-    + '.pulse-content-row{display:flex;align-items:flex-start;gap:24px;max-width:1180px;margin:0 auto;}'
+    + '.pulse-content-row{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;max-width:1180px;margin:0 auto;}'
     + '.pulse-main{flex:1;min-width:0;max-width:760px;}'
     + '.ad-rail{width:300px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:16px;position:sticky;top:24px;}'
-    + '.ad-rail-label{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-30);text-align:center;}'
+    + '.ad-rail-label{position:absolute;left:0;right:0;bottom:100%;margin-bottom:6px;font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-30);text-align:center;}'
     + '.ad-slot{position:relative;border-radius:8px;overflow:hidden;background:#fff;border:1px solid var(--ve-border);width:100%;max-width:300px;flex-shrink:0;}'
     + '.ad-slot-tower{aspect-ratio:1/2;} .ad-slot-landscape{aspect-ratio:6/5;}'
     + '.ad-slot a{display:block;width:100%;height:100%;} .ad-slot img{width:100%;height:100%;object-fit:cover;display:block;}'
     + '.ad-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:var(--ve-green-light);color:var(--ve-green-dark);}'
     + '.ad-placeholder svg{width:26px;height:26px;opacity:0.6;} .ad-ph-text{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;} .ad-ph-dim{font-size:10px;font-weight:600;color:var(--ve-text-30);}'
-    + '@media (max-width:1240px){.pulse-content-row{flex-direction:column;}.ad-rail{position:static;top:auto;width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:12px;padding-top:20px;border-top:1px solid var(--ve-border);}.ad-slot{width:100%;max-width:100%;}}'
+    + '@media (max-width:960px){.pulse-content-row{flex-direction:column;}.ad-rail-label{position:static;width:100%;margin:0;}.ad-rail{position:static;top:auto;width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:12px;padding-top:20px;border-top:1px solid var(--ve-border);}.ad-slot{width:100%;max-width:100%;}}'
     + '@media (max-width:640px){.pulse-list-wrap{padding:16px 16px 48px;}}'
     + '.panel-breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:28px;flex-wrap:wrap;}'
     + '.panel-trail-btn{background:none;border:none;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-dark);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px;}'
@@ -240,6 +258,9 @@ module.exports = async (req, res) => {
     + '.article-lede{font-size:15px;font-weight:400;color:var(--ve-text-75);line-height:1.75;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--ve-border);}'
     + '.article-section-head{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-text);margin:28px 0 12px;}'
     + '.article-p{font-size:14px;font-weight:400;color:var(--ve-text-75);line-height:1.8;margin-bottom:16px;}'
+    + '.article > p:not([class]):not([style]){font-size:14px;font-weight:400;color:var(--ve-text-75);line-height:1.8;margin:0 0 18px;}'
+    + '.article a:not([class]){color:var(--ve-green-dark);font-weight:700;text-decoration:underline;text-underline-offset:3px;}'
+    + '.article-source{font-size:12.5px;font-weight:600;color:var(--ve-text-50);line-height:1.6;margin:22px 0 0;}'
     + '.article-list{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:12px;}'
     + '.article-list li{display:flex;align-items:flex-start;gap:12px;font-size:13px;color:var(--ve-text-75);line-height:1.65;}'
     + '.article-list li strong{color:var(--ve-text);font-weight:700;}'
@@ -303,7 +324,7 @@ module.exports = async (req, res) => {
     + '</div>'
     + '<div class="pulse-list-wrap"><div class="pulse-content-row">'
     + '<div class="pulse-main">'
-    + '<div class="article">' + embedHtml + post.body
+    + '<div class="article">' + embedHtml + post.body + sourceHtml
     + '<div class="share-bar">'
     + '<textarea id="captionInput" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;"></textarea>'
     + '<div class="share-label">Share this article</div>'
