@@ -4,6 +4,11 @@
 // title/image/description in the raw page source, since pulse.html builds its content
 // with client-side JavaScript that those crawlers never execute.
 //
+// Preview (Sean, 2026-09-29): /pulse/<slug>?preview=<token> shows a piece, draft or not, with
+// this same page, for the Depot's Preview button (hq.lesaruss.ai/depot and the brand Depots).
+// The token comes from public.ve_pulse_previews and lives an hour; ve_pulse_preview() returns
+// the piece only for a live token. A preview is marked, never indexed and never cached.
+//
 // Categories and ad rail here must mirror pulse.html exactly (same consolidated
 // Community/Recipes taxonomy, same ad_placements/ad_campaigns rail via ad-resolve).
 
@@ -94,15 +99,22 @@ module.exports = async (req, res) => {
     return res.end();
   }
 
-  let post = STATIC_POSTS.find(function (p) { return p.slug === slug; });
+  const previewToken = String((req.query && req.query.preview) || '');
+  const preview = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(previewToken);
+  let previewStatus = '';
+
+  let post = preview ? null : STATIC_POSTS.find(function (p) { return p.slug === slug; });
 
   if (!post) {
     try {
-      const url = SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1';
-      const r = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY } });
+      const headers = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+      const r = preview
+        ? await fetch(SUPABASE_URL + '/rest/v1/rpc/ve_pulse_preview', { method: 'POST', headers: headers, body: JSON.stringify({ p_token: previewToken }) })
+        : await fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1', { headers: headers });
       const rows = await r.json();
-      if (Array.isArray(rows) && rows[0]) {
+      if (Array.isArray(rows) && rows[0] && (!preview || rows[0].slug === slug)) {
         const row = rows[0];
+        if (preview) previewStatus = row.status || 'draft';
         post = {
           slug: row.slug,
           category: row.category,
@@ -114,7 +126,7 @@ module.exports = async (req, res) => {
           audioUrl: row.audio_url,
           author: row.author,
           fromDepot: row.origin === 'depot',
-          date: row.published_at ? new Date(row.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '',
+          date: row.published_at || preview ? new Date(row.published_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '',
           body: row.body || ''
         };
       }
@@ -157,6 +169,7 @@ module.exports = async (req, res) => {
     + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
     + '<title>' + esc(title) + ' - VEGANS EXPLORE Pulse</title>'
     + '<meta name="description" content="' + esc(description) + '">'
+    + (preview ? '<meta name="robots" content="noindex, nofollow">' : '')
     + '<link rel="canonical" href="' + pageUrl + '">'
     + '<meta property="og:type" content="article">'
     + '<meta property="og:site_name" content="VEGANS EXPLORE">'
@@ -269,6 +282,7 @@ module.exports = async (req, res) => {
     + '.pulse-comment-text{font-size:13px;color:var(--ve-text-75);line-height:1.6;white-space:pre-wrap;word-break:break-word;}'
     + '</style></head><body>'
     + '<script src="/public/nav.js"></script>'
+    + (preview ? '<div role="note" style="position:sticky;top:0;z-index:50;background:#F69820;color:#1a1a1a;font:800 12px/1.4 Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:9px 12px;">Preview' + (previewStatus === 'published' ? ' of a published piece' : ': not published yet') + '</div>' : '')
     + '<section class="pulse-hero hero-collapsed" id="pulse-hero-section" aria-labelledby="pulse-hero-h1">'
     + '<div class="hero-inner">'
     + '<p class="hero-eyebrow">Vegans Explore</p>'
@@ -353,6 +367,7 @@ module.exports = async (req, res) => {
     + '</body></html>';
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400');
+  res.setHeader('Cache-Control', preview ? 'private, no-store' : 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400');
+  if (preview) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   res.status(200).send(html);
 };
