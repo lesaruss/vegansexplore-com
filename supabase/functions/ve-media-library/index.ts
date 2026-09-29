@@ -33,7 +33,7 @@
 //   shows in that hub's Local News feed (public/hub-news.js reads ve_pulse_city_tags). This
 //   replaces /admin/pulse-city-tags, which wrote the table with the anon key and was refused.
 // POST { action: 'logo_list', region }            a region's directory listings and their logos
-// POST { action: 'logo_set', listing_id, url }    url: a library picture, or null for the initials
+// POST { action: 'logo_set', listing_id, url }    url: a library picture, or null for the initials (any approved listing)
 // POST { action: 'logo_fetch', listing_id }       the listing's current logo from its own website, as base64
 //   The Depot's Logos tab (Sean, 2026-09-27: update directory logos "similar to how we are
 //   updating the Onboarding pages in the Depot"). A logo is a library picture tagged 'logo';
@@ -79,7 +79,6 @@ function youtubeId(v: unknown): string | null {
 const LOGO_REGIONS: Record<string, string[]> = {
   'south-florida': ['Miami', 'Miami Beach', 'North Miami', 'Aventura', 'Doral', 'Hollywood', 'Fort Lauderdale', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate', 'West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Tequesta', 'Loxahatchee'],
 };
-const LOGO_CITIES = Object.values(LOGO_REGIONS).flat();
 const LISTING_COLS = 'id, slug, name, category, address_city, logo_url, logo_alt_text, initials, color';
 const MAX_FULL = 8 * 1024 * 1024;
 const MAX_THUMB = 1024 * 1024;
@@ -296,7 +295,8 @@ Deno.serve(async (req) => {
     const id = String(body.listing_id || '');
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
     const { data: listing } = await db.from('listings').select(LISTING_COLS).eq('id', id).eq('status', 'approved').maybeSingle();
-    if (!listing || !LOGO_CITIES.includes(listing.address_city)) return json({ error: 'not_found' }, 404);
+    // Any approved listing, in any city: the listing editor sets logos everywhere (Sean, 2026-09-29).
+    if (!listing) return json({ error: 'not_found' }, 404);
 
     if (body.action === 'logo_fetch') {
       let u: URL;

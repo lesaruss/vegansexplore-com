@@ -16,6 +16,8 @@
  *     items: only the files that are new to the library. saved: the library item for every
  *     file that went through, new or already there, in order (the Logos tab needs a dupe's url).
  *   VEMediaUpload.bindDrop(dropEl, inputEl, onFiles)   folder drag-and-drop + click to choose
+ *   VEMediaUpload.logoFile(blob, listing)  -> Promise<File>  a logo drawn onto white, at most 800px, as PNG
+ *   VEMediaUpload.setLogo(token, blob, listing) -> Promise<listing>  upload it and put it on the listing
  *   A File may carry veRef (where it came from, e.g. 'higgsfield:<id>') and veName (its label).
  */
 (function () {
@@ -129,5 +131,35 @@
     inputEl.addEventListener('change', function (e) { onFiles(Array.prototype.slice.call(e.target.files || [])); e.target.value = ''; });
   }
 
-  window.VEMediaUpload = { accepts: accepts, upload: upload, bindDrop: bindDrop, api: api };
+  // Directory logos (the Depot's Logos tab and the listing editor). Any picture (PNG, JPEG, WebP,
+  // SVG, GIF...) is drawn onto white first, so a see-through logo never turns black where the
+  // library saves JPEG, and scaled to at most 800px, plenty for a 72px card on a sharp screen.
+  var LOGO_MAX = 800;
+  function logoFile(blob, l) {
+    return new Promise(function (res, rej) {
+      var url = URL.createObjectURL(blob), img = new Image();
+      img.onload = function () {
+        var w = img.naturalWidth || 512, h = img.naturalHeight || 512, k = Math.min(1, LOGO_MAX / Math.max(w, h));
+        var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+        var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.imageSmoothingQuality = 'high'; x.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) {
+          if (!b) return rej(new Error('encode'));
+          var f = new File([b], (l.slug || 'logo') + '-logo.png', { type: 'image/png' });
+          f.veName = l.name + ' logo'; f.veRef = 'listing-logo:' + String(l.slug || l.id).slice(0, 180);
+          res(f);
+        }, 'image/png');
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('not_an_image')); };
+      img.src = url;
+    });
+  }
+  function setLogo(token, blob, l) {
+    return logoFile(blob, l).then(function (f) { return upload([f], token); }).then(function (r) {
+      var it = r.saved[0]; if (!it) throw new Error('upload');
+      return api(token, { action: 'logo_set', listing_id: l.id, url: it.url });
+    }).then(function (d) { if (!d.ok) throw new Error(d.error || 'save'); return d.listing; });
+  }
+
+  window.VEMediaUpload = { accepts: accepts, upload: upload, bindDrop: bindDrop, api: api, logoFile: logoFile, setLogo: setLogo };
 })();

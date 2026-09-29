@@ -4,6 +4,10 @@
  * mark it closed, and, for restaurants and cafes, fill in the At a Glance details (atmosphere,
  * seating, amenities, accessibility, ownership) that Love Life Cafe shows.
  *
+ * Logo (Sean, 2026-09-29: "upload the logos directly on the listings"): upload one, copy a logo
+ * still linked from the business's own site into our storage, or remove it. A logo change saves
+ * right away through ve-media-library (logo_set / logo_fetch), the same path as Depot > Logos.
+ *
  * Nobody else sees it: the button only renders for a signed-in superadmin (not while
  * previewing the site as someone else), and ve-claims admin_listing checks is_superadmin again.
  *
@@ -14,6 +18,7 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FN = SB + '/functions/v1/ve-claims';
+  var OURS = SB + '/storage/v1/object/public/vegan-media/';
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   // Main sections and their sub-sections. Keep in step with CAT_MAP / CAT_CONFIG in
   // /public/ve-region-directory.js and CATEGORIES in supabase/functions/ve-claims.
@@ -53,8 +58,11 @@
     '#vla .save{background:#1f5f22;color:#fff;border:0}#vla .save:disabled{opacity:.5}#vla .cancel{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25)}' +
     '@media(max-width:520px){#vla .row{grid-template-columns:1fr 1fr}#vla .row .street{grid-column:1/-1}}' +
     '.vla-edit{font-family:Montserrat,sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:4px;border:1px dashed #b7791f;background:#fffaf0;color:#7a4b00;cursor:pointer}' +
-    '.vla-edit:hover{background:#fff1d6}';
-  var FIELDS = 'id,slug,name,category,extra_categories,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly';
+    '.vla-edit:hover{background:#fff1d6}' +
+    '#vla .logo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}#vla .logo-img{width:72px;height:72px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;flex:0 0 auto}' +
+    '#vla .logo-btns{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}#vla .logo-btns button{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25);padding:8px 12px;min-height:38px}#vla .logo-btns .rm{color:#8a1c12}' +
+    '#vla .logo-msg{flex-basis:100%;font-size:12.5px;font-weight:700;color:#1f5f22;min-height:18px}#vla .logo-msg.bad{color:#8a1c12}';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -64,6 +72,15 @@
   function css() { if (!document.getElementById('vla-css')) { var st = document.createElement('style'); st.id = 'vla-css'; st.textContent = CSS; document.head.appendChild(st); } }
   function sectionOf(cat) { for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i][1].indexOf(cat) >= 0) return SECTIONS[i][0]; return ''; }
   function subsOf(sec) { for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i][0] === sec) return SECTIONS[i][1]; return []; }
+  // The shared uploader is only on Depot pages, so the editor loads it the first time a logo is added.
+  function uploader() {
+    if (window.VEMediaUpload) return Promise.resolve(window.VEMediaUpload);
+    return new Promise(function (res, rej) {
+      var sc = document.createElement('script'); sc.src = '/public/ve-media-upload.js';
+      sc.onload = function () { window.VEMediaUpload ? res(window.VEMediaUpload) : rej(new Error('load')); }; sc.onerror = function () { rej(new Error('load')); };
+      document.head.appendChild(sc);
+    });
+  }
   function chip(type, name, value, label, on) { return '<label><input type="' + type + '" name="' + name + '" value="' + esc(value) + '"' + (on ? ' checked' : '') + '>' + esc(label) + '</label>'; }
 
   // The hub cards only carry a few fields, so fetch the whole row first.
@@ -90,6 +107,10 @@
     wrap.innerHTML = '<div class="box" role="dialog" aria-modal="true" aria-labelledby="vla-t">' +
       '<h2 id="vla-t">Edit listing</h2><div class="who">Admin only. Changes are live as soon as you save.</div>' +
       '<label class="h" for="vla-name">Business name</label><input type="text" id="vla-name" maxlength="160" value="' + esc(l.name) + '">' +
+
+      '<h3>Logo</h3><div class="logo"><div class="logo-img" id="vla-logo"></div><div class="logo-btns">' +
+      '<button type="button" id="vla-up">Upload a logo</button><button type="button" id="vla-copy" hidden>Copy it into our storage</button><button type="button" class="rm" id="vla-rm" hidden>Remove</button>' +
+      '<input type="file" id="vla-file" accept="image/*" hidden></div><div class="logo-msg" id="vla-lmsg" role="status"></div></div>' +
 
       '<h3>Location</h3>' +
       '<label class="check"><input type="checkbox" id="vla-online"' + (online ? ' checked' : '') + '> Online only, no storefront</label>' +
@@ -135,14 +156,63 @@
     $('#vla-sub').addEventListener('change', syncSub);
     $('#vla-extra').addEventListener('change', syncSub);
     drawSubs(l.category);
+    // ---- Logo: saves on its own, right away.
+    var logoChanged = false;
+    function drawLogo(msg, bad) {
+      var box = $('#vla-logo'), u = l.logo_url || '';
+      if (u) { box.style.backgroundImage = 'url("' + u.replace(/"/g, '%22') + '")'; box.style.backgroundColor = '#fff'; box.textContent = ''; box.setAttribute('aria-label', 'Current logo'); }
+      else { box.style.backgroundImage = ''; box.style.backgroundColor = l.color || '#1f5f22'; box.textContent = l.initials || String(l.name || '?').slice(0, 2).toUpperCase(); box.setAttribute('aria-label', 'No logo yet, the initials show instead'); }
+      $('#vla-up').textContent = u ? 'Replace the logo' : 'Upload a logo';
+      $('#vla-copy').hidden = !u || u.indexOf(OURS) === 0; // still hotlinked from the business's site
+      $('#vla-rm').hidden = !u;
+      var m = $('#vla-lmsg');
+      m.className = 'logo-msg' + (bad ? ' bad' : '');
+      m.textContent = msg != null ? msg : (u && u.indexOf(OURS) !== 0 ? 'This logo is linked from their website. Copy it into our storage so it never breaks.' : u ? '' : 'No logo yet. The initials show instead.');
+    }
+    function logoWork(label, p) {
+      var btns = wrap.querySelectorAll('.logo-btns button'); btns.forEach(function (b) { b.disabled = true; });
+      drawLogo(label);
+      return p().then(function (saved) {
+        l.logo_url = saved.logo_url; target.logo_url = saved.logo_url; target.logo_alt_text = saved.logo_alt_text; logoChanged = true;
+        drawLogo(saved.logo_url ? 'Saved. The logo is live now.' : 'Removed. The initials show now.');
+      }, function (e) {
+        drawLogo(e && e.message === 'not_an_image' ? 'That file is not a picture.' : e && e.message === 'fetch_failed' ? 'Their website would not hand over the logo. Upload it instead.' : 'That did not save. Try again.', true);
+      }).then(function () { btns.forEach(function (b) { b.disabled = false; }); });
+    }
+    $('#vla-up').onclick = function () { $('#vla-file').click(); };
+    $('#vla-file').onchange = function () {
+      var f = this.files && this.files[0]; this.value = ''; if (!f) return;
+      logoWork('Adding the logo...', function () { return uploader().then(function (U) { return U.setLogo(VEAuth.getToken(), f, l); }); });
+    };
+    $('#vla-copy').onclick = function () {
+      logoWork('Copying the logo from their website...', function () {
+        return uploader().then(function (U) {
+          return U.api(VEAuth.getToken(), { action: 'logo_fetch', listing_id: l.id }).then(function (d) {
+            if (!d.ok) throw new Error(d.error || 'fetch_failed');
+            var bin = atob(d.b64), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+            return U.setLogo(VEAuth.getToken(), new Blob([a], { type: d.mime }), l);
+          });
+        });
+      });
+    };
+    $('#vla-rm').onclick = function () {
+      if (!confirm('Remove this logo? The initials show instead.')) return;
+      logoWork('Removing...', function () {
+        return uploader().then(function (U) { return U.api(VEAuth.getToken(), { action: 'logo_set', listing_id: l.id, url: null }); })
+          .then(function (d) { if (!d.ok) throw new Error(d.error || 'save'); return d.listing; });
+      });
+    };
+    drawLogo();
+
     function syncOnline() { $('#vla-addr').hidden = $('#vla-online').checked; }
     $('#vla-online').addEventListener('change', syncOnline); syncOnline();
 
-    function close() { wrap.remove(); document.removeEventListener('keydown', onKey); }
+    // A logo already saved on its own: tell the page when the editor closes, so it redraws.
+    function close(saved) { wrap.remove(); document.removeEventListener('keydown', onKey); if (!saved && logoChanged && onSaved) onSaved({ logo_url: l.logo_url }); }
     function onKey(e) { if (e.key === 'Escape') close(); }
     document.addEventListener('keydown', onKey);
     wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
-    $('#vla-x').onclick = close;
+    $('#vla-x').onclick = function () { close(); };
     $('#vla-name').focus();
 
     $('#vla-s').onclick = function () {
@@ -166,7 +236,7 @@
       fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
         .then(function (r) { return r.json(); }).then(function (d) {
           if (!d || !d.ok) { btn.disabled = false; bad(d && d.error === 'no_access' ? 'Admins only.' : d && d.error === 'bad_city' ? 'Add a city, or tick Online only.' : 'That did not save. Try again.'); return; }
-          Object.assign(target, d.listing); close(); if (onSaved) onSaved(d.listing);
+          Object.assign(target, d.listing, { logo_url: l.logo_url }); close(true); if (onSaved) onSaved(d.listing);
         }).catch(function () { btn.disabled = false; bad('Could not connect. Try again.'); });
     };
   }

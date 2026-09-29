@@ -515,3 +515,15 @@ piece. Depot > **Inbox** (`/admin/depot/inbox`) replaces News Desk and City News
   at status `write` for the Dispatcher Worker; `lesaruss_dispatch_sources.news_desk_write` now
   reads `sean_note` and revises the same draft when a lead with a `pulse_id` is sent back.
 - The Background writer box (stations and routing) moved to the bottom of the Inbox.
+
+## Logo slot in the listing editor (2026-09-29)
+
+Sean: "upload the logos directly on the listings." The superadmin quick editor
+(`/public/ve-listing-admin.js`, on hub cards and listing pages) has a Logo section: Upload (or
+Replace), Copy it into our storage (for a logo still linked from the business's own site), and
+Remove. A logo change saves right away through `ve-media-library` `logo_set` / `logo_fetch`, the
+same path as Depot > Logos; the logo prep (drawn onto white, at most 800px, PNG) now lives once
+in `/public/ve-media-upload.js` (`logoFile`, `setLogo`) and the Logos tab uses it too.
+`ve-media-library` v13 (`verify_jwt=false`, unchanged) accepts `logo_set` / `logo_fetch` for any
+approved listing in any city (v12 allowed only South Florida). The Logos tab stays for bulk work
+(3,408 of 3,659 listings had no logo) until it moves to the Businesses tile as Missing logos.

@@ -144,7 +144,6 @@
     (function () {
       var REGION = 'south-florida';
       var OURS = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/';
-      var MAX_SIDE = 800; // plenty for a 72px card, even on a sharp phone screen
       var $ = function (id) { return document.getElementById(id); };
       var listings = [], LIB = [], busy = {}, note = {}, target = null, copying = false;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -152,27 +151,8 @@
       function source(l) { return !l.logo_url ? 'none' : l.logo_url.indexOf(OURS) === 0 ? 'ours' : 'linked'; }
       function byId(id) { for (var i = 0; i < listings.length; i++) if (listings[i].id === id) return listings[i]; return null; }
 
-      // Any picture (PNG, JPEG, WebP, SVG, GIF...) drawn onto white at a sensible size, as a PNG.
-      // White first, so a see-through logo never turns black where the library saves JPEG.
-      function toLogoFile(blob, l) {
-        return new Promise(function (res, rej) {
-          var url = URL.createObjectURL(blob), img = new Image();
-          img.onload = function () {
-            var w = img.naturalWidth || 512, h = img.naturalHeight || 512, k = Math.min(1, MAX_SIDE / Math.max(w, h));
-            var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
-            var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.imageSmoothingQuality = 'high'; x.drawImage(img, 0, 0, c.width, c.height);
-            URL.revokeObjectURL(url);
-            c.toBlob(function (b) {
-              if (!b) return rej(new Error('encode'));
-              var f = new File([b], (l.slug || 'logo') + '-logo.png', { type: 'image/png' });
-              f.veName = l.name + ' logo'; f.veRef = 'listing-logo:' + String(l.slug || l.id).slice(0, 180);
-              res(f);
-            }, 'image/png');
-          };
-          img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('not_an_image')); };
-          img.src = url;
-        });
-      }
+      // Drawn onto white at up to 800px as a PNG: shared with the listing editor (/public/ve-media-upload.js).
+      function toLogoFile(blob, l) { return VEMediaUpload.logoFile(blob, l); }
       function setLogo(l, url) {
         return api({ action: 'logo_set', listing_id: l.id, url: url }).then(function (d) {
           if (!d.ok) throw new Error(d.error || 'save');
