@@ -63,7 +63,10 @@
     '.ve-cv-foot .go[disabled]{opacity:.5;cursor:not-allowed;}' +
     '.ve-cv-msg{flex:1 1 200px;font-size:13px;color:#8a1c1c;min-height:1em;}' +
     '.ve-cv-msg.ok{color:#1f5f2a;}' +
-    '[data-cv-pane][hidden]{display:none;}';
+    '[data-cv-pane][hidden]{display:none;}' +
+    '.ve-cv textarea{box-sizing:border-box;width:100%;font:inherit;font-size:13.5px;line-height:1.55;padding:10px 12px;border:1px solid rgba(0,0,0,.28);border-radius:8px;}' +
+    '.ve-cv-mail{font-size:13.5px;font-weight:800;padding:10px 16px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#1f5f2a;color:#fff;text-decoration:none;}' +
+    '.ve-cv-mail[hidden]{display:none;}';
   document.head.appendChild(st);
 
   function build() {
@@ -74,7 +77,7 @@
       '<div class="ve-cv-in">' +
       '<h2 id="ve-cv-h">Cover</h2>' +
       '<p class="lead">A piece about a real business needs a real photo we have the right to use, with its credit, or that business\'s logo card. Never a photo from the source article, and never one copied off a website unless their press page says media may use it.</p>' +
-      '<div class="ve-cv-tabs" role="tablist"><button type="button" role="tab" data-cv-tab="photo" aria-selected="true">A real photo</button><button type="button" role="tab" data-cv-tab="card" aria-selected="false">Their logo card</button></div>' +
+      '<div class="ve-cv-tabs" role="tablist"><button type="button" role="tab" data-cv-tab="photo" aria-selected="true">A real photo</button><button type="button" role="tab" data-cv-tab="card" aria-selected="false">Their logo card</button><button type="button" role="tab" data-cv-tab="ask" aria-selected="false">Ask them for a photo</button></div>' +
       '<label for="ve-cv-q">Which business is this piece about?</label>' +
       '<input type="text" id="ve-cv-q" autocomplete="off" placeholder="Type the name as it is in the Directory">' +
       '<div class="ve-cv-hits" id="ve-cv-hits"></div><div class="ve-cv-picked" id="ve-cv-picked"></div>' +
@@ -87,6 +90,9 @@
       '<p class="hint" id="ve-cv-pagehint">The page that says media may use it. We keep it with the photo.</p>' +
       '</div>' +
       '<div data-cv-pane="card" hidden><canvas id="ve-cv-canvas" width="1600" height="900" aria-label="Logo card preview"></canvas><p class="hint">Drawn from the logo on their Directory listing, their own mark, so it never suggests what their food looks like.</p></div>' +
+      '<div data-cv-pane="ask" hidden><p class="hint" id="ve-cv-askto"></p><label for="ve-cv-asktext">The message (edit it if you like)</label><textarea id="ve-cv-asktext" rows="11"></textarea>' +
+      '<div class="ve-cv-foot" style="justify-content:flex-start;margin-top:10px"><a class="ve-cv-mail" id="ve-cv-mail" hidden>Open in email</a><button type="button" id="ve-cv-copy">Copy the message</button></div>' +
+      '<p class="hint">Nothing is sent from here: you send it. When they reply with photos, add one with A real photo and choose "They said yes when we asked".</p></div>' +
       '<div class="ve-cv-foot"><span class="ve-cv-msg" id="ve-cv-msg" role="status"></span><button type="button" data-cv-close>Cancel</button><button type="button" class="go" id="ve-cv-go">Use this cover</button></div>' +
       '</div>';
     document.body.appendChild(dlg);
@@ -105,6 +111,11 @@
     });
     $('ve-cv-lic').addEventListener('change', licHint);
     $('ve-cv-go').addEventListener('click', go);
+    $('ve-cv-asktext').addEventListener('input', mailLink);
+    $('ve-cv-copy').addEventListener('click', function () {
+      var t = $('ve-cv-asktext').value;
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { say('Copied.', true); }, function () { $('ve-cv-asktext').select(); say('Select all and copy.'); });
+    });
   }
 
   function $(id) { return dlg.querySelector('#' + id); }
@@ -113,7 +124,31 @@
     dlg.querySelectorAll('[data-cv-tab]').forEach(function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-cv-tab') === name)); });
     dlg.querySelectorAll('[data-cv-pane]').forEach(function (p) { p.hidden = p.getAttribute('data-cv-pane') !== name; });
     say('');
+    $('ve-cv-go').hidden = name === 'ask';
     if (name === 'card') drawCard();
+    if (name === 'ask') askDraft();
+  }
+  // ---- asking the business for a photo: a draft Sean sends himself (never sent from here).
+  function askDraft() {
+    var l = pickedListing, to = $('ve-cv-askto');
+    if (!l) { to.textContent = 'Pick the business above first.'; $('ve-cv-asktext').value = ''; mailLink(); return; }
+    var hi = l.ve_contact_name ? 'Hi ' + l.ve_contact_name.split(' ')[0] + ',' : 'Hi ' + l.name + ' team,';
+    $('ve-cv-asktext').value = hi + '\n\n' +
+      'We are writing a story about ' + l.name + ' for the Vegans Explore Pulse' + (opts.title ? ': "' + opts.title + '"' : '') + '. We would love to run one of your own photos with it, so readers see your food and your space as they really are.\n\n' +
+      'Could you send one or two photos you are happy for us to use with the story? We will credit them "Courtesy of ' + l.name + '" and link back to you. Replying with the photos attached tells us we have your permission to use them for this story.\n\n' +
+      'Thank you,\nSean A. Russell\nVegans Explore\nvegansexplore.com';
+    var email = l.ve_contact_email || l.email || '';
+    var ways = [];
+    if (email) ways.push('Email: ' + email);
+    if (l.instagram) ways.push('Instagram: ' + l.instagram);
+    if (l.website) ways.push('Website: ' + l.website);
+    to.textContent = ways.length ? 'How to reach them. ' + ways.join('. ') + '.' : 'No contact details on their listing. Find them on their website or social pages.';
+    mailLink();
+  }
+  function mailLink() {
+    var l = pickedListing, a = $('ve-cv-mail'), email = l && (l.ve_contact_email || l.email);
+    a.hidden = !email;
+    if (email) a.href = 'mailto:' + String(email).replace(/[^\w.@+-]/g, '') + '?subject=' + encodeURIComponent('A photo for our Vegans Explore story on ' + l.name) + '&body=' + encodeURIComponent($('ve-cv-asktext').value);
   }
   function current() { var b = dlg.querySelector('[data-cv-tab][aria-selected=true]'); return b ? b.getAttribute('data-cv-tab') : 'photo'; }
   function licHint() {
@@ -141,6 +176,7 @@
     $('ve-cv-picked').textContent = l ? 'This piece is about ' + l.name + (l.address_city ? ' (' + l.address_city + ')' : '') + '.' : '';
     licHint();
     if (current() === 'card') drawCard();
+    if (current() === 'ask') askDraft();
   }
 
   // ---- the logo card: 1600x900, the business's color, its logo on a white tile, its name.

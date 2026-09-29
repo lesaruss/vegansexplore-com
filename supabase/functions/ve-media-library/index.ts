@@ -98,6 +98,8 @@ const LOGO_REGIONS: Record<string, string[]> = {
   'south-florida': ['Miami', 'Miami Beach', 'North Miami', 'Aventura', 'Doral', 'Hollywood', 'Fort Lauderdale', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate', 'West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Tequesta', 'Loxahatchee'],
 };
 const LISTING_COLS = 'id, slug, name, category, address_city, logo_url, logo_alt_text, initials, color';
+// The Cover dialog also drafts a photo request, so its lookup returns how to reach the business.
+const LISTING_CONTACT_COLS = LISTING_COLS + ', website, email, instagram, ve_contact_name, ve_contact_email';
 const MAX_FULL = 8 * 1024 * 1024;
 const MAX_THUMB = 1024 * 1024;
 
@@ -269,12 +271,12 @@ Deno.serve(async (req) => {
 
   if (body.action === 'listing_search') {
     if (/^[0-9a-f-]{36}$/.test(String(body.id || ''))) {
-      const { data } = await db.from('listings').select(LISTING_COLS).eq('id', String(body.id)).eq('status', 'approved').limit(1);
+      const { data } = await db.from('listings').select(LISTING_CONTACT_COLS).eq('id', String(body.id)).eq('status', 'approved').limit(1);
       return json({ listings: data || [] });
     }
     const q = String(body.q || '').replace(/[%_,()]/g, ' ').trim().slice(0, 60);
     if (q.length < 2) return json({ listings: [] });
-    const { data, error } = await db.from('listings').select(LISTING_COLS).eq('status', 'approved').ilike('name', `%${q}%`).order('name').limit(12);
+    const { data, error } = await db.from('listings').select(LISTING_CONTACT_COLS).eq('status', 'approved').ilike('name', `%${q}%`).order('name').limit(12);
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     return json({ listings: data || [] });
   }

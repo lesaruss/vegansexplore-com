@@ -597,5 +597,12 @@ only for general topics, labelled." Migration `depot_photo_provenance`:
   logo on its listing. Library cards edit credit, license and source page.
 - `api/pulse-article.js`: a credit line under the cover ("Photo: Courtesy of X", "X logo",
   or "Illustration").
+- **ve-pulse-cover v2**: the writer attaches a cover with license illustration (default),
+  press_kit or open_license; the last two need a credit and the https page that grants the use,
+  and the photo is saved to the Library too. The writer's instructions (news_desk_write step 6)
+  follow the order: Directory lookup, press page photo, open license for places, otherwise no
+  cover and a note ("Needs a real photo"); illustrations only for general topics.
+- The Cover dialog's third choice, Ask them for a photo, drafts the request (email when the
+  listing has one, else Instagram or website). Nothing is sent from the Depot.
 - Never: a photo from the source article, a photo copied off a website without a press grant,
   Google Maps or Yelp photos (`listings.google_photos` are Google users' photos).
