@@ -44,28 +44,23 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 )
 
-async function subscribeToBeehiiv(email: string, publicationId: string) {
-  const res = await fetch(
-    `https://api.beehiiv.com/v2/publications/${publicationId}/subscriptions`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('BEEHIIV_API_KEY')}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email,
-        reactivate_existing: true,
-        send_welcome_email: false,
-        utm_source: 'vegans-explore',
-        utm_medium: 'checkout'
-      })
-    }
-  )
-  if (!res.ok) {
-    console.error(`Beehiiv error (${publicationId}):`, await res.text())
+// Checkout buyers join the LESARUSS email lists (public.email_list_members,
+// universal email system in lesaruss-hq migration 028), replacing Beehiiv.
+// email_list_subscribe is idempotent and never re-adds someone who
+// unsubscribed, bounced or complained. A failure is logged, never thrown, so
+// it cannot break the checkout flow.
+async function subscribeToList(email: string, name: string, list: string) {
+  const { error } = await supabase.rpc('email_list_subscribe', {
+    p_list: list,
+    p_email: email,
+    p_name: name || null,
+    p_source: 'vegans-explore',
+    p_source_detail: 'checkout',
+  })
+  if (error) {
+    console.error(`Email list error (${list}):`, error.message)
   } else {
-    console.log(`Beehiiv subscribed to ${publicationId}:`, email)
+    console.log(`Email list subscribed to ${list}:`, email)
   }
 }
 
@@ -1316,8 +1311,8 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    await subscribeToBeehiiv(email, Deno.env.get('BEEHIIV_MASTER_PUBLICATION_ID')!)
-    await subscribeToBeehiiv(email, Deno.env.get('BEEHIIV_VE_PUBLICATION_ID')!)
+    await subscribeToList(email, name, 'lesaruss-pulse')
+    await subscribeToList(email, name, 'vegans-explore')
 
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
