@@ -92,7 +92,7 @@
     <div id="im-gate" class="gate" hidden></div>
     <div id="im-app" hidden>
       <div class="bar">
-        <label>Page <select id="im-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option></select></label>
+        <label>Page <select id="im-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option></select></label>
         <label>City <select id="im-city">
           <option value="south-florida">South Florida</option>
           <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
@@ -184,6 +184,15 @@
         { key: 'only', label: 'It only works with you', def: 'site-events-hero', defUrl: '/public/events/ve-hero-mobile.png' },
         { key: 'seat', label: 'Take your seat', def: 'site-partner', defUrl: '/public/partner/ve-partner-mobile.png' }
       ] };
+      PAGES.member = { view: '/welcome', slides: [
+        { key: 'welcome', label: 'Why I built this', def: 'site-foodie-fest', defUrl: '/public/events/vegan-foodie-fest-2025.jpg' },
+        { key: 'oldway', label: 'The old way', def: 'site-founder', defUrl: '/public/founder/sean-hero.jpg' },
+        { key: 'city', label: 'Your city, right now', def: 'site-stadium', defUrl: '/public/images/ve-panel2.png' },
+        { key: 'inperson', label: 'Show up in person', def: 'site-tailgate', defUrl: '/public/images/ve-hero-mobile.png' },
+        { key: 'board', label: 'The Community Board', def: 'site-partner', defUrl: '/public/partner/ve-partner-mobile.png' },
+        { key: 'unfinished', label: 'Unfinished on purpose', def: 'site-founder', defUrl: '/public/founder/sean-hero.jpg' },
+        { key: 'seat', label: 'Take your founding seat', def: 'site-partner', defUrl: '/public/partner/ve-partner-mobile.png' }
+      ] };
       // Every page also has its background, desktop (landscape) and phone (portrait).
       var BG_DEFAULT = '/communities/south-florida/banner.jpg';
       Object.keys(PAGES).forEach(function (k) {
@@ -201,7 +210,9 @@
           season: d('cm/sf/season-v4.mp3', 'vegan-glow'), grow: d('cm/sf/grow-v4.mp3', 'concrete-daydreams'), join: d('cm/sf/join-v5.mp3', 'manifesto-whisper'),
           apply: d('cm/sf/apply-v1.mp3', 'earthy-reflections-v2') },
         partners: { problem: d('partners/sf/problem-v1.mp3', 'green-bites'), why: d('partners/sf/why-v1.mp3', 'sanctuary-stroll'), room: d('partners/sf/room-v1.mp3', 'vegan-glow'),
-          bring: d('partners/sf/bring-v1.mp3', 'earthy-reflections'), only: d('partners/sf/only-v1.mp3', 'concrete-daydreams'), seat: d('partners/sf/seat-v1.mp3', 'manifesto-whisper') }
+          bring: d('partners/sf/bring-v1.mp3', 'earthy-reflections'), only: d('partners/sf/only-v1.mp3', 'concrete-daydreams'), seat: d('partners/sf/seat-v1.mp3', 'manifesto-whisper') },
+        // Slide 1 is Sean's lesaruss.com studio take, music already mixed in; the rest wait on his recordings.
+        member: { welcome: { narr: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/site-audio/lesaruss-com/vegans-explore.mp3', bed: null } }
       };
       var AUDIO_LIB = [], VIDEO_LIB = [], clips = {}, recipes = {};
       var LIB_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-media-library';

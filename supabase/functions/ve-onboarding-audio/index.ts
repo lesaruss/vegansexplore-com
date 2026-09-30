@@ -32,7 +32,10 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const PAGES: Record<string, string[]> = {
   cm: ['welcome', 'have', 'lead', 'role', 'month', 'pulse', 'season', 'grow', 'join', 'apply', 'applied'],
   partners: ['problem', 'why', 'room', 'bring', 'only', 'seat'],
+  // Member entry point, /welcome (2026-09-30).
+  member: ['welcome', 'oldway', 'city', 'inperson', 'board', 'unfinished', 'seat'],
 };
+const PAGE_LABEL: Record<string, string> = { cm: 'Community Manager', partners: 'Partners', member: 'Member' };
 // Picture-only keys every page has: its background, desktop (landscape) and phone
 // (portrait). These take a picture, never narration.
 const BG_KEYS = ['bg-desktop', 'bg-mobile'];
@@ -204,7 +207,7 @@ Deno.serve(async (req) => {
     const hex = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))).map((x) => x.toString(16).padStart(2, '0')).join('');
     await db.from('ve_media_library').insert({
       sha256: hex, kind: 'audio', mime: 'audio/wav', url, bytes: bytes.length, duration: dur, uses: ['narration'],
-      labels: [page, key], source_name: `Narration: ${page === 'cm' ? 'Community Manager' : 'Partners'}, ${key}, Sean's recording`,
+      labels: [page, key], source_name: `Narration: ${PAGE_LABEL[page] || page}, ${key}, Sean's recording`,
       source_ref: `audio:${path.slice('onboarding-audio/'.length)}`, uploaded_by: memberId,
     });
     return json({ ok: true, key, url, dur });

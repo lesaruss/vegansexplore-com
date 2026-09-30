@@ -163,11 +163,11 @@
     // but not the headline.
     desktopRight =
       '<a href="/login" class="ve-nav-login"' + cur('/login') + '>Log In</a>' +
-      '<a href="/join" class="ve-nav-cta">Get Passport</a>';
+      '<a href="/welcome" class="ve-nav-cta">Join</a>';
     mobileBottom =
       '<div class="ve-mob-cta-wrap">' +
         '<a href="/login" class="ve-mob-login"' + cur('/login') + '>Log In</a>' +
-        '<a href="/join" class="ve-mob-cta">Get Passport</a>' +
+        '<a href="/welcome" class="ve-mob-cta">Join</a>' +
       '</div>';
   }
 

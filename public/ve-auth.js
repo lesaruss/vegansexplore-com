@@ -94,6 +94,9 @@ function startEntryCheckout(amountCents){
 }
 var _amInited=false;
 function showActivateModal(message){
+  // A page can take over this moment with its own join step (the Member entry point, Sean
+  // 2026-09-30: an open contribution, $11 suggested). Every other page is unchanged.
+  if(typeof global.VE_ACTIVATE_HANDLER==='function'){global.VE_ACTIVATE_HANDLER(message);return;}
   if(!_amInited){_buildActivateModal();_amInited=true;}
   var msg=document.getElementById('ve-pm-msg');
   if(msg)msg.textContent=message||'One $11 contribution, one time. It supports what we are building and unlocks the full community.';

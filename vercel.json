@@ -1649,6 +1649,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/passport",
+      "destination": "/welcome",
+      "permanent": false
+    },
     {"source": "/hunt/scan", "destination": "/passport/challenge/scan", "permanent": false},
     {"source": "/hunt", "destination": "/passport/challenge", "permanent": false},
     {"source": "/admin/depot/hunt-card", "destination": "/admin/depot/challenge-card", "permanent": false},
