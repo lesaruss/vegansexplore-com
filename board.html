@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Board | Vegans Explore</title>
+  <meta name="description" content="Ask your city and find who can help. Requests and offers from the Vegans Explore community: rescue, fostering, transport, food, services and volunteers.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Community Board (Sean, 2026-09-30). Open to see, join to interact: anyone can read and
+       search; posting, replying, resolving, reporting and seeing contact details need an active
+       member. Every call goes to the ve-board edge function, which enforces the same rules. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820; --ve-orange-ink: #8a4b00; --ve-orange-light: #fff4e5;
+      --ve-border: rgba(0,0,0,0.12); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.78); --ve-text-60: #595959;
+      --ve-bg: #f7f7f5; --ve-danger: #a61b1b;
+    }
+    body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; background: #fff; }
+    select:not([multiple]):not([size]) { -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right 14px center !important; background-size: 10px 6px !important; padding-right: 40px !important; }
+    button, input, select, textarea { font-family: inherit; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+    .board-head { background: var(--ve-bg); border-bottom: 1px solid var(--ve-border); padding: 44px 0 32px; }
+    .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .board-head h1 { font-size: clamp(28px, 4.4vw, 44px); font-weight: 900; line-height: 1.08; margin: 10px 0 12px; letter-spacing: -0.01em; }
+    .board-head p.lede { font-size: 16px; line-height: 1.6; color: var(--ve-text-75); max-width: 640px; }
+    .head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 22px; }
+    .field-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-60); }
+    .select, .input { border: 1.5px solid var(--ve-border); border-radius: 10px; background-color: #fff; color: var(--ve-text); font-size: 15px; padding: 11px 14px; min-width: 0; max-width: 100%; }
+    .select:focus, .input:focus, textarea:focus { outline: 2px solid var(--ve-green-dark); outline-offset: 1px; border-color: var(--ve-green-dark); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; padding: 12px 20px; cursor: pointer; min-height: 44px; text-decoration: none; }
+    .btn-primary { background: var(--ve-green-dark); color: #fff; }
+    .btn-primary:hover { background: #246a28; }
+    .btn-ghost { background: #fff; color: var(--ve-text); border: 1.5px solid var(--ve-border); }
+    .btn-ghost:hover { border-color: var(--ve-text-60); }
+    .btn-link { background: none; border: none; color: var(--ve-green-dark); font-weight: 700; font-size: 13px; cursor: pointer; padding: 8px 4px; text-decoration: underline; }
+    .btn:focus-visible, .chip:focus-visible, .post-card:focus-visible, .btn-link:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+
+    .join-note { display: none; margin-top: 18px; background: #fff; border: 1.5px solid var(--ve-green-dark); border-radius: 12px; padding: 14px 16px; font-size: 14px; line-height: 1.55; color: var(--ve-text); }
+    .join-note.show { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; justify-content: space-between; }
+
+    .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; padding: 22px 0 8px; align-items: center; }
+    .search { width: 100%; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0 14px; }
+    .chip { border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text); border-radius: 999px; font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer; min-height: 38px; }
+    .chip[aria-pressed="true"] { background: var(--ve-text); border-color: var(--ve-text); color: #fff; }
+
+    .status-line { font-size: 13px; color: var(--ve-text-60); padding: 4px 0 12px; min-height: 22px; }
+    .posts { display: grid; gap: 14px; padding-bottom: 20px; }
+    .post-card { display: block; width: 100%; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 18px 20px; cursor: pointer; color: inherit; }
+    .post-card:hover { border-color: var(--ve-text-60); }
+    .post-card.resolved { background: var(--ve-bg); }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .tag { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 6px; padding: 4px 8px; }
+    .tag-request { background: var(--ve-orange-light); color: var(--ve-orange-ink); }
+    .tag-offer { background: var(--ve-green-light); color: var(--ve-green-dark); }
+    .tag-cat { background: #efefef; color: #3d3d3d; }
+    .tag-resolved { background: #1a1a1a; color: #fff; }
+    .tag-hidden { background: #fde8e8; color: var(--ve-danger); }
+    .post-title { font-size: 18px; font-weight: 800; line-height: 1.3; }
+    .post-body { font-size: 14px; line-height: 1.6; color: var(--ve-text-75); margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; font-size: 13px; color: var(--ve-text-60); }
+    .who { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ve-text); }
+    .avatar { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #1a1a1a; flex: 0 0 auto; background-size: cover; background-position: center; }
+    .badge-cm { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ve-green-dark); border: 1px solid var(--ve-green-dark); border-radius: 4px; padding: 1px 5px; }
+    .empty { border: 1.5px dashed var(--ve-border); border-radius: 14px; padding: 34px 22px; text-align: center; color: var(--ve-text-75); font-size: 15px; line-height: 1.6; }
+    .empty strong { display: block; color: var(--ve-text); font-size: 17px; margin-bottom: 6px; }
+    .more-row { text-align: center; padding: 6px 0 40px; }
+
+    /* Dialogs */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: flex-start; justify-content: center; z-index: 9000; padding: 40px 16px; overflow-y: auto; }
+    .overlay.open { display: flex; }
+    .dialog { background: #fff; border-radius: 16px; width: 100%; max-width: 680px; padding: 26px 26px 22px; position: relative; }
+    .dialog h2 { font-size: 22px; font-weight: 900; line-height: 1.25; padding-right: 40px; }
+    .close-x { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%; border: none; background: #f0f0f0; font-size: 22px; line-height: 1; cursor: pointer; color: #1a1a1a; }
+    .full-body { font-size: 15px; line-height: 1.7; color: var(--ve-text); margin-top: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .trust { display: flex; gap: 12px; align-items: flex-start; border: 1.5px solid var(--ve-border); border-radius: 12px; padding: 14px; margin-top: 18px; }
+    .trust .avatar { width: 44px; height: 44px; font-size: 15px; }
+    .trust-name { font-weight: 800; font-size: 15px; }
+    .trust-lines { font-size: 13px; line-height: 1.6; color: var(--ve-text-60); margin-top: 2px; }
+    .contact-box { margin-top: 14px; border-radius: 12px; padding: 12px 14px; background: var(--ve-green-light); font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
+    .contact-box.locked { background: var(--ve-bg); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .replies { margin-top: 22px; border-top: 1px solid var(--ve-border); padding-top: 16px; }
+    .replies h3 { font-size: 13px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-60); margin-bottom: 10px; }
+    .reply { padding: 12px 0; border-bottom: 1px solid #efefef; }
+    .reply-text { font-size: 14px; line-height: 1.6; margin-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .reply-tools { margin-top: 2px; }
+    form.stack { display: grid; gap: 14px; margin-top: 16px; }
+    form.stack label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; }
+    form.stack .hint { font-weight: 400; color: var(--ve-text-60); font-size: 12px; }
+    textarea { border: 1.5px solid var(--ve-border); border-radius: 10px; font-size: 15px; padding: 11px 14px; resize: vertical; min-height: 110px; width: 100%; color: var(--ve-text); }
+    .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+    .seg { display: flex; gap: 8px; flex-wrap: wrap; }
+    form.stack .seg label { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 700; }
+    .seg input { accent-color: var(--ve-green-dark); width: 18px; height: 18px; }
+    .form-msg { font-size: 13px; min-height: 18px; color: var(--ve-danger); }
+    .form-msg.ok { color: var(--ve-green-dark); }
+    .muted { color: var(--ve-text-60); font-size: 13px; line-height: 1.55; }
+    [hidden] { display: none !important; }
+    .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    @media (max-width: 720px) {
+      .toolbar { grid-template-columns: minmax(0, 1fr); }
+      .two { grid-template-columns: minmax(0, 1fr); }
+      .board-head { padding: 30px 0 24px; }
+      .wrap { padding: 0 16px; }
+      .dialog { padding: 22px 18px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main id="main">
+    <header class="board-head">
+      <div class="wrap">
+        <p class="eyebrow">Community Board</p>
+        <h1>Ask your city. Find who can help.</h1>
+        <p class="lede">Need a foster for six hens, a ride to the vet, or a hand at an event? Post it here, where your city can find it, answer it, and find it again later.</p>
+        <div class="head-row">
+          <label class="field-label" for="city">Your city</label>
+          <select id="city" class="select" aria-label="Choose your city"></select>
+          <button type="button" class="btn btn-primary" id="new-post">Post a request or offer</button>
+        </div>
+        <div class="join-note" id="join-note" role="note">
+          <span id="join-note-text">You're welcome to look around. Become a member to post, reply, and see contact details.</span>
+          <button type="button" class="btn btn-ghost" id="join-note-btn">Join the community</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="wrap" aria-labelledby="posts-title">
+      <h2 id="posts-title" class="visually-hidden">Posts</h2>
+      <form class="toolbar" id="search-form" role="search">
+        <label for="q" class="visually-hidden">Search the board</label>
+        <input id="q" class="input search" type="search" placeholder="Search requests and offers, for example: foster, transport, Broward" maxlength="120">
+        <label for="category" class="visually-hidden">Category</label>
+        <select id="category" class="select">
+          <option value="">All categories</option>
+        </select>
+        <label for="status" class="visually-hidden">Status</label>
+        <select id="status" class="select">
+          <option value="open">Open</option>
+          <option value="resolved">Resolved</option>
+          <option value="all">All</option>
+        </select>
+      </form>
+      <div class="chips" role="group" aria-label="Show">
+        <button type="button" class="chip" data-kind="" aria-pressed="true">Everything</button>
+        <button type="button" class="chip" data-kind="request" aria-pressed="false">Requests</button>
+        <button type="button" class="chip" data-kind="offer" aria-pressed="false">Offers</button>
+      </div>
+      <p class="status-line" id="status-line" role="status" aria-live="polite"></p>
+      <div class="posts" id="posts"></div>
+      <div class="more-row"><button type="button" class="btn btn-ghost" id="more" hidden>Show more</button></div>
+    </section>
+  </main>
+
+  <!-- Post detail -->
+  <div class="overlay" id="detail" role="dialog" aria-modal="true" aria-labelledby="d-title">
+    <div class="dialog">
+      <button type="button" class="close-x" data-close aria-label="Close">&times;</button>
+      <div class="tags" id="d-tags"></div>
+      <h2 id="d-title"></h2>
+      <p class="muted" id="d-when"></p>
+      <div class="full-body" id="d-body"></div>
+      <div class="contact-box" id="d-contact"></div>
+      <div class="trust" id="d-trust"></div>
+      <div class="actions" id="d-actions"></div>
+      <div class="replies">
+        <h3 id="d-replies-title">Replies</h3>
+        <div id="d-replies"></div>
+        <form class="stack" id="reply-form">
+          <label for="reply-text">Your reply<span class="hint">Offer help, ask a question, or point them to someone who can.</span></label>
+          <textarea id="reply-text" maxlength="2000" required></textarea>
+          <div><button type="submit" class="btn btn-primary">Reply</button></div>
+          <p class="form-msg" id="reply-msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- New post -->
+  <div class="overlay" id="composer" role="dialog" aria-modal="true" aria-labelledby="c-title">
+    <div class="dialog">
+      <button type="button" class="close-x" data-close aria-label="Close">&times;</button>
+      <h2 id="c-title">Post to the <span id="c-city"></span> board</h2>
+      <form class="stack" id="post-form">
+        <fieldset style="border:none">
+          <legend class="field-label" style="margin-bottom:8px">This is</legend>
+          <div class="seg">
+            <label><input type="radio" name="kind" value="request" checked> A request: I need help</label>
+            <label><input type="radio" name="kind" value="offer"> An offer: I can help</label>
+          </div>
+        </fieldset>
+        <div class="two">
+          <label for="p-category">Category<select id="p-category" class="select" required></select></label>
+          <label for="p-area">Area<span class="hint">Optional, for example: Broward, Wynwood, Delray Beach</span><input id="p-area" class="input" maxlength="120"></label>
+        </div>
+        <label for="p-title">Title<span class="hint">One line people will scan, for example: Foster needed for six hens</span><input id="p-title" class="input" maxlength="140" required></label>
+        <label for="p-body">Details<textarea id="p-body" maxlength="4000" required></textarea></label>
+        <label for="p-contact">How to reach you<span class="hint">Optional. Only members who are signed in can see this.</span><input id="p-contact" class="input" maxlength="200" placeholder="Phone, email, or Instagram"></label>
+        <div><button type="submit" class="btn btn-primary" id="post-submit">Post it</button></div>
+        <p class="form-msg" id="post-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Report -->
+  <div class="overlay" id="reporter" role="dialog" aria-modal="true" aria-labelledby="r-title">
+    <div class="dialog">
+      <button type="button" class="close-x" data-close aria-label="Close">&times;</button>
+      <h2 id="r-title">Report this</h2>
+      <p class="muted" style="margin-top:8px">Your city's Community Manager will take a look. Reports are private.</p>
+      <form class="stack" id="report-form">
+        <label for="r-reason">What's wrong?
+          <select id="r-reason" class="select" required>
+            <option value="not_who_they_say">They may not be who they say they are</option>
+            <option value="unsafe">Unsafe for animals or people</option>
+            <option value="scam">A scam or a request for money</option>
+            <option value="spam">Spam</option>
+            <option value="harassment">Harassment</option>
+            <option value="other">Something else</option>
+          </select>
+        </label>
+        <label for="r-details">Anything else we should know?<span class="hint">Optional</span><textarea id="r-details" maxlength="1000" style="min-height:80px"></textarea></label>
+        <div><button type="submit" class="btn btn-primary">Send report</button></div>
+        <p class="form-msg" id="report-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-board';
+    var CATEGORIES = [['rescue', 'Rescue'], ['fostering', 'Fostering'], ['transport', 'Transport'], ['food', 'Food'], ['services', 'Services'], ['volunteers', 'Volunteers'], ['other', 'Other']];
+    var CAT_LABEL = {}; CATEGORIES.forEach(function (c) { CAT_LABEL[c[0]] = c[1]; });
+    var $ = function (id) { return document.getElementById(id); };
+    var params = new URLSearchParams(location.search);
+    var state = { city: '', kind: '', q: '', category: '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function token() { return window.VEAuth && VEAuth.getToken ? (VEAuth.getToken() || '') : ''; }
+    function call(body) {
+      var h = { 'Content-Type': 'application/json' };
+      var t = token(); if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+    }
+    function ago(iso) {
+      var s = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+      if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' min ago';
+      if (s < 86400) return Math.round(s / 3600) + ' hr ago';
+      var d = Math.round(s / 86400); if (d < 30) return d + (d === 1 ? ' day ago' : ' days ago');
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    function since(iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
+    function hubName(slug) { return window.VE_HUB ? VE_HUB(slug).name : slug; }
+    function avatar(p) {
+      if (!p) return '<span class="avatar" style="background:#ddd">?</span>';
+      if (p.avatar) return '<span class="avatar" style="background-image:url(\'' + esc(p.avatar) + '\')" aria-hidden="true"></span>';
+      return '<span class="avatar" style="background:' + esc(p.color || '#ddd') + '" aria-hidden="true">' + esc(p.initials || '') + '</span>';
+    }
+    function tags(post) {
+      var out = '<span class="tag tag-' + post.kind + '">' + (post.kind === 'offer' ? 'Offer' : 'Request') + '</span>' +
+        '<span class="tag tag-cat">' + esc(CAT_LABEL[post.category] || post.category) + '</span>';
+      if (post.status === 'resolved') out += '<span class="tag tag-resolved">Resolved</span>';
+      if (post.status === 'hidden') out += '<span class="tag tag-hidden">Hidden</span>';
+      return out;
+    }
+
+    // Who can do what. Signed out: sign in. Signed in, not paid: the $11 Founding Membership box.
+    function gate(message) {
+      if (!token() || !state.viewer.signed_in) { if (window.VEAuth) VEAuth.showAuthModal(message || 'Sign in or create your account to join the conversation.', function () { location.reload(); }); return false; }
+      if (!state.viewer.member) { if (window.VEAuth) VEAuth.showActivateModal(message || 'Become a Founding Member to post, reply and help your community on the Board.'); return false; }
+      return true;
+    }
+    function handleError(d, msgEl) {
+      if (d && d.error === 'not_authenticated') { gate(d.message); return true; }
+      if (d && d.error === 'payment_required') { if (window.VEAuth) VEAuth.showActivateModal(d.message); return true; }
+      if (d && d.error) { if (msgEl) { msgEl.className = 'form-msg'; msgEl.textContent = d.message || 'That did not go through. Please try again.'; } return true; }
+      return false;
+    }
+
+    // ---- City, filters -----------------------------------------------------------------
+    var hubs = window.VE_HUBS || [];
+    var saved = ''; try { saved = localStorage.getItem('ve_selected_city') || ''; } catch (e) {}
+    var member = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+    var wanted = params.get('community') || (member && member.home_community) || saved || 'south-florida';
+    if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';
+    $('city').innerHTML = hubs.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
+    $('city').value = wanted; state.city = wanted;
+    $('category').innerHTML += CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
+    $('p-category').innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
+
+    function syncUrl() {
+      var u = new URL(location.href); u.searchParams.set('community', state.city);
+      if (state.current) u.searchParams.set('post', state.current.id); else u.searchParams.delete('post');
+      history.replaceState(null, '', u.pathname + u.search);
+    }
+    $('city').addEventListener('change', function () { state.city = this.value; try { localStorage.setItem('ve_selected_city', state.city); } catch (e) {} load(); });
+    $('category').addEventListener('change', function () { state.category = this.value; load(); });
+    $('status').addEventListener('change', function () { state.status = this.value; load(); });
+    var searchTimer = null;
+    $('q').addEventListener('input', function () { clearTimeout(searchTimer); var v = this.value; searchTimer = setTimeout(function () { state.q = v.trim(); load(); }, 350); });
+    $('search-form').addEventListener('submit', function (e) { e.preventDefault(); state.q = $('q').value.trim(); load(); });
+    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (b) {
+      b.addEventListener('click', function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        state.kind = b.getAttribute('data-kind'); load();
+      });
+    });
+
+    // ---- List -------------------------------------------------------------------------
+    function card(post) {
+      var p = post.poster || {};
+      return '<button type="button" class="post-card' + (post.status === 'resolved' ? ' resolved' : '') + '" data-id="' + post.id + '">' +
+        '<div class="tags">' + tags(post) + '</div>' +
+        '<div class="post-title">' + esc(post.title) + '</div>' +
+        '<div class="post-body">' + esc(post.body) + '</div>' +
+        '<div class="post-meta"><span class="who">' + avatar(p) + esc(p.name || 'Member') + (p.community_manager ? ' <span class="badge-cm">Community Manager</span>' : '') + '</span>' +
+        (post.area ? '<span>' + esc(post.area) + '</span>' : '') +
+        '<span>' + ago(post.created_at) + '</span>' +
+        '<span>' + post.reply_count + (post.reply_count === 1 ? ' reply' : ' replies') + '</span></div></button>';
+    }
+    function renderJoinNote() {
+      var note = $('join-note');
+      if (state.viewer.member) { note.classList.remove('show'); return; }
+      $('join-note-text').textContent = state.viewer.signed_in
+        ? 'You can read everything here. Become a Founding Member to post, reply, and see contact details.'
+        : "You're welcome to look around. Become a member to post, reply, and see contact details.";
+      $('join-note-btn').textContent = state.viewer.signed_in ? 'Become a Founding Member' : 'Join the community';
+      note.classList.add('show');
+    }
+    function load(append) {
+      var body = { action: 'list', community: state.city, status: state.status };
+      if (state.kind) body.kind = state.kind;
+      if (state.category) body.category = state.category;
+      if (state.q) body.q = state.q;
+      if (append && state.last) body.before = state.last;
+      $('status-line').textContent = 'Loading the ' + hubName(state.city) + ' board...';
+      call(body).then(function (d) {
+        if (d.viewer) state.viewer = d.viewer;
+        renderJoinNote();
+        var posts = d.posts || [];
+        if (!append) $('posts').innerHTML = '';
+        if (!posts.length && !append) {
+          $('posts').innerHTML = state.q || state.kind || state.category || state.status !== 'open'
+            ? '<div class="empty"><strong>Nothing matches that yet.</strong>Try fewer words, or clear the filters.</div>'
+            : '<div class="empty"><strong>The ' + esc(hubName(state.city)) + ' board is ready for its first post.</strong>Need something, or have something to offer? Post it and your city can answer.</div>';
+        } else {
+          $('posts').insertAdjacentHTML('beforeend', posts.map(card).join(''));
+        }
+        state.last = posts.length ? posts[posts.length - 1].created_at : state.last;
+        $('more').hidden = !d.more;
+        var shown = document.querySelectorAll('.post-card').length;
+        $('status-line').textContent = shown ? shown + (shown === 1 ? ' post' : ' posts') + ' on the ' + hubName(state.city) + ' board' : '';
+      }).catch(function () { $('status-line').textContent = 'The board could not load. Please refresh the page.'; });
+    }
+    $('more').addEventListener('click', function () { load(true); });
+    $('posts').addEventListener('click', function (e) { var c = e.target.closest('.post-card'); if (c) openPost(c.getAttribute('data-id')); });
+
+    // ---- Dialogs ------------------------------------------------------------------------
+    var lastFocus = null;
+    function openDialog(id) { lastFocus = document.activeElement; $(id).classList.add('open'); document.body.style.overflow = 'hidden'; var f = $(id).querySelector('.close-x'); if (f) f.focus(); }
+    function closeDialog(id) {
+      $(id).classList.remove('open');
+      if (!document.querySelector('.overlay.open')) document.body.style.overflow = '';
+      if (id === 'detail') { state.current = null; syncUrl(); }
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.overlay'), function (o) {
+      o.addEventListener('click', function (e) { if (e.target === o || e.target.hasAttribute('data-close')) closeDialog(o.id); });
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { var open = document.querySelectorAll('.overlay.open'); if (open.length) closeDialog(open[open.length - 1].id); } });
+
+    // ---- Detail -------------------------------------------------------------------------
+    function openPost(id) {
+      call({ action: 'get', id: id }).then(function (d) {
+        if (!d.post) { $('status-line').textContent = 'That post is no longer on the board.'; return; }
+        if (d.viewer) state.viewer = d.viewer;
+        state.current = d.post; syncUrl();
+        renderDetail(d.post, d.replies || []);
+        if (!$('detail').classList.contains('open')) openDialog('detail');
+      });
+    }
+    function renderDetail(post, replies) {
+      var p = post.poster || {};
+      $('d-tags').innerHTML = tags(post);
+      $('d-title').textContent = post.title;
+      $('d-when').textContent = 'Posted ' + ago(post.created_at) + (post.area ? ' · ' + post.area : '') + ' · ' + hubName(post.community);
+      $('d-body').textContent = post.body;
+      var c = $('d-contact');
+      if (post.contact) { c.className = 'contact-box'; c.innerHTML = '<strong>How to reach them:</strong> ' + esc(post.contact); c.hidden = false; }
+      else if (post.has_contact) { c.className = 'contact-box locked'; c.innerHTML = 'Contact details are for members. <button type="button" class="btn-link" id="unlock-contact">' + (state.viewer.signed_in ? 'Become a Founding Member to see them' : 'Sign in or join to see them') + '</button>'; c.hidden = false; }
+      else { c.hidden = true; }
+      var lines = ['Member since ' + since(p.member_since)];
+      if (p.founding) lines.push('Founding Member');
+      if (p.community) lines.push('Home community: ' + hubName(p.community));
+      lines.push(p.helped ? 'Has helped ' + p.helped + (p.helped === 1 ? ' time' : ' times') + ' on the Board' : 'New to the Board');
+      $('d-trust').innerHTML = avatar(p) + '<div><div class="trust-name">' + esc(p.name || 'Member') + (p.community_manager ? ' <span class="badge-cm">Community Manager</span>' : '') + '</div>' +
+        (p.headline ? '<div class="trust-lines">' + esc(p.headline) + '</div>' : '') + '<div class="trust-lines">' + esc(lines.join(' · ')) + '</div></div>';
+      var a = '';
+      if (post.mine || state.viewer.moderator) a += '<button type="button" class="btn btn-ghost" id="toggle-resolve">' + (post.status === 'resolved' ? 'Reopen it' : 'Mark resolved') + '</button>';
+      if (!post.mine) a += '<button type="button" class="btn btn-ghost" id="report-post">Report</button>';
+      if (state.viewer.moderator) a += '<button type="button" class="btn btn-ghost" id="mod-post">' + (post.status === 'hidden' ? 'Restore post' : 'Hide post') + '</button>';
+      a += '<button type="button" class="btn btn-ghost" id="copy-link">Copy link</button>';
+      $('d-actions').innerHTML = a;
+      $('d-replies-title').textContent = replies.length ? replies.length + (replies.length === 1 ? ' reply' : ' replies') : 'No replies yet';
+      $('d-replies').innerHTML = replies.map(function (r) {
+        var rp = r.poster || {};
+        return '<div class="reply"><div class="post-meta" style="margin-top:0"><span class="who">' + avatar(rp) + esc(rp.name || 'Member') + (rp.community_manager ? ' <span class="badge-cm">Community Manager</span>' : '') + '</span><span>' + ago(r.created_at) + '</span>' + (r.hidden ? '<span class="tag tag-hidden">Hidden</span>' : '') + '</div>' +
+          '<div class="reply-text">' + esc(r.body) + '</div><div class="reply-tools">' +
+          (!r.mine ? '<button type="button" class="btn-link" data-report-reply="' + r.id + '">Report</button>' : '') +
+          (state.viewer.moderator ? '<button type="button" class="btn-link" data-mod-reply="' + r.id + '" data-hidden="' + (r.hidden ? '1' : '') + '">' + (r.hidden ? 'Restore' : 'Hide') + '</button>' : '') + '</div></div>';
+      }).join('');
+      $('reply-form').hidden = post.status === 'hidden';
+      $('reply-msg').textContent = '';
+    }
+    $('d-contact').addEventListener('click', function (e) { if (e.target.id === 'unlock-contact') gate('Become a Founding Member to see contact details and reach people directly.'); });
+    $('d-actions').addEventListener('click', function (e) {
+      var post = state.current; if (!post) return;
+      if (e.target.id === 'toggle-resolve') {
+        call({ action: 'resolve', post_id: post.id, reopen: post.status === 'resolved' }).then(function (d) { if (!handleError(d)) { openPost(post.id); load(); } });
+      } else if (e.target.id === 'report-post') {
+        if (!gate('Become a Founding Member to report a post.')) return;
+        state.reportTarget = { post_id: post.id }; $('report-form').reset(); $('report-msg').textContent = ''; openDialog('reporter');
+      } else if (e.target.id === 'mod-post') {
+        call({ action: 'moderate', post_id: post.id, op: post.status === 'hidden' ? 'restore' : 'hide' }).then(function (d) { if (!handleError(d)) { openPost(post.id); load(); } });
+      } else if (e.target.id === 'copy-link') {
+        var link = location.origin + '/board?community=' + post.community + '&post=' + post.id;
+        (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { e.target.textContent = 'Link copied'; }, function () { prompt('Copy this link', link); });
+      }
+    });
+    $('d-replies').addEventListener('click', function (e) {
+      var rid = e.target.getAttribute('data-report-reply');
+      if (rid) { if (!gate('Become a Founding Member to report a reply.')) return; state.reportTarget = { reply_id: rid }; $('report-form').reset(); $('report-msg').textContent = ''; openDialog('reporter'); return; }
+      var mid = e.target.getAttribute('data-mod-reply');
+      if (mid) call({ action: 'moderate', reply_id: mid, op: e.target.getAttribute('data-hidden') ? 'restore' : 'hide' }).then(function (d) { if (!handleError(d)) openPost(state.current.id); });
+    });
+    $('reply-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!gate('Become a Founding Member to reply and help your community.')) return;
+      var text = $('reply-text').value.trim(); if (!text) return;
+      call({ action: 'reply', post_id: state.current.id, body: text }).then(function (d) {
+        if (handleError(d, $('reply-msg'))) return;
+        $('reply-text').value = ''; openPost(state.current.id); load();
+      });
+    });
+    $('report-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var body = Object.assign({ action: 'report', reason: $('r-reason').value, details: $('r-details').value.trim() }, state.reportTarget || {});
+      call(body).then(function (d) {
+        if (handleError(d, $('report-msg'))) return;
+        $('report-msg').className = 'form-msg ok'; $('report-msg').textContent = d.message || 'Thank you. Your Community Manager will take a look.';
+        setTimeout(function () { closeDialog('reporter'); if (state.current) openPost(state.current.id); load(); }, 1400);
+      });
+    });
+
+    // ---- New post -----------------------------------------------------------------------
+    $('new-post').addEventListener('click', function () {
+      if (!gate('Become a Founding Member to post a request or offer to your city.')) return;
+      $('c-city').textContent = hubName(state.city); $('post-msg').textContent = ''; openDialog('composer');
+    });
+    $('join-note-btn').addEventListener('click', function () { gate(); });
+    $('post-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var kind = (document.querySelector('input[name="kind"]:checked') || {}).value || 'request';
+      $('post-submit').disabled = true;
+      call({ action: 'create', community: state.city, kind: kind, category: $('p-category').value, title: $('p-title').value.trim(), body: $('p-body').value.trim(), area: $('p-area').value.trim(), contact: $('p-contact').value.trim() })
+        .then(function (d) {
+          $('post-submit').disabled = false;
+          if (handleError(d, $('post-msg'))) return;
+          $('post-form').reset(); closeDialog('composer'); state.status = 'open'; $('status').value = 'open'; load(); openPost(d.id);
+        }, function () { $('post-submit').disabled = false; $('post-msg').textContent = 'That did not go through. Please try again.'; });
+    });
+
+    // A fresh session check so the page knows who is looking before the first click.
+    load();
+    if (params.get('post')) openPost(params.get('post'));
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
