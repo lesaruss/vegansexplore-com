@@ -1509,6 +1509,9 @@
       };
     });
     TILE_REGISTRY.push(
+      // Community Board (Sean, 2026-09-30): requests and offers per city. Opens inside the
+      // dashboard window; the public /board page is the same page outside it.
+      { key: 'community-board', href: '/board', embed: true, embedLabel: 'Community Board', iconHtml: '&#128204;', bg: 'linear-gradient(135deg,#2d7d31,#1f5f22)', title: 'Community Board', desc: 'Ask your city and find who can help: rescue, fostering, rides, food and more.', visibility: 'all', defaultSection: 'tools' },
       { key: 'sa-members', href: '/dashboard/members', embed: true, embedLabel: 'Members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every VEGANS EXPLORE registration, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/events.html', embed: true, embedLabel: 'Event Submissions', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
@@ -3426,6 +3429,7 @@
           dpRows(body, rows, function (a) { return { name: a.name || a.email || 'Applicant', meta: a.email && a.name ? a.email : dpDate(a.created_at) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
+      grid.appendChild(dpAccessCard({ icon: '📌', bg: '#EAF7EA', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }));
       grid.appendChild(dpAccessCard({ icon: '📊', bg: '#EAF7EA', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
       return;
     }
@@ -3436,7 +3440,8 @@
       { icon: '📣', bg: '#F1EBFE', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
       { icon: '🎯', bg: '#E0F2FE', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
       { icon: '📚', bg: '#E8F8EF', title: 'Guides', desc: 'Step-by-step guides for your journey.', fn: function () { gotoToolSection('dash-guides-section', 'Guides'); } },
-      { icon: '📋', bg: '#E0F7FA', title: 'My List', desc: "Every listing you've saved from the Directory.", fn: function () { if (window.activateDashTab) activateDashTab('tools'); openMyList(); } }
+      { icon: '📋', bg: '#E0F7FA', title: 'My List', desc: "Every listing you've saved from the Directory.", fn: function () { if (window.activateDashTab) activateDashTab('tools'); openMyList(); } },
+      { icon: '📌', bg: '#EAF7EA', title: 'Community Board', desc: 'Ask your city and find who can help.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }
     ];
     if (member.ve_tier && member.ve_tier !== 'free') {
       access.push({ icon: '🧭', bg: '#E8F8EF', title: 'Choose Your Guide', desc: 'Pick a dedicated guide to walk with you. A Passport benefit.', fn: function () { if (window.activateDashTab) activateDashTab('tools'); openChooseGuide(); } });

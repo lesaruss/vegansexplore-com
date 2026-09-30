@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Community Board | Vegans Explore</title>
   <meta name="description" content="Ask your city and find who can help. Requests and offers from the Vegans Explore community: rescue, fostering, transport, food, services and volunteers.">
+  <!-- Inside the dashboard window the Board drops its own nav and footer, the way the Depot
+       pages do; on the public site it keeps both. -->
+  <script>try { if (window.self !== window.top && window.parent.location.origin === location.origin) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- Community Board (Sean, 2026-09-30). Open to see, join to interact: anyone can read and
@@ -105,7 +108,16 @@
     [hidden] { display: none !important; }
     .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+    /* In the dashboard frame: no site nav or footer, a lighter header, and dialogs open where the
+       member is looking (the dashboard sends the visible part of the frame as --ve-view-top). */
+    .ve-embedded .ve-nav, .ve-embedded .ve-footer, .ve-embedded .ve-announce { display: none !important; }
+    .ve-embedded .board-head { background: #fff; padding: 22px 0 14px; }
+    .ve-embedded .board-head h1 { font-size: clamp(24px, 3.4vw, 32px); }
+    .ve-embedded .wrap { max-width: none; padding: 0 22px; }
+    .ve-embedded .overlay { position: absolute; min-height: 100%; padding-top: calc(var(--ve-view-top, 0px) + 24px); }
+
     @media (max-width: 720px) {
+      .ve-embedded .wrap { padding: 0 14px; }
       .toolbar { grid-template-columns: minmax(0, 1fr); }
       .two { grid-template-columns: minmax(0, 1fr); }
       .board-head { padding: 30px 0 24px; }
@@ -484,7 +496,25 @@
         }, function () { $('post-submit').disabled = false; $('post-msg').textContent = 'That did not go through. Please try again.'; });
     });
 
-    // A fresh session check so the page knows who is looking before the first click.
+    // Inside the dashboard frame: report the page height so the frame grows to fit (one scroll,
+    // the dashboard's), and take the visible band so dialogs open in view. Same messages the
+    // Depot pages send (public/depot-tabs.js); the dashboard's openConsoleFrame listens.
+    if (document.documentElement.classList.contains('ve-embedded')) {
+      var root = document.documentElement, lastH = 0;
+      var sendH = function () {
+        var h = Math.ceil(Math.max(document.body.scrollHeight, root.scrollHeight));
+        if (Math.abs(h - lastH) < 2) return;
+        lastH = h; window.parent.postMessage({ type: 've-frame-height', h: h }, location.origin);
+      };
+      sendH();
+      if (window.ResizeObserver) new ResizeObserver(sendH).observe(document.body);
+      window.addEventListener('load', sendH);
+      window.addEventListener('message', function (e) {
+        if (e.origin !== location.origin || !e.data || e.data.type !== 've-frame-view') return;
+        root.style.setProperty('--ve-view-top', Math.max(0, Math.round(e.data.top)) + 'px');
+      });
+    }
+
     load();
     if (params.get('post')) openPost(params.get('post'));
   })();
