@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore | Vegans Explore</title>
+  <meta name="description" content="Everything you can do on Vegans Explore: your city's community, the Pulse, the Directory, the Community Board, events, guides and podcasts. Look around, then take your founding seat when you are ready.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Explore (Sean, 2026-10-01): the second door on the homepage. Some people want the whole
+       story (/welcome); some just want to start using the tools. This is the menu of everything
+       they can do, open to look at, with the founding seat one tap away. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.78); --ve-border: rgba(0,0,0,0.1); --ve-bg: #f7f7f5; }
+    body { font-family: 'Montserrat', sans-serif; background: #fff; color: var(--ve-text); -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; background: #fff; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    .head { background: var(--ve-bg); border-bottom: 1px solid var(--ve-border); padding: 44px 0 30px; }
+    .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); }
+    h1 { font-size: clamp(30px, 4.6vw, 46px); font-weight: 900; line-height: 1.06; letter-spacing: -0.01em; margin: 10px 0 12px; }
+    .lede { font-size: 16px; line-height: 1.6; color: var(--ve-text-75); max-width: 640px; }
+    .head-ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 12px 22px; border-radius: 8px; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; }
+    .btn-primary { background: var(--ve-green-dark); color: #fff; }
+    .btn-primary:hover { background: var(--ve-green-deep); }
+    .btn-ghost { background: #fff; color: var(--ve-text); border: 1.5px solid var(--ve-border); }
+    .btn-ghost:hover { border-color: #6b6b6b; }
+    .btn:focus-visible, .tile:focus-visible { outline: 3px solid #F69820; outline-offset: 2px; }
+
+    .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: 16px; padding: 30px 0 18px; }
+    .tile { display: flex; flex-direction: column; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 16px; overflow: hidden; color: inherit; text-decoration: none; transition: border-color 0.15s, transform 0.15s; min-width: 0; }
+    .tile:hover { border-color: var(--ve-green-dark); transform: translateY(-2px); }
+    .tile-img { aspect-ratio: 16 / 10; background: #e9efe9 center 18% / cover no-repeat; }
+    .tile-body { padding: 14px 16px 16px; }
+    .tile-title { font-size: 17px; font-weight: 900; line-height: 1.25; }
+    .tile-desc { font-size: 14px; line-height: 1.5; color: var(--ve-text-75); margin-top: 4px; }
+    .tile-go { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); margin-top: 10px; }
+    .tile-join { background: var(--ve-green-light); border-color: #b8ddb9; }
+    .note { font-size: 13.5px; line-height: 1.6; color: var(--ve-text-75); padding: 4px 0 44px; }
+    .note a { color: var(--ve-green-deep); font-weight: 700; }
+    @media (max-width: 600px) { .wrap { padding: 0 16px; } .head { padding: 30px 0 24px; } }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main id="main">
+    <header class="head">
+      <div class="wrap">
+        <p class="eyebrow">Explore</p>
+        <h1>Everything you can do here.</h1>
+        <p class="lede">Look around as much as you like. When you&rsquo;re ready to post, reply, vote and reach people directly, take your founding seat.</p>
+        <div class="head-ctas">
+          <a class="btn btn-primary" href="/welcome#seat">Take my founding seat</a>
+          <a class="btn btn-ghost" href="/welcome">Hear the whole story</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="wrap" aria-label="Everything on Vegans Explore">
+      <div class="tiles">
+        <a class="tile" href="/communities"><div class="tile-img" style="background-image:url('/public/guides/liz.png')"></div><div class="tile-body"><div class="tile-title">Your city&rsquo;s community</div><div class="tile-desc">Local news, events, places and people in your city.</div><div class="tile-go">Find your city</div></div></a>
+        <a class="tile" href="/pulse"><div class="tile-img" style="background-image:url('/public/guides/river.jpg')"></div><div class="tile-body"><div class="tile-title">The Pulse</div><div class="tile-desc">Hundreds of local community stories, updated as things happen.</div><div class="tile-go">Read the Pulse</div></div></a>
+        <a class="tile" href="/communities"><div class="tile-img" style="background-image:url('/public/guides/thumb-directory.jpg')"></div><div class="tile-body"><div class="tile-title">The Directory</div><div class="tile-desc">Vegan and Vegan-friendly places, in your city&rsquo;s hub.</div><div class="tile-go">Pick your city</div></div></a>
+        <a class="tile" href="/board"><div class="tile-img" style="background-image:url('/public/guides/dani.png')"></div><div class="tile-body"><div class="tile-title">Community Board</div><div class="tile-desc">Ask your city, offer a hand, and find who can help.</div><div class="tile-go">See the Board</div></div></a>
+        <a class="tile" href="/events"><div class="tile-img" style="background-image:url('/public/guides/theo.png')"></div><div class="tile-body"><div class="tile-title">Events</div><div class="tile-desc">Community Nights and things to do near you.</div><div class="tile-go">See events</div></div></a>
+        <a class="tile" href="/campaigns"><div class="tile-img" style="background-image:url('/public/guides/thumb-community.jpg')"></div><div class="tile-body"><div class="tile-title">Campaigns</div><div class="tile-desc">Ways to show up, volunteer and get involved.</div><div class="tile-go">See campaigns</div></div></a>
+        <a class="tile" href="/guides"><div class="tile-img" style="background-image:url('/public/guides/nori.png')"></div><div class="tile-body"><div class="tile-title">Guides</div><div class="tile-desc">Step-by-step guides for every stage of the Vegan journey.</div><div class="tile-go">Browse guides</div></div></a>
+        <a class="tile" href="/guide.html"><div class="tile-img" style="background-image:url('/public/guides/maya.png')"></div><div class="tile-body"><div class="tile-title">Talk to a Guide</div><div class="tile-desc">Chat with one of our AI Guides about where to start.</div><div class="tile-go">Meet the Guides</div></div></a>
+        <a class="tile" href="/podcast"><div class="tile-img" style="background-image:url('/public/guides/pascal.png')"></div><div class="tile-body"><div class="tile-title">Podcasts</div><div class="tile-desc">Conversations from across the movement.</div><div class="tile-go">Listen</div></div></a>
+        <a class="tile tile-join" href="/welcome#seat"><div class="tile-img" style="background-image:url('/public/guides/thumb-passport.jpg')"></div><div class="tile-body"><div class="tile-title">Take your founding seat</div><div class="tile-desc">$11 suggested, one time. Post, reply, vote and reach people directly.</div><div class="tile-go">Join</div></div></a>
+      </div>
+      <p class="note">Run a Vegan business? <a href="/partners">See Partners</a> &middot; Want to lead your city? <a href="/community-managers/onboarding">Become a Community Manager</a></p>
+    </section>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    // A member skips the join prompts and goes straight to their own city.
+    (function () {
+      var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+      if (!me) return;
+      if (me.home_community) document.querySelectorAll('a.tile[href="/communities"]').forEach(function (a) { a.href = '/communities/' + me.home_community; });
+      if (me.membership_status === 'active') {
+        var j = document.querySelector('.tile-join'); if (j) j.remove();
+        var c = document.querySelector('.head-ctas'); if (c) c.innerHTML = '<a class="btn btn-primary" href="/dashboard">Go to my dashboard</a>';
+        var l = document.querySelector('.lede'); if (l) l.textContent = 'Everything Vegans Explore has, in one place.';
+      }
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
