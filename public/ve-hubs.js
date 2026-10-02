@@ -6,7 +6,7 @@
  * `places` are suggestions for a tour's city field.
  */
 (function () {
-  var SF = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
+  var SF = ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade'];
   var CF = ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala'];
   var LA = ['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park'];
   var hubs = [

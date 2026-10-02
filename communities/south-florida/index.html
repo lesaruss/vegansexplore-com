@@ -965,7 +965,7 @@
   /* ==================== LIVE DATA: NEWS / EVENTS / DIRECTORY ==================== */
   var SF_SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var SF_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var SF_CITIES = ['Miami','Miami Beach','North Miami','Aventura','Doral','Hollywood','Fort Lauderdale','Sunrise','Pompano Beach','Coral Springs','Margate','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Tequesta','Loxahatchee'];
+  var SF_CITIES = ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade'];
 
   function sfEsc(s) {
     return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1124,9 +1124,9 @@
     mount: 've-region-directory',
     matchListing: function (l) { return !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1); },
     counties: {
-      'Miami-Dade': ['Miami', 'Miami Beach', 'North Miami', 'Aventura', 'Doral'],
-      'Broward': ['Fort Lauderdale', 'Hollywood', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate'],
-      'Palm Beach': ['West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Tequesta', 'Loxahatchee']
+      'Miami-Dade': ['Miami', 'Miami Beach', 'North Miami', 'North Miami Beach', 'Aventura', 'Bal Harbour', 'Sunny Isles Beach', 'Surfside', 'Doral', 'Hialeah', 'Miami Gardens', 'Miami Lakes', 'Miami Springs', 'Coral Gables', 'South Miami', 'Key Biscayne', 'Pinecrest', 'Palmetto Bay', 'Cutler Bay', 'Homestead', 'Florida City'],
+      'Broward': ['Fort Lauderdale', 'Hollywood', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate', 'Miramar', 'Pembroke Pines', 'Weston', 'Davie', 'Cooper City', 'Plantation', 'Lauderhill', 'Lauderdale Lakes', 'North Lauderdale', 'Tamarac', 'Oakland Park', 'Wilton Manors', 'Dania Beach', 'Hallandale', 'Hallandale Beach', 'Deerfield Beach', 'Lighthouse Point', 'Coconut Creek', 'Parkland', 'Lauderdale-by-the-Sea', 'Southwest Ranches'],
+      'Palm Beach': ['West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Lake Worth Beach', 'Tequesta', 'Loxahatchee', 'Riviera Beach', 'Royal Palm Beach', 'Wellington', 'North Palm Beach', 'Palm Beach', 'Greenacres', 'Lantana', 'Lake Park', 'Juno Beach', 'Palm Springs', 'Highland Beach', 'Belle Glade']
     }
   });
 
