@@ -384,16 +384,23 @@ Deno.serve(async (req) => {
   // Staff: a Vegans Explore superadmin token, or HQ's server calling with the admin key.
   const adminKey = req.headers.get('x-lesaruss-admin');
   let hq = false;
+  // The person behind this call, by email. Sharing to a hub needs one (Sean, 2026-10-02): the
+  // database refuses to approve city news without a superadmin attached (ve_news_approve,
+  // migration 20261002_ve_community_news_person_approval_guard).
+  let approver: string | null = null;
   if (adminKey) {
     const want = await secret('LESARUSS_ADMIN_TOKEN');
     if (!want || adminKey !== want) return json({ error: 'not_authenticated' }, 401);
     hq = true;
+    // HQ checks staff before calling (app/(shell)/depot/actions.ts requireStaff) and passes who.
+    approver = typeof body.approver_email === 'string' ? body.approver_email.trim().toLowerCase() || null : null;
   } else {
     const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
     const memberId = token ? await verifyToken(token) : null;
     if (!memberId) return json({ error: 'not_authenticated' }, 401);
-    const { data: member } = await db.from('members').select('id, is_superadmin').eq('id', memberId).maybeSingle();
+    const { data: member } = await db.from('members').select('id, email, is_superadmin').eq('id', memberId).maybeSingle();
     if (!member?.is_superadmin) return json({ error: 'no_access' }, 403);
+    approver = member.email ? String(member.email).toLowerCase() : null;
   }
   const isId = (v: unknown) => /^[0-9a-f-]{36}$/.test(String(v || ''));
   // brand: one brand's Depot, or (from HQ only) every brand when left out. A brand site without a
@@ -538,18 +545,21 @@ Deno.serve(async (req) => {
     const city = body.city_slug && HUB_SLUGS.includes(body.city_slug) ? body.city_slug : lead.city_slug;
     if (!city) return json({ error: 'city_required' }, 400);
     if (!/^https?:\/\//i.test(lead.url || '')) return json({ error: 'no_link' }, 400);
+    if (!approver) return json({ error: 'needs_person' }, 403);
     const now = new Date().toISOString();
     let cnId = lead.community_news_id;
+    // Approval goes through the database's person check, which records the approver as reviewed_by.
+    const denied = (m: string) => /needs_person|approver_not_superadmin/.test(m) ? json({ error: 'needs_person' }, 403) : json({ error: 'save_failed', message: m }, 500);
     if (cnId) {
-      const { error } = await db.from('ve_community_news').update({ status: 'approved', city_slug: city, reviewed_by: 'the-depot', reviewed_at: now, published_at: now }).eq('id', cnId);
-      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      const { error } = await db.rpc('ve_news_approve', { p_approver: approver, p_id: cnId, p_city: city, p_published_at: now });
+      if (error) return denied(error.message);
     } else {
-      const { data: cn, error } = await db.from('ve_community_news').insert({
-        city_slug: city, headline: plain(lead.title, 200), summary: lead.summary ? plain(lead.summary, 500) : null, url: lead.url, image_url: /^https:\/\//i.test(lead.image_url || '') ? lead.image_url : null,
-        source_type: 'manual', source_name: lead.source_name, status: 'approved', reviewed_by: 'the-depot', reviewed_at: now, published_at: now,
-      }).select('id').single();
-      if (error) return json({ error: 'save_failed', message: error.message }, 500);
-      cnId = cn.id;
+      const { data: newId, error } = await db.rpc('ve_news_share_new', {
+        p_approver: approver, p_city: city, p_headline: plain(lead.title, 200), p_summary: lead.summary ? plain(lead.summary, 500) : null,
+        p_url: lead.url, p_image_url: /^https:\/\//i.test(lead.image_url || '') ? lead.image_url : null, p_source_name: lead.source_name,
+      });
+      if (error) return denied(error.message);
+      cnId = newId as string;
     }
     const { data, error } = await db.from('ve_news_leads').update({ status: 'shared', city_slug: city, decided_at: now, community_news_id: cnId }).eq('id', body.id).select(LEAD_COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
