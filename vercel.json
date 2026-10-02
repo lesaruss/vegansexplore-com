@@ -704,10 +704,6 @@
       "destination": "https://archive.vegansexplore.com/opportunities/"
     },
     {
-      "source": "/opportunities/community-managers",
-      "destination": "https://archive.vegansexplore.com/opportunities/community-managers/"
-    },
-    {
       "source": "/opportunities/community-partners",
       "destination": "https://archive.vegansexplore.com/opportunities/community-partners/"
     },
@@ -1654,6 +1650,8 @@
       "destination": "/welcome",
       "permanent": false
     },
+    {"source": "/community-managers", "destination": "/community-managers/onboarding", "permanent": false},
+    {"source": "/opportunities/community-managers", "destination": "/community-managers/onboarding", "permanent": false},
     {"source": "/hunt/scan", "destination": "/passport/challenge/scan", "permanent": false},
     {"source": "/hunt", "destination": "/passport/challenge", "permanent": false},
     {"source": "/admin/depot/hunt-card", "destination": "/admin/depot/challenge-card", "permanent": false},
