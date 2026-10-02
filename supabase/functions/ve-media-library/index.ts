@@ -93,9 +93,9 @@ function youtubeId(v: unknown): string | null {
   const m = t.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
   return m ? m[1] : null;
 }
-// Regions the Logos tab covers. The cities mirror SF_CITIES in /communities/south-florida/index.html.
+// Regions the Logos tab covers. The cities mirror SF_CITIES in /communities/south-florida/index.html and public/ve-hubs.js (70 cities, 2026-10-02).
 const LOGO_REGIONS: Record<string, string[]> = {
-  'south-florida': ['Miami', 'Miami Beach', 'North Miami', 'Aventura', 'Doral', 'Hollywood', 'Fort Lauderdale', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate', 'West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Tequesta', 'Loxahatchee'],
+  'south-florida': ['Miami', 'Miami Beach', 'North Miami', 'North Miami Beach', 'Aventura', 'Bal Harbour', 'Sunny Isles Beach', 'Surfside', 'Doral', 'Hialeah', 'Miami Gardens', 'Miami Lakes', 'Miami Springs', 'Coral Gables', 'South Miami', 'Key Biscayne', 'Pinecrest', 'Palmetto Bay', 'Cutler Bay', 'Homestead', 'Florida City', 'Fort Lauderdale', 'Hollywood', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate', 'Miramar', 'Pembroke Pines', 'Weston', 'Davie', 'Cooper City', 'Plantation', 'Lauderhill', 'Lauderdale Lakes', 'North Lauderdale', 'Tamarac', 'Oakland Park', 'Wilton Manors', 'Dania Beach', 'Hallandale', 'Hallandale Beach', 'Deerfield Beach', 'Lighthouse Point', 'Coconut Creek', 'Parkland', 'Lauderdale-by-the-Sea', 'Southwest Ranches', 'West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Lake Worth Beach', 'Tequesta', 'Loxahatchee', 'Riviera Beach', 'Royal Palm Beach', 'Wellington', 'North Palm Beach', 'Palm Beach', 'Greenacres', 'Lantana', 'Lake Park', 'Juno Beach', 'Palm Springs', 'Highland Beach', 'Belle Glade'],
 };
 const LISTING_COLS = 'id, slug, name, category, address_city, logo_url, logo_alt_text, initials, color';
 // The Cover dialog also drafts a photo request, so its lookup returns how to reach the business.
