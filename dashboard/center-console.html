@@ -2759,7 +2759,7 @@
     var useScope = scope || dashLeaderboardScope;
     var cities;
     if (useScope === 'global') {
-      cities = LEADERBOARD_ALL_CITIES;
+      cities = ['*']; // every real member (ve_leaderboard, 2026-10-03)
     } else {
       var active = getActiveCity(member);
       cities = (active && LEADERBOARD_CITY_TERMS[active]) || [];
@@ -3411,7 +3411,8 @@
     if (member.is_superadmin) {
       grid.appendChild(dpDataCard('Recent Members', '/dashboard/members', function (token, body, t) {
         dpFetch('/functions/v1/ve-members-admin?action=list_all_members', { token: token }).then(function (d) {
-          var rows = ((d && d.members) || []).slice().sort(function (a, b) { return new Date(b.joined_at || 0) - new Date(a.joined_at || 0); });
+          // Real members only: AI, staff, test and spam accounts stay on the Members page (2026-10-03).
+          var rows = ((d && d.members) || []).filter(function (m) { return m.member_class === 'member'; }).sort(function (a, b) { return new Date(b.joined_at || 0) - new Date(a.joined_at || 0); });
           dpCount(t, rows.length);
           dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
