@@ -21,6 +21,11 @@
 (function () {
   var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-partner-guide';
   var STORE_KEY = 've_pg_state';
+  // Preview mode (Depot > Preview journeys, public/ve-preview.js): ?preview=guide, gate, results or
+  // success opens that step with sample answers. The visitor's saved answers are left alone, and
+  // nothing is sent, signed up for or charged.
+  var PREVIEW = '';
+  try { PREVIEW = window.VE_PREVIEW || new URLSearchParams(location.search).get('preview') || ''; } catch (e) {}
   var AUTH_API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
@@ -130,9 +135,17 @@
       .then(function (d) { G.memberStatus = d && d.member ? d.member.membership_status : null; return G.memberStatus; })
       .catch(function () { G.memberStatus = null; return null; });
   }
-  function isFoundingMember() { return loggedIn() && G.memberStatus === 'active'; }
+  function isFoundingMember() {
+    if (PREVIEW === 'gate') return false;
+    if (PREVIEW === 'results' || PREVIEW === 'success') return true;
+    return loggedIn() && G.memberStatus === 'active';
+  }
+  function previewNote(text) {
+    var b = G.dialog && G.dialog.querySelector('.vpg-body'); if (!b) return;
+    var p = document.createElement('p'); p.className = 'vpg-msg ok'; p.setAttribute('role', 'status'); p.style.marginTop = '14px'; p.textContent = text; b.appendChild(p);
+  }
   function loggedIn() { try { return window.VEAuth ? VEAuth.isLoggedIn() : !!token(); } catch (e) { return !!token(); } }
-  function track(name, params) { try { if (window.gtag) window.gtag('event', name, params || {}); } catch (e) {} }
+  function track(name, params) { try { if (window.gtag && !PREVIEW) window.gtag('event', name, params || {}); } catch (e) {} }
   var ICON_X = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 
   var G = {
@@ -140,8 +153,8 @@
     state: { step: 'audience', audience: '', city: 'south-florida', goal: '', budget: '', start: '' }
   };
 
-  function loadState() { try { var s = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (s && typeof s === 'object') G.state = Object.assign(G.state, s); } catch (e) {} }
-  function saveState() { try { localStorage.setItem(STORE_KEY, JSON.stringify(G.state)); } catch (e) {} }
+  function loadState() { if (PREVIEW) return; try { var s = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (s && typeof s === 'object') G.state = Object.assign(G.state, s); } catch (e) {} }
+  function saveState() { if (PREVIEW) return; try { localStorage.setItem(STORE_KEY, JSON.stringify(G.state)); } catch (e) {} }
 
   function injectCss() {
     if (document.getElementById('vpg-css')) return;
@@ -287,6 +300,7 @@
   // After sign-up the site may show its own activation prompt first; reopen on the
   // visitor's matches once they are signed in and every account pop-up is closed.
   function authThenResults(mode) {
+    if (PREVIEW) { previewNote('Preview: on the live page this opens ' + (mode === 'pay' ? 'the $11 Founding Membership checkout.' : (mode === 'login' ? 'log in.' : 'account sign-up, then the $11 checkout.'))); return; }
     saveState();
     if (mode === 'pay' && window.VEAuth) {
       track('pg_membership_checkout', {});
@@ -313,6 +327,7 @@
     opts = opts || {};
     if (opts.source) G.source = opts.source;
     track('pg_join', { source: G.source, signed_in: loggedIn() });
+    if (PREVIEW) { open({ step: G.state.audience ? 'results' : 'audience' }); return; }
     if (!loggedIn()) { authThenResults('signup'); return; }
     refreshMember().then(function () {
       G.memberChecked = true;
@@ -463,6 +478,7 @@
     };
     var action = kind === 'checkout' ? 'checkout' : 'inquire';
     if (action === 'inquire') body.kind = kind;
+    if (PREVIEW) { show('ok', 'Preview: nothing was sent. On the live page this ' + (kind === 'checkout' ? 'opens secure checkout.' : 'sends the request to the team and emails a copy.')); return; }
     btn.disabled = true;
     show('ok', kind === 'checkout' ? 'Opening secure checkout&hellip;' : 'Sending&hellip;');
     fetch(API + '?action=' + action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -502,7 +518,13 @@
       open({ source: t.getAttribute('data-source') || G.source, step: t.getAttribute('data-vpg-step') || undefined });
     });
     var q = new URLSearchParams(location.search);
-    if (q.get('activate') === 'success') {
+    if (PREVIEW) {
+      // Sample answers for a local business, so the matches and the gate have something to show.
+      if (PREVIEW !== 'guide') G.state = { step: 'audience', audience: 'local_business', city: 'south-florida', goal: 'sampling', budget: '500_2500', start: 'before_oct_24' };
+      if (PREVIEW === 'success') { G.memberChecked = true; open({ step: 'success' }); }
+      else open({ step: PREVIEW === 'guide' ? 'audience' : 'results' });
+    }
+    else if (q.get('activate') === 'success') {
       var tries = 0;
       (function poll() {
         refreshMember().then(function () {

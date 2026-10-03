@@ -8,6 +8,7 @@
     { href: '/admin/depot/inbox', label: 'Inbox' },
     { href: '/admin/depot', label: 'Library' },
     { href: '/admin/depot/onboarding', label: 'Onboarding' },
+    { href: '/admin/depot/preview', label: 'Preview journeys' },
     { href: '/admin/depot/pulse', label: 'Pulse' },
     { href: '/admin/depot/sources', label: 'Sources' },
     { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },

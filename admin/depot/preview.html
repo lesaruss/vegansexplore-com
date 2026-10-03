@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Preview Journeys | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--amber-bg:#FEF3C7;--amber-line:#B45309;--amber-text:#92400E;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-bottom:16px;}
+    .seg{display:inline-flex;flex-wrap:wrap;gap:6px;}
+    .seg button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;min-height:44px;border-radius:99px;border:1.5px solid var(--ve-green-deep);background:#fff;color:var(--ve-green-deep);cursor:pointer;}
+    .seg button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;}
+    .bar label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .bar select{font:inherit;font-size:13px;font-weight:700;padding:8px 10px;min-height:44px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;max-width:100%;}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:start;}
+    @media (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr);}.stage{display:none !important;}}
+    .journey-intro{font-size:14px;color:var(--ve-text-75);margin-bottom:12px;max-width:760px;}
+    ol.steps{list-style:none;counter-reset:step;}
+    .step{counter-increment:step;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:start;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;}
+    .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:var(--ve-green-light);color:var(--ve-green-deep);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+    .step.current{border-color:var(--ve-green-deep);box-shadow:0 0 0 2px var(--ve-green-deep) inset;}
+    .step.off{cursor:default;background:#fafafa;}
+    .step.off::before{background:#eee;color:#555;}
+    .step h3{font-size:14.5px;font-weight:800;line-height:1.35;}
+    .step p{font-size:13px;color:var(--ve-text-75);line-height:1.5;margin-top:2px;}
+    .tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:2px;}
+    .tag.pv{background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-line);}
+    .tag.live{background:var(--ve-green-light);color:var(--ve-green-deep);border:1px solid #b8ddb9;}
+    .tag.na{background:#eee;color:#444;border:1px solid #ccc;}
+    .open{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-green-deep);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;padding:10px 2px;}
+    .stage{position:sticky;top:80px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+    .frame{background:#111;border-radius:28px;padding:10px;box-shadow:0 18px 40px rgba(0,0,0,0.25);}
+    .frame iframe{display:block;border:0;border-radius:20px;background:#fff;}
+    .frame.phone iframe{width:390px;height:min(780px,calc(100vh - 150px));}
+    .frame.desk{border-radius:14px;padding:8px;}
+    .frame.desk iframe{width:min(860px,calc(100vw - 640px));height:min(560px,calc(100vh - 150px));border-radius:8px;}
+    .stage-cap{font-size:12px;font-weight:700;color:var(--ve-text-75);max-width:390px;text-align:center;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Preview Journeys</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every onboarding journey in order, from the first slide to the dashboard. Click a step to see it in the frame, or open it in a new tab. Steps tagged <span class="tag pv">Preview</span> are screens that normally appear only after signing up, paying or applying; they open in preview mode, where nothing is saved, sent or charged. To change a slide's picture, narration, music or video, use the <a href="/admin/depot/onboarding">Onboarding</a> tab.</p>
+    <div id="pv-gate" class="gate" hidden></div>
+    <div id="pv-app" hidden>
+      <div class="bar">
+        <div class="seg" role="group" aria-label="Journey">
+          <button type="button" data-j="member" aria-pressed="true">Member</button>
+          <button type="button" data-j="partners" aria-pressed="false">Partners</button>
+          <button type="button" data-j="cm" aria-pressed="false">Community Manager</button>
+        </div>
+        <label id="city-wrap" hidden>City <select id="city">
+          <option value="south-florida">South Florida</option>
+          <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
+          <option value="philadelphia">Philadelphia</option>
+          <option value="new-york">New York</option>
+          <option value="los-angeles">Los Angeles</option>
+        </select></label>
+        <div class="seg" role="group" aria-label="Frame size">
+          <button type="button" data-size="phone" aria-pressed="true">Phone</button>
+          <button type="button" data-size="desk" aria-pressed="false">Desktop</button>
+        </div>
+      </div>
+      <div class="layout">
+        <div>
+          <p class="journey-intro" id="intro"></p>
+          <ol class="steps" id="steps"></ol>
+        </div>
+        <div class="stage">
+          <div class="frame phone" id="frame"><iframe id="view" title="Step preview" src="about:blank"></iframe></div>
+          <p class="stage-cap" id="cap">Click a step to see it here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      // kind: live (the real page, nothing happens until you act), pv (preview mode), na (cannot be previewed).
+      var JOURNEYS = {
+        member: {
+          intro: 'Someone who wants to join. The homepage’s Start Your Journey button opens the Member page, they choose an amount (from $11) and land on their dashboard.',
+          steps: [
+            { t: 'Homepage', d: 'Start Your Journey opens the Member page.', u: '/', k: 'live' },
+            { t: 'Slide 1: Why I built this', d: 'Your lesaruss.com recording.', u: '/welcome', k: 'live' },
+            { t: 'Slide 2: What’s been missing', u: '/welcome#oldway', k: 'live' },
+            { t: 'Slide 3: Your city, right now', u: '/welcome#city', k: 'live' },
+            { t: 'Slide 4: In person', u: '/welcome#inperson', k: 'live' },
+            { t: 'Slide 5: The Community Board', u: '/welcome#board', k: 'live' },
+            { t: 'Slide 6: Unfinished on purpose', u: '/welcome#unfinished', k: 'live' },
+            { t: 'Slide 7: Take your founding seat', d: 'As a new visitor sees it: pick an amount and the points it brings. The button is turned off.', u: '/welcome?preview=visitor#seat', k: 'pv' },
+            { t: 'Create an account', d: 'The pop-up a new visitor gets. Finishing it creates a real account, so just look.', u: '/welcome?preview=signup', k: 'pv' },
+            { t: 'Secure checkout', d: 'Stripe’s own page with the amount they chose. It cannot be previewed here.', k: 'na' },
+            { t: 'Welcome in', d: 'Back from checkout. Live, this moves on to the dashboard after five seconds; in preview it stays.', u: '/welcome?preview=welcome-in', k: 'pv' },
+            { t: 'Dashboard', d: 'Your own dashboard. Use the amber View As button to see it as a Free Member.', u: '/dashboard', k: 'live' }
+          ]
+        },
+        partners: {
+          intro: 'A business owner. Six slides, then Find my fit asks a few questions and shows matching options. Pricing shows once they are a Founding Member.',
+          steps: [
+            { t: 'Slide 1: You put everything into what you offer', u: '/partners#problem', k: 'live' },
+            { t: 'Slide 2: Every Vegan option on a menu is a door', u: '/partners#why', k: 'live' },
+            { t: 'Slide 3: I built the room', u: '/partners#room', k: 'live' },
+            { t: 'Slide 4: What you offer is the way in', u: '/partners#bring', k: 'live' },
+            { t: 'Slide 5: This only works if you’re in it', u: '/partners#only', k: 'live' },
+            { t: 'Slide 6: Take your seat', u: '/partners#seat', k: 'live' },
+            { t: 'Find my fit: the questions', d: 'Who they are, city, goal, budget, timing. Your own saved answers are left alone.', u: '/partners?preview=guide', k: 'pv' },
+            { t: 'Matches before joining', d: 'What a non-member sees: the $11 Founding Membership and what it unlocks.', u: '/partners?preview=gate', k: 'pv' },
+            { t: 'Account and $11 checkout', d: 'The sign-up pop-up, then Stripe. It cannot be previewed here.', k: 'na' },
+            { t: 'Matches with pricing', d: 'What a Founding Member sees, with sample answers for a local business. Checkout and requests are turned off.', u: '/partners?preview=results', k: 'pv' },
+            { t: 'Paid for an option', d: 'The confirmation after buying a table, goodie bag or other option.', u: '/partners?preview=success', k: 'pv' },
+            { t: 'Dashboard', d: 'Find my fit also lives in the dashboard’s Opportunities section.', u: '/dashboard', k: 'live' }
+          ]
+        },
+        cm: {
+          intro: 'Someone who wants to lead a city. Nine slides, then the $11 Founding Membership, then an application, one question at a time. Pick the city above.',
+          city: true,
+          steps: [
+            { t: 'Slide 1: Welcome', u: '/community-managers/onboarding#welcome', k: 'live' },
+            { t: 'Slide 2: What you get', u: '/community-managers/onboarding#have', k: 'live' },
+            { t: 'Slide 3: Lead the charge', u: '/community-managers/onboarding#lead', k: 'live' },
+            { t: 'Slide 4: Your role', u: '/community-managers/onboarding#role', k: 'live' },
+            { t: 'Slide 5: A month', u: '/community-managers/onboarding#month', k: 'live' },
+            { t: 'Slide 6: Eyes and ears', u: '/community-managers/onboarding#pulse', k: 'live' },
+            { t: 'Slide 7: The season', u: '/community-managers/onboarding#season', k: 'live' },
+            { t: 'Slide 8: The agreement', u: '/community-managers/onboarding#grow', k: 'live' },
+            { t: 'Slide 9: Ready to lead', d: 'The Apply button.', u: '/community-managers/onboarding#join', k: 'live' },
+            { t: 'Account and $11 checkout', d: 'The sign-up pop-up, then Stripe. It cannot be previewed here.', k: 'na' },
+            { t: 'Application: welcome', d: 'Before the first question.', u: '/community-managers/onboarding?preview=apply', k: 'pv' },
+            { t: 'Application: the questions', d: 'Nine questions, typed or recorded. Answers are not saved, recording is off, and Submit only shows the next screen.', u: '/community-managers/onboarding?preview=questions', k: 'pv' },
+            { t: 'Application received', u: '/community-managers/onboarding?preview=done', k: 'pv' },
+            { t: 'Slide 9 after applying', d: 'What they see when they come back: thanks and what happens next.', u: '/community-managers/onboarding?preview=applied', k: 'pv' },
+            { t: 'Dashboard', d: 'Use the amber View As button and pick Community Manager.', u: '/dashboard', k: 'live' }
+          ]
+        }
+      };
+      var LABEL = { live: 'Live page', pv: 'Preview', na: 'Not previewable' };
+      var j = 'member', size = 'phone', cur = -1;
+      try { var saved = JSON.parse(localStorage.getItem('ve_depot_preview') || 'null'); if (saved) { if (JOURNEYS[saved.j]) j = saved.j; if (saved.size === 'desk') size = 'desk'; } } catch (e) {}
+      function remember() { try { localStorage.setItem('ve_depot_preview', JSON.stringify({ j: j, size: size })); } catch (e) {} }
+      function url(s) {
+        if (!s.u) return '';
+        if (j !== 'cm') return s.u;
+        var city = $('city').value; if (city === 'south-florida') return s.u;
+        var hash = s.u.indexOf('#') >= 0 ? s.u.slice(s.u.indexOf('#')) : '', base = hash ? s.u.slice(0, s.u.indexOf('#')) : s.u;
+        return base + (base.indexOf('?') >= 0 ? '&' : '?') + 'city=' + encodeURIComponent(city) + hash;
+      }
+      function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function render() {
+        var J = JOURNEYS[j];
+        document.querySelectorAll('[data-j]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-j') === j ? 'true' : 'false'); });
+        document.querySelectorAll('[data-size]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-size') === size ? 'true' : 'false'); });
+        $('city-wrap').hidden = !J.city;
+        $('intro').textContent = J.intro;
+        $('frame').className = 'frame ' + size;
+        $('steps').innerHTML = J.steps.map(function (s, i) {
+          var u = url(s);
+          return '<li class="step' + (u ? '' : ' off') + (i === cur ? ' current' : '') + '" data-i="' + i + '"' + (u ? ' tabindex="0" role="button" aria-label="Show ' + esc(s.t) + ' in the frame"' : '') + '>' +
+            '<div><h3>' + esc(s.t) + '<span class="tag ' + s.k + '">' + LABEL[s.k] + '</span></h3>' + (s.d ? '<p>' + esc(s.d) + '</p>' : '') + '</div>' +
+            (u ? '<a class="open" href="' + esc(u) + '" target="_blank" rel="noopener">Open</a>' : '<span></span>') + '</li>';
+        }).join('');
+      }
+      function pick(i) {
+        var s = JOURNEYS[j].steps[i], u = url(s); if (!u) return;
+        cur = i;
+        // Reload the frame even when only the #slide changes, so each page starts on that slide.
+        $('view').src = 'about:blank';
+        setTimeout(function () { $('view').src = u; }, 30);
+        $('cap').textContent = (i + 1) + '. ' + s.t;
+        document.querySelectorAll('.step').forEach(function (el) { el.classList.toggle('current', +el.getAttribute('data-i') === i); });
+      }
+      $('steps').addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        var li = e.target.closest('.step'); if (li) pick(+li.getAttribute('data-i'));
+      });
+      $('steps').addEventListener('keydown', function (e) {
+        var li = e.target.closest && e.target.closest('.step');
+        if (li && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick(+li.getAttribute('data-i')); }
+      });
+      document.querySelectorAll('[data-j]').forEach(function (b) { b.addEventListener('click', function () { j = b.getAttribute('data-j'); cur = -1; remember(); render(); pick(0); }); });
+      document.querySelectorAll('[data-size]').forEach(function (b) { b.addEventListener('click', function () { size = b.getAttribute('data-size'); remember(); render(); }); });
+      $('city').addEventListener('change', function () { render(); if (cur >= 0) pick(cur); });
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('pv-gate').hidden = false; $('pv-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('pv-app').hidden = false;
+        render(); pick(0);
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

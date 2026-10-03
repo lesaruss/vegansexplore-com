@@ -249,6 +249,7 @@
   <div class="page-frame">
 
   <script src="/public/nav.js"></script>
+  <script src="/public/ve-preview.js"></script>
 
   <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Partner with Vegans Explore">
     <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
@@ -435,7 +436,7 @@
         document.getElementById('nav-count').textContent = (cur + 1) + ' of ' + slides.length;
         document.getElementById('stage-nav').classList.toggle('on-hero', cur === 0);
         if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
-        try { if (window.gtag) gtag('event', 'pg_slide', { slide: ids[cur] }); } catch (e) {}
+        try { if (window.gtag && !window.VE_PREVIEW) gtag('event', 'pg_slide', { slide: ids[cur] }); } catch (e) {}
       }
 
       document.getElementById('nav-back').addEventListener('click', function () { show(cur - 1); });
@@ -448,7 +449,7 @@
       });
 
       var start = ids.indexOf((location.hash || '').replace('#', ''));
-      if (location.hash === '#guide') start = ids.length - 1;
+      if (location.hash === '#guide' || (window.VE_PREVIEW && !location.hash)) start = ids.length - 1;
       show(start > 0 ? start : 0, true);
 
       // The picture in each slide's panel, chosen in the Depot (/admin/depot/onboarding) (Page: Partners).

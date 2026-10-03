@@ -268,6 +268,7 @@
   <div class="page-frame">
 
   <script src="/public/nav.js"></script>
+  <script src="/public/ve-preview.js"></script>
 
   <!-- Member entry point (Sean, 2026-09-30): the main front door, on the Community Manager and
        Partners slide engine. Script from the 2026-09-30 panel (playbook_records 1a1bcedd) with
@@ -466,7 +467,7 @@
         document.getElementById('nav-count').textContent = (cur + 1) + ' of ' + slides.length;
         document.getElementById('stage-nav').classList.toggle('on-hero', cur === 0);
         if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
-        try { if (window.gtag) gtag('event', 'member_slide', { slide: ids[cur] }); } catch (e) {}
+        try { if (window.gtag && !window.VE_PREVIEW) gtag('event', 'member_slide', { slide: ids[cur] }); } catch (e) {}
       }
       document.getElementById('nav-back').addEventListener('click', function () { show(cur - 1); });
       document.getElementById('nav-next').addEventListener('click', function () { show(cur + 1); });
@@ -476,8 +477,11 @@
         if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
       });
       var params = new URLSearchParams(location.search);
+      // Preview mode (Depot > Preview journeys): ?preview=visitor, signup or welcome-in shows the
+      // join slide as that moment looks, with checkout turned off. public/ve-preview.js draws the tag.
+      var PREVIEW = params.get('preview') || '';
       var start = ids.indexOf((location.hash || '').replace('#', ''));
-      if (location.hash === '#join' || params.get('activate')) start = ids.length - 1;
+      if (location.hash === '#join' || params.get('activate') || (PREVIEW && !location.hash)) start = ids.length - 1;
       show(start > 0 ? start : 0, true);
 
       // Pictures, narration and each slide's recipe, set in the Depot (Page: Member).
@@ -532,6 +536,7 @@
       otherIn.addEventListener('input', function () { setAmount(Math.round(+otherIn.value || 0)); });
 
       function checkout() {
+        if (PREVIEW) { joinMsg.className = 'join-msg'; joinMsg.textContent = 'Preview: checkout is turned off. On the live page this opens secure checkout for $' + amount + '.'; return; }
         if (!(amount >= 11 && amount <= 1000)) { joinMsg.className = 'join-msg'; joinMsg.textContent = 'Choose an amount from $11 to $1,000.'; return; }
         joinMsg.className = 'join-msg'; joinMsg.textContent = 'Opening secure checkout...';
         try { localStorage.setItem('ve_join_amount', String(amount)); } catch (e) {}
@@ -543,7 +548,7 @@
       // A new account lands here instead of the site's fixed $11 box, so the amount chosen holds.
       window.VE_ACTIVATE_HANDLER = function () { show(ids.length - 1); checkout(); };
       document.getElementById('join-btn').addEventListener('click', function () {
-        if (!window.VEAuth) return;
+        if (!window.VEAuth || PREVIEW) { checkout(); return; }
         if (!VEAuth.isLoggedIn()) { VEAuth.showAuthModal('Create your account to take your founding seat.', checkout, 'signup'); return; }
         checkout();
       });
@@ -557,10 +562,18 @@
       } else if (params.get('activate') === 'cancelled') {
         joinMsg.textContent = 'No charge was made. Your seat is here whenever you are ready.';
       }
+      // Preview: the return from checkout (it stays put instead of moving on to the dashboard),
+      // and the account pop-up a new visitor sees. Finishing that pop-up does create a real account.
+      if (PREVIEW === 'welcome-in') {
+        joinMsg.className = 'join-msg ok';
+        joinMsg.innerHTML = 'Welcome in. Your ' + pts(11) + ' points are on the way. <a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
+      } else if (PREVIEW === 'signup') {
+        window.addEventListener('load', function () { if (window.VEAuth) VEAuth.showAuthModal('Create your account to take your founding seat.', function () {}, 'signup'); });
+      }
 
       // Members see that they are in, and can still give more.
       var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
-      if (me && me.membership_status === 'active' && !params.get('activate')) {
+      if (me && me.membership_status === 'active' && !params.get('activate') && !PREVIEW) {
         document.getElementById('join-btn').textContent = 'Contribute';
         document.getElementById('join-note').textContent = "You're already a member. Give more any time.";
       }
