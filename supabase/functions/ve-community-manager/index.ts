@@ -117,6 +117,23 @@ Deno.serve(async (req) => {
   const invited = !!invite;
   const approved = member.ve_role === 'community_manager';
 
+  // Sean's dashboard checklist (Depot > Dashboard checklist): which parts of the
+  // dashboard each role sees. Only Hide marks are stored; anyone can read them.
+  if (action === 'admin_dashboard_set') {
+    if (!member.is_superadmin) return json({ error: 'no_access' }, 403);
+    const value: Record<string, Record<string, boolean>> = {};
+    for (const role of ['member', 'cm', 'superadmin']) {
+      const marks = body.marks?.[role] || {};
+      value[role] = {};
+      for (const k of Object.keys(marks).slice(0, 100)) {
+        if (/^[a-z0-9-]{1,40}$/.test(k) && marks[k] === false) value[role][k] = false;
+      }
+    }
+    const { error } = await db.from('ve_site_settings').upsert({ key: 'dashboard_sections', value, updated_at: new Date().toISOString(), updated_by: memberId });
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, value });
+  }
+
   if (action === 'admin_list' || action === 'admin_decide') {
     if (!member.is_superadmin) return json({ error: 'no_access' }, 403);
     if (action === 'admin_list') {

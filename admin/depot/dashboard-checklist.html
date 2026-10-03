@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Dashboard Checklist | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:16px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .views{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px;}
+    .views span{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-right:4px;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;min-height:44px;border-radius:99px;border:1.5px solid var(--ve-green-deep);background:#fff;color:var(--ve-green-deep);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;}
+    .btn:hover{background:var(--ve-green-light);}
+    .status{font-size:13px;font-weight:700;min-height:22px;margin:8px 0 14px;}
+    .status.err{color:#8a1c12;} .status.ok{color:#174a1a;}
+    .group{background:#fff;border:1px solid var(--ve-border);border-radius:14px;margin-bottom:16px;overflow:hidden;}
+    .group h2{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;padding:14px 18px;background:#fafcfa;border-bottom:1px solid var(--ve-border);}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);text-align:left;padding:10px 18px;border-bottom:1px solid var(--ve-border);}
+    th.r,td.r{text-align:center;width:190px;}
+    td{padding:12px 18px;border-bottom:1px solid var(--ve-border);vertical-align:middle;}
+    tr:last-child td{border-bottom:0;}
+    .part b{display:block;font-size:14.5px;font-weight:800;line-height:1.35;}
+    .part small{display:block;font-size:12.5px;color:var(--ve-text-75);line-height:1.45;margin-top:2px;}
+    .seg{display:inline-flex;border:1.5px solid var(--ve-green-deep);border-radius:99px;overflow:hidden;}
+    .seg button{font:inherit;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:0;background:#fff;color:var(--ve-green-deep);padding:8px 14px;min-height:40px;min-width:64px;cursor:pointer;}
+    .seg button[aria-pressed="true"].keep{background:var(--ve-green-deep);color:#fff;}
+    .seg button[aria-pressed="true"].hide{background:#8a1c12;color:#fff;}
+    .seg.hidden-on{border-color:#8a1c12;}
+    .na{font-size:12px;color:rgba(26,26,26,0.5);font-weight:700;}
+    .lbl{display:none;}
+    @media (max-width:760px){
+      thead{display:none;}
+      tr{display:block;border-bottom:1px solid var(--ve-border);padding:12px 16px;}
+      tr:last-child{border-bottom:0;}
+      td{display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;padding:6px 0;}
+      td.part{display:block;padding-bottom:8px;}
+      th.r,td.r{width:auto;text-align:left;}
+      .lbl{display:inline;font-size:12px;font-weight:800;color:var(--ve-text-75);}
+    }
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Dashboard Checklist</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every part of the member dashboard, for each view. Mark each one <b>Keep</b> or <b>Hide</b>; every mark saves the moment you tap it and applies the next time that person loads their dashboard. Then open each view below to check it. A dash means that view never gets that part.</p>
+    <div id="dc-gate" class="gate" hidden></div>
+    <div id="dc-app" hidden>
+      <div class="views">
+        <span>Open the dashboard as</span>
+        <a class="btn" href="/dashboard/center-console" target="_blank" rel="noopener" data-view="member">Member</a>
+        <a class="btn" href="/dashboard/center-console" target="_blank" rel="noopener" data-view="cm">Community Manager</a>
+        <a class="btn" href="/dashboard/center-console" target="_blank" rel="noopener" data-view="superadmin">Superadmin (you)</a>
+      </div>
+      <p class="status" id="status" role="status"></p>
+      <div id="groups"></div>
+    </div>
+  </div>
+  <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/dashboard-sections.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-community-manager';
+      var $ = function (id) { return document.getElementById(id); };
+      var S = window.VEDashSections;
+      var marks = { member: {}, cm: {}, superadmin: {} };
+      function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function cell(it, role) {
+        if (it.today.indexOf(role.key) === -1) return '<td class="r"><span class="lbl">' + esc(role.label) + '</span><span class="na" title="This view never gets this part">&mdash;</span></td>';
+        var hidden = marks[role.key][it.key] === false;
+        return '<td class="r"><span class="lbl">' + esc(role.label) + '</span><span class="seg' + (hidden ? ' hidden-on' : '') + '" role="group" aria-label="' + esc(it.label + ', ' + role.label) + '">' +
+          '<button type="button" class="keep" data-k="' + it.key + '" data-r="' + role.key + '" data-v="keep" aria-pressed="' + !hidden + '">Keep</button>' +
+          '<button type="button" class="hide" data-k="' + it.key + '" data-r="' + role.key + '" data-v="hide" aria-pressed="' + hidden + '">Hide</button></span></td>';
+      }
+      function render() {
+        var groups = [];
+        S.ITEMS.forEach(function (it) { if (groups.indexOf(it.group) === -1) groups.push(it.group); });
+        $('groups').innerHTML = groups.map(function (g) {
+          var rows = S.ITEMS.filter(function (it) { return it.group === g; }).map(function (it) {
+            return '<tr><td class="part"><b>' + esc(it.label) + '</b><small>' + esc(it.note) + '</small></td>' + S.ROLES.map(function (r) { return cell(it, r); }).join('') + '</tr>';
+          }).join('');
+          return '<section class="group"><h2>' + esc(g) + '</h2><table><thead><tr><th>Part</th>' + S.ROLES.map(function (r) { return '<th class="r">' + esc(r.label) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows + '</tbody></table></section>';
+        }).join('');
+      }
+      function status(text, cls) { $('status').className = 'status' + (cls ? ' ' + cls : ''); $('status').textContent = text; }
+      var saving = 0;
+      function save() {
+        var n = ++saving;
+        status('Saving…');
+        fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'admin_dashboard_set', marks: marks }) })
+          .then(function (r) { return r.json(); })
+          .then(function (r) {
+            if (n !== saving) return;
+            if (!r || !r.ok) { status('That did not save' + (r && r.error ? ' (' + r.error + ')' : '') + '. Tap it again.', 'err'); return; }
+            var hiddenCount = 0; S.ROLES.forEach(function (role) { hiddenCount += S.hiddenFor(r.value, role.key).length; });
+            status('Saved. ' + (hiddenCount ? hiddenCount + (hiddenCount === 1 ? ' part is' : ' parts are') + ' hidden across the three views.' : 'Every view shows everything it gets today.'), 'ok');
+          })
+          .catch(function () { if (n === saving) status('Could not connect. Tap it again.', 'err'); });
+      }
+      $('groups').addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-k]'); if (!b) return;
+        var k = b.getAttribute('data-k'), r = b.getAttribute('data-r');
+        if (b.getAttribute('data-v') === 'hide') marks[r][k] = false; else delete marks[r][k];
+        render();
+        var again = document.querySelector('button[data-k="' + k + '"][data-r="' + r + '"][data-v="' + b.getAttribute('data-v') + '"]');
+        if (again) again.focus();
+        save();
+      });
+      // View As is stored per browser; the dashboard's own View As menu switches back.
+      document.querySelector('.views').addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-view]'); if (!a) return;
+        var v = a.getAttribute('data-view');
+        try {
+          if (v === 'superadmin') localStorage.removeItem('ve_view_as');
+          else localStorage.setItem('ve_view_as', JSON.stringify({ mode: 'member', points: 0, tier: 'free', role: v === 'cm' ? 'community_manager' : null }));
+        } catch (err) {}
+      });
+      function start() {
+        if (!window.VEAuth || !window.VEDashSections) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('dc-gate').hidden = false; $('dc-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('dc-app').hidden = false;
+        status('Loading your marks…');
+        S.load().then(function (v) {
+          S.ROLES.forEach(function (role) { S.hiddenFor(v, role.key).forEach(function (it) { marks[role.key][it.key] = false; }); });
+          status('');
+          render();
+        });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

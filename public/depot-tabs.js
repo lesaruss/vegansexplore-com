@@ -14,6 +14,7 @@
     { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },
     { href: '/admin/depot/logos', label: 'Logos' },
     { href: '/admin/depot/community-managers', label: 'Community Managers' },
+    { href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
     { href: '/admin/depot/claims', label: 'Claims' },
     { href: '/admin/depot/verified', label: 'Passport Partners' },
     { href: '/admin/depot/services', label: 'Services' },

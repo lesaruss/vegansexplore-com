@@ -572,6 +572,7 @@
 </head>
 <body>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/dashboard-sections.js"></script>
 <!-- The ONE LESARUSS universal bar, served by LESARUSS HQ (2026-09-27, Sean:
      "It should be the same selector, no matter which brand I'm on"). This site
      used to keep its own copy in /public/universal-bar.js, and the two had
@@ -767,7 +768,7 @@
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </button>
-      <div class="dash-stats-hero cols-2">
+      <div class="dash-stats-hero cols-2" id="dash-stats-hero">
         <div class="dash-stats-hero-tile">
           <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
           <div class="dash-stats-hero-label">Membership</div>
@@ -802,6 +803,7 @@
            location field doesn't mention their metro by name won't surface
            on this board yet -- a real data-quality gap in the existing
            location field, not something this tile can fabricate around. -->
+      <div id="dash-leaderboard-block">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;">
         <p class="dash-section-title" style="margin-top:0;">Leaderboard</p>
         <div class="dash-leaderboard-scope" id="dash-leaderboard-scope" role="tablist" aria-label="Leaderboard scope">
@@ -810,6 +812,7 @@
         </div>
       </div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
+      </div>
 
       <!-- Home Daily Pulse preview. MUST stay inside #dash-profile-section
            (2026-09-20): it was a sibling AFTER the section's </div>, so it
@@ -817,7 +820,7 @@
            pulse shows up on all of the pages"). Moving the section's close to
            after this block scopes it to the Dashboard tab, where the "See All"
            jumps to the full Daily Pulse tab. -->
-      <div style="margin-top:24px;margin-bottom:28px;">
+      <div id="dash-home-pulse-block" style="margin-top:24px;margin-bottom:28px;">
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <p class="dash-section-title" style="margin-top:0;">Daily Pulse</p>
           <button type="button" class="dash-home-pulse-seeall" id="dash-home-pulse-seeall">See All &rarr;</button>
@@ -1194,9 +1197,12 @@
     // itself still lives at /dashboard/handbook if a link is needed again.
     var grid = document.getElementById('dash-tile-grid');
     // Certification first: it is the Community Manager's starting point.
+    if (!dashTileHidden('cm-handbook')) {
     var cert = document.createElement('a'); cert.className = 'dash-tile'; cert.href = '/dashboard/certification';
     cert.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green-dark),var(--ve-green));">&#127891;</div><div class="dash-tile-body"><div class="dash-tile-title">Certification <span class="dash-tag">Start here</span></div><div class="dash-tile-desc">Your Community Manager handbook as a course. Pass every module to be certified.</div></div>';
     if (grid.firstChild) grid.insertBefore(cert, grid.firstChild); else grid.appendChild(cert);
+    }
+    if (dashTileHidden('cm-coming')) return;
     var coming1 = document.createElement('a'); coming1.className = 'dash-tile coming'; coming1.href = '#';
     coming1.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,#c7c7c7,#9a9a9a);">&#128197;</div><div class="dash-tile-body"><div class="dash-tile-title">Event Management <span class="dash-tag">Coming Soon</span></div><div class="dash-tile-desc">Post and manage events for your city\'s hub page directly from here.</div></div>';
     grid.appendChild(coming1);
@@ -1587,6 +1593,7 @@
     (dashLayout || []).forEach(function (row) { savedMap[row.module_key] = row; });
     var buckets = { superadmin: [], media: [], tools: [] };
     registry.forEach(function (t) {
+      if (dashTileHidden(t.key)) return;
       if (t.visibility === 'staff' && !isStaff) return;
       if (t.visibility === 'superadmin' && !member.is_superadmin) return;
       var tile = t;
@@ -1794,6 +1801,7 @@
     var hidden = (member.hidden_modules) || [];
     MODULES.forEach(function(m) {
       if (hidden.indexOf(m.key) !== -1) return;
+      if (dashTileHidden(m.key)) return;
       var wrap = document.createElement('div');
       wrap.className = 'dash-tile-wrap';
       var tile = document.createElement('a');
@@ -3235,6 +3243,7 @@
     if (!grid) return;
     grid.innerHTML = '';
     TOOL_SECTIONS.forEach(function (t) {
+      if (DASH_HIDDEN.sections[t.id]) return;
       var wrap = document.createElement('div');
       wrap.className = 'dash-tile-wrap';
       var tile = document.createElement('a');
@@ -3642,7 +3651,45 @@
       }).catch(function () {});
   }
 
+  // Sean's dashboard checklist (Depot > Dashboard checklist, 2026-10-03): parts marked
+  // Hide for this member's role (after View As) are hidden before anything renders.
+  // Tabs lose their data-tab-key so they leave the tab bar; tiles and Tools sections are
+  // skipped by their renderers; everything else gets a display:none !important rule,
+  // which wins over the renderers that later set style.display.
+  var DASH_HIDDEN = { tiles: {}, sections: {} };
+  function dashTileHidden(key) { return !!DASH_HIDDEN.tiles[key]; }
+  function applyDashChecklist(member, marks) {
+    var S = window.VEDashSections;
+    if (!S) return;
+    var css = [];
+    S.hiddenFor(marks, S.roleOf(member)).forEach(function (it) {
+      (it.tile || []).forEach(function (k) { DASH_HIDDEN.tiles[k] = true; });
+      if (it.section) DASH_HIDDEN.sections[it.section] = true;
+      if (it.tab) {
+        var el = document.querySelector('[data-tab-key="' + it.tab + '"]');
+        if (el) { el.removeAttribute('data-tab-key'); el.removeAttribute('data-tab-label'); }
+      }
+      (it.sel || []).forEach(function (q) { css.push(q + '{display:none !important}'); });
+    });
+    if (css.length) {
+      var st = document.createElement('style');
+      st.id = 'dash-checklist-css';
+      st.textContent = css.join('\n');
+      document.head.appendChild(st);
+    }
+  }
+  var dashShown = false;
   function showDashboard(member) {
+    if (dashShown) return;
+    dashShown = true;
+    var S = window.VEDashSections;
+    (S ? S.load() : Promise.resolve({})).then(function (marks) {
+      try { applyDashChecklist(member, marks); } catch (e) {}
+      showDashboardNow(member);
+    });
+  }
+
+  function showDashboardNow(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     renderStatsHero(member);
