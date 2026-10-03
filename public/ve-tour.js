@@ -1,240 +1,224 @@
-// ve-tour.js (2026-08-18, Logan, V direction)
+// ve-tour.js: the 60-second tour.
 //
-// Replaces the old static card-based /tour.html wizard with a real,
-// interactive walkthrough that runs ON TOP of the actual live pages --
-// dashboard, a real Community Hub, the Daily Pulse, Guides, and
-// Get Involved -- instead of describing them in the abstract. A small
-// movable spotlight box highlights the real element being explained and
-// a callout card carries the copy + Back/Next/Skip controls.
+// Rebuilt 2026-10-03 (Sean: "I like the 60 second tour, but it's of the old version of the
+// website... do an updated version that shows the new layout ... the exact same format").
+// Same format as before: a soft spotlight on the real part of the page, a white card with
+// "Step X of Y", the title and copy, progress dots, and Back / Next / Skip tour. What changed
+// is where it runs. The old tour opened inside an iframe and walked through the Atlanta hub,
+// the old Guides page and Get Involved. Now every step is on the member's own dashboard
+// (/dashboard/center-console): the header, the tabs, the leaderboard, the Daily Pulse, each
+// tab, Tools and the Guide button.
 //
-// Sequenced Community-Hub-first per V's direction: the Hub is the concept
-// ("here are the sections, here's where you find information"), with the
-// Directory shown as a tab living INSIDE the hub rather than a separate
-// top-level stop, and a clear distinction between hub-local articles
-// (community-specific) and the Daily Pulse (the shared, site-wide feed).
+// Steps are filtered when the tour starts: a step is skipped when its part is not on this
+// member's dashboard (a tab Sean hid on Depot > Dashboard checklist, the Community Manager
+// certification for a member, and so on), so the tour only ever points at real things.
 //
-// State persists across real page navigations via sessionStorage (a tour
-// step's `page` can differ from the previous step's page -- Next then does
-// a real navigation instead of just re-rendering). This file is loaded on
-// every page that participates in a tour stop; on pages that aren't part
-// of the tour, or when no tour is active, it does nothing.
-//
-// Selectors point at real, already-shipped markup (hub-tabs, tab-news,
-// tab-directory, #pulseList, #passport-heading, #gi-list, etc.) -- verified
-// against the live repo before writing this file. If a selector isn't found
-// on load (future markup changes, slow-loading async content, etc.) the
-// engine falls back to a centered card with no spotlight rather than
-// breaking the tour.
+// Entry points: the "Take the 60-second tour" prompt on the dashboard calls VETour.start()
+// in place, and /tour (tour.html) sends visitors to /dashboard?tour=1, which starts it once
+// the dashboard has loaded (after sign-in, for a visitor who was signed out). Other pages
+// that still load this file do nothing.
 
 (function (global) {
-  var STORAGE_KEY = 've_tour_step';
   var Z = 999999;
 
+  // sel: the first visible match is spotlighted (lists cover desktop and phone markup).
+  // tab: the dashboard tab to open first. role: only offered when that part is on the page.
   var TOUR_STEPS = [
     {
-      page: '/dashboard',
-      selector: '#dash-community-section',
-      fallbackSelector: '#dash-tile-grid',
-      title: 'Welcome to Vegans Explore',
-      body: "This is a real, live walkthrough -- we'll point out the actual pages as we go, not just describe them. Let's start with your Community Hub.",
-      placement: 'bottom',
+      tab: 'profile', sel: ['.dash-welcome'],
+      title: 'Welcome to your dashboard',
+      body: "This is home base for everything Vegans Explore. Here's a quick look around, on your real dashboard.",
+      placement: 'bottom'
     },
     {
-      page: '/communities/atlanta',
-      selector: '.hub-tabs',
-      fallbackSelector: '.hero',
-      title: 'Your Community Hub',
-      body: "Every city has a hub like this one. This is Atlanta's -- once you join a city from your dashboard, yours will look just like it. Here are the sections: this is where you'll find everything for your city.",
-      placement: 'bottom',
+      tab: 'profile', sel: ['#dash-welcome-stats'],
+      title: 'Your points and level',
+      body: 'Everything you do earns points: voting in the Directory, going to events, finishing guides and inviting friends. Your level climbs as they add up.',
+      placement: 'bottom'
     },
     {
-      page: '/communities/atlanta',
-      tab: 'news',
-      selector: '#tab-news',
-      title: 'Articles For This City',
-      body: "This tab holds articles written specifically for this community -- local news, deals, and updates you won't find anywhere else.",
-      placement: 'right',
+      tab: 'profile', sel: ['#dash-city-pill'],
+      title: 'Choose your city',
+      body: 'Your city sets what you see: local spots, local events and local news. Switch any time, even before you travel.',
+      placement: 'bottom'
     },
     {
-      // NEW (2026-08-19, V correction): split the old single Directory step
-      // into a "here's the tab" step and a "here's the content" step. Before,
-      // the spotlight jumped straight to the tab panel content while the card
-      // landed far from the tab bar itself, so it was easy to miss which tab
-      // was even active. This step spotlights the tab button directly (the
-      // same element the tab-highlight ring already points at), so the
-      // dimming cutout and the ring converge on one unmistakable target.
-      page: '/communities/atlanta',
-      tab: 'directory',
-      selector: '#tab-btn-directory',
-      title: 'The Directory Lives Right Here',
-      body: "Your city's Directory is built right into the hub -- it's this tab, not a separate page.",
-      placement: 'bottom',
+      tab: 'profile', sel: ['#dash-cm-cert-prompt'],
+      title: 'Your certification',
+      body: 'Community Managers start here. Nine short modules, each with a quick quiz. Pass them all to be certified.',
+      placement: 'bottom'
     },
     {
-      // Second half of the split: now show what's actually inside that tab.
-      page: '/communities/atlanta',
-      tab: 'directory',
-      selector: '#tab-directory',
-      title: 'Search & Vote On Local Spots',
-      body: "Browse vegan-friendly restaurants and shops near you, vote for your favorites, without ever leaving the community.",
-      placement: 'right',
+      tab: 'profile', sel: ['#dash-tabs', '#dash-tabs-mobile'],
+      title: 'Everything is one tab away',
+      body: 'The Directory, Events, Shows, the Daily Pulse, Communities and your Tools all live right here.',
+      placement: 'bottom'
     },
     {
-      // NEW (2026-08-19, V correction): before jumping straight to the Pulse
-      // page, show where it actually lives day to day -- the main nav menu --
-      // so members know how to get back to it later instead of only seeing it
-      // once via this tour. Opens the real hamburger drawer and rings the
-      // real Pulse link inside it (id added to nav.js for this).
-      page: '/communities/atlanta',
-      openNav: true,
-      selector: '#ve-nav-pulse-link',
-      title: 'Find It From Anywhere',
-      body: "Pulse always lives in your main menu -- tap here from any page on the site to catch up on what's happening site-wide.",
-      placement: 'left',
+      tab: 'profile', sel: ['#dash-leaderboard-block'],
+      title: 'The leaderboard',
+      body: 'See who is leading your city and the whole community. Switch between This City and Global.',
+      placement: 'top'
     },
     {
-      page: '/pulse',
-      selector: '#pulseList',
-      fallbackSelector: '#pulse-hero-section',
-      title: 'The Daily Pulse',
-      body: "This is the main feed -- the articles that apply across all of Vegans Explore, not just one city. Local hub news and the Daily Pulse work together: local for your community, Pulse for everyone.",
-      placement: 'top',
+      tab: 'profile', sel: ['#dash-home-pulse-block'],
+      title: "Today's Daily Pulse",
+      body: 'The latest Vegan news and stories. See All opens the full feed.',
+      placement: 'top'
     },
     {
-      page: '/guides',
-      selector: '#passport-heading',
-      fallbackSelector: '#gc-heading',
-      title: 'Points & Your Passport',
-      body: 'Everything you do earns points toward your Passport -- missions, daily activity, and inviting friends all count.',
-      placement: 'top',
+      tab: 'directory', sel: ['#dash-tabs .dash-tab[data-tab-key="directory"]', '#dash-tabs-mobile'],
+      title: 'The Directory',
+      body: 'Vegan and Vegan-friendly restaurants, shops and services in your city. Vote for your favorites and save them to My List.',
+      placement: 'bottom'
     },
     {
-      page: '/dashboard/get-involved',
-      selector: '#gi-list',
-      fallbackSelector: '#gi-content',
-      title: "You're Ready to Explore",
-      body: 'Want to do more than browse? Apply here to volunteer or become a Vegan Explorer.',
-      placement: 'top',
-      isLast: true,
+      tab: 'events', sel: ['#dash-tabs .dash-tab[data-tab-key="events"]', '#dash-tabs-mobile'],
+      title: 'Events',
+      body: "What's coming up in your city, from potlucks to festivals.",
+      placement: 'bottom'
     },
+    {
+      tab: 'shows', sel: ['#dash-tabs .dash-tab[data-tab-key="shows"]', '#dash-tabs-mobile'],
+      title: 'Shows',
+      body: 'Watch and listen to Vegans Explore shows and podcasts without leaving your dashboard.',
+      placement: 'bottom'
+    },
+    {
+      tab: 'communities', sel: ['#dash-tabs .dash-tab[data-tab-key="communities"]', '#dash-tabs-mobile'],
+      title: 'Communities',
+      body: 'Every city has its own community. Visit yours, or look around another city before you go.',
+      placement: 'bottom'
+    },
+    {
+      tab: 'tools', sel: ['#dash-tabs .dash-tab[data-tab-key="tools"]', '#dash-tabs-mobile'],
+      title: 'Your tools',
+      body: 'Bounties, campaigns, ways to get involved, step-by-step guides and My List, all in one place.',
+      placement: 'bottom'
+    },
+    {
+      tab: 'profile', sel: ['#lr-dock-ask'],
+      title: 'Ask your Guide',
+      body: 'Have a question? Tap your Guide any time and we will get you an answer. Enjoy exploring.',
+      placement: 'top'
+    }
   ];
 
-  function getStep() {
-    var s;
-    try { s = sessionStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
-    if (s === null) return null;
-    var n = parseInt(s, 10);
-    return isNaN(n) ? null : n;
-  }
-  function setStep(i) {
-    try { sessionStorage.setItem(STORAGE_KEY, String(i)); } catch (e) {}
-  }
-  function clearTourState() {
-    try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
-  }
-
-  function exitHref() {
-    return (global.VEAuth && global.VEAuth.isLoggedIn && global.VEAuth.isLoggedIn()) ? '/dashboard' : '/join';
-  }
-
-  function startTour() {
-    setStep(0);
-    var first = TOUR_STEPS[0];
-    if (location.pathname === first.page) {
-      renderStep(0);
-    } else {
-      location.href = first.page;
-    }
-  }
-
-  function goToStep(idx) {
-    if (idx < 0) idx = 0;
-    if (idx >= TOUR_STEPS.length) { finishTour(); return; }
-    var step = TOUR_STEPS[idx];
-    setStep(idx);
-    if (step.page === location.pathname) {
-      renderStep(idx);
-    } else {
-      location.href = step.page;
-    }
-  }
-
-  function finishTour() {
-    clearTourState();
-    teardown();
-    location.href = exitHref();
-  }
-
-  function skipTour() {
-    clearTourState();
-    teardown();
-    location.href = exitHref();
-  }
-
-  function teardown() {
-    // FIXED (2026-08-18, Logan, V correction): this used to check for an id
-    // ('ve-tour-overlay-backdrop') that was never actually created -- the
-    // real elements are 've-tour-overlay-spotlight' and 've-tour-overlay-card'.
-    // Because the check never matched, ensureDom() below recreated a brand
-    // new spotlight box-shadow on every single Next click instead of reusing
-    // the existing one. Each fresh box-shadow layer stacks its own dimming on
-    // top of the last, which is why it visibly got darker and darker with
-    // every step -- confirmed as the root cause of V's report.
-    ['overlay-spotlight', 'overlay-card', 'tab-highlight'].forEach(function (id) {
-      var el = document.getElementById('ve-tour-' + id);
-      if (el) el.parentNode.removeChild(el);
-    });
-    window.removeEventListener('resize', reposition);
-    window.removeEventListener('scroll', reposition, true);
-  }
-
+  var steps = [];
+  var current = 0;
   var currentTarget = null;
   var currentPlacement = 'bottom';
   var currentTabButton = null;
 
-  function ensureDom() {
-    // FIXED: correct id check, so a same-page step change (e.g. the two
-    // hub-tab steps) reuses the one existing overlay instead of stacking a
-    // new one on top. Cross-page navigations get a fresh DOM anyway (new
-    // page load), so this is also safe there.
-    if (document.getElementById('ve-tour-overlay-card')) return;
+  function onDashboard() { return !!document.getElementById('dash-content'); }
+  function visible(el) { return !!(el && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden'); }
+  function tabAvailable(key) {
+    if (key === 'profile') return true;
+    return !!document.querySelector('#dash-tabs .dash-tab[data-tab-key="' + key + '"]');
+  }
+  function openTab(key) {
+    if (typeof global.activateDashTab === 'function') { try { global.activateDashTab(key, { skipHistory: true }); } catch (e) {} }
+  }
+  function findEl(step) {
+    for (var i = 0; i < step.sel.length; i++) {
+      var el = document.querySelector(step.sel[i]);
+      if (visible(el)) return el;
+    }
+    return null;
+  }
 
-    var style = document.createElement('style');
-    style.id = 've-tour-style';
-    style.textContent =
-      // LIGHTENED (2026-08-18, V correction): was rgba(0,0,0,0.55); "not so
-      // dark" -- dropped to 0.32 so the page stays legible behind the dim.
-      '#ve-tour-overlay-spotlight{position:absolute;pointer-events:none;border-radius:10px;' +
-      'box-shadow:0 0 0 9999px rgba(0,0,0,0.32);transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;z-index:' + Z + ';}' +
-      // NEW: a distinct ring (no dimming, no cutout) around the active hub
-      // tab button itself, so it's clear which tab the tour is on even
-      // though the tab bar sits outside the spotlighted section below it.
-      '#ve-tour-tab-highlight{position:absolute;pointer-events:none;border-radius:8px;' +
-      'border:2.5px solid #22C55E;box-shadow:0 0 0 3px rgba(34,197,94,0.25);' +
-      'transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;z-index:' + (Z + 1) + ';}' +
-      '#ve-tour-overlay-card{position:absolute;max-width:340px;background:#fff;border-radius:14px;' +
-      'box-shadow:0 12px 40px rgba(0,0,0,0.3);padding:20px 22px;font-family:"Montserrat",sans-serif;z-index:' + (Z + 2) + ';' +
-      'transition:top .25s ease,left .25s ease;}' +
-      '#ve-tour-overlay-card.centered{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);}' +
-      '.ve-tour-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#22C55E;margin-bottom:6px;}' +
-      '.ve-tour-title{font-size:16px;font-weight:900;color:#1a1a1a;margin-bottom:8px;line-height:1.25;}' +
-      '.ve-tour-body{font-size:13px;color:#444;line-height:1.55;margin-bottom:16px;}' +
-      '.ve-tour-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}' +
-      '.ve-tour-dots{display:flex;gap:5px;}' +
-      '.ve-tour-dot{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,0.15);}' +
-      '.ve-tour-dot.active{background:#22C55E;width:14px;border-radius:3px;transition:width .15s;}' +
-      '.ve-tour-btns{display:flex;gap:8px;}' +
-      '.ve-tour-btn{border:none;cursor:pointer;font-family:"Montserrat",sans-serif;font-size:11.5px;font-weight:800;' +
-      'letter-spacing:.05em;text-transform:uppercase;padding:9px 16px;border-radius:7px;}' +
-      '.ve-tour-btn-primary{background:#22C55E;color:#fff;}' +
-      '.ve-tour-btn-primary:hover{background:#16A34A;}' +
-      '.ve-tour-btn-back{background:#F3F4F6;color:#555;}' +
-      '.ve-tour-btn-back:hover{background:#E5E7EB;}' +
-      '.ve-tour-skip{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#999;' +
-      'background:none;border:none;cursor:pointer;text-decoration:underline;font-family:"Montserrat",sans-serif;' +
-      'position:absolute;top:10px;right:14px;}' +
-      '@media (max-width:520px){#ve-tour-overlay-card{max-width:calc(100vw - 32px);}}';
-    document.head.appendChild(style);
+  // Keep a step only when its tab is on this member's dashboard and its part shows there.
+  function availableSteps() {
+    return TOUR_STEPS.filter(function (s) {
+      if (!tabAvailable(s.tab)) return false;
+      if (s.tab !== 'profile') return true;
+      return !!findEl(s);
+    });
+  }
+
+  function dashboardReady() {
+    var c = document.getElementById('dash-content');
+    return c && getComputedStyle(c).display !== 'none' && document.querySelector('#dash-tabs .dash-tab');
+  }
+
+  function startTour(onReady) {
+    if (!onDashboard()) { location.href = '/dashboard?tour=1'; return; }
+    var tries = 0;
+    (function wait() {
+      if (!dashboardReady()) { if (++tries < 80) setTimeout(wait, 150); return; }
+      if (typeof onReady === 'function') onReady();
+      if (typeof global.veCloseToolPanels === 'function') { try { global.veCloseToolPanels(); } catch (e) {} }
+      openTab('profile');
+      steps = availableSteps();
+      if (!steps.length) return;
+      goToStep(0);
+    })();
+  }
+
+  function goToStep(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= steps.length) { finishTour(); return; }
+    current = idx;
+    renderStep(idx);
+  }
+
+  function finishTour() {
+    teardown();
+    openTab('profile');
+    try { global.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { global.scrollTo(0, 0); }
+  }
+
+  function teardown() {
+    ['overlay-spotlight', 'overlay-card', 'tab-highlight'].forEach(function (id) {
+      var el = document.getElementById('ve-tour-' + id);
+      if (el) el.parentNode.removeChild(el);
+    });
+    document.removeEventListener('keydown', onKey);
+    window.removeEventListener('resize', reposition);
+    window.removeEventListener('scroll', reposition, true);
+  }
+
+  function onKey(e) {
+    if (e.key === 'Escape') finishTour();
+    else if (e.key === 'ArrowRight') goToStep(current + 1);
+    else if (e.key === 'ArrowLeft' && current > 0) goToStep(current - 1);
+  }
+
+  function ensureDom() {
+    if (document.getElementById('ve-tour-overlay-card')) return;
+    if (!document.getElementById('ve-tour-style')) {
+      var style = document.createElement('style');
+      style.id = 've-tour-style';
+      style.textContent =
+        '#ve-tour-overlay-spotlight{position:absolute;pointer-events:none;border-radius:10px;' +
+        'box-shadow:0 0 0 9999px rgba(0,0,0,0.32);transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;z-index:' + Z + ';}' +
+        '#ve-tour-tab-highlight{position:absolute;pointer-events:none;border-radius:8px;' +
+        'border:2.5px solid #22C55E;box-shadow:0 0 0 3px rgba(34,197,94,0.25);' +
+        'transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;z-index:' + (Z + 1) + ';}' +
+        '#ve-tour-overlay-card{position:absolute;max-width:340px;background:#fff;border-radius:14px;' +
+        'box-shadow:0 12px 40px rgba(0,0,0,0.3);padding:20px 22px;font-family:"Montserrat",sans-serif;z-index:' + (Z + 2) + ';' +
+        'transition:top .25s ease,left .25s ease;}' +
+        '#ve-tour-overlay-card.centered{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);}' +
+        '.ve-tour-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#16A34A;margin-bottom:6px;}' +
+        '.ve-tour-title{font-size:16px;font-weight:900;color:#1a1a1a;margin-bottom:8px;line-height:1.25;padding-right:64px;}' +
+        '.ve-tour-body{font-size:13px;color:#444;line-height:1.55;margin-bottom:16px;}' +
+        '.ve-tour-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}' +
+        '.ve-tour-dots{display:flex;gap:5px;flex-wrap:wrap;}' +
+        '.ve-tour-dot{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,0.15);}' +
+        '.ve-tour-dot.active{background:#22C55E;width:14px;border-radius:3px;transition:width .15s;}' +
+        '.ve-tour-btns{display:flex;gap:8px;flex-shrink:0;}' +
+        '.ve-tour-btn{border:none;cursor:pointer;font-family:"Montserrat",sans-serif;font-size:11.5px;font-weight:800;' +
+        'letter-spacing:.05em;text-transform:uppercase;padding:9px 16px;min-height:40px;border-radius:7px;}' +
+        '.ve-tour-btn-primary{background:#16A34A;color:#fff;}' +
+        '.ve-tour-btn-primary:hover{background:#15803D;}' +
+        '.ve-tour-btn-back{background:#F3F4F6;color:#555;}' +
+        '.ve-tour-btn-back:hover{background:#E5E7EB;}' +
+        '.ve-tour-skip{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#777;' +
+        'background:none;border:none;cursor:pointer;text-decoration:underline;font-family:"Montserrat",sans-serif;' +
+        'position:absolute;top:10px;right:14px;padding:6px 0;}' +
+        '@media (max-width:520px){#ve-tour-overlay-card{max-width:calc(100vw - 32px);}}';
+      document.head.appendChild(style);
+    }
 
     var spotlight = document.createElement('div');
     spotlight.id = 've-tour-overlay-spotlight';
@@ -247,17 +231,13 @@
 
     var card = document.createElement('div');
     card.id = 've-tour-overlay-card';
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-live', 'polite');
     document.body.appendChild(card);
 
+    document.addEventListener('keydown', onKey);
     window.addEventListener('resize', reposition);
     window.addEventListener('scroll', reposition, true);
-  }
-
-  function findEl(step) {
-    var el = step.selector ? document.querySelector(step.selector) : null;
-    if (el) return el;
-    if (step.fallbackSelector) return document.querySelector(step.fallbackSelector);
-    return null;
   }
 
   function reposition() {
@@ -266,19 +246,14 @@
     var tabHighlight = document.getElementById('ve-tour-tab-highlight');
     if (!card || !spotlight) return;
 
-    // NEW (V correction): ring-highlight the active hub tab button itself,
-    // separately from the dimmed spotlight cutout below it, so it's always
-    // clear which tab the tour is pointing at even when the tab bar sits
-    // outside the spotlighted section.
     if (tabHighlight) {
-      if (currentTabButton && document.body.contains(currentTabButton)) {
-        var btnRect = currentTabButton.getBoundingClientRect();
-        var btnPad = 4;
+      if (currentTabButton && currentTabButton !== currentTarget && visible(currentTabButton)) {
+        var b = currentTabButton.getBoundingClientRect(), bp = 4;
         tabHighlight.style.display = 'block';
-        tabHighlight.style.top = (btnRect.top + window.scrollY - btnPad) + 'px';
-        tabHighlight.style.left = (btnRect.left + window.scrollX - btnPad) + 'px';
-        tabHighlight.style.width = (btnRect.width + btnPad * 2) + 'px';
-        tabHighlight.style.height = (btnRect.height + btnPad * 2) + 'px';
+        tabHighlight.style.top = (b.top + window.scrollY - bp) + 'px';
+        tabHighlight.style.left = (b.left + window.scrollX - bp) + 'px';
+        tabHighlight.style.width = (b.width + bp * 2) + 'px';
+        tabHighlight.style.height = (b.height + bp * 2) + 'px';
       } else {
         tabHighlight.style.display = 'none';
       }
@@ -304,77 +279,49 @@
     spotlight.style.height = height + 'px';
 
     var cardRect = card.getBoundingClientRect();
-    var cTop, cLeft;
-    var gap = 18;
-    if (currentPlacement === 'left') {
-      cTop = top + height / 2 - cardRect.height / 2;
-      cLeft = left - cardRect.width - gap;
-      if (cLeft < window.scrollX + 12) {
-        cLeft = left + width + gap; // flip to right if no room
-      }
-    } else if (currentPlacement === 'right') {
-      cTop = top + height / 2 - cardRect.height / 2;
-      cLeft = left + width + gap;
-      if (cLeft + cardRect.width > window.scrollX + window.innerWidth - 12) {
-        cLeft = left - cardRect.width - gap; // flip to left if no room
-      }
-    } else if (currentPlacement === 'top') {
+    var cTop, cLeft, gap = 18;
+    if (currentPlacement === 'top') {
       cTop = top - cardRect.height - gap;
       cLeft = left + width / 2 - cardRect.width / 2;
+      if (cTop < window.scrollY + 12) cTop = top + height + gap;
     } else {
-      // bottom (default)
       cTop = top + height + gap;
       cLeft = left + width / 2 - cardRect.width / 2;
+      if (cTop + cardRect.height > window.scrollY + window.innerHeight - 12 && top - cardRect.height - gap > window.scrollY + 12) {
+        cTop = top - cardRect.height - gap;
+      }
     }
-    // clamp within viewport horizontally
     var minLeft = window.scrollX + 12;
     var maxLeft = window.scrollX + window.innerWidth - cardRect.width - 12;
     if (cLeft < minLeft) cLeft = minLeft;
     if (cLeft > maxLeft) cLeft = Math.max(minLeft, maxLeft);
-    if (cTop < window.scrollY + 12) cTop = top + height + gap; // flip below if would go above viewport top
-
     card.style.top = cTop + 'px';
     card.style.left = cLeft + 'px';
   }
 
   function renderStep(idx) {
-    var step = TOUR_STEPS[idx];
+    var step = steps[idx];
     ensureDom();
+    if (step.tab) openTab(step.tab);
 
-    function paint() {
-      if (step.tab && typeof window.switchTab === 'function') {
-        try { window.switchTab(step.tab); } catch (e) {}
-      }
-      // NEW (2026-08-19, V correction): steps can point at the real nav
-      // drawer instead of in-page content. Open it (reusing the site's own
-      // hamburger toggle, so its slide-in animation and aria state stay
-      // correct) when a step needs it, and close it again on any step that
-      // doesn't, in case a previous nav step left it open.
-      var mobMenu = document.getElementById('ve-mob-menu');
-      var hamburgerBtn = document.getElementById('ve-hamburger-btn');
-      if (mobMenu && hamburgerBtn) {
-        var menuOpen = mobMenu.classList.contains('open');
-        if (step.openNav && !menuOpen) { hamburgerBtn.click(); }
-        else if (!step.openNav && menuOpen) { hamburgerBtn.click(); }
-      }
-      // NEW (V correction): track the real tab button (id="tab-btn-<tab>",
-      // matching the hub markup) so reposition() can ring-highlight it.
-      currentTabButton = step.tab ? document.getElementById('tab-btn-' + step.tab) : null;
+    setTimeout(function () {
       currentTarget = findEl(step);
+      currentTabButton = step.tab && step.tab !== 'profile' ? document.querySelector('#dash-tabs .dash-tab[data-tab-key="' + step.tab + '"]') : null;
       currentPlacement = step.placement || 'bottom';
       if (currentTarget && currentTarget.scrollIntoView) {
         currentTarget.scrollIntoView({ block: 'center', behavior: 'smooth' });
       }
 
+      var isLast = idx === steps.length - 1;
       var card = document.getElementById('ve-tour-overlay-card');
-      var isLast = !!step.isLast;
+      card.setAttribute('aria-label', 'Tour, step ' + (idx + 1) + ' of ' + steps.length);
       card.innerHTML =
         '<button type="button" class="ve-tour-skip" id="ve-tour-skip-btn">Skip tour</button>' +
-        '<div class="ve-tour-eyebrow">Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length + '</div>' +
+        '<div class="ve-tour-eyebrow">Step ' + (idx + 1) + ' of ' + steps.length + '</div>' +
         '<div class="ve-tour-title">' + step.title + '</div>' +
         '<div class="ve-tour-body">' + step.body + '</div>' +
         '<div class="ve-tour-row">' +
-          '<div class="ve-tour-dots" id="ve-tour-dots"></div>' +
+          '<div class="ve-tour-dots" id="ve-tour-dots" aria-hidden="true"></div>' +
           '<div class="ve-tour-btns">' +
             (idx > 0 ? '<button type="button" class="ve-tour-btn ve-tour-btn-back" id="ve-tour-back-btn">Back</button>' : '') +
             '<button type="button" class="ve-tour-btn ve-tour-btn-primary" id="ve-tour-next-btn">' + (isLast ? 'Start Exploring' : 'Next') + '</button>' +
@@ -382,39 +329,40 @@
         '</div>';
 
       var dotsEl = document.getElementById('ve-tour-dots');
-      TOUR_STEPS.forEach(function (_, i) {
+      steps.forEach(function (_, i) {
         var d = document.createElement('div');
         d.className = 've-tour-dot' + (i === idx ? ' active' : '');
         dotsEl.appendChild(d);
       });
 
-      document.getElementById('ve-tour-skip-btn').addEventListener('click', skipTour);
+      document.getElementById('ve-tour-skip-btn').addEventListener('click', finishTour);
       var backBtn = document.getElementById('ve-tour-back-btn');
       if (backBtn) backBtn.addEventListener('click', function () { goToStep(idx - 1); });
-      document.getElementById('ve-tour-next-btn').addEventListener('click', function () {
-        if (isLast) { finishTour(); } else { goToStep(idx + 1); }
-      });
+      var nextBtn = document.getElementById('ve-tour-next-btn');
+      nextBtn.addEventListener('click', function () { if (isLast) finishTour(); else goToStep(idx + 1); });
+      try { nextBtn.focus({ preventScroll: true }); } catch (e) {}
 
-      // Give the DOM a frame to size the card before positioning it.
       requestAnimationFrame(reposition);
-    }
-
-    // Async tab content (e.g. the directory widget) can take a beat to mount;
-    // same for the nav drawer's slide-in -- give both a short window before
-    // measuring positions.
-    if (step.tab || step.openNav) { setTimeout(paint, 120); } else { paint(); }
+      // Smooth scrolling and late-loading tab content move things; settle once more.
+      setTimeout(reposition, 450);
+    }, step.tab && step.tab !== 'profile' ? 150 : 0);
   }
 
-  global.VETour = {
-    start: startTour,
-    steps: TOUR_STEPS,
-  };
+  global.VETour = { start: function () { startTour(); }, steps: TOUR_STEPS };
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var idx = getStep();
-    if (idx === null || idx < 0 || idx >= TOUR_STEPS.length) return;
-    var step = TOUR_STEPS[idx];
-    if (step.page !== location.pathname) return; // this page isn't this step -- no-op
-    renderStep(idx);
-  });
+  // /tour sends people to /dashboard?tour=1; start once the dashboard is up, and drop the
+  // flag from the address so a refresh does not restart it.
+  function autoStart() {
+    if (!onDashboard()) return;
+    var on = false;
+    try { on = new URLSearchParams(location.search).get('tour') === '1'; } catch (e) {}
+    if (!on) return;
+    startTour(function () {
+      try {
+        var u = new URL(location.href); u.searchParams.delete('tour');
+        history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+      } catch (e) {}
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoStart); else autoStart();
 })(window);

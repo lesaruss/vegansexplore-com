@@ -21,8 +21,8 @@
        describing them in the abstract. This page's only job is to start
        that tour and forward to its first real stop. -->
   <p class="ve-tour-boot">Starting your tour&hellip;</p>
-  <script src="/public/ve-auth.js"></script>
-  <script src="/public/ve-tour.js"></script>
-  <script>VETour.start();</script>
+  <!-- 2026-10-03: the tour now runs on the member's own dashboard (public/ve-tour.js). -->
+  <script>location.replace('/dashboard?tour=1');</script>
+  <noscript><meta http-equiv="refresh" content="0;url=/dashboard?tour=1"></noscript>
 </body>
 </html>

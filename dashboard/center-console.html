@@ -749,7 +749,7 @@
         <div class="dash-tour-prompt-icon">&#128075;</div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">New here? Take the 60-second tour</div>
-          <div class="dash-tour-prompt-desc">A quick, live walkthrough of your Community Hub, Daily Pulse, Guides, and Points.</div>
+          <div class="dash-tour-prompt-desc">A quick look around your dashboard: your city, points, tabs, the Daily Pulse and your tools.</div>
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
@@ -3335,7 +3335,8 @@
     if (host) host.innerHTML = '';
   }
   window.closeConsoleFrame = closeConsoleFrame;
-  function openTour() { openConsoleFrame('/tour', 'Take the tour'); }
+  // The tour runs on this dashboard itself (public/ve-tour.js, rebuilt 2026-10-03).
+  function openTour() { if (window.VETour) VETour.start(); }
   window.openTour = openTour;
   document.addEventListener('keydown', function (e) {
     var content = document.getElementById('dash-content');
