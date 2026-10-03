@@ -66,3 +66,7 @@ as $function$
   order by coalesce(mp.available_points, 0) desc
   limit 10;
 $function$;
+
+-- 5. Sean's own SoFlo Vegans account stays off the leaderboard too (Sean, 2026-10-03).
+select public.set_member_class(id, 'internal', 'Sean''s own account (SoFlo Vegans); kept off the leaderboard (Sean, 2026-10-03).', 'logan')
+  from members where lower(email) = 'soflovegans@gmail.com' and member_class <> 'internal';
