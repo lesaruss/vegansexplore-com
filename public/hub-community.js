@@ -384,3 +384,9 @@
     wireEventSubmit: wireEventSubmit
   };
 })();
+
+// Guided tour (public/ve-tour.js, Sean 2026-10-03): every hub gets the "Take the tour" button.
+(function () {
+  if (window.VETour || document.querySelector('script[src="/public/ve-tour.js"]')) return;
+  var s = document.createElement('script'); s.src = '/public/ve-tour.js'; s.defer = true; document.body.appendChild(s);
+})();

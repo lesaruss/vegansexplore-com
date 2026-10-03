@@ -23,6 +23,7 @@
 
     { key: 'cm-cert', group: 'Dashboard tab', label: 'Certification prompt', note: '"Start your Community Manager certification", with progress.', today: [C, S], sel: ['#dash-cm-cert-prompt'] },
     { key: 'cm-pulse', group: 'Dashboard tab', label: 'Pulse Desk prompt', note: 'Link to the Community Manager Pulse Desk.', today: [C, S], sel: ['#dash-cm-pulse-prompt'] },
+    { key: 'cm-tour', group: 'Dashboard tab', label: 'Community Manager tour prompt', note: 'Starts the tour of the dashboard, Certification and the Pulse Desk.', today: [C, S], sel: ['#dash-cm-tour-prompt'] },
     { key: 'cm-app', group: 'Dashboard tab', label: 'Community Manager application card', note: 'Only after someone applies: Received, On standby, Selected or Not right now.', today: [M, C], sel: ['#dash-cm-app-prompt'] },
     { key: 'tour', group: 'Dashboard tab', label: 'Take the tour', note: 'The guided tour prompt.', today: [M, C, S], sel: ['#dash-tour-prompt'] },
     { key: 'survey', group: 'Dashboard tab', label: 'Mission survey (250 points)', note: 'Shown until the member answers it.', today: [M, C, S], sel: ['#dash-survey-prompt'] },

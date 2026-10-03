@@ -734,6 +734,16 @@
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
+      <!-- Community Manager tour (Sean 2026-10-03: "the tour format for other things"):
+           dashboard, Certification and the Pulse Desk. public/ve-tour.js, tour 'cm'. -->
+      <a href="/dashboard?tour=cm" class="dash-tour-prompt" id="dash-cm-tour-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;" onclick="if (window.VETour) { VETour.start('cm'); return false; }">
+        <div class="dash-tour-prompt-icon">&#129517;</div>
+        <div class="dash-tour-prompt-body">
+          <div class="dash-tour-prompt-title">Take the Community Manager tour</div>
+          <div class="dash-tour-prompt-desc">Your city, your certification, the Pulse Desk and your tools, in about a minute.</div>
+        </div>
+        <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
+      </a>
       <!-- Community Manager application status (Sean 2026-09-26: "where do I see
            the status of my application?"). renderCmApplication() shows it to
            anyone who has applied. -->
@@ -3618,6 +3628,7 @@
     if (!card || !(member.ve_role === 'community_manager' || member.is_superadmin)) return;
     card.style.display = '';
     var desk = document.getElementById('dash-cm-pulse-prompt'); if (desk) desk.style.display = '';
+    var cmTour = document.getElementById('dash-cm-tour-prompt'); if (cmTour) cmTour.style.display = '';
     var token = window.VEAuth && VEAuth.getToken();
     if (!token) return;
     fetch(SUPABASE_URL + '/functions/v1/ve-learn', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ action: 'outline', course: 've-community-manager-certification' }) })

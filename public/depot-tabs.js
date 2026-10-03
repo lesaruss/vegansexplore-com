@@ -93,3 +93,10 @@
     };
   }
 })();
+
+// Guided tour (public/ve-tour.js, Sean 2026-10-03): every Depot page gets the "Take the tour" button.
+(function () {
+  if (window.VETour || document.querySelector('script[src="/public/ve-tour.js"]')) return;
+  function add() { var s = document.createElement('script'); s.src = '/public/ve-tour.js'; s.defer = true; document.body.appendChild(s); }
+  if (document.body) add(); else document.addEventListener('DOMContentLoaded', add);
+})();
