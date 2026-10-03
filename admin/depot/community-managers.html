@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Community Managers | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:16px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+    .toolbar select{font:inherit;font-size:13.5px;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;max-width:100%;}
+    .count{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:10px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 20px;margin-bottom:12px;}
+    .card.on{border-color:#b8ddb9;box-shadow:0 0 0 2px var(--ve-green-light) inset;}
+    .row{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px 16px;}
+    .who{font-size:17px;font-weight:900;line-height:1.3;}
+    .contact{font-size:13px;color:var(--ve-text-75);word-break:break-word;}
+    .contact a{color:var(--ve-green-deep);}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;border:1px solid transparent;}
+    .tag.green{background:var(--ve-green-light);color:#174a1a;border-color:#b8ddb9;}
+    .tag.gray{background:#eef0ee;color:#333;border-color:#d6d9d6;}
+    .tag.amber{background:#FEF3C7;color:#92400E;border-color:#B45309;}
+    .tag.red{background:#fdecea;color:#8a1c12;border-color:#f1b8b1;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;min-height:44px;border-radius:99px;border:1.5px solid var(--ve-green-deep);background:#fff;color:var(--ve-green-deep);cursor:pointer;}
+    .btn.primary{background:var(--ve-green-deep);color:#fff;}
+    .btn.warn{border-color:#8a1c12;color:#8a1c12;}
+    .btn:disabled{opacity:.5;cursor:wait;}
+    details{margin-top:12px;border-top:1px solid var(--ve-border);padding-top:10px;}
+    summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--ve-green-deep);min-height:32px;}
+    .qa{margin-top:10px;}
+    .qa h3{font-size:13px;font-weight:800;line-height:1.4;}
+    .qa p{font-size:14px;line-height:1.6;white-space:pre-wrap;margin-top:2px;}
+    .qa audio{display:block;width:100%;max-width:420px;margin-top:6px;}
+    .msg{font-size:13px;font-weight:700;margin-top:8px;}
+    .msg.err{color:#8a1c12;} .msg.ok{color:#174a1a;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:24px 0;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Community Managers</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Everyone who applied to lead a city. Nobody gets the Community Manager dashboard until you approve them, invited or not. <b>Approve</b> turns it on: the next time they load their dashboard they see their Community Manager tools and the certification, and they get a welcome email. <b>Remove role</b> turns it off. Standby and Decline only change the status they see on their application.</p>
+    <div id="cm-gate" class="gate" hidden></div>
+    <div id="cm-app" hidden>
+      <div class="toolbar">
+        <select id="f-status" aria-label="Show">
+          <option value="waiting">Waiting for you</option>
+          <option value="approved">Approved</option>
+          <option value="standby">On standby</option>
+          <option value="declined">Declined</option>
+          <option value="">All applications</option>
+        </select>
+        <select id="f-city" aria-label="City"><option value="">All cities</option></select>
+      </div>
+      <p class="count" id="count"></p>
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-community-manager';
+      var $ = function (id) { return document.getElementById(id); };
+      var apps = [];
+      function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) {
+        return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+          .then(function (r) { return r.json(); });
+      }
+      function bucket(a) {
+        if (a.approved) return 'approved';
+        if (a.status === 'standby') return 'standby';
+        if (a.status === 'declined') return 'declined';
+        return 'waiting';
+      }
+      var STATUS_TAG = { applied: ['Waiting for you', 'amber'], selected: ['Selected', 'green'], standby: ['On standby', 'gray'], declined: ['Declined', 'red'] };
+      function card(a) {
+        var tags = [];
+        tags.push(a.approved ? '<span class="tag green">Community Manager</span>' : '<span class="tag gray">Member dashboard</span>');
+        var st = STATUS_TAG[a.status] || [a.status, 'gray']; if (!a.approved) tags.push('<span class="tag ' + st[1] + '">' + esc(st[0]) + '</span>');
+        if (a.invited) tags.push('<span class="tag amber">Invited</span>');
+        tags.push(a.membership_status === 'active' ? '<span class="tag green">Founding Member</span>' : '<span class="tag red">Membership not active</span>');
+        if (a.member_class && a.member_class !== 'member') tags.push('<span class="tag gray">Test or staff account (' + esc(a.member_class) + ')</span>');
+        var acts = [];
+        if (!a.approved) acts.push('<button type="button" class="btn primary" data-d="approve">Approve</button>');
+        if (!a.approved && a.status !== 'standby') acts.push('<button type="button" class="btn" data-d="standby">Standby</button>');
+        if (!a.approved && a.status !== 'declined') acts.push('<button type="button" class="btn warn" data-d="decline">Decline</button>');
+        if (a.approved) acts.push('<button type="button" class="btn warn" data-d="revoke">Remove role</button>');
+        var answers = (a.answers || []).map(function (q) {
+          return '<div class="qa"><h3>' + esc(q.question) + '</h3>' + (q.text ? '<p>' + esc(q.text) + '</p>' : '<p><i>Recorded answer only</i></p>') +
+            (q.listen ? '<audio controls preload="none" src="' + esc(q.listen) + '"></audio>' : '') + '</div>';
+        }).join('');
+        return '<div class="card' + (a.approved ? ' on' : '') + '" data-id="' + esc(a.id) + '">' +
+          '<div class="row"><div><div class="who">' + esc(a.name || a.email) + '<span style="font-weight:700;color:var(--ve-text-75);font-size:14px;"> &middot; ' + esc(a.city_name || '') + '</span></div>' +
+          '<div class="contact"><a href="mailto:' + esc(a.email) + '">' + esc(a.email) + '</a>' + (a.phone ? ' &middot; <a href="tel:' + esc(a.phone) + '">' + esc(a.phone) + '</a>' : '') +
+          ' &middot; applied ' + esc(new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })) + '</div>' +
+          '<div class="tags">' + tags.join('') + '</div></div>' +
+          '<div class="acts">' + acts.join('') + '</div></div>' +
+          '<p class="msg" role="status"></p>' +
+          '<details><summary>Their answers (' + (a.answers || []).length + ')</summary>' + (answers || '<p class="empty">No answers saved.</p>') + '</details></div>';
+      }
+      function render() {
+        var fs = $('f-status').value, fc = $('f-city').value;
+        var list = apps.filter(function (a) { return (!fs || bucket(a) === fs) && (!fc || a.city_slug === fc); });
+        $('count').textContent = list.length + (list.length === 1 ? ' application' : ' applications');
+        $('list').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">Nothing here right now.</p>';
+      }
+      var CONFIRM = {
+        approve: 'Approve {name} as the {city} Community Manager? Their dashboard switches to the Community Manager view and they get a welcome email.',
+        revoke: 'Remove the Community Manager role from {name}? Their dashboard goes back to the member view.',
+        decline: 'Decline {name}’s application? They will see "Not right now" on their dashboard. No email is sent.',
+        standby: 'Put {name} on standby? They will see "On standby" on their dashboard. No email is sent.'
+      };
+      $('list').addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-d]'); if (!b) return;
+        var el = b.closest('.card'), id = el.getAttribute('data-id'), d = b.getAttribute('data-d');
+        var a = apps.filter(function (x) { return x.id === id; })[0]; if (!a) return;
+        if (!confirm(CONFIRM[d].replace('{name}', a.name || a.email).replace('{city}', a.city_name || 'their city'))) return;
+        el.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+        var msg = el.querySelector('.msg'); msg.className = 'msg'; msg.textContent = 'Saving…';
+        api({ action: 'admin_decide', id: id, decision: d }).then(function (r) {
+          if (!r || !r.ok) { msg.className = 'msg err'; msg.textContent = 'That did not save' + (r && r.error ? ' (' + r.error + ')' : '') + '. Try again.'; el.querySelectorAll('button').forEach(function (x) { x.disabled = false; }); return; }
+          a.status = r.status; if (r.approved !== undefined && r.approved !== null) a.approved = r.approved;
+          render();
+          var again = document.querySelector('.card[data-id="' + id + '"] .msg');
+          var done = { approve: 'Approved. Their Community Manager dashboard is on, and the welcome email is on its way.', revoke: 'Role removed. They are back on the member dashboard.', decline: 'Declined.', standby: 'On standby.' }[d];
+          if (again) { again.className = 'msg ok'; again.textContent = done + (r.note ? ' ' + r.note : ''); }
+          else { $('count').textContent += ' · ' + done; }
+        }).catch(function () { msg.className = 'msg err'; msg.textContent = 'Could not connect. Try again.'; el.querySelectorAll('button').forEach(function (x) { x.disabled = false; }); });
+      });
+      $('f-status').addEventListener('change', render);
+      $('f-city').addEventListener('change', render);
+
+      function load() {
+        $('list').innerHTML = '<p class="empty">Loading applications…</p>';
+        api({ action: 'admin_list' }).then(function (r) {
+          if (!r || !r.applications) { $('list').innerHTML = '<p class="empty">Applications did not load' + (r && r.error ? ' (' + esc(r.error) + ')' : '') + '. Refresh to try again.</p>'; return; }
+          apps = r.applications;
+          var cities = {}; apps.forEach(function (a) { if (a.city_slug) cities[a.city_slug] = a.city_name || a.city_slug; });
+          $('f-city').innerHTML = '<option value="">All cities</option>' + Object.keys(cities).map(function (k) { return '<option value="' + esc(k) + '">' + esc(cities[k]) + '</option>'; }).join('');
+          if (!apps.some(function (a) { return bucket(a) === 'waiting'; }) && apps.length) $('f-status').value = '';
+          render();
+        }).catch(function () { $('list').innerHTML = '<p class="empty">Could not connect. Refresh to try again.</p>'; });
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('cm-gate').hidden = false; $('cm-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('cm-app').hidden = false;
+        load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

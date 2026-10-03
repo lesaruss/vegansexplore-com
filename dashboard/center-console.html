@@ -674,8 +674,7 @@
           <div class="dash-viewas-menu" id="dash-viewas-menu" role="menu">
             <button type="button" class="dash-viewas-opt" data-viewas="real" role="menuitem">My Account (Real)</button>
             <div class="dash-viewas-sep"></div>
-            <button type="button" class="dash-viewas-opt" data-viewas="free" role="menuitem">Free Member</button>
-            <button type="button" class="dash-viewas-opt" data-viewas="passport" role="menuitem">Passport Member</button>
+            <button type="button" class="dash-viewas-opt" data-viewas="free" role="menuitem">Member</button>
             <button type="button" class="dash-viewas-opt" data-viewas="cm" role="menuitem">Community Manager</button>
           </div>
         </div>
@@ -2593,7 +2592,9 @@
   // the markup comment on #dash-viewas-wrap above for full context. Reads
   // VEAuth.getViewAs()/setViewAs()/clearViewAs(), which already merge
   // tier/role overrides onto the real member in ve-auth.js's getMember().
-  var VIEW_AS_LABELS = { free: 'Free Member', passport: 'Passport Member', cm: 'Community Manager' };
+  // 2026-10-03 (Sean): membership is the one-time Founding Membership now, so View As offers
+  // Member and Community Manager. An old saved Passport preview shows as Member.
+  var VIEW_AS_LABELS = { free: 'Member', passport: 'Member', cm: 'Community Manager' };
   function initViewAsControl() {
     var real = VEAuth.getRealMember();
     var wrap = document.getElementById('dash-viewas-wrap');
@@ -3672,7 +3673,7 @@
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
     document.getElementById('dash-welcome-name').textContent = 'Welcome back, ' + firstName;
-    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : (member.ve_tier === 'passport' ? 'Passport Member' : 'Member'));
+    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : (member.membership_status === 'active' ? 'Founding Member' : 'Member'));
 
     if (member.is_superadmin) {
       loadAndRenderSectioned(member, isStaff);
@@ -3697,9 +3698,11 @@
         var apps = (d && d.applications) || [];
         var accepted = apps.filter(function (a) { return a.status === 'accepted' && a.opportunities && a.opportunities.opportunity_type === 'community_manager'; });
         var sub = document.getElementById('dash-welcome-sub');
-        if (accepted.length) {
-          var cityName = VE_CITY_NAMES[accepted[0].opportunities.city_slug] || accepted[0].opportunities.city_slug;
-          sub.textContent = 'You manage ' + cityName + '.';
+        // Approval in the Depot (2026-10-03) sets the city on the account (home_community);
+        // older Community Managers were accepted through an opportunity application.
+        var managedCity = member.ve_role === 'community_manager' && member.home_community ? member.home_community : (accepted.length ? accepted[0].opportunities.city_slug : null);
+        if (managedCity) {
+          sub.textContent = 'You manage ' + (VE_CITY_NAMES[managedCity] || managedCity) + '.';
         } else if (member.is_superadmin) {
           sub.textContent = 'Superadmin preview, no city assignment on file for this account.';
         } else {
@@ -3709,7 +3712,7 @@
         document.getElementById('dash-welcome-sub').textContent = 'Could not load your city assignment right now.';
       });
     } else {
-      document.getElementById('dash-welcome-sub').textContent = member.ve_tier === 'passport' ? 'Passport member.' : 'Free member.';
+      document.getElementById('dash-welcome-sub').textContent = member.membership_status === 'active' ? 'Thank you for being a Founding Member.' : 'Become a Founding Member any time: $11, one time.';
     }
   }
 

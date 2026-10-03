@@ -130,8 +130,10 @@
     var avatarSrc = member.avatar_url
       ? '<img src="' + member.avatar_url + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" alt="' + member.name + '">'
       : '<span>' + (member.initials || '?') + '</span>';
-    var VE_TIER_BADGE = { free: 'Free', passport: 'Passport' };
-    var tierBadge = VE_TIER_BADGE[member.ve_tier] || 'Free';
+    // 2026-10-03 (Sean): the badge names the membership a person actually has. Membership is
+    // the one-time Founding Membership; Community Manager appears once Sean approves them.
+    var tierBadge = member.ve_role === 'community_manager' ? 'Community Manager'
+      : (member.membership_status === 'active' ? 'Founding Member' : 'Member');
 
     desktopRight =
       '<div class="ve-nav-member" id="ve-nav-member-chip" role="button" tabindex="0" aria-label="Account menu" aria-haspopup="true" aria-expanded="false">' +

@@ -640,8 +640,8 @@
           if (jm) { jm.setAttribute('data-sa-key', 'applied'); jm.setAttribute('data-cap', 'Thank you for applying'); jm.innerHTML = VESlideAudio.markup('applied', jm.getAttribute('data-poster'), 'Thank you for applying'); }
           if (ids[cur] === 'join') VESlideAudio.onSlide('applied');
         }
-        $('cm-applied-copy').textContent = d && d.invited
-          ? 'Thank you. Your application is in, and your Community Manager certification is waiting in your dashboard.'
+        $('cm-applied-copy').textContent = d && d.approved
+          ? 'Thank you. You have been approved, and your Community Manager certification is waiting in your dashboard.'
           : 'Thank you. Your application is in. We read every one, and we\u2019ll reach out.';
       }
 
@@ -714,8 +714,8 @@
           track('cm_applied', { invited: !!d.invited });
           if (!PREVIEW) try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
           $('ap-q').hidden = true; $('ap-done').hidden = false; $('nav-back').style.visibility = 'hidden';
-          $('ap-done-copy').textContent = d.invited
-            ? 'Your application is in. You already have Community Manager access, so your certification is waiting in your dashboard.'
+          $('ap-done-copy').textContent = d.approved
+            ? 'Your application is in. You are already approved, so your certification is waiting in your dashboard.'
             : 'Your application is in. We read every one, and we\u2019ll reach out. Even if we\u2019re not filling ' + C + ' right away, you\u2019re on our list as cities grow and new roles open.';
           showApplied(d);
         }).catch(function () { btn.disabled = false; $('ap-msg').textContent = 'Could not connect. Please try again.'; });

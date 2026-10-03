@@ -6,8 +6,7 @@
 //   Stores the question and emails it to Sean, reply-to the candidate.
 // POST { action: 'confirm', city, acknowledgements }  Authorization: Bearer <ve_token>
 //   Requires an active (paid) membership and every acknowledgement. Records the
-//   confirmation and emails Sean. Invited candidates (ve_staff_invites, which
-//   already set their Community Manager role at sign-up) are 'confirmed';
+//   confirmation and emails Sean. Approved Community Managers are 'confirmed';
 //   anyone else is 'pending_review' for Sean to decide.
 // POST { action: 'status' }  Authorization: Bearer <ve_token>
 //   Whether this member has confirmed or applied, and whether they were invited.
@@ -17,6 +16,18 @@
 //   The application (Sean, 2026-09-26: open to every member, so there is always a
 //   bench ready as cities grow). Requires an active membership. Emails Sean the
 //   answers with week-long links to any recordings.
+//
+// Approval (Sean, 2026-10-03: "same switch for Ron"). Nobody becomes a Community Manager
+// until Sean approves them, invited or not. An invite (ve_staff_invites) only marks the
+// application "Invited"; it no longer sets the role at sign-up. Superadmins (Depot >
+// Community Managers):
+// POST { action: 'admin_list' }   every application, with its answers and one-hour links to recordings
+// POST { action: 'admin_decide', id, decision: 'approve' | 'standby' | 'decline' | 'revoke' }
+//   approve: members.ve_role and staff_role 'community_manager', home_community = the city,
+//     the city's manager when it has none, application 'selected', and a welcome email.
+//     The applicant's dashboard switches to the Community Manager view on their next load.
+//   revoke: takes the role away (back to the member dashboard) and frees the city.
+//   standby / decline: the application status only.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -60,13 +71,13 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 
-async function sendEmail(subject: string, html: string, replyTo?: string) {
+async function sendEmail(subject: string, html: string, replyTo?: string, to: string = SEAN_EMAIL) {
   if (!RESEND_KEY) return false;
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [SEAN_EMAIL], subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }),
+      body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [to], subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }),
     });
     return res.ok;
   } catch { return false; }
@@ -99,15 +110,73 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, email, name, ve_role, membership_status, home_community').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, email, name, ve_role, membership_status, home_community, is_superadmin').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'member_not_found' }, 404);
   const { data: invite } = await db.from('ve_staff_invites').select('email, city_slug').ilike('email', member.email).maybeSingle();
-  const invited = !!invite || member.ve_role === 'community_manager';
+  // Invited is a label for Sean (someone he already talked to); approved is the switch.
+  const invited = !!invite;
+  const approved = member.ve_role === 'community_manager';
+
+  if (action === 'admin_list' || action === 'admin_decide') {
+    if (!member.is_superadmin) return json({ error: 'no_access' }, 403);
+    if (action === 'admin_list') {
+      const { data: rows, error } = await db.from('ve_cm_candidates').select('id, member_id, email, name, city_slug, answers, phone, invited, status, created_at')
+        .eq('kind', 'application').order('created_at', { ascending: false }).limit(300);
+      if (error) return json({ error: 'list_failed', message: error.message }, 500);
+      const ids = [...new Set((rows || []).map((r: any) => r.member_id).filter(Boolean))];
+      const { data: people } = ids.length ? await db.from('members').select('id, ve_role, membership_status, member_class, home_community').in('id', ids) : { data: [] };
+      const byId: Record<string, any> = {}; (people || []).forEach((m: any) => { byId[m.id] = m; });
+      const { data: invites } = await db.from('ve_staff_invites').select('email');
+      const invitedSet = new Set((invites || []).map((i: any) => String(i.email || '').toLowerCase()));
+      const { data: cities } = await db.from('ve_partner_cities').select('slug, manager_member_id, manager_name');
+      const out = await Promise.all((rows || []).map(async (r: any) => {
+        const answers = await Promise.all((Array.isArray(r.answers) ? r.answers : []).map(async (a: any) => {
+          let listen = null;
+          if (a.audio_path) { const { data } = await db.storage.from('cm-applications').createSignedUrl(a.audio_path, 3600); listen = data?.signedUrl || null; }
+          return { key: a.key, question: a.question, text: a.text, listen };
+        }));
+        const m = byId[r.member_id] || {};
+        return { ...r, answers, invited: r.invited || invitedSet.has(String(r.email || '').toLowerCase()), approved: m.ve_role === 'community_manager',
+          membership_status: m.membership_status || null, member_class: m.member_class || null, city_name: CITY_NAMES[r.city_slug] || r.city_slug };
+      }));
+      return json({ applications: out, cities: cities || [] });
+    }
+    // admin_decide
+    const id = String(body.id || ''), decision = String(body.decision || '');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !['approve', 'standby', 'decline', 'revoke'].includes(decision)) return json({ error: 'bad_request' }, 400);
+    const { data: app } = await db.from('ve_cm_candidates').select('id, member_id, email, name, city_slug, status').eq('id', id).eq('kind', 'application').maybeSingle();
+    if (!app) return json({ error: 'not_found' }, 404);
+    const city = CITY_NAMES[app.city_slug] || 'your city';
+    let note = '';
+    if (decision === 'approve' || decision === 'revoke') {
+      if (!app.member_id) return json({ error: 'no_account' }, 409);
+      const on = decision === 'approve';
+      const patch: Record<string, unknown> = { ve_role: on ? 'community_manager' : 'member', staff_role: on ? 'community_manager' : null, updated_at: new Date().toISOString() };
+      if (on && app.city_slug) patch.home_community = app.city_slug;
+      const { error } = await db.from('members').update(patch).eq('id', app.member_id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      if (on && app.city_slug) {
+        const { data: pc } = await db.from('ve_partner_cities').select('manager_member_id').eq('slug', app.city_slug).maybeSingle();
+        if (pc && !pc.manager_member_id) await db.from('ve_partner_cities').update({ manager_member_id: app.member_id, manager_email: app.email }).eq('slug', app.city_slug);
+        else if (pc && pc.manager_member_id !== app.member_id) note = 'The city already has a manager on file, so it was left as is.';
+      }
+      if (!on) await db.from('ve_partner_cities').update({ manager_member_id: null }).eq('manager_member_id', app.member_id);
+    }
+    const status = { approve: 'selected', standby: 'standby', decline: 'declined', revoke: 'standby' }[decision]!;
+    await db.from('ve_cm_candidates').update({ status }).eq('id', app.id);
+    if (decision === 'approve' && app.email) {
+      await sendEmail(`Welcome, ${city} Community Manager`,
+        `<p>Hi${app.name ? ' ' + esc(String(app.name).split(' ')[0]) : ''},</p><p>You have been selected as the Vegans Explore Community Manager for <strong>${esc(city)}</strong>. Welcome to the team.</p>` +
+        `<p>Log in at <a href="https://vegansexplore.com/dashboard">vegansexplore.com/dashboard</a>. Your dashboard now has your Community Manager tools, and your certification is the first step.</p>` +
+        `<p>We start with a three-month trial so we can both see if it is a fit. Reply to this email with any questions.</p><p>Sean and the Vegans Explore team</p>`, SEAN_EMAIL, app.email);
+    }
+    return json({ ok: true, status, approved: decision === 'approve' ? true : decision === 'revoke' ? false : undefined, note });
+  }
 
   if (action === 'status') {
     const { data: row } = await db.from('ve_cm_candidates').select('status, city_slug, created_at').eq('member_id', memberId).eq('kind', 'confirmation').order('created_at', { ascending: false }).limit(1).maybeSingle();
     const { data: app } = await db.from('ve_cm_candidates').select('status, city_slug, created_at').eq('member_id', memberId).eq('kind', 'application').order('created_at', { ascending: false }).limit(1).maybeSingle();
-    return json({ confirmed: !!row, status: row?.status ?? null, applied: !!app, application_status: app?.status ?? null, application_city: app?.city_slug ?? null, invited, membership_status: member.membership_status });
+    return json({ confirmed: !!row, status: row?.status ?? null, applied: !!app, application_status: app?.status ?? null, application_city: app?.city_slug ?? null, invited, approved, membership_status: member.membership_status });
   }
 
   if (action === 'apply_audio') {
@@ -153,20 +222,20 @@ Deno.serve(async (req) => {
       return `<p style="margin:14px 0 4px;"><strong>${esc(a.question)}</strong></p><p style="margin:0;">${esc(a.text || '(Recorded answer only)').replace(/\n/g, '<br>')}${listen}</p>`;
     }));
     await sendEmail(`${prior ? 'Updated application' : 'New application'}: Community Manager, ${cityName}, ${member.name || member.email}`,
-      `<p><strong>${esc(member.name || '')}</strong> (${esc(member.email)}${phone ? ', ' + esc(phone) : ''}) applied to be the Vegans Explore Community Manager for <strong>${esc(cityName)}</strong>.${invited ? ' They were invited, so their Community Manager access is already set up.' : ''}</p>${items.join('')}<p style="margin-top:18px;color:#666;">Recording links work for 7 days. Reply to this email to reach them.</p>`, member.email);
-    return json({ ok: true, invited, updated: !!prior });
+      `<p><strong>${esc(member.name || '')}</strong> (${esc(member.email)}${phone ? ', ' + esc(phone) : ''}) applied to be the Vegans Explore Community Manager for <strong>${esc(cityName)}</strong>.${invited ? ' You invited them.' : ''}</p>${items.join('')}<p style="margin-top:14px;">Approve, put on standby or decline them in the Depot: <a href="https://vegansexplore.com/admin/depot/community-managers">vegansexplore.com/admin/depot/community-managers</a></p><p style="margin-top:18px;color:#666;">Recording links work for 7 days. Reply to this email to reach them.</p>`, member.email);
+    return json({ ok: true, invited, approved, updated: !!prior });
   }
 
   if (action === 'confirm') {
     if (member.membership_status !== 'active') return json({ error: 'membership_required' }, 402);
     const acks = body.acknowledgements || {};
     if (!ACKS.every((k) => acks[k] === true)) return json({ error: 'confirm_every_item' }, 400);
-    const status = invited ? 'confirmed' : 'pending_review';
+    const status = approved ? 'confirmed' : 'pending_review';
     const { data: existing } = await db.from('ve_cm_candidates').select('id, status').eq('member_id', memberId).eq('kind', 'confirmation').maybeSingle();
     if (!existing) {
       await db.from('ve_cm_candidates').insert({ kind: 'confirmation', member_id: memberId, email: member.email, name: member.name, city_slug: citySlug ?? invite?.city_slug ?? null, acknowledgements: acks, invited, status });
       await sendEmail(`${member.name || member.email} confirmed: Community Manager, ${cityName}`,
-        `<p><strong>${esc(member.name || '')}</strong> (${esc(member.email)}) confirmed they want to be the Vegans Explore Community Manager for <strong>${esc(cityName)}</strong>.</p><ul><li>Wants to lead the city</li><li>Understands the three-month trial</li><li>Can give about 3 hours a week</li><li>Will complete the certification</li></ul><p>${invited ? 'They were invited, so their Community Manager access is already set up and the certification is waiting in their dashboard.' : '<strong>They were not invited.</strong> Their membership is active, but they do not have Community Manager access until you add an invite for them.'}</p>`, member.email);
+        `<p><strong>${esc(member.name || '')}</strong> (${esc(member.email)}) confirmed they want to be the Vegans Explore Community Manager for <strong>${esc(cityName)}</strong>.</p><ul><li>Wants to lead the city</li><li>Understands the three-month trial</li><li>Can give about 3 hours a week</li><li>Will complete the certification</li></ul><p>${approved ? 'You have approved them, so the certification is waiting in their dashboard.' : 'They are not approved yet. Approve them in the Depot to turn on their Community Manager dashboard: <a href="https://vegansexplore.com/admin/depot/community-managers">vegansexplore.com/admin/depot/community-managers</a>'}</p>`, member.email);
     }
     return json({ ok: true, invited, status: existing?.status ?? status });
   }
