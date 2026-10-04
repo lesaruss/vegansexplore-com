@@ -435,10 +435,10 @@ body {
 <script src="/public/nav.js"></script>
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
-<div id="dir-gate" style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 24px;font-family:'Montserrat',sans-serif;">
-  <p style="font-size:13px;color:#888;">Checking access&hellip;</p>
-</div>
-<div id="frame" style="display:none">
+<!-- Open to everyone again (Sean, 2026-10-04): the full Directory is the front-end showcase, so
+     visitors can browse every listing and see the votes. Voting itself still asks a signed-out
+     visitor to sign in, then offers the $11 Founding Membership (see /public/ve-votes.js). -->
+<div id="frame">
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -482,7 +482,9 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 .billboard-sub{font-size:11px;color:#888;margin-top:4px;letter-spacing:0.04em}
 .billboard-badge{font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;padding:5px 12px;border-radius:20px;background:#5EC47A;color:#000}
 /* CATEGORY TABS */
-.cat-tabs{display:flex;gap:0;border-bottom:2px solid #e8e8e8}
+.cat-tabs{display:flex;gap:0;border-bottom:2px solid #e8e8e8;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tabs .cat-tab{flex-shrink:0;margin-bottom:0}
 .cat-tab{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:11px 20px;border:none;background:transparent;color:#888;cursor:pointer;font-family:'Montserrat',sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}
 .cat-tab.active{color:#1a1a1a;border-bottom-color:#5EC47A}
 .cat-tab:hover:not(.active){color:#555}
@@ -570,10 +572,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 <div>
 <div class="hero-brand-tag">VEGANS EXPLORE</div>
 <h1 class="hero-h1">Vegan Directory</h1>
-<p class="hero-desc">Find Vegan restaurants, products, services, and community near you. Every vote banks points for your favorite businesses.</p>
+<p class="hero-desc">Find Vegan restaurants, products, services, and community near you. Member votes decide who leads every list.</p>
 <div class="hero-btns">
 <button class="btn-primary" onclick="document.querySelector('.content').scrollIntoView({behavior:'smooth'})">Browse Directory</button>
-<button class="btn-secondary">Saved Listings</button>
+<a class="btn-secondary" href="/account/my-list" style="text-decoration:none;display:inline-block">Saved Listings</a>
 </div>
 </div>
 <div class="hero-search-wrap">
@@ -599,18 +601,10 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 </div>
 </section>
 <main class="content">
-<div class="founding-callout">
-<div class="fc-icon"><svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24" width="22"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
-<div class="fc-text"><strong>Founding Season is live.</strong> June 1 through July 31 count as one extended first month. No reset until August 1. Top 10 at reset earn up to <strong>+111 pts</strong> banked automatically.</div>
-</div>
 <div class="billboard-header">
 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-<span style="font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;padding:5px 12px;border-radius:20px;background:#1a1a1a;color:#5EC47A;border:1px solid #5EC47A">Founding Season</span>
-<span style="font-size:10px;font-weight:700;color:#888;letter-spacing:0.08em;text-transform:uppercase">June 1 - July 31</span>
-<span style="color:#e0e0e0;font-size:12px">|</span>
 <span class="billboard-badge">Live Rankings</span>
-<span style="font-size:11px;font-weight:800;color:#5EC47A">42 days left</span>
-<span style="font-size:10px;font-weight:700;color:#888;letter-spacing:0.06em;text-transform:uppercase">Resets Aug 1</span>
+<span style="font-size:11px;font-weight:700;color:#888">Ranked by member votes</span>
 </div>
 </div>
 <div class="cat-tabs" role="tablist"><button class="cat-tab active" onclick="showBoard(this,'food')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg> Food</button><button class="cat-tab" onclick="showBoard(this,'products')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg> Products</button><button class="cat-tab" onclick="showBoard(this,'services')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg> Services</button><button class="cat-tab" onclick="showBoard(this,'community')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg> Community</button><button class="cat-tab" onclick="showBoard(this,'events')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><rect height="18" rx="2" width="18" x="3" y="4"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg> Events</button><button class="cat-tab" onclick="showBoard(this,'media')" role="tab"><svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewbox="0 0 24 24" width="13"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect height="14" rx="2" width="15" x="1" y="5"></rect></svg> Media</button></div>
@@ -1014,12 +1008,13 @@ body{font-family:'Montserrat',sans-serif;background:#f5f5f5;color:#1a1a1a}
 </div>
 <div class="points-callout">
 <div>
-<div class="pc-title">Your membership <span>votes for them.</span></div>
-<p class="pc-desc">Every $11/month membership includes 1,000 points. Cast one vote per listing per day - each vote banks points for that business. When they claim, those points are waiting - redeemable for marketing and services at <strong style="color:#5EC47A">up to 50% off</strong>.</p>
+<div class="pc-title">Your votes <span>rank them.</span></div>
+<p class="pc-desc">Founding Members vote once a day for every business they love, and the votes decide who leads each list. $11, one time, never renews.</p>
+<a class="btn-primary" href="/welcome#join" style="display:inline-block;margin-top:16px;text-decoration:none">Become a Founding Member</a>
 </div>
 <div class="pc-stats">
-<div class="pc-stat"><div class="pc-num">1,000</div><div class="pc-unit">points per month</div></div>
-<div class="pc-stat"><div class="pc-num">50%</div><div class="pc-unit">max service discount</div></div>
+<div class="pc-stat"><div class="pc-num">1</div><div class="pc-unit">vote per listing, every day</div></div>
+<div class="pc-stat"><div class="pc-num">$11</div><div class="pc-unit">one time</div></div>
 </div>
 </div>
 </main>
@@ -1364,34 +1359,7 @@ document.getElementById('city-dropdown').addEventListener('change',function(){
   window.__veDirFetchAll = fetchAll;
 })();
 </script>
-<script>
-(function(){
-  function showSignIn(){
-    document.getElementById('dir-gate').innerHTML =
-      '<div><p style="font-size:14px;font-weight:800;color:#1a1a1a;margin-bottom:6px;">Admins Only</p>' +
-      '<p style="font-size:13px;color:#888;margin-bottom:18px;max-width:340px;">The full cross-region directory is restricted to LESARUSS admins. Looking for Vegan spots? Check your <a href="/communities" style="color:#3A9B3E;font-weight:700;">community</a> or a <a href="/guides" style="color:#3A9B3E;font-weight:700;">guide</a>.</p>' +
-      '<button id="dir-signin-btn" style="background:#5EC47A;color:#000;border:none;padding:12px 26px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:\'Montserrat\',sans-serif;">Admin Sign In</button></div>';
-    document.getElementById('dir-signin-btn').addEventListener('click', function(){
-      VEAuth.showAuthModal('Sign in with an admin account to view the full directory.', check);
-    });
-  }
-  function showDenied(){
-    document.getElementById('dir-gate').innerHTML =
-      '<div><p style="font-size:14px;font-weight:800;color:#1a1a1a;margin-bottom:6px;">Admins Only</p>' +
-      '<p style="font-size:13px;color:#888;max-width:340px;">This account does not have access to the full directory. Check your <a href="/communities" style="color:#3A9B3E;font-weight:700;">community</a> or a <a href="/guides" style="color:#3A9B3E;font-weight:700;">guide</a> instead.</p></div>';
-  }
-  function reveal(){
-    document.getElementById('dir-gate').style.display = 'none';
-    document.getElementById('frame').style.display = '';
-    if (window.__veDirFetchAll) window.__veDirFetchAll();
-  }
-  function check(){
-    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showSignIn(); return; }
-    if (!VEAuth.isRealSuperAdmin()) { showDenied(); return; }
-    reveal();
-  }
-  check();
-})();
-</script>
+<script>if (window.__veDirFetchAll) window.__veDirFetchAll();</script>
+<script src="/public/footer.js"></script>
 </body>
 </html>

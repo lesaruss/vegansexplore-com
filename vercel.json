@@ -3004,11 +3004,6 @@
       "source": "/the-vegan-foodie-fest-miami",
       "destination": "/archive/the-vegan-foodie-fest-miami",
       "permanent": true
-    },
-    {
-      "source": "/directory",
-      "destination": "/communities",
-      "permanent": true
     }
   ]
 }

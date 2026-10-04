@@ -46,8 +46,7 @@ this list follows the rule above. A new exception goes on this list first.
 
 - **Redirect stubs**, pages whose only job is to send the visitor elsewhere
   (a meta refresh or `location.replace`, or a `vercel.json` redirect that
-  catches the URL before the file is served): `directory/index.html`
-  (`/directory` goes to `/communities`), `partner.html` (`/partner` goes to
+  catches the URL before the file is served): `partner.html` (`/partner` goes to
   `/partners`), `tour.html` (`/tour` goes to the archive site),
   `guides/ve-discuss.html`, `onboarding.html`.
 - **Partner pitch decks**, standalone sales documents with their own footer,
@@ -207,6 +206,17 @@ Invites sends them from Sean (or copies the link). From then they work once, for
 - Contribute any time: active members have a Contribute button on the dashboard (ve-entry-checkout,
   $11 or more). "Member since" (`entry_paid_at`) never moves for an active member. Always a
   contribution, never a tax-deductible donation.
+
+## Explore and the Directory (Sean, 2026-10-04)
+
+The homepage hero offers two ways in: Start Your Journey (the guided tour, `/welcome`) and Explore
+Now (`/explore`), a one-screen overview for visitors who want to look around first: Guides,
+Directory, Communities and Community Board cards, the $11 Founding Membership, and a link to the tour.
+Log In stays in the nav. Explore cards use our illustrations, never photos.
+
+`/directory` is open to everyone again (it was locked to super admins and redirected to
+`/communities`). Anyone can browse, search and see vote counts; voting asks a signed-out visitor to
+sign in and then offers the $11 Founding Membership (`/public/ve-votes.js`).
 
 ## Image conventions
 
