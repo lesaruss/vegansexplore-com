@@ -274,6 +274,22 @@
     var state = loadState();
     var app = document.getElementById('guideApp');
 
+    // Who is here (Sean, 2026-10-04: "members without a passport should not be able to choose a
+    // guide"). Read once at load, so someone who signs up partway through the intake keeps going.
+    //   Signed out                        -> the sign-up intake, as before.
+    //   Passport member                   -> pick a Guide, then talk to them. No sign-up steps,
+    //                                        no name and city again, no Passport pitch.
+    //   Signed in, no Passport            -> the Passport benefit and how to get it.
+    // IN_INTAKE: this device is partway through the intake (it has a name), so leave it alone.
+    var ENTRY_MEMBER = (window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember) ? VEAuth.getMember() : null;
+    var IN_INTAKE = !!state.chat_name;
+    if (ENTRY_MEMBER && !IN_INTAKE && new URLSearchParams(window.location.search).get('passport') === 'success') {
+      state.passport_bought = true;
+      saveState(state);
+    }
+    var PASSPORT_MODE = !!ENTRY_MEMBER && !IN_INTAKE && (ENTRY_MEMBER.ve_tier === 'passport' || !!state.passport_bought);
+    var LOCKED_MODE = !!ENTRY_MEMBER && !IN_INTAKE && !PASSPORT_MODE;
+
     // 2026-09-07 (Sean field note): keep the window itself from scrolling on
     // laptops/desktops -- measure the real rendered nav.js/footer.js heights
     // (they're injected scripts, so their height isn't knowable at CSS-write
@@ -357,6 +373,8 @@
 
     function currentStep(){
       if (state.has_passport_pending_confirm) return 'passportConfirm';
+      if (LOCKED_MODE) return 'locked';
+      if (PASSPORT_MODE) return state.guide_slug ? 'talk' : 'picker';
       if (!state.guide_slug) return 'picker';
       if (!state.chat_done) return 'chat';
       if (state.fork_pending) return 'fork';
@@ -373,7 +391,7 @@
     // there. The guide strip only shows on steps that don't already carry
     // their own chat-hdr avatar (chat/tellmore/openq have one built in).
     function renderChrome(step){
-      if (step === 'passportConfirm' || step === 'finishing') return;
+      if (step === 'passportConfirm' || step === 'finishing' || step === 'locked') return;
       var showBack = !!(state.history && state.history.length);
       var showGuideStrip = !!state.guide_slug && (step === 'fork' || step === 'reels' || step === 'drive');
       if (!showBack && !showGuideStrip) return;
@@ -397,9 +415,11 @@
       }
       app.innerHTML = '';
       var step = currentStep();
-      app.className = 'guide-wrap' + (step === 'openq' ? ' oq-fill' : '');
+      app.className = 'guide-wrap' + ((step === 'openq' || step === 'talk') ? ' oq-fill' : '');
       renderChrome(step);
       if (step === 'passportConfirm') return renderPassportConfirm();
+      if (step === 'locked') return renderLocked();
+      if (step === 'talk') return renderOpenQuestion(true);
       if (step === 'picker') return renderPicker();
       if (step === 'chat') return renderChat();
       if (step === 'fork') return renderFork();
@@ -413,7 +433,7 @@
     // ---- Step 1: guide picker (storyboard frame 3) ----------------------
     function renderPicker(){
       var wrap = document.createElement('div');
-      wrap.innerHTML = '<div class="g-eyebrow">Meet your Guide</div>' +
+      wrap.innerHTML = '<div class="g-eyebrow">' + (PASSPORT_MODE ? 'Passport &middot; Choose your Guide' : 'Meet your Guide') + '</div>' +
         '<h1 style="font-size:24px;font-weight:900;margin:0 0 6px;">Who feels like the right fit right now?</h1>' +
         '<p style="font-size:14px;color:var(--ink-muted);line-height:1.6;margin:0 0 4px;">You can always talk to a different Guide later.</p>' +
         '<div class="guide-list" id="glist"></div>';
@@ -690,16 +710,25 @@
     // a voice question instead of typing -- captured with MediaRecorder,
     // transcribed server-side (ve-auth's transcribe_audio, Whisper), then
     // sent through the same guide_chat_send path as a typed question.
-    function renderOpenQuestion(){
+    function renderOpenQuestion(memberTalk){
       var g = guideBySlug(state.guide_slug);
+      var first = memberTalk && ENTRY_MEMBER && ENTRY_MEMBER.name ? String(ENTRY_MEMBER.name).split(' ')[0] : '';
+      var hello = memberTalk
+        ? 'Hi' + (first ? ' ' + first : '') + ', I am ' + g.name + ', your Guide. What is on your mind? Type it, or tap the mic to say it out loud.'
+        : 'Go ahead, ask me anything. Type it, or tap the mic to say it out loud.';
       var wrap = document.createElement('div');
       wrap.innerHTML = '<div class="chat-card"><div class="chat-hdr"><img src="' + g.image + '" alt="' + g.name + '"><div class="nm">' + g.name + '</div></div>' +
-        '<div class="chat-thread" id="oqThread"><div class="msg guide">Go ahead, ask me anything. Type it, or tap the mic to say it out loud.</div></div>' +
+        '<div class="chat-thread" id="oqThread"><div class="msg guide"></div></div>' +
         '<div class="input-row"><input class="input-pill" id="oqInput" placeholder="Type your question"><button class="mic-btn" id="oqMic" title="Record a voice question" aria-label="Record a voice question">&#127908;</button><button class="send-btn" id="oqSend">&rarr;</button></div>' +
-        '<button class="skip-link" id="oqSkip">Skip, continue instead</button></div>';
+        (memberTalk
+          ? '<button class="skip-link" id="oqSkip">Talk to a different Guide</button><a class="skip-link" href="/dashboard" style="display:block;text-align:center;text-decoration:none">Back to your dashboard</a></div>'
+          : '<button class="skip-link" id="oqSkip">Skip, continue instead</button></div>');
       app.appendChild(wrap);
       var thread = document.getElementById('oqThread');
-      document.getElementById('oqSkip').onclick = function(){ pushHistory(); state.open_question = false; saveState(state); render(); };
+      thread.firstChild.textContent = hello;
+      document.getElementById('oqSkip').onclick = memberTalk
+        ? function(){ pushHistory(); state.guide_slug = null; state.messages = []; saveState(state); render(); }
+        : function(){ pushHistory(); state.open_question = false; saveState(state); render(); };
       var send = function(){
         var input = document.getElementById('oqInput');
         var v = input.value.trim();
@@ -714,6 +743,7 @@
           var gm = document.createElement('div'); gm.className = 'msg guide';
           gm.textContent = d.reply || 'Sorry, I am having trouble responding right now. Try again in a moment.';
           thread.appendChild(gm);
+          if (memberTalk) return; // a member's conversation just keeps going
           var cont = document.createElement('button');
           cont.className = 'chip-btn'; cont.style.marginTop = '10px'; cont.textContent = 'Continue';
           cont.onclick = function(){ pushHistory(); state.open_question = false; saveState(state); render(); };
@@ -776,6 +806,18 @@
         };
         reader.readAsDataURL(blob);
       }
+    }
+
+    // ---- Signed in without a Passport: choosing a Guide is a Passport benefit ----
+    function renderLocked(){
+      var wrap = document.createElement('div');
+      wrap.innerHTML = '<div class="g-eyebrow">Passport benefit</div>' +
+        '<h1 style="font-size:22px;font-weight:900;margin:0 0 10px;">Choosing your Guide comes with Passport.</h1>' +
+        '<p style="font-size:14px;color:var(--ink-muted);line-height:1.6;margin:0 0 18px;">Your Guide is a real, ongoing conversation about where you are and where you are headed. Get a Passport to pick yours.</p>' +
+        '<button type="button" class="btn accent drive-cta" id="lockPass">Get Passport</button>' +
+        '<a class="skip-link" href="/dashboard" style="display:block;text-decoration:none;margin-top:12px">Back to your dashboard</a>';
+      app.appendChild(wrap);
+      document.getElementById('lockPass').onclick = function(){ startPassportGeneral(); };
     }
 
     // ---- Step 5: highlight reels (storyboard frame 7) --------------------
@@ -966,7 +1008,9 @@
         (founding ? '<div class="founding-badge">Founding Member #' + (state.join_result.founding_number || '') + ' of ' + state.city_display + '</div>' : '') +
         '<p class="status-line">Taking you to your home base...</p>';
       app.appendChild(wrap);
-      try { localStorage.removeItem(STATE_KEY); } catch(e){}
+      // Keep the chosen Guide: the dashboard dock and the Choose Your Guide tile read it from here
+      // (/public/footer.js). Clearing the whole state used to reset everyone back to Liz.
+      try { localStorage.removeItem(STATE_KEY); if (state.guide_slug) saveState({ guide_slug: state.guide_slug }); } catch(e){}
       setTimeout(function(){ window.location.href = '/dashboard'; }, 1400);
     }
 

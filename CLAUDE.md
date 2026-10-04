@@ -226,6 +226,16 @@ change the Directory there, not in the page. The page adds a city picker from `V
 (`/public/ve-hubs.js`), a hero with that city's art (New York for all cities), `?city=<hub slug>` and
 `?tab=<section>` in the address bar, and the Founding Membership box for non-members.
 
+## Choose Your Guide (Sean, 2026-10-04)
+
+Choosing a Guide is a Passport benefit: members without a Passport cannot choose one. The dashboard's
+Choose Your Guide tile (Your Tools) shows the Guides to Passport members and a locked note to everyone
+else; each Guide opens `/guide.html?guide=<slug>`. `/guide.html` serves three visitors: signed out, the
+sign-up intake; a Passport member, pick a Guide and talk to them (no sign-up steps, no Passport pitch);
+signed in without a Passport, the Passport benefit and Get Passport. The chosen Guide is kept in
+`ve_guide_flow_state` (the dock icon reads it through `/public/footer.js`). What the intake asks
+members is still an open conversation with Sean; do not add questions to the member path without him.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
