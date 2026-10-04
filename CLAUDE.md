@@ -218,6 +218,14 @@ Log In stays in the nav. Explore cards use our illustrations, never photos.
 `/communities`). Anyone can browse, search and see vote counts; voting asks a signed-out visitor to
 sign in and then offers the $11 Founding Membership (`/public/ve-votes.js`).
 
+The Directory runs on `/public/ve-region-directory.js`, the same component as the city hubs (rebuilt
+2026-10-04 after an audit; the old page had its own out-of-date sections, region list and copy). One
+component means the sections, badges, vegan filters, search, the public vetting rule
+(`/public/ve-trust.js`) and the hidden `lesaruss-ai-directory-candidate` listings match everywhere:
+change the Directory there, not in the page. The page adds a city picker from `VE_HUBS`
+(`/public/ve-hubs.js`), a hero with that city's art (New York for all cities), `?city=<hub slug>` and
+`?tab=<section>` in the address bar, and the Founding Membership box for non-members.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
