@@ -54,6 +54,31 @@
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     .empty{font-size:14px;color:var(--ve-text-75);padding:6px 0;}
     [hidden]{display:none !important;}
+    /* Campaigns (Sean, 2026-10-04) */
+    .cform{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px 12px;margin-top:10px;align-items:start;}
+    .cform label,.cedit label{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .cform input,.cform select,.cform textarea,.cedit input,.cedit select,.cedit textarea{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .cform textarea,.cedit textarea{min-height:90px;resize:vertical;}
+    .cform .wide,.cedit .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .kinds{display:flex;flex-wrap:wrap;gap:8px;}
+    .kinds label{flex-direction:row;align-items:center;gap:8px;border:1.5px solid rgba(0,0,0,0.15);border-radius:99px;padding:8px 14px;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ve-text);cursor:pointer;}
+    .kinds input{width:auto;min-height:0;}
+    .p-proposed{background:#fff4e2;color:#6b3f00;}
+    .p-open{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .p-closed,.p-declined,.p-canceled{background:#efefef;color:#3d3d3d;}
+    .cedit{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px 12px;margin-top:12px;}
+    .jobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;margin-top:10px;}
+    .job{background:#f7f8f7;border-radius:10px;padding:12px;font-size:13px;}
+    .job b{display:block;font-size:14px;}
+    .job details summary{cursor:pointer;font-weight:800;color:var(--ve-green-deep);margin-top:6px;}
+    .job .cedit{grid-template-columns:1fr 1fr;}
+    .hits{list-style:none;display:grid;gap:4px;margin-top:6px;}
+    .hits button{width:100%;text-align:left;font:inherit;font-size:13px;background:#fff;border:1px solid rgba(0,0,0,0.15);border-radius:8px;padding:8px 10px;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600;}
+    .hits button:hover{border-color:var(--ve-green-deep);}
+    .chk{display:flex;flex-wrap:wrap;gap:8px 16px;}
+    .chk label{flex-direction:row;align-items:center;gap:6px;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ve-text);}
+    .chk input{width:auto;min-height:0;}
   </style>
 </head>
 <body>
@@ -67,10 +92,38 @@
     <p class="eyebrow">The Depot</p>
     <h1>Bounties</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Claims, questions and work for bounties (playbook: Bounty Lifecycle). Review within 5 days: <b>Approve</b> at full points or fewer (say why), ask for <b>Changes</b> (2 rounds, 72 hours each), or <b>Decline</b>. A coaching note is optional and goes to the member either way. Members see the bounties at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>.</p>
+    <p class="sub">Campaigns, claims, questions and work for bounties (playbook: Bounty Lifecycle). Members see campaign cards at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>, soonest deadline first; a campaign shows only while it has jobs. Any leadership member can propose a campaign. The city's Community Manager decides. Review within 5 days: <b>Approve</b> at full points or fewer (say why), ask for <b>Changes</b> (2 rounds, 72 hours each), or <b>Decline</b>. A coaching note is optional and goes to the member either way.</p>
     <div id="bq-gate" class="gate" hidden></div>
     <div id="bq-app" hidden>
-      <section class="panel">
+      <section class="panel" id="camp-panel">
+        <h2>Campaigns</h2>
+        <div id="camps"><p class="empty">Loading...</p></div>
+        <details class="sub-card" id="new-camp" style="margin-top:14px">
+          <summary style="cursor:pointer"><b>Propose a campaign</b> <span class="meta">An event, a restaurant night, or an ongoing call for content. Its jobs start from a template you can edit.</span></summary>
+          <form class="cform" id="cf">
+            <div class="wide"><span class="hint" style="display:block;margin-bottom:6px;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Kind</span><div class="kinds">
+              <label><input type="radio" name="kind" value="event" checked> Event (festival, party)</label>
+              <label><input type="radio" name="kind" value="place"> Restaurant night (a host)</label>
+              <label><input type="radio" name="kind" value="ongoing"> Ongoing (a window, no event day)</label></div></div>
+            <label>City<select id="cf-city"></select></label>
+            <label>Name<input id="cf-title" maxlength="140" required placeholder="Scavenger hunt: Little Haiti restaurants"></label>
+            <label class="wide">The story<textarea id="cf-story" maxlength="4000" placeholder="What it is, why we are there, what creators get, and exactly what is provided."></textarea><span class="hint">This is the top of the campaign page. Spell out what is provided (for a restaurant night, the meal the restaurant chooses).</span></label>
+            <label data-when="event place">Starts<input id="cf-start" type="datetime-local"></label>
+            <label data-when="event place">Ends<input id="cf-end" type="datetime-local"></label>
+            <label data-when="ongoing">Window closes<input id="cf-due" type="datetime-local"></label>
+            <label>Place<input id="cf-place" maxlength="200" placeholder="Venue or restaurant name"></label>
+            <label>Address<input id="cf-address" maxlength="300"></label>
+            <label>Cover image (optional)<input id="cf-cover" type="url" maxlength="1000" placeholder="https://"></label>
+            <label>Part of<select id="cf-family"><option value="">No larger campaign</option></select><span class="hint">A Vegans Explore campaign this creator work belongs to.</span></label>
+            <label data-when="place" class="wide">Host restaurant<input id="cf-host-q" maxlength="80" placeholder="Search the Directory by name"><ul class="hits" id="cf-hits"></ul><span class="hint" id="cf-host-picked">The host must be an active member (the one-time $11 membership) before it can go live.</span></label>
+            <label data-when="place">Host's email (if not the listing's owner)<input id="cf-host-email" type="email" maxlength="200"></label>
+            <label data-when="place">Creators seated<input id="cf-cap" type="number" min="1" max="500" value="10"></label>
+            <div class="wide"><label class="chk" style="flex-direction:row"><input type="checkbox" id="cf-publish"> Put it live now (you decide for this city)</label></div>
+            <div class="wide"><button type="submit" class="btn" id="cf-go">Propose campaign</button> <span class="msg" id="cf-msg" role="status"></span></div>
+          </form>
+        </details>
+      </section>
+      <section class="panel" id="review-panel">
         <div class="filters" id="filters" role="group" aria-label="Show">
           <button type="button" data-s="submitted" aria-pressed="true">To review <span data-c="submitted"></span></button>
           <button type="button" data-s="changes" aria-pressed="false">Changes asked <span data-c="changes"></span></button>
@@ -81,12 +134,12 @@
         </div>
         <div id="subs"><p class="empty">Loading...</p></div>
       </section>
-      <section class="panel">
+      <section class="panel" id="events-panel">
         <h2>Events</h2>
         <p class="meta" style="margin-bottom:10px">Who holds each spot, the claimers' questions, and the details only claimers see. Move or cancel an event here and every claimer is emailed.</p>
         <div id="events"></div>
       </section>
-      <section class="panel">
+      <section class="panel" id="strikes-panel">
         <h2>Strikes</h2>
         <p class="meta" style="margin-bottom:10px">1 strike: 30 days without claiming. 2 in 6 months: 90 days. 3, or a violation: paused until cleared. A release after claims close is half a strike. Clear one when a member explains what happened.</p>
         <div id="strikes"></div>
@@ -234,13 +287,145 @@
         Array.prototype.forEach.call($('filters').querySelectorAll('button'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
         load();
       });
+      // ---- Campaigns ---------------------------------------------------------------------------
+      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+      var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
+      var EXTRA = { photo_shoot: 'Photo shoot ($150)', reel: 'Reel ($200)', social_post: 'Social feature post ($75)', event_table: 'Sampling table ($100)', challenge_month: 'Passport Challenge stop ($100)' };
+      var cdata = null, pickedHost = null;
+      function iso(v) { return v ? new Date(v).toISOString() : null; }
+      function campCard(c) {
+        var city = c.community_slug, jobs = c.jobs || [];
+        var when = c.kind === 'ongoing' ? (c.due_at ? 'Window closes ' + day(c.due_at, city) : 'No window set') : (c.starts_at ? day(c.starts_at, city) : 'No date set');
+        var host = c.host ? esc(c.host.name) + (c.host_member ? (c.host_member.active ? ' &middot; host is an active member' : ' &middot; <b style="color:#8a1c12">host is not an active member yet</b>') : ' &middot; <b style="color:#8a1c12">no host member found</b>') +
+          (c.host.featured_until ? ' &middot; featured until ' + esc(day(c.host.featured_until, city)) : '') + (c.host.photos ? ' &middot; ' + c.host.photos + ' photos on the listing' : '') : '';
+        var ed = c.can_decide || (c.status === 'proposed');
+        return '<details class="sub-card" data-camp="' + c.id + '"' + (c.status === 'proposed' ? ' open' : '') + '><summary style="cursor:pointer"><span class="pill p-' + c.status + '">' + esc(c.status) + '</span><b>' + esc(c.title) + '</b> &middot; <span class="meta">' + esc(KIND[c.kind]) + ' &middot; ' + esc(CITY[city] || city) + ' &middot; ' + esc(when) + ' &middot; ' + jobs.length + ' jobs</span></summary>' +
+          '<p class="meta" style="margin-top:8px">' + (c.proposer ? 'Proposed by ' + esc(c.proposer) + '. ' : '') + (c.decision_note ? 'Note: ' + esc(c.decision_note) + '. ' : '') + (host ? '<br>Host: ' + host : '') + '</p>' +
+          (c.can_decide && c.status === 'proposed' ? '<div class="acts"><input type="text" data-f="dnote" maxlength="1000" placeholder="Note (optional)" aria-label="Decision note"><button type="button" class="btn" data-ca="approve">Approve and put it live</button><button type="button" class="btn btn-no" data-ca="decline">Decline</button></div>' : '') +
+          (c.can_decide && c.status === 'open' ? '<div class="acts"><button type="button" class="btn btn-ghost" data-ca="close">Close the campaign</button></div>' : '') +
+          (c.can_decide && c.status === 'closed' ? '<div class="acts"><button type="button" class="btn" data-ca="approve">Reopen</button></div>' : '') +
+          (ed ? '<div class="cedit">' +
+            '<label>Name<input data-f="title" maxlength="140" value="' + esc(c.title) + '"></label>' +
+            '<label>Cover image<input data-f="cover_url" type="url" maxlength="1000" value="' + esc(c.cover_url || '') + '"></label>' +
+            '<label class="wide">The story<textarea data-f="story" maxlength="4000">' + esc(c.story || '') + '</textarea></label>' +
+            (c.kind === 'ongoing' ? '<label>Window closes<input data-f="due_at" type="datetime-local" value="' + local(c.due_at) + '"></label>' :
+              '<label>Starts<input data-f="starts_at" type="datetime-local" value="' + local(c.starts_at) + '"></label><label>Ends<input data-f="ends_at" type="datetime-local" value="' + local(c.ends_at) + '"></label>') +
+            '<label>Place<input data-f="place_name" maxlength="200" value="' + esc(c.place_name || '') + '"></label>' +
+            '<label>Address<input data-f="address" maxlength="300" value="' + esc(c.address || '') + '"></label>' +
+            (c.kind === 'place' ? '<label>Creators seated<input data-f="creator_cap" type="number" min="1" max="500" value="' + (c.creator_cap || '') + '"></label>' +
+              '<label>Host\'s email (to change the host)<input data-f="host_email" type="email" maxlength="200"></label>' +
+              '<div class="wide"><span class="hint" style="display:block;margin-bottom:6px">Paid extras the host chose (each one that needs creators becomes a job)</span><div class="chk">' + Object.keys(EXTRA).map(function (k) { return '<label><input type="checkbox" data-extra="' + k + '"' + ((c.host_extras || []).indexOf(k) > -1 ? ' checked' : '') + '> ' + esc(EXTRA[k]) + '</label>'; }).join('') + '</div></div>' : '') +
+            '<label class="wide">Details only claimers see<textarea data-f="details" maxlength="6000" placeholder="Parking, who to ask for, organizer contact, set times">' + esc(c.details || '') + '</textarea></label>' +
+            '<div class="wide"><button type="button" class="btn btn-ghost" data-ca="save">Save changes</button></div></div>' : '') +
+          '<h2 style="margin-top:16px">Jobs</h2><div class="jobs">' + jobs.filter(function (j) { return j.status !== 'canceled'; }).map(function (j) {
+            return '<div class="job" data-job="' + j.id + '"><b>' + esc(j.title.replace(/^[^:]+:\s*/, '')) + '</b>' + j.points.toLocaleString() + ' points &middot; ' + j.taken + (j.slots != null ? ' of ' + j.slots : '') + ' spots taken &middot; ' + esc(j.status) +
+              ((j.parts || []).length ? '<br><span class="meta">' + j.parts.length + ' parts, all needed to earn the points</span>' : '') +
+              (ed ? '<details><summary>Edit</summary><div class="cedit">' +
+                '<label>Points<input data-j="points" type="number" min="1" max="10000" value="' + j.points + '"></label>' +
+                '<label>Spots<input data-j="slots" type="number" min="1" max="500" value="' + (j.slots || '') + '"></label>' +
+                '<label class="wide">What to deliver<input data-j="deliverable" maxlength="400" value="' + esc(j.deliverable) + '"></label>' +
+                '<label class="wide">Brief<textarea data-j="brief" maxlength="4000">' + esc(j.brief) + '</textarea></label>' +
+                '<label class="wide">Parts, one per line (leave empty for a job that is not a bundle)<textarea data-j="parts">' + esc((j.parts || []).join('\n')) + '</textarea></label>' +
+                '<div class="wide"><button type="button" class="btn btn-ghost" data-jact="save">Save job</button> <button type="button" class="btn btn-no" data-jact="remove">Remove job</button></div></div></details>' : '') + '</div>';
+          }).join('') + '</div><p class="msg" role="status"></p></details>';
+      }
+      function loadCamps() {
+        return api({ action: 'campaign_admin_list' }).then(function (d) {
+          if (!d.campaigns) { $('camp-panel').hidden = true; return; }
+          cdata = d;
+          var order = { proposed: 0, open: 1, closed: 2, declined: 3, canceled: 4 };
+          var list = d.campaigns.slice().sort(function (a, b) { return (order[a.status] - order[b.status]) || String(a.starts_at || a.due_at || '').localeCompare(String(b.starts_at || b.due_at || '')); });
+          $('camps').innerHTML = list.length ? list.map(campCard).join('') : '<p class="empty">No campaigns yet. Propose the first one below.</p>';
+          var cities = d.admin ? Object.keys(CITY) : Object.keys(CITY);
+          $('cf-city').innerHTML = cities.map(function (k) { return '<option value="' + k + '"' + ((d.cities || [])[0] === k ? ' selected' : '') + '>' + esc(CITY[k]) + '</option>'; }).join('');
+          $('cf-family').innerHTML = '<option value="">No larger campaign</option>' + (d.families || []).map(function (f) { return '<option value="' + f.id + '">' + esc(f.title) + '</option>'; }).join('');
+          syncKind();
+        });
+      }
+      function kindNow() { var r = document.querySelector('input[name="kind"]:checked'); return r ? r.value : 'event'; }
+      function syncKind() {
+        var k = kindNow();
+        Array.prototype.forEach.call(document.querySelectorAll('#cf [data-when]'), function (el) { el.hidden = el.getAttribute('data-when').split(' ').indexOf(k) < 0; });
+        var mine = cdata && (cdata.admin || (cdata.cities || []).indexOf($('cf-city').value) > -1);
+        $('cf-publish').closest('div').hidden = !mine; if (!mine) $('cf-publish').checked = false;
+      }
+      document.querySelectorAll('input[name="kind"]').forEach(function (r) { r.addEventListener('change', syncKind); });
+      $('cf-city').addEventListener('change', syncKind);
+      var hostTimer = null;
+      $('cf-host-q').addEventListener('input', function () {
+        clearTimeout(hostTimer); var q = this.value.trim(); pickedHost = null;
+        if (q.length < 2) { $('cf-hits').innerHTML = ''; return; }
+        hostTimer = setTimeout(function () {
+          api({ action: 'listing_search', q: q }).then(function (d) {
+            $('cf-hits').innerHTML = (d.listings || []).map(function (l) {
+              return '<li><button type="button" data-host="' + l.id + '" data-name="' + esc(l.name) + '">' + esc(l.name) + (l.city ? ' &middot; ' + esc(l.city) : '') + ' &middot; ' + (l.member ? esc(l.member.name || l.member.email) + (l.member.active ? ' (active member)' : ' (not an active member)') : 'no owner on file') + '</button></li>';
+            }).join('') || '<li class="meta">No listing by that name.</li>';
+          });
+        }, 250);
+      });
+      $('cf-hits').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-host]'); if (!b) return;
+        pickedHost = b.getAttribute('data-host'); $('cf-host-q').value = b.getAttribute('data-name'); $('cf-hits').innerHTML = '';
+        $('cf-host-picked').textContent = 'Host: ' + b.getAttribute('data-name') + '. The host must be an active member before it can go live.';
+        if (!$('cf-place').value) $('cf-place').value = b.getAttribute('data-name');
+      });
+      $('cf').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var k = kindNow(), msg = $('cf-msg');
+        var body = { action: 'campaign_propose', community: $('cf-city').value, kind: k, title: $('cf-title').value, story: $('cf-story').value, cover_url: $('cf-cover').value, place_name: $('cf-place').value, address: $('cf-address').value, campaign_id: $('cf-family').value || null, publish: $('cf-publish').checked };
+        if (k === 'ongoing') body.due_at = iso($('cf-due').value); else { body.starts_at = iso($('cf-start').value); body.ends_at = iso($('cf-end').value); }
+        if (k === 'place') { body.host_listing_id = pickedHost; body.host_email = $('cf-host-email').value; body.creator_cap = $('cf-cap').value; }
+        $('cf-go').disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
+        api(body).then(function (r) {
+          $('cf-go').disabled = false;
+          if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; return; }
+          msg.textContent = r.status === 'open' ? 'It is live on the bounties page.' : 'Proposed. The city\'s Community Manager decides; edit its jobs below.';
+          $('cf').reset(); pickedHost = null; syncKind(); loadCamps();
+        });
+      });
+      $('camps').addEventListener('click', function (e) {
+        var card = e.target.closest('[data-camp]'); if (!card) return;
+        var id = card.getAttribute('data-camp'), msg = card.querySelector('.msg:last-child') || card.querySelector('.msg');
+        var done = function (r, text) { if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; return false; } msg.className = 'msg'; msg.textContent = text; setTimeout(loadCamps, 900); return true; };
+        var act = e.target.getAttribute('data-ca');
+        if (act === 'approve' || act === 'decline' || act === 'close') {
+          if (act === 'decline' && !confirm('Decline this proposal?')) return;
+          if (act === 'close' && !confirm('Close this campaign? Its jobs stop taking claims; people holding a spot keep it.')) return;
+          var n = card.querySelector('[data-f="dnote"]');
+          api({ action: 'campaign_decide', id: id, decision: act, note: n ? n.value : '' }).then(function (r) { done(r, act === 'approve' ? 'Live on the bounties page.' : act === 'close' ? 'Closed.' : 'Declined.'); });
+          return;
+        }
+        if (act === 'save') {
+          var f = function (k) { var el = card.querySelector('.cedit [data-f="' + k + '"]'); return el ? el.value : undefined; };
+          var body = { action: 'campaign_update', id: id, title: f('title'), cover_url: f('cover_url'), story: f('story'), place_name: f('place_name'), address: f('address'), details: f('details') };
+          ['starts_at', 'ends_at', 'due_at'].forEach(function (k) { var v = f(k); if (v !== undefined) body[k] = iso(v); });
+          if (f('creator_cap') !== undefined) body.creator_cap = f('creator_cap');
+          if (f('host_email')) body.host_email = f('host_email');
+          var ex = card.querySelectorAll('[data-extra]'); if (ex.length) body.host_extras = Array.prototype.filter.call(ex, function (x) { return x.checked; }).map(function (x) { return x.getAttribute('data-extra'); });
+          api(body).then(function (r) { done(r, 'Saved.'); });
+          return;
+        }
+        var jact = e.target.getAttribute('data-jact');
+        if (jact) {
+          var job = e.target.closest('[data-job]'), jid = job.getAttribute('data-job');
+          var g = function (k) { var el = job.querySelector('[data-j="' + k + '"]'); return el ? el.value : ''; };
+          if (jact === 'remove') { if (!confirm('Remove this job?')) return; api({ action: 'job_update', id: jid, remove: true }).then(function (r) { done(r, 'Removed.'); }); return; }
+          api({ action: 'job_update', id: jid, points: g('points'), slots: g('slots'), deliverable: g('deliverable'), brief: g('brief'), parts: g('parts').split('\n').map(function (x) { return x.trim(); }).filter(Boolean) }).then(function (r) { done(r, 'Job saved.'); });
+        }
+      });
+
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
         if (!VEAuth.isLoggedIn()) { $('bq-gate').hidden = false; $('bq-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins and Community Managers.</p><button type="button" class="btn" id="bq-signin">Sign in</button>'; $('bq-signin').onclick = function () { VEAuth.showAuthModal('Sign in to review bounties.', function () { location.reload(); }); }; return; }
-        if (!m || !(m.is_superadmin || m.ve_role === 'community_manager' || m.staff_role === 'community_manager')) { $('bq-gate').hidden = false; $('bq-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins and Community Managers.</p>'; return; }
+        var leader = m && (m.is_superadmin || m.ve_role === 'community_manager' || ['community_manager', 'creative_producer', 'executive_assistant'].indexOf(m.staff_role) > -1);
+        if (!leader) { $('bq-gate').hidden = false; $('bq-gate').innerHTML = '<h2>Leadership only</h2><p>This page is for Vegans Explore leadership: admins, Community Managers and the production team.</p>'; return; }
         $('bq-app').hidden = false;
-        load();
+        loadCamps();
+        // Reviewing claims and work is for admins and the city's Community Manager.
+        var reviewer = m.is_superadmin || m.ve_role === 'community_manager' || m.staff_role === 'community_manager';
+        ['review-panel', 'events-panel', 'strikes-panel'].forEach(function (id) { $(id).hidden = !reviewer; });
+        if (reviewer) load();
       }
       start();
     })();

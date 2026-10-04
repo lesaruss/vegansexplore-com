@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bounties | Vegans Explore</title>
-  <meta name="description" content="Cover what is happening in your city's Vegan community and earn points: recap videos, vlogs, interviews, write-ups and clips.">
+  <meta name="description" content="Pick a campaign in your city, take on a job and earn points: recap videos, vlogs, interviews, write-ups, restaurant features and more.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -13,7 +13,10 @@
        A Passport holder claims a spot (claims lock 48 hours before the event), gets the rundown,
        the event details and a claimers-only Q&A, then uploads and submits before the deadline (7
        days after the event). The city's Community Manager reviews; approving pays the points.
-       Every call goes to ve-bounties. -->
+       Every call goes to ve-bounties.
+       Campaigns (Sean, 2026-10-04, worked through with V): the page shows campaign cards only, four
+       across, soonest deadline first. A card opens the campaign: its story, then its jobs. A job with
+       parts is one bundle and pays only when every part is done. -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-orange: #F69820; --ve-orange-ink: #8a4b00; --ve-orange-light: #fff4e5; --ve-border: rgba(0,0,0,0.12); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.78); --ve-text-60: #595959; --ve-bg: #f7f7f5; --ve-danger: #a61b1b; }
@@ -35,12 +38,49 @@
     .btn-ghost { background: #fff; color: var(--ve-text); border: 1.5px solid var(--ve-border); }
     .btn:focus-visible, .bcard:focus-visible, .linkbtn:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
     .linkbtn { background: none; border: none; color: var(--ve-green-dark); font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: underline; padding: 6px 2px; }
+    /* Campaign cards: four across even with two, so ten campaigns read as easily as two. */
+    .cgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 26px 0 8px; }
+    @media (max-width: 1100px) { .cgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 820px) { .cgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 520px) { .cgrid { grid-template-columns: minmax(0, 1fr); } }
+    .ccard { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 16px; overflow: hidden; cursor: pointer; font: inherit; color: inherit; padding: 0; }
+    .ccard:hover { border-color: var(--ve-text-60); }
+    .ccard:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    .ccover { display: block; flex: 0 0 auto; aspect-ratio: 16 / 9; background: linear-gradient(135deg, var(--ve-green-dark), var(--ve-green-deep)); background-size: cover; background-position: center; position: relative; }
+    .ccover.k-place { background-color: var(--ve-orange-ink); background-image: linear-gradient(135deg, #b8640a, var(--ve-orange-ink)); }
+    .ccover.k-ongoing { background-image: linear-gradient(135deg, #3b5998, #22345c); }
+    .ckind { position: absolute; top: 10px; left: 10px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(255,255,255,0.94); color: var(--ve-text); border-radius: 999px; padding: 4px 10px; }
+    .cbody { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; flex: 1; }
+    .ctitle { font-size: 17px; font-weight: 900; line-height: 1.25; }
+    .cmeta { font-size: 13px; color: var(--ve-text-60); line-height: 1.45; }
+    .cjobs { font-size: 13px; font-weight: 800; color: var(--ve-orange-ink); margin-top: auto; padding-top: 6px; }
+    .cmine { align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 6px; padding: 4px 8px; background: var(--ve-green-light); color: var(--ve-green-deep); }
+    /* Campaign page */
+    .back { display: inline-flex; align-items: center; gap: 6px; margin: 22px 0 0; background: none; border: none; font: inherit; font-size: 13px; font-weight: 800; color: var(--ve-green-dark); cursor: pointer; padding: 6px 0; text-decoration: none; }
+    .back:hover { text-decoration: underline; }
+    .back:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    .chero { margin-top: 14px; border-radius: 18px; min-height: 180px; background: linear-gradient(135deg, var(--ve-green-dark), var(--ve-green-deep)); background-size: cover; background-position: center; position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+    .chero.k-place { background-image: linear-gradient(135deg, #b8640a, var(--ve-orange-ink)); }
+    .chero.k-ongoing { background-image: linear-gradient(135deg, #3b5998, #22345c); }
+    .chero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.1) 100%); }
+    .chero-in { position: relative; padding: 22px 24px; color: #fff; }
+    .chero-in h2 { font-size: clamp(24px, 3.4vw, 36px); font-weight: 900; line-height: 1.1; }
+    .chero-in p { font-size: 14px; font-weight: 600; opacity: 0.92; margin-top: 6px; }
+    .cstory { font-size: 16px; line-height: 1.7; color: var(--ve-text-75); margin-top: 18px; max-width: 860px; white-space: pre-wrap; }
+    .cnote { display: inline-block; margin-top: 14px; font-size: 14px; line-height: 1.55; background: var(--ve-orange-light); color: var(--ve-orange-ink); border-radius: 10px; padding: 10px 14px; }
+    .jobs-h { font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-text-60); margin: 28px 0 0; }
+    .parts { list-style: none; display: grid; gap: 6px; margin: 12px 0 0; }
+    .parts li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; background: var(--ve-bg); border-radius: 10px; padding: 9px 12px; }
+    .parts li::before { content: "\2713"; color: var(--ve-green-dark); font-weight: 900; }
+    .parts-check { display: grid; gap: 8px; margin-top: 10px; }
+    .parts-check label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
+    .parts-check input { width: 20px; height: 20px; margin-top: 1px; flex: 0 0 auto; }
     .event { margin: 32px 0 6px; }
     .event h2 { font-size: 22px; font-weight: 900; line-height: 1.25; }
     .event p { font-size: 14px; color: var(--ve-text-60); margin-top: 4px; }
     .event a { color: var(--ve-green-dark); font-weight: 700; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
-    .bcard { display: flex; flex-direction: column; gap: 8px; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 18px; cursor: pointer; font: inherit; color: inherit; }
+    .bcard { display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 18px; cursor: pointer; font: inherit; color: inherit; }
     .bcard:hover { border-color: var(--ve-text-60); }
     .pts { align-self: flex-start; font-size: 13px; font-weight: 900; color: #fff; background: var(--ve-orange-ink); border-radius: 999px; padding: 4px 12px; }
     .btitle { font-size: 17px; font-weight: 800; line-height: 1.3; }
@@ -125,7 +165,16 @@
     </header>
     <section class="wrap" aria-live="polite">
       <div id="list"></div>
-      <div class="how"><strong>How it works.</strong> Each bounty has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for Passport holders.</div>
+      <div id="campaign" hidden>
+        <a class="back" id="c-back" href="/bounties">&larr; All campaigns</a>
+        <div class="chero" id="c-hero"><div class="chero-in"><span class="ckind" id="c-kind" style="position:static;display:inline-block;margin-bottom:10px"></span><h2 id="c-title"></h2><p id="c-meta"></p></div></div>
+        <p class="cstory" id="c-story"></p>
+        <div id="c-note"></div>
+        <p class="jobs-h" id="c-jobs-h">The jobs</p>
+        <div class="grid" id="c-jobs"></div>
+        <p class="fine" style="margin-top:14px">The event details, the rundown and a Q&amp;A with your Community Manager open once you claim a job.</p>
+      </div>
+      <div class="how"><strong>How it works.</strong> Pick a campaign, then a job. Each job has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for Passport holders.</div>
     </section>
   </main>
 
@@ -137,6 +186,7 @@
       <p class="meta" id="d-meta"></p>
       <p class="clock" id="d-clock" aria-live="off"></p>
       <div class="brief" id="d-brief"></div>
+      <div id="d-parts" hidden><p class="label" style="margin-top:14px">Every part, to earn the points</p><ul class="parts" id="d-parts-list"></ul></div>
       <div id="d-state"></div>
       <div class="box" id="d-claim" hidden></div>
       <div class="box rd" id="d-rundown" hidden></div>
@@ -161,6 +211,7 @@
         <ul class="files" id="files"></ul>
         <label class="f" for="links">Links <span class="hint">One per line: Google Drive, Dropbox, YouTube (unlisted is fine)</span><textarea id="links" rows="3" style="min-height:80px" placeholder="https://"></textarea></label>
         <label class="f" for="note" id="note-label">A note for the reviewer <span class="hint" id="note-hint">Optional. For the write-up, paste the whole piece here.</span><textarea id="note" rows="5"></textarea></label>
+        <div id="parts-box" hidden><p class="label" style="margin-top:14px">Tick each part that is in your upload</p><div class="parts-check" id="parts-check"></div></div>
         <label class="check" for="license"><input type="checkbox" id="license"><span>This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.</span></label>
         <div style="margin-top:14px"><button type="button" class="btn btn-primary" id="submit">Submit for review</button></div>
         <p class="msg" id="msg" role="status" aria-live="polite"></p>
@@ -179,7 +230,8 @@
     var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
-    var state = { city: '', bounties: [], current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
+    var state = { city: '', bounties: [], campaigns: [], cslug: params.get('campaign') || '', current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
+    var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
     var HOLDS = ['claimed', 'submitted', 'changes', 'approved', 'rejected'];
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function token() { return window.VEAuth && VEAuth.getToken ? (VEAuth.getToken() || '') : ''; }
@@ -209,7 +261,15 @@
     if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';
     $('city').innerHTML = hubs.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
     $('city').value = wanted; state.city = wanted;
-    $('city').addEventListener('change', function () { state.city = this.value; load(); });
+    $('city').addEventListener('change', function () { state.city = this.value; state.cslug = ''; setUrl(true); load(); });
+    // The address bar follows the view: ?campaign=<slug> for a campaign, ?id=<job> for an open job.
+    function setUrl(push) {
+      var u = new URL(location.href);
+      u.searchParams.set('community', state.city);
+      if (state.cslug) u.searchParams.set('campaign', state.cslug); else u.searchParams.delete('campaign');
+      if (!(state.current && $('detail').classList.contains('open'))) u.searchParams.delete('id');
+      (push ? history.pushState : history.replaceState).call(history, null, '', u.pathname + u.search);
+    }
 
     function renderStanding() {
       var v = state.viewer, st = v.standing || {}, el = $('standing');
@@ -230,7 +290,16 @@
       var k = b.claims_close_at && b.claims_open ? left(b.claims_close_at) : '';
       return k ? 'Claims close in ' + k : 'Claims closed';
     }
+    function campaignClock(c) {
+      if (c.claims_close_at && new Date(c.claims_close_at).getTime() > Date.now()) return 'Claims close in ' + left(c.claims_close_at);
+      if (c.due_at && new Date(c.due_at).getTime() > Date.now()) return c.mine ? 'Work due in ' + left(c.due_at) : 'Claims closed';
+      return '';
+    }
     function tick() {
+      Array.prototype.forEach.call(document.querySelectorAll('[data-cclock]'), function (el) {
+        var c = state.campaigns.filter(function (x) { return x.slug === el.getAttribute('data-cclock'); })[0]; if (!c) return;
+        var t = campaignClock(c); el.textContent = t; el.className = 'clock' + (/^Claims closed$/.test(t) || !t ? ' closed' : '');
+      });
       Array.prototype.forEach.call(document.querySelectorAll('[data-clock]'), function (el) {
         var b = state.bounties.filter(function (x) { return x.id === el.getAttribute('data-clock'); })[0]; if (!b) return;
         var t = clockText(b, b.mine); el.textContent = t; el.className = 'clock' + (/^(Claims closed|Deadline passed)$/.test(t) ? ' closed' : '');
@@ -242,29 +311,71 @@
     setInterval(tick, 1000);
 
     function load() {
-      $('list').innerHTML = '<p class="meta" style="margin:24px 0">Loading bounties&hellip;</p>';
+      $('list').innerHTML = '<p class="meta" style="margin:24px 0">Loading campaigns&hellip;</p>';
       return call({ action: 'list', community: state.city }).then(function (d) {
         state.bounties = d.bounties || []; state.viewer = d.viewer || { signed_in: false };
+        state.campaigns = (d.campaigns || []).slice();
+        // Jobs that belong to no campaign still show, under one card of their own.
+        var loose = state.bounties.filter(function (b) { return !b.campaign_id; });
+        if (loose.length) state.campaigns.push({ slug: '_more', kind: 'ongoing', title: 'More jobs', story: 'Jobs that are not part of a campaign.', jobs: loose.length, jobs_open: loose.filter(function (b) { return b.claims_open; }).length, max_points: loose.reduce(function (n, b) { return Math.max(n, b.points); }, 0), mine: loose.filter(function (b) { return b.mine && b.mine.status !== 'released'; }).length });
         renderStanding();
-        if (!state.bounties.length) { $('list').innerHTML = '<div class="empty"><strong>No open bounties here yet.</strong>New ones go up with big events in your city. Check the Daily Pulse for what is coming.</div>'; return; }
-        var groups = [], seen = {};
-        state.bounties.forEach(function (b) { var k = b.event_id || b.event_title || 'other'; if (!seen[k]) { seen[k] = { event: b.event, title: b.event_title, items: [] }; groups.push(seen[k]); } seen[k].items.push(b); });
-        $('list').innerHTML = groups.map(function (g) {
-          var e = g.event, total = g.items.reduce(function (n, b) { return n + b.points; }, 0);
-          return '<div class="event"><h2>' + esc(e ? e.title : (g.title || 'More bounties')) + '</h2>' +
-            (e ? '<p>' + esc(when(e.starts_at)) + (e.location_name ? ' &middot; ' + esc(e.location_name) : '') + (e.city ? ', ' + esc(e.city) : '') +
-              (e.ticket_url ? ' &middot; <a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener noreferrer">Event details</a>' : '') + ' &middot; up to ' + total.toLocaleString() + ' points</p>' : '') + '</div>' +
-            '<div class="grid">' + g.items.map(function (b) {
-              return '<button type="button" class="bcard" data-id="' + b.id + '"><span class="pts">' + b.points.toLocaleString() + ' points</span>' +
-                '<span class="btitle">' + esc(b.title.replace(/^[^:]+:\s*/, '')) + '</span><span class="bdeliv">' + esc(b.deliverable) + '</span>' +
-                (b.mine && b.mine.status !== 'released' ? '<span class="status ' + b.mine.status + '">' + esc(LABEL[b.mine.status] || b.mine.status) + '</span>' : spotsHtml(b)) +
-                '<span class="clock" data-clock="' + b.id + '"></span></button>';
-            }).join('') + '</div>';
-        }).join('');
-        tick();
+        route();
       }).catch(function () { $('list').innerHTML = '<div class="empty"><strong>Bounties could not load.</strong>Please refresh the page.</div>'; });
     }
-    $('list').addEventListener('click', function (e) { var c = e.target.closest('.bcard'); if (c) open(c.getAttribute('data-id')); });
+    function jobsOf(c) { return state.bounties.filter(function (b) { return c.slug === '_more' ? !b.campaign_id : b.campaign_id === c.id; }); }
+    function dateLine(c) {
+      if (c.kind === 'ongoing' || !c.starts_at) return c.due_at ? 'Anytime until ' + day(c.due_at) : 'Anytime';
+      return when(c.starts_at);
+    }
+    function route() {
+      var c = state.cslug && state.campaigns.filter(function (x) { return x.slug === state.cslug; })[0];
+      if (c) renderCampaign(c); else { state.cslug = ''; renderList(); }
+      tick();
+    }
+    function renderList() {
+      $('campaign').hidden = true; $('list').hidden = false;
+      if (!state.campaigns.length) { $('list').innerHTML = '<div class="empty"><strong>No campaigns here right now.</strong>New ones go up when your city needs creators: big events, restaurant nights and more. Check the Daily Pulse for what is coming.</div>'; return; }
+      $('list').innerHTML = '<div class="cgrid">' + state.campaigns.map(function (c) {
+        var cover = c.cover_url ? ' style="background-image:linear-gradient(to top,rgba(0,0,0,0.25),rgba(0,0,0,0)),url(\'' + esc(c.cover_url).replace(/'/g, '%27') + '\')"' : '';
+        return '<button type="button" class="ccard" data-slug="' + esc(c.slug) + '"><span class="ccover k-' + esc(c.kind) + '"' + cover + '><span class="ckind">' + esc(KIND[c.kind] || 'Campaign') + '</span></span>' +
+          '<span class="cbody"><span class="ctitle">' + esc(c.title) + '</span>' +
+          '<span class="cmeta">' + esc(dateLine(c)) + (c.place_name ? '<br>' + esc(c.place_name) : '') + (c.host ? '<br>Hosted by ' + esc(c.host.name) : '') + '</span>' +
+          (c.mine ? '<span class="cmine">You are in</span>' : '') +
+          '<span class="cjobs">' + c.jobs + (c.jobs === 1 ? ' job' : ' jobs') + ' &middot; up to ' + (c.max_points || 0).toLocaleString() + ' points</span>' +
+          (c.slug === '_more' ? '' : '<span class="clock" data-cclock="' + esc(c.slug) + '"></span>') + '</span></button>';
+      }).join('') + '</div>';
+    }
+    function jobCard(b) {
+      return '<button type="button" class="bcard" data-id="' + b.id + '"><span class="pts">' + b.points.toLocaleString() + ' points</span>' +
+        '<span class="btitle">' + esc(b.title.replace(/^[^:]+:\s*/, '')) + '</span><span class="bdeliv">' + esc(b.deliverable) + '</span>' +
+        ((b.parts || []).length ? '<span class="spots">' + b.parts.length + ' parts, all needed</span>' : '') +
+        (b.mine && b.mine.status !== 'released' ? '<span class="status ' + b.mine.status + '">' + esc(LABEL[b.mine.status] || b.mine.status) + '</span>' : spotsHtml(b)) +
+        '<span class="clock" data-clock="' + b.id + '"></span></button>';
+    }
+    function renderCampaign(c) {
+      $('list').hidden = true; $('campaign').hidden = false;
+      var hero = $('c-hero');
+      hero.className = 'chero k-' + c.kind;
+      hero.style.backgroundImage = c.cover_url ? 'url(\'' + c.cover_url.replace(/'/g, '%27') + '\')' : '';
+      $('c-kind').textContent = KIND[c.kind] || 'Campaign';
+      $('c-title').textContent = c.title;
+      $('c-meta').textContent = [dateLine(c), c.place_name, c.host ? 'Hosted by ' + c.host.name : ''].filter(Boolean).join(' · ');
+      $('c-story').textContent = c.story || '';
+      $('c-note').innerHTML = c.meal ? '<p class="cnote"><strong>Your meal is on the house.</strong> The restaurant provides it and chooses what you eat. ' + (c.host && c.host.slug ? '<a href="/directory/' + esc(c.host.slug) + '" style="color:inherit;font-weight:800">See the restaurant</a>' : '') + '</p>' : '';
+      var jobs = jobsOf(c);
+      $('c-jobs-h').textContent = jobs.length === 1 ? 'The job' : 'The jobs (' + jobs.length + ')';
+      $('c-jobs').innerHTML = jobs.length ? jobs.map(jobCard).join('') : '<p class="meta">No jobs open right now.</p>';
+    }
+    function openCampaign(slug, push) { state.cslug = slug; setUrl(push); route(); window.scrollTo(0, 0); }
+    $('list').addEventListener('click', function (e) { var c = e.target.closest('.ccard'); if (c) openCampaign(c.getAttribute('data-slug'), true); });
+    $('c-jobs').addEventListener('click', function (e) { var c = e.target.closest('.bcard'); if (c) open(c.getAttribute('data-id')); });
+    $('c-back').addEventListener('click', function (e) { e.preventDefault(); state.cslug = ''; setUrl(true); route(); });
+    window.addEventListener('popstate', function () {
+      var p = new URLSearchParams(location.search);
+      state.cslug = p.get('campaign') || '';
+      if (!p.get('id') && $('detail').classList.contains('open')) { $('detail').classList.remove('open'); document.body.style.overflow = ''; }
+      route();
+    });
 
     // ---- Detail -------------------------------------------------------------------------
     function open(id) {
@@ -272,13 +383,17 @@
         if (!d.bounty) return;
         state.current = d.bounty; state.mine = d.mine; state.viewer = d.viewer || state.viewer;
         state.rundown = d.rundown; state.details = d.details; state.thread = d.thread;
-        var u = new URL(location.href); u.searchParams.set('id', id); history.replaceState(null, '', u.pathname + u.search);
+        // Behind the job sits its campaign, so closing the job lands on the campaign page.
+        var camp = state.campaigns.filter(function (c) { return d.bounty.campaign_id ? c.id === d.bounty.campaign_id : c.slug === '_more'; })[0];
+        if (camp && state.cslug !== camp.slug) { state.cslug = camp.slug; route(); }
+        var u = new URL(location.href); u.searchParams.set('id', id); if (state.cslug) u.searchParams.set('campaign', state.cslug); history.replaceState(null, '', u.pathname + u.search);
         $('detail').classList.add('open'); render(); document.body.style.overflow = 'hidden';
       });
     }
     function close() {
       $('detail').classList.remove('open'); document.body.style.overflow = '';
       var u = new URL(location.href); u.searchParams.delete('id'); history.replaceState(null, '', u.pathname + u.search);
+      state.current = null;
       load();
     }
     $('detail').addEventListener('click', function (e) { if (e.target === $('detail') || e.target.hasAttribute('data-close')) close(); });
@@ -288,12 +403,17 @@
       var b = state.current, m = state.mine, e = b.event, mine = holds(m);
       $('d-pts').textContent = b.points.toLocaleString() + ' points';
       $('d-title').textContent = b.title;
-      $('d-meta').innerHTML = (e ? esc(e.title) + ' &middot; ' + esc(when(e.starts_at)) + (e.location_name ? ' &middot; ' + esc(e.location_name) : '') + '<br>' : '') +
+      var cp = b.campaign;
+      $('d-meta').innerHTML = (cp ? 'Part of <strong>' + esc(cp.title) + '</strong>' + (cp.host ? ', hosted by ' + esc(cp.host.name) : '') + '<br>' : '') +
+        (e ? esc(e.title) + ' &middot; ' + esc(when(e.starts_at)) + (e.location_name ? ' &middot; ' + esc(e.location_name) : '') + '<br>' : (b.event_starts_at ? esc(when(b.event_starts_at)) + (cp && cp.place_name ? ' &middot; ' + esc(cp.place_name) : '') + '<br>' : '')) +
         '<strong>Deliver:</strong> ' + esc(b.deliverable) + '<br><strong>Due:</strong> ' + esc(when(b.due_at)) +
         (b.claims_close_at ? '<br><strong>Claims close:</strong> ' + esc(when(b.claims_close_at)) : '') +
         (b.slots != null && !mine ? '<br>' + spotsHtml(b) : '') +
         (b.example_url ? '<br><a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">See an example</a>' : '');
-      $('d-brief').textContent = b.brief;
+      $('d-brief').textContent = b.brief + (cp && cp.meal ? '\n\nThe restaurant provides your meal and chooses what you eat.' : '');
+      var parts = b.parts || [];
+      $('d-parts').hidden = !parts.length;
+      $('d-parts-list').innerHTML = parts.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
       tick();
 
       var st = '';
@@ -321,6 +441,10 @@
       $('note').rows = writeup ? 14 : 4;
       $('submit').textContent = m.status === 'submitted' ? 'Update my submission' : m.status === 'changes' ? 'Send my changes' : 'Submit for review';
       $('msg').textContent = '';
+      // A bundle: tick each part as it goes into the upload; submit needs every one.
+      var done = (m.parts_done || []);
+      $('parts-box').hidden = !parts.length;
+      $('parts-check').innerHTML = parts.map(function (t, i) { return '<label><input type="checkbox" data-part="' + i + '"' + (done.indexOf(i) > -1 ? ' checked' : '') + '><span>' + esc(t) + '</span></label>'; }).join('');
       renderFiles();
     }
 
@@ -448,10 +572,13 @@
     drop.addEventListener('drop', function (e) { uploadAll(e.dataTransfer.files); });
 
     $('submit').addEventListener('click', function () {
+      var boxes = Array.prototype.slice.call($('parts-check').querySelectorAll('input[data-part]'));
+      var partsDone = boxes.filter(function (x) { return x.checked; }).map(function (x) { return Number(x.getAttribute('data-part')); });
+      if (boxes.length && partsDone.length < boxes.length) { $('msg').className = 'msg'; $('msg').textContent = 'This job needs every part. Tick each one when it is in your upload.'; boxes.filter(function (x) { return !x.checked; })[0].focus(); return; }
       if (!$('license').checked) { $('msg').className = 'msg'; $('msg').textContent = 'Tick the box to confirm this is your own work and Vegans Explore may use it.'; $('license').focus(); return; }
       var links = $('links').value.split(/\s+/).map(function (s) { return s.trim(); }).filter(function (s) { return /^https?:\/\//i.test(s); });
       $('submit').disabled = true; $('msg').className = 'msg ok'; $('msg').textContent = 'Sending it in...';
-      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value, license: true }).then(function (d) {
+      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value, parts_done: partsDone, license: true }).then(function (d) {
         $('submit').disabled = false;
         if (d.error) { $('msg').className = 'msg'; $('msg').textContent = d.message || 'That did not go through. Please try again.'; return; }
         open(state.current.id);

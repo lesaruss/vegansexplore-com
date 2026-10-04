@@ -1064,7 +1064,9 @@ function renderListing(l){
   // Photos right after About. Not listings.google_photos (Sean, 2026-09-29, BOSS "source reliable
   // photos"): those are Google Maps users' photos, which we have no right to show. Only photos the
   // business or Vegans Explore own go here; the column is kept, just not shown.
-  var ownPhotos = [];
+  // gallery_urls holds photos Vegans Explore owns: approved bounty work from a host night, licensed
+  // to us by the creator (Sean, 2026-10-04, playbook ve-bounties-lifecycle).
+  var ownPhotos = (l.gallery_urls || []).filter(function (u) { return /^https:\/\//.test(u); });
   var overviewPhotoHtml = renderPhotos(ownPhotos, 'ov');
   if(overviewPhotoHtml){
     overviewContent += '<div class="section"><h2 class="section-title">Photos</h2>'+overviewPhotoHtml+'</div>';
