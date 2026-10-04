@@ -288,7 +288,7 @@
         load();
       });
       // ---- Campaigns ---------------------------------------------------------------------------
-      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', sandbox: 'Sandbox (test)' };
       var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
       var EXTRA = { photo_shoot: 'Photo shoot ($150)', reel: 'Reel ($200)', social_post: 'Social feature post ($75)', event_table: 'Sampling table ($100)', challenge_month: 'Passport Challenge stop ($100)' };
       var cdata = null, pickedHost = null;
@@ -336,7 +336,7 @@
           var order = { proposed: 0, open: 1, closed: 2, declined: 3, canceled: 4 };
           var list = d.campaigns.slice().sort(function (a, b) { return (order[a.status] - order[b.status]) || String(a.starts_at || a.due_at || '').localeCompare(String(b.starts_at || b.due_at || '')); });
           $('camps').innerHTML = list.length ? list.map(campCard).join('') : '<p class="empty">No campaigns yet. Propose the first one below.</p>';
-          var cities = d.admin ? Object.keys(CITY) : Object.keys(CITY);
+          var cities = Object.keys(CITY).filter(function (k) { return d.admin || k !== 'sandbox'; });
           $('cf-city').innerHTML = cities.map(function (k) { return '<option value="' + k + '"' + ((d.cities || [])[0] === k ? ' selected' : '') + '>' + esc(CITY[k]) + '</option>'; }).join('');
           $('cf-family').innerHTML = '<option value="">No larger campaign</option>' + (d.families || []).map(function (f) { return '<option value="' + f.id + '">' + esc(f.title) + '</option>'; }).join('');
           syncKind();

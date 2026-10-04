@@ -254,8 +254,9 @@
     var LABEL = { claimed: 'Your spot', submitted: 'In review', changes: 'Needs changes', approved: 'Approved', rejected: 'Not approved', no_show: 'Missed' };
     var holds = function (m) { return !!m && HOLDS.indexOf(m.status) > -1; };
 
-    var hubs = window.VE_HUBS || [];
     var member = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+    // Sandbox: a test city only Sean sees, for trying a campaign end to end.
+    var hubs = (window.VE_HUBS || []).concat(member && member.is_superadmin ? [{ slug: 'sandbox', name: 'Sandbox (test, only you see it)' }] : []);
     var saved = ''; try { saved = localStorage.getItem('ve_selected_city') || ''; } catch (e) {}
     var wanted = params.get('community') || (member && member.home_community) || saved || 'south-florida';
     if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';

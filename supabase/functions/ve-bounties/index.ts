@@ -53,6 +53,10 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const BUCKET = 've-bounty-uploads';
 const COMMUNITIES = ['south-florida', 'central-florida', 'atlanta', 'dmv', 'new-york', 'philadelphia', 'los-angeles', 'london'];
+// A test city only superadmins see, for trying a campaign end to end. Never listed for members, and a
+// sandbox host is never featured.
+const SANDBOX = 'sandbox';
+const cityOk = (v: { admin: boolean } | null, c: string) => COMMUNITIES.includes(c) || (c === SANDBOX && !!v?.admin);
 const HUB_FOR_CITY: Record<string, string> = { 'orlando-north-central-florida': 'central-florida' };
 const TZ: Record<string, string> = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles' };
 const MAX_FILES = 120;
@@ -151,7 +155,7 @@ async function loadViewer(req: Request): Promise<Viewer> {
 // Cities this person reviews: Sean all of them, a Community Manager their own.
 async function reviewCities(v: Viewer): Promise<string[]> {
   if (!v) return [];
-  if (v.admin) return COMMUNITIES;
+  if (v.admin) return [...COMMUNITIES, SANDBOX];
   if (!v.cm) return [];
   const { data: inv } = v.email ? await db.from('ve_staff_invites').select('city_slug').ilike('email', v.email).maybeSingle() : { data: null };
   const raw = inv?.city_slug || v.home || '';
@@ -206,7 +210,7 @@ async function canDecide(v: Viewer, community: string) { return !!v && (v.admin 
 // (copied to the public media bucket) and the listing is featured for 90 days, unless it is
 // already featured some other way.
 async function applyHost(c: any, submission: any) {
-  if (!c || c.kind !== 'place' || !c.host_listing_id) return;
+  if (!c || c.kind !== 'place' || !c.host_listing_id || c.community_slug === SANDBOX) return;
   const { data: l } = await db.from('listings').select('id, is_featured, featured_until, gallery_urls, ve_first_featured_at').eq('id', c.host_listing_id).maybeSingle();
   if (!l) return;
   const patch: Record<string, unknown> = {};
@@ -405,7 +409,7 @@ Deno.serve(async (req) => {
   switch (body.action) {
     case 'list': {
       const community = clean(body.community, 40);
-      if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
+      if (!cityOk(viewer, community)) return json({ error: 'bad_community' }, 400);
       const { data } = await db.from('ve_bounties').select(BOUNTY_COLS).eq('community_slug', community).in('status', ['open', 'closed']).order('sort');
       let mine: Record<string, any> = {};
       if (viewer && (data || []).length) {
@@ -429,7 +433,7 @@ Deno.serve(async (req) => {
     case 'get': {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
       const { data: raw } = await db.from('ve_bounties').select(BOUNTY_COLS + ', event_details').eq('id', body.id).maybeSingle();
-      if (!raw || raw.status === 'draft') return json({ error: 'not_found' }, 404);
+      if (!raw || raw.status === 'draft' || !cityOk(viewer, raw.community_slug)) return json({ error: 'not_found' }, 404);
       const [b] = await withCampaigns(await withEvents([raw]));
       const taken = (await takenCounts([b.id]))[b.id] || 0;
       let mine: any = null, s: any = null;
@@ -458,7 +462,8 @@ Deno.serve(async (req) => {
       if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
       if (!viewer.passport) return json({ error: 'passport', message: 'Bounties are for Passport holders. Get your Passport to claim a spot.' }, 403);
       // A host night seats a set number of creators across all its jobs.
-      const { data: cb } = await db.from('ve_bounties').select('campaign_id').eq('id', body.bounty_id).maybeSingle();
+      const { data: cb } = await db.from('ve_bounties').select('campaign_id, community_slug').eq('id', body.bounty_id).maybeSingle();
+      if (cb && !cityOk(viewer, cb.community_slug)) return json({ error: 'not_found' }, 404);
       if (cb?.campaign_id) {
         const { data: camp } = await db.from('ve_bounty_campaigns').select('creator_cap').eq('id', cb.campaign_id).maybeSingle();
         if (camp?.creator_cap) {
@@ -793,7 +798,7 @@ Deno.serve(async (req) => {
         c = data;
       }
       const community = c ? c.community_slug : clean(body.community, 40);
-      if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community', message: 'Pick a city.' }, 400);
+      if (!cityOk(viewer, community)) return json({ error: 'bad_community', message: 'Pick a city.' }, 400);
       const kind = c ? c.kind : clean(body.kind, 20);
       if (!TEMPLATES[kind]) return json({ error: 'bad_kind', message: 'Pick event, place or ongoing.' }, 400);
       const patch: Record<string, any> = { updated_at: nowIso() };
