@@ -36,14 +36,14 @@
     .btn-primary:hover { background: var(--ve-green-deep); }
     .btn-primary:disabled { opacity: 0.55; cursor: default; }
     .btn-ghost { background: #fff; color: var(--ve-text); border: 1.5px solid var(--ve-border); }
-    .btn:focus-visible, .bcard:focus-visible, .linkbtn:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    .btn:focus-visible, .linkbtn:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
     .linkbtn { background: none; border: none; color: var(--ve-green-dark); font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: underline; padding: 6px 2px; }
     /* Campaign cards: four across even with two, so ten campaigns read as easily as two. */
     .cgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 26px 0 8px; }
     @media (max-width: 1100px) { .cgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (max-width: 820px) { .cgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 520px) { .cgrid { grid-template-columns: minmax(0, 1fr); } }
-    .ccard { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 16px; overflow: hidden; cursor: pointer; font: inherit; color: inherit; padding: 0; }
+    .ccard { text-decoration: none; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 16px; overflow: hidden; cursor: pointer; font: inherit; color: inherit; padding: 0; }
     .ccard:hover { border-color: var(--ve-text-60); }
     .ccard:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
     .ccover { display: block; flex: 0 0 auto; aspect-ratio: 16 / 9; background: linear-gradient(135deg, var(--ve-green-dark), var(--ve-green-deep)); background-size: cover; background-position: center; position: relative; }
@@ -79,9 +79,6 @@
     .event h2 { font-size: 22px; font-weight: 900; line-height: 1.25; }
     .event p { font-size: 14px; color: var(--ve-text-60); margin-top: 4px; }
     .event a { color: var(--ve-green-dark); font-weight: 700; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
-    .bcard { display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 18px; cursor: pointer; font: inherit; color: inherit; }
-    .bcard:hover { border-color: var(--ve-text-60); }
     .pts { align-self: flex-start; font-size: 13px; font-weight: 900; color: #fff; background: var(--ve-orange-ink); border-radius: 999px; padding: 4px 12px; }
     .btitle { font-size: 17px; font-weight: 800; line-height: 1.3; }
     .bdeliv { font-size: 14px; line-height: 1.5; color: var(--ve-text-75); }
@@ -93,12 +90,49 @@
     .empty strong { display: block; color: var(--ve-text); font-size: 17px; margin-bottom: 4px; }
     .how { background: var(--ve-bg); border-radius: 14px; padding: 18px 20px; margin: 34px 0 50px; font-size: 14px; line-height: 1.65; color: var(--ve-text-75); }
     .how strong { color: var(--ve-text); }
-    /* Detail */
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: flex-start; justify-content: center; z-index: 9000; padding: 40px 16px; overflow-y: auto; }
-    .overlay.open { display: flex; }
-    .dialog { background: #fff; border-radius: 16px; width: 100%; max-width: 720px; padding: 26px; position: relative; }
-    .dialog h2 { font-size: 22px; font-weight: 900; line-height: 1.25; padding-right: 44px; margin-top: 8px; }
-    .close-x { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%; border: none; background: #f0f0f0; font-size: 22px; cursor: pointer; }
+    /* One thing per view, with breadcrumbs back (Sean, 2026-10-04: canon-sean-interface-defaults). */
+    .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; margin: 22px 0 0; }
+    .crumbs a { color: var(--ve-green-dark); text-decoration: none; }
+    .crumbs a:hover { text-decoration: underline; }
+    .crumbs .sep { color: var(--ve-text-60); font-weight: 600; }
+    .crumbs [aria-current] { color: var(--ve-text); }
+    .sub-view .head { padding: 22px 0 18px; }
+    .sub-view .head h1, .sub-view .head .lede, .sub-view .head .row { display: none; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; }
+    .filters button { font: inherit; font-size: 13px; font-weight: 800; border: 1.5px solid var(--ve-border); background: #fff; border-radius: 99px; padding: 8px 14px; cursor: pointer; min-height: 40px; color: var(--ve-text); }
+    .filters button[aria-pressed="true"] { background: var(--ve-green-deep); border-color: var(--ve-green-deep); color: #fff; }
+    /* Jobs: one row per job, the same columns and the same View button on every row. */
+    .jrows { display: grid; margin-top: 14px; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 4px 18px; background: #fff; }
+    .jrow { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr) 90px; gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--ve-border); font-size: 14px; color: inherit; text-decoration: none; }
+    .jrow.jhead { border-top: none; padding: 12px 0 6px; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-60); }
+    a.jrow:hover .btn { border-color: var(--ve-text-60); }
+    a.jrow:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    .jname b { display: block; font-size: 15px; }
+    .jname small { display: block; font-size: 12.5px; color: var(--ve-text-60); line-height: 1.45; }
+    .jact { text-align: right; }
+    .btn-sm { min-height: 36px; padding: 6px 14px; font-size: 12.5px; }
+    @media (max-width: 760px) {
+      .jrow { grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+      .jrow.jhead { display: none; }
+      .jname { grid-column: 1 / -1; }
+      .jrow [data-l]::before { content: attr(data-l) ": "; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ve-text-60); }
+      .jact { grid-column: 1 / -1; text-align: left; }
+    }
+    /* Status is a tag in plain words, never a button. */
+    .tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 99px; padding: 4px 10px; white-space: nowrap; }
+    .t-live { background: var(--ve-green-light); color: var(--ve-green-deep); }
+    .t-wait { background: var(--ve-orange-light); color: var(--ve-orange-ink); }
+    .t-bad { background: #fde8e8; color: var(--ve-danger); }
+    .t-off { background: #efefef; color: #3d3d3d; }
+    /* One job: the work on the left, the facts at a glance on the right. */
+    .jtop { margin-top: 16px; }
+    .jtop h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 900; line-height: 1.15; margin-top: 10px; }
+    .jlayout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 20px; align-items: start; margin-top: 4px; }
+    @media (max-width: 900px) { .jlayout { grid-template-columns: minmax(0, 1fr); } .jside { order: -1; } }
+    .facts { display: grid; gap: 10px; }
+    .facts dt { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-60); }
+    .facts dd { font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+    .facts a { color: var(--ve-green-dark); font-weight: 700; }
     .meta { font-size: 13px; color: var(--ve-text-60); margin-top: 6px; line-height: 1.6; }
     .brief { font-size: 15px; line-height: 1.7; margin-top: 14px; white-space: pre-wrap; }
     .box { border: 1.5px solid var(--ve-border); border-radius: 12px; padding: 16px; margin-top: 18px; }
@@ -141,8 +175,7 @@
     [hidden] { display: none !important; }
     .ve-embedded .head { background: #fff; padding: 22px 0 14px; }
     .ve-embedded .wrap { max-width: none; padding: 0 22px; }
-    .ve-embedded .overlay { position: absolute; min-height: 100%; padding-top: calc(var(--ve-view-top, 0px) + 24px); }
-    @media (max-width: 720px) { .wrap { padding: 0 16px; } .dialog { padding: 22px 18px; } .head { padding: 30px 0 22px; } }
+    @media (max-width: 720px) { .wrap { padding: 0 16px; } .head { padding: 30px 0 22px; } }
   </style>
 </head>
 <body>
@@ -164,64 +197,64 @@
       </div>
     </header>
     <section class="wrap" aria-live="polite">
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb" hidden></nav>
       <div id="list"></div>
       <div id="campaign" hidden>
-        <a class="back" id="c-back" href="/bounties">&larr; All campaigns</a>
         <div class="chero" id="c-hero"><div class="chero-in"><span class="ckind" id="c-kind" style="position:static;display:inline-block;margin-bottom:10px"></span><h2 id="c-title"></h2><p id="c-meta"></p></div></div>
         <p class="cstory" id="c-story"></p>
         <div id="c-note"></div>
         <p class="jobs-h" id="c-jobs-h">The jobs</p>
-        <div class="grid" id="c-jobs"></div>
+        <div id="c-jobs"></div>
         <p class="fine" style="margin-top:14px">The event details, the rundown and a Q&amp;A with your Community Manager open once you claim a job.</p>
       </div>
-      <div class="how"><strong>How it works.</strong> Pick a campaign, then a job. Each job has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for Passport holders.</div>
+      <div id="job" hidden>
+        <div class="jtop"><span class="pts" id="d-pts"></span><h2 id="d-title"></h2><p class="clock" id="d-clock" aria-live="off"></p></div>
+        <div class="jlayout">
+          <div class="jmain">
+            <div id="d-state"></div>
+            <div class="box" id="d-claim" hidden></div>
+            <div class="box"><h3>The brief</h3><div class="brief" id="d-brief" style="margin-top:0"></div>
+              <div id="d-parts" hidden><p class="label" style="margin-top:14px">Every part, to earn the points</p><ul class="parts" id="d-parts-list"></ul></div></div>
+            <div class="box rd" id="d-rundown" hidden></div>
+            <div class="box rd" id="d-details" hidden></div>
+            <div class="box" id="d-qa" hidden>
+              <h3>Questions and answers</h3>
+              <p class="hint" id="qa-hint"></p>
+              <ul class="qa" id="qa-list"></ul>
+              <div id="qa-form">
+                <label class="f" for="qa-text">Ask a question <span class="hint">Everyone covering this event sees it, and your Community Manager answers.</span><textarea id="qa-text" rows="3" style="min-height:70px" maxlength="2000"></textarea></label>
+                <div style="margin-top:10px"><button type="button" class="btn btn-ghost" id="qa-send">Post</button></div>
+              </div>
+              <p class="msg" id="qa-msg" role="status" aria-live="polite"></p>
+            </div>
+            <div class="box" id="d-work" hidden>
+              <h3>Your submission</h3>
+              <div class="drop" id="drop">
+                <p>Drag files here, or</p>
+                <p style="margin-top:8px"><label class="btn btn-ghost" for="pick">Choose files</label><input id="pick" type="file" multiple class="visually-hidden"></p>
+                <p class="hint" style="margin-top:8px">Video, photos or documents, up to 2 GB each.</p>
+              </div>
+              <ul class="files" id="files"></ul>
+              <label class="f" for="links">Links <span class="hint">One per line: Google Drive, Dropbox, YouTube (unlisted is fine)</span><textarea id="links" rows="3" style="min-height:80px" placeholder="https://"></textarea></label>
+              <label class="f" for="note" id="note-label">A note for the reviewer <span class="hint" id="note-hint">Optional. For the write-up, paste the whole piece here.</span><textarea id="note" rows="5"></textarea></label>
+              <div id="parts-box" hidden><p class="label" style="margin-top:14px">Tick each part that is in your upload</p><div class="parts-check" id="parts-check"></div></div>
+              <label class="check" for="license"><input type="checkbox" id="license"><span>This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.</span></label>
+              <div style="margin-top:14px"><button type="button" class="btn btn-primary" id="submit">Submit for review</button></div>
+              <p class="msg" id="msg" role="status" aria-live="polite"></p>
+            </div>
+          </div>
+          <aside class="jside">
+            <div class="box" id="d-meta" style="margin-top:18px"></div>
+            <div id="d-release" hidden style="margin-top:14px">
+              <button type="button" class="linkbtn" id="release">Release my spot</button>
+              <p class="fine" id="release-note"></p>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <div class="how" id="how"><strong>How it works.</strong> Pick a campaign, then a job. Each job has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for Passport holders.</div>
     </section>
   </main>
-
-  <div class="overlay" id="detail" role="dialog" aria-modal="true" aria-labelledby="d-title">
-    <div class="dialog">
-      <button type="button" class="close-x" data-close aria-label="Close">&times;</button>
-      <span class="pts" id="d-pts"></span>
-      <h2 id="d-title"></h2>
-      <p class="meta" id="d-meta"></p>
-      <p class="clock" id="d-clock" aria-live="off"></p>
-      <div class="brief" id="d-brief"></div>
-      <div id="d-parts" hidden><p class="label" style="margin-top:14px">Every part, to earn the points</p><ul class="parts" id="d-parts-list"></ul></div>
-      <div id="d-state"></div>
-      <div class="box" id="d-claim" hidden></div>
-      <div class="box rd" id="d-rundown" hidden></div>
-      <div class="box rd" id="d-details" hidden></div>
-      <div class="box" id="d-qa" hidden>
-        <h3>Questions and answers</h3>
-        <p class="hint" id="qa-hint"></p>
-        <ul class="qa" id="qa-list"></ul>
-        <div id="qa-form">
-          <label class="f" for="qa-text">Ask a question <span class="hint">Everyone covering this event sees it, and your Community Manager answers.</span><textarea id="qa-text" rows="3" style="min-height:70px" maxlength="2000"></textarea></label>
-          <div style="margin-top:10px"><button type="button" class="btn btn-ghost" id="qa-send">Post</button></div>
-        </div>
-        <p class="msg" id="qa-msg" role="status" aria-live="polite"></p>
-      </div>
-      <div class="box" id="d-work" hidden>
-        <h3>Your submission</h3>
-        <div class="drop" id="drop">
-          <p>Drag files here, or</p>
-          <p style="margin-top:8px"><label class="btn btn-ghost" for="pick">Choose files</label><input id="pick" type="file" multiple class="visually-hidden"></p>
-          <p class="hint" style="margin-top:8px">Video, photos or documents, up to 2 GB each.</p>
-        </div>
-        <ul class="files" id="files"></ul>
-        <label class="f" for="links">Links <span class="hint">One per line: Google Drive, Dropbox, YouTube (unlisted is fine)</span><textarea id="links" rows="3" style="min-height:80px" placeholder="https://"></textarea></label>
-        <label class="f" for="note" id="note-label">A note for the reviewer <span class="hint" id="note-hint">Optional. For the write-up, paste the whole piece here.</span><textarea id="note" rows="5"></textarea></label>
-        <div id="parts-box" hidden><p class="label" style="margin-top:14px">Tick each part that is in your upload</p><div class="parts-check" id="parts-check"></div></div>
-        <label class="check" for="license"><input type="checkbox" id="license"><span>This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.</span></label>
-        <div style="margin-top:14px"><button type="button" class="btn btn-primary" id="submit">Submit for review</button></div>
-        <p class="msg" id="msg" role="status" aria-live="polite"></p>
-      </div>
-      <div id="d-release" hidden style="margin-top:18px">
-        <button type="button" class="linkbtn" id="release">Release my spot</button>
-        <p class="fine" id="release-note"></p>
-      </div>
-    </div>
-  </div>
 
   <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-auth.js"></script>
@@ -230,7 +263,7 @@
     var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
-    var state = { city: '', bounties: [], campaigns: [], cslug: params.get('campaign') || '', current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
+    var state = { city: '', bounties: [], campaigns: [], cslug: params.get('campaign') || '', jobId: params.get('id') || '', view: '', cfilter: 'all', current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
     var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
     var HOLDS = ['claimed', 'submitted', 'changes', 'approved', 'rejected'];
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -262,15 +295,17 @@
     if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';
     $('city').innerHTML = hubs.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
     $('city').value = wanted; state.city = wanted;
-    $('city').addEventListener('change', function () { state.city = this.value; state.cslug = ''; setUrl(true); load(); });
-    // The address bar follows the view: ?campaign=<slug> for a campaign, ?id=<job> for an open job.
+    $('city').addEventListener('change', function () { state.city = this.value; state.cslug = ''; state.jobId = ''; setUrl(true); load(); });
+    // The address bar follows the view: ?campaign=<slug> for a campaign, &id=<job> for a job.
     function setUrl(push) {
       var u = new URL(location.href);
       u.searchParams.set('community', state.city);
       if (state.cslug) u.searchParams.set('campaign', state.cslug); else u.searchParams.delete('campaign');
-      if (!(state.current && $('detail').classList.contains('open'))) u.searchParams.delete('id');
+      if (state.jobId) u.searchParams.set('id', state.jobId); else u.searchParams.delete('id');
       (push ? history.pushState : history.replaceState).call(history, null, '', u.pathname + u.search);
     }
+    function href(slug, id) { return '/bounties?community=' + encodeURIComponent(state.city) + (slug ? '&campaign=' + encodeURIComponent(slug) : '') + (id ? '&id=' + id : ''); }
+    function short(t) { return String(t || '').replace(/^[^:]+:\s*/, ''); }
 
     function renderStanding() {
       var v = state.viewer, st = v.standing || {}, el = $('standing');
@@ -305,7 +340,7 @@
         var b = state.bounties.filter(function (x) { return x.id === el.getAttribute('data-clock'); })[0]; if (!b) return;
         var t = clockText(b, b.mine); el.textContent = t; el.className = 'clock' + (/^(Claims closed|Deadline passed)$/.test(t) ? ' closed' : '');
       });
-      if (state.current && $('detail').classList.contains('open')) {
+      if (state.current && state.view === 'job') {
         var t = clockText(state.current, state.mine); $('d-clock').textContent = t; $('d-clock').className = 'clock' + (/^(Claims closed|Deadline passed)$/.test(t) ? ' closed' : '');
       }
     }
@@ -328,33 +363,64 @@
       if (c.kind === 'ongoing' || !c.starts_at) return c.due_at ? 'Anytime until ' + day(c.due_at) : 'Anytime';
       return when(c.starts_at);
     }
+    function campOf(slug) { return state.campaigns.filter(function (x) { return x.slug === slug; })[0] || null; }
+    // One thing per view, with breadcrumbs back (canon-sean-interface-defaults): the campaigns,
+    // one campaign, one job.
+    function setView(v) {
+      state.view = v;
+      $('list').hidden = v !== 'list'; $('campaign').hidden = v !== 'campaign'; $('job').hidden = v !== 'job'; $('how').hidden = v !== 'list';
+      document.body.classList.toggle('sub-view', v !== 'list');
+      var c = campOf(state.cslug), items = [['Bounties', href('', '')]];
+      if (v !== 'list' && c) items.push([c.title, href(c.slug, '')]);
+      if (v === 'job' && state.current) items.push([short(state.current.title), '']);
+      $('crumbs').hidden = v === 'list';
+      $('crumbs').innerHTML = items.map(function (it, i) {
+        return i === items.length - 1 ? '<span aria-current="page">' + esc(it[0]) + '</span>' : '<a href="' + esc(it[1]) + '" data-nav="' + (i === 0 ? 'list' : 'campaign') + '">' + esc(it[0]) + '</a>';
+      }).join('<span class="sep" aria-hidden="true">&rsaquo;</span>');
+    }
     function route() {
-      var c = state.cslug && state.campaigns.filter(function (x) { return x.slug === state.cslug; })[0];
+      if (state.jobId) { open(state.jobId); return; }
+      var c = state.cslug && campOf(state.cslug);
       if (c) renderCampaign(c); else { state.cslug = ''; renderList(); }
       tick();
     }
     function renderList() {
-      $('campaign').hidden = true; $('list').hidden = false;
+      setView('list');
       if (!state.campaigns.length) { $('list').innerHTML = '<div class="empty"><strong>No campaigns here right now.</strong>New ones go up when your city needs creators: big events, restaurant nights and more. Check the Daily Pulse for what is coming.</div>'; return; }
-      $('list').innerHTML = '<div class="cgrid">' + state.campaigns.map(function (c) {
+      var mineN = state.campaigns.filter(function (c) { return c.mine; }).length;
+      if (!mineN) state.cfilter = 'all';
+      var list = state.cfilter === 'mine' ? state.campaigns.filter(function (c) { return c.mine; }) : state.campaigns;
+      $('list').innerHTML = (mineN ? '<div class="filters" role="group" aria-label="Show"><button type="button" data-cf="all" aria-pressed="' + (state.cfilter !== 'mine') + '">All campaigns (' + state.campaigns.length + ')</button><button type="button" data-cf="mine" aria-pressed="' + (state.cfilter === 'mine') + '">You are in (' + mineN + ')</button></div>' : '') +
+        '<div class="cgrid">' + list.map(function (c) {
         var cover = c.cover_url ? ' style="background-image:linear-gradient(to top,rgba(0,0,0,0.25),rgba(0,0,0,0)),url(\'' + esc(c.cover_url).replace(/'/g, '%27') + '\')"' : '';
-        return '<button type="button" class="ccard" data-slug="' + esc(c.slug) + '"><span class="ccover k-' + esc(c.kind) + '"' + cover + '><span class="ckind">' + esc(KIND[c.kind] || 'Campaign') + '</span></span>' +
+        return '<a class="ccard" href="' + esc(href(c.slug, '')) + '" data-slug="' + esc(c.slug) + '"><span class="ccover k-' + esc(c.kind) + '"' + cover + '><span class="ckind">' + esc(KIND[c.kind] || 'Campaign') + '</span></span>' +
           '<span class="cbody"><span class="ctitle">' + esc(c.title) + '</span>' +
           '<span class="cmeta">' + esc(dateLine(c)) + (c.place_name ? '<br>' + esc(c.place_name) : '') + (c.host ? '<br>Hosted by ' + esc(c.host.name) : '') + '</span>' +
           (c.mine ? '<span class="cmine">You are in</span>' : '') +
           '<span class="cjobs">' + c.jobs + (c.jobs === 1 ? ' job' : ' jobs') + ' &middot; up to ' + (c.max_points || 0).toLocaleString() + ' points</span>' +
-          (c.slug === '_more' ? '' : '<span class="clock" data-cclock="' + esc(c.slug) + '"></span>') + '</span></button>';
+          (c.slug === '_more' ? '' : '<span class="clock" data-cclock="' + esc(c.slug) + '"></span>') + '</span></a>';
       }).join('') + '</div>';
     }
-    function jobCard(b) {
-      return '<button type="button" class="bcard" data-id="' + b.id + '"><span class="pts">' + b.points.toLocaleString() + ' points</span>' +
-        '<span class="btitle">' + esc(b.title.replace(/^[^:]+:\s*/, '')) + '</span><span class="bdeliv">' + esc(b.deliverable) + '</span>' +
-        ((b.parts || []).length ? '<span class="spots">' + b.parts.length + ' parts, all needed</span>' : '') +
-        (b.mine && b.mine.status !== 'released' ? '<span class="status ' + b.mine.status + '">' + esc(LABEL[b.mine.status] || b.mine.status) + '</span>' : spotsHtml(b)) +
-        '<span class="clock" data-clock="' + b.id + '"></span></button>';
+    // Plain words for where a job stands, for you.
+    function jobStatus(b) {
+      var m = b.mine && b.mine.status !== 'released' ? b.mine : null;
+      if (m) return [LABEL[m.status] || m.status, m.status === 'submitted' ? 't-wait' : /changes|rejected|no_show/.test(m.status) ? 't-bad' : 't-live'];
+      if (b.status === 'canceled') return ['Canceled', 't-off'];
+      if (!b.claims_open) return ['Claims closed', 't-off'];
+      if (b.spots_left === 0) return ['Full', 't-off'];
+      return ['Spots open', 't-live'];
+    }
+    function jobRow(b) {
+      var st = jobStatus(b);
+      return '<a class="jrow" href="' + esc(href(state.cslug, b.id)) + '" data-id="' + b.id + '"><span class="jname"><b>' + esc(short(b.title)) + '</b><small>' + esc(b.deliverable) + '</small>' +
+        '<small>' + ((b.parts || []).length ? 'Bundle: ' + b.parts.length + ' parts, all needed to earn the points' : 'Pays on its own') + '</small><span class="clock" data-clock="' + b.id + '"></span></span>' +
+        '<span data-l="Points">' + b.points.toLocaleString() + '</span>' +
+        '<span data-l="Spots">' + (b.slots == null ? 'No limit' : b.spots_left + ' of ' + b.slots + ' left') + '</span>' +
+        '<span data-l="Status"><span class="tag ' + st[1] + '">' + esc(st[0]) + '</span></span>' +
+        '<span class="jact"><span class="btn btn-ghost btn-sm">View</span></span></a>';
     }
     function renderCampaign(c) {
-      $('list').hidden = true; $('campaign').hidden = false;
+      setView('campaign');
       var hero = $('c-hero');
       hero.className = 'chero k-' + c.kind;
       hero.style.backgroundImage = c.cover_url ? 'url(\'' + c.cover_url.replace(/'/g, '%27') + '\')' : '';
@@ -365,52 +431,53 @@
       $('c-note').innerHTML = c.meal ? '<p class="cnote"><strong>Your meal is on the house.</strong> The restaurant provides it and chooses what you eat. ' + (c.host && c.host.slug ? '<a href="/directory/' + esc(c.host.slug) + '" style="color:inherit;font-weight:800">See the restaurant</a>' : '') + '</p>' : '';
       var jobs = jobsOf(c);
       $('c-jobs-h').textContent = jobs.length === 1 ? 'The job' : 'The jobs (' + jobs.length + ')';
-      $('c-jobs').innerHTML = jobs.length ? jobs.map(jobCard).join('') : '<p class="meta">No jobs open right now.</p>';
+      $('c-jobs').innerHTML = jobs.length ? '<div class="jrows"><div class="jrow jhead" aria-hidden="true"><span>Job</span><span>Points</span><span>Spots</span><span>Status</span><span></span></div>' + jobs.map(jobRow).join('') + '</div>' : '<p class="meta">No jobs open right now.</p>';
     }
-    function openCampaign(slug, push) { state.cslug = slug; setUrl(push); route(); window.scrollTo(0, 0); }
-    $('list').addEventListener('click', function (e) { var c = e.target.closest('.ccard'); if (c) openCampaign(c.getAttribute('data-slug'), true); });
-    $('c-jobs').addEventListener('click', function (e) { var c = e.target.closest('.bcard'); if (c) open(c.getAttribute('data-id')); });
-    $('c-back').addEventListener('click', function (e) { e.preventDefault(); state.cslug = ''; setUrl(true); route(); });
+    function openCampaign(slug) { state.cslug = slug; state.jobId = ''; setUrl(true); route(); window.scrollTo(0, 0); }
+    function openJob(id) { state.jobId = id; setUrl(true); open(id).then(function () { window.scrollTo(0, 0); }); }
+    // Leaving a job reloads the list, so a claim or a submission shows on the way back.
+    function backTo(which) { var was = state.view; state.jobId = ''; if (which === 'list') state.cslug = ''; setUrl(true); window.scrollTo(0, 0); if (was === 'job') load(); else route(); }
+    var plain = function (e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1); };
+    $('list').addEventListener('click', function (e) {
+      var f = e.target.closest('[data-cf]'); if (f) { state.cfilter = f.getAttribute('data-cf'); renderList(); tick(); return; }
+      var c = e.target.closest('.ccard'); if (c && plain(e)) { e.preventDefault(); openCampaign(c.getAttribute('data-slug')); }
+    });
+    $('c-jobs').addEventListener('click', function (e) { var row = e.target.closest('[data-id]'); if (row && plain(e)) { e.preventDefault(); openJob(row.getAttribute('data-id')); } });
+    $('crumbs').addEventListener('click', function (e) { var a = e.target.closest('[data-nav]'); if (a && plain(e)) { e.preventDefault(); backTo(a.getAttribute('data-nav')); } });
     window.addEventListener('popstate', function () {
-      var p = new URLSearchParams(location.search);
-      state.cslug = p.get('campaign') || '';
-      if (!p.get('id') && $('detail').classList.contains('open')) { $('detail').classList.remove('open'); document.body.style.overflow = ''; }
-      route();
+      var p = new URLSearchParams(location.search), was = state.view;
+      state.cslug = p.get('campaign') || ''; state.jobId = p.get('id') || '';
+      if (was === 'job' && !state.jobId) load(); else route();
     });
 
-    // ---- Detail -------------------------------------------------------------------------
+    // ---- One job --------------------------------------------------------------------------
     function open(id) {
       return call({ action: 'get', id: id }).then(function (d) {
-        if (!d.bounty) return;
+        if (!d.bounty) { state.jobId = ''; setUrl(false); route(); return; }
         state.current = d.bounty; state.mine = d.mine; state.viewer = d.viewer || state.viewer;
         state.rundown = d.rundown; state.details = d.details; state.thread = d.thread;
-        // Behind the job sits its campaign, so closing the job lands on the campaign page.
+        // Behind the job sits its campaign: the breadcrumb leads back to it.
         var camp = state.campaigns.filter(function (c) { return d.bounty.campaign_id ? c.id === d.bounty.campaign_id : c.slug === '_more'; })[0];
-        if (camp && state.cslug !== camp.slug) { state.cslug = camp.slug; route(); }
-        var u = new URL(location.href); u.searchParams.set('id', id); if (state.cslug) u.searchParams.set('campaign', state.cslug); history.replaceState(null, '', u.pathname + u.search);
-        $('detail').classList.add('open'); render(); document.body.style.overflow = 'hidden';
+        if (camp) state.cslug = camp.slug;
+        state.jobId = id; setUrl(false);
+        setView('job'); render();
       });
     }
-    function close() {
-      $('detail').classList.remove('open'); document.body.style.overflow = '';
-      var u = new URL(location.href); u.searchParams.delete('id'); history.replaceState(null, '', u.pathname + u.search);
-      state.current = null;
-      load();
-    }
-    $('detail').addEventListener('click', function (e) { if (e.target === $('detail') || e.target.hasAttribute('data-close')) close(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('detail').classList.contains('open')) close(); });
 
     function render() {
       var b = state.current, m = state.mine, e = b.event, mine = holds(m);
       $('d-pts').textContent = b.points.toLocaleString() + ' points';
-      $('d-title').textContent = b.title;
-      var cp = b.campaign;
-      $('d-meta').innerHTML = (cp ? 'Part of <strong>' + esc(cp.title) + '</strong>' + (cp.host ? ', hosted by ' + esc(cp.host.name) : '') + '<br>' : '') +
-        (e ? esc(e.title) + ' &middot; ' + esc(when(e.starts_at)) + (e.location_name ? ' &middot; ' + esc(e.location_name) : '') + '<br>' : (b.event_starts_at ? esc(when(b.event_starts_at)) + (cp && cp.place_name ? ' &middot; ' + esc(cp.place_name) : '') + '<br>' : '')) +
-        '<strong>Deliver:</strong> ' + esc(b.deliverable) + '<br><strong>Due:</strong> ' + esc(when(b.due_at)) +
-        (b.claims_close_at ? '<br><strong>Claims close:</strong> ' + esc(when(b.claims_close_at)) : '') +
-        (b.slots != null && !mine ? '<br>' + spotsHtml(b) : '') +
-        (b.example_url ? '<br><a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">See an example</a>' : '');
+      $('d-title').textContent = short(b.title);
+      var cp = b.campaign, facts = [['Points', b.points.toLocaleString()]];
+      if (cp) facts.push(['Part of', esc(cp.title) + (cp.host ? ', hosted by ' + esc(cp.host.name) : '')]);
+      if (e) facts.push(['Event', esc(e.title) + '<br>' + esc(when(e.starts_at)) + (e.location_name ? '<br>' + esc(e.location_name) : '')]);
+      else if (b.event_starts_at) facts.push(['When', esc(when(b.event_starts_at)) + (cp && cp.place_name ? '<br>' + esc(cp.place_name) : '')]);
+      facts.push(['Deliver', esc(b.deliverable)]);
+      if (b.claims_close_at) facts.push(['Claims close', esc(when(b.claims_close_at))]);
+      facts.push(['Due', esc(when(b.due_at))]);
+      if (b.slots != null && !mine) facts.push(['Spots', spotsHtml(b)]);
+      if (b.example_url) facts.push(['Example', '<a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">See an example</a>']);
+      $('d-meta').innerHTML = '<h3>At a glance</h3><dl class="facts">' + facts.map(function (f) { return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>';
       $('d-brief').textContent = b.brief + (cp && cp.meal ? '\n\nThe restaurant provides your meal and chooses what you eat.' : '');
       var parts = b.parts || [];
       $('d-parts').hidden = !parts.length;
@@ -587,7 +654,7 @@
     });
     window.addEventListener('beforeunload', function (e) { if (state.uploading > 0) { e.preventDefault(); e.returnValue = ''; } });
 
-    load().then(function () { if (params.get('id')) open(params.get('id')); });
+    load();
   })();
   </script>
 
