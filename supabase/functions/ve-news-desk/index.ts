@@ -5,6 +5,8 @@
 // Sources live in ve_news_feeds, one row each:
 //   scope 'vegan'  a Vegan outlet (VegNews, Plant Based News, ...). A story is flagged only when it
 //                  names one of our hub cities ("a Philadelphia eatery", "this event in New York").
+//                  From a US outlet, a story that names none of them is kept with status 'national'
+//                  (Sean, 2026-10-04): it feeds the national Daily Pulse and stays out of the Inbox.
 //   scope 'local'  a city outlet (Eater NY, Miami Curated, ...). Flagged only when it mentions
 //                  Vegan food or living (vegan, plant-based, meatless, dairy-free, ...).
 //   scope 'search' a Google News search for one hub (search_query, with intitle: so the headline is
@@ -78,7 +80,7 @@ const HUB_RES = HUBS.map((h) => ({ ...h, re: h.terms.map((t) => new RegExp('(?<!
 const hubName = (slug: string | null) => HUBS.find((h) => h.slug === slug)?.name || 'National';
 const VEGAN_RE = /\b(vegan(?:s|ism)?|plant[- ]based|meat[- ]?free|meatless|dairy[- ]free|animal[- ]free|vegetarian)\b/gi;
 const CATEGORIES = ['Community', 'Community Spotlight', 'Business Spotlight', 'Food & Dining', 'Recipes', 'Health & Nutrition', 'Animal Rights', 'Policy & Advocacy', 'Culture & Media', 'Sustainability & Environment'];
-const LEAD_STATUSES = ['new', 'write', 'drafting', 'drafted', 'dismissed', 'published', 'shared'];
+const LEAD_STATUSES = ['new', 'write', 'drafting', 'drafted', 'dismissed', 'published', 'shared', 'national'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -166,13 +168,13 @@ function cityHits(text: string): { slug: string; term: string }[] {
   }
   return out;
 }
-interface Flag { city_slug: string | null; reason: string; matched_terms: string[]; headline_match: boolean }
+interface Flag { city_slug: string | null; reason: string; matched_terms: string[]; headline_match: boolean; status?: string }
 function judge(feed: any, it: Item): Flag | null {
   const text = it.title + ' ' + (it.summary || '');
   if (feed.scope === 'vegan') {
     const inTitle = cityHits(it.title), all = cityHits(text);
     const hit = inTitle[0] || all[0];
-    if (!hit) return null;
+    if (!hit) return feed.locale === 'US' ? { city_slug: null, reason: `${feed.feed_name} national story`, matched_terms: [], headline_match: false, status: 'national' } : null;
     return { city_slug: hit.slug, reason: `${feed.feed_name} story that names ${hit.term} (${hubName(hit.slug)})`, matched_terms: all.map((c) => c.term), headline_match: inTitle.length > 0 };
   }
   const v = veganHits(text);
