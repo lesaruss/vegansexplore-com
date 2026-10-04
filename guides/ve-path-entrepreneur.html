@@ -27,7 +27,7 @@
     .vp-btn { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 4px; padding: 6px 10px; cursor: pointer; color: var(--ve-text-75); transition: all 0.15s; }
     .vp-btn:hover, .vp-btn.active { background: var(--path-light); color: var(--path-color); border-color: var(--path-color); }
 
-    #mockFrame { width: 100%; max-width: 1200px; margin: 0 auto; min-height: 100vh; background: #fff; transition: max-width 0.25s ease; }
+    #mockFrame { width: 100%; max-width:none; margin: 0 auto; min-height: 100vh; background: #fff; transition: max-width 0.25s ease; }
     #mockFrame.tablet { max-width: 768px; }
     #mockFrame.mobile { max-width: 390px; }
 
@@ -65,6 +65,8 @@
     .btn-secondary { background: transparent; color: var(--ve-text-75); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 13px 22px; border-radius: 4px; text-decoration: none; border: 1.5px solid var(--ve-border); transition: all 0.15s; }
     .btn-secondary:hover { border-color: var(--path-color); color: var(--path-color); }
     .path-hero-visual { flex: 0 0 320px; display: flex; justify-content: center; }
+    /* On a real phone the hero stacks too, not only in the mock's Mobile preview (2026-10-04). */
+    @media (max-width: 760px) { .path-hero { flex-direction: column; padding: 32px 20px 40px; gap: 24px; } .path-hero-visual { flex: none; width: 100%; } .channel-grid { grid-template-columns: 1fr !important; } }
     .guide-portrait-hero { width: 260px; height: 300px; border-radius: 16px; overflow: hidden; border: 4px solid var(--path-color); box-shadow: 0 12px 40px color-mix(in srgb, var(--path-color) 25%, transparent); }
 
     /* PATH STEPS */
@@ -233,7 +235,7 @@
     <div class="section-eyebrow">Choose Your Channel</div>
     <h2 style="margin-bottom:10px;text-transform:uppercase;letter-spacing:0.02em;">Three Ways In. You Choose.</h2>
     <p class="section-sub" style="margin-bottom:44px;">Every option puts Nori in your corner. Pick what fits where you are right now.</p>
-    <div class="channel-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1080px;">
+    <div class="channel-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
 
       <!-- Card 1: $1 / 11 Days -->
       <div style="background:#fff;border:2px solid var(--ve-border);border-radius:12px;padding:28px 24px;display:flex;flex-direction:column;">
@@ -377,6 +379,12 @@
     document.querySelectorAll('.vp-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
+  // A real phone gets the Mobile layout (2026-10-04); the preview buttons still switch it by hand.
+  (function () {
+    var mq = window.matchMedia('(max-width: 760px)'), frame = document.getElementById('mockFrame');
+    function fit() { if (frame && (frame.className === '' || frame.className === 'mobile')) frame.className = mq.matches ? 'mobile' : ''; }
+    fit(); if (mq.addEventListener) mq.addEventListener('change', fit);
+  })();
   (function() {
     var trigger = document.getElementById('guidesBtn');
     var menu = trigger ? trigger.nextElementSibling : null;

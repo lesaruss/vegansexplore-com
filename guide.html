@@ -36,7 +36,9 @@
        column, and the guide-frame content grows to push the footer
        down to the bottom on short pages without ever overlapping it. */
     .page-frame{display:flex;flex-direction:column;min-height:100vh;}
-    .guide-frame{flex:1 0 auto;width:100%;max-width:600px;margin:36px auto 40px;padding:0 20px;}
+    /* Full width (Sean, 2026-10-04: "we don't do fixed width"). */
+    .guide-frame{flex:1 0 auto;width:100%;max-width:none;margin:36px 0 40px;padding:0 40px;}
+    @media (max-width:700px){.guide-frame{padding:0 16px;}}
     .guide-panel{
       background:var(--surface);border:1px solid var(--line);border-radius:20px;
       box-shadow:0 12px 40px -16px rgba(0,0,0,.10);

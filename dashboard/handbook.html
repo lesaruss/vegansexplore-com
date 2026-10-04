@@ -12,7 +12,7 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;}
-  main{max-width:880px;margin:0 auto;padding:48px 24px 80px;}
+  main{max-width:none;margin:0 auto;padding:48px 24px 80px;}
   #academy-gate{text-align:center;padding:100px 20px;}
   #academy-gate button{margin-top:16px;background:#3A9B3E;color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
   #academy-gate p{font-size:14px;color:rgba(26,26,26,0.75);margin-bottom:8px;}
@@ -27,6 +27,8 @@
   .academy-doc li { margin-bottom:6px; }
   .academy-doc .tag { display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; border-radius:4px; padding:2px 8px; margin-left:8px; color:#14532d; background:#d7f0dd; border:1px solid #8fcf9d; }
   .academy-hero{height:130px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:20px;background:linear-gradient(135deg,#3A9B3E,#2d7d31);}
+  /* The page is full width; long handbook copy keeps a reading width (CLAUDE.md Full width). */
+  main p,main li,main blockquote{max-width:880px;}
 </style>
 </head>
 <body>

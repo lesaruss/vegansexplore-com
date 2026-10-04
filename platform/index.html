@@ -16,7 +16,7 @@
     }
     html { scroll-behavior: smooth; }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-    .page-frame { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; }
+    .page-frame { width: 100%; max-width:none; margin: 0 auto; background: #fff; }
 
     /* HERO */
     .hero {
@@ -263,7 +263,9 @@
     .footer-social .social-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); transition: color 0.15s; text-decoration: none; }
     .footer-social .social-icon:hover { color: rgba(255,255,255,0.9); }
     .footer-social .social-icon svg { display: block; }
-  </style>
+    /* Phones: the Find a community section stacks (2026-10-04). */
+  @media (max-width:760px){ #directory{padding:56px 16px !important;} #directory .find-grid{grid-template-columns:1fr !important;gap:28px !important;} }
+</style>
 </head>
 <body>
 <div class="page-frame">
@@ -546,7 +548,7 @@
 
   <!-- FIND A COMMUNITY -->
   <section style="padding:88px 56px;background:var(--ve-green-light);border-top:1px solid var(--ve-green-mid);" id="directory" aria-labelledby="find-h2">
-    <div style="display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;">
+    <div class="find-grid" style="display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;">
       <div>
         <p class="section-eyebrow">The network</p>
         <h2 class="section-h2" id="find-h2">Find your community</h2>
@@ -556,7 +558,7 @@
           <a href="/intake.html" style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;border-radius:4px;text-decoration:none;background:transparent;color:var(--ve-green-dark);border:2px solid var(--ve-green);transition:all 0.15s;">Suggest your city</a>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:300px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:min(300px,100%);">
         <div style="background:#fff;border-radius:10px;border:1.5px solid var(--ve-green-mid);padding:20px 18px;">
           <p style="font-size:28px;font-weight:900;letter-spacing:-0.03em;color:var(--ve-text);line-height:1;">8</p>
           <p style="font-size:9px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:var(--ve-text-30);margin-top:4px;">Launch cities</p>
