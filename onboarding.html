@@ -8,17 +8,16 @@
   <link rel="canonical" href="/guide.html">
   <script>
     // 2026-09-06 (Logan): the old quiz-based onboarding wizard here never
-    // shipped end to end (its save path was broken) and nobody ever
-    // completed it. It has been replaced by the Guide front door at
-    // /guide.html, a real conversational flow wired to signup, chapter
-    // join/founding, and Passport checkout. This redirects any existing
-    // links or bookmarks straight there.
+    // shipped end to end. Existing links and bookmarks go to /guide.html.
+    // Since 2026-10-04 that is Your Guide, for members: a new member who
+    // lands here after signing up (/join) moves into the dashboard and sets
+    // up their Guide; someone signed out is asked to sign in.
     window.location.replace('/guide.html');
   </script>
 </head>
 <body>
   <p style="font-family:sans-serif;padding:40px;text-align:center;color:#555;">
-    Redirecting to <a href="/guide.html">Talk to a Guide</a>...
+    Redirecting to <a href="/guide.html">Your Guide</a>...
   </p>
 </body>
 </html>

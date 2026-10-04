@@ -70,7 +70,7 @@
           <button type="button" data-j="member" aria-pressed="true">Member</button>
           <button type="button" data-j="partners" aria-pressed="false">Partners</button>
           <button type="button" data-j="cm" aria-pressed="false">Community Manager</button>
-          <button type="button" data-j="guide" aria-pressed="false">Choose your Guide</button>
+          <button type="button" data-j="guide" aria-pressed="false">Your Guide</button>
         </div>
         <label id="city-wrap" hidden>City <select id="city">
           <option value="south-florida">South Florida</option>
@@ -160,24 +160,19 @@
           ]
         }
       };
-      // Choose your Guide, /guide (Sean, 2026-10-04): a guide for the guides. Three visitors: someone new
-      // goes through the sign-up intake; a Passport member picks a Guide and talks to them; a member
-      // without a Passport sees the Passport benefit. Every step opens with sample answers (Alex, Miami).
+      // Your Guide, /guide (Sean, 2026-10-04): for members only, opened from the dashboard (the action
+      // item, the dock's Guide icon, the Choose Your Guide tile). Every step opens with a sample member
+      // (Alex, South Florida); nothing is saved or sent.
       JOURNEYS.guide = {
-        intro: 'Choosing a Guide. Someone new meets a Guide, answers two questions and joins. A Passport member, from the dashboard\u2019s Choose Your Guide tile, picks a Guide and talks to them. A member without a Passport sees the Passport benefit.',
+        intro: 'A member setting up their Guide. It opens in the dashboard window from the Set up your Guide action item or the Guide icon in the dock. The Guide meets them, asks the Mission Survey if they have not done it, shows how it helps, and from then on the icon opens the conversation.',
         steps: [
-          { t: 'New: Meet your Guide', d: 'The six Guides, one tap to choose.', u: '/guide?preview=picker', k: 'pv' },
-          { t: 'New: Getting to know you', d: 'The Guide asks their name, then their city.', u: '/guide?preview=chat', k: 'pv' },
-          { t: 'New: A city without a chapter', d: 'Join the waitlist or found the chapter. Sample city: Tampa. Joining and checkout are turned off.', u: '/guide?preview=fork', k: 'pv' },
-          { t: 'New: Tell me more?', d: 'Hear more, or ask a question first.', u: '/guide?preview=tellmore', k: 'pv' },
-          { t: 'New: Ask your Guide', d: 'Typed or spoken. In preview the Guide gives a sample reply and nothing is sent.', u: '/guide?preview=question', k: 'pv' },
-          { t: 'New: Highlight reels', d: 'What Vegans Explore does, with narration.', u: '/guide?preview=reels', k: 'pv' },
-          { t: 'New: Make it official', d: 'Founding Membership. Sign-up is turned off.', u: '/guide?preview=drive', k: 'pv' },
-          { t: 'New: All set', d: 'Live, this moves on to the dashboard; in preview it stays.', u: '/guide?preview=finishing', k: 'pv' },
-          { t: 'Passport member: Choose your Guide', d: 'From the dashboard tile. No sign-up steps.', u: '/guide?preview=member-pick', k: 'pv' },
-          { t: 'Passport member: Talk to your Guide', d: 'A running conversation. In preview the Guide gives a sample reply.', u: '/guide?preview=member-talk', k: 'pv' },
-          { t: 'Member without a Passport', d: 'The Passport benefit and Get Passport. Checkout is turned off.', u: '/guide?preview=locked', k: 'pv' },
-          { t: 'Dashboard: Choose Your Guide tile', d: 'Your Tools. Use the amber View As button to see it as a Free Member (locked) or a Passport member.', u: '/dashboard', k: 'live' }
+          { t: 'Dashboard: Set up your Guide', d: 'The first action item until setup is done. The Guide icon in the dock opens the same thing.', u: '/dashboard', k: 'live' },
+          { t: '1. Meet your Guide: Passport', d: 'Passport members choose from the six Guides.', u: '/guide?preview=meet', k: 'pv' },
+          { t: '1. Meet your Guide: everyone else', d: 'Their Guide is Liz, with a note that Passport members can choose.', u: '/guide?preview=meet-liz', k: 'pv' },
+          { t: '2. Tell your Guide about you', d: 'The Mission Survey, five steps, in the Guide\u2019s voice. Only if they have not taken it. Earns 250 points. Answers are not sent in preview.', u: '/guide?preview=survey', k: 'pv' },
+          { t: '3. How your Guide helps', d: 'Restaurants, things to do in their city, finding something, anything Vegan. Each idea is a question they can send.', u: '/guide?preview=uses', k: 'pv' },
+          { t: 'Talking to your Guide', d: 'What the dock\u2019s Guide icon opens once setup is done. In preview the Guide gives a sample reply.', u: '/guide?preview=talk', k: 'pv' },
+          { t: 'Signed out', d: 'Your Guide is for members: sign in or join.', u: '/guide?preview=gate', k: 'pv' }
         ]
       };
       var LABEL = { live: 'Live page', pv: 'Preview', na: 'Not previewable' };

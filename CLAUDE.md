@@ -226,18 +226,28 @@ change the Directory there, not in the page. The page adds a city picker from `V
 (`/public/ve-hubs.js`), a hero with that city's art (New York for all cities), `?city=<hub slug>` and
 `?tab=<section>` in the address bar, and the Founding Membership box for non-members.
 
-## Choose Your Guide (Sean, 2026-10-04)
+## Your Guide (Sean, 2026-10-04)
 
-Choosing a Guide is a Passport benefit: members without a Passport cannot choose one. The dashboard's
-Choose Your Guide tile (Your Tools) shows the Guides to Passport members and a locked note to everyone
-else; each Guide opens `/guide.html?guide=<slug>`. `/guide.html` serves three visitors: signed out, the
-sign-up intake; a Passport member, pick a Guide and talk to them (no sign-up steps, no Passport pitch);
-signed in without a Passport, the Passport benefit and Get Passport. The chosen Guide is kept in
-`ve_guide_flow_state` (the dock icon reads it through `/public/footer.js`). What the intake asks
-members is still an open conversation with Sean; do not add questions to the member path without him.
-Depot > Preview journeys > Choose your Guide walks every step for all three visitors
-(`/guide?preview=<step>`, the steps are `PREVIEW_STATES` in `guide.html`); a new step gets a preview
-state there and a line in `JOURNEYS.guide` in `/admin/depot/preview.html`.
+Your Guide is for registered members, inside the dashboard window: `/dashboard/guide` opens `/guide`
+under "Dashboard / Your Guide" (`openGuide` in center-console; `/guide` opened on its own moves there
+when signed in and shows a sign-in gate when signed out). Opened from the **Set up your Guide** action
+item (first in Action items until done), the dock's Guide icon, and the Choose Your Guide tile.
+
+- Setup: 1. meet your Guide (Passport members choose from six; everyone else has Liz, and choosing is a
+  Passport benefit, enforced in `ve-guide`), 2. the Guide asks the Mission Survey if they have not taken
+  it (`/public/ve-mission-survey.js`, the only copy of the questions; 250 points via ve-mission-survey),
+  3. how the Guide helps (restaurants, things to do in their city, finding something, anything Vegan),
+  each idea a question they can send. Then the dock icon opens the conversation.
+- Data: `ve-guide` edge function (`status`, `setup`), `members.guide_slug` and `members.guide_setup_at`.
+  The dock icon wears the Guide from `ve_guide_flow_state` (`/public/footer.js`), kept in step from
+  `ve-guide` status.
+- Chat: `ve-auth` `guide_chat_send`, 4 points a message from a monthly allowance (60 points, 300 with
+  Passport). "Send us a message" in the conversation opens the old question box (a person answers by
+  email) through the dashboard (`ve-open-help`).
+- Not yet: the Guide's replies do not read the member's survey answers. That needs the shared reply
+  engine (`character-respond`, used across LESARUSS) to take member context.
+- Depot > Preview journeys > Your Guide walks every screen (`/guide?preview=<step>`, `PREVIEWS` in
+  `guide.html`); a new screen gets a preview there and a line in `JOURNEYS.guide`.
 
 ## Image conventions
 

@@ -26,7 +26,9 @@
     { key: 'cm-tour', group: 'Dashboard tab', label: 'Community Manager tour prompt', note: 'Starts the tour of the dashboard, Certification and the Pulse Desk.', today: [C, S], sel: ['#dash-cm-tour-prompt'] },
     { key: 'cm-app', group: 'Dashboard tab', label: 'Community Manager application card', note: 'Only after someone applies: Received, On standby, Selected or Not right now.', today: [M, C], sel: ['#dash-cm-app-prompt'] },
     { key: 'tour', group: 'Dashboard tab', label: 'Take the tour', note: 'The guided tour prompt.', today: [M, C, S], sel: ['#dash-tour-prompt'] },
-    { key: 'survey', group: 'Dashboard tab', label: 'Mission survey (250 points)', note: 'Shown until the member answers it.', today: [M, C, S], sel: ['#dash-survey-prompt'] },
+    // Set up your Guide replaced the Mission Survey item on 2026-10-04 (the Guide asks the survey now). The
+    // key stays 'survey' so the visibility already saved for it carries over.
+    { key: 'survey', group: 'Dashboard tab', label: 'Set up your Guide', note: 'The Guide asks the Mission Survey (250 points), then shows how it helps. Shown until setup is done.', today: [M, C, S], sel: ['#dash-guide-prompt'] },
     { key: 'membership', group: 'Dashboard tab', label: 'Challenge Badges', note: 'Badges earned, beside Points and Level at the top. The membership itself shows above the name.', today: [M, C, S], sel: ['#dash-hero-badges-tile'] },
     { key: 'admin-previews', group: 'Dashboard tab', label: 'Your tools', note: 'Three across under Action items. Superadmins see Recent Members, Event Submissions, Recent Leads, Guest Reviews.', today: [S], sel: ['#dash-previews'] },
     { key: 'role-stats', group: 'Dashboard tab', label: 'Your Role: health, submissions, this week', note: 'Superadmin: Platform Health, Pending Submissions, This Week. Community Manager: Today\'s Pulse, their city\'s submissions, this week in their city.', today: [C, S], sel: ['#dash-role-label', '#dash-stats-row'] },
@@ -44,7 +46,7 @@
     { key: 'tools-opportunities', group: 'Tools tab', label: 'Your Opportunities', note: 'Volunteer and paid opportunities.', today: [M, C, S], section: 'dash-opportunities-section' },
     { key: 'tools-guides', group: 'Tools tab', label: 'Guides', note: 'Step-by-step guide catalog.', today: [M, C, S], section: 'dash-guides-section' },
     { key: 'tile-my-list', group: 'Tools tab', label: 'My List tile', note: 'Saved Directory listings.', today: [M, C, S], tile: ['my-list'] },
-    { key: 'tile-choose-guide', group: 'Tools tab', label: 'Choose Your Guide tile', note: 'Pick a Guide (a Founding Member perk).', today: [M, C, S], tile: ['choose-guide'] },
+    { key: 'tile-choose-guide', group: 'Tools tab', label: 'Choose Your Guide tile', note: 'Pick a Guide (a Passport benefit).', today: [M, C, S], tile: ['choose-guide'] },
     { key: 'tile-community-board', group: 'Tools tab', label: 'Community Board tile', note: 'Requests and offers per city. Today only in the superadmin layout.', today: [S], tile: ['community-board'] },
     { key: 'tile-cm-cert', group: 'Tools tab', label: 'Certification tile', note: 'Community Manager course and certificate.', today: [C, S], tile: ['cm-handbook'] },
     { key: 'tile-cm-coming', group: 'Tools tab', label: 'Event Management and Directory Review (coming)', note: 'Greyed "coming" tiles for Community Managers.', today: [C], tile: ['cm-coming'] },
