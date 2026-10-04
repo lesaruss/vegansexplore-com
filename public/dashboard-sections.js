@@ -31,7 +31,6 @@
     { key: 'admin-previews', group: 'Dashboard tab', label: 'Admin previews', note: 'Recent Members, Event Submissions, Recent Leads, Guest Reviews. Superadmin only, always.', today: [S], sel: ['#dash-previews'] },
     { key: 'role-stats', group: 'Dashboard tab', label: 'Your Role: city and pending applications', note: 'The city they manage and the count of applications waiting.', today: [C, S], sel: ['#dash-role-label', '#dash-stats-row'] },
     { key: 'leaderboard', group: 'Dashboard tab', label: 'Leaderboard', note: 'This City and Global points ranking.', today: [M, C, S], sel: ['#dash-leaderboard-block'] },
-    { key: 'home-pulse', group: 'Dashboard tab', label: 'Daily Pulse preview', note: 'The latest Pulse stories on the Dashboard tab.', today: [M, C, S], sel: ['#dash-home-pulse-block'] },
 
     { key: 'tab-directory', group: 'Tabs', label: 'Directory tab', note: 'Local Directory listings for their city.', today: [M, C, S], tab: 'directory', sel: ['#dash-directory-section'] },
     { key: 'tab-events', group: 'Tabs', label: 'Events tab', note: 'Upcoming events.', today: [M, C, S], tab: 'events', sel: ['#dash-events-section'] },

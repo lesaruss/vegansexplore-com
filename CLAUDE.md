@@ -132,6 +132,18 @@ Classes currently under the rule:
 The cap applies to the card only. Full article and detail views
 (`.article-lede`, `.article-p`) are never clamped.
 
+## Ad rail (Sean, 2026-10-04)
+
+Three-fourths content, one-fourth ads on the right, on: the Daily Pulse (`/board` Pulse list and
+Pulse posts, the dashboard Daily Pulse tab) and the dashboard Events tab. Not on Communities,
+Tools, Shows or the Directory (the Directory listing has its own billboard).
+
+Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
+and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come from `ad_placements`
+(page_slug + slot_id) through the `ad-resolve` function; a rail fills, and counts an impression,
+only once it is on screen. A new page needs its slots added to `ad_placements` and to `PAGES` in
+the script.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
