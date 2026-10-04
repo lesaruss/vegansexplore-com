@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're invited to dinner — Vegans Explore</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="A private dinner in Palm Beach for the people building Vegan South Florida. Friday, October 23. Twenty seats, four courses, on us.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-mint:#c5f2c7;--ve-orange:#F69820;--ve-ink:#0d130e;--ve-border:rgba(255,255,255,0.18);--ve-soft:#ececec;}
+    body{font-family:"Montserrat",sans-serif;background:var(--ve-ink);color:#fff;line-height:1.6;}
+    a{color:var(--ve-mint);}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 40px;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:var(--ve-mint);margin-bottom:14px;}
+    h1,h2{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;}
+    h2{font-size:clamp(28px,3.4vw,42px);margin-bottom:18px;}
+    .lede{font-size:17px;color:#fff;max-width:600px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 26px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;}
+    .btn-primary{background:#22C55E;color:#03170a;}
+    .btn-primary:hover{background:#4ade80;}
+    .btn-ghost{background:rgba(0,0,0,0.35);color:#fff;border:1.5px solid rgba(255,255,255,0.7);}
+    .btn-ghost:hover{background:rgba(255,255,255,0.12);}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:28px;}
+    section{padding:88px 0;border-top:1px solid rgba(255,255,255,0.08);}
+
+    /* Hero: the invitation card over the festival photo (CLAUDE.md hero pattern). */
+    .hero{position:relative;min-height:calc(100vh - 61px);display:flex;align-items:center;background:url('/public/events/vegan-foodie-fest-2025.jpg') center right/cover no-repeat;border-top:0;padding:72px 0;}
+    .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.99) 0%,rgba(0,0,0,0.95) 28%,rgba(0,0,0,0.72) 52%,rgba(0,0,0,0.28) 68%,transparent 84%);}
+    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.45) 0%,transparent 32%);}
+    .hero .wrap{max-width:1280px;width:100%;}
+    .hero-inner{position:relative;z-index:1;max-width:540px;}
+    .hero .lede{max-width:500px;}
+    .hero h1{font-size:clamp(40px,5.6vw,68px);margin-bottom:20px;}
+    .hero h1 em{font-style:normal;color:var(--ve-mint);}
+    .facts{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;}
+    .facts li{font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:8px 14px;border-radius:99px;background:rgba(0,0,0,0.55);border:1px solid var(--ve-border);}
+    .facts li b{color:var(--ve-mint);font-weight:900;}
+
+    /* The letter */
+    .letter{display:grid;grid-template-columns:240px minmax(0,1fr);gap:56px;align-items:start;}
+    .letter img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,0.45);}
+    .letter p{font-size:17px;margin-bottom:16px;max-width:640px;}
+    .sig{font-weight:800;margin-top:22px;}
+    .sig small{display:block;font-weight:600;color:var(--ve-soft);font-size:13px;letter-spacing:0.04em;}
+
+    /* What we are building */
+    .grid4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:8px;}
+    .card{padding:18px 20px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid var(--ve-border);}
+    .card b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
+    .card span{font-size:14.5px;color:var(--ve-soft);font-weight:600;}
+    .spotlight{font-size:18px;font-weight:800;line-height:1.45;border-left:4px solid var(--ve-orange);padding:6px 0 6px 18px;max-width:640px;margin-top:28px;}
+
+    /* The ask */
+    .asks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:8px;}
+    .ask{padding:20px;border-radius:12px;background:rgba(6,32,12,0.72);border:1px solid rgba(155,226,158,0.45);}
+    .ask .n{font-size:28px;font-weight:900;color:var(--ve-mint);line-height:1;margin-bottom:10px;}
+    .ask b{display:block;font-size:16px;font-weight:900;margin-bottom:6px;}
+    .ask span{font-size:14.5px;color:var(--ve-soft);font-weight:600;}
+
+    /* The evening */
+    .run{list-style:none;display:grid;gap:8px;max-width:720px;margin-top:8px;}
+    .run li{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:14px 18px;border:1px solid var(--ve-border);border-radius:10px;background:rgba(0,0,0,0.35);}
+    .run b{font-size:12px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-mint);}
+    .run span{font-size:15.5px;font-weight:700;}
+    .run small{display:block;font-size:13.5px;font-weight:600;color:var(--ve-soft);}
+
+    /* Take your seat */
+    .seat{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;align-items:start;}
+    .seat-box{padding:26px 26px 22px;border-radius:16px;background:var(--ve-green-light);color:#1a1a1a;}
+    .seat-box .price{font-size:15px;font-weight:700;margin-bottom:6px;}
+    .seat-box .price b{font-size:30px;font-weight:900;color:var(--ve-green-deep);margin-right:8px;}
+    .seat-box p{font-size:14.5px;color:rgba(26,26,26,0.8);margin-bottom:10px;}
+    .checks{list-style:none;display:grid;gap:7px;margin:12px 0 18px;}
+    .checks li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:700;line-height:1.4;}
+    .checks li::before{content:"";flex:0 0 20px;height:20px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/11px no-repeat;margin-top:1px;}
+    .seat-box .btn{width:100%;}
+    .seat-plus{font-size:13.5px;color:rgba(26,26,26,0.8);margin-top:14px;padding-top:12px;border-top:1px solid rgba(31,95,34,0.18);}
+    .seat-plus b{color:var(--ve-green-deep);}
+    .seat-note{font-size:12.5px;font-weight:600;color:rgba(26,26,26,0.7);margin-top:10px;text-align:center;}
+    .seat-msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;margin-top:8px;text-align:center;}
+    .seats-left{font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-orange);margin-top:18px;}
+
+    /* Questions */
+    .faq-list{max-width:720px;}
+    .faq details{border-bottom:1px solid var(--ve-border);padding:16px 0;}
+    .faq summary{cursor:pointer;font-size:16px;font-weight:800;list-style:none;display:flex;justify-content:space-between;gap:16px;}
+    .faq summary::-webkit-details-marker{display:none;}
+    .faq summary::after{content:"+";color:var(--ve-mint);font-weight:900;}
+    .faq details[open] summary::after{content:"\2212";}
+    .faq p{font-size:15px;color:var(--ve-soft);margin-top:8px;}
+
+    @media (max-width:900px){
+      .wrap{padding:0 24px;}
+      section{padding:64px 0;}
+      .hero{background-image:url('/public/events/ve-hero-mobile.png');background-position:center center;align-items:flex-end;min-height:calc(100vh - 61px);padding:0;}
+      .hero::before{background:rgba(0,0,0,0.32);}
+      .hero::after{display:none;}
+      .hero .wrap{padding:0;}
+      .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}
+      .letter{grid-template-columns:minmax(0,1fr);gap:28px;}
+      .letter img{max-width:220px;}
+      .grid4,.asks{grid-template-columns:minmax(0,1fr);}
+      .seat{grid-template-columns:minmax(0,1fr);gap:28px;}
+      .run li{grid-template-columns:minmax(0,1fr);gap:2px;}
+    }
+    @media (max-width:480px){
+      .wrap{padding:0 16px;}
+      .hero::before{background:rgba(0,0,0,0.32);}
+      .hero::after{display:none;}
+      .hero-inner{background:rgba(0,0,0,0.62);margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,0.10);}
+      .hero h1{font-size:36px;}
+      .lede,.letter p{font-size:16px;}
+      .seat-box{padding:22px 18px 18px;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<script src="/public/ve-preview.js"></script>
+<!-- Palm Beach dinner invitation (Sean, 2026-10-04). Play 1 of the Vegans Explore launch
+     playbook: a private dinner the night before the two Oct 24 community events, twenty
+     invited guests, and the $11 Founding Membership is the RSVP. Unlisted and noindex: it is
+     only reached from Sean's personal invitations. Seats stay closed (SEATS_OPEN false) until
+     Ron confirms the venue and the seat list is wired; the button explains that instead of
+     charging. Venue name and time are sent with each confirmation, so the page never needs
+     them. -->
+<main>
+  <section class="hero" aria-labelledby="inv-title">
+    <div class="wrap">
+      <div class="hero-inner">
+        <p class="eyebrow">A private dinner &middot; Palm Beach</p>
+        <h1 id="inv-title">You&rsquo;re invited <em>to dinner.</em></h1>
+        <p class="lede">Twenty seats, for the people who have been building Vegan South Florida. Four courses, on us. One conversation about what we build next, together.</p>
+        <ul class="facts">
+          <li><b>Fri</b> October 23</li>
+          <li>Palm Beach</li>
+          <li><b>20</b> seats</li>
+          <li>Four courses, on us</li>
+        </ul>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#seat">Take your seat</a>
+          <a class="btn btn-ghost" href="#letter">Read the invitation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="letter" aria-labelledby="letter-title">
+    <div class="wrap letter">
+      <img src="/public/founder/sean-profile.jpg" alt="Sean A. Russell, founder of Vegans Explore" loading="lazy">
+      <div>
+        <p class="eyebrow">Why you, why now</p>
+        <h2 id="letter-title">I wanted the people who move this city at one table.</h2>
+        <p>For more than ten years I&rsquo;ve been building South Florida&rsquo;s Vegan community, first as SoFlo Vegans and now as Vegans Explore. In that time I&rsquo;ve watched the same thing happen again and again: good people build incredible things, and almost nobody can find them. Everyone is building alone.</p>
+        <p>This dinner is where that changes. Before we open anything up to the wider community, I want the people who already make things happen here in one room: to hear what we&rsquo;re building, to tell us what&rsquo;s missing, and to decide if you want to build it with us.</p>
+        <p>You&rsquo;re on this list because you&rsquo;re one of those people.</p>
+        <p class="sig">Sean A. Russell<small>Founder, Vegans Explore, with Ron Arrindell, South Florida Community Manager</small></p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="build-title">
+    <div class="wrap">
+      <p class="eyebrow">What we&rsquo;re building</p>
+      <h2 id="build-title">One home base for Vegan South Florida.</h2>
+      <p class="lede">The community has done incredible things with whatever tools were around. What&rsquo;s been missing is a place built for us: to find each other, organize and grow.</p>
+      <div class="grid4">
+        <div class="card"><b>The Pulse</b><span>Local community stories, the things you&rsquo;d usually hear about a week too late.</span></div>
+        <div class="card"><b>The Directory</b><span>Vegan and Vegan-friendly places, so people can find the businesses that get them.</span></div>
+        <div class="card"><b>The Community Board</b><span>Ask your city a question and find the people who can help.</span></div>
+        <div class="card"><b>Community Nights</b><span>In-person nights that move around the region, because a room is where it sticks.</span></div>
+      </div>
+      <p class="spotlight">South Florida is the first. Orlando, Philadelphia, New York and Los Angeles are next. This room is where it starts.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="ask-title">
+    <div class="wrap">
+      <p class="eyebrow">What we&rsquo;re asking</p>
+      <h2 id="ask-title">Not a sponsorship. A seat at the table.</h2>
+      <p class="lede">This only works with the people in this room. Come hear the plan, and if it&rsquo;s right for you, pick the way you want to be part of it.</p>
+      <div class="asks">
+        <div class="ask"><div class="n">1</div><b>Take your seat</b><span>Become a Founding Member. That&rsquo;s your RSVP, and it puts you on the inside.</span></div>
+        <div class="ask"><div class="n">2</div><b>Bring your people</b><span>Your business, your group, your audience. We help them find each other.</span></div>
+        <div class="ask"><div class="n">3</div><b>Lead something</b><span>A night, a cause, a corner of the city. We back the people who step up.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="eve-title">
+    <div class="wrap">
+      <p class="eyebrow">The evening</p>
+      <h2 id="eve-title">Friday, October 23.</h2>
+      <ul class="run">
+        <li><b>Arrive</b><span>Meet the table<small>We introduce everyone by name. You&rsquo;ll know who is in the room.</small></span></li>
+        <li><b>Dinner</b><span>A four-course tasting, on us<small>Hosted at one of Palm Beach&rsquo;s own. The venue and time come with your confirmation.</small></span></li>
+        <li><b>Five minutes</b><span>What we&rsquo;re building, and where you fit<small>No presentation. One short moment, then the conversation is yours.</small></span></li>
+        <li><b>Saturday</b><span>Come out with us<small>On October 24 we&rsquo;re out supporting two community events. Join us as our guest.</small></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="seat" aria-labelledby="seat-title">
+    <div class="wrap seat">
+      <div>
+        <p class="eyebrow">Your seat</p>
+        <h2 id="seat-title">Take your seat.</h2>
+        <p class="lede">Your $11 Founding Membership is your RSVP. If you&rsquo;re at the table, you&rsquo;re a member, and so is everyone sitting with you.</p>
+        <p class="seats-left">20 seats. When they&rsquo;re gone, you&rsquo;re first on the list for the next dinner.</p>
+      </div>
+      <div class="seat-box">
+        <p class="price"><b>$11</b>one time, it never renews</p>
+        <p>It confirms your seat and puts you on the inside.</p>
+        <ul class="checks">
+          <li>Your seat at the table on October 23</li>
+          <li>Vote for and save your favorite places</li>
+          <li>Comment on the Daily Pulse</li>
+          <li>Join your city&rsquo;s community</li>
+          <li>Guides, and your own dashboard</li>
+          <li>1,100 points to start</li>
+        </ul>
+        <button type="button" class="btn btn-primary" id="seat-btn">Take my seat for $11</button>
+        <p class="seat-plus"><b>Bringing someone?</b> Add one guest for $30. That covers their dinner and their Founding Membership. Already a member? Then it&rsquo;s $15.</p>
+        <p class="seat-note">Secure checkout. The venue and time come with your confirmation.</p>
+        <p class="seat-msg" id="seat-msg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq-title">
+    <div class="wrap faq">
+      <div class="faq-list">
+      <p class="eyebrow">Questions</p>
+      <h2 id="faq-title">Before you say yes.</h2>
+      <details><summary>Is dinner really on you?</summary><p>Yes. Four courses, on us. The only thing we ask is that you come ready to talk about what we can build together.</p></details>
+      <details><summary>Why $11?</summary><p>It&rsquo;s how you join Vegans Explore, one time, and it never renews. Showing up as a member is how we know everyone at the table is in it together.</p></details>
+      <details><summary>Can I bring someone?</summary><p>Yes, one guest. Their seat is $30, which covers their dinner and makes them a Founding Member too. If they&rsquo;re already a member, it&rsquo;s $15. Your guest takes one of the 20 seats.</p></details>
+      <details><summary>Already a member?</summary><p>Then your seat is one tap away. Sign in with the button above and we&rsquo;ll save it.</p></details>
+      <details><summary>Can&rsquo;t make it on the 23rd?</summary><p>Tell us. This is the first of these dinners, not the last, and you&rsquo;ll be first on the list for the next one.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/public/footer.js"></script>
+</div>
+<script>
+  (function () {
+    // Seats open once Ron confirms the venue and the seat list is wired. Until then the button
+    // explains instead of charging, so the page can be shared for review safely.
+    var SEATS_OPEN = false;
+    var btn = document.getElementById('seat-btn');
+    var msg = document.getElementById('seat-msg');
+    btn.addEventListener('click', function () {
+      if (!SEATS_OPEN || window.VE_PREVIEW) {
+        msg.textContent = 'Seats open when invitations go out. This button will take you to secure $11 checkout and save your seat.';
+        return;
+      }
+      if (!window.VEAuth) { location.href = '/join'; return; }
+      var go = function () {
+        msg.textContent = 'Opening secure checkout...';
+        VEAuth.startEntryCheckout(1100).then(function (d) {
+          if (d && d.url) { location.href = d.url; return; }
+          msg.textContent = 'Checkout did not open. Refresh and try again.';
+        }).catch(function () { msg.textContent = 'Checkout did not open. Refresh and try again.'; });
+      };
+      if (!VEAuth.isLoggedIn()) { VEAuth.showAuthModal('Create your account to take your seat at the table.', go, 'signup'); return; }
+      go();
+    });
+  })();
+</script>
+</body>
+</html>
