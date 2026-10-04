@@ -1236,7 +1236,7 @@
     // Certification first: it is the Community Manager's starting point.
     if (!dashTileHidden('cm-handbook')) {
     var cert = document.createElement('a'); cert.className = 'dash-tile'; cert.href = '/dashboard/certification';
-    cert.innerHTML = '<div class="dash-thumb" style="background:linear-gradient(135deg,var(--ve-green-dark),var(--ve-green));">&#127891;</div><div class="dash-tile-body"><div class="dash-tile-title">Certification <span class="dash-tag">Start here</span></div><div class="dash-tile-desc">Your Community Manager handbook as a course. Pass every module to be certified.</div></div>';
+    cert.innerHTML = '<div class="dash-thumb" style="background-image:url(\'/public/dashboard/tools/tools-certification.jpg\');background-size:cover;background-color:var(--ve-green-light);"></div><div class="dash-tile-body"><div class="dash-tile-title">Certification <span class="dash-tag">Start here</span></div><div class="dash-tile-desc">Your Community Manager handbook as a course. Pass every module to be certified.</div></div>';
     if (grid.firstChild) grid.insertBefore(cert, grid.firstChild); else grid.appendChild(cert);
     }
     if (dashTileHidden('cm-coming')) return;
@@ -1551,7 +1551,7 @@
   }
 
   var MODULES = [
-    { key: 'my-list', href: '/account/my-list', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
+    { key: 'my-list', href: '/account/my-list', img: '/public/dashboard/tools/tools-my-list.jpg', icon: '&#128203;', bg: 'linear-gradient(135deg,#0891b2,#164e63)', title: 'My List', desc: "Every listing you've saved from the Directory, in one place." },
     // Thumbnail is the member's chosen Guide, cropped so the top of the head
     // sits out of frame (2026-09-10, Sean, Group H: replace "the placeholder
     // thumbnail (currently a witch/wizard emoji) ... with an actual photo of
@@ -1590,7 +1590,7 @@
     TILE_REGISTRY.push(
       // Community Board (Sean, 2026-09-30): requests and offers per city. Opens inside the
       // dashboard window; the public /board page is the same page outside it.
-      { key: 'community-board', href: '/board', embed: true, embedLabel: 'Community Board', iconHtml: '&#128204;', bg: 'linear-gradient(135deg,#2d7d31,#1f5f22)', title: 'Community Board', desc: 'Ask your city and find who can help: rescue, fostering, rides, food and more.', visibility: 'all', defaultSection: 'tools' },
+      { key: 'community-board', href: '/board', embed: true, embedLabel: 'Community Board', img: '/public/dashboard/tools/tools-community-board.jpg', iconHtml: '&#128204;', bg: 'linear-gradient(135deg,#2d7d31,#1f5f22)', title: 'Community Board', desc: 'Ask your city and find who can help: rescue, fostering, rides, food and more.', visibility: 'all', defaultSection: 'tools' },
       { key: 'sa-members', href: '/dashboard/members', embed: true, embedLabel: 'Members', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every VEGANS EXPLORE registration, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/events.html', embed: true, embedLabel: 'Event Submissions', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
@@ -1602,7 +1602,7 @@
       // Community Manager Certification (2026-09-25, Sean): the handbook as a
       // course with module quizzes and a certificate. Reuses the cm-handbook
       // key, which ve-auth's VALID_LAYOUT_MODULES already accepts.
-      { key: 'cm-handbook', href: '/dashboard/certification', iconHtml: '&#127891;', bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Certification', tagLabel: 'Community Manager', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', visibility: 'staff', defaultSection: 'tools' },
+      { key: 'cm-handbook', href: '/dashboard/certification', img: '/public/dashboard/tools/tools-certification.jpg', iconHtml: '&#127891;', bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Certification', tagLabel: 'Community Manager', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', visibility: 'staff', defaultSection: 'tools' },
       // Passport Challenge and Tours (Sean 2026-09-27): planned for 2027, one program per
       // city, and listed for Community Managers first. Until a city launches them in the
       // Depot, these open the member pages as a preview only staff can see.
