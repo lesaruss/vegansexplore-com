@@ -1,12 +1,12 @@
 // ve-news-desk: the Vegans Explore News Desk (Sean, 2026-09-27: "pull in vegan sources and look
 // at local news outlets for each of the cities we're in ... flagged with its pull ... mark them for
-// written content and then for that to be written out as a Daily Post article").
+// written content and then for that to be written out as a Pulse article").
 //
 // Sources live in ve_news_feeds, one row each:
 //   scope 'vegan'  a Vegan outlet (VegNews, Plant Based News, ...). A story is flagged only when it
 //                  names one of our hub cities ("a Philadelphia eatery", "this event in New York").
 //                  From a US outlet, a story that names none of them is kept with status 'national'
-//                  (Sean, 2026-10-04): it feeds the national Daily Post and stays out of the Inbox.
+//                  (Sean, 2026-10-04): it feeds the national Daily Pulse and stays out of the Inbox.
 //   scope 'local'  a city outlet (Eater NY, Miami Curated, ...). Flagged only when it mentions
 //                  Vegan food or living (vegan, plant-based, meatless, dairy-free, ...).
 //   scope 'search' a Google News search for one hub (search_query, with intitle: so the headline is
@@ -19,7 +19,7 @@
 // Member and City News stories arrive through the ve_community_news_to_inbox trigger and keep a
 // community_news_id, so Deny and Share close that row too. Approve marks a story 'write'; the
 // Background writer (lesaruss_dispatch_sources.news_desk_write, a Claude routine on Sean's
-// subscription) writes it as a Daily Post draft. Drafts come back to the Ready lane: Publish, or Send back
+// subscription) writes it as a Pulse draft. Drafts come back to the Ready lane: Publish, or Send back
 // with a note (the writer then revises the same draft). Nothing a routine writes goes live without
 // Sean's Publish tap.
 //
@@ -300,7 +300,7 @@ function outreachTemplate(track: string, o: { name: string | null; business: str
   const who = o.business || 'you';
   return {
     subject: `Vegans Explore is featuring ${o.business || 'you'}`,
-    body: `${hi}\n\nI'm Sean with Vegans Explore, a community for Vegans living${where}. We're featuring ${who} on the Vegans Explore Daily Post and wanted you to see it first:\n\n{{preview_link}}\n\nIt goes live ${o.when}. Two quick things, if you have a moment:\n\n1. Did we get anything wrong? Hours, prices, names, anything at all. Just reply and we'll fix it.\n2. Would you like to send a photo or two? We'll run them with the piece, credited to you. Replying with photos attached tells us we have your permission to use them for this story.\n\nThat's it. Thank you for what you're building.\n\nSean A. Russell\nVegans Explore\nvegansexplore.com`,
+    body: `${hi}\n\nI'm Sean with Vegans Explore, a community for Vegans living${where}. We're featuring ${who} on the Vegans Explore Pulse and wanted you to see it first:\n\n{{preview_link}}\n\nIt goes live ${o.when}. Two quick things, if you have a moment:\n\n1. Did we get anything wrong? Hours, prices, names, anything at all. Just reply and we'll fix it.\n2. Would you like to send a photo or two? We'll run them with the piece, credited to you. Replying with photos attached tells us we have your permission to use them for this story.\n\nThat's it. Thank you for what you're building.\n\nSean A. Russell\nVegans Explore\nvegansexplore.com`,
   };
 }
 const htmlEsc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -465,7 +465,7 @@ Deno.serve(async (req) => {
     const { data, error } = await db.from('ve_news_leads').update(patch)
       .eq('id', body.id).in('status', ['new', 'write', 'dismissed']).select(LEAD_COLS).single();
     if (error || !data) return json({ error: 'not_available' }, 409);
-    if (data.community_news_id) await db.from('ve_community_news').update({ status: 'rejected', reviewed_by: 'the-depot', reviewed_at: now, rejection_reason: 'Approved in the Depot Inbox to be written up as a Daily Post piece' }).eq('id', data.community_news_id).eq('status', 'pending');
+    if (data.community_news_id) await db.from('ve_community_news').update({ status: 'rejected', reviewed_by: 'the-depot', reviewed_at: now, rejection_reason: 'Approved in the Depot Inbox to be written up as a Pulse piece' }).eq('id', data.community_news_id).eq('status', 'pending');
     return json({ ok: true, lead: data });
   }
 
@@ -568,7 +568,7 @@ Deno.serve(async (req) => {
     return json({ ok: true, lead: data });
   }
 
-  // Ready lane: publish the draft the writer made. Same rules as Depot > Daily Post (ve-media-library):
+  // Ready lane: publish the draft the writer made. Same rules as Depot > Pulse (ve-media-library):
   // a cover from our own Library, published_at stamped, and the piece's city tag so it shows on that hub.
   if (body.action === 'ready_publish') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);

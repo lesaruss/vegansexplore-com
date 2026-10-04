@@ -1,5 +1,5 @@
 // Vercel Serverless Function: /api/pulse-article
-// Serves a real, crawlable, per-article Daily Post page at /pulse/[slug] (rewritten in vercel.json).
+// Serves a real, crawlable, per-article Pulse page at /pulse/[slug] (rewritten in vercel.json).
 // Exists so link-preview crawlers (Facebook, LinkedIn, iMessage, Slack) see a real
 // title/image/description in the raw page source, since pulse.html builds its content
 // with client-side JavaScript that those crawlers never execute.
@@ -18,7 +18,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Mirrors the hardcoded `posts` array in pulse.html (post July-18 category consolidation:
 // Platform/Beta/Guides/Regions/Events/Points/Story all folded into Community, Recipes kept
 // separate). These 9 are frozen pre-launch posts (June 2026) and do not change, so a
-// one-time copy here is safe. All other Daily Post articles are live rows in ve_pulse_content,
+// one-time copy here is safe. All other Pulse articles are live rows in ve_pulse_content,
 // fetched below.
 const STATIC_POSTS = [
   {
@@ -33,7 +33,7 @@ const STATIC_POSTS = [
     headline: "Beta Access Is Live for Founding Members",
     excerpt: "You're inside. Here's what you can explore right now and what features are still being built before July 13.",
     img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_191822_aa0d2b7e-89f1-4893-b958-e3d251e67aef.png',
-    body: '<div class="article-eyebrow orange">Beta Access</div><h1 class="article-h1">You\'re Inside. Here\'s What That Means Right Now.</h1><p class="article-lede">Beta access is live for Founding Members. This isn\'t a waitlist confirmation or a holding page, you\'re in. The platform isn\'t complete, and that\'s intentional. Here\'s what\'s available to explore right now, and what\'s still being built before July 13.</p><div class="article-section-head">What\'s Live Right Now</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>This hub.</strong> The Founding Member welcome page is your pre-launch home. The Daily Post updates here daily as things develop.</div></li><li><div class="article-dot"></div><div><strong>The directory preview.</strong> A growing view of what\'s been cataloged across our launch regions.</div></li><li><div class="article-dot"></div><div><strong>Opportunity registration.</strong> Community Manager and Vegan Explorer interest forms are live. If a role opens in your city, you\'ll be contacted first.</div></li></ul><div class="article-section-head">What\'s Coming Before July 13</div><ul class="article-list"><li><div class="article-dot orange"></div><div><strong>Login access.</strong> A link will be emailed to you when full platform login opens. One click, no password needed.</div></li><li><div class="article-dot orange"></div><div><strong>Full directory search.</strong> Filter by city, category, neighborhood, and more across all nine regions.</div></li><li><div class="article-dot orange"></div><div><strong>Guide track enrollment.</strong> Your 111-day path opens on July 13. You\'ll choose your starting point at first login.</div></li><li><div class="article-dot orange"></div><div><strong>Community events.</strong> RSVP opens for Founding Members before public tickets drop.</div></li></ul><p class="article-p">Beta isn\'t a lesser version, it\'s the version where Founding Members shape what ships. If something doesn\'t feel right, that\'s the point of this window.</p>'
+    body: '<div class="article-eyebrow orange">Beta Access</div><h1 class="article-h1">You\'re Inside. Here\'s What That Means Right Now.</h1><p class="article-lede">Beta access is live for Founding Members. This isn\'t a waitlist confirmation or a holding page, you\'re in. The platform isn\'t complete, and that\'s intentional. Here\'s what\'s available to explore right now, and what\'s still being built before July 13.</p><div class="article-section-head">What\'s Live Right Now</div><ul class="article-list"><li><div class="article-dot"></div><div><strong>This hub.</strong> The Founding Member welcome page is your pre-launch home. The Pulse updates here daily as things develop.</div></li><li><div class="article-dot"></div><div><strong>The directory preview.</strong> A growing view of what\'s been cataloged across our launch regions.</div></li><li><div class="article-dot"></div><div><strong>Opportunity registration.</strong> Community Manager and Vegan Explorer interest forms are live. If a role opens in your city, you\'ll be contacted first.</div></li></ul><div class="article-section-head">What\'s Coming Before July 13</div><ul class="article-list"><li><div class="article-dot orange"></div><div><strong>Login access.</strong> A link will be emailed to you when full platform login opens. One click, no password needed.</div></li><li><div class="article-dot orange"></div><div><strong>Full directory search.</strong> Filter by city, category, neighborhood, and more across all nine regions.</div></li><li><div class="article-dot orange"></div><div><strong>Guide track enrollment.</strong> Your 111-day path opens on July 13. You\'ll choose your starting point at first login.</div></li><li><div class="article-dot orange"></div><div><strong>Community events.</strong> RSVP opens for Founding Members before public tickets drop.</div></li></ul><p class="article-p">Beta isn\'t a lesser version, it\'s the version where Founding Members shape what ships. If something doesn\'t feel right, that\'s the point of this window.</p>'
   },
   {
     slug: 'guide-tracks', category: 'Community',
@@ -142,11 +142,11 @@ module.exports = async (req, res) => {
   if (!post) {
     res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
     return res.end(
-      '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Article not found - VEGANS EXPLORE Daily Post</title>' +
+      '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Article not found - VEGANS EXPLORE Pulse</title>' +
       '<meta name="viewport" content="width=device-width, initial-scale=1.0"></head>' +
       '<body style="font-family:Montserrat,sans-serif;padding:80px 24px;text-align:center;color:#1a1a1a;">' +
       '<h1 style="font-size:20px;">This article could not be found.</h1>' +
-      '<p><a href="/pulse" style="color:#2d7d31;">Back to the Daily Post</a></p></body></html>'
+      '<p><a href="/pulse" style="color:#2d7d31;">Back to the Pulse</a></p></body></html>'
     );
   }
 
@@ -172,7 +172,7 @@ module.exports = async (req, res) => {
   const title = post.headline;
   const description = (post.excerpt || '').slice(0, 200);
   const image = post.img || 'https://vegansexplore.com/public/pulse-ve-banner.png';
-  const caption = 'Read this on VEGANS EXPLORE Daily Post: ' + title;
+  const caption = 'Read this on VEGANS EXPLORE Pulse: ' + title;
 
   // Above the article: a YouTube player, our own video or audio from the Depot, or the
   // cover picture for an article or interview. Mirrors pulseMediaHtml() in /pulse.html.
@@ -197,7 +197,7 @@ module.exports = async (req, res) => {
     + '<html lang="en"><head>'
     + '<meta charset="UTF-8">'
     + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-    + '<title>' + esc(title) + ' - VEGANS EXPLORE Daily Post</title>'
+    + '<title>' + esc(title) + ' - VEGANS EXPLORE Pulse</title>'
     + '<meta name="description" content="' + esc(description) + '">'
     + (preview ? '<meta name="robots" content="noindex, nofollow">' : '')
     + '<link rel="canonical" href="' + pageUrl + '">'
@@ -322,18 +322,18 @@ module.exports = async (req, res) => {
     + '<section class="pulse-hero hero-collapsed" id="pulse-hero-section" aria-labelledby="pulse-hero-h1">'
     + '<div class="hero-inner">'
     + '<p class="hero-eyebrow">Vegans Explore</p>'
-    + '<h1 id="pulse-hero-h1">The Daily<br><em>Post.</em></h1>'
+    + '<h1 id="pulse-hero-h1">The Daily<br><em>Pulse.</em></h1>'
     + '<p class="hero-sub">Daily news, opinion pieces, and stories from across the VEGANS EXPLORE ecosystem. New content, every day.</p>'
-    + '<div class="hero-ctas"><a href="/pulse" class="btn-hero-primary">Browse the Daily Post</a></div>'
+    + '<div class="hero-ctas"><a href="/pulse" class="btn-hero-primary">Browse the Pulse</a></div>'
     + '</div>'
     + '</section>'
-    + '<div class="member-bar mb-collapsed" id="pulse-member-bar" role="complementary" aria-label="Daily Post banner control">'
+    + '<div class="member-bar mb-collapsed" id="pulse-member-bar" role="complementary" aria-label="Pulse banner control">'
     + '<div class="member-bar-left">'
     + '<button type="button" class="member-bar-toggle" id="pulse-bar-toggle" aria-expanded="false" aria-controls="pulse-hero-section">'
     + '<svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>'
     + '<span class="mb-toggle-label" id="pulse-bar-toggle-label">Expand</span>'
     + '</button>'
-    + '<nav class="mb-breadcrumb" id="pulse-bar-breadcrumb" aria-label="Breadcrumb"><a href="/pulse">Daily Post</a><span aria-hidden="true">/</span><span class="current" aria-current="page">' + esc(post.category || '') + '</span></nav>'
+    + '<nav class="mb-breadcrumb" id="pulse-bar-breadcrumb" aria-label="Breadcrumb"><a href="/pulse">Pulse</a><span aria-hidden="true">/</span><span class="current" aria-current="page">' + esc(post.category || '') + '</span></nav>'
     + '</div>'
     + '<div class="member-bar-actions"><a href="/passport" class="btn-join" id="pulse-bar-get-passport" style="font-size:10px;padding:9px 18px;">Get Passport</a></div>'
     + '</div>'

@@ -1,5 +1,5 @@
-/* Daily Post topics (Sean, 2026-10-04, playbook ve-daily-pulse-discussion).
-   The Daily Post is a lane of the Community Board: one topic a day per city plus one national topic,
+/* Daily Pulse topics (Sean, 2026-10-04, playbook ve-daily-pulse-discussion).
+   The Pulse is a lane of the Community Board: one topic a day per city plus one national topic,
    each a short intro, one question and a link to the source. This file is the one way the rest of
    the site shows topics (dashboard, city hubs), so a topic card looks the same everywhere. The
    Board itself (/board?lane=pulse) is where the conversation happens.
@@ -103,7 +103,7 @@
   }
   function card(t, community) {
     var n = t.reply_count || 0, sum = summary(t);
-    return '<a class="vep-card" href="' + link(t, community) + '" data-frame-label="Daily Post">' +
+    return '<a class="vep-card" href="' + link(t, community) + '" data-frame-label="Daily Pulse">' +
       '<div class="vep-tags">' + (isToday(t) ? '<span class="vep-tag today">Today</span>' : '') +
         '<span class="vep-tag' + (t.community === 'national' ? ' national">National' : '">Local') + '</span></div>' +
       '<div class="vep-title">' + esc(t.title) + '</div>' +

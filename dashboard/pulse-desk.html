@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Daily Post Desk | Vegans Explore</title>
+  <title>Pulse Desk | Vegans Explore</title>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -72,17 +72,17 @@
     <div class="top">
       <div>
         <p class="eyebrow">Community Manager &middot; <span id="pd-city">Your city</span></p>
-        <h1>Daily Post Desk</h1>
-        <p class="sub">Your city&rsquo;s Daily Post topic each day, then local stories for your community page. Tell me what&rsquo;s happening, typed or out loud, and you give everything a final look before it goes up.</p>
+        <h1>Pulse Desk</h1>
+        <p class="sub">Your city&rsquo;s Daily Pulse topic each day, then local stories for your community page. Tell me what&rsquo;s happening, typed or out loud, and you give everything a final look before it goes up.</p>
       </div>
       <a class="back-dash" href="/dashboard">&larr; Dashboard</a>
     </div>
     <div id="pd-gate" class="gate" hidden></div>
-    <!-- Daily Post topics (Sean, 2026-10-04): approve today's topic for your city before the
+    <!-- Daily Pulse topics (Sean, 2026-10-04): approve today's topic for your city before the
          story chat below. public/ve-pulse-desk.js; it renders nothing for someone without access. -->
     <div id="pd-topics"></div>
     <div class="layout" id="pd-app" hidden>
-      <section class="card chat" aria-label="Conversation with the Daily Post desk">
+      <section class="card chat" aria-label="Conversation with the Pulse desk">
         <div class="thread" id="pd-thread" aria-live="polite"></div>
         <form class="composer" id="pd-form">
           <button type="button" class="icon-btn" id="pd-mic" aria-label="Speak instead of typing" title="Speak instead of typing">
@@ -229,13 +229,13 @@
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
         if (!VEAuth.isLoggedIn()) {
-          gate('<h2>Sign in to use the Daily Post Desk</h2><p>The Daily Post Desk is for Vegans Explore Community Managers.</p><button type="button" class="btn" id="pd-signin">Sign in</button>');
-          $('pd-signin').onclick = function () { VEAuth.showAuthModal('Sign in to use the Daily Post Desk.', function () { location.reload(); }, 'login'); };
+          gate('<h2>Sign in to use the Pulse Desk</h2><p>The Pulse Desk is for Vegans Explore Community Managers.</p><button type="button" class="btn" id="pd-signin">Sign in</button>');
+          $('pd-signin').onclick = function () { VEAuth.showAuthModal('Sign in to use the Pulse Desk.', function () { location.reload(); }, 'login'); };
           return;
         }
         loadDrafts().then(function (d) {
-          if (d._status === 401) return gate('<h2>Sign in again</h2><p>Your session has ended.</p><button type="button" class="btn" onclick="VEAuth.showAuthModal(\'Sign in to use the Daily Post Desk.\', function(){location.reload();}, \'login\')">Sign in</button>');
-          if (d._status === 403) return gate('<h2>For Community Managers</h2><p>The Daily Post Desk opens once you are a Vegans Explore Community Manager.</p><a class="btn" href="/dashboard">Back to my dashboard</a>');
+          if (d._status === 401) return gate('<h2>Sign in again</h2><p>Your session has ended.</p><button type="button" class="btn" onclick="VEAuth.showAuthModal(\'Sign in to use the Pulse Desk.\', function(){location.reload();}, \'login\')">Sign in</button>');
+          if (d._status === 403) return gate('<h2>For Community Managers</h2><p>The Pulse Desk opens once you are a Vegans Explore Community Manager.</p><a class="btn" href="/dashboard">Back to my dashboard</a>');
           if (d.error === 'no_city') return gate('<h2>Almost there</h2><p>' + esc(d.message) + '</p>');
           if (!d.drafts) return gate('<h2>Something went wrong</h2><p>Refresh the page to try again.</p>');
           citySlug = d.city; $('pd-city').textContent = d.city_name;

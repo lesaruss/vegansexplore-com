@@ -297,7 +297,7 @@
       '<div class="ve-mob-section">' +
         dashboardLinkHtml +
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
-        '<a href="/pulse" id="ve-nav-pulse-link"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Daily Post</a>' +
+        '<a href="/pulse" id="ve-nav-pulse-link"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
         '<a href="/podcast"' + (isCurrent('/podcast') || p.indexOf('/podcast/') === 0 ? ' aria-current="page"' : '') + '>Podcasts</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
         '<a href="/board"' + cur('/board') + '>Community Board</a>' +
