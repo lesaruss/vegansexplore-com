@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform Health - VEGANS EXPLORE</title>
+<meta name="description" content="How Vegans Explore is running right now.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* Platform Health (Sean, 2026-10-04): "anything that needs to be brought to my attention in terms
+     of the health of the platform ... almost like a sentinel page ... a breakdown of how Vegans
+     Explore is operating." Read only. Data: ve-ops action=health (public.ve_ops_snapshot). */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;
+    --ve-border:rgba(0,0,0,0.09);
+    --ve-text:#1a1a1a;--ve-text-75:#4a4a4a;--ve-text-50:#595959;
+    --ok:#2d7d31;--ok-bg:#EAF7EA;--warn:#7d4a00;--warn-bg:#fff3e0;--alert:#991b1b;--alert-bg:#fee2e2;
+  }
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:960px;margin:0 auto;padding:44px 32px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ve-green-dark);outline-offset:2px;}
+
+  #ph-gate{text-align:center;padding:100px 20px;}
+  #ph-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #ph-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-family:inherit;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #ph-content{display:none;}
+
+  .ph-back{display:inline-block;margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;}
+  .ph-back:hover{text-decoration:underline;}
+  .ph-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--ve-border);margin-bottom:22px;}
+  .ph-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  .ph-head h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
+  .ph-sub{font-size:12px;color:var(--ve-text-50);}
+  .ph-refresh{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);cursor:pointer;}
+  .ph-refresh:hover{border-color:var(--ve-green);}
+
+  .ph-overall{display:flex;align-items:center;gap:14px;border-radius:12px;padding:16px 20px;margin-bottom:22px;font-weight:800;font-size:15px;}
+  .ph-overall.ok{background:var(--ok-bg);color:var(--ok);}
+  .ph-overall.warn{background:var(--warn-bg);color:var(--warn);}
+  .ph-overall.alert{background:var(--alert-bg);color:var(--alert);}
+  .ph-overall small{display:block;font-size:12px;font-weight:600;opacity:0.85;margin-top:2px;}
+
+  .ph-week{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:26px;}
+  .ph-week div{border:1.5px solid var(--ve-border);border-radius:12px;padding:14px 16px;}
+  .ph-week b{display:block;font-size:22px;font-weight:900;}
+  .ph-week span{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);}
+
+  .ph-check{border:1.5px solid var(--ve-border);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+  .ph-check summary{list-style:none;display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;}
+  .ph-check summary::-webkit-details-marker{display:none;}
+  .ph-check summary:hover{background:#fafdfa;}
+  .ph-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .ph-dot.ok{background:var(--ok);} .ph-dot.warn{background:#e8a33d;} .ph-dot.alert{background:#d64545;}
+  .ph-check-label{font-weight:800;font-size:14px;min-width:160px;}
+  .ph-check-sum{flex:1;font-size:13px;color:var(--ve-text-75);min-width:0;}
+  .ph-chev{font-size:12px;color:var(--ve-text-50);transition:transform 0.15s;}
+  .ph-check[open] .ph-chev{transform:rotate(90deg);}
+  .ph-items{border-top:1px solid var(--ve-border);padding:6px 18px 12px;}
+  .ph-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--ve-border);font-size:12.5px;}
+  .ph-item:first-child{border-top:none;}
+  .ph-item .ph-dot{width:9px;height:9px;margin-top:4px;}
+  .ph-item-name{font-weight:700;min-width:190px;}
+  .ph-item-sum{color:var(--ve-text-75);flex:1;min-width:0;overflow-wrap:anywhere;}
+  .ph-none{font-size:12.5px;color:var(--ve-text-50);padding:8px 0;}
+  @media (max-width:640px){
+    .ph-week{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;} .ph-week b{font-size:18px;} .ph-week span{font-size:8.5px;}
+    .ph-check summary{flex-wrap:wrap;} .ph-check-label{min-width:0;} .ph-check-sum{flex-basis:100%;order:3;}
+    .ph-item{flex-wrap:wrap;} .ph-item-name{min-width:0;}
+  }
+</style>
+</head>
+<body>
+<script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+</script>
+<style>.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .ph-back{display:none !important}</style>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+<main>
+  <div id="ph-gate"><p>Checking access&hellip;</p></div>
+  <div id="ph-content">
+    <a class="ph-back" href="/dashboard">&larr; Back to dashboard</a>
+    <div class="ph-head">
+      <div>
+        <p class="ph-eyebrow">Superadmin</p>
+        <h1>Platform Health</h1>
+        <p class="ph-sub" id="ph-sub">Loading&hellip;</p>
+      </div>
+      <button type="button" class="ph-refresh" id="ph-refresh">Refresh</button>
+    </div>
+    <div class="ph-overall" id="ph-overall" role="status"></div>
+    <div class="ph-week" id="ph-week"></div>
+    <div id="ph-checks"></div>
+  </div>
+</main>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var RANK = { alert: 0, warn: 1, ok: 2 };
+  // Sentinel's check names, in plain words.
+  var NAMES = {
+    vegansexplore_com_live: 'vegansexplore.com is up', vercel_deployment_vegansexplore: 'Latest deploy',
+    supabase_api_live: 'Database and sign-in API', email_send_health: 'Email sending', email_dispatcher_tick: 'Email dispatcher',
+    email_resend_usage: 'Email quota', cron_heartbeat_stale: 'Scheduled job heartbeat',
+    've-bounties-hourly': 'Bounty reminders and deadlines', 've-depot-publish-due': 'Scheduled Depot publishing',
+    've-news-desk-6h': 'News feed intake', 've-purge-unverified-members': 'Unverified account cleanup',
+    've-results-daily': 'Daily results', 've-verified-daily': 'Verified memberships', 'lesaruss-dispatch-15m': 'Background writer dispatch',
+    'email-welcome-tick': 'Welcome emails', 'email-dispatch-tick': 'Email queue', 'sentinel-runner-15min': 'Sentinel checks',
+    national: 'National', 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV',
+    'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London'
+  };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function state(s) { return RANK[s] != null ? s : (s === 'stale' || s === 'flag' ? 'warn' : 'alert'); }
+  function showGate(msg, withButton) {
+    var gate = document.getElementById('ph-gate');
+    gate.style.display = 'block';
+    document.getElementById('ph-content').style.display = 'none';
+    gate.innerHTML = '<p>' + esc(msg) + '</p>';
+    if (withButton) {
+      var b = document.createElement('button');
+      b.textContent = 'Sign In';
+      b.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to see platform health.', init); });
+      gate.appendChild(b);
+    }
+  }
+  function render(d) {
+    document.getElementById('ph-gate').style.display = 'none';
+    document.getElementById('ph-content').style.display = 'block';
+    var checks = (d.checks || []).slice().sort(function (a, b) { return RANK[state(a.state)] - RANK[state(b.state)]; });
+    var alerts = checks.filter(function (c) { return state(c.state) === 'alert'; });
+    var warns = checks.filter(function (c) { return state(c.state) === 'warn'; });
+    var overall = alerts.length ? 'alert' : warns.length ? 'warn' : 'ok';
+    var o = document.getElementById('ph-overall');
+    o.className = 'ph-overall ' + overall;
+    o.innerHTML = '<span class="ph-dot ' + overall + '" aria-hidden="true"></span><div>' +
+      (overall === 'ok' ? 'All systems normal' : (alerts.length ? alerts.length + ' need' + (alerts.length === 1 ? 's' : '') + ' attention now' : '') + (alerts.length && warns.length ? ', ' : '') + (warns.length ? warns.length + ' to keep an eye on' : '')) +
+      '<small>' + esc(overall === 'ok' ? 'Every check below is passing.' : (checks[0].label + ': ' + checks[0].summary)) + '</small></div>';
+    var w = d.week || {};
+    var diff = (w.new_members || 0) - (w.prior_week || 0);
+    document.getElementById('ph-week').innerHTML =
+      '<div><b>' + (w.new_members || 0) + '</b><span>New members, 7 days</span></div>' +
+      '<div><b>' + (diff > 0 ? '+' : '') + diff + '</b><span>Vs the week before</span></div>' +
+      '<div><b>' + (w.passports || 0) + '</b><span>Active Passports</span></div>';
+    document.getElementById('ph-checks').innerHTML = checks.map(function (c) {
+      var st = state(c.state);
+      var items = c.items || [];
+      return '<details class="ph-check"' + (st !== 'ok' ? ' open' : '') + '><summary>' +
+        '<span class="ph-dot ' + st + '" aria-label="' + st + '"></span>' +
+        '<span class="ph-check-label">' + esc(c.label) + '</span>' +
+        '<span class="ph-check-sum">' + esc(c.summary) + '</span><span class="ph-chev" aria-hidden="true">&#9654;</span></summary>' +
+        '<div class="ph-items">' + (items.length ? items.map(function (it) {
+          var s2 = state(it.state);
+          return '<div class="ph-item"><span class="ph-dot ' + s2 + '" aria-label="' + s2 + '"></span><span class="ph-item-name">' + esc(NAMES[it.name] || it.name) + '</span><span class="ph-item-sum">' + esc(it.summary || '') + '</span></div>';
+        }).join('') : '<p class="ph-none">Nothing to report.</p>') + '</div></details>';
+    }).join('');
+    var t = d.generated_at ? new Date(d.generated_at) : new Date();
+    document.getElementById('ph-sub').textContent = 'As of ' + t.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' · ' + (d.open || 0) + ' open submission' + (d.open === 1 ? '' : 's');
+  }
+  function load() {
+    fetch(SUPABASE_URL + '/functions/v1/ve-ops', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+      body: JSON.stringify({ action: 'health' })
+    }).then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); }).then(function (res) {
+      if (res.status === 401) { showGate('Your session ended. Sign in again.', true); return; }
+      if (res.status === 403) { showGate('Platform Health is superadmin only.', false); return; }
+      if (!res.d || !res.d.checks) { showGate('Could not load platform health right now. Try again shortly.', false); return; }
+      render(res.d);
+    }).catch(function () { showGate('Could not reach the health service. Check your connection and reload.', false); });
+  }
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showGate('Sign in to see platform health.', true); return; }
+    load();
+  }
+  document.getElementById('ph-refresh').addEventListener('click', load);
+  init();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

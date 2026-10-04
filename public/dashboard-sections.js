@@ -29,7 +29,7 @@
     { key: 'survey', group: 'Dashboard tab', label: 'Mission survey (250 points)', note: 'Shown until the member answers it.', today: [M, C, S], sel: ['#dash-survey-prompt'] },
     { key: 'membership', group: 'Dashboard tab', label: 'Challenge Badges', note: 'Badges earned, beside Points and Level at the top. The membership itself shows above the name.', today: [M, C, S], sel: ['#dash-hero-badges-tile'] },
     { key: 'admin-previews', group: 'Dashboard tab', label: 'Your tools', note: 'Three across under Action items. Superadmins see Recent Members, Event Submissions, Recent Leads, Guest Reviews.', today: [S], sel: ['#dash-previews'] },
-    { key: 'role-stats', group: 'Dashboard tab', label: 'Your Role: city and pending applications', note: 'The city they manage and the count of applications waiting.', today: [C, S], sel: ['#dash-role-label', '#dash-stats-row'] },
+    { key: 'role-stats', group: 'Dashboard tab', label: 'Your Role: health, submissions, this week', note: 'Superadmin: Platform Health, Pending Submissions, This Week. Community Manager: Today\'s Pulse, their city\'s submissions, this week in their city.', today: [C, S], sel: ['#dash-role-label', '#dash-stats-row'] },
     { key: 'leaderboard', group: 'Dashboard tab', label: 'Leaderboard', note: 'This City and Global points ranking.', today: [M, C, S], sel: ['#dash-leaderboard-block'] },
 
     { key: 'tab-directory', group: 'Tabs', label: 'Directory tab', note: 'Local Directory listings for their city.', today: [M, C, S], tab: 'directory', sel: ['#dash-directory-section'] },

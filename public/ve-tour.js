@@ -111,8 +111,8 @@
       steps: [
         { page: DASH_PAGE, tab: 'profile', sel: ['.dash-welcome'], title: 'Your Community Manager tools',
           body: 'A quick walk through what you have as a Community Manager: your city, your certification, the Pulse Desk and your tools.' },
-        { page: DASH_PAGE, tab: 'profile', sel: ['#dash-stats-row'], title: 'Your city and applications',
-          body: 'The city you manage, and the applications waiting for a decision. Tap Pending Applications to review them.' },
+        { page: DASH_PAGE, tab: 'profile', sel: ['#dash-stats-row'], title: 'What needs you',
+          body: 'Today\'s Pulse for your city, everything waiting on a decision, and how your city grew this week. Tap Pending Submissions to work through them.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-cm-cert-prompt'], title: 'Start with your certification',
           body: 'Your handbook as a course. This card shows your progress and takes you straight back in.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-cm-pulse-prompt'], title: 'The Pulse Desk',

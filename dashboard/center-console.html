@@ -178,7 +178,10 @@
   .dash-stat-value{font-size:20px;font-weight:900;}
   a.dash-stat{text-decoration:none;color:var(--ve-text);display:block;transition:border-color .15s,background .15s;}
   a.dash-stat:hover{border-color:var(--ve-green);background:var(--ve-green-light);}
+  a.dash-stat:not([href]):hover{border-color:var(--ve-border);background:none;}
   @media (max-width:640px){ .dash-stats{grid-template-columns:1fr 1fr;} }
+  .dash-stat-sub{font-size:11px;font-weight:600;color:var(--ve-text-50);margin-top:4px;line-height:1.4;}
+  .dash-stat-value.is-ok{color:var(--ve-green-dark);} .dash-stat-value.is-warn{color:#7d4a00;} .dash-stat-value.is-alert{color:#991b1b;}
 
   /* --- Front-and-center stats hero: Points / Membership / Badges
      (2026-09-07, Logan, Sean direction, next phase after the dashboard
@@ -209,7 +212,13 @@
   .dash-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:8px;}
   /* Home (Sean, 2026-10-04): Action items and the Leaderboard side by side. */
   .dash-home-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:4px;}
-  .dash-action-list{display:flex;flex-direction:column;gap:0;}
+  .dash-action-list{display:flex;flex-direction:column;gap:0;position:relative;}
+  /* Three Action items show; the rest scroll inside the box (Sean, 2026-10-04). The height is set
+     by sizeActionList() from the third card, since card heights vary. */
+  .dash-action-list.is-capped{overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  .dash-action-more{font-size:11px;font-weight:700;color:var(--ve-text-50);margin:8px 0 0;}
+  /* The Leaderboard scrolls inside its column, up to 100 (Sean, 2026-10-04). */
+  #dash-leaderboard-list{max-height:440px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
   .dash-action-list .dash-tour-prompt{width:100%;}
   .dash-action-empty{font-size:13px;color:var(--ve-text-50);border:1.5px dashed var(--ve-border);border-radius:14px;padding:16px 18px;margin:0;}
   .dash-home-overview{margin-top:24px;}
@@ -732,10 +741,14 @@
            My List, Choose Your Guide (Passport) and new Communities. Filled by
            renderDashboardPreviews(). Shown as Action items beside the Leaderboard. -->
       <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
+      <!-- Role row (Sean, 2026-10-04): what this person should know first, by role. Superadmin:
+           Platform Health, Submissions, This Week. Community Manager: Today's Pulse for their city,
+           their city's Submissions, This Week in their city. Filled by renderRoleRow() from
+           ve-ops action=summary. Replaced Your City / Pending Applications / Status Active. -->
       <div class="dash-stats" id="dash-stats-row" style="display:none;">
-        <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
-        <a class="dash-stat" href="/dashboard/opportunities" onclick="openConsoleFrame('/dashboard/opportunities', 'Pending Applications'); return false;"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
-        <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
+        <a class="dash-stat" id="dash-role-first" href="/dashboard/health" onclick="openConsoleFrame(this.getAttribute('href'), this.dataset.frame || 'Platform Health'); return false;"><div class="dash-stat-label" id="dash-role-first-label">Platform Health</div><div class="dash-stat-value" id="dash-role-first-value">--</div><div class="dash-stat-sub" id="dash-role-first-sub">&nbsp;</div></a>
+        <a class="dash-stat" href="/dashboard/submissions" onclick="openConsoleFrame('/dashboard/submissions', 'Submissions'); return false;"><div class="dash-stat-label">Pending Submissions</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div><div class="dash-stat-sub" id="dash-stat-pending-sub">&nbsp;</div></a>
+        <a class="dash-stat" id="dash-role-week" href="/dashboard/members" onclick="openConsoleFrame('/dashboard/members', 'Members'); return false;"><div class="dash-stat-label" id="dash-role-week-label">This Week</div><div class="dash-stat-value" id="dash-role-week-value">--</div><div class="dash-stat-sub" id="dash-role-week-sub">&nbsp;</div></a>
       </div>
       <!-- Home layout (Sean, 2026-10-04): Membership and Challenge Badges on top, then Action items
            (the preview cards) and the Leaderboard side by side. The Daily Pulse preview left the
@@ -812,6 +825,7 @@
       </button>
       <p class="dash-action-empty" id="dash-action-empty" hidden>You're all caught up. New tasks show up here.</p>
       </div>
+      <p class="dash-action-more" id="dash-action-more" hidden></p>
       </div>
 
 
@@ -1233,16 +1247,48 @@
     grid.appendChild(coming2);
   }
 
-  function loadPendingCount(token) {
-    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
+  // Role row (Sean, 2026-10-04): "for me, what I would want to see is the health ... almost like a
+  // sentinel page", then "any pending submissions ... very similar to how we have it on BCPS Marcom",
+  // and Your City dropped ("you could be in any city"). The third tile is This Week: new members
+  // against the week before, and active Passports. A Community Manager gets Today's Pulse for their
+  // city in place of Platform Health, and their city's numbers in the other two.
+  var ROLE_TYPE_LABEL = { event: 'event', guest: 'Guest Passport', application: 'application', community_manager: 'Community Manager', partner: 'partner', claim: 'listing claim', interest: 'initiative lead', bounty: 'bounty', report: 'report', service: 'service order', pulse: 'Pulse draft' };
+  function renderRoleRow(member) {
+    function set(id, text, cls) { var el = document.getElementById(id); if (!el) return; el.textContent = text; if (cls !== undefined) el.className = 'dash-stat-value' + (cls ? ' ' + cls : ''); }
+    fetch(SUPABASE_URL + '/functions/v1/ve-ops', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: token, status: 'pending', opportunity_type: 'vegan_explorer' })
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+      body: JSON.stringify({ action: 'summary' })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      var count = (d && d.items && d.items.length) || 0;
-      document.getElementById('dash-stat-pending').textContent = count;
+      if (!d || !d.queue) throw new Error('no summary');
+      var first = document.getElementById('dash-role-first');
+      if (d.role === 'superadmin' && d.health) {
+        var h = d.health;
+        set('dash-role-first-value', h.state === 'ok' ? 'All clear' : (h.alerts ? h.alerts + ' alert' + (h.alerts === 1 ? '' : 's') : h.warnings + ' to watch'), 'is-' + h.state);
+        set('dash-role-first-sub', h.headline);
+      } else {
+        // Today's Pulse for the Community Manager's city: published in the last day, or not yet.
+        var city = d.city, mine = (d.pulse || []).filter(function (p) { return p.city === city; })[0];
+        var fresh = mine && (Date.now() - new Date(mine.published_at).getTime()) < 30 * 3600 * 1000;
+        document.getElementById('dash-role-first-label').textContent = "Today's Pulse";
+        first.setAttribute('href', '/dashboard/pulse-desk'); first.dataset.frame = 'Pulse Desk';
+        set('dash-role-first-value', fresh ? 'Published' : 'Not yet', fresh ? 'is-ok' : 'is-warn');
+        set('dash-role-first-sub', fresh ? mine.title : (VE_CITY_NAMES[city] || city) + ' needs today\'s edition.');
+      }
+      var q = d.queue;
+      set('dash-stat-pending', String(q.open));
+      var top = Object.keys(q.by_type || {}).sort(function (a, b) { return q.by_type[b] - q.by_type[a]; }).slice(0, 2).map(function (t) { var l = ROLE_TYPE_LABEL[t] || t; return q.by_type[t] + ' ' + (q.by_type[t] === 1 ? l : (/y$/.test(l) ? l.slice(0, -1) + 'ies' : l + 's')); });
+      set('dash-stat-pending-sub', q.open ? top.join(', ') + (q.oldest_days ? ' · oldest ' + q.oldest_days + 'd' : '') : 'Nothing waiting');
+      var w = d.week || {}, diff = (w.new_members || 0) - (w.prior_week || 0);
+      set('dash-role-week-value', (w.new_members || 0) + ' new member' + (w.new_members === 1 ? '' : 's'), '');
+      set('dash-role-week-sub', (diff > 0 ? '+' : '') + diff + ' vs last week · ' + (w.passports || 0) + ' active Passport' + (w.passports === 1 ? '' : 's'));
+      if (d.role !== 'superadmin') {
+        set('dash-role-week-sub', 'In ' + (VE_CITY_NAMES[d.city] || d.city) + ' · ' + (diff > 0 ? '+' : '') + diff + ' vs last week');
+        var wk = document.getElementById('dash-role-week'); wk.removeAttribute('href'); wk.onclick = null;
+      }
     }).catch(function () {
-      document.getElementById('dash-stat-pending').textContent = '--';
+      set('dash-role-first-value', '--'); set('dash-stat-pending', '--'); set('dash-role-week-value', '--');
+      set('dash-role-first-sub', 'Could not load right now.');
     });
   }
 
@@ -2676,20 +2722,6 @@
     pill.onclick = function () { openCityModal(member); };
   }
 
-  // "Your City" stat under Your Role (2026-09-09, Sean, Fieldy field note:
-  // it "always shows All Cities"). It used to be written only from the
-  // accepted Community Manager application, with a hardcoded 'All Cities'
-  // fallback for any superadmin without one -- which is every superadmin, so
-  // the tile never showed a real city. It now reads the same active city the
-  // top pill and the Directory/Leaderboard/Events tabs are already scoped to,
-  // so the stat and the rest of the page can never disagree. Kept in sync by
-  // switchActiveCity below.
-  function renderRoleCityStat(member) {
-    var el = document.getElementById('dash-stat-city');
-    if (!el) return;
-    var active = getActiveCity(member);
-    el.textContent = active ? (VE_CITY_NAMES[active] || active) : 'No city selected';
-  }
 
   // Plain city switcher for the top pill -- every launched city, no
   // checkmarks, no join/leave (that stays in dash-community-modal / Your
@@ -2732,7 +2764,6 @@
   function switchActiveCity(slug, member) {
     setActiveCity(slug);
     renderCityPill(member);
-    renderRoleCityStat(member);
     renderDirectory(member);
     renderLeaderboard(member);
     renderEventsTab(member);
@@ -2801,7 +2832,7 @@
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
       body: JSON.stringify({ token: VEAuth.getToken(), cities: cities })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      var rows = ((d && d.leaderboard) || []).slice(0, 5);
+      var rows = ((d && d.leaderboard) || []).slice(0, 100); // scrolls inside its column (2026-10-04)
       if (!rows.length) {
         list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">' + (useScope === 'global' ? 'No ranked members yet.' : 'No ranked members in your city yet.') + '</p>';
         return;
@@ -3384,15 +3415,35 @@
   // are showing, say so instead of leaving an empty column next to the Leaderboard.
   (function () {
     var list = document.getElementById('dash-action-list'), empty = document.getElementById('dash-action-empty');
+    var more = document.getElementById('dash-action-more');
     if (!list || !empty) return;
+    var SHOW = 3; // Three show; the rest scroll inside the box (Sean, 2026-10-04).
     function check() {
-      var any = Array.prototype.some.call(list.children, function (c) { return c !== empty && getComputedStyle(c).display !== 'none'; });
+      var cards = Array.prototype.filter.call(list.children, function (c) { return c !== empty && getComputedStyle(c).display !== 'none'; });
+      var any = cards.length > 0;
       if (empty.hidden !== any) empty.hidden = any; // only on a real change, or the observer would loop
+      // Cap the height at the bottom of the third card. Every write is guarded the same way.
+      var capped = cards.length > SHOW && cards[SHOW - 1].offsetHeight > 0;
+      var h = capped ? (cards[SHOW - 1].offsetTop + cards[SHOW - 1].offsetHeight) + 'px' : '';
+      if (list.classList.contains('is-capped') !== capped) list.classList.toggle('is-capped', capped);
+      if (list.style.maxHeight !== h) list.style.maxHeight = h;
+      if (more) {
+        var txt = capped ? 'Scroll for ' + (cards.length - SHOW) + ' more' : '';
+        if (more.textContent !== txt) more.textContent = txt;
+        if (more.hidden !== !capped) more.hidden = !capped;
+      }
     }
     if (window.MutationObserver) new MutationObserver(function (records) {
-      if (records.some(function (r) { return r.target !== empty; })) check();
+      if (records.some(function (r) { return r.target !== empty && r.target !== list; })) check();
     }).observe(list, { attributes: true, subtree: true, attributeFilter: ['style', 'hidden', 'class'] });
-    check(); window.addEventListener('load', check);
+    check(); window.addEventListener('load', check); window.addEventListener('resize', check);
+    // Cards fill in and the Dashboard tab can start hidden, so measure again whenever a size changes.
+    // check() only writes on a real change, so its own max-height write settles after one pass.
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { check(); });
+      ro.observe(list);
+      Array.prototype.forEach.call(list.children, function (c) { ro.observe(c); });
+    }
   })();
 
   function renderDashboardPreviews(member) {
@@ -3764,10 +3815,9 @@
     if (isStaff) {
       document.getElementById('dash-role-label').style.display = 'block';
       document.getElementById('dash-stats-row').style.display = 'grid';
-      renderRoleCityStat(member);
       var oppsDesc = document.getElementById('dash-opps-desc');
       if (oppsDesc) oppsDesc.textContent = 'Review applications, manage campaigns, and more.';
-      loadPendingCount(VEAuth.getToken());
+      renderRoleRow(member);
 
       fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=my_applications', {
         method: 'POST',

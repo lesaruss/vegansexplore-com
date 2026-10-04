@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submissions - VEGANS EXPLORE</title>
+<meta name="description" content="Every open submission waiting on review, in one list.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* Submissions (Sean, 2026-10-04): "any pending submissions ... very similar to how we have it on
+     BCPS Marcom ... registrations ... I could sort by the types." One list of everything open across
+     the site, filter by type and city, sort, and a Review link to the page where it gets decided.
+     Superadmins see everything; a Community Manager sees their city's bounty work, reports and
+     Pulse drafts. Data: ve-ops action=queue (public.ve_ops_snapshot). */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;
+    --ve-border:rgba(0,0,0,0.09);
+    --ve-text:#1a1a1a;--ve-text-75:#4a4a4a;--ve-text-50:#595959;
+    --warn:#7d4a00;--warn-bg:#fff3e0;
+  }
+  body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
+  main{max-width:1100px;margin:0 auto;padding:44px 32px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+  a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--ve-green-dark);outline-offset:2px;}
+
+  #sb-gate{text-align:center;padding:100px 20px;}
+  #sb-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
+  #sb-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-family:inherit;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
+  #sb-content{display:none;}
+
+  .sb-back{display:inline-block;margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;}
+  .sb-back:hover{text-decoration:underline;}
+  .sb-head{padding-bottom:20px;border-bottom:1px solid var(--ve-border);margin-bottom:18px;}
+  .sb-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
+  .sb-head h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
+  .sb-sub{font-size:13px;color:var(--ve-text-50);}
+
+  .sb-types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .sb-chip{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.04em;padding:8px 12px;border-radius:100px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text-75);cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .sb-chip:hover{border-color:var(--ve-green);}
+  .sb-chip[aria-pressed="true"]{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
+  .sb-chip b{background:rgba(0,0,0,0.07);border-radius:20px;padding:1px 7px;font-size:10px;}
+  .sb-chip[aria-pressed="true"] b{background:rgba(255,255,255,0.25);}
+
+  .sb-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+  .sb-tools input,.sb-tools select{font-family:inherit;font-size:12.5px;padding:9px 12px;border:1.5px solid var(--ve-border);border-radius:8px;background:#fff;color:var(--ve-text);}
+  .sb-tools input{flex:1;min-width:180px;}
+  .sb-tools label{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);display:flex;align-items:center;gap:6px;}
+
+  .sb-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .sb-table th{text-align:left;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);padding:10px 10px;border-bottom:1.5px solid var(--ve-border);white-space:nowrap;}
+  .sb-table th button{all:unset;cursor:pointer;}
+  .sb-table th button:hover{color:var(--ve-green-dark);}
+  .sb-table th button:focus-visible{outline:3px solid var(--ve-green-dark);outline-offset:2px;}
+  .sb-table td{padding:12px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}
+  .sb-table tr:hover td{background:#fafdfa;}
+  .sb-title{font-weight:700;overflow-wrap:anywhere;}
+  .sb-who{font-size:12px;color:var(--ve-text-50);overflow-wrap:anywhere;}
+  .sb-type{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:3px 9px;border-radius:100px;background:var(--ve-green-light);color:var(--ve-green-dark);white-space:nowrap;}
+  .sb-age{white-space:nowrap;font-weight:700;}
+  .sb-age.old{color:var(--warn);}
+  .sb-status{font-size:11px;color:var(--ve-text-50);white-space:nowrap;}
+  .sb-review{font-size:11px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;white-space:nowrap;}
+  .sb-review:hover{text-decoration:underline;}
+  .sb-empty{padding:60px 20px;text-align:center;color:var(--ve-text-50);font-size:13px;}
+  @media (max-width:760px){
+    .sb-table thead{display:none;}
+    .sb-table,.sb-table tbody,.sb-table tr,.sb-table td{display:block;width:100%;}
+    .sb-table tr{border:1.5px solid var(--ve-border);border-radius:12px;padding:10px 14px;margin-bottom:10px;}
+    .sb-table td{border:none;padding:3px 0;}
+    .sb-table td[data-k]::before{content:attr(data-k) ": ";font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);}
+  }
+</style>
+</head>
+<body>
+<script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+</script>
+<style>.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .sb-back{display:none !important}</style>
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+<main>
+  <div id="sb-gate"><p>Checking access&hellip;</p></div>
+  <div id="sb-content">
+    <a class="sb-back" href="/dashboard">&larr; Back to dashboard</a>
+    <div class="sb-head">
+      <p class="sb-eyebrow" id="sb-eyebrow">Superadmin</p>
+      <h1>Submissions</h1>
+      <p class="sb-sub" id="sb-sub">Loading&hellip;</p>
+    </div>
+    <div class="sb-types" id="sb-types" role="group" aria-label="Filter by type"></div>
+    <div class="sb-tools">
+      <input type="search" id="sb-q" placeholder="Search title or name" aria-label="Search submissions">
+      <label id="sb-city-wrap">City <select id="sb-city"><option value="">All</option></select></label>
+      <label>Sort <select id="sb-sort">
+        <option value="oldest">Waiting longest</option>
+        <option value="newest">Newest first</option>
+        <option value="type">Type</option>
+        <option value="city">City</option>
+      </select></label>
+    </div>
+    <table class="sb-table">
+      <thead><tr>
+        <th scope="col"><button type="button" data-sort="type">Type</button></th>
+        <th scope="col">Submission</th>
+        <th scope="col"><button type="button" data-sort="city">City</button></th>
+        <th scope="col"><button type="button" data-sort="oldest">Waiting</button></th>
+        <th scope="col">Status</th>
+        <th scope="col"><span class="sr-only" style="position:absolute;left:-9999px;">Action</span></th>
+      </tr></thead>
+      <tbody id="sb-rows"></tbody>
+    </table>
+    <p class="sb-empty" id="sb-empty" hidden>Nothing waiting. Every queue is clear.</p>
+  </div>
+</main>
+<script>
+  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var TYPES = {
+    event: 'Event', guest: 'Guest Passport', application: 'Application', community_manager: 'Community Manager',
+    partner: 'Partner', claim: 'Listing claim', interest: 'Initiative interest', bounty: 'Bounty work',
+    report: 'Board report', service: 'Service order', pulse: 'Pulse draft'
+  };
+  var CITIES = { national: 'National', 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+  var STATUS = { pending: 'Pending', pending_review: 'Pending review', flagged: 'Flagged', needs_followup: 'Needs follow-up', submitted: 'Submitted', open: 'Open', new: 'New', paid: 'Paid, to schedule', written: 'Written', failed: 'Write failed', confirmed: 'Confirmed', answered: 'Answered', applied: 'Applied' };
+  var items = [], view = { type: '', city: '', q: '', sort: 'oldest' };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function days(iso) { return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000)); }
+  function age(iso) { var d = days(iso); return d === 0 ? 'Today' : d === 1 ? '1 day' : d + ' days'; }
+  function showGate(msg, withButton) {
+    var gate = document.getElementById('sb-gate');
+    gate.style.display = 'block';
+    document.getElementById('sb-content').style.display = 'none';
+    gate.innerHTML = '<p>' + esc(msg) + '</p>';
+    if (withButton) {
+      var b = document.createElement('button');
+      b.textContent = 'Sign In';
+      b.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to see submissions.', init); });
+      gate.appendChild(b);
+    }
+  }
+  // Remember the filters for this viewer (a convenience; the page works without it).
+  function saveView() { try { localStorage.setItem('ve-submissions-view', JSON.stringify({ type: view.type, city: view.city, sort: view.sort })); } catch (e) {} }
+  function loadView() { try { var v = JSON.parse(localStorage.getItem('ve-submissions-view') || 'null'); if (v) { view.type = v.type || ''; view.city = v.city || ''; view.sort = v.sort || 'oldest'; } } catch (e) {} }
+  // A link from the dashboard can preselect a type: /dashboard/submissions?type=bounty
+  function readQuery() { try { var t = new URLSearchParams(location.search).get('type'); if (t && TYPES[t]) view.type = t; } catch (e) {} }
+
+  function renderChips() {
+    var counts = {};
+    items.forEach(function (i) { counts[i.type] = (counts[i.type] || 0) + 1; });
+    if (view.type && !counts[view.type]) view.type = '';
+    var html = '<button type="button" class="sb-chip" data-type="" aria-pressed="' + (!view.type) + '">All <b>' + items.length + '</b></button>';
+    Object.keys(TYPES).forEach(function (t) {
+      if (!counts[t]) return;
+      html += '<button type="button" class="sb-chip" data-type="' + t + '" aria-pressed="' + (view.type === t) + '">' + esc(TYPES[t]) + ' <b>' + counts[t] + '</b></button>';
+    });
+    var box = document.getElementById('sb-types');
+    box.innerHTML = html;
+    Array.prototype.forEach.call(box.querySelectorAll('.sb-chip'), function (b) {
+      b.addEventListener('click', function () { view.type = b.getAttribute('data-type'); saveView(); renderChips(); renderRows(); });
+    });
+  }
+  function renderCities() {
+    var sel = document.getElementById('sb-city');
+    var seen = {};
+    items.forEach(function (i) { if (i.city) seen[i.city] = 1; });
+    var keys = Object.keys(seen).sort(function (a, b) { return (CITIES[a] || a).localeCompare(CITIES[b] || b); });
+    sel.innerHTML = '<option value="">All</option>' + keys.map(function (k) { return '<option value="' + esc(k) + '">' + esc(CITIES[k] || k) + '</option>'; }).join('') + '<option value="-">No city</option>';
+    if (view.city && view.city !== '-' && !seen[view.city]) view.city = '';
+    sel.value = view.city;
+    document.getElementById('sb-city-wrap').style.display = keys.length ? '' : 'none';
+  }
+  function renderRows() {
+    var q = view.q.toLowerCase();
+    var rows = items.filter(function (i) {
+      if (view.type && i.type !== view.type) return false;
+      if (view.city === '-' ? i.city : (view.city && i.city !== view.city)) return false;
+      if (q && ((i.title || '') + ' ' + (i.who || '')).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    var by = {
+      oldest: function (a, b) { return new Date(a.created_at) - new Date(b.created_at); },
+      newest: function (a, b) { return new Date(b.created_at) - new Date(a.created_at); },
+      type: function (a, b) { return (TYPES[a.type] || a.type).localeCompare(TYPES[b.type] || b.type) || new Date(a.created_at) - new Date(b.created_at); },
+      city: function (a, b) { return (CITIES[a.city] || a.city || '~').localeCompare(CITIES[b.city] || b.city || '~') || new Date(a.created_at) - new Date(b.created_at); }
+    };
+    rows.sort(by[view.sort] || by.oldest);
+    document.getElementById('sb-rows').innerHTML = rows.map(function (i) {
+      return '<tr>' +
+        '<td><span class="sb-type">' + esc(TYPES[i.type] || i.type) + '</span></td>' +
+        '<td><div class="sb-title">' + esc(i.title || 'Untitled') + '</div>' + (i.who ? '<div class="sb-who">' + esc(i.who) + '</div>' : '') + '</td>' +
+        '<td data-k="City">' + esc(i.city ? (CITIES[i.city] || i.city) : '—') + '</td>' +
+        '<td data-k="Waiting"><span class="sb-age' + (days(i.created_at) >= 3 ? ' old' : '') + '" title="' + esc(new Date(i.created_at).toLocaleString()) + '">' + age(i.created_at) + '</span></td>' +
+        '<td data-k="Status"><span class="sb-status">' + esc(STATUS[i.status] || i.status || '') + '</span></td>' +
+        '<td><a class="sb-review" href="' + esc(i.link) + '">Review &rarr;</a></td>' +
+      '</tr>';
+    }).join('');
+    document.getElementById('sb-empty').hidden = rows.length > 0;
+    document.getElementById('sb-empty').textContent = items.length ? 'Nothing matches these filters.' : 'Nothing waiting. Every queue is clear.';
+  }
+  function load() {
+    fetch(SUPABASE_URL + '/functions/v1/ve-ops', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+      body: JSON.stringify({ action: 'queue' })
+    }).then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); }).then(function (res) {
+      if (res.status === 401) { showGate('Your session ended. Sign in again.', true); return; }
+      if (res.status === 403) { showGate(res.d && res.d.error === 'No city on your account yet.' ? 'Your account has no city yet. Ask the team to set it.' : 'Submissions is for the team only.', false); return; }
+      if (!res.d || !res.d.items) { showGate('Could not load submissions right now. Try again shortly.', false); return; }
+      items = res.d.items;
+      document.getElementById('sb-gate').style.display = 'none';
+      document.getElementById('sb-content').style.display = 'block';
+      var cm = res.d.role !== 'superadmin';
+      document.getElementById('sb-eyebrow').textContent = cm ? 'Community Manager · ' + (CITIES[res.d.city] || res.d.city) : 'Superadmin';
+      var old = items.filter(function (i) { return days(i.created_at) >= 3; }).length;
+      document.getElementById('sb-sub').textContent = items.length + ' open' + (old ? ', ' + old + ' waiting 3 days or more' : '') + '. Review opens the page where each one gets decided.';
+      document.getElementById('sb-sort').value = view.sort;
+      renderChips(); renderCities(); renderRows();
+    }).catch(function () { showGate('Could not reach the submissions service. Check your connection and reload.', false); });
+  }
+  function init() {
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { showGate('Sign in to see submissions.', true); return; }
+    load();
+  }
+  document.getElementById('sb-q').addEventListener('input', function (e) { view.q = e.target.value; renderRows(); });
+  document.getElementById('sb-city').addEventListener('change', function (e) { view.city = e.target.value; saveView(); renderRows(); });
+  document.getElementById('sb-sort').addEventListener('change', function (e) { view.sort = e.target.value; saveView(); renderRows(); });
+  Array.prototype.forEach.call(document.querySelectorAll('.sb-table th button'), function (b) {
+    b.addEventListener('click', function () { view.sort = b.getAttribute('data-sort'); document.getElementById('sb-sort').value = view.sort; saveView(); renderRows(); });
+  });
+  loadView(); readQuery();
+  init();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
