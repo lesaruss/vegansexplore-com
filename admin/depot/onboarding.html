@@ -92,7 +92,7 @@
     <div id="im-gate" class="gate" hidden></div>
     <div id="im-app" hidden>
       <div class="bar">
-        <label>Page <select id="im-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option><option value="dinner">Dinner invitation</option></select></label>
+        <label>Page <select id="im-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option><option value="dinner">Dinner invitation</option><option value="host">Host a dinner</option></select></label>
         <label>City <select id="im-city">
           <option value="south-florida">South Florida</option>
           <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
@@ -203,6 +203,16 @@
         { key: 'evening', label: 'The evening', def: 'ad3e10f5', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_164150_ad3e10f5-8514-4ebd-a019-ba5d999b2a02.png' },
         { key: 'seat', label: 'Take your seat', def: '501d6a50', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_164149_501d6a50-0125-4b40-b2a4-40773b339081.png' },
         { key: 'faq', label: 'Questions', def: '7927c50c', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_185514_7927c50c-6b46-424b-a65d-93e88a0d660f.png' }
+      ] };
+      // Host the table, /dinners/host (2026-10-04): same art as the dinner, Sean first and last.
+      PAGES.host = { view: '/dinners/host', slides: [
+        { key: 'invite', label: 'Host the table', def: '3f812ce9', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_191202_3f812ce9-9f99-4794-b08c-035aaa88559d.png' },
+        { key: 'why', label: 'Why a dinner', def: '1c29bf05', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_164150_1c29bf05-1f51-4e45-a3c3-4b3fae41dd4f.png' },
+        { key: 'table', label: 'Who\u2019s at the table', def: '9266428b', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_164149_9266428b-0d50-43c0-80e8-60fba5258309.png' },
+        { key: 'night', label: 'The night', def: 'ad3e10f5', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_164150_ad3e10f5-8514-4ebd-a019-ba5d999b2a02.png' },
+        { key: 'terms', label: 'Who pays for what', def: '501d6a50', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_164149_501d6a50-0125-4b40-b2a4-40773b339081.png' },
+        { key: 'get', label: 'What you get', def: 'ed0eb5e8', defUrl: 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/ed0eb5e8-7150-4da1-8a6f-0def5c0df104.png' },
+        { key: 'talk', label: 'Let\u2019s talk', def: '7927c50c', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_185514_7927c50c-6b46-424b-a65d-93e88a0d660f.png' }
       ] };
       // Every page also has its background, desktop (landscape) and phone (portrait).
       var BG_DEFAULT = '/communities/south-florida/banner.jpg';
