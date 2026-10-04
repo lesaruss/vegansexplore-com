@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host the table — Vegans Explore</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Host a Vegans Explore founding dinner: one evening, about 20 people chosen by name, your food, your room. Who pays for what, and what you get.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-mint:#c5f2c7;--ve-orange:#F69820;--ve-ink:#0d130e;--line:rgba(255,255,255,0.22);--soft:#ececec;}
+    body{font-family:"Montserrat",sans-serif;background:var(--ve-ink);color:#fff;line-height:1.55;}
+    a{color:var(--ve-mint);}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-mint);margin-bottom:12px;}
+    h1,h2{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;}
+    h1{font-size:clamp(34px,4.2vw,56px);margin-bottom:16px;}
+    h1 em{font-style:normal;color:var(--ve-mint);}
+    h2{font-size:clamp(26px,3vw,40px);margin-bottom:14px;}
+    .lede{font-size:16.5px;color:#fff;max-width:620px;margin-bottom:16px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 24px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;}
+    .btn-primary{background:#22C55E;color:#03170a;}
+    .btn-primary:hover{background:#4ade80;}
+    .btn-ghost{background:rgba(0,0,0,0.45);color:#fff;border:1.5px solid rgba(255,255,255,0.75);}
+    .btn-ghost:hover{background:rgba(255,255,255,0.12);}
+    .btn-link{background:none;color:#fff;text-decoration:underline;text-underline-offset:3px;padding:14px 8px;letter-spacing:0.06em;}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px;}
+
+    /* The stage: the city sits under every slide, dimmed so all text clears WCAG AAA
+       (the overlay plus each panel's dark glass keeps white text above 7:1). */
+    .stage{position:relative;height:calc(100vh - 61px);min-height:600px;overflow:hidden;background:#0d130e center/cover no-repeat;}
+    .stage::before{content:"";position:absolute;inset:0;background:rgba(5,10,6,0.78);pointer-events:none;}
+    .slide{position:absolute;inset:0;display:none;padding:28px max(32px,calc((100% - 1280px)/2)) 84px;z-index:1;}
+    .slide.active{display:block;}
+    /* One third for Sean, two thirds for the words. */
+    .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:36px;height:100%;}
+    .media{position:relative;border-radius:16px;overflow:hidden;background:#0f1a10;height:100%;box-shadow:0 18px 40px rgba(0,0,0,0.45);border:1px solid var(--line);}
+    .media img{width:100%;height:100%;object-fit:cover;object-position:center 22%;display:block;}
+    .media .sa-play{inset:auto 0 0 0;height:auto;padding:16px 14px 20px;flex-direction:row;justify-content:flex-start;gap:12px;background:rgba(0,0,0,0.72);}
+    .media .sa-icon{width:52px;height:52px;flex:0 0 52px;}
+    .media .sa-label{background:none;padding:0;text-align:left;}
+    .body{align-self:center;max-height:100%;overflow:auto;padding:28px 30px;border-radius:16px;background:rgba(0,0,0,0.55);border:1px solid var(--line);}
+
+    .chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+    .chips li{font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:8px 14px;border-radius:99px;background:rgba(0,0,0,0.55);border:1px solid var(--line);}
+    .chips b{color:var(--ve-mint);}
+    .letter p{font-size:16px;margin-bottom:12px;max-width:640px;}
+    .sig{font-weight:800;margin-top:6px;}
+    .sig small{display:block;font-weight:600;color:var(--soft);font-size:13px;}
+
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px;}
+    .card{padding:16px 18px;border-radius:12px;background:rgba(6,32,12,0.72);border:1px solid rgba(155,226,158,0.45);}
+    .card .n{font-size:24px;font-weight:900;color:var(--ve-mint);line-height:1;margin-bottom:8px;}
+    .card b{display:block;font-size:15.5px;font-weight:900;margin-bottom:4px;}
+    .card span{font-size:14px;color:var(--soft);font-weight:600;}
+    .spotlight{font-size:16px;font-weight:800;line-height:1.45;border-left:4px solid var(--ve-orange);padding:4px 0 4px 16px;max-width:640px;margin-top:18px;}
+
+    /* The evening, condensed, with What's next beside it */
+    .split2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:22px;align-items:start;}
+    .run{list-style:none;display:grid;gap:7px;}
+    .run li{padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,0.4);}
+    .run b{display:block;font-size:11px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-mint);}
+    .run span{font-size:14.5px;font-weight:700;}
+    .next-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .next-head p{margin:0;}
+    .next-arrows{display:flex;gap:6px;}
+    .next-arrows button{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.7);background:rgba(0,0,0,0.45);color:#fff;font-size:18px;font-weight:900;cursor:pointer;}
+    .next-arrows button:hover{background:rgba(255,255,255,0.12);}
+    .rail{display:grid;grid-auto-flow:column;grid-auto-columns:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:12px;}
+    .rail::-webkit-scrollbar{display:none;}
+    .tile{scroll-snap-align:start;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:rgba(0,0,0,0.5);}
+    .tile img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
+    .tile div{padding:10px 14px 12px;}
+    .tile b{display:block;font-size:15px;font-weight:900;}
+    .tile span{font-size:13.5px;color:var(--soft);font-weight:600;}
+    .tile i{font-style:normal;font-size:10.5px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--ve-mint);color:#0b2e14;margin-left:6px;vertical-align:2px;}
+    .dots{display:flex;gap:6px;justify-content:center;margin-top:8px;}
+    .dots button{width:10px;height:10px;border-radius:50%;border:0;background:rgba(255,255,255,0.4);cursor:pointer;padding:0;}
+    .dots button[aria-current="true"]{background:var(--ve-mint);}
+
+    /* Take your seat */
+    .seat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start;}
+    .seat-box{padding:22px 22px 18px;border-radius:14px;background:var(--ve-green-light);color:#1a1a1a;}
+    .seat-box .price{font-size:14.5px;font-weight:700;margin-bottom:4px;}
+    .seat-box .price b{font-size:28px;font-weight:900;color:var(--ve-green-deep);margin-right:8px;}
+    .checks{list-style:none;display:grid;gap:6px;margin:10px 0 14px;}
+    .checks li{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:700;line-height:1.4;}
+    .checks li::before{content:"";flex:0 0 20px;height:20px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/11px no-repeat;margin-top:1px;}
+    .seat-box .btn{width:100%;}
+    .seat-note{font-size:12.5px;font-weight:600;color:rgba(26,26,26,0.75);margin-top:8px;text-align:center;}
+    .sb-title{font-size:17px;font-weight:900;color:var(--ve-green-deep);margin-bottom:8px;}
+    .sb-text{font-size:14px;font-weight:600;margin-bottom:10px;}
+    .sb-label{display:block;font-size:13px;font-weight:800;margin:8px 0 4px;}
+    .seat-box textarea,.seat-box input{width:100%;font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,0.35);border-radius:8px;background:#fff;color:#1a1a1a;margin-bottom:6px;}
+    .seat-box textarea{resize:vertical;min-height:72px;}
+    .seat-box .btn{margin-top:6px;}
+    .btn-ghost-dark{background:#fff;color:var(--ve-green-deep);border:1.5px solid var(--ve-green-deep);}
+    .sb-alt{display:block;margin:10px auto 0;background:none;border:0;font:inherit;font-size:13px;font-weight:700;color:#1a1a1a;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:32px;}
+    .sb-who{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px;}
+    .sb-who li{font-size:12.5px;font-weight:800;padding:5px 10px;border-radius:99px;background:#fff;border:1px solid rgba(31,95,34,0.35);}
+    .sb-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px;}
+    .sb-who{max-height:96px;overflow:auto;}
+    .terms{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;}
+    .terms .card ul{list-style:none;display:grid;gap:6px;margin-top:6px;}
+    .terms .card li{font-size:14px;font-weight:600;color:#fff;line-height:1.4;padding-left:16px;position:relative;}
+    .terms .card li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--ve-mint);}
+    .terms-note{font-size:13.5px;font-weight:700;color:var(--soft);margin-top:10px;}
+    .sb-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+    .seat-msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;margin-top:6px;text-align:center;}
+    .plus{font-size:14.5px;color:#fff;margin-top:14px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,0.4);}
+    .plus b{color:var(--ve-mint);}
+    .room{font-size:12.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#ffc477;margin-top:12px;}
+
+    /* Questions */
+    .faq details{border-bottom:1px solid var(--line);padding:12px 0;}
+    .faq summary{cursor:pointer;font-size:15.5px;font-weight:800;list-style:none;display:flex;justify-content:space-between;gap:16px;}
+    .faq summary::-webkit-details-marker{display:none;}
+    .faq summary::after{content:"+";color:var(--ve-mint);font-weight:900;}
+    .faq details[open] summary::after{content:"\2212";}
+    .faq p{font-size:14.5px;color:var(--soft);margin-top:6px;}
+
+    /* One navigation bar for every slide: Back, the count, Next. */
+    .stage-nav{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px max(32px,calc((100% - 1280px)/2)) 18px;}
+    .step-count{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#fff;}
+
+    /* Desktop: nav, the stage and the footer share one screen; nothing scrolls. */
+    @media (min-width:901px){ html,body{overflow:hidden;height:100%;} .page-frame{display:flex;flex-direction:column;height:100vh;} .stage{flex:1 1 auto;height:auto;min-height:0;} }
+    @media (min-width:901px) and (max-height:820px){
+      .slide{padding-top:16px;padding-bottom:70px;}
+      .body{padding:20px 24px;}
+      h1{font-size:clamp(30px,3.4vw,44px);}
+      h2{font-size:clamp(24px,2.4vw,32px);margin-bottom:10px;}
+      .lede,.letter p{font-size:15px;margin-bottom:10px;}
+      .run li{padding:7px 12px;}
+      .checks{gap:4px;margin:8px 0 10px;}
+      .checks li{font-size:13px;}
+      .seat-box{padding:16px 18px 14px;}
+      .tile div{padding:8px 12px 10px;}
+      .faq details{padding:9px 0;}
+      .seat-box textarea,.seat-box input{padding:8px 10px;margin-bottom:2px;}
+      .seat-box textarea{min-height:60px;}
+      .sb-label{margin:6px 0 3px;}
+      .sb-text{margin-bottom:6px;}
+      .sb-who{max-height:64px;}
+      .plus{margin-top:10px;padding:10px 12px;}
+    }
+
+    /* Phones and tablets: slides stack and the page scrolls within a slide. */
+    @media (max-width:900px){
+      .stage{height:auto;min-height:0;overflow:visible;background:none !important;}
+      .stage::before{display:none;}
+      .stage-bg{position:fixed;inset:0;z-index:-1;background:#0d130e center/cover no-repeat;}
+      .stage-bg::after{content:"";position:absolute;inset:0;background:rgba(5,10,6,0.8);}
+      .slide{position:relative;inset:auto;padding:20px 24px 8px;}
+      .cols{grid-template-columns:minmax(0,1fr);gap:16px;height:auto;}
+      .media{height:auto;aspect-ratio:4/3;}
+      /* Sean, 2026-10-04: each picture sits in its 4:3 phone frame on its own (--pos-m on the slide). */
+      .media img{object-position:center var(--pos-m,22%);}
+      .body{max-height:none;overflow:visible;padding:22px 20px;}
+      .cards,.split2,.seat,.terms,.sb-two{grid-template-columns:minmax(0,1fr);}
+      .stage-nav{position:relative;padding:8px 24px 32px;}
+    }
+    @media (max-width:480px){
+      .slide{padding:16px 16px 8px;}
+      .stage-nav{padding:8px 16px 28px;}
+      h1{font-size:32px;}
+      .body{padding:18px 16px;}
+    }
+    .stage-bg{display:none;}
+    @media (max-width:900px){ .stage-bg{display:block;} }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<script src="/public/ve-preview.js"></script>
+<!-- Host the table (Sean, 2026-10-04, city dinner version 3 after BOSS and a PANEL): the page we send
+     a restaurant we want to host a city dinner (for example Love Life Cafe in Miami), and the one
+     Ron uses to pitch his partners. Same guided template as /dinners/palm-beach. ?for=<business>
+     and ?city=<city> personalize it; send it as a tracked link from Depot > Links. Terms are the
+     panel's host terms: we promise only what we control. "Let's talk" leaves a Host lead on
+     /dashboard/leads (ve-dinner-seats host_interest). Pictures and narration: page 'host' in the
+     Depot. Unlisted and noindex. -->
+<main class="stage" id="stage" aria-roledescription="carousel" aria-label="Host a dinner">
+  <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
+
+  <section class="slide active" id="s-invite" aria-roledescription="slide" aria-label="1 of 7">
+    <div class="cols">
+      <div class="media" data-key="invite" style="--pos-m:0%" data-cap="Host the table"></div>
+      <div class="body">
+        <p class="eyebrow">For restaurants &middot; Founding Host</p>
+        <h1><span id="for-hello"></span>Host <em>the table.</em></h1>
+        <p class="lede">One evening. About 20 of the people who make Vegan life in <span data-city>your city</span> happen, at your tables, eating your food. We bring the names and the program. You bring the food and the room.</p>
+        <ul class="chips">
+          <li>One evening</li>
+          <li>About 20 guests, by name</li>
+          <li>You set the menu</li>
+          <li>You see the list first</li>
+        </ul>
+        <div class="cta-row">
+          <button type="button" class="btn btn-primary" data-go="1">See what hosting means</button>
+          <button type="button" class="btn btn-ghost" data-go="6">Talk to us</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s-why" aria-roledescription="slide" aria-label="2 of 7">
+    <div class="cols">
+      <div class="media" data-key="why" style="--pos-m:40%" data-cap="Why a dinner"></div>
+      <div class="body letter">
+        <p class="eyebrow">Why a dinner</p>
+        <h2>Every city starts at one table.</h2>
+        <p>For more than ten years I&rsquo;ve been building South Florida&rsquo;s Vegan community, first as SoFlo Vegans and now as Vegans Explore. Every city we go into starts the same way: a small table of the people others already follow, in a room that deserves to be known.</p>
+        <p>Not a festival, and not a pitch night. A dinner where they meet each other, hear what we&rsquo;re building, and decide to build it with us. The restaurant that hosts that table is part of the story from the first night.</p>
+        <p class="sig">Sean A. Russell<small>Founder, Vegans Explore. We&rsquo;re a nonprofit, and we always will be.</small></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s-table" aria-roledescription="slide" aria-label="3 of 7">
+    <div class="cols">
+      <div class="media" data-key="table" style="--pos-m:42%" data-cap="Who's at the table"></div>
+      <div class="body">
+        <p class="eyebrow">Who&rsquo;s at the table</p>
+        <h2>Chosen by name. Never a crowd.</h2>
+        <div class="cards">
+          <div class="card"><div class="n">1</div><b>Chosen by name</b><span>Business owners, organizers and the voices people listen to. No plus-ones, no open seats.</span></div>
+          <div class="card"><div class="n">2</div><b>You see the list first</b><span>The names come to you before you cook. The count locks 7 days out, and after that it can only go down.</span></div>
+          <div class="card"><div class="n">3</div><b>You&rsquo;re at the table</b><span>You or your chef sits with us as our Founding Host, and gets two minutes to introduce the menu.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s-night" aria-roledescription="slide" aria-label="4 of 7">
+    <div class="cols">
+      <div class="media" data-key="night" style="--pos-m:40%" data-cap="The night"></div>
+      <div class="body">
+        <p class="eyebrow">The night</p>
+        <h2>About two and a half hours.</h2>
+        <ul class="run">
+          <li><b>Arrive</b><span>Guests meet the table by introducing the person next to them.</span></li>
+          <li><b>Dinner</b><span>Your chef&rsquo;s two minutes, then your three-course tasting: appetizer, main and dessert.</span></li>
+          <li><b>After the main course</b><span>Five minutes from Sean on what we&rsquo;re building, and a few guests&rsquo; answers read aloud.</span></li>
+          <li><b>Before they leave</b><span>Each guest picks one next step. We follow up with every one of them personally within 48 hours.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s-terms" aria-roledescription="slide" aria-label="5 of 7">
+    <div class="cols">
+      <div class="media" data-key="terms" style="--pos-m:2%" data-cap="Who pays for what"></div>
+      <div class="body">
+        <p class="eyebrow">Who pays for what</p>
+        <h2>Clear before you say yes.</h2>
+        <div class="terms">
+          <div class="card"><b><span data-host>You</span></b><ul>
+            <li>The room, for one evening</li>
+            <li>A three-course tasting for the confirmed count, up to a cap you set</li>
+            <li>Your menu, your way</li>
+            <li>Your team on the floor</li>
+          </ul></div>
+          <div class="card"><b>Vegans Explore</b><ul>
+            <li>Every invitation and the guest list</li>
+            <li>A count locked 7 days out, that can only go down</li>
+            <li>Anything past your cap, billed to us at menu price</li>
+            <li>Your team&rsquo;s tip, on the full value of the food, paid that night</li>
+            <li>The program, photos and video, and the story</li>
+          </ul></div>
+        </div>
+        <p class="terms-note">Guests buy their own drinks, on their own checks, so your team earns on the night.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s-get" aria-roledescription="slide" aria-label="6 of 7">
+    <div class="cols">
+      <div class="media" data-key="get" style="--pos-m:22%" data-cap="What you get"></div>
+      <div class="body">
+        <p class="eyebrow">What you get</p>
+        <h2>What we promise, and what we don&rsquo;t.</h2>
+        <div class="cards">
+          <div class="card"><div class="n">1</div><b>Founding Host</b><span>Named as host on the invitation and at the table, in <span data-city>your city</span>&rsquo;s first chapter.</span></div>
+          <div class="card"><div class="n">2</div><b>The story</b><span>Photos and video of your food and your team, a Daily Pulse story, and a feature in our directory.</span></div>
+          <div class="card"><div class="n">3</div><b>First call</b><span>First call to host the next dinner, and the drink sales on the night.</span></div>
+        </div>
+        <p class="spotlight">We won&rsquo;t promise you outcomes. We&rsquo;ll promise exactly who is invited, and how many plates to make, a week ahead.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="s-talk" aria-roledescription="slide" aria-label="7 of 7">
+    <div class="cols">
+      <div class="media" data-key="talk" style="--pos-m:10%" data-cap="Let's talk"></div>
+      <div class="body">
+        <p class="eyebrow">Let&rsquo;s talk</p>
+        <h2>Host the table.</h2>
+        <div class="seat">
+          <div>
+            <p class="lede">Leave your name and the best way to reach you. Sean will call, walk the room with you, and you&rsquo;ll pick the date and the menu together.</p>
+            <p class="plus"><b>Nothing is agreed until you say so.</b> You&rsquo;ll see the guest list, the run of the night and who pays for what, in writing, before you commit.</p>
+          </div>
+          <form class="seat-box" id="host-form">
+            <p class="sb-title">Talk to us about hosting.</p>
+            <div class="sb-two">
+              <div><label class="sb-label" for="h-name">Your name</label><input id="h-name" type="text" maxlength="120" autocomplete="name" required></div>
+              <div><label class="sb-label" for="h-business">Your business</label><input id="h-business" type="text" maxlength="120" autocomplete="organization" required></div>
+            </div>
+            <div class="sb-two">
+              <div><label class="sb-label" for="h-email">Email</label><input id="h-email" type="email" maxlength="200" autocomplete="email" required></div>
+              <div><label class="sb-label" for="h-phone">Phone (optional)</label><input id="h-phone" type="tel" maxlength="40" autocomplete="tel"></div>
+            </div>
+            <label class="sb-label" for="h-note">Anything we should know? (optional)</label><input id="h-note" type="text" maxlength="800">
+            <input id="h-web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="sb-hp">
+            <button type="submit" class="btn btn-primary" id="h-send">Talk to us about hosting</button>
+            <p class="seat-msg" id="h-msg" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="stage-nav" id="stage-nav" aria-label="Slides">
+    <button type="button" class="btn btn-link" id="nav-back">Back</button>
+    <p class="step-count" id="nav-count" aria-live="polite">1 of 7</p>
+    <button type="button" class="btn btn-primary" id="nav-next">Next</button>
+  </nav>
+</main>
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/slide-audio.js"></script>
+<script>
+  (function () {
+    // One host page for every city. PAGE and CITY pick its pictures and narration in the Depot.
+    var PAGE = 'host', CITY = 'south-florida';
+    var HF = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_';
+    var BEDS = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/beds/';
+    var DEFAULTS = {
+      panels: {
+        invite: HF + '191202_3f812ce9-9f99-4794-b08c-035aaa88559d.png', why: HF + '164150_1c29bf05-1f51-4e45-a3c3-4b3fae41dd4f.png',
+        table: HF + '164149_9266428b-0d50-43c0-80e8-60fba5258309.png', night: HF + '164150_ad3e10f5-8514-4ebd-a019-ba5d999b2a02.png',
+        terms: HF + '164149_501d6a50-0125-4b40-b2a4-40773b339081.png', get: 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/ed0eb5e8-7150-4da1-8a6f-0def5c0df104.png',
+        talk: HF + '185514_7927c50c-6b46-424b-a65d-93e88a0d660f.png',
+        'bg-desktop': HF + '154721_ab571b65-aac8-412c-a204-ebbc44120cb5.png', 'bg-mobile': HF + '154721_ab571b65-aac8-412c-a204-ebbc44120cb5.png'
+      },
+      // Sample narration in Sean's voice (Higgsfield) until his own recordings replace it.
+      clips: {
+        invite: { url: HF + '195759_b5cda8c0-2e09-4808-8ff9-53a630b56af7.mp3', dur: 17, bed: BEDS + 'sanctuary-stroll-60.wav' },
+        why: { url: HF + '195759_11afe9d3-fbe2-47c9-a935-63d8b128d614.mp3', dur: 23, bed: BEDS + 'earthy-reflections-60.wav' },
+        table: { url: HF + '195759_aa70f0f8-a8a5-4fa4-8a93-8a48155a60cc.mp3', dur: 21, bed: BEDS + 'vegan-rhythms-60.wav' },
+        night: { url: HF + '195800_bd5b7b07-4cab-4180-956c-2b77a254803e.mp3', dur: 18, bed: BEDS + 'vegan-glow-60.wav' },
+        terms: { url: HF + '195759_822c4e9d-35a1-4b45-b147-29b9c6eb8bbb.mp3', dur: 22, bed: BEDS + 'green-bites-60.wav' },
+        get: { url: HF + '195759_a2aa06dd-b06b-4587-ba96-b0c24df2ce68.mp3', dur: 24, bed: BEDS + 'manifesto-whisper-60.wav' },
+        talk: { url: HF + '195759_8f204fce-d1bf-4558-a1d7-fc03254bbabe.mp3', dur: 10, bed: BEDS + 'earthy-reflections-v2-60.wav' }
+      }
+    };
+    var REST = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/';
+    var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    var H = { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } };
+    var rq = '&page=eq.' + PAGE + '&city_slug=eq.' + CITY;
+    var ids = ['invite', 'why', 'table', 'night', 'terms', 'get', 'talk'];
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var panels = Object.assign({}, DEFAULTS.panels), clips = JSON.parse(JSON.stringify(DEFAULTS.clips));
+    var cur = 0, $ = function (id) { return document.getElementById(id); };
+
+    // ?for=<business>&city=<city>: greet the restaurant by name (plain text only).
+    var qs = new URLSearchParams(location.search);
+    var who = (qs.get('for') || '').replace(/[<>]/g, '').trim().slice(0, 60), city = (qs.get('city') || '').replace(/[<>]/g, '').trim().slice(0, 40);
+    if (who) { $('for-hello').textContent = who + ', '; document.querySelectorAll('[data-host]').forEach(function (el) { el.textContent = who; }); $('h-business').value = who; }
+    if (city) document.querySelectorAll('[data-city]').forEach(function (el) { el.textContent = city; });
+
+    function applyPictures() {
+      var desk = panels['bg-desktop'], mob = panels['bg-mobile'] || desk;
+      $('stage').style.backgroundImage = desk ? "url('" + desk + "')" : '';
+      $('stage-bg').style.backgroundImage = mob ? "url('" + mob + "')" : '';
+      document.querySelectorAll('.media[data-key]').forEach(function (m) {
+        var key = m.getAttribute('data-key'), cap = m.getAttribute('data-cap'), pic = panels[key] || '';
+        if (window.VESlideAudio && VESlideAudio.has(key)) { m.setAttribute('data-sa-key', key); m.innerHTML = VESlideAudio.markup(key, pic, cap); }
+        else m.innerHTML = '<img src="' + pic + '" alt="">';
+      });
+    }
+    function startAudio() { if (window.VESlideAudio) VESlideAudio.setup({ clips: clips }); applyPictures(); }
+    Promise.all([
+      fetch(REST + 've_onboarding_panels?select=clip_key,url' + rq, H).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }),
+      fetch(REST + 've_onboarding_audio?select=clip_key,url,dur' + rq, H).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
+    ]).then(function (res) {
+      res[0].forEach(function (row) { if (row.url) panels[row.clip_key] = row.url; });
+      res[1].forEach(function (row) { if (row.url && clips[row.clip_key]) { clips[row.clip_key].url = row.url; if (row.dur) clips[row.clip_key].dur = row.dur; } });
+      startAudio(); if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
+    });
+    applyPictures();
+
+    function show(n) {
+      cur = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
+      history.replaceState(null, '', location.pathname + location.search + (cur ? '#' + ids[cur] : ''));
+      if (window.innerWidth <= 900) window.scrollTo(0, 0);
+      $('nav-back').style.visibility = cur === 0 ? 'hidden' : '';
+      $('nav-next').style.visibility = cur === slides.length - 1 ? 'hidden' : '';
+      $('nav-count').textContent = (cur + 1) + ' of ' + slides.length;
+      if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
+      try { if (window.gtag && !window.VE_PREVIEW) gtag('event', 'dinner_host_slide', { slide: ids[cur], host: who || 'none' }); } catch (e) {}
+    }
+    $('nav-back').addEventListener('click', function () { show(cur - 1); });
+    $('nav-next').addEventListener('click', function () { show(cur + 1); });
+    document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
+    document.addEventListener('keydown', function (e) {
+      if (/INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName)) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+    });
+    var start = ids.indexOf(location.hash.slice(1)); show(start > 0 ? start : 0);
+
+    // Let's talk: a Host lead on /dashboard/leads (initiative dinner-host).
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-dinner-seats';
+    $('host-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var b = $('h-send'), msg = $('h-msg');
+      if (window.VE_PREVIEW) { msg.textContent = 'Preview: nothing was sent.'; return; }
+      b.disabled = true; msg.textContent = '';
+      fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'host_interest', name: $('h-name').value, business: $('h-business').value, email: $('h-email').value, phone: $('h-phone').value, city: city, note: $('h-note').value, website: $('h-web').value }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          b.disabled = false;
+          if (d && d.ok) { $('host-form').querySelectorAll('input').forEach(function (i) { if (i.id !== 'h-business') i.value = ''; }); msg.textContent = 'Thank you. Sean will be in touch to set up a call.'; return; }
+          msg.textContent = (d && d.message) || 'That did not send. Try again.';
+        }).catch(function () { b.disabled = false; msg.textContent = 'That did not send. Try again.'; });
+    });
+  })();
+</script>
+</body>
+</html>

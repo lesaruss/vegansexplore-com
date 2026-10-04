@@ -36,8 +36,10 @@ const PAGES: Record<string, string[]> = {
   member: ['welcome', 'oldway', 'city', 'inperson', 'board', 'unfinished', 'seat'],
   // City dinner invitation, /dinners/<city> (Sean, 2026-10-04: the template for every city we go into).
   dinner: ['invite', 'why', 'build', 'ask', 'evening', 'seat', 'faq'],
+  // Host the table, /dinners/host (2026-10-04): the page for restaurants we ask to host.
+  host: ['invite', 'why', 'table', 'night', 'terms', 'get', 'talk'],
 };
-const PAGE_LABEL: Record<string, string> = { cm: 'Community Manager', partners: 'Partners', member: 'Member', dinner: 'Dinner invitation' };
+const PAGE_LABEL: Record<string, string> = { cm: 'Community Manager', partners: 'Partners', member: 'Member', dinner: 'Dinner invitation', host: 'Host a dinner' };
 // Picture-only keys a page has beyond its slides: the dinner's "What's next" cards.
 const PICTURE_KEYS: Record<string, string[]> = { dinner: ['next-1', 'next-2', 'next-3', 'next-4'] };
 // Picture-only keys every page has: its background, desktop (landscape) and phone
