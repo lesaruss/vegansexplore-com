@@ -134,6 +134,8 @@
       .slide{position:relative;inset:auto;padding:20px 24px 8px;}
       .cols{grid-template-columns:minmax(0,1fr);gap:16px;height:auto;}
       .media{height:auto;aspect-ratio:4/3;}
+      /* Sean, 2026-10-04: each picture sits in its 4:3 phone frame on its own (--pos-m on the slide). */
+      .media img{object-position:center var(--pos-m,22%);}
       .body{max-height:none;overflow:visible;padding:22px 20px;}
       .cards,.split2,.seat{grid-template-columns:minmax(0,1fr);}
       .stage-nav{position:relative;padding:8px 24px 32px;}
@@ -165,7 +167,7 @@
 
   <section class="slide active" id="s-invite" aria-roledescription="slide" aria-label="1 of 7">
     <div class="cols">
-      <div class="media" data-key="invite" data-cap="You're invited"></div>
+      <div class="media" data-key="invite" style="--pos-m:0%" data-cap="You're invited"></div>
       <div class="body">
         <p class="eyebrow">A private dinner &middot; Palm Beach</p>
         <h1>You&rsquo;re invited <em>to dinner.</em></h1>
@@ -186,7 +188,7 @@
 
   <section class="slide" id="s-why" aria-roledescription="slide" aria-label="2 of 7">
     <div class="cols">
-      <div class="media" data-key="why" data-cap="Why you, why now"></div>
+      <div class="media" data-key="why" style="--pos-m:40%" data-cap="Why you, why now"></div>
       <div class="body letter">
         <p class="eyebrow">Why you, why now</p>
         <h2>I wanted the people who move this city at one table.</h2>
@@ -199,7 +201,7 @@
 
   <section class="slide" id="s-build" aria-roledescription="slide" aria-label="3 of 7">
     <div class="cols">
-      <div class="media" data-key="build" data-cap="What we're building"></div>
+      <div class="media" data-key="build" style="--pos-m:22%" data-cap="What we're building"></div>
       <div class="body">
         <p class="eyebrow">What we&rsquo;re building</p>
         <h2>One home base for SoFlo Vegans.</h2>
@@ -215,7 +217,7 @@
 
   <section class="slide" id="s-ask" aria-roledescription="slide" aria-label="4 of 7">
     <div class="cols">
-      <div class="media" data-key="ask" data-cap="A seat at the table"></div>
+      <div class="media" data-key="ask" style="--pos-m:42%" data-cap="A seat at the table"></div>
       <div class="body">
         <p class="eyebrow">What we&rsquo;re asking</p>
         <h2>Not a sponsorship. A seat at the table.</h2>
@@ -232,7 +234,7 @@
 
   <section class="slide" id="s-evening" aria-roledescription="slide" aria-label="5 of 7">
     <div class="cols">
-      <div class="media" data-key="evening" data-cap="The evening"></div>
+      <div class="media" data-key="evening" style="--pos-m:40%" data-cap="The evening"></div>
       <div class="body">
         <p class="eyebrow">The evening</p>
         <h2>Friday, October 23.</h2>
@@ -263,7 +265,7 @@
 
   <section class="slide" id="s-seat" aria-roledescription="slide" aria-label="6 of 7">
     <div class="cols">
-      <div class="media" data-key="seat" data-cap="Take your seat"></div>
+      <div class="media" data-key="seat" style="--pos-m:2%" data-cap="Take your seat"></div>
       <div class="body">
         <p class="eyebrow">Your seat</p>
         <h2>Take your seat.</h2>
@@ -294,7 +296,7 @@
 
   <section class="slide" id="s-faq" aria-roledescription="slide" aria-label="7 of 7">
     <div class="cols">
-      <div class="media" data-key="faq" data-cap="Questions"></div>
+      <div class="media" data-key="faq" style="--pos-m:10%" data-cap="Questions"></div>
       <div class="body faq">
         <p class="eyebrow">Questions</p>
         <h2>Before you say yes.</h2>
@@ -327,7 +329,7 @@
     var BEDS = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/beds/';
     var DEFAULTS = {
       panels: {
-        invite: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_185513_36e52ab9-a110-4701-bfb8-dd08d50aaeae.png', why: HF + '164150_1c29bf05-1f51-4e45-a3c3-4b3fae41dd4f.png',
+        invite: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_191202_3f812ce9-9f99-4794-b08c-035aaa88559d.png', why: HF + '164150_1c29bf05-1f51-4e45-a3c3-4b3fae41dd4f.png',
         build: 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/ed0eb5e8-7150-4da1-8a6f-0def5c0df104.png', ask: HF + '164149_9266428b-0d50-43c0-80e8-60fba5258309.png',
         evening: HF + '164150_ad3e10f5-8514-4ebd-a019-ba5d999b2a02.png', seat: HF + '164149_501d6a50-0125-4b40-b2a4-40773b339081.png',
         faq: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_185514_7927c50c-6b46-424b-a65d-93e88a0d660f.png',
