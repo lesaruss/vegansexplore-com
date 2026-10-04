@@ -1872,9 +1872,9 @@
     if (!grid) return;
     closeMyList();
     grid.innerHTML = '';
-    var hidden = (member.hidden_modules) || [];
+    // Every tool always shows: the Remove from Your Tools links and the Add a Tool tile that brought
+    // one back were taken off (Sean, 2026-10-04: not needed with two tools; nobody had removed one).
     MODULES.forEach(function(m) {
-      if (hidden.indexOf(m.key) !== -1) return;
       if (dashTileHidden(m.key)) return;
       var wrap = document.createElement('div');
       wrap.className = 'dash-tile-wrap';
@@ -1899,31 +1899,8 @@
       if (m.key === 'my-list') {
         tile.addEventListener('click', function(e) { e.preventDefault(); openMyList(); });
       }
-      var remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'dash-community-change';
-      remove.textContent = 'Remove from Your Tools';
-      remove.addEventListener('click', function(e) { e.preventDefault(); toggleModule(m.key, false); });
-      wrap.appendChild(remove);
       grid.appendChild(wrap);
     });
-
-    var addWrap = document.createElement('div');
-    addWrap.className = 'dash-tile-wrap';
-    var addTile = document.createElement('div');
-    addTile.className = 'dash-tile dash-add-tile';
-    addTile.setAttribute('role', 'button');
-    addTile.setAttribute('tabindex', '0');
-    addTile.innerHTML =
-      '<div class="dash-thumb">+</div>' +
-      '<div class="dash-tile-body">' +
-        '<div class="dash-tile-title">Add a Tool</div>' +
-        '<div class="dash-tile-desc">Bring back any tool you\'ve removed.</div>' +
-      '</div>';
-    addTile.addEventListener('click', openToolsModal);
-    addTile.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openToolsModal(); } });
-    addWrap.appendChild(addTile);
-    grid.appendChild(addWrap);
   }
 
   document.getElementById('dash-tools-modal-close').addEventListener('click', closeToolsModal);
