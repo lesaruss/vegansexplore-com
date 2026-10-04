@@ -92,7 +92,7 @@
     <div id="im-gate" class="gate" hidden></div>
     <div id="im-app" hidden>
       <div class="bar">
-        <label>Page <select id="im-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option></select></label>
+        <label>Page <select id="im-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option><option value="dinner">Dinner invitation</option></select></label>
         <label>City <select id="im-city">
           <option value="south-florida">South Florida</option>
           <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
@@ -193,6 +193,16 @@
         { key: 'board', label: 'The Community Board', def: 'site-partner', defUrl: '/public/partner/ve-partner-mobile.png' },
         { key: 'unfinished', label: 'Unfinished on purpose', def: 'site-founder', defUrl: '/public/founder/sean-hero.jpg' },
         { key: 'seat', label: 'Take your founding seat', def: 'site-partner', defUrl: '/public/partner/ve-partner-mobile.png' }
+      ] };
+      // City dinner invitation (2026-10-04): Sean in GeekFon style, one third of every slide.
+      PAGES.dinner = { view: '/dinners/palm-beach', slides: [
+        { key: 'invite', label: 'You\u2019re invited', def: 'c8c9455e', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_154721_c8c9455e-0ec3-46b1-aa7f-884daba562b5.png' },
+        { key: 'why', label: 'Why you, why now', def: '455ec92d', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_154721_455ec92d-da89-4ef4-bf6e-82fc93c46df5.png' },
+        { key: 'build', label: 'What we\u2019re building', def: '71abdffe', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_154721_71abdffe-d674-4d86-91b0-94c12e5796d2.png' },
+        { key: 'ask', label: 'A seat at the table', def: 'a29b8b85', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_154721_a29b8b85-dae7-4729-a2a4-900f9a29ba4c.png' },
+        { key: 'evening', label: 'The evening', def: '0bd1b310', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_154721_0bd1b310-edfe-418c-a37d-af9b0448d5ba.png' },
+        { key: 'seat', label: 'Take your seat', def: '77aad735', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_154721_77aad735-4914-4107-bfc4-1e391634f925.png' },
+        { key: 'faq', label: 'Questions', def: 'c6673b1f', defUrl: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_154724_c6673b1f-3604-490c-b403-3f4338ff1f7d.png' }
       ] };
       // Every page also has its background, desktop (landscape) and phone (portrait).
       var BG_DEFAULT = '/communities/south-florida/banner.jpg';
