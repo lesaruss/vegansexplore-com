@@ -1,6 +1,6 @@
-/* Daily Pulse desk (Sean, 2026-10-04, playbook ve-daily-pulse-discussion). Where a topic is made
-   and approved before it goes up on the Community Board's Pulse lane. A Community Manager sees
-   their own city here (in the Pulse Desk); Sean sees every city and National (Depot > Inbox opens
+/* Daily Post desk (Sean, 2026-10-04, playbook ve-daily-pulse-discussion). Where a topic is made
+   and approved before it goes up on the Community Board's Daily Post lane. A Community Manager sees
+   their own city here (in the Daily Post Desk); Sean sees every city and National (Depot > Inbox opens
    on National). Nothing posts on its own: a story from the Inbox, or a pasted link, becomes a
    draft queued for the Background writer (the dispatcher's pulse_topic_write job, on Sean's
    Claude subscription), which fills in the headline, intro and question, usually within minutes.
@@ -8,7 +8,7 @@
    needs a first reply so no topic opens to an empty room.
 
    Each day's topic is a city briefing (Sean, 2026-10-04: lead the movement, not trivia): Build
-   today's Pulse asks the writer for the whole thing (opening, the stories people are talking
+   today's Daily Post asks the writer for the whole thing (opening, the stories people are talking
    about, events, one action, the question); a story or link can also lead it. The approver keeps
    or drops each story and event and can change the action before publishing.
 
@@ -79,12 +79,12 @@
     if (!document.getElementById('vpd-style')) { var st = document.createElement('style'); st.id = 'vpd-style'; st.textContent = css; document.head.appendChild(st); }
     var state = { scope: (opts && opts.scope) || '', data: null, timer: null };
     el.classList.add('vpd');
-    el.innerHTML = '<div class="vpd-card"><p class="vpd-empty">Loading the Daily Pulse desk&hellip;</p></div>';
+    el.innerHTML = '<div class="vpd-card"><p class="vpd-empty">Loading the Daily Post desk&hellip;</p></div>';
 
     function load() {
       api({ action: 'topic_desk', community: state.scope }).then(function (d) {
         if (d.error) {
-          el.innerHTML = d._status === 403 ? '' : '<div class="vpd-card"><p class="vpd-empty">' + esc(d.message || 'The Daily Pulse desk could not load. Refresh to try again.') + '</p></div>';
+          el.innerHTML = d._status === 403 ? '' : '<div class="vpd-card"><p class="vpd-empty">' + esc(d.message || 'The Daily Post desk could not load. Refresh to try again.') + '</p></div>';
           return;
         }
         state.data = d; state.scope = d.scope; render();
@@ -102,10 +102,10 @@
     function render() {
       var d = state.data, where = d.scope === 'national' ? 'the whole country' : d.scope_name;
       var html = '<div class="vpd-card">' +
-        '<div class="vpd-head"><h2>Daily Pulse &middot; ' + esc(d.scope_name) + '</h2>' +
+        '<div class="vpd-head"><h2>Daily Post &middot; ' + esc(d.scope_name) + '</h2>' +
           '<span class="vpd-today' + (d.posted_today ? ' done">Today\'s topic is up' : '">No topic yet today') + '</span></div>' +
         '<p class="vpd-sub">One briefing a day for ' + esc(where) + ', the way the people leading the movement here would tell it: what is happening, what people are talking about, and one thing to do about it, with a question for the conversation. Check it, write the first reply, and publish it to the Board.</p>' +
-        '<div class="vpd-row" style="margin-top:14px;"><button type="button" class="vpd-btn" data-build>Build today\'s Pulse</button>' +
+        '<div class="vpd-row" style="margin-top:14px;"><button type="button" class="vpd-btn" data-build>Build today\'s Daily Post</button>' +
           '<span class="vpd-hint" style="font-size:13px;">The writer gathers what is happening in ' + esc(where) + ', the stories people are talking about, events and one thing to do, in a few minutes.</span></div>' +
         (d.scopes.length > 1 ? '<label class="vpd-f" style="margin-top:12px;max-width:320px;">Desk<select data-scope>' +
           d.scopes.map(function (s) { return '<option value="' + s.slug + '"' + (s.slug === d.scope ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + '</select></label>' : '') +
@@ -134,7 +134,7 @@
         (d.live.length ? '<ul class="vpd-list">' + d.live.map(function (t) {
           var link = '/board?lane=pulse&community=' + (t.community === 'national' ? 'south-florida' : t.community) + '&post=' + t.id;
           return '<li class="vpd-item"><div><b>' + esc(t.title) + '</b><small>' + day(t.published_at) + ' &middot; ' + t.reply_count + (t.reply_count === 1 ? ' reply' : ' replies') +
-            (t.status === 'hidden' ? ' &middot; Hidden' : '') + '</small></div><a class="vpd-btn ghost" href="' + link + '" data-frame-label="Daily Pulse">Open</a></li>';
+            (t.status === 'hidden' ? ' &middot; Hidden' : '') + '</small></div><a class="vpd-btn ghost" href="' + link + '" data-frame-label="Daily Post">Open</a></li>';
         }).join('') + '</ul>' : '<p class="vpd-empty">Nothing published yet.</p>') + '</div>';
 
       el.innerHTML = html;
@@ -146,7 +146,7 @@
       else if (ws === 'written') banner = '<p class="vpd-warn ok">Written by the Background writer. Check each story against its source, keep what matters, write the first reply, and publish.</p>';
       else if (ws === 'failed') banner = '<p class="vpd-warn err">The writer could not write this one' + (t.write_error ? ': ' + esc(t.write_error) : '.') + ' Finish it by hand, send it back with a note, or discard it.</p>';
       return '<form class="vpd-draft" data-draft="' + t.id + '">' + banner +
-        '<label class="vpd-f">Headline <span class="vpd-hint">For example: South Florida Pulse: a new market, a rescue in need, Saturday\'s party</span><input name="title" maxlength="140" value="' + esc(t.title) + '"></label>' +
+        '<label class="vpd-f">Headline <span class="vpd-hint">For example: South Florida Daily Post: a new market, a rescue in need, Saturday\'s party</span><input name="title" maxlength="140" value="' + esc(t.title) + '"></label>' +
         '<label class="vpd-f">Opening <span class="vpd-hint">Two or three sentences: what is moving in the city today and why it matters</span><textarea name="body" rows="3" maxlength="4000">' + esc(t.body) + '</textarea></label>' +
         briefingHtml(t) +
         '<label class="vpd-f" style="margin-top:12px;">The question <span class="vpd-hint">One real question that gets the city talking about today</span><input name="question" maxlength="300" value="' + esc(t.question || '') + '"></label>' +
@@ -213,7 +213,7 @@
       if (e.target.hasAttribute && e.target.hasAttribute('data-build')) {
         e.target.disabled = true; e.target.textContent = 'Queuing...';
         api({ action: 'topic_draft', community: state.scope }).then(function (d) {
-          e.target.disabled = false; e.target.textContent = 'Build today\'s Pulse';
+          e.target.disabled = false; e.target.textContent = 'Build today\'s Daily Post';
           if (d.error) { alert(d.message || 'That did not go through. Try again.'); return; }
           load();
         });

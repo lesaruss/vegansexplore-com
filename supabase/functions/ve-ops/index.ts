@@ -1,7 +1,7 @@
 // ve-ops: the dashboard's role row and the two pages behind it (Sean, 2026-10-04).
 //   Platform health  -> /dashboard/health       (superadmins)
 //   Submissions      -> /dashboard/submissions  (superadmins: every open item; Community Managers:
-//                                                their city's bounty work, reports and Pulse drafts)
+//                                                their city's bounty work, reports and Daily Post drafts)
 //   This week        -> new members against the week before, active Passports
 //
 // POST { action: 'summary' }  counts for the role row tiles

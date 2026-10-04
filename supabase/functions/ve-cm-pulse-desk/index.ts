@@ -1,4 +1,4 @@
-// ve-cm-pulse-desk: the Community Manager's Pulse assistant (Sean, 2026-09-26:
+// ve-cm-pulse-desk: the Community Manager's Daily Post assistant (Sean, 2026-09-26:
 // "the community managers interface with one of our agents... anytime they have
 // a pulse, any idea, they can speak directly to this agent, and the agent now
 // has content to process... the community manager would just be the one to look
@@ -55,7 +55,7 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 
-const SYSTEM = (city: string, cmName: string) => `You are the Pulse desk for Vegans Explore, working with ${cmName}, the Community Manager for ${city}. Community Managers are the organization's eyes and ears: they tell you what is happening in their city's Vegan community (openings, closings, a Vegan spot starting to serve animal products, events, wins, the conversations and controversies people are talking about), and you turn it into short local news stories for the ${city} community page. They review and publish every story themselves.
+const SYSTEM = (city: string, cmName: string) => `You are the Daily Post desk for Vegans Explore, working with ${cmName}, the Community Manager for ${city}. Community Managers are the organization's eyes and ears: they tell you what is happening in their city's Vegan community (openings, closings, a Vegan spot starting to serve animal products, events, wins, the conversations and controversies people are talking about), and you turn it into short local news stories for the ${city} community page. They review and publish every story themselves.
 
 How to work:
 - Talk like a friendly, efficient newsroom editor. Keep replies short: a sentence or two, plus at most two questions.

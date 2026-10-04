@@ -18,7 +18,7 @@
 // POST { action: 'moderate', post_id? | reply_id?, op: 'hide'|'restore' }  moderator
 // POST { action: 'reports', community? }        moderator -> open reports
 //
-// Daily Pulse topics (Sean, 2026-10-04, playbook ve-daily-pulse-discussion): the Pulse is a lane of
+// Daily Post topics (Sean, 2026-10-04, playbook ve-daily-pulse-discussion): the Daily Post is a lane of
 // the Board. A topic is a post with kind 'topic': a short intro, one question, and its source.
 // community 'national' holds the national topic, shown in every city's lane. Topics start as
 // drafts that only the desk sees; the city's Community Manager approves theirs, Sean the national
@@ -152,9 +152,9 @@ async function posterCards(ids: string[]) {
   return out;
 }
 
-// A topic is posted by the Daily Pulse, not by the person who approved it; their name shows on
+// A topic is posted by the Daily Post, not by the person who approved it; their name shows on
 // the first reply instead.
-const PULSE_POSTER = { name: 'Daily Pulse', initials: 'DP', color: '#cfe8d0', avatar: null, pulse: true };
+const PULSE_POSTER = { name: 'Daily Post', initials: 'DP', color: '#cfe8d0', avatar: null, pulse: true };
 
 function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
   const topic = p.kind === 'topic';
@@ -167,7 +167,7 @@ function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
   };
 }
 
-// ---- Daily Pulse desk ---------------------------------------------------------------------
+// ---- Daily Post desk ---------------------------------------------------------------------
 // Which topic scopes this person may draft and approve: Sean every city and National, a
 // Community Manager their own city (their invite's city first, then their home community).
 async function deskScopes(viewer: Viewer): Promise<string[]> {
@@ -387,7 +387,7 @@ Deno.serve(async (req) => {
         post = data;
       }
       if (!post) return json({ error: 'not_found' }, 404);
-      // A topic is the Daily Pulse's post: a report on it is about the topic, not the person who approved it.
+      // A topic is the Daily Post's post: a report on it is about the topic, not the person who approved it.
       const reported = reply ? reply.member_id : (post.kind === 'topic' ? null : post.member_id);
       if (reported && reported === viewer!.id) return json({ error: 'own_post', message: 'You cannot report your own post.' }, 400);
       if (await countSince('ve_board_reports', 'reporter_member_id', viewer!.id) >= LIMITS.report) return json({ error: 'rate_limited', message: 'You have sent a lot of reports today. The team is on it.' }, 429);
@@ -443,7 +443,7 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
 
     case 'topic_desk': {
       const scopes = await deskScopes(viewer);
-      if (!scopes.length) return json({ error: 'forbidden', message: 'The Pulse desk is for Community Managers.' }, 403);
+      if (!scopes.length) return json({ error: 'forbidden', message: 'The Daily Post desk is for Community Managers.' }, 403);
       const scope = scopes.includes(clean(body.community, 40)) ? clean(body.community, 40) : scopes[0];
       const cols = 'id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, lead_id, write_status, write_note, write_error, briefing';
       const since = new Date(Date.now() - 21 * DAY_MS).toISOString();
@@ -494,7 +494,7 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
       const named = tidy(story.title, 140);
       const { data, error } = await db.from('ve_board_posts').insert({
         community_slug: scope, member_id: viewer!.id, kind: 'topic', category: 'pulse', status: 'draft',
-        title: named.length >= 3 ? named : (scope === NATIONAL ? 'Daily Pulse' : SCOPE_NAME[scope] + ' Pulse'),
+        title: named.length >= 3 ? named : (scope === NATIONAL ? 'Daily Post' : SCOPE_NAME[scope] + ' Daily Post'),
         body: tidy(story.summary, 4000) || 'The Background writer is building today\'s briefing.', question: '',
         source_name: story.url ? tidy(story.source || hostName(story.url), 120) : null, source_url: story.url || null, lead_id: leadId,
         write_status: 'queued', write_note: note || null, write_marked_at: new Date().toISOString(),

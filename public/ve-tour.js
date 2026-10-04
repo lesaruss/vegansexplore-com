@@ -10,7 +10,7 @@
 //
 // Tours (VETour.start(name), or ?tour=<name> on the tour's first page):
 //   dashboard   the member dashboard (also ?tour=1 and /tour)
-//   cm          Community Manager tools: dashboard, Certification, Pulse Desk
+//   cm          Community Manager tools: dashboard, Certification, Daily Post Desk
 //   hub         any city community hub (/communities/<city>)
 //   depot       The Depot, page by page
 //   partners    the Partners page (/partners)
@@ -84,10 +84,10 @@
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-cm-cert-prompt'], title: 'Your certification',
           body: 'Community Managers start here. Nine short modules, each with a quick quiz. Pass them all to be certified.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-tabs', '#dash-tabs-mobile'], title: 'Everything is one tab away',
-          body: 'The Directory, Events, Shows, the Daily Pulse, Communities and your Tools all live right here.' },
+          body: 'The Directory, Events, Shows, the Daily Post, Communities and your Tools all live right here.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-leaderboard-block'], placement: 'top', title: 'The leaderboard',
           body: 'See who is leading your city and the whole community. Switch between This City and Global.' },
-        { page: DASH_PAGE, tab: 'pulse', sel: ['#dash-tabs .dash-tab[data-tab-key="pulse"]', '#dash-tabs-mobile'], title: "Today's Daily Pulse",
+        { page: DASH_PAGE, tab: 'pulse', sel: ['#dash-tabs .dash-tab[data-tab-key="pulse"]', '#dash-tabs-mobile'], title: "Today's Daily Post",
           body: "Your city's daily briefing and today's national one: what is happening, what is coming up, and one thing you can do." },
         { page: DASH_PAGE, tab: 'directory', sel: ['#dash-tabs .dash-tab[data-tab-key="directory"]', '#dash-tabs-mobile'], title: 'The Directory',
           body: 'Vegan and Vegan-friendly restaurants, shops and services in your city. Vote for your favorites and save them to My List.' },
@@ -110,12 +110,12 @@
       prepare: function () { if (onDashboard()) { if (typeof global.veCloseToolPanels === 'function') { try { global.veCloseToolPanels(); } catch (e) {} } dashTab('profile'); } },
       steps: [
         { page: DASH_PAGE, tab: 'profile', sel: ['.dash-welcome'], title: 'Your Community Manager tools',
-          body: 'A quick walk through what you have as a Community Manager: your city, your certification, the Pulse Desk and your tools.' },
+          body: 'A quick walk through what you have as a Community Manager: your city, your certification, the Daily Post Desk and your tools.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-stats-row'], title: 'What needs you',
-          body: 'Today\'s Pulse for your city, everything waiting on a decision, and how your city grew this week. Tap Pending Submissions to work through them.' },
+          body: 'Today\'s Daily Post for your city, everything waiting on a decision, and how your city grew this week. Tap Pending Submissions to work through them.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-cm-cert-prompt'], title: 'Start with your certification',
           body: 'Your handbook as a course. This card shows your progress and takes you straight back in.' },
-        { page: DASH_PAGE, tab: 'profile', sel: ['#dash-cm-pulse-prompt'], title: 'The Pulse Desk',
+        { page: DASH_PAGE, tab: 'profile', sel: ['#dash-cm-pulse-prompt'], title: 'The Daily Post Desk',
           body: "Where you tell us what's happening in your city. We'll look at it in a moment." },
         { page: DASH_PAGE, tab: 'tools', sel: ['#dash-tiles-flat', '#dash-tiles-sectioned'], title: 'Your tools',
           body: 'Certification lives here too, with Event Management and Directory Review on the way.' },
@@ -173,9 +173,9 @@
           body: 'Drop pictures, sound and video here. Everything is kept in our own storage and tagged, so any page can use it.' },
         { page: '/admin/depot/inbox', sel: ['.depot-head'], title: 'Inbox',
           body: 'Every story idea in one place: links you paste, stories members send from their hub, and what our sources find.' },
-        { page: '/admin/depot/pulse', sel: ['.depot-head'], title: 'Pulse',
-          body: 'Write a piece and publish it straight to the Daily Pulse.' },
-        { page: '/admin/depot/pulse-cities', sel: ['.depot-head'], title: 'Pulse Cities',
+        { page: '/admin/depot/pulse', sel: ['.depot-head'], title: 'Daily Post',
+          body: 'Write a piece and publish it straight to the Daily Post.' },
+        { page: '/admin/depot/pulse-cities', sel: ['.depot-head'], title: 'Daily Post Cities',
           body: 'Put any published piece in one or more city hubs. A tagged piece shows in that hub\'s Local News.' },
         { page: '/admin/depot/onboarding', sel: ['.depot-head'], title: 'Onboarding',
           body: 'Set each onboarding slide\'s picture, narration, music and video.' },
@@ -462,7 +462,7 @@
     var tries = 0;
     setTimeout(function paint() {
       currentTarget = findEl(step);
-      // Parts that load after the page (certification, the Pulse Desk) get a few seconds.
+      // Parts that load after the page (certification, the Daily Post Desk) get a few seconds.
       if (!currentTarget && ++tries < 25) { setTimeout(paint, 200); return; }
       currentRing = null;
       if (step.tab && step.tab !== 'profile') currentRing = q('#dash-tabs .dash-tab[data-tab-key="' + step.tab + '"]');

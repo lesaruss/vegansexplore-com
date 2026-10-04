@@ -1,9 +1,9 @@
 /* ve-ad-rail.js: the right-hand advertising rail (Sean, 2026-10-04: "three-fourths being the
    content, one-fourth being the advertisement to the right ... that's a revenue stream for us").
-   Used on the Daily Pulse (/board list and post pages, the dashboard's Daily Pulse tab) and the
+   Used on the Daily Post (/board list and post pages, the dashboard's Daily Post tab) and the
    dashboard's Events tab. Not on Communities, Tools, Shows or the Directory (which has its own).
 
-   Same ad system as the old Pulse page and the Directory listing billboard: placements live in
+   Same ad system as the old Daily Post page and the Directory listing billboard: placements live in
    ad_placements (page_slug + slot_id), ad-resolve picks the active campaign per slot and logs the
    impression, ad-click logs the click.
 

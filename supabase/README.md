@@ -114,7 +114,7 @@ member (no points credited) and redirects back. Keep the allowlist tiny and clea
 
 ## ve-cm-pulse-desk
 
-The Community Manager's Pulse Desk (`/dashboard/pulse-desk`). `verify_jwt` is **false**: the VE app
+The Community Manager's Daily Post Desk (`/dashboard/pulse-desk`). `verify_jwt` is **false**: the VE app
 token is HMAC-verified in the function like ve-auth. Community managers (and superadmins, who may
 pass `city`) chat with Claude (`claude-opus-5`, server-side refusal fallbacks on, key from
 `lesaruss_secrets.ANTHROPIC_API_KEY`); it asks follow-ups, then drafts a local story into
@@ -165,15 +165,15 @@ onto white at up to 800px before the shared uploader, so see-through logos never
 `delete` now also keeps any picture a listing uses as its logo. Deployed as v9 with
 `verify_jwt=false` (unchanged).
 
-## ve-media-library: Pulse city tags (2026-09-27)
+## ve-media-library: Daily Post city tags (2026-09-27)
 
-The Depot's **Pulse Cities** tab (`/admin/depot/pulse-cities`, superadmins) replaces the retired
+The Depot's **Daily Post Cities** tab (`/admin/depot/pulse-cities`, superadmins) replaces the retired
 `/admin/pulse-city-tags` page. That page wrote `ve_pulse_city_tags` from the browser with the
 anon key, but the table's insert/delete policies were for `authenticated` only, so every change
-was silently refused. Now `city_tags_list` returns every published Pulse piece with its tags and
+was silently refused. Now `city_tags_list` returns every published Daily Post piece with its tags and
 `city_tag { pulse_id, city_slug, on }` adds or removes one (city must be in `PULSE_CITIES`).
 `pulse_save` no longer clears every tag on a Depot piece when it is edited: it moves only the
-piece's own `city_slug` tag, so extra hubs tagged on Pulse Cities stay. Migration
+piece's own `city_slug` tag, so extra hubs tagged on Daily Post Cities stay. Migration
 `ve_pulse_city_tags_writes_via_depot_only` drops the two write policies and revokes
 insert/update/delete from anon and authenticated; public read stays (`public/hub-news.js`).
 Deployed as v10 with `verify_jwt=false` (unchanged).
@@ -182,11 +182,11 @@ The Depot's **City News** tab (`/admin/depot/news`) replaces `/admin/news-review
 existing `ve-community-news` function (`list_pending`, `approve`, `reject`; member token in the
 body), unchanged.
 
-## Pulse: podcast episodes live on /podcast only (2026-09-27)
+## Daily Post: podcast episodes live on /podcast only (2026-09-27)
 
-Sean: move the podcast "articles" to the podcast page exclusively; the Pulse is for original city
+Sean: move the podcast "articles" to the podcast page exclusively; the Daily Post is for original city
 content, "coming soon" until there is some. A `ve_pulse_content` row with a `podcast_show` is an
-episode. `/pulse`, the dashboard Pulse grids (`dashboard/center-console.html`) and the hub Local
+episode. `/pulse`, the dashboard Daily Post grids (`dashboard/center-console.html`) and the hub Local
 News feeds (`public/hub-news.js`, via `ve_pulse_content!inner` + `podcast_show=is.null`) now leave
 episodes out, and `ve-media-library` `city_tags_list` (v11) no longer offers them for tagging.
 `/podcast`, the show pages and `/pulse/<slug>` (`api/pulse-article.js`) still serve every episode.
@@ -371,7 +371,7 @@ member must hold the listing), `?confirm=` (also reached by the webhook's generi
 ## ve-news-desk: the News Desk (2026-09-27)
 
 Sean: pull Vegan outlets and each city's local news, flag anything about Vegan life in our cities
-back to June, show it on a dashboard page, and turn marked stories into Pulse articles. Page:
+back to June, show it on a dashboard page, and turn marked stories into Daily Post articles. Page:
 Depot > News Desk (`/admin/depot/news-desk`, superadmins; the Depot opens inside the dashboard).
 
 - **Sources** are rows in `ve_news_feeds` (migration `ve_news_desk` added `scope`, `search_query`,
@@ -398,7 +398,7 @@ Depot > News Desk (`/admin/depot/news-desk`, superadmins; the Depot opens inside
   publishing" notes on the lead. Failed drafts keep the error on the lead and the cron retries
   up to two queued drafts per run. The key is `ANTHROPIC_API_KEY` in `lesaruss_secrets`; on
   2026-09-27 that account was out of credit (error_registry `ROOM-ANTHROPIC-CREDIT-EXHAUSTED-502`).
-- **Publishing** happens in Depot > Pulse (`/admin/depot/pulse?edit=<id>` opens a draft):
+- **Publishing** happens in Depot > Daily Post (`/admin/depot/pulse?edit=<id>` opens a draft):
   `ve-media-library` v12 keeps drafts as drafts on save, needs a Library cover to publish, stamps
   `published_at`, and marks the lead `published`. `public/hub-news.js` shows only published
   pieces, so a draft never reaches a hub.
@@ -480,7 +480,7 @@ spreading a new Vegan cream cheese on a bagel, drawn from their reference pictur
 `/public/guides/<name>.png`; no real people, no Sean, no text, no logos or brand packaging; the
 worker notes the guides and picture description on the lead)
 and calls `ve-pulse-cover` through SQL (`net.http_post`, `x-cron-secret`). The function copies the
-image into `vegan-media/library/covers/` (the Pulse only publishes covers stored there) and sets the
+image into `vegan-media/library/covers/` (the Daily Post only publishes covers stored there) and sets the
 draft's `thumbnail_url`; drafts only. The step is in `lesaruss_dispatch_sources.news_desk_write`
 and is skipped when the routine has no Higgsfield connector. Live-tested on a throwaway draft
 (deleted; one test image remains in storage).
@@ -554,7 +554,7 @@ writer now saves each draft under its story's brand.
 
 "A preview button so I can see a mockup of how the actual article would look in a lightbox."
 Preview shows a piece, draft or not, on its real article page, inside a lightbox with a
-Desktop / Phone toggle. It is on the Inbox Ready lane and every Pulse tab row, here and in
+Desktop / Phone toggle. It is on the Inbox Ready lane and every Daily Post tab row, here and in
 HQ's Depot (hq.lesaruss.ai/depot).
 
 - `ve_pulse_previews` (migration `ve_pulse_previews`): one row per preview link, token uuid,
@@ -570,7 +570,7 @@ HQ's Depot (hq.lesaruss.ai/depot).
 - HQ shows vegansexplore.com in a frame, so HQ's CSP `frame-src` lists it (lesaruss-hq
   next.config.ts; error_registry HQ-CSP-FRAME-SRC).
 
-Same day: Inbox, Sources and Pulse Cities dropped their 900 to 1100px caps on cards, stats and
+Same day: Inbox, Sources and Daily Post Cities dropped their 900 to 1100px caps on cards, stats and
 toolbars, so every Depot tab is full width. Only the intro line under each title keeps a
 reading width.
 
@@ -587,12 +587,12 @@ only for general topics, labelled." Migration `depot_photo_provenance`:
   writer's own `library/covers/` pictures are illustrations) and sets names_business for Food &
   Dining and Business Spotlight. Trigger `ve_pulse_cover_rule` refuses to publish a piece with
   names_business whose cover is an illustration or has no recorded right (`needs_real_photo`).
-  It lives in the database so both Depots, Depot > Pulse and the writer all follow it.
+  It lives in the database so both Depots, Depot > Daily Post and the writer all follow it.
 - **ve-media-library v14**: upload, register and update take license, credit, source_page_url;
   `listing_search`, `pulse_cover`; publish errors come back as `needs_real_photo`.
   **ve-news-desk v7**: the Ready lane gets each draft's cover credit; `ready_publish` returns
   `needs_real_photo`.
-- `public/depot-cover.js`: the Cover dialog (Inbox Ready cards, Depot > Pulse). A real photo with
+- `public/depot-cover.js`: the Cover dialog (Inbox Ready cards, Depot > Daily Post). A real photo with
   what lets us use it and its credit, or the business's logo card drawn in the browser from the
   logo on its listing. Library cards edit credit, license and source page.
 - `api/pulse-article.js`: a credit line under the cover ("Photo: Courtesy of X", "X logo",

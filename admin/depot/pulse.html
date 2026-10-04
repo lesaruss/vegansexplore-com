@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Pulse | The Depot</title>
+  <title>Daily Post | The Depot</title>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -86,9 +86,9 @@
 
   <div class="wrap">
     <p class="eyebrow">The Depot</p>
-    <h1>Pulse</h1>
+    <h1>Daily Post</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Write a piece and publish it straight to the <a href="/pulse" target="_blank" rel="noopener">Pulse</a>. It goes live the moment you press Publish, with no approval step. Its picture, video and audio come from the <a href="/admin/depot">Library</a>. A piece with a city also shows on that city's page. You can edit or take down anything below at any time.</p>
+    <p class="sub">Write a piece and publish it straight to the <a href="/pulse" target="_blank" rel="noopener">Daily Post</a>. It goes live the moment you press Publish, with no approval step. Its picture, video and audio come from the <a href="/admin/depot">Library</a>. A piece with a city also shows on that city's page. You can edit or take down anything below at any time.</p>
     <div id="pu-gate" class="gate" hidden></div>
     <div id="pu-app" hidden>
       <section class="panel" aria-labelledby="pu-form-h">
@@ -103,7 +103,7 @@
             </div>
           </div>
           <div class="field wide"><label for="pu-title">Title</label><input type="text" id="pu-title" maxlength="160" autocomplete="off"></div>
-          <div class="field wide"><label for="pu-summary">Summary</label><textarea id="pu-summary" rows="2" maxlength="400"></textarea><span class="hint">Cards on the Pulse show the first two lines of this.</span></div>
+          <div class="field wide"><label for="pu-summary">Summary</label><textarea id="pu-summary" rows="2" maxlength="400"></textarea><span class="hint">Cards on the Daily Post show the first two lines of this.</span></div>
           <div class="field"><label for="pu-category">Category</label><select id="pu-category">
             <option>Community</option><option>Community Spotlight</option><option>Business Spotlight</option><option>Food &amp; Dining</option><option>Recipes</option>
             <option>Health &amp; Nutrition</option><option>Animal Rights</option><option>Policy &amp; Advocacy</option><option>Culture &amp; Media</option>
@@ -125,7 +125,7 @@
           <div class="field wide"><label for="pu-body">The piece</label><textarea id="pu-body" rows="12"></textarea><span class="hint">Leave a blank line to start a new paragraph.</span></div>
         </div>
         <div class="actions">
-          <button type="button" class="btn" id="pu-publish">Publish to the Pulse</button>
+          <button type="button" class="btn" id="pu-publish">Publish to the Daily Post</button>
           <button type="button" class="btn btn-ghost" id="pu-save-draft" hidden>Save draft</button>
           <button type="button" class="btn btn-ghost" id="pu-clear">Start a new piece</button>
           <span class="msg" id="pu-msg" role="status"></span>
@@ -225,7 +225,7 @@
         renderCover(); renderMediaSelects(p && p.video_url, p && p.audio_url);
         var draft = !!(p && p.status === 'draft');
         $('pu-form-h').textContent = p ? (draft ? 'Draft: ' : 'Editing: ') + p.title : 'New piece';
-        $('pu-publish').textContent = p && !draft ? 'Save changes' : 'Publish to the Pulse';
+        $('pu-publish').textContent = p && !draft ? 'Save changes' : 'Publish to the Daily Post';
         $('pu-save-draft').hidden = !draft;
         $('pu-errs').textContent = '';
       }
@@ -259,7 +259,7 @@
           var wasNew = !editing, p = d.piece;
           pieces = [p].concat(pieces.filter(function (x) { return x.id !== p.id; }));
           renderList(); fill(p);
-          $('pu-msg').innerHTML = p.status === 'draft' ? 'Draft saved. It is not on the Pulse yet.' :
+          $('pu-msg').innerHTML = p.status === 'draft' ? 'Draft saved. It is not on the Daily Post yet.' :
             ((wasNew || draft ? 'Published. It is live' : 'Saved. It is live') + ' at <a href="/pulse/' + esc(p.slug) + '" target="_blank" rel="noopener">vegansexplore.com/pulse/' + esc(p.slug) + '</a>.');
         }).catch(function () { busy = false; $('pu-publish').disabled = false; $('pu-msg').textContent = ''; $('pu-errs').textContent = 'Could not connect. Try again.'; });
       }
@@ -279,7 +279,7 @@
           b.onclick = function () {
             var p = pieces[+b.getAttribute('data-status')], next = p.status === 'published' ? 'archived' : 'published';
             if (next === 'published' && !p.thumbnail_url) { alert('Open "' + p.title + '" with Edit and choose a cover picture first.'); return; }
-            if (next === 'archived' && !confirm('Take "' + p.title + '" down from the Pulse? You can put it back up later.')) return;
+            if (next === 'archived' && !confirm('Take "' + p.title + '" down from the Daily Post? You can put it back up later.')) return;
             b.disabled = true;
             api({ action: 'pulse_status', id: p.id, status: next }).then(function (d) {
               if (d.ok) { pieces[pieces.indexOf(p)] = d.piece; renderList(); } else { b.disabled = false; alert(d.error === 'bad_cover' ? 'Choose a cover picture first (Edit).' : d.error === 'needs_real_photo' ? 'This piece is about a business: it needs a real, credited photo or their logo card first (Edit, then A real photo or their logo card).' : 'That did not save. Try again.'); }
@@ -293,7 +293,7 @@
         if (!VEAuth.isLoggedIn()) {
           $('pu-gate').hidden = false;
           $('pu-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="pu-signin">Sign in</button>';
-          $('pu-signin').onclick = function () { VEAuth.showAuthModal('Sign in to publish to the Pulse.', function () { location.reload(); }, 'login'); };
+          $('pu-signin').onclick = function () { VEAuth.showAuthModal('Sign in to publish to the Daily Post.', function () { location.reload(); }, 'login'); };
           return;
         }
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();

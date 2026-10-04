@@ -1,7 +1,7 @@
-// ve-pulse-cover: saves a cover picture onto a Pulse DRAFT (Sean, 2026-09-27: yes to covers made for
+// ve-pulse-cover: saves a cover picture onto a Daily Post DRAFT (Sean, 2026-09-27: yes to covers made for
 // News Desk drafts). The Dispatcher Worker routine makes the picture with Higgsfield, then calls this
 // through SQL (net.http_post with x-cron-secret). This copies the image into our own storage
-// (vegan-media/library/covers/), because the Pulse only publishes covers stored there, and sets it
+// (vegan-media/library/covers/), because the Daily Post only publishes covers stored there, and sets it
 // as the draft's thumbnail. Drafts only: a published piece is never touched.
 //
 // POST { pulse_id, image_url, license?, credit?, source_page_url?, listing_id? }   x-cron-secret: <CRON_SECRET>
