@@ -1410,7 +1410,7 @@
 
   // Communities tab (Sean 2026-09-26): every community shows, four across, so
   // none are out of sight. Tapping one brings it up on the dashboard (city pill,
-  // Directory, Leaderboard, Events, Campaigns, Daily Pulse). Joined ones come
+  // Directory, Leaderboard, Events, Campaigns, Daily Pulse) and opens its landing page. Joined ones come
   // first and carry a Leave link; the rest carry a Join link.
   function renderCommunitySection(member) {
     currentMember = member;
@@ -1437,10 +1437,15 @@
             (isJoined ? ' <span class="dash-tag live">Joined</span>' : '') +
             (slug === viewing ? ' <span class="dash-tag">Viewing</span>' : '') + '</div>' +
         '</div>';
+      // Picking a community brings it up on the dashboard and opens its landing page in the
+      // window (Sean, 2026-10-04: "somebody might think it's broken if it doesn't take them to
+      // that community").
       tile.addEventListener('click', function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
         e.preventDefault();
         switchActiveCity(slug, member);
         renderCommunitySection(currentMember);
+        if (window.openConsoleFrame) window.openConsoleFrame('/communities/' + slug, VE_CITY_NAMES[slug]); else location.href = '/communities/' + slug;
       });
       wrap.appendChild(tile);
 

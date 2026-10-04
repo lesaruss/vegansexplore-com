@@ -92,6 +92,34 @@
     body.lane-pulse .chips, body.lane-pulse #category, body.lane-pulse #status { display: none; }
     body.lane-pulse .toolbar { grid-template-columns: minmax(0, 1fr); }
 
+    /* A post on its own page (Sean, 2026-10-04). Wider and larger than the old pop-up, with the
+       less-used tools (copy link, report, hide) as quiet links at the bottom. */
+    .post-page { max-width: 780px; margin: 0 auto; padding: 18px 24px 64px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 14px; font-weight: 800; color: var(--ve-green-dark); text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .back-link:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    .post-article { margin-top: 10px; }
+    .post-article #d-title { font-size: clamp(26px, 3.8vw, 36px); font-weight: 900; line-height: 1.15; letter-spacing: -0.01em; margin: 4px 0 8px; }
+    .post-article #d-title:focus { outline: none; }
+    .post-article .full-body { font-size: 17px; line-height: 1.7; margin-top: 18px; }
+    .post-article .vep-brief { gap: 26px; margin-top: 28px; }
+    .post-article .vep-brief h4 { font-size: 12px; margin-bottom: 12px; }
+    .post-article .vep-brief ol, .post-article .vep-brief ul { gap: 16px; }
+    .post-article .vep-brief li { padding: 2px 0 2px 16px; }
+    .post-article .vep-brief li a, .post-article .vep-brief li strong { font-size: 17px; line-height: 1.35; }
+    .post-article .vep-brief .vep-take { font-size: 15px; line-height: 1.6; margin-top: 4px; }
+    .post-article .vep-brief .vep-src { font-size: 13px; margin-top: 4px; }
+    .post-article .vep-move { padding: 20px 22px; }
+    .post-article .d-question { margin-top: 28px; background: var(--ve-green-light); border-radius: 12px; padding: 16px 18px; color: var(--ve-text); font-size: 18px; font-weight: 800; line-height: 1.45; }
+    .q-label { display: block; font-size: 11px; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 6px; }
+    .post-article .replies { margin-top: 32px; }
+    .post-tools { display: flex; flex-wrap: wrap; gap: 0 18px; margin-top: 28px; padding-top: 12px; border-top: 1px solid #efefef; }
+    .post-tools button { background: none; border: none; font: inherit; font-size: 13px; font-weight: 600; color: var(--ve-text-60); text-decoration: underline; cursor: pointer; padding: 10px 0; min-height: 40px; }
+    .post-tools button:hover { color: var(--ve-text); }
+    .post-tools button:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    @media (max-width: 720px) { .post-page { padding: 12px 16px 48px; } .post-article .full-body { font-size: 16px; } }
+    .ve-embedded .post-page { max-width: 820px; padding: 12px 22px 48px; }
+
     /* Dialogs */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: flex-start; justify-content: center; z-index: 9000; padding: 40px 16px; overflow-y: auto; }
     .overlay.open { display: flex; }
@@ -111,6 +139,8 @@
     .reply { padding: 12px 0; border-bottom: 1px solid #efefef; }
     .reply-text { font-size: 14px; line-height: 1.6; margin-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
     .reply-tools { margin-top: 2px; }
+    .reply-tools .btn-link { color: var(--ve-text-60); font-weight: 600; font-size: 12px; }
+    .reply-tools .btn-link:hover { color: var(--ve-text); }
     form.stack { display: grid; gap: 14px; margin-top: 16px; }
     form.stack label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; }
     form.stack .hint { font-weight: 400; color: var(--ve-text-60); font-size: 12px; }
@@ -149,6 +179,7 @@
   <script src="/public/nav.js"></script>
 
   <main id="main">
+    <div id="list-view">
     <header class="board-head">
       <div class="wrap">
         <p class="eyebrow">Community Board</p>
@@ -197,34 +228,38 @@
       <div class="posts" id="posts"></div>
       <div class="more-row"><button type="button" class="btn btn-ghost" id="more" hidden>Show more</button></div>
     </section>
-  </main>
-
-  <!-- Post detail -->
-  <div class="overlay" id="detail" role="dialog" aria-modal="true" aria-labelledby="d-title">
-    <div class="dialog">
-      <button type="button" class="close-x" data-close aria-label="Close">&times;</button>
-      <div class="tags" id="d-tags"></div>
-      <h2 id="d-title"></h2>
-      <p class="muted" id="d-when"></p>
-      <div class="full-body" id="d-body"></div>
-      <div id="d-briefing"></div>
-      <p class="d-question" id="d-question" hidden></p>
-      <div class="source-box" id="d-source" hidden></div>
-      <div class="contact-box" id="d-contact"></div>
-      <div class="trust" id="d-trust"></div>
-      <div class="actions" id="d-actions"></div>
-      <div class="replies">
-        <h3 id="d-replies-title">Replies</h3>
-        <div id="d-replies"></div>
-        <form class="stack" id="reply-form">
-          <label for="reply-text">Your reply<span class="hint">Offer help, ask a question, or point them to someone who can.</span></label>
-          <textarea id="reply-text" maxlength="2000" required></textarea>
-          <div><button type="submit" class="btn btn-primary">Reply</button></div>
-          <p class="form-msg" id="reply-msg" role="status" aria-live="polite"></p>
-        </form>
-      </div>
     </div>
-  </div>
+
+    <!-- A post on its own page (Sean, 2026-10-04: "not a pop-up ... its own page, with navigation
+         back to the main post list"). ?post=<id> opens it; Back or the browser's back button returns
+         to the list. -->
+    <section class="post-page" id="detail" hidden aria-labelledby="d-title">
+      <a class="back-link" id="d-back" href="/board">&larr; <span id="d-back-label">Back to the Daily Pulse</span></a>
+      <article class="post-article">
+        <div class="tags" id="d-tags"></div>
+        <h2 id="d-title" tabindex="-1"></h2>
+        <p class="muted" id="d-when"></p>
+        <div class="full-body" id="d-body"></div>
+        <div id="d-briefing"></div>
+        <div class="d-question" id="d-question" hidden></div>
+        <div class="source-box" id="d-source" hidden></div>
+        <div class="contact-box" id="d-contact"></div>
+        <div class="trust" id="d-trust"></div>
+        <div class="actions" id="d-primary"></div>
+        <div class="replies">
+          <h3 id="d-replies-title">Replies</h3>
+          <div id="d-replies"></div>
+          <form class="stack" id="reply-form">
+            <label for="reply-text">Your reply<span class="hint">Offer help, ask a question, or point them to someone who can.</span></label>
+            <textarea id="reply-text" maxlength="2000" required></textarea>
+            <div><button type="submit" class="btn btn-primary">Reply</button></div>
+            <p class="form-msg" id="reply-msg" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <div class="post-tools" id="d-actions"></div>
+      </article>
+    </section>
+  </main>
 
   <!-- New post -->
   <div class="overlay" id="composer" role="dialog" aria-modal="true" aria-labelledby="c-title">
@@ -364,7 +399,7 @@
     }
     setLane(state.lane);
     Array.prototype.forEach.call(document.querySelectorAll('.lane'), function (b) {
-      b.addEventListener('click', function () { if (state.lane === b.getAttribute('data-lane')) return; setLane(b.getAttribute('data-lane')); state.q = ''; $('q').value = ''; syncUrl(); load(); });
+      b.addEventListener('click', function () { if (state.lane === b.getAttribute('data-lane')) return; closePost(); setLane(b.getAttribute('data-lane')); state.q = ''; $('q').value = ''; syncUrl(); load(); });
     });
     $('city').addEventListener('change', function () { state.city = this.value; try { localStorage.setItem('ve_selected_city', state.city); } catch (e) {} load(); });
     $('category').addEventListener('change', function () { state.category = this.value; load(); });
@@ -443,7 +478,7 @@
       }).catch(function () { $('status-line').textContent = 'The board could not load. Please refresh the page.'; });
     }
     $('more').addEventListener('click', function () { load(true); });
-    $('posts').addEventListener('click', function (e) { var c = e.target.closest('.post-card'); if (c) openPost(c.getAttribute('data-id')); });
+    $('posts').addEventListener('click', function (e) { var c = e.target.closest('.post-card'); if (c) openPost(c.getAttribute('data-id'), true); });
 
     // ---- Dialogs ------------------------------------------------------------------------
     var lastFocus = null;
@@ -451,7 +486,6 @@
     function closeDialog(id) {
       $(id).classList.remove('open');
       if (!document.querySelector('.overlay.open')) document.body.style.overflow = '';
-      if (id === 'detail') { state.current = null; syncUrl(); }
       if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
     Array.prototype.forEach.call(document.querySelectorAll('.overlay'), function (o) {
@@ -460,16 +494,47 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { var open = document.querySelectorAll('.overlay.open'); if (open.length) closeDialog(open[open.length - 1].id); } });
 
     // ---- Detail -------------------------------------------------------------------------
-    function openPost(id) {
+    // The post page. push: true when a member opened it from the list, so Back returns there.
+    var listScroll = 0;
+    function topOfPage() {
+      try { window.scrollTo(0, 0); } catch (e) {}
+      if (document.documentElement.classList.contains('ve-embedded')) window.parent.postMessage({ type: 've-frame-scroll', top: 0 }, location.origin);
+    }
+    function showPost() {
+      if (!$('detail').hidden) return;
+      listScroll = window.scrollY || 0;
+      $('list-view').hidden = true; $('detail').hidden = false;
+      topOfPage();
+    }
+    function closePost(fromHistory) {
+      if ($('detail').hidden) return;
+      $('detail').hidden = true; $('list-view').hidden = false; state.current = null;
+      if (!fromHistory) syncUrl();
+      try { window.scrollTo(0, listScroll); } catch (e) {}
+      if (document.documentElement.classList.contains('ve-embedded')) window.parent.postMessage({ type: 've-frame-scroll', top: listScroll }, location.origin);
+    }
+    function openPost(id, push) {
       call({ action: 'get', id: id }).then(function (d) {
-        if (!d.post) { $('status-line').textContent = 'That post is no longer on the board.'; return; }
+        if (!d.post) { closePost(); $('status-line').textContent = 'That post is no longer on the board.'; return; }
         if (d.viewer) state.viewer = d.viewer;
         if (d.post.kind === 'topic' && state.lane !== 'pulse') { setLane('pulse'); load(); }
-        state.current = d.post; syncUrl();
+        var first = $('detail').hidden;
+        state.current = d.post;
+        if (push) { var u = new URL(location.href); u.searchParams.set('post', id); history.pushState({ post: id }, '', u.pathname + u.search); }
+        else syncUrl();
         renderDetail(d.post, d.replies || []);
-        if (!$('detail').classList.contains('open')) openDialog('detail');
+        showPost();
+        if (first) $('d-title').focus({ preventScroll: true });
       });
     }
+    $('d-back').addEventListener('click', function (e) {
+      e.preventDefault();
+      if (history.state && history.state.post) history.back(); else closePost();
+    });
+    window.addEventListener('popstate', function () {
+      var id = new URLSearchParams(location.search).get('post');
+      if (id) openPost(id); else closePost(true);
+    });
     function renderDetail(post, replies) {
       var p = post.poster || {};
       $('d-tags').innerHTML = tags(post);
@@ -479,7 +544,9 @@
         ? 'Daily Pulse · ' + ago(post.created_at) + ' · ' + (post.community === 'national' ? 'National' : hubName(post.community))
         : 'Posted ' + ago(post.created_at) + (post.area ? ' · ' + post.area : '') + ' · ' + hubName(post.community);
       $('d-body').textContent = post.body;
-      $('d-question').hidden = !topic || !post.question; $('d-question').textContent = topic ? (post.question || '') : '';
+      $('d-question').hidden = !topic || !post.question; $('d-question').innerHTML = topic && post.question ? '<span class="q-label">Today\'s question</span>' + esc(post.question) : '';
+      $('d-back-label').textContent = topic ? 'Back to the Daily Pulse' : 'Back to the board';
+      $('d-back').setAttribute('href', '/board?' + (topic ? 'lane=pulse&' : '') + 'community=' + state.city);
       $('d-briefing').innerHTML = topic && window.VEPulse ? VEPulse.briefing(post) : '';
       var src = $('d-source');
       if (topic && post.source_url && !(post.briefing && post.briefing.stories && post.briefing.stories.length)) {
@@ -498,13 +565,14 @@
       lines.push(p.helped ? 'Has helped ' + p.helped + (p.helped === 1 ? ' time' : ' times') + ' on the Board' : 'New to the Board');
       $('d-trust').innerHTML = avatar(p) + '<div><div class="trust-name">' + esc(p.name || 'Member') + (p.community_manager ? ' <span class="badge-cm">Community Manager</span>' : '') + '</div>' +
         (p.headline ? '<div class="trust-lines">' + esc(p.headline) + '</div>' : '') + '<div class="trust-lines">' + esc(lines.join(' · ')) + '</div></div>';
-      var a = '';
-      if (!topic && (post.mine || state.viewer.moderator)) a += '<button type="button" class="btn btn-ghost" id="toggle-resolve">' + (post.status === 'resolved' ? 'Reopen it' : 'Mark resolved') + '</button>';
-      if (!post.mine) a += '<button type="button" class="btn btn-ghost" id="report-post">Report</button>';
-      if (state.viewer.moderator) a += '<button type="button" class="btn btn-ghost" id="mod-post">' + (post.status === 'hidden' ? 'Restore post' : 'Hide post') + '</button>';
-      a += '<button type="button" class="btn btn-ghost" id="copy-link">Copy link</button>';
+      // Resolving is the poster's job, so it stays a button; the rest are quiet links at the bottom.
+      $('d-primary').innerHTML = !topic && (post.mine || state.viewer.moderator) ? '<button type="button" class="btn btn-ghost" id="toggle-resolve">' + (post.status === 'resolved' ? 'Reopen it' : 'Mark resolved') + '</button>' : '';
+      $('d-primary').hidden = !$('d-primary').innerHTML;
+      var a = '<button type="button" id="copy-link">Copy link</button>';
+      if (!post.mine) a += '<button type="button" id="report-post">Report this post</button>';
+      if (state.viewer.moderator) a += '<button type="button" id="mod-post">' + (post.status === 'hidden' ? 'Restore post' : 'Hide post (moderators)') + '</button>';
       $('d-actions').innerHTML = a;
-      $('d-replies-title').textContent = replies.length ? replies.length + (replies.length === 1 ? ' reply' : ' replies') : (topic ? 'Start the conversation' : 'No replies yet');
+      $('d-replies-title').textContent = topic ? (replies.length ? 'The conversation (' + replies.length + ')' : 'Start the conversation') : (replies.length ? replies.length + (replies.length === 1 ? ' reply' : ' replies') : 'No replies yet');
       $('d-replies').innerHTML = replies.map(function (r) {
         var rp = r.poster || {};
         return '<div class="reply"><div class="post-meta" style="margin-top:0"><span class="who">' + avatar(rp) + esc(rp.name || 'Member') + (rp.community_manager ? ' <span class="badge-cm">Community Manager</span>' : '') + '</span><span>' + ago(r.created_at) + '</span>' + (r.hidden ? '<span class="tag tag-hidden">Hidden</span>' : '') + '</div>' +
@@ -516,7 +584,7 @@
       $('reply-msg').textContent = '';
     }
     $('d-contact').addEventListener('click', function (e) { if (e.target.id === 'unlock-contact') gate('Become a Founding Member to see contact details and reach people directly.'); });
-    $('d-actions').addEventListener('click', function (e) {
+    function postAction(e) {
       var post = state.current; if (!post) return;
       if (e.target.id === 'toggle-resolve') {
         call({ action: 'resolve', post_id: post.id, reopen: post.status === 'resolved' }).then(function (d) { if (!handleError(d)) { openPost(post.id); load(); } });
@@ -529,7 +597,9 @@
         var link = location.origin + '/board?' + (post.kind === 'topic' ? 'lane=pulse&' : '') + 'community=' + (post.community === 'national' ? state.city : post.community) + '&post=' + post.id;
         (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { e.target.textContent = 'Link copied'; }, function () { prompt('Copy this link', link); });
       }
-    });
+    }
+    $('d-actions').addEventListener('click', postAction);
+    $('d-primary').addEventListener('click', postAction);
     $('d-replies').addEventListener('click', function (e) {
       var rid = e.target.getAttribute('data-report-reply');
       if (rid) { if (!gate('Become a Founding Member to report a reply.')) return; state.reportTarget = { reply_id: rid }; $('report-form').reset(); $('report-msg').textContent = ''; openDialog('reporter'); return; }
@@ -569,7 +639,7 @@
         .then(function (d) {
           $('post-submit').disabled = false;
           if (handleError(d, $('post-msg'))) return;
-          $('post-form').reset(); closeDialog('composer'); state.status = 'open'; $('status').value = 'open'; load(); openPost(d.id);
+          $('post-form').reset(); closeDialog('composer'); state.status = 'open'; $('status').value = 'open'; load(); openPost(d.id, true);
         }, function () { $('post-submit').disabled = false; $('post-msg').textContent = 'That did not go through. Please try again.'; });
     });
 
