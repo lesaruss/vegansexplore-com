@@ -12,7 +12,9 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 //                                          Holding a seat needs a free account (record 97a1bcbe); when the
 //                                          guest's membership is on us, holding the seat claims it.
 //          decline { dinner, code, suggestion? }
-//          request { dinner, name, email, note? }
+//          request { dinner, note? }        Bearer <ve_token>: asking for a seat needs a free account
+//                                          (Sean, 2026-10-04), so the name and email are the account's.
+//                                          Sean approves it in Depot > Dinner guests (Invite them).
 //          host_interest { name, business, email, phone?, city?, note? }
 // Admin (superadmin token, Depot > Dinner guests):
 //          admin_dinners, admin_get { dinner }, admin_dinner { dinner, ...fields },
@@ -276,11 +278,14 @@ Deno.serve(async (req: Request) => {
 
     if (action === 'request') {
       if (body.website) return json({ ok: true }); // honeypot
-      const name = clip(body.name, 120), email = clip(body.email, 200)?.toLowerCase() ?? null;
-      if (!name || !emailOk(email)) return json({ error: 'missing_fields', message: 'Add your name and an email.' }, 400);
+      const me = await viewer(req);
+      if (!me) return json({ error: 'not_authenticated', message: 'Create your free account to ask for a seat.' }, 401);
+      const { data: m } = await db.from('members').select('name, email').eq('id', me).maybeSingle();
+      const name = clip(m?.name, 120), email = clip(m?.email, 200)?.toLowerCase() ?? null;
+      if (!name || !emailOk(email)) return json({ error: 'missing_fields', message: 'Add your name to your account, then ask again.' }, 400);
       const { data: dup } = await db.from('ve_dinner_invites').select('id').eq('dinner_slug', slug).ilike('email', email!).maybeSingle();
-      if (dup) return json({ ok: true });
-      const { error } = await db.from('ve_dinner_invites').insert({ dinner_slug: slug, name, email, note: clip(body.note, 1000), status: 'requested', list: 'backup' });
+      if (dup) return json({ ok: true, already: true });
+      const { error } = await db.from('ve_dinner_invites').insert({ dinner_slug: slug, name, email, member_id: me, note: clip(body.note, 1000), status: 'requested', list: 'backup' });
       if (error) { console.error('request:', error); return json({ error: 'save_failed' }, 500); }
       return json({ ok: true });
     }

@@ -290,7 +290,7 @@ el.innerHTML=
 '<div id="ve-am-google-wrap"><div id="ve-am-google-btn"></div></div>'+
 '<div class="ve-am-divider"><div class="ve-am-divider-line"></div><span class="ve-am-divider-text">or use email</span><div class="ve-am-divider-line"></div></div>'+
 '<form id="ve-am-form" novalidate>'+
-'<div class="ve-am-field" id="ve-am-name-wrap" style="display:none;"><label for="ve-am-name">Name</label><input type="text" id="ve-am-name" name="name" autocomplete="name" placeholder="Your name"></div>'+
+'<div class="ve-am-field" id="ve-am-name-wrap" style="display:none;"><label for="ve-am-name">Name</label><input type="text" id="ve-am-name" name="name" autocomplete="name" placeholder="First and last name"></div>'+
 '<div class="ve-am-field"><label for="ve-am-email">Email</label><input type="email" id="ve-am-email" name="email" autocomplete="email" placeholder="you@example.com" required></div>'+
 '<div class="ve-am-field"><label for="ve-am-password">Password</label><input type="password" id="ve-am-password" name="password" autocomplete="current-password" placeholder="Your password" required></div>'+
 '<div aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;"><label for="ve-am-website">Leave this field empty</label><input type="text" id="ve-am-website" name="website" tabindex="-1" autocomplete="off" value=""></div>'+
