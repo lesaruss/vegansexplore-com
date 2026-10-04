@@ -144,7 +144,7 @@ async function sendWelcomeEmail(email: string, name: string): Promise<void> {
     <span style="color:#22C55E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span>
   </div>
   <h1 style="font-size:24px;font-weight:700;color:#1A1A1A;margin:0 0 8px;">Welcome, ${name}.</h1>
-  <p style="color:#555;margin:0 0 24px;line-height:1.6;">Your Passport is active. You can now vote for your favorite businesses, save listings to your list, comment on the Daily Post, and join Communities.</p>
+  <p style="color:#555;margin:0 0 24px;line-height:1.6;">Your Passport is active. You can now vote for your favorite businesses, save listings to your list, comment on the Daily Pulse, and join Communities.</p>
   <a href="https://vegansexplore.com/directory" style="display:inline-block;background:#22C55E;color:#fff;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:15px;">Explore the Directory</a>
   <p style="margin:32px 0 0;font-size:12px;color:#999;">VEGANS EXPLORE - The community for everyone exploring vegan life.</p>
 </div>`,

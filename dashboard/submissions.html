@@ -15,7 +15,7 @@
      BCPS Marcom ... registrations ... I could sort by the types." One list of everything open across
      the site, filter by type and city, sort, and a Review link to the page where it gets decided.
      Superadmins see everything; a Community Manager sees their city's bounty work, reports and
-     Daily Post drafts. Data: ve-ops action=queue (public.ve_ops_snapshot). */
+     Pulse drafts. Data: ve-ops action=queue (public.ve_ops_snapshot). */
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{
     --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;
@@ -124,7 +124,7 @@
   var TYPES = {
     event: 'Event', guest: 'Guest Passport', application: 'Application', community_manager: 'Community Manager',
     partner: 'Partner', claim: 'Listing claim', interest: 'Initiative interest', bounty: 'Bounty work',
-    report: 'Board report', service: 'Service order', pulse: 'Daily Post draft'
+    report: 'Board report', service: 'Service order', pulse: 'Pulse draft'
   };
   var CITIES = { national: 'National', 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
   var STATUS = { pending: 'Pending', pending_review: 'Pending review', flagged: 'Flagged', needs_followup: 'Needs follow-up', submitted: 'Submitted', open: 'Open', new: 'New', paid: 'Paid, to schedule', written: 'Written', failed: 'Write failed', confirmed: 'Confirmed', answered: 'Answered', applied: 'Applied' };
