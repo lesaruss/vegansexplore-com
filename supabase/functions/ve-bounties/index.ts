@@ -38,6 +38,10 @@
 // POST { action: 'campaign_update', id, ...fields, host_extras?, details? }      city CM or superadmin
 // POST { action: 'job_update', id, title?, points?, slots?, brief?, deliverable?, parts? }
 // POST { action: 'listing_search', q }               leadership: pick a host listing
+// Cash bounties (Sean, 2026-10-04): a bounty can pay cash on top of its points (cash_cents, paid by
+// Sean after approval, outside the points ledger), and can be held for one person first
+// (reserved_email until reserved_until): Run the city dinner, $150 + points, first dibs to the city's
+// Community Manager. Members see that it is held, never for whom.
 // Cron (x-cron-secret, hourly): reminders, no-shows, auto-submit, lapsed change requests, ends
 // featured runs that bounties started
 // POST { action: 'cron' }
@@ -164,7 +168,7 @@ async function reviewCities(v: Viewer): Promise<string[]> {
   return COMMUNITIES.includes(hub) ? [hub] : [];
 }
 
-const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts';
+const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until';
 const CAMPAIGN_COLS = 'id, slug, community_slug, kind, title, story, cover_url, campaign_id, event_id, place_name, address, starts_at, ends_at, claims_close_at, due_at, host_listing_id, host_member_id, host_extras, creator_cap, status, proposed_by, decided_by, decided_at, decision_note, featured_applied_at, created_at';
 // The date a campaign card sorts by: claims closing while they are open, then the work deadline.
 // A campaign with neither sorts after every dated one.
@@ -274,6 +278,15 @@ function workOpen(b: any, s: any) {
   if (s.status === 'claimed' || s.status === 'submitted') return isNaN(due) || Date.now() < due;
   return false;
 }
+// Held for someone first: members see that it is held, and whether it is held for them.
+const heldNow = (b: any) => !!b.reserved_until && Date.now() < ms(b.reserved_until);
+async function heldForViewer(ids: string[], viewer: Viewer): Promise<Set<string>> {
+  if (!viewer?.email || !ids.length) return new Set();
+  const { data } = await db.from('ve_bounties').select('id, reserved_email').in('id', ids).not('reserved_email', 'is', null);
+  const me = viewer.email.toLowerCase();
+  return new Set((data || []).filter((r) => String(r.reserved_email).toLowerCase() === me).map((r) => r.id));
+}
+const payText = (b: any) => `${b.cash_cents ? `$${(b.cash_cents / 100).toLocaleString('en-US')} + ` : ''}${b.points.toLocaleString()} points`;
 const shapeMine = (s: any) => s ? { id: s.id, status: s.status, parts_done: s.parts_done || [], note: s.note, links: s.links, files: (s.files || []).map((f: any) => ({ path: f.path, name: f.name, size: f.size, type: f.type })), review_note: s.review_note, coaching_note: s.coaching_note, points_awarded: s.points_awarded, submitted_at: s.submitted_at, claimed_at: s.claimed_at, revisions: s.revisions, changes_due_at: s.changes_due_at, auto_submitted: s.auto_submitted } : null;
 async function takenCounts(ids: string[]) {
   const out: Record<string, number> = {};
@@ -422,7 +435,8 @@ Deno.serve(async (req) => {
       const rows = (data || []).filter((b) => (b.status === 'open' && (!b.due_at || Date.now() < ms(b.due_at))) || (mine[b.id] && mine[b.id].status !== 'released'));
       const bounties = await withCampaigns(await withEvents(rows));
       const taken = await takenCounts(bounties.map((b) => b.id));
-      const shaped = bounties.map(({ _address, ...b }) => ({ ...b, taken: taken[b.id] || 0, spots_left: b.slots == null ? null : Math.max(0, b.slots - (taken[b.id] || 0)), claims_open: claimsOpen(b), mine: mine[b.id] || null }));
+      const forMe = await heldForViewer(bounties.filter(heldNow).map((b) => b.id), viewer);
+      const shaped = bounties.map(({ _address, ...b }) => ({ ...b, taken: taken[b.id] || 0, spots_left: b.slots == null ? null : Math.max(0, b.slots - (taken[b.id] || 0)), claims_open: claimsOpen(b), mine: mine[b.id] || null, held: heldNow(b), held_for_you: forMe.has(b.id) }));
       // Campaign cards, soonest deadline first (Sean, 2026-10-04).
       const cids = [...new Set(shaped.map((b) => b.campaign_id).filter(Boolean))];
       const { data: cs } = cids.length ? await db.from('ve_bounty_campaigns').select(CAMPAIGN_COLS).in('id', cids) : { data: [] };
@@ -455,7 +469,7 @@ Deno.serve(async (req) => {
       }
       const { _address, event_details, ...pub } = b;
       return json({
-        bounty: { ...pub, taken, spots_left: b.slots == null ? null : Math.max(0, b.slots - taken), claims_open: claimsOpen(b), work_open: workOpen(b, s) },
+        bounty: { ...pub, taken, spots_left: b.slots == null ? null : Math.max(0, b.slots - taken), claims_open: claimsOpen(b), work_open: workOpen(b, s), held: heldNow(b), held_for_you: heldNow(b) && (await heldForViewer([b.id], viewer)).has(b.id) },
         mine, rundown, details, thread, viewer: await viewerInfo(),
       });
     }
@@ -465,8 +479,11 @@ Deno.serve(async (req) => {
       if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
       if (!viewer.passport) return json({ error: 'passport', message: 'Bounties are for Passport holders. Get your Passport to claim a spot.' }, 403);
       // A host night seats a set number of creators across all its jobs.
-      const { data: cb } = await db.from('ve_bounties').select('campaign_id, community_slug').eq('id', body.bounty_id).maybeSingle();
+      const { data: cb } = await db.from('ve_bounties').select('campaign_id, community_slug, reserved_email, reserved_until').eq('id', body.bounty_id).maybeSingle();
       if (cb && !cityOk(viewer, cb.community_slug)) return json({ error: 'not_found' }, 404);
+      if (cb && heldNow(cb) && String(cb.reserved_email || '').toLowerCase() !== String(viewer.email || '').toLowerCase()) {
+        return json({ error: 'held', message: `This one is held for the city's Community Manager until ${new Date(cb.reserved_until).toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'America/New_York' })}. If they pass, it opens to everyone.` }, 409);
+      }
       if (cb?.campaign_id) {
         const { data: camp } = await db.from('ve_bounty_campaigns').select('creator_cap').eq('id', cb.campaign_id).maybeSingle();
         if (camp?.creator_cap) {
@@ -495,7 +512,7 @@ Deno.serve(async (req) => {
         const c = await memberContact(viewer.id);
         await sendEmail(c.email, `Your spot is held: ${b.title}`,
           P(`Hi ${esc(c.first)},`) +
-          P(`You claimed <b>${esc(b.title)}</b> (${b.points.toLocaleString()} points). Your rundown, the event details and the Q&amp;A are on the bounty page: what we need, how to shoot it, and how to get people's yes on camera.`) +
+          P(`You claimed <b>${esc(b.title)}</b> (${payText(b)}). Your rundown, the event details and the Q&amp;A are on the bounty page: what we need, how to shoot it, and how to get people's yes on camera.`) +
           P(`<b>Event:</b> ${esc(when(b.event_starts_at, b.community_slug))}<br><b>Due:</b> ${esc(when(b.due_at, b.community_slug))}`) +
           P(`Can't make it? Release your spot before ${esc(when(b.claims_close_at, b.community_slug))} so someone else can take it.`) +
           P(`<a href="${bountyLink(b)}">Open your rundown</a>`));
@@ -639,7 +656,7 @@ Deno.serve(async (req) => {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
       const { data: s } = await db.from('ve_bounty_submissions').select('id, bounty_id, member_id, status, revisions, parts_done, files').eq('id', body.id).maybeSingle();
       if (!s) return json({ error: 'not_found' }, 404);
-      const { data: b } = await db.from('ve_bounties').select('id, community_slug, title, points, parts, campaign_id').eq('id', s.bounty_id).maybeSingle();
+      const { data: b } = await db.from('ve_bounties').select('id, community_slug, title, points, parts, campaign_id, cash_cents').eq('id', s.bounty_id).maybeSingle();
       if (!b || !(await reviewCities(viewer)).includes(b.community_slug)) return json({ error: 'forbidden' }, 403);
       if (!['submitted', 'changes'].includes(s.status)) return json({ error: 'not_reviewable', message: 'This one is not waiting on a review.' }, 409);
       const note = clean(body.note, 2000) || null;
@@ -662,7 +679,7 @@ Deno.serve(async (req) => {
           try { await applyHost(camp, s); } catch (e) { console.error('applyHost', e); }
         }
         if (paid?.awarded) await sendEmail(c.email, `You earned ${points.toLocaleString()} points: ${b.title}`,
-          P(`Hi ${esc(c.first)},`) + P(`Your work for <b>${esc(b.title)}</b> is approved, and <b>${points.toLocaleString()} points</b> are in your account${points < b.points ? ` (of ${b.points.toLocaleString()})` : ''}. Thank you for showing up for your city.`) + (note ? P(esc(note)) : '') + coachHtml + P(`<a href="${link}">See your bounties</a>`));
+          P(`Hi ${esc(c.first)},`) + P(`Your work for <b>${esc(b.title)}</b> is approved, and <b>${points.toLocaleString()} points</b> are in your account${points < b.points ? ` (of ${b.points.toLocaleString()})` : ''}.${b.cash_cents ? ` The $${(b.cash_cents / 100).toLocaleString('en-US')} comes from Sean directly.` : ''} Thank you for showing up for your city.`) + (note ? P(esc(note)) : '') + coachHtml + P(`<a href="${link}">See your bounties</a>`));
         return json({ ok: true, ...paid });
       }
       if (decision === 'changes') {

@@ -187,6 +187,27 @@ that click to the visitor's account once they are signed in (30 days). Email-sys
 links are synced every 15 minutes (`ve-links-email-sync` cron) and named by recipient. Never paste a
 bare campaign URL into outreach.
 
+## Invites and free memberships (Sean, 2026-10-04)
+
+Sean invites people who aren't confirmed yet (no account anywhere in the universe) from HQ > People
+(super admins only): select people, Invite, pick the brand, what it points to (membership, a dinner
+seat, the Community Manager role) and, per person, whether the membership is on us ("in recognition
+of their work and contributions to the community"). Invites are made "Not sent yet"; HQ > People >
+Invites sends them from Sean (or copies the link). From then they work once, for 30 days.
+
+- Data: `universe_invites` (migration `20261004_universe_invites.sql`); `ve-invites` edge function
+  (view and accept for `/invite?c=<code>`, and the admin actions HQ calls with
+  `lesaruss_secrets.INVITES_KEY`). Each invite gets a personal tracked link (`ve_links`).
+- Claiming: `universe_invite_claim()`, run when the invited email signs up (members insert triggers
+  `trg_zz_universe_invite_*`), when they accept on `/invite`, or when they hold their dinner seat. A
+  free membership is exactly an $11 Founding Membership: active, plus 1,100 points
+  (`points_ledger` reason `comp_membership`).
+- Dinners: a dinner seat needs a free account (Hold my seat opens the account window). Depot > Dinner
+  guests sets each guest's membership (on us by default) and holds the dinner's budget ($500 cap).
+- Contribute any time: active members have a Contribute button on the dashboard (ve-entry-checkout,
+  $11 or more). "Member since" (`entry_paid_at`) never moves for an active member. Always a
+  contribution, never a tax-deductible donation.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.

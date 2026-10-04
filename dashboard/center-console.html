@@ -160,6 +160,23 @@
   .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
   .dash-welcome h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
   .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
+  .dash-contribute{margin-top:8px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;border-radius:999px;border:1.5px solid #2d7d31;background:#fff;color:#1f5f22;cursor:pointer;}
+  .dash-contribute:hover{background:#EAF7EA;}
+  .dash-contribute-note{font-size:13px;font-weight:700;color:#1f5f22;margin-top:6px;}
+  .dash-cm-back{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;}
+  .dash-cm-back[hidden]{display:none;}
+  .dash-cm-box{background:#fff;border-radius:12px;padding:28px 26px 22px;max-width:420px;width:100%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+  .dash-cm-box h2{margin:0 0 6px;font-size:20px;font-weight:900;}
+  .dash-cm-text{font-size:13.5px;color:rgba(26,26,26,.75);margin:0 0 14px;line-height:1.5;}
+  .dash-cm-amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+  .dash-cm-amounts button{font-family:inherit;font-size:15px;font-weight:800;padding:12px 0;border-radius:8px;border:1.5px solid rgba(0,0,0,.15);background:#fff;cursor:pointer;}
+  .dash-cm-amounts button[aria-pressed="true"]{border-color:#2d7d31;background:#EAF7EA;color:#1f5f22;}
+  .dash-cm-label{display:block;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#555;margin-bottom:4px;}
+  #dash-cm-other{width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid rgba(0,0,0,.15);border-radius:8px;margin-bottom:14px;}
+  .dash-cm-go{width:100%;padding:13px;border:0;border-radius:8px;background:#22C55E;color:#0b2e14;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
+  .dash-cm-go:disabled{background:#9CA3AF;color:#fff;cursor:default;}
+  .dash-cm-x{position:absolute;top:10px;right:12px;background:none;border:0;font-size:24px;cursor:pointer;color:#888;line-height:1;}
+  .dash-cm-err{font-size:12.5px;font-weight:700;color:#b42318;margin:8px 0 0;min-height:1em;}
   /* The "Welcome back" hero (eyebrow, name, sub, and the points/level stat
      cluster) shows only on the Dashboard tab (Sean, 2026-09-21: "the welcome
      back should only be on the dashboard"). The City selector and the
@@ -668,6 +685,10 @@
         <p class="dash-eyebrow" id="dash-eyebrow">Member</p>
         <h1 id="dash-welcome-name">Your Dashboard</h1>
         <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
+        <!-- Contribute any time (Sean, 2026-10-04, playbook record 499aaebc): every active member,
+             paid or on us, can give again whenever they want. Same open contribution as /welcome
+             (ve-entry-checkout, $11 suggested, $1 = 100 points). A contribution, never a donation. -->
+        <button type="button" class="dash-contribute" id="dash-contribute" hidden>Contribute</button>
         <!-- Your City pill (2026-09-07, Logan, Sean direction): opens a
              plain city switcher, not a join/leave picker -- Sean,
              2026-09-07: "you shouldn't be checking the cities, you should
@@ -3786,6 +3807,7 @@
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     renderStatsHero(member);
+    renderContribute(member);
     renderMissionSurveyPrompt(member);
     renderCmCertPrompt(member);
     renderCmApplication(member);
@@ -3853,6 +3875,75 @@
     } else {
       document.getElementById('dash-welcome-sub').textContent = member.membership_status === 'active' ? 'Thank you for being a Founding Member.' : 'Become a Founding Member any time: $11, one time.';
     }
+  }
+
+  // Contribute any time (Sean, 2026-10-04): for active members, an amount and a checkout.
+  function renderContribute(member) {
+    var btn = document.getElementById('dash-contribute');
+    if (!btn) return;
+    var real = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : member;
+    btn.hidden = !(member && member.membership_status === 'active' && real && !window.VE_PREVIEW);
+    if (btn._wired) return;
+    btn._wired = true;
+    btn.addEventListener('click', openContribute);
+    var q = new URLSearchParams(location.search);
+    if (q.get('activate') === 'success' || q.get('activate') === 'cancelled') {
+      var ok = q.get('activate') === 'success';
+      showContributeNote(ok ? 'Thank you. Your contribution came through, and your points land in a minute.' : 'No charge was made. You can contribute any time.');
+      q.delete('activate');
+      history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash);
+    }
+  }
+  function showContributeNote(text) {
+    var sub = document.getElementById('dash-welcome-sub');
+    if (!sub) return;
+    var n = document.createElement('p');
+    n.className = 'dash-contribute-note'; n.setAttribute('role', 'status'); n.textContent = text;
+    sub.parentNode.insertBefore(n, sub.nextSibling);
+  }
+  function openContribute() {
+    var m = document.getElementById('dash-contribute-modal');
+    if (!m) {
+      m = document.createElement('div');
+      m.id = 'dash-contribute-modal'; m.className = 'dash-cm-back'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'dash-cm-title');
+      m.innerHTML = '<div class="dash-cm-box"><button type="button" class="dash-cm-x" aria-label="Close">&times;</button>' +
+        '<h2 id="dash-cm-title">Contribute</h2>' +
+        '<p class="dash-cm-text">Help us build faster, any time. Every dollar becomes 100 points. It&rsquo;s a contribution to our community, not a tax-deductible donation.</p>' +
+        '<div class="dash-cm-amounts" role="group" aria-label="Choose an amount">' +
+        [11, 25, 50, 100].map(function (a, i) { return '<button type="button" data-amt="' + a + '" aria-pressed="' + (i === 0) + '">$' + a + '</button>'; }).join('') + '</div>' +
+        '<label class="dash-cm-label" for="dash-cm-other">Or another amount ($11 or more)</label><input id="dash-cm-other" type="number" min="11" max="1000" step="1" inputmode="numeric" placeholder="11">' +
+        '<button type="button" class="dash-cm-go" id="dash-cm-go">Contribute $11</button><p class="dash-cm-err" id="dash-cm-err" role="alert"></p></div>';
+      document.body.appendChild(m);
+      var amt = 11;
+      var go = m.querySelector('#dash-cm-go'), other = m.querySelector('#dash-cm-other'), err = m.querySelector('#dash-cm-err');
+      function setAmt(a) { amt = a; go.textContent = 'Contribute $' + a; }
+      m.querySelectorAll('[data-amt]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          m.querySelectorAll('[data-amt]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+          other.value = ''; setAmt(Number(b.getAttribute('data-amt')));
+        });
+      });
+      other.addEventListener('input', function () {
+        var v = Math.round(Number(other.value));
+        m.querySelectorAll('[data-amt]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        if (v) setAmt(v);
+      });
+      function close() { m.hidden = true; document.body.style.overflow = ''; }
+      m.querySelector('.dash-cm-x').addEventListener('click', close);
+      m.addEventListener('click', function (e) { if (e.target === m) close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !m.hidden) close(); });
+      go.addEventListener('click', function () {
+        err.textContent = '';
+        if (!(amt >= 11 && amt <= 1000)) { err.textContent = 'Choose $11 to $1,000.'; return; }
+        go.disabled = true; go.textContent = 'Opening checkout...';
+        VEAuth.startEntryCheckout(amt * 100).then(function (d) {
+          if (d && d.url) { location.href = d.url; return; }
+          go.disabled = false; setAmt(amt); err.textContent = (d && (d.message || d.error)) ? 'That did not open. Try again in a minute.' : 'That did not open. Try again.';
+        }).catch(function () { go.disabled = false; setAmt(amt); err.textContent = 'That did not open. Check your connection and try again.'; });
+      });
+    }
+    m.hidden = false; document.body.style.overflow = 'hidden';
+    var first = m.querySelector('[data-amt]'); if (first) first.focus();
   }
 
   // "Have a Question" dock item (2026-09-09, Sean, Fieldy 08:53 UTC). Drives

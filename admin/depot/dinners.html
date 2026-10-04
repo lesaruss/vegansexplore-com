@@ -35,6 +35,8 @@
     .t-yes{background:#d6f5d8;color:#14501a;} .t-invited{background:#e6eefc;color:#1d3f8a;} .t-declined{background:#f1f1f1;color:#444;}
     .t-requested{background:#fff1d6;color:#7a4b00;} .t-not_invited{background:#f6e3e3;color:#7a1f1f;} .t-open{background:#d6f5d8;color:#14501a;} .t-closed{background:#f1f1f1;color:#444;}
     .tags{display:flex;flex-wrap:wrap;gap:6px;}
+    .t-comp{background:#EAF7EA;color:#1f5f22;border:1px solid rgba(58,155,62,0.3);} .t-planned{background:#e6eefc;color:#1d3f8a;} .t-paid{background:#d6f5d8;color:#14501a;} .t-over{background:#f6e3e3;color:#7a1f1f;}
+    .money{font-size:28px;font-weight:900;line-height:1.1;}
     .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border-radius:8px;font:inherit;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
     .btn:hover{background:#174a1a;}
     .btn.ghost{background:#fff;color:var(--ve-green-deep);border:1.5px solid var(--ve-green-deep);}
@@ -94,7 +96,15 @@
       function crumbs(parts) {
         $('crumbs').innerHTML = parts.map(function (p, i) { return i < parts.length - 1 ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a><span aria-hidden="true">&rsaquo;</span>' : '<span aria-current="page">' + esc(p[0]) + '</span>'; }).join('');
       }
-      function linkFor(d, inv) { return SITE + (d.page_path || '/dinners') + '?i=' + inv.code; }
+      // The guest's personal link: their tracked link when they were invited from HQ > People.
+      function linkFor(d, inv) { return inv.link_code ? SITE + '/go/' + inv.link_code : SITE + (d.page_path || '/dinners') + '?i=' + inv.code; }
+      function money(c) { return '$' + (Math.round(Number(c || 0)) / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
+      function budget(r) {
+        var costs = r.costs || [], cap = r.dinner.budget_cap_cents == null ? 50000 : r.dinner.budget_cap_cents;
+        var total = costs.reduce(function (n, c) { return n + (c.amount_cents || 0); }, 0);
+        var paid = costs.filter(function (c) { return c.status === 'paid'; }).reduce(function (n, c) { return n + (c.amount_cents || 0); }, 0);
+        return { cap: cap, total: total, paid: paid, left: cap - total };
+      }
       function loadDinner(slug) {
         return api({ action: 'admin_get', dinner: slug }).then(function (r) { if (!r.dinner) throw new Error(r.error || 'load'); cache[slug] = r; return r; });
       }
@@ -124,11 +134,12 @@
           var d = r.dinner, list = r.invites.slice();
           crumbs([['Dinners', '#'], [d.title, '#dinner/' + slug]]);
           var yes = list.filter(function (i) { return i.status === 'yes'; });
+          var comps = list.filter(function (i) { return i.comp; }).length, b = budget(r);
           $('view').innerHTML =
             '<div class="panel"><h2>' + esc(d.title) + '</h2><p class="meta">' + esc(date(d.event_date)) + (d.start_time ? ', ' + esc(d.start_time) : '') + ' &middot; ' + esc(d.venue_name || 'Venue not confirmed yet') +
             ' &middot; ' + (d.capacity ? esc(d.capacity) + ' seats' : 'Seat count not set') + ' &middot; RSVPs close ' + esc(date(d.rsvp_closes)) + '</p>' +
-            '<div class="tags" style="margin-top:8px"><span class="tag ' + (d.seats_open ? 't-open">Seats open' : 't-closed">Seats closed') + '</span><span class="tag t-yes">' + yes.length + ' said yes</span></div>' +
-            '<div class="row"><a class="btn ghost" href="#dinner/' + esc(slug) + '/edit">Dinner details</a><button type="button" class="btn ghost" id="copy-host">Copy the list for the host</button><a class="btn" href="#dinner/' + esc(slug) + '/new">New guest</a></div><p class="msg" id="dmsg" role="status"></p></div>' +
+            '<div class="tags" style="margin-top:8px"><span class="tag ' + (d.seats_open ? 't-open">Seats open' : 't-closed">Seats closed') + '</span><span class="tag t-yes">' + yes.length + ' said yes</span><span class="tag t-comp">' + comps + ' memberships on us</span><span class="tag ' + (b.left < 0 ? 't-over">Over budget by ' + money(-b.left) : 't-planned">' + money(b.total) + ' of ' + money(b.cap) + ' budget') + '</span></div>' +
+            '<div class="row"><a class="btn ghost" href="#dinner/' + esc(slug) + '/edit">Dinner details</a><a class="btn ghost" href="#dinner/' + esc(slug) + '/budget">Budget</a><button type="button" class="btn ghost" id="copy-host">Copy the list for the host</button><a class="btn" href="#dinner/' + esc(slug) + '/new">New guest</a></div><p class="msg" id="dmsg" role="status"></p></div>' +
             '<div class="toolbar"><input type="search" id="q" placeholder="Search by name or email" aria-label="Search guests"><select id="f" aria-label="Show"><option value="">Everyone</option>' +
             Object.keys(STATUS).map(function (k) { return '<option value="' + k + '">' + esc(STATUS[k]) + '</option>'; }).join('') + '<option value="backup">Backup list</option></select></div>' +
             '<p class="count" id="count"></p><div class="grid" id="guests"></div>';
@@ -141,7 +152,7 @@
             }).sort(function (a, b) { return (ORDER[a.status] - ORDER[b.status]) || ((a.list === 'backup') - (b.list === 'backup')) || ((a.rank || 999) - (b.rank || 999)) || a.name.localeCompare(b.name); });
             $('count').textContent = rows.length + ' of ' + list.length + ' guests';
             $('guests').innerHTML = rows.length ? rows.map(function (i) {
-              return '<article class="card"><div class="tags">' + tag(i.status) + '<span class="tag t-closed">' + (i.list === 'backup' ? 'Backup' : 'A list') + (i.rank ? ' #' + esc(i.rank) : '') + '</span></div>' +
+              return '<article class="card"><div class="tags">' + tag(i.status) + '<span class="tag t-closed">' + (i.list === 'backup' ? 'Backup' : 'A list') + (i.rank ? ' #' + esc(i.rank) : '') + '</span>' + (i.comp ? '<span class="tag t-comp">' + (i.comp_status === 'joined' ? 'Member, on us' : 'Membership on us') + '</span>' : '') + '</div>' +
                 '<p class="name">' + esc(i.name) + '</p><p class="meta">' + esc(i.email || 'No email') + '</p>' +
                 '<p class="text">' + esc(i.answer || i.suggestion || i.note || 'No answer yet.') + '</p>' +
                 '<a class="btn" href="#dinner/' + esc(slug) + '/guest/' + esc(i.id) + '">Open</a></article>';
@@ -179,14 +190,14 @@
 
       // One guest (or a new one): their personal link, what they said, and the edit form.
       function viewGuest(slug, id) {
-        (cache[slug] ? Promise.resolve(cache[slug]) : loadDinner(slug)).then(function (r) {
+        return (cache[slug] ? Promise.resolve(cache[slug]) : loadDinner(slug)).then(function (r) {
           var d = r.dinner, inv = id ? r.invites.filter(function (i) { return i.id === id; })[0] : null;
           if (id && !inv) { location.hash = '#dinner/' + slug; return; }
           crumbs([['Dinners', '#'], [d.title, '#dinner/' + slug], [inv ? inv.name : 'New guest', location.hash]]);
           var html = '';
           if (inv) {
-            html += '<div class="panel"><div class="tags">' + tag(inv.status) + '</div><h2 style="margin-top:8px">' + esc(inv.name) + '</h2>' +
-              '<p class="sub" style="margin-bottom:6px">Personal link. Make it a tracked link in Depot &gt; Links, one per person, so the click names them.</p>' +
+            html += '<div class="panel"><div class="tags">' + tag(inv.status) + (inv.comp ? '<span class="tag t-comp">' + (inv.comp_status === 'joined' ? 'Member, on us' : 'Membership on us') + '</span>' : '') + '</div><h2 style="margin-top:8px">' + esc(inv.name) + '</h2>' +
+              '<p class="sub" style="margin-bottom:6px">' + (inv.link_code ? 'Personal tracked link, made when you invited them from HQ &gt; People.' : 'Personal link. Make it a tracked link in Depot &gt; Links, one per person, so the click names them.') + '</p>' +
               '<p class="link" id="g-link">' + esc(linkFor(d, inv)) + '</p><div class="row"><button type="button" class="btn ghost" id="g-copy">Copy link</button><a class="btn ghost" href="/admin/depot/links" target="_blank" rel="noopener">Open Links</a></div>' +
               (inv.answer ? '<p class="meta" style="margin-top:14px">Their answer</p><p class="quote">' + esc(inv.answer) + '</p>' : '') +
               (inv.suggestion ? '<p class="meta">Who they suggested</p><p class="quote">' + esc(inv.suggestion) + '</p>' : '') +
@@ -200,12 +211,13 @@
             '<div><label for="g-list">List</label><select id="g-list"><option value="a">A list</option><option value="backup"' + (inv && inv.list === 'backup' ? ' selected' : '') + '>Backup</option></select></div>' +
             '<div><label for="g-rank">Rank</label><input id="g-rank" type="number" min="1" value="' + esc(inv && inv.rank || '') + '"></div>' +
             '<div><label for="g-status">Status</label><select id="g-status">' + Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + ((inv ? inv.status : 'invited') === k ? ' selected' : '') + '>' + esc(STATUS[k]) + '</option>'; }).join('') + '</select></div>' +
+            '<div><label for="g-comp">Membership</label><select id="g-comp"' + (inv && inv.comp_status === 'joined' ? ' disabled' : '') + '><option value="1">On us, in recognition of their work</option><option value="0"' + (inv && !inv.comp ? ' selected' : '') + '>They join the usual way ($11)</option></select></div>' +
             '<div><label for="g-show">Show their name to other guests</label><select id="g-show"><option value="1">Yes</option><option value="0"' + (inv && inv.show_name === false ? ' selected' : '') + '>No</option></select></div>' +
             '<div class="wide"><label for="g-note">Why they&rsquo;re on the list (only you see this)</label><textarea id="g-note" rows="2" maxlength="1000">' + esc(inv ? inv.note || '' : '') + '</textarea></div>' +
             '</div><div class="row"><button type="submit" class="btn">Save</button><a class="btn ghost" href="#dinner/' + esc(slug) + '">Back to guests</a>' + (inv ? '<button type="button" class="btn danger" id="g-del">Remove</button>' : '') + '</div><p class="msg" id="fmsg" role="status"></p></form>';
           $('view').innerHTML = html;
           function save(extra) {
-            return api(Object.assign({ action: 'admin_invite_save', dinner: slug, id: inv ? inv.id : undefined, name: $('g-name').value, email: $('g-email').value, phone: $('g-phone').value, list: $('g-list').value, rank: $('g-rank').value, status: $('g-status').value, show_name: $('g-show').value === '1', note: $('g-note').value }, extra || {}));
+            return api(Object.assign({ action: 'admin_invite_save', dinner: slug, id: inv ? inv.id : undefined, name: $('g-name').value, email: $('g-email').value, phone: $('g-phone').value, list: $('g-list').value, rank: $('g-rank').value, status: $('g-status').value, show_name: $('g-show').value === '1', note: $('g-note').value, comp: $('g-comp').value === '1' }, extra || {}));
           }
           $('gf').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -213,7 +225,7 @@
               if (!x.invite) throw new Error(x.message || '');
               delete cache[slug];
               location.hash = '#dinner/' + slug + '/guest/' + x.invite.id;
-              if (inv) viewGuest(slug, x.invite.id);
+              (inv ? viewGuest(slug, x.invite.id) : Promise.resolve()).then(function () { if (x.note && $('fmsg')) { $('fmsg').className = 'msg err'; $('fmsg').textContent = x.note; } });
             }).catch(function (err) { $('fmsg').className = 'msg err'; $('fmsg').textContent = err.message || 'Did not save. Try again.'; });
           });
           if (inv) {
@@ -228,9 +240,56 @@
         });
       }
 
+      // Budget (record 97a1bcbe): a cap per dinner ($500) and its cost lines, planned then paid.
+      function viewBudget(slug) {
+        (cache[slug] ? Promise.resolve(cache[slug]) : loadDinner(slug)).then(function (r) {
+          var d = r.dinner, b = budget(r);
+          crumbs([['Dinners', '#'], [d.title, '#dinner/' + slug], ['Budget', '#dinner/' + slug + '/budget']]);
+          $('view').innerHTML = '<div class="panel"><h2>Budget</h2><p class="sub">What this dinner costs us: the staff tip, anything past the host&rsquo;s cap, and the Community Manager&rsquo;s bounty. Known before the venue is booked.</p>' +
+            '<div class="grid" style="margin-top:12px"><div><p class="meta">Cap</p><p class="money">' + money(b.cap) + '</p></div><div><p class="meta">Planned</p><p class="money">' + money(b.total) + '</p></div><div><p class="meta">Paid</p><p class="money">' + money(b.paid) + '</p></div><div><p class="meta">' + (b.left < 0 ? 'Over' : 'Left') + '</p><p class="money"' + (b.left < 0 ? ' style="color:#a61b1b"' : '') + '>' + money(Math.abs(b.left)) + '</p></div></div>' +
+            '<form class="row" id="capf"><label for="cap" class="meta">Cap ($)</label><input id="cap" type="number" min="0" step="1" value="' + (b.cap / 100) + '" style="max-width:140px;min-height:44px;padding:8px 10px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;font:inherit"><button class="btn ghost" type="submit">Save cap</button><a class="btn" href="#dinner/' + esc(slug) + '/budget/new">New cost</a></form><p class="msg" id="bmsg" role="status"></p></div>' +
+            '<div class="grid">' + ((r.costs || []).map(function (c) {
+              return '<article class="card"><div class="tags"><span class="tag t-' + esc(c.status) + '">' + (c.status === 'paid' ? 'Paid' : 'Planned') + '</span></div><p class="name">' + esc(c.label) + '</p><p class="money">' + money(c.amount_cents) + '</p><p class="text">' + esc(c.note || '') + '</p><a class="btn" href="#dinner/' + esc(slug) + '/budget/' + esc(c.id) + '">Edit</a></article>';
+            }).join('') || '<p class="empty">No costs yet.</p>') + '</div>';
+          $('capf').addEventListener('submit', function (e) {
+            e.preventDefault();
+            api({ action: 'admin_dinner', dinner: slug, budget_cap_cents: Math.round(Number($('cap').value || 0) * 100) }).then(function (x) {
+              if (!x.dinner) throw new Error(); cache[slug].dinner = x.dinner; viewBudget(slug);
+            }).catch(function () { $('bmsg').className = 'msg err'; $('bmsg').textContent = 'Did not save. Try again.'; });
+          });
+        });
+      }
+      function viewCost(slug, id) {
+        (cache[slug] ? Promise.resolve(cache[slug]) : loadDinner(slug)).then(function (r) {
+          var d = r.dinner, c = id ? (r.costs || []).filter(function (x) { return x.id === id; })[0] : null;
+          if (id && !c) { location.hash = '#dinner/' + slug + '/budget'; return; }
+          crumbs([['Dinners', '#'], [d.title, '#dinner/' + slug], ['Budget', '#dinner/' + slug + '/budget'], [c ? c.label : 'New cost', location.hash]]);
+          $('view').innerHTML = '<form class="panel" id="cf"><h2>' + (c ? 'Edit cost' : 'New cost') + '</h2><div class="form">' +
+            '<div><label for="c-label">What it is</label><input id="c-label" required maxlength="120" value="' + esc(c ? c.label : '') + '"></div>' +
+            '<div><label for="c-amt">Amount ($)</label><input id="c-amt" type="number" min="0" step="0.01" required value="' + (c ? c.amount_cents / 100 : '') + '"></div>' +
+            '<div><label for="c-st">Status</label><select id="c-st"><option value="planned">Planned</option><option value="paid"' + (c && c.status === 'paid' ? ' selected' : '') + '>Paid</option></select></div>' +
+            '<div class="wide"><label for="c-note">Note</label><input id="c-note" maxlength="500" value="' + esc(c ? c.note || '' : '') + '"></div>' +
+            '</div><div class="row"><button type="submit" class="btn">Save</button><a class="btn ghost" href="#dinner/' + esc(slug) + '/budget">Back to budget</a>' + (c ? '<button type="button" class="btn danger" id="c-del">Remove</button>' : '') + '</div><p class="msg" id="cmsg" role="status"></p></form>';
+          $('cf').addEventListener('submit', function (e) {
+            e.preventDefault();
+            api({ action: 'admin_cost_save', dinner: slug, id: c ? c.id : undefined, label: $('c-label').value, amount_cents: Math.round(Number($('c-amt').value || 0) * 100), status: $('c-st').value, note: $('c-note').value })
+              .then(function (x) { if (!x.cost) throw new Error(x.message || ''); delete cache[slug]; location.hash = '#dinner/' + slug + '/budget'; })
+              .catch(function (err) { $('cmsg').className = 'msg err'; $('cmsg').textContent = err.message || 'Did not save. Try again.'; });
+          });
+          if (c) $('c-del').addEventListener('click', function () {
+            if (!confirm('Remove ' + c.label + '?')) return;
+            api({ action: 'admin_cost_delete', id: c.id }).then(function (x) { if (!x.ok) throw new Error(); delete cache[slug]; location.hash = '#dinner/' + slug + '/budget'; })
+              .catch(function () { $('cmsg').className = 'msg err'; $('cmsg').textContent = 'Did not remove. Try again.'; });
+          });
+        });
+      }
+
       function route() {
         var h = location.hash.replace(/^#/, ''), m;
         if ((m = h.match(/^dinner\/([a-z0-9-]+)\/edit$/))) return viewEdit(m[1]);
+        if ((m = h.match(/^dinner\/([a-z0-9-]+)\/budget$/))) return viewBudget(m[1]);
+        if ((m = h.match(/^dinner\/([a-z0-9-]+)\/budget\/new$/))) return viewCost(m[1], null);
+        if ((m = h.match(/^dinner\/([a-z0-9-]+)\/budget\/([0-9a-f-]+)$/))) return viewCost(m[1], m[2]);
         if ((m = h.match(/^dinner\/([a-z0-9-]+)\/new$/))) return viewGuest(m[1], null);
         if ((m = h.match(/^dinner\/([a-z0-9-]+)\/guest\/([0-9a-f-]+)$/))) return viewGuest(m[1], m[2]);
         if ((m = h.match(/^dinner\/([a-z0-9-]+)$/))) return viewDinner(m[1]);

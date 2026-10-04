@@ -443,13 +443,16 @@
       if (b.status === 'canceled') return ['Canceled', 't-off'];
       if (!b.claims_open) return ['Claims closed', 't-off'];
       if (b.spots_left === 0) return ['Full', 't-off'];
+      if (b.held && !b.held_for_you) return ['Held for the Community Manager', 't-off'];
       return ['Spots open', 't-live'];
     }
+    // A cash bounty pays dollars on top of its points (Sean, 2026-10-04).
+    function pay(b) { return (b.cash_cents ? '$' + (b.cash_cents / 100).toLocaleString('en-US') + ' + ' : '') + b.points.toLocaleString(); }
     function jobRow(b) {
       var st = jobStatus(b);
       return '<a class="jrow" href="' + esc(href(state.cslug, b.id)) + '" data-id="' + b.id + '"><span class="jname"><b>' + esc(short(b.title)) + '</b><small>' + esc(b.deliverable) + '</small>' +
         '<small>' + ((b.parts || []).length ? 'Bundle: ' + b.parts.length + ' parts, all needed to earn the points' : 'Pays on its own') + '</small><span class="clock" data-clock="' + b.id + '"></span></span>' +
-        '<span data-l="Points">' + b.points.toLocaleString() + '</span>' +
+        '<span data-l="Points">' + pay(b) + '</span>' +
         '<span data-l="Spots">' + (b.slots == null ? 'No limit' : b.spots_left + ' of ' + b.slots + ' left') + '</span>' +
         '<span data-l="Status"><span class="tag ' + st[1] + '">' + esc(st[0]) + '</span></span>' +
         '<span class="jact"><span class="btn btn-ghost btn-sm">View</span></span></a>';
@@ -503,9 +506,9 @@
 
     function render() {
       var b = state.current, m = state.mine, e = b.event, mine = holds(m);
-      $('d-pts').textContent = b.points.toLocaleString() + ' points';
+      $('d-pts').textContent = pay(b) + ' points';
       $('d-title').textContent = short(b.title);
-      var cp = b.campaign, facts = [['Points', b.points.toLocaleString()]];
+      var cp = b.campaign, facts = [[b.cash_cents ? 'Pays' : 'Points', pay(b) + (b.cash_cents ? ' points' : '')]];
       if (cp) facts.push(['Part of', esc(cp.title) + (cp.host ? ', hosted by ' + esc(cp.host.name) : '')]);
       if (e) facts.push(['Event', esc(e.title) + '<br>' + esc(when(e.starts_at)) + (e.location_name ? '<br>' + esc(e.location_name) : '')]);
       else if (b.event_starts_at) facts.push(['When', esc(when(b.event_starts_at)) + (cp && cp.place_name ? '<br>' + esc(cp.place_name) : '')]);
@@ -569,6 +572,7 @@
       var body;
       if (!b.claims_open) body = '<p>Claims for this bounty are closed.</p>';
       else if (b.spots_left === 0) body = '<p>Every spot is taken. Spots reopen if someone releases theirs before claims close, so check back.</p>';
+      else if (b.held && !b.held_for_you) body = '<p>This one is held for the city&rsquo;s Community Manager first. If they pass, it opens to everyone.</p>';
       else if (!v.signed_in) body = '<p>Sign in to claim a spot.</p><div class="claimrow"><button type="button" class="btn btn-primary" data-act="signin">Sign in or join</button></div>' + fine;
       else if (!v.passport) body = '<p>Bounties are for Passport holders.</p><div class="claimrow"><a class="btn btn-primary" href="/passport">Get your Passport</a></div>';
       else if (v.standing && v.standing.ok === false) body = '<p>' + (v.standing.paused ? 'Your bounties are paused after missed deadlines.' : 'You can claim again after ' + esc(day(v.standing.until)) + '.') + '</p>';
