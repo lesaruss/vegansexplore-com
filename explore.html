@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore — Vegans Explore</title>
+  <meta name="description" content="See what you can do on Vegans Explore in under a minute: guides, podcasts, city communities, the Community Board, and Founding Membership for $11, one time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Explore (Sean, 2026-10-04): the quick, self-serve alternative to the
+       guided tour on /welcome. High level, one card per thing a visitor can
+       do without an account, plus the $11 membership. Full width, cards four
+       across, no fixed max-width (see CLAUDE.md, Full width). */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
+      --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50);
+    }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 44px 40px 80px; }
+    .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 0.98; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 14px; }
+    h1 em { color: var(--ve-green); font-style: normal; }
+    .sub { font-size: 16px; line-height: 1.6; color: var(--ve-text-75); max-width: 860px; }
+
+    .ex-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 32px; }
+    @media (max-width: 1100px) { .ex-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) { .ex-grid { grid-template-columns: 1fr; } }
+
+    .ex-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--ve-border); border-radius: 14px; overflow: hidden; text-decoration: none; color: inherit; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+    .ex-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px -14px rgba(0,0,0,0.25); border-color: var(--ve-green); }
+    .ex-thumb { aspect-ratio: 16 / 10; background-size: cover; background-position: center; background-color: var(--ve-green-light); }
+    .ex-body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+    .ex-tag { align-self: flex-start; font-size: 9.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; background: var(--ve-green-light); color: var(--ve-green-dark); margin-bottom: 10px; }
+    .ex-title { font-size: 18px; font-weight: 900; letter-spacing: -0.01em; margin-bottom: 6px; }
+    .ex-desc { font-size: 13.5px; line-height: 1.55; color: var(--ve-text-75); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .ex-go { margin-top: auto; padding-top: 14px; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-green-dark); display: inline-flex; align-items: center; gap: 6px; }
+
+    .ex-member { margin-top: 24px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #1a1a1a; color: #fff; border-radius: 14px; padding: 28px 32px; }
+    .ex-price { font-size: 64px; font-weight: 900; letter-spacing: -0.05em; line-height: 1; }
+    .ex-member-copy { flex: 1; min-width: 240px; }
+    .ex-member-copy strong { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-orange); margin-bottom: 6px; }
+    .ex-member-copy p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.78); max-width: 860px; }
+    .btn-join { display: inline-flex; align-items: center; gap: 10px; background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 16px 32px; border-radius: 6px; text-decoration: none; transition: background 0.15s; }
+    .btn-join:hover { background: var(--ve-orange-dark); }
+
+    .ex-tour { margin-top: 28px; font-size: 14px; color: var(--ve-text-75); }
+    .ex-tour a { color: var(--ve-green-dark); font-weight: 800; text-decoration: none; }
+    .ex-tour a:hover { text-decoration: underline; }
+    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+    @media (max-width: 700px) {
+      main { padding: 32px 16px 64px; }
+      .ex-member { padding: 24px 20px; gap: 16px; }
+      .ex-price { font-size: 48px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main id="main-content">
+    <div class="eyebrow">Explore Now</div>
+    <h1>See What's <em>Here.</em></h1>
+    <p class="sub">No account needed. Here is what you can do on Vegans Explore right now, and what membership adds.</p>
+
+    <div class="ex-grid">
+      <a class="ex-card" href="/guides">
+        <div class="ex-thumb" style="background-image:url('/public/dashboard/tools/tools-guides.jpg')" role="img" aria-label="A guide open on a kitchen table"></div>
+        <div class="ex-body">
+          <span class="ex-tag">Guides</span>
+          <div class="ex-title">Step-by-Step Guides</div>
+          <p class="ex-desc">Practical guides for eating out, going Vegan, and living it well. Get the ones you want.</p>
+          <span class="ex-go">Browse guides &rarr;</span>
+        </div>
+      </a>
+      <a class="ex-card" href="/podcast">
+        <div class="ex-thumb" style="background-image:url('https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/78/e8/15/78e815be-972b-683e-53eb-a56c001e9969/mza_10373735271438816480.jpg/600x600bb.jpg')" role="img" aria-label="Vegans Explore podcast cover"></div>
+        <div class="ex-body">
+          <span class="ex-tag">Podcasts</span>
+          <div class="ex-title">Listen In</div>
+          <p class="ex-desc">Four shows with real Vegan voices: city life, fitness, getting started and more.</p>
+          <span class="ex-go">Listen now &rarr;</span>
+        </div>
+      </a>
+      <a class="ex-card" href="/communities">
+        <div class="ex-thumb" style="background-image:url('/public/guides/thumb-community.jpg')" role="img" aria-label="A Vegan community dinner outdoors"></div>
+        <div class="ex-body">
+          <span class="ex-tag">Communities</span>
+          <div class="ex-title">Pick Your City</div>
+          <p class="ex-desc">Choose a community for a deeper, local experience: news, events, spots and people near you.</p>
+          <span class="ex-go">See communities &rarr;</span>
+        </div>
+      </a>
+      <a class="ex-card" href="/board">
+        <div class="ex-thumb" style="background-image:url('/public/dashboard/tools/tools-community-board.jpg')" role="img" aria-label="Neighbors pinning notes to a community board"></div>
+        <div class="ex-body">
+          <span class="ex-tag">Community Board</span>
+          <div class="ex-title">See What's Going On</div>
+          <p class="ex-desc">Requests and offers from your city: rescue, fostering, rides, food and more.</p>
+          <span class="ex-go">Open the board &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <section class="ex-member" aria-labelledby="ex-member-heading">
+      <div class="ex-price">$11</div>
+      <div class="ex-member-copy">
+        <strong id="ex-member-heading">Become a Founding Member</strong>
+        <p>One time, never renews. Unlock even more: post and reply on the Community Board, see members' contact details, and turn every dollar into points toward guides.</p>
+      </div>
+      <a class="btn-join" href="/welcome#join">Join for $11</a>
+    </section>
+
+    <p class="ex-tour">Want to know more? <a href="/welcome">Take the guided tour &rarr;</a></p>
+  </main>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
