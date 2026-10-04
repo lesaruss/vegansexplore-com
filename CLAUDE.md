@@ -187,8 +187,21 @@ the controls after it. The format is the `/partners` page; the shared shell is
 `<div class="page-frame">`, put slides in `<main class="vg-stage">` as
 `<section class="vg-slide" id="..." data-title="...">`, and load the script after the footer.
 Different audiences branch from a `data-vg-choose` slide into `data-path` slides. Example:
-`/campaign-engine` and `/campaign-engine/fieldhouse-protein/*`. Working tools and data pages
+`/campaign-engine`, `/campaign-engine/fieldhouse-protein/report` and `/dashboard`. Working tools and data pages
 (queues, lists, forms) are not mocks and follow Interface defaults.
+
+## Campaigns on a listing (Sean, 2026-10-04)
+
+A brand's campaign runs on its Directory listing: `directory/listing.html` shows a campaign banner,
+a Campaign tab (tasks with points, your progress, a city leaderboard, the creators), an Events tab
+and a sidebar card whenever the listing carries a campaign (`l._campaign`), and Food Brands get
+their Menu tab labeled Products. The demo, `/campaign-engine/fieldhouse-protein` (rewrite in
+`vercel.json`), is that real page in demo mode: `?demo=<slug>` or `/campaign-engine/<slug>` loads
+`/campaign-engine/<slug>/listing-demo.js` instead of the database, labels it Illustrative, turns
+off votes, saves and claims, adds a member / brand view switch, and starts a `ve-tour.js`
+spotlight tour of the campaign. Live campaigns are not wired yet: `ve_bounty_campaigns.host_listing_id`
+links a campaign to a listing, but the table has no public read, so it needs to come through the
+`ve-bounties` function first.
 
 ## Tracked links (Sean, 2026-10-04)
 

@@ -4,6 +4,10 @@
   "outputDirectory": ".",
   "rewrites": [
     {
+      "source": "/campaign-engine/fieldhouse-protein",
+      "destination": "/directory/listing"
+    },
+    {
       "source": "/directory/:slug",
       "destination": "/directory/listing"
     },

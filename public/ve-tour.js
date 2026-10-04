@@ -14,6 +14,11 @@
 //   hub         any city community hub (/communities/<city>)
 //   depot       The Depot, page by page
 //   partners    the Partners page (/partners)
+//   campaign    registered by the Directory listing page in demo mode (a campaign on a listing,
+//               /campaign-engine/<brand>); a page may add tours to VETour.tours and start them.
+//
+// A step may carry before(), run before its spotlight is placed (open a tab, switch a view),
+// and a tour may set doneLabel for its last button.
 //
 // A step names its page only when the tour moves between pages; the tour's state rides in
 // sessionStorage across the move. Steps on the starting page are checked when the tour
@@ -254,6 +259,8 @@
     }
     if (step.hubTab) return !!q('#tab-btn-' + step.hubTab);
     if (step.slide) return step.sel.some(function (s) { return !!q(s); });
+    // A step that sets up its own part (before) is checked once that has run.
+    if (step.before) return step.sel.some(function (s) { return !!q(s); });
     return !!findEl(step);
   }
 
@@ -457,7 +464,9 @@
     if (step.tab) dashTab(step.tab);
     if (step.hubTab) hubTab(step.hubTab);
     if (step.slide) partnerSlide(step.slide);
-    var settle = (step.tab && step.tab !== 'profile') || step.hubTab || step.slide ? 180 : 0;
+    // A step can set up its own part of the page first (open a tab, switch a view).
+    if (typeof step.before === 'function') { try { step.before(); } catch (e) {} }
+    var settle = (step.tab && step.tab !== 'profile') || step.hubTab || step.slide || step.before ? 180 : 0;
 
     var tries = 0;
     setTimeout(function paint() {
@@ -482,7 +491,7 @@
           '<div class="ve-tour-dots" aria-hidden="true">' + order.map(function (_, i) { return '<div class="ve-tour-dot' + (i === pos ? ' active' : '') + '"></div>'; }).join('') + '</div>' +
           '<div class="ve-tour-btns">' +
             (pos > 0 ? '<button type="button" class="ve-tour-btn ve-tour-btn-back" id="ve-tour-back-btn">Back</button>' : '') +
-            '<button type="button" class="ve-tour-btn ve-tour-btn-primary" id="ve-tour-next-btn">' + (isLast ? 'Start Exploring' : 'Next') + '</button>' +
+            '<button type="button" class="ve-tour-btn ve-tour-btn-primary" id="ve-tour-next-btn">' + (isLast ? (tour.doneLabel || 'Start Exploring') : 'Next') + '</button>' +
           '</div>' +
         '</div>';
       document.getElementById('ve-tour-skip-btn').addEventListener('click', finish);

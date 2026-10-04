@@ -366,6 +366,128 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .bb-wrap{order:999}
 }
 </style>
+<style>
+/* Campaigns on a listing (playbook ve-campaign-engine, Sean 2026-10-04): while a brand runs a
+   campaign, the listing is its home base: banner, Campaign tab, Events tab and a sidebar card. */
+.demo-bar{background:#2b1d06;color:#ffd79a;border-bottom:1px solid rgba(246,152,32,.35);padding:10px 40px;display:flex;gap:14px 20px;align-items:center;flex-wrap:wrap;font-size:12px;font-weight:600;line-height:1.45}
+.demo-bar strong{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#F69820;margin-right:6px}
+.demo-bar .db-text{flex:1;min-width:260px}
+.demo-bar .db-view{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.demo-bar .db-view span{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.demo-bar button,.demo-bar a{font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,215,154,.45);background:transparent;color:#ffd79a;cursor:pointer;text-decoration:none;white-space:nowrap}
+.demo-bar button[aria-pressed="true"]{background:#F69820;border-color:#F69820;color:#1a1004}
+.demo-bar .db-links{display:flex;gap:6px;flex-wrap:wrap}
+.camp-banner{display:flex;align-items:center;gap:18px 28px;flex-wrap:wrap;padding:16px 40px;background:linear-gradient(90deg,#14240f 0%,#1d3a17 60%,#2d5a22 100%);color:#fff;border-bottom:1px solid #2d5a3a}
+.cb-left{display:flex;flex-direction:column;gap:3px;min-width:220px}
+.cb-live{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#8ff0ac}
+.cb-live i{width:8px;height:8px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 4px rgba(34,197,94,.25)}
+.cb-title{font-size:20px;font-weight:900;letter-spacing:-.01em}
+.cb-meta{font-size:12px;font-weight:600;color:rgba(255,255,255,.75)}
+.cb-prog{flex:1;min-width:160px;display:flex;flex-direction:column;gap:6px}
+.cb-prog .bar{height:8px;border-radius:4px;background:rgba(255,255,255,.15);overflow:hidden}
+.cb-prog .bar i{display:block;height:100%;background:#22C55E;border-radius:4px}
+.cb-prog span{font-size:11px;font-weight:700;color:rgba(255,255,255,.75)}
+.cb-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:12px 20px;border-radius:6px;border:0;background:#22C55E;color:#03170a;cursor:pointer;white-space:nowrap}
+.cb-btn:hover{background:#4ade80}
+.tab-btn .tab-live{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22C55E;margin-left:6px;vertical-align:1px}
+.cmp{padding:28px 40px 40px}
+.cmp-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px}
+.cmp-title{font-size:24px;font-weight:900;letter-spacing:-.01em}
+.cmp-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.cmp-chip{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--ve-green-light);color:var(--ve-green-dark)}
+.cmp-story{font-size:14px;line-height:1.7;color:var(--ve-text-75);max-width:860px;margin-bottom:22px}
+.cmp-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:24px;align-items:start}
+.cmp-sub{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:10px}
+.cmp-tasks{display:flex;flex-direction:column;gap:10px}
+.cmp-task{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:center;border:1px solid var(--ve-border);border-radius:10px;padding:12px 14px;background:#fff}
+.cmp-task.done{border-color:#9bd3a4;background:#f4fbf4}
+.cmp-task.ended{opacity:.6}
+.cmp-pts{font-size:12px;font-weight:900;text-align:center;padding:6px 0;border-radius:8px;background:var(--ve-green-light);color:var(--ve-green-dark)}
+.cmp-tn{font-size:14px;font-weight:800}
+.cmp-td{font-size:12px;color:var(--ve-text-50);line-height:1.5;margin-top:2px}
+.cmp-tc{font-size:11px;font-weight:700;color:var(--ve-text-50);margin-top:4px}
+.cmp-do{font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--ve-green);background:#fff;color:var(--ve-green-dark);cursor:pointer;white-space:nowrap}
+.cmp-do:hover{background:var(--ve-green-light)}
+.cmp-do[disabled]{border-color:#9bd3a4;background:#e8f5e9;cursor:default}
+.cmp-card{border:1px solid var(--ve-border);border-radius:12px;padding:16px 18px;background:#fff;margin-bottom:14px}
+.cmp-me .big{font-size:30px;font-weight:900;letter-spacing:-.02em}
+.cmp-me .lbl{font-size:12px;color:var(--ve-text-50);font-weight:600}
+.cmp-perk{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--ve-text-75);padding:6px 0;border-top:1px solid var(--ve-border)}
+.cmp-perk b{color:var(--ve-green-dark)}
+.cmp-join{width:100%;margin-top:12px;font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:12px;border-radius:6px;border:0;background:var(--ve-green);color:#fff;cursor:pointer}
+.cmp-join:hover{background:var(--ve-green-dark)}
+.cmp-cities{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.cmp-city{font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:20px;border:1px solid var(--ve-border);background:#fff;cursor:pointer;color:var(--ve-text-75)}
+.cmp-city[aria-pressed="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff}
+.cmp-board{list-style:none;counter-reset:r}
+.cmp-board li{display:flex;justify-content:space-between;font-size:13px;font-weight:700;padding:7px 0;border-top:1px solid var(--ve-border);counter-increment:r}
+.cmp-board li::before{content:counter(r);width:22px;color:var(--ve-text-50);font-weight:800}
+.cmp-board li span{flex:1}
+.cmp-board li.me{color:var(--ve-green-dark)}
+.cmp-creators{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,100%),1fr));gap:10px;margin-top:22px}
+.cmp-creator{display:flex;gap:10px;align-items:center;border:1px solid var(--ve-border);border-radius:10px;padding:10px 12px}
+.cmp-creator .av{width:34px;height:34px;border-radius:50%;color:#fff;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cmp-creator b{display:block;font-size:13px}
+.cmp-creator span{font-size:11px;color:var(--ve-text-50)}
+.cmp-note{font-size:12px;color:var(--ve-text-50);line-height:1.6;margin-top:16px}
+.cmp-link{font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-dark);background:none;border:0;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+.cmp-owner{border:2px solid #e8b04b;background:#fdf8ec;border-radius:12px;padding:18px 20px;margin-bottom:22px}
+.cmp-owner .eyebrow{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#7d5a12;margin-bottom:10px}
+.cmp-owner-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(140px,100%),1fr));gap:10px;margin-bottom:12px}
+.cmp-owner-tiles div{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:12px}
+.cmp-owner-tiles b{display:block;font-size:22px;font-weight:900;letter-spacing:-.02em}
+.cmp-owner-tiles span{font-size:11px;font-weight:700;color:var(--ve-text-50)}
+.cmp-owner p{font-size:13px;line-height:1.6;color:var(--ve-text-75);margin-bottom:12px}
+.cmp-owner .row{display:flex;gap:8px;flex-wrap:wrap}
+.cmp-owner a{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:10px 14px;border-radius:6px;background:#1d2f4f;color:#fff;text-decoration:none}
+.cmp-owner a.ghost{background:#fff;color:#1d2f4f;border:1px solid #1d2f4f}
+.camp-side{background:#0a1a0f;border-color:#2d5a3a;color:#fff}
+.camp-side .side-card-title{color:#8ff0ac}
+.camp-side .cs-title{font-size:16px;font-weight:900;margin-bottom:4px}
+.camp-side .cs-meta{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:12px}
+.camp-side .cs-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.camp-side .cs-stats div{background:rgba(255,255,255,.06);border-radius:8px;padding:8px 10px}
+.camp-side .cs-stats b{display:block;font-size:17px;font-weight:900}
+.camp-side .cs-stats span{font-size:10px;color:rgba(255,255,255,.7)}
+.camp-side button,.camp-side a.cs-btn{display:block;width:100%;text-align:center;font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:11px;border-radius:6px;border:0;background:#22C55E;color:#03170a;cursor:pointer;text-decoration:none}
+.evt-list{padding:28px 40px 40px;display:flex;flex-direction:column;gap:12px}
+.evt{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:16px;align-items:center;border:1px solid var(--ve-border);border-radius:12px;padding:14px 16px}
+.evt.past{opacity:.7}
+.evt-date{width:64px;height:64px;border-radius:10px;background:#1d2f4f;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900}
+.evt-t{font-size:15px;font-weight:900}
+.evt-p{font-size:12px;color:var(--ve-text-50);font-weight:700;margin:2px 0 4px}
+.evt-d{font-size:13px;color:var(--ve-text-75);line-height:1.5}
+.evt-s{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:20px;background:var(--ve-green-light);color:var(--ve-green-dark);white-space:nowrap}
+.evt.past .evt-s{background:#eee;color:#555}
+.dv-grid{padding:28px 40px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px}
+.dv{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden}
+.dv-poster{aspect-ratio:16/9;position:relative;display:flex;align-items:center;justify-content:center}
+.dv-play{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center}
+.dv-play::after{content:'';border-left:15px solid #1d2f4f;border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.dv-kind,.dv-len{position:absolute;font-size:10px;font-weight:800;background:rgba(0,0,0,.55);color:#fff;padding:3px 7px;border-radius:4px}
+.dv-kind{left:8px;top:8px;letter-spacing:.12em;text-transform:uppercase}
+.dv-len{right:8px;bottom:8px}
+.dv-body{padding:12px 14px}
+.dv-t{font-size:14px;font-weight:800}
+.dv-m{font-size:12px;color:var(--ve-text-50);margin-top:2px}
+.menu-item-actions{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.menu-item-buy{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:6px;background:var(--ve-green);color:#fff;text-decoration:none;border:0;cursor:pointer;font-family:Montserrat,sans-serif}
+.menu-item-nut summary{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-dark);cursor:pointer;list-style:none}
+.menu-item-nut summary::-webkit-details-marker{display:none}
+.menu-item-nut p{font-size:12px;line-height:1.55;color:var(--ve-text-75);margin-top:6px;max-width:560px}
+.demo-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:1000001}
+.demo-toast.show{opacity:1}
+@media(max-width:768px){
+  .demo-bar,.camp-banner{padding-left:16px;padding-right:16px}
+  .cmp,.evt-list,.dv-grid{padding:20px 16px 28px}
+  .cmp-grid{grid-template-columns:minmax(0,1fr)}
+  .cmp-task{grid-template-columns:56px minmax(0,1fr);}
+  .cmp-task .cmp-do{grid-column:1/-1}
+  .evt{grid-template-columns:52px minmax(0,1fr)}
+  .evt-date{width:52px;height:52px;font-size:15px}
+  .evt-s{grid-column:2;justify-self:start}
+}
+</style>
 </head>
 <body>
 <script>
@@ -897,6 +1019,7 @@ function renderSidebar(l){
     '</div>';
 
   return '<div class="listing-sidebar">'+
+    (l._campaign ? campaignSideCard(l._campaign) : '')+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
     '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>'+
     (deliveryPills ? '<div class="side-card"><div class="side-card-title">Delivery</div><div class="social-row">'+deliveryPills+'</div></div>' : '')+
@@ -958,6 +1081,10 @@ function menuTabContent(items){
           '<div class="menu-item-name">'+esc(item.name)+'</div>'+
           (item.description?'<div class="menu-item-desc">'+esc(item.description)+'</div>':'')+
           (tags?'<div class="menu-item-tags">'+tags+'</div>':'')+
+          ((item.buy || item.nutrition) ? '<div class="menu-item-actions">'+
+            (item.buy ? '<button type="button" class="menu-item-buy" data-buy="'+esc(item.buy)+'">Buy</button>' : '')+
+            (item.nutrition && DEMO && DEMO.nutrition && DEMO.nutrition[item.nutrition] ? '<details class="menu-item-nut"><summary>Nutrition</summary><p>'+esc(DEMO.nutrition[item.nutrition])+'</p></details>' : '')+
+          '</div>' : '')+
         '</div>'+
         (item.price_display?'<div class="menu-item-price">'+esc(item.price_display)+'</div>':'')+
       '</div>';
@@ -1008,6 +1135,158 @@ function getCommunityForListing(l){
   if(l.address_city === 'London') return {slug:'london', name:'London'};
   return null;
 }
+
+
+// ── Campaigns on a listing (playbook ve-campaign-engine) ─────────────────────
+// A listing with a running campaign gets a banner, a Campaign tab, an Events tab and a sidebar
+// card. The campaign object rides on the listing as l._campaign. Demo mode (?demo=<slug>, or
+// /campaign-engine/<slug>) loads an illustrative listing from /campaign-engine/<slug>/listing-demo.js
+// instead of the database, and turns off everything that would save (votes, saves, claims).
+var DEMO = null;
+var CST = { view: 'member', joined: false, done: {}, points: 0, city: null };
+function demoSlug(){
+  var q = ''; try { q = new URLSearchParams(location.search).get('demo') || ''; } catch(e){}
+  var m = location.pathname.match(/^\/campaign-engine\/([a-z0-9-]+)\/?$/);
+  var s = q || (m ? m[1] : '');
+  return /^[a-z0-9-]{2,60}$/.test(s) ? s : '';
+}
+function demoToast(msg){
+  var t = document.getElementById('demo-toast');
+  if(!t){ t = document.createElement('div'); t.id = 'demo-toast'; t.className = 'demo-toast'; t.setAttribute('role','status'); document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+function fmtN(n){ return Number(n).toLocaleString('en-US'); }
+function campaignBanner(C){
+  var pct = Math.round(C.week / C.weeks * 100);
+  var owner = CST.view === 'owner';
+  return '<div class="camp-banner" id="camp-banner">'+
+    '<div class="cb-left"><span class="cb-live"><i></i>'+(owner?'Your campaign is live':'Live campaign')+'</span>'+
+      '<span class="cb-title">'+esc(C.title)+'</span>'+
+      '<span class="cb-meta">'+esc(C.level)+' · '+esc(C.cities.join(', '))+' · '+esc(C.dates)+'</span></div>'+
+    '<div class="cb-prog"><div class="bar"><i style="width:'+pct+'%"></i></div><span>Week '+C.week+' of '+C.weeks+'</span></div>'+
+    (owner
+      ? '<a class="cb-btn" href="'+esc((DEMO&&DEMO.dashboardUrl)||'#')+'" style="text-decoration:none">Open your dashboard</a>'
+      : '<button type="button" class="cb-btn" data-camp-open>'+(CST.joined?'Your tasks':'Join the challenge')+'</button>')+
+  '</div>';
+}
+function campaignTab(C){
+  var owner = CST.view === 'owner';
+  var html = '<div class="cmp">';
+  if(owner && C.owner){
+    html += '<div class="cmp-owner" id="cmp-owner"><div class="eyebrow">Only you see this · Season to date, week '+C.week+'</div>'+
+      '<div class="cmp-owner-tiles">'+C.owner.tiles.map(function(t){ return '<div><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span></div>'; }).join('')+'</div>'+
+      '<p>'+esc(C.owner.note)+'</p>'+
+      '<div class="row"><a href="'+esc((DEMO&&DEMO.dashboardUrl)||'#')+'">Open the sponsor dashboard</a><a class="ghost" href="'+esc((DEMO&&DEMO.reportUrl)||'#')+'">See the final report</a></div></div>';
+  }
+  html += '<div class="cmp-head"><div><div class="cmp-title">'+esc(C.title)+'</div>'+
+    '<div class="cmp-meta"><span class="cmp-chip">Week '+C.week+' of '+C.weeks+'</span>'+C.cities.map(function(c){ return '<span class="cmp-chip">'+esc(c)+'</span>'; }).join('')+'</div></div></div>'+
+    '<p class="cmp-story">'+esc(C.story)+'</p>';
+  // Tasks
+  html += '<div class="cmp-grid"><div><div class="cmp-sub">Tasks and points</div><div class="cmp-tasks" id="cmp-tasks">'+
+    C.tasks.map(function(t){
+      var done = !!CST.done[t.id];
+      var btn = t.ended ? '<span class="cmp-tc">Ended</span>'
+        : owner ? '<span class="cmp-tc">'+fmtN(t.count + (done?1:0))+' done</span>'
+        : '<button type="button" class="cmp-do" data-task="'+t.id+'"'+(done?' disabled':'')+'>'+(done?'Done ✓':'Do this')+'</button>';
+      return '<div class="cmp-task'+(done?' done':'')+(t.ended?' ended':'')+'"><div class="cmp-pts">'+t.points+' pts</div>'+
+        '<div><div class="cmp-tn">'+esc(t.title)+'</div><div class="cmp-td">'+esc(t.desc)+'</div>'+
+        (owner?'':'<div class="cmp-tc">'+fmtN(t.count + (done?1:0))+' members so far</div>')+'</div>'+btn+'</div>';
+    }).join('')+'</div></div>';
+  // Right column: you + leaderboard
+  var cities = Object.keys(C.leaderboard||{});
+  var city = CST.city || cities[0];
+  var rows = (C.leaderboard[city]||[]).slice();
+  if(CST.joined && !owner) rows.push(['You', CST.points, true]);
+  rows.sort(function(a,b){ return b[1]-a[1]; });
+  html += '<div>'+
+    (owner ? '' :
+    '<div class="cmp-card cmp-me" id="cmp-me"><div class="cmp-sub">Your progress</div>'+
+      (CST.joined
+        ? '<div class="big">'+fmtN(CST.points)+' pts</div><div class="lbl">'+Object.keys(CST.done).length+' task'+(Object.keys(CST.done).length===1?'':'s')+' done</div>'
+        : '<div class="lbl" style="font-size:13px;line-height:1.6">Join to start earning points. Tasks take minutes and fit what you already do.</div>')+
+      '<div style="margin-top:12px">'+C.perks.map(function(p){ return '<div class="cmp-perk"><span>'+esc(p.label)+'</span><b>'+fmtN(p.pts)+' pts</b></div>'; }).join('')+'</div>'+
+      (CST.joined ? '' : '<button type="button" class="cmp-join" data-camp-join>Join the challenge</button>')+
+    '</div>')+
+    '<div class="cmp-card" id="cmp-board"><div class="cmp-sub">Leaderboard</div><div class="cmp-cities">'+
+      cities.map(function(c){ return '<button type="button" class="cmp-city" data-city="'+esc(c)+'" aria-pressed="'+(c===city)+'">'+esc(c)+'</button>'; }).join('')+
+    '</div><ol class="cmp-board">'+rows.slice(0,6).map(function(r){ return '<li'+(r[2]?' class="me"':'')+'><span>'+esc(r[0])+'</span>'+fmtN(r[1])+'</li>'; }).join('')+'</ol></div>'+
+  '</div></div>';
+  // Creators
+  html += '<div class="cmp-sub" style="margin-top:26px">Creators in this campaign</div><div class="cmp-creators" id="cmp-creators">'+
+    (C.creators||[]).map(function(c){ var ini = c.n.split(' ').map(function(w){ return w[0]; }).join('').replace('.',''); return '<div class="cmp-creator"><span class="av" style="background:'+esc(c.bg)+'">'+esc(ini)+'</span><div><b>'+esc(c.n)+'</b><span>'+esc(c.c)+'</span></div></div>'; }).join('')+
+  '</div><p class="cmp-note">Their videos are on the Video tab. Every post made for points or pay is labeled #ad. <button type="button" class="cmp-link" data-goto-tab="video">Watch them</button></p>';
+  return html+'</div>';
+}
+function campaignSideCard(C){
+  var owner = CST.view === 'owner';
+  if(owner && C.owner){
+    return '<div class="side-card camp-side" id="camp-side"><div class="side-card-title">Your campaign · week '+C.week+'</div>'+
+      '<div class="cs-title">'+esc(C.title)+'</div><div class="cs-meta">Season to date</div>'+
+      '<div class="cs-stats">'+C.owner.tiles.slice(0,4).map(function(t){ return '<div><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span></div>'; }).join('')+'</div>'+
+      '<a class="cs-btn" href="'+esc((DEMO&&DEMO.dashboardUrl)||'#')+'">Open your dashboard</a></div>';
+  }
+  return '<div class="side-card camp-side" id="camp-side"><div class="side-card-title">Live campaign</div>'+
+    '<div class="cs-title">'+esc(C.title)+'</div><div class="cs-meta">Week '+C.week+' of '+C.weeks+' · '+esc(C.cities.join(', '))+'</div>'+
+    '<div class="cs-stats"><div><b>'+fmtN(C.tasks.reduce(function(a,t){ return a+t.count; },0))+'</b><span>tasks done</span></div><div><b>'+(C.creators||[]).length+'</b><span>local creators</span></div></div>'+
+    '<button type="button" data-camp-open>'+(CST.joined?'Your tasks':'Join the challenge')+'</button></div>';
+}
+function eventsTab(C){
+  return '<div class="evt-list">'+(C.events||[]).map(function(e){
+    var past = e.status === 'Happened';
+    return '<div class="evt'+(past?' past':'')+'"><div class="evt-date">'+esc(e.day)+'</div><div><div class="evt-t">'+esc(e.title)+'</div><div class="evt-p">'+esc(e.when)+' · '+esc(e.place)+'</div><div class="evt-d">'+esc(e.desc)+'</div></div><span class="evt-s">'+esc(e.status)+'</span></div>';
+  }).join('')+'<p class="cmp-note" style="margin-top:4px">Members check in with the Passport, so every visit is counted for the brand and earns the member points.</p></div>';
+}
+function demoVideos(list){
+  return '<div class="dv-grid">'+list.map(function(v){
+    return '<div class="dv"><div class="dv-poster" style="background:linear-gradient(135deg,'+esc(v.grad)+')"><span class="dv-kind">'+esc(v.kind)+'</span><span class="dv-play" aria-hidden="true"></span><span class="dv-len">'+esc(v.len)+'</span></div><div class="dv-body"><div class="dv-t">'+esc(v.t)+'</div><div class="dv-m">'+esc(v.m)+'</div></div></div>';
+  }).join('')+'</div>';
+}
+function refreshCampaign(l){
+  var C = l._campaign; if(!C) return;
+  var b = document.getElementById('camp-banner'); if(b) b.outerHTML = campaignBanner(C);
+  var t = document.getElementById('tab-campaign'); if(t) t.innerHTML = campaignTab(C);
+  var s = document.getElementById('camp-side'); if(s) s.outerHTML = campaignSideCard(C);
+  document.querySelectorAll('[data-view]').forEach(function(x){ x.setAttribute('aria-pressed', x.getAttribute('data-view') === CST.view ? 'true' : 'false'); });
+}
+function showListingTab(target){
+  var btn = document.querySelector('.tab-btn[data-tab="'+target+'"]');
+  if(!btn || btn.style.display === 'none') return;
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+  var panel = document.getElementById('tab-'+target);
+  if(panel) panel.classList.add('active');
+  if(target === 'photos') wireCarousel('tab-photos');
+}
+window.veListingTab = showListingTab;
+function wireCampaign(l){
+  var C = l._campaign; if(!C) return;
+  document.getElementById('listing-root').addEventListener('click', function(e){
+    var el;
+    if((el = e.target.closest('[data-goto-tab]'))){ showListingTab(el.getAttribute('data-goto-tab')); return; }
+    if(e.target.closest('[data-camp-open]')){ showListingTab('campaign'); var tc = document.getElementById('tab-campaign'); if(tc) tc.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+    if(e.target.closest('[data-camp-join]')){
+      if(!DEMO){ if(window.VEAuth && !VEAuth.isLoggedIn()){ VEAuth.showAuthModal('Sign in to join this campaign.', function(){ location.reload(); }); } return; }
+      CST.joined = true; refreshCampaign(l); demoToast('Joined. In the live version this adds the campaign to your dashboard.'); return;
+    }
+    if((el = e.target.closest('[data-task]'))){
+      if(!DEMO) return;
+      var t = C.tasks.filter(function(x){ return x.id === el.getAttribute('data-task'); })[0];
+      if(!t || CST.done[t.id]) return;
+      CST.joined = true; CST.done[t.id] = true; CST.points += t.points;
+      refreshCampaign(l); demoToast('+'+t.points+' points. In the live version this opens the task: check in, post or upload.'); return;
+    }
+    if((el = e.target.closest('[data-city]'))){ CST.city = el.getAttribute('data-city'); refreshCampaign(l); return; }
+  });
+}
+function demoBar(){
+  return '<div class="demo-bar" id="demo-bar" role="note"><div class="db-text"><strong>Illustrative</strong>'+esc(DEMO.label)+'</div>'+
+    '<div class="db-view" id="demo-bar-view"><span>Viewing as</span><button type="button" data-view="member" aria-pressed="true">A member</button><button type="button" data-view="owner" aria-pressed="false">The brand</button></div>'+
+    '<div class="db-links" id="demo-bar-links"><button type="button" id="demo-tour">Take the tour</button><a href="'+esc(DEMO.dashboardUrl)+'">Dashboard</a><a href="'+esc(DEMO.reportUrl)+'">Final report</a><a href="'+esc(DEMO.hubUrl)+'">Campaign Engine</a></div></div>';
+}
+function setDemoView(v, l){ CST.view = v; refreshCampaign(l); }
+window.veDemoView = function(v){ if(window._veDemoListing) setDemoView(v, window._veDemoListing); };
 
 function renderListing(l){
   var isSoFlo = !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1);
@@ -1142,6 +1421,7 @@ function renderListing(l){
       '</div>'+
     '</div>'+
     statusBadge+
+    (l._campaign ? campaignBanner(l._campaign) : '')+
     (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
     // Persistent two-column layout: main tabs on left, sidebar always on right
     '<div class="listing-page-grid">'+
@@ -1149,18 +1429,22 @@ function renderListing(l){
         // Tab nav — Menu tab hidden until items confirmed; Video + Pulse require claimed status
         '<nav class="listing-tabs" role="tablist">'+
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
-          '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">Menu</button>'+
+          (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
+          '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
           '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
+          (l._campaign && l._campaign.events ? '<button class="tab-btn" data-tab="events" role="tab" aria-selected="false">Events</button>' : '')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
         '</nav>'+
         // Tab panels
         '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
           '<div style="padding:32px 40px 40px">'+overviewContent+'</div>'+
         '</div>'+
+        (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video')+'</div>' : '')+
+        (l._campaign && l._campaign.events ? '<div class="tab-panel" id="tab-events" role="tabpanel">'+eventsTab(l._campaign)+'</div>' : '')+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse')+'</div>' : '')+
       '</div>'+
       renderSidebar(l)+
@@ -1188,18 +1472,9 @@ function renderListing(l){
 
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var target = this.dataset.tab;
-      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-      this.classList.add('active');
-      this.setAttribute('aria-selected','true');
-      var panel = document.getElementById('tab-'+target);
-      if(panel) panel.classList.add('active');
-
-      if(target === 'photos') wireCarousel('tab-photos');
-    });
+    btn.addEventListener('click', function(){ showListingTab(this.dataset.tab); });
   });
+  wireCampaign(l);
 
   // Wire overview carousel on load; Photos tab carousel on first click
   wireCarousel('ov');
@@ -1213,6 +1488,7 @@ function renderListing(l){
   // the activate modal on the payment_required response.
   (function(){
     var voteBtn = document.getElementById('vote-btn');
+    if(DEMO){ if(voteBtn) voteBtn.addEventListener('click', function(){ demoToast('Demo listing: in the live version this casts your daily vote.'); }); return; }
     if(!voteBtn || !window.VEAuth || !window.VEVotes) return;
     var listingId = voteBtn.getAttribute('data-listing-id');
     // n: the new total from the server, or null to keep the number shown (already voted today).
@@ -1255,6 +1531,7 @@ function renderListing(l){
   // the sign-in modal instead of silently failing.
   (function(){
     var saveBtn = document.getElementById('save-btn');
+    if(DEMO){ if(saveBtn) saveBtn.addEventListener('click', function(){ demoToast('Demo listing: in the live version this saves it to My List.'); }); return; }
     if(!saveBtn || !window.VEAuth) return;
     var listingId = saveBtn.getAttribute('data-listing-id');
     function paintSaved(isSaved){
@@ -1706,6 +1983,14 @@ function ownerVerifiedCard(l){
 }
 
 // Init
+var dslug = demoSlug();
+if(dslug){
+  var ds = document.createElement('script');
+  ds.src = '/campaign-engine/' + dslug + '/listing-demo.js';
+  ds.onload = function(){ if(window.VE_DEMO){ DEMO = window.VE_DEMO; renderDemo(); } else showNotFound(); };
+  ds.onerror = function(){ showNotFound(); };
+  document.head.appendChild(ds);
+} else (function(){
 var slug = getSlug();
 if(!slug || slug === 'listing'){
   showNotFound();
@@ -1755,6 +2040,75 @@ if(!slug || slug === 'listing'){
     }
   }).catch(function(){ showNotFound(); });
 }
+})();
+
+// Demo mode: the real listing page, fed an illustrative listing and its campaign.
+function renderDemo(){
+  var l = DEMO.listing;
+  l._campaign = DEMO.campaign || null;
+  if(l._campaign && l._campaign.leaderboard) CST.city = Object.keys(l._campaign.leaderboard)[1] || null;
+  window._veDemoListing = l;
+  renderListing(l);
+  document.title = l.name + ' (Illustrative) — VEGANS EXPLORE';
+  var rb = document.createElement('meta'); rb.name = 'robots'; rb.content = 'noindex, nofollow'; document.head.appendChild(rb);
+  document.getElementById('listing-root').insertAdjacentHTML('afterbegin', demoBar());
+  if(DEMO.menu && DEMO.menu.length){
+    var panel = document.getElementById('tab-menu'); if(panel) panel.innerHTML = menuTabContent(DEMO.menu);
+    var mb = document.getElementById('tab-btn-menu'); if(mb) mb.style.display = '';
+  }
+  var vp = document.getElementById('tab-video'); if(vp && DEMO.videos) vp.innerHTML = demoVideos(DEMO.videos);
+  if(DEMO.pulse) renderPulse(DEMO.pulse, l.name);
+  var root = document.getElementById('listing-root');
+  root.addEventListener('click', function(e){
+    var v = e.target.closest('[data-view]'); if(v){ setDemoView(v.getAttribute('data-view'), l); return; }
+    if(e.target.closest('[data-buy]')){ demoToast('Demo listing: in the live version this opens the retailer through a tracked link, so the click is counted.'); return; }
+    if(e.target.closest('#demo-tour')){ startDemoTour(); }
+  });
+  var donate = document.getElementById('donate-btn'); if(donate) donate.disabled = true;
+  if(DEMO.tour !== false){
+    var ts = document.createElement('script'); ts.src = '/public/ve-tour.js';
+    ts.onload = function(){ registerDemoTour(); var q=''; try{ q = new URLSearchParams(location.search).get('tour') || ''; }catch(e){} if(q !== '0') setTimeout(startDemoTour, 400); };
+    document.head.appendChild(ts);
+  }
+}
+function registerDemoTour(){
+  if(!window.VETour || !VETour.tours) return;
+  var tab = function(t){ return function(){ showListingTab(t); }; };
+  var view = function(v, t){ return function(){ setDemoView(v, window._veDemoListing); if(t) showListingTab(t); }; };
+  VETour.tours.campaign = {
+    label: 'Campaign tour',
+    doneLabel: 'Done',
+    prepare: function(){ setDemoView('member', window._veDemoListing); showListingTab('overview'); window.scrollTo(0,0); },
+    finish: function(){ setDemoView('member', window._veDemoListing); },
+    steps: [
+      { before: view('member','overview'), sel: ['.listing-hero'], title: 'A real Directory listing',
+        body: 'This is the same listing page every business in the Directory gets. Fieldhouse is an invented brand. Everything around it is the real page.' },
+      { before: view('member','overview'), sel: ['#camp-banner'], title: 'The campaign lives on the listing',
+        body: 'While a brand runs a campaign, it sits at the top of its listing: the challenge, the cities, how far along it is, and one button to join.' },
+      { before: view('member','campaign'), sel: ['#cmp-tasks'], title: 'Members take part right here',
+        body: 'Each task is a bounty with points. Members pick what fits their routine, and every post made for points is labeled #ad. Try one: press Do this.' },
+      { before: view('member','campaign'), sel: ['#cmp-board'], placement: 'left', title: 'A leaderboard for each city',
+        body: 'Points add up toward real perks, and each city has its own top 10. Local competition is what keeps people coming back every week.' },
+      { before: view('member','campaign'), sel: ['#cmp-creators'], placement: 'top', title: 'Six local creators',
+        body: 'Two creators in each city, each claiming a paid creator bounty. Their work comes back to this listing.' },
+      { before: view('member','menu'), sel: ['#tab-menu'], placement: 'top', title: 'Products, prices and nutrition',
+        body: 'The brand supplies and approves its prices and nutrition. Every Buy button is a tracked link, so each click to a retailer is counted.' },
+      { before: view('member','video'), sel: ['#tab-video'], placement: 'top', title: 'Creator videos land on the listing',
+        body: 'Finished creator bounties become the listing\'s videos, labeled #ad and credited to the creator.' },
+      { before: view('member','events'), sel: ['#tab-events'], placement: 'top', title: 'Events, with Passport check-ins',
+        body: 'Run-club shakeouts, a workshop, the festival booth. Members check in with the Passport, so every visit is counted and earns points.' },
+      { before: view('member','pulse'), sel: ['#tab-pulse'], placement: 'top', title: 'The brand keeps people posted',
+        body: 'Weekly updates go out on the listing\'s Pulse and into the city briefings.' },
+      { before: view('owner','campaign'), sel: ['#demo-bar-view'], title: 'Now the brand\'s side',
+        body: 'Same listing, seen by Fieldhouse. Only the brand sees its results here.' },
+      { before: view('owner','campaign'), sel: ['#cmp-owner', '#tab-campaign'], title: 'Results on the listing',
+        body: 'Season to date: clicks to retailers, members, tasks, posts and how much of the budget is placed, plus the reason for every budget move.' },
+      { before: view('owner','campaign'), sel: ['#demo-bar-links'], title: 'Where it goes from here',
+        body: 'Open the sponsor dashboard to replay the season week by week, or read the final report from all five sides.' }
+    ]
+  };
+}
+function startDemoTour(){ if(window.VETour && VETour.tours && VETour.tours.campaign) VETour.start('campaign'); }
 
 })();
 </script>
