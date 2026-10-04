@@ -235,6 +235,9 @@ sign-up intake; a Passport member, pick a Guide and talk to them (no sign-up ste
 signed in without a Passport, the Passport benefit and Get Passport. The chosen Guide is kept in
 `ve_guide_flow_state` (the dock icon reads it through `/public/footer.js`). What the intake asks
 members is still an open conversation with Sean; do not add questions to the member path without him.
+Depot > Preview journeys > Choose your Guide walks every step for all three visitors
+(`/guide?preview=<step>`, the steps are `PREVIEW_STATES` in `guide.html`); a new step gets a preview
+state there and a line in `JOURNEYS.guide` in `/admin/depot/preview.html`.
 
 ## Image conventions
 

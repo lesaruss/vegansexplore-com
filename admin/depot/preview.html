@@ -70,6 +70,7 @@
           <button type="button" data-j="member" aria-pressed="true">Member</button>
           <button type="button" data-j="partners" aria-pressed="false">Partners</button>
           <button type="button" data-j="cm" aria-pressed="false">Community Manager</button>
+          <button type="button" data-j="guide" aria-pressed="false">Choose your Guide</button>
         </div>
         <label id="city-wrap" hidden>City <select id="city">
           <option value="south-florida">South Florida</option>
@@ -158,6 +159,26 @@
             { t: 'Dashboard', d: 'Use the amber View As button and pick Community Manager.', u: '/dashboard', k: 'live' }
           ]
         }
+      };
+      // Choose your Guide, /guide (Sean, 2026-10-04): a guide for the guides. Three visitors: someone new
+      // goes through the sign-up intake; a Passport member picks a Guide and talks to them; a member
+      // without a Passport sees the Passport benefit. Every step opens with sample answers (Alex, Miami).
+      JOURNEYS.guide = {
+        intro: 'Choosing a Guide. Someone new meets a Guide, answers two questions and joins. A Passport member, from the dashboard\u2019s Choose Your Guide tile, picks a Guide and talks to them. A member without a Passport sees the Passport benefit.',
+        steps: [
+          { t: 'New: Meet your Guide', d: 'The six Guides, one tap to choose.', u: '/guide?preview=picker', k: 'pv' },
+          { t: 'New: Getting to know you', d: 'The Guide asks their name, then their city.', u: '/guide?preview=chat', k: 'pv' },
+          { t: 'New: A city without a chapter', d: 'Join the waitlist or found the chapter. Sample city: Tampa. Joining and checkout are turned off.', u: '/guide?preview=fork', k: 'pv' },
+          { t: 'New: Tell me more?', d: 'Hear more, or ask a question first.', u: '/guide?preview=tellmore', k: 'pv' },
+          { t: 'New: Ask your Guide', d: 'Typed or spoken. In preview the Guide gives a sample reply and nothing is sent.', u: '/guide?preview=question', k: 'pv' },
+          { t: 'New: Highlight reels', d: 'What Vegans Explore does, with narration.', u: '/guide?preview=reels', k: 'pv' },
+          { t: 'New: Make it official', d: 'Founding Membership. Sign-up is turned off.', u: '/guide?preview=drive', k: 'pv' },
+          { t: 'New: All set', d: 'Live, this moves on to the dashboard; in preview it stays.', u: '/guide?preview=finishing', k: 'pv' },
+          { t: 'Passport member: Choose your Guide', d: 'From the dashboard tile. No sign-up steps.', u: '/guide?preview=member-pick', k: 'pv' },
+          { t: 'Passport member: Talk to your Guide', d: 'A running conversation. In preview the Guide gives a sample reply.', u: '/guide?preview=member-talk', k: 'pv' },
+          { t: 'Member without a Passport', d: 'The Passport benefit and Get Passport. Checkout is turned off.', u: '/guide?preview=locked', k: 'pv' },
+          { t: 'Dashboard: Choose Your Guide tile', d: 'Your Tools. Use the amber View As button to see it as a Free Member (locked) or a Passport member.', u: '/dashboard', k: 'live' }
+        ]
       };
       var LABEL = { live: 'Live page', pv: 'Preview', na: 'Not previewable' };
       var j = 'member', size = 'phone', cur = -1;

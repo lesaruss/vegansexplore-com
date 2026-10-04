@@ -165,6 +165,7 @@
   </div>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-preview.js"></script>
   <script>
   (function(){
     var GUIDES = [
@@ -177,10 +178,42 @@
     ];
 
     var FN_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
+
+    // Preview mode (Depot > Preview journeys, Sean 2026-10-04: look at this guide the way we look
+    // at the other guides). ?preview=<step> opens that step with sample answers, as the visitor it is
+    // for. The visitor's own saved progress is left alone, and nothing is saved, sent or charged:
+    // apiCall answers locally, Passport checkout is off, and the last step does not move on.
+    var PREVIEW = '';
+    try { PREVIEW = new URLSearchParams(window.location.search).get('preview') || ''; } catch(e){}
+    var PV_BASE = { guide_slug: 'maya', chat_name: 'Alex', chat_city: 'Miami', chat_state: 'FL', city_display: 'Miami, FL', city_status: 'active', chat_done: true };
+    function pv(extra){ var o = {}, k; for (k in PV_BASE) o[k] = PV_BASE[k]; for (k in extra) o[k] = extra[k]; return o; }
+    var PREVIEW_STATES = {
+      'picker': {},
+      'chat': { guide_slug: 'maya' },
+      'fork': pv({ chat_city: 'Tampa', city_display: 'Tampa, FL', city_status: 'none', fork_pending: true }),
+      'tellmore': pv({}),
+      'question': pv({ tellmore_answered: true, open_question: true }),
+      'reels': pv({ tellmore_answered: true }),
+      'drive': pv({ tellmore_answered: true, reels_seen: true }),
+      'finishing': pv({ tellmore_answered: true, reels_seen: true, drive_done: true }),
+      'member-pick': {},
+      'member-talk': { guide_slug: 'maya' },
+      'locked': {}
+    };
+    if (PREVIEW && !PREVIEW_STATES.hasOwnProperty(PREVIEW)) PREVIEW = 'picker';
+    var PREVIEW_MEMBER = { 'member-pick': { name: 'Alex Rivera', ve_tier: 'passport' }, 'member-talk': { name: 'Alex Rivera', ve_tier: 'passport' }, 'locked': { name: 'Alex Rivera', ve_tier: 'free' } };
+    function previewNote(text){
+      var n = document.createElement('div'); n.className = 'typing'; n.style.marginTop = '10px';
+      n.textContent = text || 'Preview: checkout is turned off.';
+      app.appendChild(n);
+    }
     var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
     var PASSPORT_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-passport-checkout';
 
     function apiCall(action, body){
+      // Preview (Depot > Preview journeys): nothing is saved or sent. The city lookup only reads.
+      if (PREVIEW && action === 'guide_chat_send') return Promise.resolve({ reply: 'This is a preview, so I am not really answering. On the live page your Guide replies here.' });
+      if (PREVIEW && action !== 'city_status') return Promise.resolve({});
       return fetch(FN_URL + '?action=' + action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON },
@@ -267,9 +300,10 @@
 
     var STATE_KEY = 've_guide_flow_state';
     function loadState(){
+      if (PREVIEW) return JSON.parse(JSON.stringify(PREVIEW_STATES[PREVIEW] || {}));
       try { return JSON.parse(localStorage.getItem(STATE_KEY) || '{}'); } catch(e){ return {}; }
     }
-    function saveState(s){ try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch(e){} }
+    function saveState(s){ if (PREVIEW) return; try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch(e){} }
 
     var state = loadState();
     var app = document.getElementById('guideApp');
@@ -281,9 +315,10 @@
     //                                        no name and city again, no Passport pitch.
     //   Signed in, no Passport            -> the Passport benefit and how to get it.
     // IN_INTAKE: this device is partway through the intake (it has a name), so leave it alone.
-    var ENTRY_MEMBER = (window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember) ? VEAuth.getMember() : null;
+    var ENTRY_MEMBER = PREVIEW ? (PREVIEW_MEMBER[PREVIEW] || null)
+      : (window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember) ? VEAuth.getMember() : null;
     var IN_INTAKE = !!state.chat_name;
-    if (ENTRY_MEMBER && !IN_INTAKE && new URLSearchParams(window.location.search).get('passport') === 'success') {
+    if (!PREVIEW && ENTRY_MEMBER && !IN_INTAKE && new URLSearchParams(window.location.search).get('passport') === 'success') {
       state.passport_bought = true;
       saveState(state);
     }
@@ -610,6 +645,7 @@
     }
 
     function joinCityFlow(founding){
+      if (PREVIEW) return previewNote('Preview: joining is turned off.');
       var token = null;
       try { token = localStorage.getItem('ve_token'); } catch(e){}
       if (!token) {
@@ -643,6 +679,7 @@
     }
 
     function startPassportForFounding(){
+      if (PREVIEW) return previewNote();
       var token = null;
       try { token = localStorage.getItem('ve_token'); } catch(e){}
       if (!token) {
@@ -930,7 +967,7 @@
     // with the second tile removed entirely so the step is shorter.
     function renderDrive(){
       var isMember = false;
-      try { isMember = !!localStorage.getItem('ve_token'); } catch(e){}
+      try { isMember = !PREVIEW && !!localStorage.getItem('ve_token'); } catch(e){}
       var bodyHtml, btnId, btnLabel;
       if (!isMember) {
         bodyHtml = '<ul class="drive-bullets">' +
@@ -956,6 +993,7 @@
 
       if (!isMember) {
         document.getElementById('joinBtn').onclick = function(){
+          if (PREVIEW) return previewNote('Preview: sign-up is turned off.');
           VEAuth.showAuthModal('Create your account, then choose how you want in.', function(){ finishDrive(); }, 'signup');
         };
       } else {
@@ -972,6 +1010,7 @@
     }
 
     function startPassportGeneral(){
+      if (PREVIEW) return previewNote();
       var token = null;
       try { token = localStorage.getItem('ve_token'); } catch(e){}
       if (!token) return;
@@ -1010,6 +1049,7 @@
       app.appendChild(wrap);
       // Keep the chosen Guide: the dashboard dock and the Choose Your Guide tile read it from here
       // (/public/footer.js). Clearing the whole state used to reset everyone back to Liz.
+      if (PREVIEW) { wrap.querySelector('.status-line').textContent = 'Live, this moves on to the dashboard. In preview it stays.'; return; }
       try { localStorage.removeItem(STATE_KEY); if (state.guide_slug) saveState({ guide_slug: state.guide_slug }); } catch(e){}
       setTimeout(function(){ window.location.href = '/dashboard'; }, 1400);
     }

@@ -1,7 +1,7 @@
 /* Preview mode for the onboarding pages (Sean, 2026-10-03: "see all of the onboarding
  * sequences ... without having to go through the process").
  *
- * Add ?preview=<state> to /welcome, /partners or /community-managers/onboarding and the
+ * Add ?preview=<state> to /welcome, /partners, /community-managers/onboarding or /guide and the
  * page shows a screen that normally only appears after signing up, paying or applying.
  * Each page reads the same parameter itself and turns off everything that would save,
  * send, upload or charge. This file only draws the amber Preview tag, so it is never
