@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Links | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Links (Sean, 2026-10-04): "anytime somebody clicks a link, you should be noting that to show
+       people who are interested in a particular campaign. And that should be done deliberately when
+       we're creating links ... attach it to a tag." Every link we send for a campaign is made here:
+       vegansexplore.com/go/<code>, with its campaign and tags, optionally one per person for
+       one-on-one messages. Clicks show up as initiative interest on Leads. Data: ve-links. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px 12px;margin-top:12px;align-items:start;}
+    .form label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .form input,.form select,.form textarea{font:inherit;font-size:13.5px;padding:9px 10px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .form textarea{min-height:96px;resize:vertical;}
+    .form .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+    .chip{font:inherit;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;text-transform:none;letter-spacing:0;}
+    .chip:hover{border-color:var(--ve-green-deep);}
+    .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--ve-green-light);color:var(--ve-green-deep);margin:0 4px 4px 0;white-space:nowrap;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:8px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 10px;min-height:34px;}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:#a61b1b;}
+    .made{margin-top:14px;border-top:1px solid var(--ve-border);padding-top:12px;}
+    .made-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:6px 0;border-bottom:1px solid var(--ve-border);font-size:13px;}
+    .made-row code{font-size:13px;font-weight:700;color:var(--ve-green-deep);word-break:break-all;}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;}
+    .toolbar select,.toolbar input{font:inherit;font-size:13.5px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;max-width:100%;}
+    .toolbar input{flex:1;min-width:200px;}
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;font-size:13px;min-width:860px;}
+    th{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);text-align:left;padding:8px;border-bottom:1px solid var(--ve-border);white-space:nowrap;}
+    td{padding:9px 8px;border-bottom:1px solid var(--ve-border);vertical-align:top;}
+    td small{display:block;color:var(--ve-text-75);word-break:break-all;}
+    td.num{font-weight:900;font-size:14px;}
+    tr.off td{opacity:.55;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:20px 0;}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:10px;margin-bottom:16px;}
+    .stat{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:10px 14px;}
+    .stat b{display:block;font-size:22px;font-weight:900;line-height:1.1;}
+    .stat span{font-size:12px;color:var(--ve-text-75);}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Links</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Make every link you send for a campaign here: in a one-on-one message, an email, a post or a flyer. Each one is a short vegansexplore.com/go/ link that knows its campaign and tags. When someone clicks, they show up on <a href="/dashboard/leads">Leads</a> as interested, with the tags, so the next announcement or offer goes to the right people. Make a personal link for each person you message and the click names them; a shared link names whoever is signed in. Link previews in iMessage, Slack and the like are not counted.</p>
+    <div id="lk-gate" class="gate" hidden></div>
+    <div id="lk-app" hidden>
+      <div class="stats" id="stats"></div>
+      <section class="card" aria-labelledby="new-h">
+        <h2 id="new-h">Make a link</h2>
+        <form class="form" id="new">
+          <label>Name<input id="f-label" maxlength="120" required placeholder="Dolphins game invite, October"></label>
+          <label>Campaign<select id="f-camp"></select></label>
+          <label class="wide">Goes to<input id="f-dest" maxlength="1000" required placeholder="/campaigns/plant-based-showcase-dolphins"><span class="hint">A page on the site (starts with /) or a full address.</span></label>
+          <label class="wide">Tags<input id="f-tags" maxlength="400" placeholder="dolphins-game, vip, south-florida"><span class="hint">Comma separated. Use them to pick who hears about what later.</span><span class="chips" id="tag-chips"></span></label>
+          <label>Sent by<select id="f-channel"><option value="dm">One-on-one message</option><option value="text">Text</option><option value="email">Email</option><option value="social">Social post</option><option value="print">Print or QR</option><option value="other">Other</option></select></label>
+          <label>Custom code (optional)<input id="f-code" maxlength="40" placeholder="dolphins"><span class="hint">Shared links only. Leave blank for an automatic one.</span></label>
+          <label class="wide">People (optional)<textarea id="f-people" placeholder="Jordan Lee, jordan@example.com&#10;Ana Brooks &lt;ana@example.com&gt;&#10;sam@example.com"></textarea><span class="hint">One per line. Each person gets their own link, so a click names them. Leave empty for one shared link.</span></label>
+          <div class="wide"><button type="submit" class="btn" id="make">Make link</button> <span class="msg" id="new-msg" role="status"></span></div>
+        </form>
+        <div class="made" id="made" hidden>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px"><h2>Ready to send</h2><button type="button" class="btn btn-ghost btn-sm" id="copy-all">Copy all</button></div>
+          <div id="made-list"></div>
+        </div>
+      </section>
+      <section class="card" aria-labelledby="all-h">
+        <h2 id="all-h">Your links (<span id="count">0</span>)</h2>
+        <div class="toolbar">
+          <input type="search" id="q" placeholder="Search name, person, code or tag" aria-label="Search links">
+          <select id="fc" aria-label="Filter by campaign"><option value="">All campaigns</option></select>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th scope="col">Link</th><th scope="col">Campaign</th><th scope="col">Tags</th><th scope="col">Person</th><th scope="col">Clicks</th><th scope="col">Last click</th><th scope="col">On</th><th scope="col"></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table></div>
+        <p class="empty" id="empty" hidden>No links yet. Make the first one above.</p>
+      </section>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-links';
+      var SITE = 'https://vegansexplore.com';
+      var $ = function (id) { return document.getElementById(id); };
+      var links = [], camps = [], tags = [], made = [];
+      var CHANNEL = { dm: 'One-on-one', text: 'Text', email: 'Email', social: 'Social', print: 'Print', other: 'Other' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function url(code) { return SITE + '/go/' + code; }
+      function campName(slug) { if (slug === 'general') return 'General'; var c = camps.filter(function (x) { return x.slug === slug; })[0]; return c ? c.title : slug; }
+      function ago(d) { if (!d) return 'never'; var m = Math.round((Date.now() - new Date(d)) / 60000); return m < 60 ? m + ' min ago' : m < 2880 ? Math.round(m / 60) + ' hr ago' : new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+      function copy(text, btn) {
+        var done = function () { if (btn) { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); } };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+        else window.prompt('Copy this', text);
+      }
+      // "Name, email", "Name <email>" or just an email, one per line.
+      function parsePeople(text) {
+        return text.split(/\n+/).map(function (line) {
+          line = line.trim(); if (!line) return null;
+          var m = line.match(/^(.*?)[\s,]*<([^>]+)>$/) || line.match(/^(.*?)[,;\t]\s*(\S+@\S+)$/);
+          if (m) return { name: m[1].trim(), email: m[2].trim() };
+          if (/^\S+@\S+$/.test(line)) return { name: '', email: line };
+          return { name: line, email: '' };
+        }).filter(Boolean);
+      }
+
+      function renderStats() {
+        var clicks = links.reduce(function (n, l) { return n + (l.clicks || 0); }, 0);
+        var personal = links.filter(function (l) { return l.recipient_email || l.recipient_name; }).length;
+        $('stats').innerHTML = '<div class="stat"><b>' + links.length + '</b><span>Links</span></div>' +
+          '<div class="stat"><b>' + personal + '</b><span>Personal links</span></div>' +
+          '<div class="stat"><b>' + clicks + '</b><span>Real clicks</span></div>' +
+          '<div class="stat"><b>' + tags.length + '</b><span>Tags in use</span></div>';
+      }
+      function renderForm() {
+        var opts = '<option value="general">General (no campaign)</option>' + camps.filter(function (c) { return c.status === 'active'; }).map(function (c) { return '<option value="' + esc(c.slug) + '">' + esc(c.title) + '</option>'; }).join('');
+        var keep = $('f-camp').value;
+        $('f-camp').innerHTML = opts;
+        if (keep && $('f-camp').querySelector('option[value="' + keep + '"]')) $('f-camp').value = keep;
+        $('fc').innerHTML = '<option value="">All campaigns</option>' + Array.from(new Set(links.map(function (l) { return l.initiative_slug; }))).map(function (s) { return '<option value="' + esc(s) + '">' + esc(campName(s)) + '</option>'; }).join('');
+        $('tag-chips').innerHTML = tags.slice(0, 30).map(function (t) { return '<button type="button" class="chip" data-tag="' + esc(t) + '">+ ' + esc(t) + '</button>'; }).join('');
+        Array.prototype.forEach.call($('tag-chips').querySelectorAll('.chip'), function (b) {
+          b.addEventListener('click', function () {
+            var cur = $('f-tags').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+            if (cur.indexOf(b.dataset.tag) < 0) cur.push(b.dataset.tag);
+            $('f-tags').value = cur.join(', ');
+          });
+        });
+      }
+      function renderRows() {
+        var q = $('q').value.trim().toLowerCase(), fc = $('fc').value;
+        var rows = links.filter(function (l) {
+          if (fc && l.initiative_slug !== fc) return false;
+          if (!q) return true;
+          return [l.label, l.code, l.recipient_name, l.recipient_email, (l.tags || []).join(' ')].join(' ').toLowerCase().indexOf(q) >= 0;
+        });
+        $('count').textContent = links.length;
+        $('empty').hidden = links.length > 0;
+        $('rows').innerHTML = rows.map(function (l) {
+          return '<tr class="' + (l.active ? '' : 'off') + '" data-id="' + esc(l.id) + '">' +
+            '<td><strong>' + esc(l.label || l.code) + '</strong><small>' + esc(url(l.code)) + '</small><small>' + esc(CHANNEL[l.channel] || l.channel) + ' &middot; to ' + esc(l.destination) + '</small></td>' +
+            '<td>' + esc(campName(l.initiative_slug)) + '</td>' +
+            '<td>' + ((l.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') || '<small>none</small>') + '</td>' +
+            '<td>' + (l.recipient_name || l.recipient_email ? esc(l.recipient_name || '') + '<small>' + esc(l.recipient_email || '') + '</small>' : '<small>Shared</small>') + '</td>' +
+            '<td class="num">' + (l.clicks || 0) + '</td>' +
+            '<td>' + esc(ago(l.last_click_at)) + '</td>' +
+            '<td><label><input type="checkbox" class="on"' + (l.active ? ' checked' : '') + ' aria-label="Link is on"></label></td>' +
+            '<td><button type="button" class="btn btn-ghost btn-sm cp">Copy</button></td>' +
+          '</tr>';
+        }).join('');
+        Array.prototype.forEach.call($('rows').querySelectorAll('tr'), function (tr) {
+          var l = links.filter(function (x) { return x.id === tr.dataset.id; })[0];
+          tr.querySelector('.cp').addEventListener('click', function (e) { copy(url(l.code), e.target); });
+          tr.querySelector('.on').addEventListener('change', function (e) {
+            var on = e.target.checked;
+            api({ action: 'update', id: l.id, active: on }).then(function (d) {
+              if (!d.ok) { e.target.checked = !on; alert(d.error || 'Could not change that link.'); return; }
+              l.active = on; tr.className = on ? '' : 'off';
+            });
+          });
+        });
+      }
+      function renderMade() {
+        $('made').hidden = !made.length;
+        $('made-list').innerHTML = made.map(function (l, i) {
+          return '<div class="made-row"><span>' + esc(l.recipient_name || l.recipient_email || l.label) + '</span><code>' + esc(url(l.code)) + '</code><button type="button" class="btn btn-ghost btn-sm" data-i="' + i + '">Copy</button></div>';
+        }).join('');
+        Array.prototype.forEach.call($('made-list').querySelectorAll('button'), function (b) { b.addEventListener('click', function () { copy(url(made[+b.dataset.i].code), b); }); });
+      }
+      function load() {
+        return api({ action: 'list' }).then(function (d) {
+          if (!d.ok) { $('lk-app').hidden = true; $('lk-gate').hidden = false; $('lk-gate').textContent = d.error || 'Could not load links.'; return; }
+          links = d.links || []; camps = d.campaigns || []; tags = d.tags || [];
+          if (d.site) SITE = d.site;
+          renderStats(); renderForm(); renderRows();
+        });
+      }
+
+      // Picking a campaign fills in its page, unless you already typed one.
+      var destTouched = false;
+      $('f-dest').addEventListener('input', function () { destTouched = !!this.value; });
+      $('f-camp').addEventListener('change', function () {
+        var c = camps.filter(function (x) { return x.slug === $('f-camp').value; })[0];
+        if (!destTouched && c && c.path) $('f-dest').value = c.path;
+      });
+      $('q').addEventListener('input', renderRows);
+      $('fc').addEventListener('change', renderRows);
+      $('copy-all').addEventListener('click', function (e) {
+        copy(made.map(function (l) { return (l.recipient_name || l.recipient_email ? (l.recipient_name || l.recipient_email) + ': ' : '') + url(l.code); }).join('\n'), e.target);
+      });
+      $('new').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var people = parsePeople($('f-people').value);
+        var body = { action: 'create', label: $('f-label').value, initiative_slug: $('f-camp').value, destination: $('f-dest').value, tags: $('f-tags').value, channel: $('f-channel').value, code: $('f-code').value, people: people };
+        $('make').disabled = true; $('new-msg').className = 'msg'; $('new-msg').textContent = 'Making ' + (people.length ? people.length + ' personal links' : 'the link') + '...';
+        api(body).then(function (d) {
+          $('make').disabled = false;
+          if (!d.ok) { $('new-msg').className = 'msg err'; $('new-msg').textContent = d.error || 'Could not make the link.'; return; }
+          made = d.links; renderMade();
+          $('new-msg').textContent = d.links.length === 1 ? 'Done. Copy it below.' : d.links.length + ' links ready below.';
+          $('f-people').value = ''; $('f-code').value = '';
+          return load();
+        }).catch(function () { $('make').disabled = false; $('new-msg').className = 'msg err'; $('new-msg').textContent = 'Could not reach the server.'; });
+      });
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('lk-gate').hidden = false; $('lk-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('lk-app').hidden = false;
+        load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

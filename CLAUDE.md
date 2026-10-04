@@ -144,6 +144,30 @@ and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come fro
 only once it is on screen. A new page needs its slots added to `ad_placements` and to `PAGES` in
 the script.
 
+## Full width (LOCKED 2026-10-04)
+
+Sean, 2026-10-04: "everything full width. Just remember everything full width. We don't do fixed
+width." Page containers never get a fixed `max-width` (`main{max-width:none;margin:0;padding:44px
+40px 80px}`, 16px side padding on phones). Lists and cards fill the width with a grid
+(`repeat(auto-fill,minmax(min(360px,100%),1fr))`) instead of one narrow column. When something
+would read badly that wide (a long text column, a form), give the page the ad rail (see Ad rail:
+three-fourths content, one-fourth ads) rather than narrowing it. A line of body copy can keep its
+own reading width (`.sub{max-width:860px}`); the page around it cannot.
+
+## Tracked links (Sean, 2026-10-04)
+
+Every link we send for a campaign (a one-on-one message, an email, a post, a flyer) is a tracked
+link made in Depot > Links (`/admin/depot/links`): `vegansexplore.com/go/<code>`, with its campaign
+(`initiative_slug`) and tags. Make one personal link per person for one-on-one messages, so the click
+names them. A real click becomes initiative interest (`ve_initiative_interest`, `action_type`
+`link_click`, with the tags), shown on `/dashboard/leads`, where a campaign and tag can be filtered
+and exported for the next announcement or offer. How it works: `api/go.js` (rewrite in
+`vercel.json`) calls the `ve-links` edge function, which logs the click (link previews and
+scanners are logged as bots and never count) and redirects with `?vl=<click id>`; `nav.js` credits
+that click to the visitor's account once they are signed in (30 days). Email-system clicks on our
+links are synced every 15 minutes (`ve-links-email-sync` cron) and named by recipient. Never paste a
+bare campaign URL into outreach.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.

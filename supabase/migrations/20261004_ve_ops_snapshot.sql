@@ -31,7 +31,7 @@ begin
       from members g
       where g.tenant_id = ve_tenant and g.membership_tier = 'guest' and g.guest_review_status in ('pending_review', 'flagged', 'needs_followup')
     union all
-    select 'application', a.id::text, coalesce(o.title, 'Application'), mm.name, o.city_slug, a.created_at, a.status, '/dashboard/applications'
+    select 'application', a.id::text, coalesce(o.title, 'Application'), mm.name, o.city_slug, a.created_at, a.status, '/dashboard/applications?id=' || a.id::text
       from opportunity_applications a left join opportunities o on o.id = a.opportunity_id left join members mm on mm.id = a.member_id
       where a.status = 'pending'
     union all
@@ -47,9 +47,9 @@ begin
       from ve_listing_claims l
       where l.status = 'submitted' and not coalesce(l.test, false)
     union all
-    select 'interest', i.id::text, coalesce(i.initiative_slug, 'Initiative') || coalesce(' · ' || i.action_type, ''), mm.name, null, i.created_at, i.status, '/dashboard/leads'
+    select 'interest', i.id::text, coalesce(i.initiative_slug, 'Initiative') || coalesce(' · ' || i.action_type, ''), coalesce(mm.name, i.name, i.email), null, i.created_at, i.status, '/dashboard/leads'
       from ve_initiative_interest i left join members mm on mm.id = i.member_id
-      where i.status = 'new'
+      where i.status = 'new' and i.action_type <> 'link_click' -- clicks are an audience, not a decision (2026-10-04)
     union all
     select 'bounty', b.id::text, coalesce(v.title, 'Bounty'), mm.name, v.community_slug, coalesce(b.submitted_at, b.updated_at), b.status, '/admin/depot/bounties'
       from ve_bounty_submissions b join ve_bounties v on v.id = b.bounty_id left join members mm on mm.id = b.member_id

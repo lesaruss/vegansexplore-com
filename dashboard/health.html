@@ -22,7 +22,8 @@
     --ok:#2d7d31;--ok-bg:#EAF7EA;--warn:#7d4a00;--warn-bg:#fff3e0;--alert:#991b1b;--alert-bg:#fee2e2;
   }
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
-  main{max-width:960px;margin:0 auto;padding:44px 32px 80px;}
+  /* Full width (Sean, 2026-10-04: "we don't do fixed width"). */
+  main{max-width:none;margin:0;padding:44px 40px 80px;}
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ve-green-dark);outline-offset:2px;}
 
@@ -47,6 +48,9 @@
   .ph-overall small{display:block;font-size:12px;font-weight:600;opacity:0.85;margin-top:2px;}
 
   .ph-week{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:26px;}
+  /* The checks sit two across on a wide screen. */
+  #ph-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(560px,100%),1fr));gap:12px;align-items:start;}
+  #ph-checks .ph-check{margin-bottom:0;}
   .ph-week div{border:1.5px solid var(--ve-border);border-radius:12px;padding:14px 16px;}
   .ph-week b{display:block;font-size:22px;font-weight:900;}
   .ph-week span{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);}

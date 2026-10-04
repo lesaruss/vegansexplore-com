@@ -12,6 +12,10 @@
       "destination": "/api/pulse-article?slug=:slug"
     },
     {
+      "source": "/go/:code",
+      "destination": "/api/go?code=:code"
+    },
+    {
       "source": "/dashboard",
       "destination": "/dashboard/center-console"
     },

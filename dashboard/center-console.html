@@ -217,8 +217,9 @@
      by sizeActionList() from the third card, since card heights vary. */
   .dash-action-list.is-capped{overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
   .dash-action-more{font-size:11px;font-weight:700;color:var(--ve-text-50);margin:8px 0 0;}
-  /* The Leaderboard scrolls inside its column, up to 100 (Sean, 2026-10-04). */
-  #dash-leaderboard-list{max-height:440px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  /* The Leaderboard shows five and scrolls the rest inside its column, up to 100 (Sean, 2026-10-04).
+     renderLeaderboard() sets the height from the fifth row; 265px is about five rows until then. */
+  #dash-leaderboard-list{position:relative;max-height:265px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
   .dash-action-list .dash-tour-prompt{width:100%;}
   .dash-action-empty{font-size:13px;color:var(--ve-text-50);border:1.5px dashed var(--ve-border);border-radius:14px;padding:16px 18px;margin:0;}
   .dash-home-overview{margin-top:24px;}
@@ -2851,6 +2852,14 @@
           '<div class="dash-leaderboard-points">' + (row.points || 0).toLocaleString() + '</div>';
         list.appendChild(el);
       });
+      // Five rows show; the rest scroll. Measured once the tab is visible (offsetHeight is 0 while hidden).
+      var tries = 0;
+      function fitFive() {
+        var r = list.querySelectorAll('.dash-leaderboard-row');
+        if (r.length > 5 && r[4].offsetHeight) list.style.maxHeight = (r[4].offsetTop + r[4].offsetHeight) + 'px';
+        else if (r.length > 5 && ++tries < 30) setTimeout(fitFive, 500);
+      }
+      fitFive();
     }).catch(function () {
       list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Could not load the leaderboard right now.</p>';
     });
@@ -3487,6 +3496,7 @@
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
       grid.appendChild(dpAccessCard({ icon: '📌', bg: '#EAF7EA', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }));
+      grid.appendChild(dpAccessCard({ icon: '🔗', bg: '#FEF0DD', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } }));
       grid.appendChild(dpAccessCard({ icon: '📊', bg: '#EAF7EA', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
       return;
     }

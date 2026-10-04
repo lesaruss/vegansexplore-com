@@ -41,6 +41,34 @@
   });
 })();
 
+/* ---- Tracked links (Sean, 2026-10-04) ----
+ * A /go/ link lands here with ?vl=<click id>. The click is kept (30 days) and, once the visitor is
+ * signed in, credited to their account so they show up as interested in that campaign
+ * (ve-links action=claim). The id is taken off the address bar right away. */
+(function () {
+  var KEY = 've_link_clicks', FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-links', DAYS = 30;
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { return []; } }
+  function save(a) { try { if (a.length) localStorage.setItem(KEY, JSON.stringify(a.slice(-20))); else localStorage.removeItem(KEY); } catch (e) {} }
+  var pending = load().filter(function (c) { return c && c.id && Date.now() - c.t < DAYS * 864e5; });
+  try {
+    var u = new URL(location.href), vl = u.searchParams.get('vl');
+    if (vl) {
+      if (/^[0-9a-f-]{36}$/i.test(vl) && !pending.some(function (c) { return c.id === vl; })) pending.push({ id: vl, t: Date.now() });
+      u.searchParams.delete('vl');
+      history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+    }
+  } catch (e) {}
+  save(pending);
+  var token = null;
+  try { token = localStorage.getItem('ve_token'); } catch (e) {}
+  if (!pending.length || !token) return;
+  pending.forEach(function (c) {
+    fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ action: 'claim', click_id: c.id }) })
+      .then(function (r) { if (r.status !== 401) save(load().filter(function (x) { return x.id !== c.id; })); })
+      .catch(function () {});
+  });
+})();
+
 (function () {
   /* ---- Styles ---- */
   var css = [

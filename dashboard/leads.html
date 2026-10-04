@@ -13,7 +13,8 @@
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#eaf6ea;--ve-orange:#F69820;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);--ve-border:rgba(0,0,0,0.09);}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
-  main{max-width:1400px;margin:0 auto;padding:44px 32px 80px;}
+  /* Full width (Sean, 2026-10-04: "we don't do fixed width"). */
+  main{max-width:none;margin:0;padding:44px 40px 80px;}
   @media (max-width:700px){ main{padding:32px 16px 60px;} }
   #leads-gate{text-align:center;padding:100px 20px;}
   #leads-gate p{font-size:14px;color:var(--ve-text-75);}
@@ -27,7 +28,14 @@
   .leads-filters select{font-size:11.5px;font-weight:700;padding:9px 12px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);}
   .leads-filters button{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:100px;border:2px solid var(--ve-border);background:#fff;cursor:pointer;}
   .leads-filters button.active{background:var(--ve-green);border-color:var(--ve-green);color:#fff;}
-  .lead-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px 18px;margin-bottom:10px;}
+  #leads-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:12px;}
+  .lead-card{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px 18px;}
+  .lead-kind.click{background:#e8f0fe;color:#1d3f8a;}
+  .lead-tags{margin:2px 0 8px;}
+  .lead-tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--ve-green-light);color:var(--ve-green-dark);margin:0 4px 4px 0;}
+  .leads-filters .leads-tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+  .leads-filters .leads-tools button{border-radius:6px;}
+  .leads-count{font-size:12px;font-weight:700;color:var(--ve-text-50);margin:-8px 0 14px;}
   .lead-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
   .lead-who{font-size:13.5px;font-weight:800;}
   .lead-email{font-size:11.5px;color:var(--ve-text-50);font-weight:600;}
@@ -84,9 +92,16 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 
     <div class="leads-filters">
       <select id="leads-campaign-filter"><option value="all">All campaigns</option></select>
+      <select id="leads-tag-filter" aria-label="Filter by tag"><option value="all">All tags</option></select>
       <button type="button" id="leads-needs-action-btn" class="active" data-mode="needs_action">Needs Action</button>
+      <button type="button" id="leads-clicks-btn" data-mode="clicks">Clicked a link</button>
       <button type="button" id="leads-all-btn" data-mode="all">All</button>
+      <span class="leads-tools">
+        <button type="button" id="leads-copy-emails" title="Copy the email addresses of everyone in this list">Copy emails</button>
+        <button type="button" id="leads-csv" title="Download this list as a spreadsheet">Download CSV</button>
+      </span>
     </div>
+    <p class="leads-count" id="leads-count"></p>
 
     <div id="leads-list"><p style="font-size:13px;color:var(--ve-text-50);">Loading leads&hellip;</p></div>
     <div id="leads-empty">Nothing here for this filter. Queue is clear.</div>
@@ -98,7 +113,9 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
-  var ACTION_TYPE_LABELS = { pledge: 'Pledge', ticket: 'Attend / Waitlist', vendor_tier: 'Vendor Tier Interest', sponsor_tier: 'Sponsor Tier Interest' };
+  var ACTION_TYPE_LABELS = { pledge: 'Pledge', ticket: 'Attend / Waitlist', vendor_tier: 'Vendor Tier Interest', sponsor_tier: 'Sponsor Tier Interest', link_click: 'Clicked a link' };
+  var activeTag = 'all';
+  var shown = [];
   var CAMPAIGN_TITLES = {};
   var allLeads = [];
   var activeCampaign = 'all';
@@ -123,8 +140,10 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
     sel.value = activeCampaign;
   }
 
+  // A click is an audience to tell about what's next, not a decision (2026-10-04).
+  function isClick(lead) { return lead.kind === 'interest' && lead.what_key === 'link_click'; }
   function needsAction(lead) {
-    if (lead.kind === 'interest') return lead.status === 'new';
+    if (lead.kind === 'interest') return lead.status === 'new' && !isClick(lead);
     return lead.status === 'pending';
   }
 
@@ -132,9 +151,14 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
     var items = allLeads.filter(function (l) {
       if (activeCampaign !== 'all' && l.campaign_slug !== activeCampaign) return false;
       if (activeMode === 'needs_action' && !needsAction(l)) return false;
+      if (activeMode === 'clicks' && !isClick(l)) return false;
+      if (activeTag !== 'all' && (l.tags || []).indexOf(activeTag) < 0) return false;
       return true;
     }).sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
 
+    shown = items;
+    var withEmail = items.filter(function (l) { return l.email; }).length;
+    document.getElementById('leads-count').textContent = items.length + ' in this list' + (items.length ? ', ' + withEmail + ' with an email' : '') + '.';
     var list = document.getElementById('leads-list');
     var empty = document.getElementById('leads-empty');
     if (!items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
@@ -142,9 +166,11 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 
     list.innerHTML = items.map(function (l) {
       var kindTag = l.kind === 'interest'
-        ? '<span class="lead-kind interest">' + esc(ACTION_TYPE_LABELS[l.what_key] || l.what_key) + '</span>'
+        ? '<span class="lead-kind ' + (isClick(l) ? 'click' : 'interest') + '">' + esc(ACTION_TYPE_LABELS[l.what_key] || l.what_key) + '</span>'
         : '<span class="lead-kind volunteer">Volunteer</span>';
-      var what = l.kind === 'interest'
+      var what = isClick(l)
+        ? 'Clicked ' + (l.clicks || 1) + ' time' + ((l.clicks || 1) === 1 ? '' : 's') + (l.source === 'email' ? ' in an email' : '') + (l.last_click_at ? ', last ' + fullDateTime(l.last_click_at) : '')
+        : l.kind === 'interest'
         ? (ACTION_TYPE_LABELS[l.what_key] || l.what_key) + (l.tier_label ? ': ' + esc(l.tier_label) : '') + (l.amount ? ' ($' + esc(l.amount) + ')' : '')
         : esc(l.what_key);
       var note = l.note ? '<div class="lead-note">"' + esc(l.note) + '"</div>' : '';
@@ -170,6 +196,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
       return '<div class="lead-card" data-row-id="' + esc(l.id) + '" data-row-kind="' + esc(l.kind) + '">' +
         '<div class="lead-top"><div>' + kindTag + '<span class="lead-who">' + esc(l.who) + '</span><br><span class="lead-email">' + esc(l.email) + '</span></div>' + actionHtml + '</div>' +
         '<div class="lead-what">' + what + '</div>' +
+        ((l.tags || []).length ? '<div class="lead-tags">' + l.tags.map(function (t) { return '<span class="lead-tag">' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
         note + coverNote +
         '<div class="lead-meta">' + esc(campaignLabel(l.campaign_slug)) + ' &middot; ' + fullDateTime(l.created_at) + '</div>' +
         deleteRow +
@@ -240,18 +267,44 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
     });
     document.getElementById('leads-needs-action-btn').addEventListener('click', function () { setMode('needs_action'); });
     document.getElementById('leads-all-btn').addEventListener('click', function () { setMode('all'); });
+    document.getElementById('leads-clicks-btn').addEventListener('click', function () { setMode('clicks'); });
+    document.getElementById('leads-tag-filter').addEventListener('change', function (e) { activeTag = e.target.value; render(); });
+    // Who to tell next: the people in the current list (campaign, tag and view), one row each.
+    function audience() {
+      var seen = {};
+      return shown.filter(function (l) { var k = (l.email || '').toLowerCase(); if (!k || seen[k]) return false; seen[k] = 1; return true; });
+    }
+    document.getElementById('leads-copy-emails').addEventListener('click', function (e) {
+      var text = audience().map(function (l) { return l.email; }).join(', ');
+      if (!text) { alert('Nobody in this list has an email yet.'); return; }
+      var btn = e.target, done = function () { btn.textContent = 'Copied ' + audience().length; setTimeout(function () { btn.textContent = 'Copy emails'; }, 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy these', text); });
+      else window.prompt('Copy these', text);
+    });
+    document.getElementById('leads-csv').addEventListener('click', function () {
+      var q = function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+      var rows = [['Name', 'Email', 'Campaign', 'Interest', 'Tags', 'Clicks', 'Status', 'Date']].concat(audience().map(function (l) {
+        return [l.who, l.email, campaignLabel(l.campaign_slug), ACTION_TYPE_LABELS[l.what_key] || l.what_key, (l.tags || []).join(' '), l.clicks || '', l.status, l.created_at];
+      }));
+      var blob = new Blob([rows.map(function (r) { return r.map(q).join(','); }).join('\n')], { type: 'text/csv' });
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'vegans-explore-leads' + (activeTag !== 'all' ? '-' + activeTag : '') + '.csv';
+      document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    });
   }
   function setMode(mode) {
     activeMode = mode;
     document.getElementById('leads-needs-action-btn').className = mode === 'needs_action' ? 'active' : '';
     document.getElementById('leads-all-btn').className = mode === 'all' ? 'active' : '';
+    document.getElementById('leads-clicks-btn').className = mode === 'clicks' ? 'active' : '';
     render();
   }
 
   function loadLeads(token) {
-    var interestP = fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_initiative_interest', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: token })
+    // Interest now carries tags, clicks and people without an account yet (ve-links, 2026-10-04).
+    var interestP = fetch(SUPABASE_URL + '/functions/v1/ve-links', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ action: 'audience' })
     }).then(function (r) { return r.json(); }).catch(function () { return { items: [] }; });
 
     var appsP = fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
@@ -274,10 +327,11 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
       var fromInterest = interestItems.map(function (it) {
         return {
           kind: 'interest', id: it.id, campaign_slug: it.initiative_slug,
-          who: (it.members && it.members.name) || 'Unknown member',
-          email: (it.members && it.members.email) || '',
+          who: it.who || it.email || 'Unknown',
+          email: it.email || '',
           what_key: it.action_type, tier_label: it.tier_label, amount: it.amount, note: it.note,
-          status: it.status, created_at: it.created_at
+          tags: it.tags || [], clicks: it.clicks, source: it.source, last_click_at: it.last_click_at,
+          status: it.status, created_at: it.last_click_at || it.created_at
         };
       });
 
@@ -295,6 +349,10 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 
       allLeads = fromInterest.concat(fromApps);
       renderCampaignFilter();
+      var tagSel = document.getElementById('leads-tag-filter');
+      var allTags = Array.from(new Set([].concat.apply([], allLeads.map(function (l) { return l.tags || []; })))).sort();
+      tagSel.innerHTML = '<option value="all">All tags</option>' + allTags.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + '</option>'; }).join('');
+      tagSel.value = allTags.indexOf(activeTag) >= 0 ? activeTag : 'all';
       render();
     });
   }

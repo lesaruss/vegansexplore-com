@@ -13,7 +13,12 @@
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);min-height:100vh;}
-  main{max-width:760px;margin:0 auto;padding:44px 24px 80px;}
+  /* Full width (Sean, 2026-10-04: "we don't do fixed width"). */
+  main{max-width:none;margin:0;padding:44px 40px 80px;}
+  @media (max-width:700px){ main{padding:32px 16px 60px;} }
+  #app-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:12px;align-items:start;}
+  .app-item.is-target{border-color:var(--ve-green);box-shadow:0 0 0 3px var(--ve-green-light);background:#fff;}
+  .app-opp{font-size:12.5px;font-weight:800;color:var(--ve-green-dark);margin-bottom:6px;}
   #app-gate{text-align:center;padding:100px 20px;}
   #app-gate button{margin-top:16px;background:var(--ve-green);color:#fff;border:none;padding:14px 28px;border-radius:6px;font-weight:800;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
   #app-gate p{font-size:14px;color:var(--ve-text-75);margin-bottom:8px;}
@@ -22,7 +27,7 @@
   .app-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
   h1{font-size:24px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:6px;}
   .app-sub{font-size:13px;color:var(--ve-text-50);margin-bottom:28px;}
-  .app-item{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px 18px;margin-bottom:10px;background:#fafafa;}
+  .app-item{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px 18px;background:#fafafa;}
   .app-meta{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:6px;}
   .app-name{font-size:14px;font-weight:800;margin-bottom:2px;}
   .app-email{font-size:12px;color:var(--ve-text-50);margin-bottom:8px;}
@@ -67,6 +72,12 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   var explorerApps = [];
+  // Sean opens this from Submissions (2026-10-04): a superadmin sees every pending application,
+  // every city and type, and ?id= marks the one clicked. A Community Manager still sees Vegan
+  // Explorer applications for their city.
+  var isAdmin = false;
+  var targetId = (function () { try { return new URLSearchParams(location.search).get('id'); } catch (e) { return null; } })();
+  var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
 
   function renderExplorerApps() {
     var list = document.getElementById('app-list');
@@ -77,8 +88,10 @@
     list.innerHTML = explorerApps.map(function (a) {
       var applicant = a.members || {};
       var when = a.created_at ? new Date(a.created_at).toLocaleDateString() : '';
-      return '<div class="app-item" data-id="' + esc(a.id) + '">' +
-        '<div class="app-meta">Applied ' + esc(when) + '</div>' +
+      var opp = a.opportunities || {};
+      return '<div class="app-item' + (a.id === targetId ? ' is-target' : '') + '" data-id="' + esc(a.id) + '">' +
+        '<div class="app-meta">Applied ' + esc(when) + (opp.city_slug ? ' &middot; ' + esc(CITY[opp.city_slug] || opp.city_slug) : '') + '</div>' +
+        (isAdmin && opp.title ? '<div class="app-opp">' + esc(opp.title) + '</div>' : '') +
         '<div class="app-name">' + esc(applicant.name || 'Unknown applicant') + '</div>' +
         '<div class="app-email">' + esc(applicant.email || '') + '</div>' +
         (a.cover_note ? '<div class="app-note">' + esc(a.cover_note) + '</div>' : '') +
@@ -117,11 +130,13 @@
     fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunity_applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: VEAuth.getToken(), status: 'pending', opportunity_type: 'vegan_explorer' })
+      body: JSON.stringify(isAdmin ? { token: VEAuth.getToken(), status: 'pending' } : { token: VEAuth.getToken(), status: 'pending', opportunity_type: 'vegan_explorer' })
     }).then(function (r) { return r.json(); }).then(function (d) {
       if (d && d.error) { list.innerHTML = '<p class="app-empty">' + esc(d.error) + '</p>'; return; }
       explorerApps = d.items || [];
       renderExplorerApps();
+      var t = targetId && list.querySelector('.app-item.is-target');
+      if (t) setTimeout(function () { t.scrollIntoView({ block: 'center' }); }, 50);
     }).catch(function () {
       list.innerHTML = '<p class="app-empty">Could not load applications right now.</p>';
     });
@@ -131,7 +146,13 @@
     document.getElementById('app-gate').innerHTML = '<p>This page is for approved Community Managers.</p><p>Interested in the role? <a href="/welcome" style="color:var(--ve-green-dark);font-weight:700;">See open cities</a>.</p>';
   }
 
-  function showContent() {
+  function showContent(member) {
+    isAdmin = !!(member && member.is_superadmin);
+    if (isAdmin) {
+      document.querySelector('.app-eyebrow').textContent = 'Superadmin';
+      document.querySelector('#app-content h1').textContent = 'Applications';
+      document.querySelector('.app-sub').textContent = 'Every pending application, every city and type. Oldest first.';
+    }
     document.getElementById('app-gate').style.display = 'none';
     document.getElementById('app-content').style.display = 'block';
     loadExplorerApps();
@@ -154,10 +175,10 @@
       if (!member) { showDenied(); return; }
       try { localStorage.setItem('ve_member', JSON.stringify(member)); } catch (e) {}
       if (member.ve_role !== 'community_manager' && !member.is_superadmin) { showDenied(); return; }
-      showContent();
+      showContent(member);
     }).catch(function () {
       var cached = VEAuth.getMember();
-      if (cached && (cached.ve_role === 'community_manager' || cached.is_superadmin)) { showContent(); }
+      if (cached && (cached.ve_role === 'community_manager' || cached.is_superadmin)) { showContent(cached); }
       else { showDenied(); }
     });
   }
