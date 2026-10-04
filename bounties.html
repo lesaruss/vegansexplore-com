@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bounties | Vegans Explore</title>
+  <meta name="description" content="Cover what is happening in your city's Vegan community and earn points: recap videos, vlogs, interviews, write-ups and clips.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Bounties (Sean, 2026-10-04): content jobs paid in points, first for the two Oct 24 South
+       Florida events. Pick one, upload your files or paste links, submit; the city's Community
+       Manager or Sean reviews, and approving pays the points. Every call goes to ve-bounties. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-orange: #F69820; --ve-orange-ink: #8a4b00; --ve-orange-light: #fff4e5; --ve-border: rgba(0,0,0,0.12); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.78); --ve-text-60: #595959; --ve-bg: #f7f7f5; --ve-danger: #a61b1b; }
+    body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+    .head { background: var(--ve-bg); border-bottom: 1px solid var(--ve-border); padding: 44px 0 30px; }
+    .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-green-dark); }
+    h1 { font-size: clamp(28px, 4.4vw, 44px); font-weight: 900; line-height: 1.08; margin: 10px 0 12px; }
+    .lede { font-size: 16px; line-height: 1.6; color: var(--ve-text-75); max-width: 680px; }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 20px; }
+    .label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-60); }
+    select, input, textarea { font-family: inherit; }
+    .select, .input, textarea { border: 1.5px solid var(--ve-border); border-radius: 10px; background: #fff; color: var(--ve-text); font-size: 15px; padding: 11px 14px; max-width: 100%; }
+    textarea { width: 100%; resize: vertical; min-height: 120px; line-height: 1.55; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; padding: 12px 20px; cursor: pointer; min-height: 44px; text-decoration: none; font-family: inherit; }
+    .btn-primary { background: var(--ve-green-dark); color: #fff; }
+    .btn-primary:hover { background: var(--ve-green-deep); }
+    .btn-primary:disabled { opacity: 0.55; cursor: default; }
+    .btn-ghost { background: #fff; color: var(--ve-text); border: 1.5px solid var(--ve-border); }
+    .btn:focus-visible, .bcard:focus-visible, .linkbtn:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    .linkbtn { background: none; border: none; color: var(--ve-green-dark); font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: underline; padding: 6px 2px; }
+    .event { margin: 32px 0 6px; }
+    .event h2 { font-size: 22px; font-weight: 900; line-height: 1.25; }
+    .event p { font-size: 14px; color: var(--ve-text-60); margin-top: 4px; }
+    .event a { color: var(--ve-green-dark); font-weight: 700; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
+    .bcard { display: flex; flex-direction: column; gap: 8px; text-align: left; background: #fff; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 18px; cursor: pointer; font: inherit; color: inherit; }
+    .bcard:hover { border-color: var(--ve-text-60); }
+    .pts { align-self: flex-start; font-size: 13px; font-weight: 900; color: #fff; background: var(--ve-orange-ink); border-radius: 999px; padding: 4px 12px; }
+    .btitle { font-size: 17px; font-weight: 800; line-height: 1.3; }
+    .bdeliv { font-size: 14px; line-height: 1.5; color: var(--ve-text-75); }
+    .status { align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 6px; padding: 4px 8px; background: #efefef; color: #3d3d3d; }
+    .status.submitted { background: var(--ve-orange-light); color: var(--ve-orange-ink); }
+    .status.approved { background: var(--ve-green-light); color: var(--ve-green-deep); }
+    .status.changes, .status.rejected { background: #fde8e8; color: var(--ve-danger); }
+    .empty { border: 1.5px dashed var(--ve-border); border-radius: 14px; padding: 30px 22px; text-align: center; color: var(--ve-text-75); margin: 30px 0; line-height: 1.6; }
+    .empty strong { display: block; color: var(--ve-text); font-size: 17px; margin-bottom: 4px; }
+    .how { background: var(--ve-bg); border-radius: 14px; padding: 18px 20px; margin: 34px 0 50px; font-size: 14px; line-height: 1.65; color: var(--ve-text-75); }
+    .how strong { color: var(--ve-text); }
+    /* Detail */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: flex-start; justify-content: center; z-index: 9000; padding: 40px 16px; overflow-y: auto; }
+    .overlay.open { display: flex; }
+    .dialog { background: #fff; border-radius: 16px; width: 100%; max-width: 720px; padding: 26px; position: relative; }
+    .dialog h2 { font-size: 22px; font-weight: 900; line-height: 1.25; padding-right: 44px; margin-top: 8px; }
+    .close-x { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%; border: none; background: #f0f0f0; font-size: 22px; cursor: pointer; }
+    .meta { font-size: 13px; color: var(--ve-text-60); margin-top: 6px; line-height: 1.6; }
+    .brief { font-size: 15px; line-height: 1.7; margin-top: 14px; white-space: pre-wrap; }
+    .box { border: 1.5px solid var(--ve-border); border-radius: 12px; padding: 16px; margin-top: 18px; }
+    .box h3 { font-size: 13px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-60); margin-bottom: 10px; }
+    .note { border-radius: 10px; padding: 12px 14px; font-size: 14px; line-height: 1.55; margin-top: 14px; }
+    .note.ok { background: var(--ve-green-light); color: var(--ve-green-deep); }
+    .note.warn { background: #fde8e8; color: var(--ve-danger); }
+    .note.info { background: var(--ve-orange-light); color: var(--ve-orange-ink); }
+    .files { list-style: none; display: grid; gap: 6px; margin: 10px 0; }
+    .files li { display: flex; justify-content: space-between; gap: 10px; align-items: center; font-size: 13px; background: var(--ve-bg); border-radius: 8px; padding: 8px 10px; overflow-wrap: anywhere; }
+    .bar { height: 6px; background: #e6e6e6; border-radius: 99px; overflow: hidden; margin-top: 4px; }
+    .bar i { display: block; height: 100%; width: 0; background: var(--ve-green-dark); transition: width 0.2s; }
+    .drop { border: 2px dashed var(--ve-border); border-radius: 12px; padding: 18px; text-align: center; font-size: 14px; color: var(--ve-text-75); }
+    .drop.over { border-color: var(--ve-green-dark); background: var(--ve-green-light); }
+    label.f { display: grid; gap: 6px; font-size: 13px; font-weight: 700; margin-top: 14px; }
+    .hint { font-weight: 400; color: var(--ve-text-60); font-size: 12px; }
+    .msg { font-size: 13px; min-height: 18px; margin-top: 10px; color: var(--ve-danger); }
+    .msg.ok { color: var(--ve-green-dark); }
+    .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    [hidden] { display: none !important; }
+    .ve-embedded .head { background: #fff; padding: 22px 0 14px; }
+    .ve-embedded .wrap { max-width: none; padding: 0 22px; }
+    .ve-embedded .overlay { position: absolute; min-height: 100%; padding-top: calc(var(--ve-view-top, 0px) + 24px); }
+    @media (max-width: 720px) { .wrap { padding: 0 16px; } .dialog { padding: 22px 18px; } .head { padding: 30px 0 22px; } }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main>
+    <header class="head">
+      <div class="wrap">
+        <p class="eyebrow">Bounties</p>
+        <h1>Cover your city. Earn points.</h1>
+        <p class="lede">Help tell the story of what Vegans are building here. Pick a bounty, show up, capture it, and send it in. When it is approved, the points are yours.</p>
+        <div class="row">
+          <label class="label" for="city">Your city</label>
+          <select id="city" class="select"></select>
+        </div>
+      </div>
+    </header>
+    <section class="wrap" aria-live="polite">
+      <div id="list"></div>
+      <div class="how"><strong>How it works.</strong> Open a bounty, read what we need, and go. Upload your files here (up to 2 GB each) or paste links to Google Drive, Dropbox or YouTube, then submit. Your city's Community Manager reviews it; approved work pays the full points, and if something needs a fix you will get a note. Only share people who said yes to being filmed or quoted.</div>
+    </section>
+  </main>
+
+  <div class="overlay" id="detail" role="dialog" aria-modal="true" aria-labelledby="d-title">
+    <div class="dialog">
+      <button type="button" class="close-x" data-close aria-label="Close">&times;</button>
+      <span class="pts" id="d-pts"></span>
+      <h2 id="d-title"></h2>
+      <p class="meta" id="d-meta"></p>
+      <div class="brief" id="d-brief"></div>
+      <div id="d-state"></div>
+      <div class="box" id="d-work">
+        <h3>Your submission</h3>
+        <div class="drop" id="drop">
+          <p>Drag files here, or</p>
+          <p style="margin-top:8px"><label class="btn btn-ghost" for="pick">Choose files</label><input id="pick" type="file" multiple class="visually-hidden"></p>
+          <p class="hint" style="margin-top:8px">Video, photos or documents, up to 2 GB each.</p>
+        </div>
+        <ul class="files" id="files"></ul>
+        <label class="f" for="links">Links <span class="hint">One per line: Google Drive, Dropbox, YouTube (unlisted is fine)</span><textarea id="links" rows="3" style="min-height:80px" placeholder="https://"></textarea></label>
+        <label class="f" for="note" id="note-label">A note for the reviewer <span class="hint" id="note-hint">Optional. For the write-up, paste the whole piece here.</span><textarea id="note" rows="5"></textarea></label>
+        <div style="margin-top:14px"><button type="button" class="btn btn-primary" id="submit">Submit for review</button></div>
+        <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
+    var $ = function (id) { return document.getElementById(id); };
+    var params = new URLSearchParams(location.search);
+    var state = { city: '', bounties: [], current: null, mine: null, signedIn: false, uploading: 0 };
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function token() { return window.VEAuth && VEAuth.getToken ? (VEAuth.getToken() || '') : ''; }
+    function call(body) {
+      var h = { 'Content-Type': 'application/json' }; var t = token(); if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+    }
+    // Times show in the city's own time zone, whatever zone the reader's device is in.
+    var TZ = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles' };
+    function tz() { return TZ[state.city] || 'America/New_York'; }
+    function when(iso) { return iso ? new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: tz() }) : ''; }
+    function day(iso) { return iso ? new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: tz() }) : ''; }
+    function size(n) { return n > 1073741824 ? (n / 1073741824).toFixed(1) + ' GB' : n > 1048576 ? Math.round(n / 1048576) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+    var LABEL = { in_progress: 'Started', submitted: 'In review', changes: 'Needs changes', approved: 'Approved', rejected: 'Not approved' };
+
+    var hubs = window.VE_HUBS || [];
+    var member = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+    var saved = ''; try { saved = localStorage.getItem('ve_selected_city') || ''; } catch (e) {}
+    var wanted = params.get('community') || (member && member.home_community) || saved || 'south-florida';
+    if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';
+    $('city').innerHTML = hubs.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
+    $('city').value = wanted; state.city = wanted;
+    $('city').addEventListener('change', function () { state.city = this.value; load(); });
+
+    function load() {
+      $('list').innerHTML = '<p class="meta" style="margin:24px 0">Loading bounties&hellip;</p>';
+      return call({ action: 'list', community: state.city }).then(function (d) {
+        state.bounties = d.bounties || []; state.signedIn = !!(d.viewer && d.viewer.signed_in);
+        if (!state.bounties.length) { $('list').innerHTML = '<div class="empty"><strong>No open bounties here yet.</strong>New ones go up with big events in your city. Check the Daily Pulse for what is coming.</div>'; return; }
+        var groups = [], seen = {};
+        state.bounties.forEach(function (b) { var k = b.event_id || 'other'; if (!seen[k]) { seen[k] = { event: b.event, title: b.event_title, items: [] }; groups.push(seen[k]); } seen[k].items.push(b); });
+        $('list').innerHTML = groups.map(function (g) {
+          var e = g.event, total = g.items.reduce(function (n, b) { return n + b.points; }, 0);
+          return '<div class="event"><h2>' + esc(e ? e.title : (g.title || 'More bounties')) + '</h2>' +
+            (e ? '<p>' + esc(when(e.starts_at)) + (e.location_name ? ' &middot; ' + esc(e.location_name) : '') + (e.city ? ', ' + esc(e.city) : '') +
+              (e.ticket_url ? ' &middot; <a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener noreferrer">Event details</a>' : '') + ' &middot; up to ' + total.toLocaleString() + ' points</p>' : '') + '</div>' +
+            '<div class="grid">' + g.items.map(function (b) {
+              return '<button type="button" class="bcard" data-id="' + b.id + '"><span class="pts">' + b.points.toLocaleString() + ' points</span>' +
+                '<span class="btitle">' + esc(b.title.replace(/^[^:]+:\s*/, '')) + '</span><span class="bdeliv">' + esc(b.deliverable) + '</span>' +
+                (b.mine ? '<span class="status ' + b.mine.status + '">' + esc(LABEL[b.mine.status] || b.mine.status) + '</span>' : '<span class="meta">Due ' + esc(day(b.due_at)) + '</span>') + '</button>';
+            }).join('') + '</div>';
+        }).join('');
+      }).catch(function () { $('list').innerHTML = '<div class="empty"><strong>Bounties could not load.</strong>Please refresh the page.</div>'; });
+    }
+    $('list').addEventListener('click', function (e) { var c = e.target.closest('.bcard'); if (c) open(c.getAttribute('data-id')); });
+
+    // ---- Detail -------------------------------------------------------------------------
+    function open(id) {
+      call({ action: 'get', id: id }).then(function (d) {
+        if (!d.bounty) return;
+        state.current = d.bounty; state.mine = d.mine; state.signedIn = !!(d.viewer && d.viewer.signed_in);
+        var u = new URL(location.href); u.searchParams.set('id', id); history.replaceState(null, '', u.pathname + u.search);
+        render(); $('detail').classList.add('open'); document.body.style.overflow = 'hidden';
+      });
+    }
+    function close() {
+      $('detail').classList.remove('open'); document.body.style.overflow = '';
+      var u = new URL(location.href); u.searchParams.delete('id'); history.replaceState(null, '', u.pathname + u.search);
+      load();
+    }
+    $('detail').addEventListener('click', function (e) { if (e.target === $('detail') || e.target.hasAttribute('data-close')) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('detail').classList.contains('open')) close(); });
+
+    function render() {
+      var b = state.current, m = state.mine, e = b.event;
+      $('d-pts').textContent = b.points.toLocaleString() + ' points';
+      $('d-title').textContent = b.title;
+      $('d-meta').innerHTML = (e ? esc(e.title) + ' &middot; ' + esc(when(e.starts_at)) + (e.location_name ? ' &middot; ' + esc(e.location_name) : '') + '<br>' : '') +
+        '<strong>Deliver:</strong> ' + esc(b.deliverable) + '<br><strong>Due:</strong> ' + esc(day(b.due_at)) +
+        (b.example_url ? '<br><a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">See an example</a>' : '');
+      $('d-brief').textContent = b.brief;
+      var st = '';
+      if (m && m.status === 'approved') st = '<div class="note ok"><strong>Approved.</strong> ' + (m.points_awarded || b.points).toLocaleString() + ' points are in your account. Thank you.' + (m.review_note ? '<br>' + esc(m.review_note) : '') + '</div>';
+      else if (m && m.status === 'submitted') st = '<div class="note info"><strong>In review.</strong> You can still add files or update it below.</div>';
+      else if (m && (m.status === 'changes' || m.status === 'rejected')) st = '<div class="note warn"><strong>' + (m.status === 'changes' ? 'A few changes needed.' : 'Not approved.') + '</strong>' + (m.review_note ? ' ' + esc(m.review_note) : '') + '</div>';
+      if (!b.accepting && !(m && m.status === 'approved')) st += '<div class="note warn">This bounty is closed.</div>';
+      $('d-state').innerHTML = st;
+      var canWork = b.accepting && !(m && m.status === 'approved');
+      $('d-work').hidden = !canWork;
+      if (!canWork) return;
+      $('links').value = m && m.links ? m.links.join('\n') : '';
+      $('note').value = m && m.note ? m.note : '';
+      var writeup = b.kind === 'writeup';
+      $('note-hint').textContent = writeup ? 'Paste your whole write-up here, or upload it as a document.' : 'Optional: anything the reviewer should know.';
+      $('note').rows = writeup ? 14 : 4;
+      $('submit').textContent = m && m.status === 'submitted' ? 'Update my submission' : 'Submit for review';
+      $('msg').textContent = '';
+      renderFiles();
+      if (!state.signedIn) {
+        $('msg').className = 'msg'; $('msg').innerHTML = 'Sign in to take on this bounty. <button type="button" class="linkbtn" id="signin">Sign in or join</button>';
+      }
+    }
+    function renderFiles() {
+      var files = (state.mine && state.mine.files) || [];
+      $('files').innerHTML = files.map(function (f) {
+        return '<li><span>' + esc(f.name) + ' <span class="hint">' + size(f.size || 0) + '</span></span><button type="button" class="linkbtn" data-remove="' + esc(f.path) + '">Remove</button></li>';
+      }).join('') + (files.length ? '<li style="background:none;padding:2px 0" class="hint">' + files.length + (files.length === 1 ? ' file' : ' files') + ' uploaded</li>' : '');
+    }
+    $('msg').addEventListener('click', function (e) { if (e.target.id === 'signin' && window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to take on bounties.', function () { location.reload(); }); });
+    $('files').addEventListener('click', function (e) {
+      var p = e.target.getAttribute('data-remove'); if (!p) return;
+      call({ action: 'file_remove', bounty_id: state.current.id, path: p }).then(function () {
+        state.mine.files = state.mine.files.filter(function (f) { return f.path !== p; }); renderFiles();
+      });
+    });
+
+    // ---- Uploads: one file at a time, each to its own signed link ------------------------
+    function needSignIn() {
+      if (state.signedIn && token()) return false;
+      if (window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to take on bounties.', function () { location.reload(); });
+      return true;
+    }
+    function uploadOne(file) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span style="flex:1">' + esc(file.name) + ' <span class="hint">' + size(file.size) + '</span><span class="bar"><i></i></span></span>';
+      $('files').insertBefore(li, $('files').firstChild);
+      return call({ action: 'upload_url', bounty_id: state.current.id, name: file.name, size: file.size, type: file.type }).then(function (d) {
+        if (!d.url) throw new Error(d.message || 'Could not start the upload.');
+        return new Promise(function (resolve, reject) {
+          var x = new XMLHttpRequest();
+          x.open('PUT', d.url);
+          x.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+          x.setRequestHeader('x-upsert', 'false');
+          x.upload.onprogress = function (ev) { if (ev.lengthComputable) li.querySelector('i').style.width = Math.round(ev.loaded / ev.total * 100) + '%'; };
+          x.onload = function () { x.status >= 200 && x.status < 300 ? resolve(d.path) : reject(new Error('Upload failed (' + x.status + ').')); };
+          x.onerror = function () { reject(new Error('Upload failed. Check your connection.')); };
+          x.send(file);
+        });
+      }).then(function (path) {
+        return call({ action: 'file_added', bounty_id: state.current.id, path: path, name: file.name, size: file.size, type: file.type }).then(function () {
+          li.remove();
+          state.mine = state.mine || { status: 'in_progress', files: [], links: [] };
+          state.mine.files = (state.mine.files || []).concat([{ path: path, name: file.name, size: file.size, type: file.type }]);
+          renderFiles();
+        });
+      }).catch(function (err) { li.innerHTML = '<span>' + esc(file.name) + '</span><span style="color:var(--ve-danger)">' + esc(err.message) + '</span>'; });
+    }
+    function uploadAll(list) {
+      if (needSignIn()) return;
+      var files = Array.prototype.slice.call(list || []); if (!files.length) return;
+      state.uploading += files.length; $('submit').disabled = true;
+      $('msg').className = 'msg ok'; $('msg').textContent = 'Uploading ' + files.length + (files.length === 1 ? ' file' : ' files') + '. Keep this page open until it finishes.';
+      files.reduce(function (p, f) { return p.then(function () { return uploadOne(f); }).then(function () { state.uploading--; }); }, Promise.resolve())
+        .then(function () { $('submit').disabled = false; $('msg').textContent = 'Uploads finished. Submit when you are ready.'; });
+    }
+    $('pick').addEventListener('change', function () { uploadAll(this.files); this.value = ''; });
+    var drop = $('drop');
+    ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+    ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+    drop.addEventListener('drop', function (e) { uploadAll(e.dataTransfer.files); });
+
+    $('submit').addEventListener('click', function () {
+      if (needSignIn()) return;
+      var links = $('links').value.split(/\s+/).map(function (s) { return s.trim(); }).filter(function (s) { return /^https?:\/\//i.test(s); });
+      $('submit').disabled = true; $('msg').className = 'msg ok'; $('msg').textContent = 'Sending it in...';
+      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value }).then(function (d) {
+        $('submit').disabled = false;
+        if (d.error) { $('msg').className = 'msg'; $('msg').textContent = d.message || 'That did not go through. Please try again.'; return; }
+        open(state.current.id);
+      });
+    });
+    window.addEventListener('beforeunload', function (e) { if (state.uploading > 0) { e.preventDefault(); e.returnValue = ''; } });
+
+    load().then(function () { if (params.get('id')) open(params.get('id')); });
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

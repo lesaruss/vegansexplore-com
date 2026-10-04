@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Bounties | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:780px;margin-bottom:14px;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 20px 20px;margin:0 0 16px;}
+    .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+    .filters button{font:inherit;font-size:13px;font-weight:800;border:1.5px solid rgba(0,0,0,0.15);background:#fff;border-radius:99px;padding:8px 14px;cursor:pointer;min-height:40px;}
+    .filters button[aria-pressed="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 16px;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;background:var(--ve-green-deep);color:#fff;cursor:pointer;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:#f4f4f4;}
+    .btn-no{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .sub-card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px 18px;margin-bottom:12px;}
+    .sub-card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .pill{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:99px;margin-right:6px;}
+    .p-submitted{background:#fff4e2;color:#6b3f00;}
+    .p-approved{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .p-changes,.p-rejected{background:#fbeeec;color:#8a1c12;}
+    .files{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin:10px 0;}
+    .files a{display:block;font-size:13px;background:#f7f8f7;border-radius:8px;padding:8px 10px;color:var(--ve-green-deep);font-weight:700;overflow-wrap:anywhere;}
+    .note{font-size:14px;white-space:pre-wrap;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin-top:8px;max-height:22em;overflow:auto;}
+    .links a{display:block;font-size:13px;color:var(--ve-green-deep);font-weight:700;overflow-wrap:anywhere;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;}
+    .acts input{flex:1 1 260px;font:inherit;font-size:14px;padding:9px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;min-width:0;}
+    .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);min-height:20px;margin-top:6px;}
+    .msg.err{color:#8a1c12;}
+    .blist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;}
+    .blist div{background:#f7f8f7;border-radius:10px;padding:10px 12px;font-size:13px;}
+    .blist b{display:block;font-size:13.5px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:6px 0;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Bounties</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Work members send in for bounties (Sean, 2026-10-04). Open each file or link, then <b>Approve</b> to pay the points, ask for <b>Changes</b> with a note, or <b>Decline</b>. The member gets an email either way. Members see the bounties at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>.</p>
+    <div id="bq-gate" class="gate" hidden></div>
+    <div id="bq-app" hidden>
+      <section class="panel">
+        <div class="filters" id="filters" role="group" aria-label="Show">
+          <button type="button" data-s="submitted" aria-pressed="true">To review <span data-c="submitted"></span></button>
+          <button type="button" data-s="changes" aria-pressed="false">Changes asked <span data-c="changes"></span></button>
+          <button type="button" data-s="approved" aria-pressed="false">Approved <span data-c="approved"></span></button>
+          <button type="button" data-s="rejected" aria-pressed="false">Declined <span data-c="rejected"></span></button>
+        </div>
+        <div id="subs"><p class="empty">Loading...</p></div>
+      </section>
+      <section class="panel">
+        <h2>Open bounties</h2>
+        <div class="blist" id="blist"></div>
+      </section>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
+      var $ = function (id) { return document.getElementById(id); };
+      var status = 'submitted';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function day(iso) { return iso ? new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }) + ' ET' : ''; }
+      function size(n) { return n > 1073741824 ? (n / 1073741824).toFixed(1) + ' GB' : n > 1048576 ? Math.round(n / 1048576) + ' MB' : Math.max(1, Math.round((n || 0) / 1024)) + ' KB'; }
+      var LABEL = { submitted: 'To review', changes: 'Changes asked', approved: 'Approved', rejected: 'Declined' };
+
+      function load() {
+        $('subs').innerHTML = '<p class="empty">Loading...</p>';
+        api({ action: 'review_list', status: status }).then(function (d) {
+          if (!d.submissions) throw new Error(d.error);
+          Array.prototype.forEach.call(document.querySelectorAll('[data-c]'), function (el) { var n = (d.counts || {})[el.getAttribute('data-c')]; el.textContent = n ? '(' + n + ')' : ''; });
+          $('blist').innerHTML = (d.bounties || []).map(function (b) {
+            return '<div><b>' + esc(b.title) + '</b>' + b.points.toLocaleString() + ' points &middot; due ' + esc(day(b.due_at)) + (b.status !== 'open' ? ' &middot; ' + esc(b.status) : '') + '</div>';
+          }).join('') || '<p class="empty">No bounties yet.</p>';
+          $('subs').innerHTML = d.submissions.length ? d.submissions.map(card).join('') : '<p class="empty">Nothing ' + esc((LABEL[status] || '').toLowerCase()) + ' right now.</p>';
+        }).catch(function () { $('subs').innerHTML = '<p class="empty">Submissions did not load. Refresh to try again.</p>'; });
+      }
+      function card(s) {
+        var b = s.bounty || {}, m = s.member || {};
+        return '<div class="sub-card" data-id="' + s.id + '">' +
+          '<span class="pill p-' + s.status + '">' + esc(LABEL[s.status] || s.status) + '</span><span class="meta">' + esc(day(s.submitted_at)) + '</span>' +
+          '<h3>' + esc(b.title || 'Bounty') + ' &middot; ' + (b.points || 0).toLocaleString() + ' points</h3>' +
+          '<p class="meta">' + esc(m.name || 'Member') + (m.email ? ' &middot; ' + esc(m.email) : '') + '</p>' +
+          (s.files.length ? '<ul class="files">' + s.files.map(function (f) { return '<li><a href="' + esc(f.url || '#') + '" target="_blank" rel="noopener">' + esc(f.name) + ' (' + size(f.size) + ')</a></li>'; }).join('') + '</ul><p class="meta">' + s.files.length + (s.files.length === 1 ? ' file' : ' files') + '. Download links last one hour; refresh for new ones.</p>' : '') +
+          (s.links && s.links.length ? '<div class="links" style="margin-top:8px">' + s.links.map(function (l) { return '<a href="' + esc(l) + '" target="_blank" rel="noopener noreferrer">' + esc(l) + '</a>'; }).join('') + '</div>' : '') +
+          (s.note ? '<div class="note">' + esc(s.note) + '</div><p class="meta">' + s.note.trim().split(/\s+/).length.toLocaleString() + ' words</p>' : '') +
+          (s.review_note ? '<p class="meta" style="margin-top:8px"><b>Your note:</b> ' + esc(s.review_note) + '</p>' : '') +
+          (s.status === 'approved' ? '<p class="meta" style="margin-top:8px"><b>Paid ' + (s.points_awarded || 0).toLocaleString() + ' points.</b></p>' :
+            '<div class="acts"><input type="text" maxlength="2000" placeholder="Note to the member (needed for Changes)" aria-label="Note to the member">' +
+            '<button type="button" class="btn" data-d="approve">Approve and pay</button><button type="button" class="btn btn-ghost" data-d="changes">Ask for changes</button><button type="button" class="btn btn-no" data-d="reject">Decline</button></div><p class="msg" role="status"></p>') +
+          '</div>';
+      }
+      $('subs').addEventListener('click', function (e) {
+        var d = e.target.getAttribute('data-d'); if (!d) return;
+        var c = e.target.closest('.sub-card'), note = c.querySelector('input').value.trim(), msg = c.querySelector('.msg');
+        if (d === 'changes' && !note) { msg.className = 'msg err'; msg.textContent = 'Say what needs to change.'; return; }
+        if (d === 'reject' && !confirm('Decline this submission? The member gets an email.')) return;
+        Array.prototype.forEach.call(c.querySelectorAll('button'), function (b) { b.disabled = true; });
+        msg.className = 'msg'; msg.textContent = d === 'approve' ? 'Paying the points...' : 'Saving...';
+        api({ action: 'review', id: c.getAttribute('data-id'), decision: d, note: note }).then(function (r) {
+          if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; Array.prototype.forEach.call(c.querySelectorAll('button'), function (b) { b.disabled = false; }); return; }
+          msg.textContent = d === 'approve' ? 'Approved. ' + (r.points || '') + ' points paid.' : 'Done. The member has been emailed.';
+          setTimeout(load, 900);
+        });
+      });
+      $('filters').addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-s]'); if (!b) return;
+        status = b.getAttribute('data-s');
+        Array.prototype.forEach.call($('filters').querySelectorAll('button'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        load();
+      });
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('bq-gate').hidden = false; $('bq-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins and Community Managers.</p><button type="button" class="btn" id="bq-signin">Sign in</button>'; $('bq-signin').onclick = function () { VEAuth.showAuthModal('Sign in to review bounties.', function () { location.reload(); }); }; return; }
+        if (!m || !(m.is_superadmin || m.ve_role === 'community_manager' || m.staff_role === 'community_manager')) { $('bq-gate').hidden = false; $('bq-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins and Community Managers.</p>'; return; }
+        $('bq-app').hidden = false;
+        load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

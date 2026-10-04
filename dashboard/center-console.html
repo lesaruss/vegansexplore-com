@@ -846,15 +846,15 @@
       <div class="dash-bounty-topics" id="dash-bounty-topics">
         <button type="button" class="dash-bounty-topic-pill active" data-topic="all">All</button>
         <button type="button" class="dash-bounty-topic-pill" data-topic="community" disabled title="Coming soon">Community</button>
-        <button type="button" class="dash-bounty-topic-pill" data-topic="content" disabled title="Coming soon">Content</button>
+        <button type="button" class="dash-bounty-topic-pill" data-topic="content">Content</button>
         <button type="button" class="dash-bounty-topic-pill" data-topic="referral" disabled title="Coming soon">Referral</button>
       </div>
       <div class="dash-bounty-scroll" id="dash-bounty-scroll">
         <div class="dash-tile" style="cursor:default;" data-topic="all">
           <div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#127942;</div>
           <div class="dash-tile-body">
-            <div class="dash-tile-title">Weekly Bounties <span class="dash-tag">Coming Soon</span></div>
-            <div class="dash-tile-desc">Short tasks you can complete each week, each worth points, each with its own expiration date.</div>
+            <div class="dash-tile-title">Bounties</div>
+            <div class="dash-tile-desc">Loading the bounties for your city.</div>
           </div>
         </div>
       </div>
@@ -2728,6 +2728,7 @@
     // filters posts by active city), so it gets the same fix here too.
     renderCampaignsSection(member);
     renderDailyPulse(member);
+    renderBounties(member);
   }
   document.getElementById('dash-city-modal-close').addEventListener('click', closeCityModal);
   document.getElementById('dash-city-modal').addEventListener('click', function(e) {
@@ -3556,6 +3557,35 @@
   // until real categorized bounty data exists, rather than faking categories
   // with no content behind them. Written generically so flipping a pill from
   // disabled to enabled later is the only change needed.
+  // Live bounties (Sean, 2026-10-04): content jobs paid in points, from ve-bounties for the
+  // member's active city. A tile opens the bounty in the dashboard window (/bounties?id=...).
+  function renderBounties(member) {
+    var scroll = document.getElementById('dash-bounty-scroll');
+    if (!scroll) return;
+    var city = getActiveCity(member) || 'south-florida';
+    var h = { 'Content-Type': 'application/json' };
+    try { var tok = VEAuth.getToken(); if (tok) h.Authorization = 'Bearer ' + tok; } catch (e) {}
+    fetch(SUPABASE_URL + '/functions/v1/ve-bounties', { method: 'POST', headers: h, body: JSON.stringify({ action: 'list', community: city }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        var list = (d.bounties || []).filter(function (b) { return b.accepting || b.mine; });
+        var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+        var STATUS = { in_progress: 'Started', submitted: 'In review', changes: 'Needs changes', approved: 'Paid', rejected: 'Not approved' };
+        if (!list.length) {
+          scroll.innerHTML = '<div class="dash-tile" style="cursor:default;" data-topic="all"><div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#127942;</div>' +
+            '<div class="dash-tile-body"><div class="dash-tile-title">Bounties</div><div class="dash-tile-desc">No open bounties in ' + esc(VE_CITY_NAMES[city] || 'your city') + ' yet. New ones go up with big events.</div></div></div>';
+          return;
+        }
+        scroll.innerHTML = list.map(function (b) {
+          var due = b.due_at ? new Date(b.due_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: city === 'london' ? 'Europe/London' : city === 'los-angeles' ? 'America/Los_Angeles' : 'America/New_York' }) : '';
+          return '<a class="dash-tile" data-topic="content" data-frame-label="Bounties" href="/bounties?community=' + encodeURIComponent(city) + '&id=' + encodeURIComponent(b.id) + '">' +
+            '<div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#127942;</div>' +
+            '<div class="dash-tile-body"><div class="dash-tile-title">' + esc(b.title) + ' <span class="dash-tag live">' + b.points.toLocaleString() + ' pts</span>' +
+            (b.mine ? ' <span class="dash-tag">' + esc(STATUS[b.mine.status] || b.mine.status) + '</span>' : '') + '</div>' +
+            '<div class="dash-tile-desc">' + esc(b.deliverable) + (due ? '. Due ' + esc(due) + '.' : '') + '</div></div></a>';
+        }).join('');
+      }).catch(function () {});
+  }
+
   function initBountyTopics() {
     var topicsRow = document.getElementById('dash-bounty-topics');
     var scroll = document.getElementById('dash-bounty-scroll');
@@ -3670,6 +3700,7 @@
     renderEventsTab(member);
     renderDailyPulse(member);
     renderHomePulsePreview(member);
+    renderBounties(member);
     initHomePulseSeeAll();
     renderCommunitySection(member);
     renderCampaignsSection(member);
