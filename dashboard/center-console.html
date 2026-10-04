@@ -3159,10 +3159,10 @@
   // opened in place from an entry tile, the same breadcrumb pattern My List and
   // Choose Your Guide already use.
   var TOOL_SECTIONS = [
-    { id: 'dash-bounties-section', key: 'bounties', label: 'Bounties', icon: '🏆', bg: 'linear-gradient(135deg,#F69820,#e07b00)', desc: 'Campaigns in your city: take on a job and earn points.' },
-    { id: 'dash-campaigns-section', key: 'campaigns', label: 'Your Campaigns', icon: '📣', bg: 'linear-gradient(135deg,#8B5CF6,#6D28D9)', desc: 'Campaigns you can attend, sponsor, or volunteer for.' },
-    { id: 'dash-opportunities-section', key: 'opportunities', label: 'Your Opportunities', icon: '🎯', bg: 'linear-gradient(135deg,#0EA5E9,#0369A1)', desc: 'Ways to get involved and lead in your city.' },
-    { id: 'dash-guides-section', key: 'guides', label: 'Guides', icon: '📚', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', desc: 'Step-by-step guides for wherever you are on the journey.' }
+    { id: 'dash-bounties-section', key: 'bounties', label: 'Bounties', img: '/public/dashboard/tools/tools-bounties.jpg', icon: '🏆', bg: 'linear-gradient(135deg,#F69820,#e07b00)', desc: 'Campaigns in your city: take on a job and earn points.' },
+    { id: 'dash-campaigns-section', key: 'campaigns', label: 'Your Campaigns', img: '/public/dashboard/tools/tools-campaigns.jpg', icon: '📣', bg: 'linear-gradient(135deg,#8B5CF6,#6D28D9)', desc: 'Campaigns you can attend, sponsor, or volunteer for.' },
+    { id: 'dash-opportunities-section', key: 'opportunities', label: 'Your Opportunities', img: '/public/dashboard/tools/tools-opportunities.jpg', icon: '🎯', bg: 'linear-gradient(135deg,#0EA5E9,#0369A1)', desc: 'Ways to get involved and lead in your city.' },
+    { id: 'dash-guides-section', key: 'guides', label: 'Guides', img: '/public/dashboard/tools/tools-guides.jpg', icon: '📚', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', desc: 'Step-by-step guides for wherever you are on the journey.' }
   ];
   var dashToolSectionPrevLayout = null;
 
@@ -3237,7 +3237,8 @@
       var tile = document.createElement('a');
       tile.className = 'dash-tile';
       tile.href = '#';
-      tile.innerHTML = '<div class="dash-thumb" style="background:' + t.bg + ';">' + t.icon + '</div>' +
+      // Illustrated Guides in Vegans Explore tees replace the placeholder icons (Sean, 2026-10-04).
+      tile.innerHTML = (t.img ? '<div class="dash-thumb" style="background-image:url(\'' + t.img + '\');background-color:#eef3ec;"></div>' : '<div class="dash-thumb" style="background:' + t.bg + ';">' + t.icon + '</div>') +
         '<div class="dash-tile-body"><div class="dash-tile-title">' + t.label + '</div>' +
         '<div class="dash-tile-desc">' + t.desc + '</div></div>';
       tile.addEventListener('click', function (e) { e.preventDefault(); if (t.key === 'bounties' && window.openBounties) openBounties(''); else openToolSection(t.id, t.label); });
