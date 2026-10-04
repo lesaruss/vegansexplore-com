@@ -147,6 +147,7 @@
     .stage-bg{display:none;}
     @media (max-width:900px){ .stage-bg{display:block;} }
   </style>
+  <script src="/public/ve-auth.js" defer></script>
 </head>
 <body>
 <div class="page-frame">
@@ -158,7 +159,7 @@
      background and the What's next cards come from ve_onboarding_panels and the narration
      from ve_onboarding_audio (page 'dinner', this page's city), so the Depot can swap them;
      the URLs below are the built-in defaults. Unlisted and noindex: reached only from
-     personal invitations. Seats stay closed (SEATS_OPEN false) until the venue confirms. -->
+     personal invitations. Seats stay closed until ve_dinners.seats_open is set for this dinner, once the venue confirms. -->
 <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Dinner invitation">
   <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
 
@@ -269,7 +270,7 @@
         <div class="seat">
           <div>
             <p class="lede">Your $11 Founding Membership is your RSVP. If you&rsquo;re at the table, you&rsquo;re a member, and so is everyone sitting with you.</p>
-            <p class="plus"><b>Bringing someone?</b> Send them this page. They take their seat the same way, with their own $11 Founding Membership.</p>
+            <p class="plus"><b>Want someone else in the room?</b> Send them this page. You get first dibs on a seat, and they take theirs the same way, with their own $11 Founding Membership.</p>
             <p class="room">Seats are limited by the room. If it fills, you&rsquo;re first on the list for the next dinner.</p>
           </div>
           <div class="seat-box">
@@ -321,15 +322,15 @@
     // The template: one page per city dinner. PAGE and CITY pick its panels and narration
     // in the Depot; DEFAULTS are the built-in pictures and sample narration until replaced.
     var PAGE = 'dinner', CITY = 'south-florida';
-    var SEATS_OPEN = false; // opens once the venue confirms and the seat list is wired
+    var DINNER = 'palm-beach-2026-10-23'; // ve_dinners.slug: seats_open and capacity live there
     var HF = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_';
     var BEDS = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/beds/';
     var DEFAULTS = {
       panels: {
-        invite: HF + '164149_0480bef2-479a-47f0-b3f8-023094ecb3bb.png', why: HF + '164150_1c29bf05-1f51-4e45-a3c3-4b3fae41dd4f.png',
-        build: HF + '164149_c04fd94d-18ab-4720-82b6-ca8aabad0b81.png', ask: HF + '164149_9266428b-0d50-43c0-80e8-60fba5258309.png',
+        invite: 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/9804db3d-8522-438b-ac6a-4113da03a6fd.png', why: HF + '164150_1c29bf05-1f51-4e45-a3c3-4b3fae41dd4f.png',
+        build: 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/ed0eb5e8-7150-4da1-8a6f-0def5c0df104.png', ask: HF + '164149_9266428b-0d50-43c0-80e8-60fba5258309.png',
         evening: HF + '164150_ad3e10f5-8514-4ebd-a019-ba5d999b2a02.png', seat: HF + '164149_501d6a50-0125-4b40-b2a4-40773b339081.png',
-        faq: HF + '164149_d8e9d6e5-0028-49f1-8abb-ce059023c098.png',
+        faq: 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/f688044c-3ce1-4580-b365-f6b2efa46161.png',
         'bg-desktop': HF + '154721_ab571b65-aac8-412c-a204-ebbc44120cb5.png', 'bg-mobile': HF + '154721_ab571b65-aac8-412c-a204-ebbc44120cb5.png',
         'next-1': HF + '154721_a1aed24b-5b7d-487b-a5f2-ab1e602ad22d.png', 'next-2': HF + '154721_8a98f994-df44-4353-ac55-58c50ae337ca.png',
         'next-3': HF + '154723_6314671e-961a-4c99-a681-e3b3ef84d880.png', 'next-4': HF + '154724_e1351684-412e-4b56-b709-2b9ffc3715bd.png'
@@ -414,19 +415,54 @@
     $('nx-next').addEventListener('click', function () { go(at() + 1); });
     mark(0);
 
-    // Seats open when invitations go out; until then the button explains instead of charging.
-    $('seat-btn').addEventListener('click', function () {
-      var msg = $('seat-msg');
-      if (!SEATS_OPEN || window.VE_PREVIEW) { msg.textContent = 'Seats open when invitations go out. This button will take you to secure $11 checkout and save your seat.'; return; }
-      if (!window.VEAuth) { location.href = '/join'; return; }
-      var go2 = function () {
-        msg.textContent = 'Opening secure checkout...';
-        VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) { location.href = d.url; return; } msg.textContent = 'Checkout did not open. Refresh and try again.'; })
-          .catch(function () { msg.textContent = 'Checkout did not open. Refresh and try again.'; });
-      };
-      if (!VEAuth.isLoggedIn()) { VEAuth.showAuthModal('Create your account to take your seat at the table.', go2, 'signup'); return; }
-      go2();
+    // Seats (Sean, 2026-10-04): the $11 Founding Membership is the RSVP. ve-dinner-seats saves
+    // the seat for an active member; anyone else goes through checkout and the seat is saved when
+    // they come back (?activate=success). Open/closed and the room size live in ve_dinners.
+    var SEATS_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-dinner-seats';
+    var btn = $('seat-btn'), msg = $('seat-msg'), seatState = { open: false, full: false, mine: null };
+    function tok() { try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
+    function seats(action) {
+      var h = { 'Content-Type': 'application/json' }, t = tok();
+      if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(SEATS_FN, { method: 'POST', headers: h, body: JSON.stringify({ action: action, dinner: DINNER }) })
+        .then(function (r) { return r.json(); });
+    }
+    function paint() {
+      if (seatState.mine === 'confirmed') { btn.textContent = 'Your seat is saved'; btn.disabled = true; msg.textContent = 'See you on the 23rd. The venue and time come in your confirmation.'; return; }
+      if (seatState.mine === 'waitlist') { btn.textContent = 'You\u2019re on the list'; btn.disabled = true; msg.textContent = 'The room is full. You\u2019re first in line if a seat opens, and first on the list for the next dinner.'; return; }
+      btn.disabled = false;
+      btn.textContent = seatState.open && seatState.full ? 'Join the waitlist' : 'Take my seat for $11';
+    }
+    function take(tries) {
+      msg.textContent = 'Saving your seat...';
+      return seats('take').then(function (d) {
+        if (d && d.seat) { seatState.mine = d.seat; paint(); return; }
+        if (d && d.need_membership) {
+          if (tries > 0) { setTimeout(function () { take(tries - 1); }, 2500); return; } // the payment is still landing
+          msg.textContent = 'Opening secure checkout...';
+          return VEAuth.startEntryCheckout(1100).then(function (c) { if (c && c.url) { location.href = c.url; return; } msg.textContent = 'Checkout did not open. Refresh and try again.'; });
+        }
+        msg.textContent = (d && d.message) || 'Your seat did not save. Refresh and try again.';
+      }).catch(function () { msg.textContent = 'Your seat did not save. Refresh and try again.'; });
+    }
+    function withAuth(fn) {
+      if (window.VEAuth) return fn();
+      var t = 0, iv = setInterval(function () { if (window.VEAuth || ++t > 50) { clearInterval(iv); if (window.VEAuth) fn(); else location.href = '/join'; } }, 100);
+    }
+    btn.addEventListener('click', function () {
+      if (window.VE_PREVIEW || !seatState.open) { msg.textContent = 'Seats open when invitations go out. This button will take you to secure $11 checkout and save your seat.'; return; }
+      withAuth(function () {
+        if (!VEAuth.isLoggedIn()) { VEAuth.showAuthModal('Create your account to take your seat at the table.', function () { take(0); }, 'signup'); return; }
+        take(0);
+      });
     });
+    seats('status').then(function (d) {
+      if (!d || d.error) return;
+      seatState = { open: !!d.open, full: !!d.full, mine: d.mine || null }; paint();
+      var q = new URLSearchParams(location.search).get('activate');
+      if (q === 'success' && !seatState.mine && tok()) { show(5); withAuth(function () { take(6); }); }
+      if (q === 'cancelled') { show(5); msg.textContent = 'Checkout was cancelled. Your seat is not saved yet.'; }
+    }).catch(function () {});
   })();
 </script>
 </body>
