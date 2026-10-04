@@ -10,10 +10,10 @@
     { href: '/admin/depot', label: 'Library' },
     { href: '/admin/depot/onboarding', label: 'Onboarding' },
     { href: '/admin/depot/preview', label: 'Preview journeys' },
-    { href: '/admin/depot/pulse', label: 'Daily Post' },
+    { href: '/admin/depot/pulse', label: 'Pulse' },
     { href: '/admin/depot/sources', label: 'Sources' },
     { href: '/admin/depot/links', label: 'Links' },
-    { href: '/admin/depot/pulse-cities', label: 'Daily Post Cities' },
+    { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },
     { href: '/admin/depot/logos', label: 'Logos' },
     { href: '/admin/depot/community-managers', label: 'Community Managers' },
     { href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
@@ -27,7 +27,7 @@
   // Sean, 2026-09-29: a drop-down to the right of the page title instead of a row of tabs,
   // so the pages feel less busy. The current page is the selected option.
   // Sean, 2026-09-29: the drop-down sits on the far right, "Go to" on one line. Its styles are
-  // !important where a page styles every select (Daily Post sets select{width:100%}).
+  // !important where a page styles every select (Pulse sets select{width:100%}).
   var CSS = '.depot-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin-bottom:18px;}' +
     '.depot-head h1{margin-bottom:0 !important;min-width:0;}' +
     '.depot-go{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-left:auto;}' +
@@ -56,7 +56,7 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
 
-  // Inside the dashboard (Sean, 2026-09-29: the Daily Post page "gets cut off" at The piece): the
+  // Inside the dashboard (Sean, 2026-09-29: the Pulse page "gets cut off" at The piece): the
   // dashboard shows a Depot page in a fixed-height frame inside its own scrolling panel, two
   // scrolls stacked, so a tall page looked cut off at the frame's edge. The page now tells the
   // dashboard its height and the frame grows to fit, one scroll. The dashboard in turn says which
