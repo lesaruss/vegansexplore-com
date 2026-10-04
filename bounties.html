@@ -9,9 +9,11 @@
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- Bounties (Sean, 2026-10-04): content jobs paid in points, first for the two Oct 24 South
-       Florida events. Pick one, upload your files or paste links, submit; the city's Community
-       Manager or Sean reviews, and approving pays the points. Every call goes to ve-bounties. -->
+  <!-- Bounties (Sean, 2026-10-04; playbook ve-bounties-lifecycle): content jobs paid in points.
+       A Passport holder claims a spot (claims lock 48 hours before the event), gets the rundown,
+       the event details and a claimers-only Q&A, then uploads and submits before the deadline (7
+       days after the event). The city's Community Manager reviews; approving pays the points.
+       Every call goes to ve-bounties. -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-orange: #F69820; --ve-orange-ink: #8a4b00; --ve-orange-light: #fff4e5; --ve-border: rgba(0,0,0,0.12); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.78); --ve-text-60: #595959; --ve-bg: #f7f7f5; --ve-danger: #a61b1b; }
@@ -75,6 +77,26 @@
     .hint { font-weight: 400; color: var(--ve-text-60); font-size: 12px; }
     .msg { font-size: 13px; min-height: 18px; margin-top: 10px; color: var(--ve-danger); }
     .msg.ok { color: var(--ve-green-dark); }
+    .spots { font-size: 12px; font-weight: 800; color: var(--ve-text-60); }
+    .spots.low { color: var(--ve-orange-ink); }
+    .spots.full { color: var(--ve-danger); }
+    .clock { font-size: 13px; font-weight: 800; color: var(--ve-green-deep); font-variant-numeric: tabular-nums; }
+    .clock.closed { color: var(--ve-text-60); font-weight: 700; }
+    .status.claimed { background: var(--ve-green-light); color: var(--ve-green-deep); }
+    .status.no_show { background: #fde8e8; color: var(--ve-danger); }
+    .standing { margin: 18px 0 0; }
+    .fine { font-size: 12.5px; line-height: 1.55; color: var(--ve-text-60); margin-top: 10px; }
+    .claimrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+    .rd h4 { font-size: 14px; font-weight: 800; margin: 14px 0 4px; }
+    .rd ul { margin: 0 0 0 20px; font-size: 14px; line-height: 1.6; color: var(--ve-text-75); }
+    .rd p { font-size: 14px; line-height: 1.6; color: var(--ve-text-75); }
+    .rd a { color: var(--ve-green-dark); font-weight: 700; }
+    .qa { list-style: none; display: grid; gap: 8px; margin: 6px 0 10px; max-height: 360px; overflow-y: auto; }
+    .qa li { background: var(--ve-bg); border-radius: 10px; padding: 9px 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .qa li.staff { background: var(--ve-green-light); }
+    .qa .who { display: block; font-size: 11.5px; font-weight: 800; color: var(--ve-text-60); margin-bottom: 2px; white-space: normal; }
+    .check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; margin-top: 14px; }
+    .check input { width: 20px; height: 20px; margin-top: 1px; flex: 0 0 auto; }
     .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     [hidden] { display: none !important; }
     .ve-embedded .head { background: #fff; padding: 22px 0 14px; }
@@ -93,16 +115,17 @@
       <div class="wrap">
         <p class="eyebrow">Bounties</p>
         <h1>Cover your city. Earn points.</h1>
-        <p class="lede">Help tell the story of what Vegans are building here. Pick a bounty, show up, capture it, and send it in. When it is approved, the points are yours.</p>
+        <p class="lede">Help tell the story of what Vegans are building here. Claim a spot, show up, capture it, and send it in. When it is approved, the points are yours.</p>
         <div class="row">
           <label class="label" for="city">Your city</label>
           <select id="city" class="select"></select>
         </div>
+        <div id="standing" class="standing" hidden></div>
       </div>
     </header>
     <section class="wrap" aria-live="polite">
       <div id="list"></div>
-      <div class="how"><strong>How it works.</strong> Open a bounty, read what we need, and go. Upload your files here (up to 2 GB each) or paste links to Google Drive, Dropbox or YouTube, then submit. Your city's Community Manager reviews it; approved work pays the full points, and if something needs a fix you will get a note. Only share people who said yes to being filmed or quoted.</div>
+      <div class="how"><strong>How it works.</strong> Each bounty has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for Passport holders.</div>
     </section>
   </main>
 
@@ -112,9 +135,23 @@
       <span class="pts" id="d-pts"></span>
       <h2 id="d-title"></h2>
       <p class="meta" id="d-meta"></p>
+      <p class="clock" id="d-clock" aria-live="off"></p>
       <div class="brief" id="d-brief"></div>
       <div id="d-state"></div>
-      <div class="box" id="d-work">
+      <div class="box" id="d-claim" hidden></div>
+      <div class="box rd" id="d-rundown" hidden></div>
+      <div class="box rd" id="d-details" hidden></div>
+      <div class="box" id="d-qa" hidden>
+        <h3>Questions and answers</h3>
+        <p class="hint" id="qa-hint"></p>
+        <ul class="qa" id="qa-list"></ul>
+        <div id="qa-form">
+          <label class="f" for="qa-text">Ask a question <span class="hint">Everyone covering this event sees it, and your Community Manager answers.</span><textarea id="qa-text" rows="3" style="min-height:70px" maxlength="2000"></textarea></label>
+          <div style="margin-top:10px"><button type="button" class="btn btn-ghost" id="qa-send">Post</button></div>
+        </div>
+        <p class="msg" id="qa-msg" role="status" aria-live="polite"></p>
+      </div>
+      <div class="box" id="d-work" hidden>
         <h3>Your submission</h3>
         <div class="drop" id="drop">
           <p>Drag files here, or</p>
@@ -124,8 +161,13 @@
         <ul class="files" id="files"></ul>
         <label class="f" for="links">Links <span class="hint">One per line: Google Drive, Dropbox, YouTube (unlisted is fine)</span><textarea id="links" rows="3" style="min-height:80px" placeholder="https://"></textarea></label>
         <label class="f" for="note" id="note-label">A note for the reviewer <span class="hint" id="note-hint">Optional. For the write-up, paste the whole piece here.</span><textarea id="note" rows="5"></textarea></label>
+        <label class="check" for="license"><input type="checkbox" id="license"><span>This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.</span></label>
         <div style="margin-top:14px"><button type="button" class="btn btn-primary" id="submit">Submit for review</button></div>
         <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      </div>
+      <div id="d-release" hidden style="margin-top:18px">
+        <button type="button" class="linkbtn" id="release">Release my spot</button>
+        <p class="fine" id="release-note"></p>
       </div>
     </div>
   </div>
@@ -137,7 +179,8 @@
     var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
-    var state = { city: '', bounties: [], current: null, mine: null, signedIn: false, uploading: 0 };
+    var state = { city: '', bounties: [], current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
+    var HOLDS = ['claimed', 'submitted', 'changes', 'approved', 'rejected'];
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function token() { return window.VEAuth && VEAuth.getToken ? (VEAuth.getToken() || '') : ''; }
     function call(body) {
@@ -147,10 +190,17 @@
     // Times show in the city's own time zone, whatever zone the reader's device is in.
     var TZ = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles' };
     function tz() { return TZ[state.city] || 'America/New_York'; }
-    function when(iso) { return iso ? new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: tz() }) : ''; }
+    function when(iso) { return iso ? new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: tz(), timeZoneName: 'short' }) : ''; }
     function day(iso) { return iso ? new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: tz() }) : ''; }
     function size(n) { return n > 1073741824 ? (n / 1073741824).toFixed(1) + ' GB' : n > 1048576 ? Math.round(n / 1048576) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
-    var LABEL = { in_progress: 'Started', submitted: 'In review', changes: 'Needs changes', approved: 'Approved', rejected: 'Not approved' };
+    // The ticking clock: days and hours far out, minutes and seconds in the last hour.
+    function left(iso) {
+      var ms = new Date(iso).getTime() - Date.now(); if (!(ms > 0)) return '';
+      var s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+      return d ? d + 'd ' + h + 'h ' + m + 'm' : h ? h + 'h ' + m + 'm ' + (s % 60) + 's' : m + 'm ' + (s % 60) + 's';
+    }
+    var LABEL = { claimed: 'Your spot', submitted: 'In review', changes: 'Needs changes', approved: 'Approved', rejected: 'Not approved', no_show: 'Missed' };
+    var holds = function (m) { return !!m && HOLDS.indexOf(m.status) > -1; };
 
     var hubs = window.VE_HUBS || [];
     var member = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
@@ -161,13 +211,44 @@
     $('city').value = wanted; state.city = wanted;
     $('city').addEventListener('change', function () { state.city = this.value; load(); });
 
+    function renderStanding() {
+      var v = state.viewer, st = v.standing || {}, el = $('standing');
+      if (!v.signed_in || st.ok !== false) { el.hidden = true; return; }
+      el.hidden = false;
+      el.innerHTML = '<div class="note warn">' + (st.paused ? '<strong>Your bounties are paused</strong> after missed deadlines. Reply to your strike email or ask your Community Manager to restore them.' :
+        '<strong>You can claim again after ' + esc(day(st.until)) + '.</strong> A missed deadline pauses claiming for a while. You can still finish any bounty you already hold.') + '</div>';
+    }
+    function spotsHtml(b) {
+      if (b.slots == null) return '';
+      var n = b.spots_left;
+      return '<span class="spots' + (n === 0 ? ' full' : n <= 2 ? ' low' : '') + '">' + (n === 0 ? 'All ' + b.slots + ' spots taken' : n + ' of ' + b.slots + (b.slots === 1 ? ' spot' : ' spots') + ' left') + '</span>';
+    }
+    function clockText(b, m) {
+      if (holds(m) && (m.status === 'claimed' || m.status === 'submitted')) { var t = left(b.due_at); return t ? 'Your submission is due in ' + t : 'Deadline passed'; }
+      if (m && m.status === 'changes' && m.changes_due_at) { var c = left(m.changes_due_at); return c ? 'Send your changes within ' + c : ''; }
+      if (holds(m) || (m && m.status === 'no_show')) return '';
+      var k = b.claims_close_at && b.claims_open ? left(b.claims_close_at) : '';
+      return k ? 'Claims close in ' + k : 'Claims closed';
+    }
+    function tick() {
+      Array.prototype.forEach.call(document.querySelectorAll('[data-clock]'), function (el) {
+        var b = state.bounties.filter(function (x) { return x.id === el.getAttribute('data-clock'); })[0]; if (!b) return;
+        var t = clockText(b, b.mine); el.textContent = t; el.className = 'clock' + (/^(Claims closed|Deadline passed)$/.test(t) ? ' closed' : '');
+      });
+      if (state.current && $('detail').classList.contains('open')) {
+        var t = clockText(state.current, state.mine); $('d-clock').textContent = t; $('d-clock').className = 'clock' + (/^(Claims closed|Deadline passed)$/.test(t) ? ' closed' : '');
+      }
+    }
+    setInterval(tick, 1000);
+
     function load() {
       $('list').innerHTML = '<p class="meta" style="margin:24px 0">Loading bounties&hellip;</p>';
       return call({ action: 'list', community: state.city }).then(function (d) {
-        state.bounties = d.bounties || []; state.signedIn = !!(d.viewer && d.viewer.signed_in);
+        state.bounties = d.bounties || []; state.viewer = d.viewer || { signed_in: false };
+        renderStanding();
         if (!state.bounties.length) { $('list').innerHTML = '<div class="empty"><strong>No open bounties here yet.</strong>New ones go up with big events in your city. Check the Daily Pulse for what is coming.</div>'; return; }
         var groups = [], seen = {};
-        state.bounties.forEach(function (b) { var k = b.event_id || 'other'; if (!seen[k]) { seen[k] = { event: b.event, title: b.event_title, items: [] }; groups.push(seen[k]); } seen[k].items.push(b); });
+        state.bounties.forEach(function (b) { var k = b.event_id || b.event_title || 'other'; if (!seen[k]) { seen[k] = { event: b.event, title: b.event_title, items: [] }; groups.push(seen[k]); } seen[k].items.push(b); });
         $('list').innerHTML = groups.map(function (g) {
           var e = g.event, total = g.items.reduce(function (n, b) { return n + b.points; }, 0);
           return '<div class="event"><h2>' + esc(e ? e.title : (g.title || 'More bounties')) + '</h2>' +
@@ -176,20 +257,23 @@
             '<div class="grid">' + g.items.map(function (b) {
               return '<button type="button" class="bcard" data-id="' + b.id + '"><span class="pts">' + b.points.toLocaleString() + ' points</span>' +
                 '<span class="btitle">' + esc(b.title.replace(/^[^:]+:\s*/, '')) + '</span><span class="bdeliv">' + esc(b.deliverable) + '</span>' +
-                (b.mine ? '<span class="status ' + b.mine.status + '">' + esc(LABEL[b.mine.status] || b.mine.status) + '</span>' : '<span class="meta">Due ' + esc(day(b.due_at)) + '</span>') + '</button>';
+                (b.mine && b.mine.status !== 'released' ? '<span class="status ' + b.mine.status + '">' + esc(LABEL[b.mine.status] || b.mine.status) + '</span>' : spotsHtml(b)) +
+                '<span class="clock" data-clock="' + b.id + '"></span></button>';
             }).join('') + '</div>';
         }).join('');
+        tick();
       }).catch(function () { $('list').innerHTML = '<div class="empty"><strong>Bounties could not load.</strong>Please refresh the page.</div>'; });
     }
     $('list').addEventListener('click', function (e) { var c = e.target.closest('.bcard'); if (c) open(c.getAttribute('data-id')); });
 
     // ---- Detail -------------------------------------------------------------------------
     function open(id) {
-      call({ action: 'get', id: id }).then(function (d) {
+      return call({ action: 'get', id: id }).then(function (d) {
         if (!d.bounty) return;
-        state.current = d.bounty; state.mine = d.mine; state.signedIn = !!(d.viewer && d.viewer.signed_in);
+        state.current = d.bounty; state.mine = d.mine; state.viewer = d.viewer || state.viewer;
+        state.rundown = d.rundown; state.details = d.details; state.thread = d.thread;
         var u = new URL(location.href); u.searchParams.set('id', id); history.replaceState(null, '', u.pathname + u.search);
-        render(); $('detail').classList.add('open'); document.body.style.overflow = 'hidden';
+        $('detail').classList.add('open'); render(); document.body.style.overflow = 'hidden';
       });
     }
     function close() {
@@ -201,41 +285,123 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('detail').classList.contains('open')) close(); });
 
     function render() {
-      var b = state.current, m = state.mine, e = b.event;
+      var b = state.current, m = state.mine, e = b.event, mine = holds(m);
       $('d-pts').textContent = b.points.toLocaleString() + ' points';
       $('d-title').textContent = b.title;
       $('d-meta').innerHTML = (e ? esc(e.title) + ' &middot; ' + esc(when(e.starts_at)) + (e.location_name ? ' &middot; ' + esc(e.location_name) : '') + '<br>' : '') +
-        '<strong>Deliver:</strong> ' + esc(b.deliverable) + '<br><strong>Due:</strong> ' + esc(day(b.due_at)) +
+        '<strong>Deliver:</strong> ' + esc(b.deliverable) + '<br><strong>Due:</strong> ' + esc(when(b.due_at)) +
+        (b.claims_close_at ? '<br><strong>Claims close:</strong> ' + esc(when(b.claims_close_at)) : '') +
+        (b.slots != null && !mine ? '<br>' + spotsHtml(b) : '') +
         (b.example_url ? '<br><a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">See an example</a>' : '');
       $('d-brief').textContent = b.brief;
+      tick();
+
       var st = '';
       if (m && m.status === 'approved') st = '<div class="note ok"><strong>Approved.</strong> ' + (m.points_awarded || b.points).toLocaleString() + ' points are in your account. Thank you.' + (m.review_note ? '<br>' + esc(m.review_note) : '') + '</div>';
-      else if (m && m.status === 'submitted') st = '<div class="note info"><strong>In review.</strong> You can still add files or update it below.</div>';
-      else if (m && (m.status === 'changes' || m.status === 'rejected')) st = '<div class="note warn"><strong>' + (m.status === 'changes' ? 'A few changes needed.' : 'Not approved.') + '</strong>' + (m.review_note ? ' ' + esc(m.review_note) : '') + '</div>';
-      if (!b.accepting && !(m && m.status === 'approved')) st += '<div class="note warn">This bounty is closed.</div>';
+      else if (m && m.status === 'submitted') st = '<div class="note info"><strong>In review.</strong> ' + (m.auto_submitted ? 'The deadline passed with your files uploaded, so we sent them in for you. ' : 'You can still add files or update it below until the deadline.') + '</div>';
+      else if (m && m.status === 'changes') st = '<div class="note warn"><strong>A few changes needed.</strong>' + (m.review_note ? ' ' + esc(m.review_note) : '') + (m.changes_due_at ? '<br>Send your update by ' + esc(when(m.changes_due_at)) + '.' : '') + '</div>';
+      else if (m && m.status === 'rejected') st = '<div class="note warn"><strong>Not approved.</strong>' + (m.review_note ? ' ' + esc(m.review_note) : '') + '</div>';
+      else if (m && m.status === 'no_show') st = '<div class="note warn"><strong>Missed deadline.</strong> This spot counted as a no-show. If something happened, reply to the email we sent you.</div>';
+      if (m && m.coaching_note && (m.status === 'approved' || m.status === 'rejected' || m.status === 'changes')) st += '<div class="note info"><strong>For next time:</strong> ' + esc(m.coaching_note) + '</div>';
+      if (b.status === 'canceled') st += '<div class="note warn">This event was canceled, so the bounty is closed. Nothing counts against you.</div>';
       $('d-state').innerHTML = st;
-      var canWork = b.accepting && !(m && m.status === 'approved');
-      $('d-work').hidden = !canWork;
-      if (!canWork) return;
-      $('links').value = m && m.links ? m.links.join('\n') : '';
-      $('note').value = m && m.note ? m.note : '';
+
+      renderClaim(); renderRundown(); renderThread();
+      $('d-work').hidden = !(mine && b.work_open);
+      $('d-release').hidden = !(m && m.status === 'claimed');
+      if (m && m.status === 'claimed') {
+        $('release-note').textContent = b.claims_open ? 'Releasing before claims close is free, and the spot goes back to everyone.' : 'Claims have closed, so releasing now counts as half a strike. It is still better than a missed deadline.';
+      }
+      if ($('d-work').hidden) return;
+      $('links').value = m.links ? m.links.join('\n') : '';
+      $('note').value = m.note || '';
+      $('license').checked = false;
       var writeup = b.kind === 'writeup';
       $('note-hint').textContent = writeup ? 'Paste your whole write-up here, or upload it as a document.' : 'Optional: anything the reviewer should know.';
       $('note').rows = writeup ? 14 : 4;
-      $('submit').textContent = m && m.status === 'submitted' ? 'Update my submission' : 'Submit for review';
+      $('submit').textContent = m.status === 'submitted' ? 'Update my submission' : m.status === 'changes' ? 'Send my changes' : 'Submit for review';
       $('msg').textContent = '';
       renderFiles();
-      if (!state.signedIn) {
-        $('msg').className = 'msg'; $('msg').innerHTML = 'Sign in to take on this bounty. <button type="button" class="linkbtn" id="signin">Sign in or join</button>';
-      }
     }
+
+    function renderClaim() {
+      var b = state.current, m = state.mine, v = state.viewer, el = $('d-claim');
+      if (holds(m) || (m && m.status === 'no_show') || b.status === 'canceled') { el.hidden = true; return; }
+      el.hidden = false;
+      var fine = '<p class="fine">Claiming a spot holds it for you and takes it from someone else. If you can\'t make it, release your spot before claims close. Missing a deadline without releasing your spot pauses your ability to claim future bounties.</p>';
+      var body;
+      if (!b.claims_open) body = '<p>Claims for this bounty are closed.</p>';
+      else if (b.spots_left === 0) body = '<p>Every spot is taken. Spots reopen if someone releases theirs before claims close, so check back.</p>';
+      else if (!v.signed_in) body = '<p>Sign in to claim a spot.</p><div class="claimrow"><button type="button" class="btn btn-primary" data-act="signin">Sign in or join</button></div>' + fine;
+      else if (!v.passport) body = '<p>Bounties are for Passport holders.</p><div class="claimrow"><a class="btn btn-primary" href="/passport">Get your Passport</a></div>';
+      else if (v.standing && v.standing.ok === false) body = '<p>' + (v.standing.paused ? 'Your bounties are paused after missed deadlines.' : 'You can claim again after ' + esc(day(v.standing.until)) + '.') + '</p>';
+      else body = '<div class="claimrow"><button type="button" class="btn btn-primary" data-act="claim">Claim a spot</button>' + spotsHtml(b) + '</div>' + fine;
+      el.innerHTML = '<h3>Take this on</h3>' + body + '<p class="msg" id="claim-msg" role="status" aria-live="polite"></p>';
+    }
+    $('d-claim').addEventListener('click', function (e) {
+      var act = e.target.getAttribute('data-act'); if (!act) return;
+      if (act === 'signin') { if (window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to claim bounties.', function () { location.reload(); }); return; }
+      e.target.disabled = true; $('claim-msg').className = 'msg ok'; $('claim-msg').textContent = 'Claiming your spot...';
+      call({ action: 'claim', bounty_id: state.current.id }).then(function (d) {
+        if (d.error) { e.target.disabled = false; $('claim-msg').className = 'msg'; $('claim-msg').textContent = d.message || 'That did not go through.'; return; }
+        open(state.current.id).then(function () { var r = $('d-rundown'); if (r && !r.hidden) r.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      });
+    });
+
+    function renderRundown() {
+      var r = state.rundown, det = state.details, b = state.current;
+      if (!r) { $('d-rundown').hidden = true; } else {
+        $('d-rundown').hidden = false;
+        $('d-rundown').innerHTML = '<h3>Your rundown</h3>' + (r.intro ? '<p>' + esc(r.intro) + '</p>' : '') +
+          (r.sections || []).map(function (s) { return '<h4>' + esc(s.heading) + '</h4><ul>' + (s.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>'; }).join('') +
+          ((r.links || []).length || b.example_url ? '<h4>Study these</h4><ul>' + (b.example_url ? '<li><a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">An example of what we are looking for</a></li>' : '') +
+            (r.links || []).map(function (l) { return '<li><a href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer">' + esc(l.label || l.url) + '</a></li>'; }).join('') + '</ul>' : '');
+      }
+      if (!det) { $('d-details').hidden = true; return; }
+      var e = b.event;
+      $('d-details').hidden = false;
+      $('d-details').innerHTML = '<h3>Event details</h3>' +
+        (e ? '<p><strong>' + esc(e.title) + '</strong><br>' + esc(when(e.starts_at)) + (e.ends_at ? ' to ' + esc(new Date(e.ends_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz() })) : '') + '</p>' : '') +
+        (det.address ? '<p>' + esc(det.address) + ' &middot; <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(det.address) + '" target="_blank" rel="noopener noreferrer">Map</a></p>' : '') +
+        (e && e.ticket_url ? '<p><a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener noreferrer">Event page and tickets</a></p>' : '') +
+        (det.notes ? '<p style="white-space:pre-wrap">' + esc(det.notes) + '</p>' : '<p class="hint">Your Community Manager adds parking, who to ask for and set times here. Ask below if you need something sooner.</p>');
+    }
+
+    function renderThread() {
+      var t = state.thread;
+      if (!t) { $('d-qa').hidden = true; return; }
+      $('d-qa').hidden = false;
+      $('qa-hint').textContent = t.open ? 'For everyone covering this event. Questions close when the event starts.' : 'Questions closed when the event started.';
+      $('qa-list').innerHTML = t.messages.length ? t.messages.map(function (m) {
+        return '<li class="' + (m.staff ? 'staff' : '') + '"><span class="who">' + esc(m.name) + (m.staff ? ' &middot; Community Manager' : '') + ' &middot; ' + esc(when(m.at)) + '</span>' + esc(m.body) + '</li>';
+      }).join('') : '<li class="hint" style="background:none;padding:2px 0">No questions yet.</li>';
+      $('qa-form').hidden = !t.open; $('qa-msg').textContent = '';
+    }
+    $('qa-send').addEventListener('click', function () {
+      var text = $('qa-text').value.trim(); if (!text) return;
+      $('qa-send').disabled = true;
+      call({ action: 'ask', bounty_id: state.current.id, body: text }).then(function (d) {
+        $('qa-send').disabled = false;
+        if (d.error) { $('qa-msg').className = 'msg'; $('qa-msg').textContent = d.message || 'That did not go through.'; return; }
+        $('qa-text').value = ''; state.thread = { messages: d.messages, open: d.open }; renderThread();
+      });
+    });
+
+    $('release').addEventListener('click', function () {
+      var b = state.current;
+      if (!confirm(b.claims_open ? 'Release your spot? It goes back to everyone.' : 'Claims have closed, so releasing now counts as half a strike. Release your spot?')) return;
+      call({ action: 'release', bounty_id: b.id }).then(function (d) {
+        if (d.error) { alert(d.message || 'That did not go through.'); return; }
+        open(b.id);
+      });
+    });
+
     function renderFiles() {
       var files = (state.mine && state.mine.files) || [];
       $('files').innerHTML = files.map(function (f) {
         return '<li><span>' + esc(f.name) + ' <span class="hint">' + size(f.size || 0) + '</span></span><button type="button" class="linkbtn" data-remove="' + esc(f.path) + '">Remove</button></li>';
       }).join('') + (files.length ? '<li style="background:none;padding:2px 0" class="hint">' + files.length + (files.length === 1 ? ' file' : ' files') + ' uploaded</li>' : '');
     }
-    $('msg').addEventListener('click', function (e) { if (e.target.id === 'signin' && window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to take on bounties.', function () { location.reload(); }); });
     $('files').addEventListener('click', function (e) {
       var p = e.target.getAttribute('data-remove'); if (!p) return;
       call({ action: 'file_remove', bounty_id: state.current.id, path: p }).then(function () {
@@ -244,11 +410,6 @@
     });
 
     // ---- Uploads: one file at a time, each to its own signed link ------------------------
-    function needSignIn() {
-      if (state.signedIn && token()) return false;
-      if (window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to take on bounties.', function () { location.reload(); });
-      return true;
-    }
     function uploadOne(file) {
       var li = document.createElement('li');
       li.innerHTML = '<span style="flex:1">' + esc(file.name) + ' <span class="hint">' + size(file.size) + '</span><span class="bar"><i></i></span></span>';
@@ -268,14 +429,12 @@
       }).then(function (path) {
         return call({ action: 'file_added', bounty_id: state.current.id, path: path, name: file.name, size: file.size, type: file.type }).then(function () {
           li.remove();
-          state.mine = state.mine || { status: 'in_progress', files: [], links: [] };
           state.mine.files = (state.mine.files || []).concat([{ path: path, name: file.name, size: file.size, type: file.type }]);
           renderFiles();
         });
       }).catch(function (err) { li.innerHTML = '<span>' + esc(file.name) + '</span><span style="color:var(--ve-danger)">' + esc(err.message) + '</span>'; });
     }
     function uploadAll(list) {
-      if (needSignIn()) return;
       var files = Array.prototype.slice.call(list || []); if (!files.length) return;
       state.uploading += files.length; $('submit').disabled = true;
       $('msg').className = 'msg ok'; $('msg').textContent = 'Uploading ' + files.length + (files.length === 1 ? ' file' : ' files') + '. Keep this page open until it finishes.';
@@ -289,10 +448,10 @@
     drop.addEventListener('drop', function (e) { uploadAll(e.dataTransfer.files); });
 
     $('submit').addEventListener('click', function () {
-      if (needSignIn()) return;
+      if (!$('license').checked) { $('msg').className = 'msg'; $('msg').textContent = 'Tick the box to confirm this is your own work and Vegans Explore may use it.'; $('license').focus(); return; }
       var links = $('links').value.split(/\s+/).map(function (s) { return s.trim(); }).filter(function (s) { return /^https?:\/\//i.test(s); });
       $('submit').disabled = true; $('msg').className = 'msg ok'; $('msg').textContent = 'Sending it in...';
-      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value }).then(function (d) {
+      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value, license: true }).then(function (d) {
         $('submit').disabled = false;
         if (d.error) { $('msg').className = 'msg'; $('msg').textContent = d.message || 'That did not go through. Please try again.'; return; }
         open(state.current.id);

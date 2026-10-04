@@ -3567,21 +3567,26 @@
     try { var tok = VEAuth.getToken(); if (tok) h.Authorization = 'Bearer ' + tok; } catch (e) {}
     fetch(SUPABASE_URL + '/functions/v1/ve-bounties', { method: 'POST', headers: h, body: JSON.stringify({ action: 'list', community: city }) })
       .then(function (r) { return r.json(); }).then(function (d) {
-        var list = (d.bounties || []).filter(function (b) { return b.accepting || b.mine; });
+        // Open to claim, or a spot this member holds (Bounty Lifecycle, 2026-10-04).
+        var list = (d.bounties || []).filter(function (b) { return (b.claims_open && b.spots_left !== 0) || (b.mine && b.mine.status !== 'released'); });
         var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
-        var STATUS = { in_progress: 'Started', submitted: 'In review', changes: 'Needs changes', approved: 'Paid', rejected: 'Not approved' };
+        var STATUS = { claimed: 'Your spot', submitted: 'In review', changes: 'Needs changes', approved: 'Paid', rejected: 'Not approved', no_show: 'Missed' };
         if (!list.length) {
           scroll.innerHTML = '<div class="dash-tile" style="cursor:default;" data-topic="all"><div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#127942;</div>' +
             '<div class="dash-tile-body"><div class="dash-tile-title">Bounties</div><div class="dash-tile-desc">No open bounties in ' + esc(VE_CITY_NAMES[city] || 'your city') + ' yet. New ones go up with big events.</div></div></div>';
           return;
         }
         scroll.innerHTML = list.map(function (b) {
-          var due = b.due_at ? new Date(b.due_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: city === 'london' ? 'Europe/London' : city === 'los-angeles' ? 'America/Los_Angeles' : 'America/New_York' }) : '';
+          var zone = city === 'london' ? 'Europe/London' : city === 'los-angeles' ? 'America/Los_Angeles' : 'America/New_York';
+          var held = b.mine && b.mine.status !== 'released';
+          var at = held ? b.due_at : b.claims_close_at;
+          var due = at ? new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: zone }) : '';
+          var spots = !held && b.spots_left != null ? b.spots_left + (b.spots_left === 1 ? ' spot' : ' spots') + ' left. ' : '';
           return '<a class="dash-tile" data-topic="content" data-frame-label="Bounties" href="/bounties?community=' + encodeURIComponent(city) + '&id=' + encodeURIComponent(b.id) + '">' +
             '<div class="dash-thumb" style="background:linear-gradient(135deg,#F69820,#e07b00);">&#127942;</div>' +
             '<div class="dash-tile-body"><div class="dash-tile-title">' + esc(b.title) + ' <span class="dash-tag live">' + b.points.toLocaleString() + ' pts</span>' +
             (b.mine ? ' <span class="dash-tag">' + esc(STATUS[b.mine.status] || b.mine.status) + '</span>' : '') + '</div>' +
-            '<div class="dash-tile-desc">' + esc(b.deliverable) + (due ? '. Due ' + esc(due) + '.' : '') + '</div></div></a>';
+            '<div class="dash-tile-desc">' + esc(spots) + (due ? (held ? 'Due ' : 'Claim by ') + esc(due) + '. ' : '') + esc(b.deliverable) + '</div></div></a>';
         }).join('');
       }).catch(function () {});
   }

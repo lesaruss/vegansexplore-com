@@ -35,7 +35,11 @@
     .pill{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:99px;margin-right:6px;}
     .p-submitted{background:#fff4e2;color:#6b3f00;}
     .p-approved{background:var(--ve-green-light);color:var(--ve-green-deep);}
-    .p-changes,.p-rejected{background:#fbeeec;color:#8a1c12;}
+    .p-changes,.p-rejected,.p-no_show{background:#fbeeec;color:#8a1c12;}
+    .p-claimed{background:#eef3fb;color:#1d4f8a;}
+    details.sub-card summary{list-style:none;}
+    details.sub-card summary::-webkit-details-marker{display:none;}
+    .acts input[type=datetime-local]{flex:0 0 auto;margin-left:6px;}
     .files{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin:10px 0;}
     .files a{display:block;font-size:13px;background:#f7f8f7;border-radius:8px;padding:8px 10px;color:var(--ve-green-deep);font-weight:700;overflow-wrap:anywhere;}
     .note{font-size:14px;white-space:pre-wrap;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin-top:8px;max-height:22em;overflow:auto;}
@@ -63,21 +67,29 @@
     <p class="eyebrow">The Depot</p>
     <h1>Bounties</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Work members send in for bounties (Sean, 2026-10-04). Open each file or link, then <b>Approve</b> to pay the points, ask for <b>Changes</b> with a note, or <b>Decline</b>. The member gets an email either way. Members see the bounties at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>.</p>
+    <p class="sub">Claims, questions and work for bounties (playbook: Bounty Lifecycle). Review within 5 days: <b>Approve</b> at full points or fewer (say why), ask for <b>Changes</b> (2 rounds, 72 hours each), or <b>Decline</b>. A coaching note is optional and goes to the member either way. Members see the bounties at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>.</p>
     <div id="bq-gate" class="gate" hidden></div>
     <div id="bq-app" hidden>
       <section class="panel">
         <div class="filters" id="filters" role="group" aria-label="Show">
           <button type="button" data-s="submitted" aria-pressed="true">To review <span data-c="submitted"></span></button>
           <button type="button" data-s="changes" aria-pressed="false">Changes asked <span data-c="changes"></span></button>
+          <button type="button" data-s="claimed" aria-pressed="false">Claimed, not in yet <span data-c="claimed"></span></button>
           <button type="button" data-s="approved" aria-pressed="false">Approved <span data-c="approved"></span></button>
           <button type="button" data-s="rejected" aria-pressed="false">Declined <span data-c="rejected"></span></button>
+          <button type="button" data-s="no_show" aria-pressed="false">Missed <span data-c="no_show"></span></button>
         </div>
         <div id="subs"><p class="empty">Loading...</p></div>
       </section>
       <section class="panel">
-        <h2>Open bounties</h2>
-        <div class="blist" id="blist"></div>
+        <h2>Events</h2>
+        <p class="meta" style="margin-bottom:10px">Who holds each spot, the claimers' questions, and the details only claimers see. Move or cancel an event here and every claimer is emailed.</p>
+        <div id="events"></div>
+      </section>
+      <section class="panel">
+        <h2>Strikes</h2>
+        <p class="meta" style="margin-bottom:10px">1 strike: 30 days without claiming. 2 in 6 months: 90 days. 3, or a violation: paused until cleared. A release after claims close is half a strike. Clear one when a member explains what happened.</p>
+        <div id="strikes"></div>
       </section>
     </div>
   </div>
@@ -87,51 +99,134 @@
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
       var $ = function (id) { return document.getElementById(id); };
-      var status = 'submitted';
+      var status = 'submitted', data = null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
-      function day(iso) { return iso ? new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }) + ' ET' : ''; }
+      var TZ = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles' };
+      function day(iso, city) { return iso ? new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ[city] || 'America/New_York', timeZoneName: 'short' }) : ''; }
       function size(n) { return n > 1073741824 ? (n / 1073741824).toFixed(1) + ' GB' : n > 1048576 ? Math.round(n / 1048576) + ' MB' : Math.max(1, Math.round((n || 0) / 1024)) + ' KB'; }
-      var LABEL = { submitted: 'To review', changes: 'Changes asked', approved: 'Approved', rejected: 'Declined' };
+      function local(iso) { if (!iso) return ''; var d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); }
+      var LABEL = { submitted: 'To review', changes: 'Changes asked', approved: 'Approved', rejected: 'Declined', claimed: 'Claimed', no_show: 'Missed', released: 'Released' };
+      var REASON = { no_show: 'No-show', late_release: 'Released after claims closed', violation: 'Violation' };
 
       function load() {
         $('subs').innerHTML = '<p class="empty">Loading...</p>';
-        api({ action: 'review_list', status: status }).then(function (d) {
+        return api({ action: 'review_list', status: status }).then(function (d) {
           if (!d.submissions) throw new Error(d.error);
+          data = d;
           Array.prototype.forEach.call(document.querySelectorAll('[data-c]'), function (el) { var n = (d.counts || {})[el.getAttribute('data-c')]; el.textContent = n ? '(' + n + ')' : ''; });
-          $('blist').innerHTML = (d.bounties || []).map(function (b) {
-            return '<div><b>' + esc(b.title) + '</b>' + b.points.toLocaleString() + ' points &middot; due ' + esc(day(b.due_at)) + (b.status !== 'open' ? ' &middot; ' + esc(b.status) : '') + '</div>';
-          }).join('') || '<p class="empty">No bounties yet.</p>';
           $('subs').innerHTML = d.submissions.length ? d.submissions.map(card).join('') : '<p class="empty">Nothing ' + esc((LABEL[status] || '').toLowerCase()) + ' right now.</p>';
-        }).catch(function () { $('subs').innerHTML = '<p class="empty">Submissions did not load. Refresh to try again.</p>'; });
+          $('events').innerHTML = (d.events || []).map(eventCard).join('') || '<p class="empty">No bounties yet.</p>';
+          $('strikes').innerHTML = (d.strikes || []).length ? d.strikes.map(function (s) {
+            return '<div class="sub-card" data-strike="' + s.id + '"><b>' + esc(s.member) + '</b> &middot; ' + esc(REASON[s.reason] || s.reason) + ' (' + s.weight + ') &middot; <span class="meta">' + esc(day(s.created_at)) + '</span>' +
+              '<div class="acts"><input type="text" maxlength="1000" placeholder="Why it is cleared (optional)" aria-label="Why it is cleared"><button type="button" class="btn btn-ghost" data-clear="' + s.id + '">Clear strike</button></div></div>';
+          }).join('') : '<p class="empty">No open strikes.</p>';
+        }).catch(function () { $('subs').innerHTML = '<p class="empty">Bounties did not load. Refresh to try again.</p>'; });
       }
+
       function card(s) {
-        var b = s.bounty || {}, m = s.member || {};
-        return '<div class="sub-card" data-id="' + s.id + '">' +
-          '<span class="pill p-' + s.status + '">' + esc(LABEL[s.status] || s.status) + '</span><span class="meta">' + esc(day(s.submitted_at)) + '</span>' +
+        var b = s.bounty || {}, m = s.member || {}, h = s.history || { coaching: [], strikes: [] };
+        var reviewable = s.status === 'submitted' || s.status === 'changes';
+        var hist = (h.coaching.length ? '<p class="meta" style="margin-top:8px"><b>Earlier coaching:</b> ' + h.coaching.map(function (c) { return esc(c.note) + ' <i>(' + esc(c.bounty) + ')</i>'; }).join(' &middot; ') + '</p>' : '') +
+          (h.strikes.length ? '<p class="meta"><b>Strikes:</b> ' + h.strikes.map(function (x) { return esc(REASON[x.reason] || x.reason) + (x.cleared_at ? ' (cleared)' : ''); }).join(', ') + '</p>' : '');
+        return '<div class="sub-card" data-id="' + s.id + '" data-points="' + (b.points || 0) + '">' +
+          '<span class="pill p-' + s.status + '">' + esc(LABEL[s.status] || s.status) + '</span>' +
+          (s.overdue ? '<span class="pill p-rejected">Waiting ' + s.waited_days + ' days</span>' : '') +
+          (s.auto_submitted ? '<span class="pill p-submitted">Sent in at the deadline</span>' : '') +
+          '<span class="meta">' + esc(s.submitted_at ? 'Submitted ' + day(s.submitted_at) : 'Claimed ' + day(s.claimed_at)) + (s.revisions ? ' &middot; changes asked ' + s.revisions + ' of 2' : '') + '</span>' +
           '<h3>' + esc(b.title || 'Bounty') + ' &middot; ' + (b.points || 0).toLocaleString() + ' points</h3>' +
           '<p class="meta">' + esc(m.name || 'Member') + (m.email ? ' &middot; ' + esc(m.email) : '') + '</p>' +
           (s.files.length ? '<ul class="files">' + s.files.map(function (f) { return '<li><a href="' + esc(f.url || '#') + '" target="_blank" rel="noopener">' + esc(f.name) + ' (' + size(f.size) + ')</a></li>'; }).join('') + '</ul><p class="meta">' + s.files.length + (s.files.length === 1 ? ' file' : ' files') + '. Download links last one hour; refresh for new ones.</p>' : '') +
           (s.links && s.links.length ? '<div class="links" style="margin-top:8px">' + s.links.map(function (l) { return '<a href="' + esc(l) + '" target="_blank" rel="noopener noreferrer">' + esc(l) + '</a>'; }).join('') + '</div>' : '') +
           (s.note ? '<div class="note">' + esc(s.note) + '</div><p class="meta">' + s.note.trim().split(/\s+/).length.toLocaleString() + ' words</p>' : '') +
           (s.review_note ? '<p class="meta" style="margin-top:8px"><b>Your note:</b> ' + esc(s.review_note) + '</p>' : '') +
-          (s.status === 'approved' ? '<p class="meta" style="margin-top:8px"><b>Paid ' + (s.points_awarded || 0).toLocaleString() + ' points.</b></p>' :
-            '<div class="acts"><input type="text" maxlength="2000" placeholder="Note to the member (needed for Changes)" aria-label="Note to the member">' +
-            '<button type="button" class="btn" data-d="approve">Approve and pay</button><button type="button" class="btn btn-ghost" data-d="changes">Ask for changes</button><button type="button" class="btn btn-no" data-d="reject">Decline</button></div><p class="msg" role="status"></p>') +
+          (s.coaching_note ? '<p class="meta"><b>Coaching:</b> ' + esc(s.coaching_note) + '</p>' : '') +
+          hist +
+          (s.status === 'approved' ? '<p class="meta" style="margin-top:8px"><b>Paid ' + (s.points_awarded || 0).toLocaleString() + ' points.</b></p>' : '') +
+          (reviewable ?
+            '<div class="acts"><input type="text" data-f="note" maxlength="2000" placeholder="Note to the member (needed for changes or fewer points)" aria-label="Note to the member"></div>' +
+            '<div class="acts"><input type="text" data-f="coaching" maxlength="2000" placeholder="Coaching for next time (optional)" aria-label="Coaching for next time"></div>' +
+            '<div class="acts"><label class="meta" style="display:flex;align-items:center;gap:8px">Points <input type="number" data-f="points" min="1" max="' + (b.points || 0) + '" value="' + (b.points || 0) + '" style="flex:0 0 110px" aria-label="Points to pay"></label>' +
+            '<button type="button" class="btn" data-d="approve">Approve and pay</button>' +
+            '<button type="button" class="btn btn-ghost" data-d="changes"' + (s.revisions >= 2 ? ' disabled title="Both rounds of changes are used"' : '') + '>Ask for changes</button>' +
+            '<button type="button" class="btn btn-no" data-d="reject">Decline</button>' +
+            '<button type="button" class="btn btn-no" data-d="violation" title="Recycled footage or someone else\'s work. Pauses their bounties.">Violation</button></div><p class="msg" role="status"></p>' : '') +
           '</div>';
       }
       $('subs').addEventListener('click', function (e) {
         var d = e.target.getAttribute('data-d'); if (!d) return;
-        var c = e.target.closest('.sub-card'), note = c.querySelector('input').value.trim(), msg = c.querySelector('.msg');
-        if (d === 'changes' && !note) { msg.className = 'msg err'; msg.textContent = 'Say what needs to change.'; return; }
+        var c = e.target.closest('.sub-card'), msg = c.querySelector('.msg');
+        var f = function (k) { var el = c.querySelector('[data-f="' + k + '"]'); return el ? el.value.trim() : ''; };
+        var note = f('note'), points = Number(f('points')), full = Number(c.getAttribute('data-points'));
+        if ((d === 'changes' || d === 'violation') && !note) { msg.className = 'msg err'; msg.textContent = d === 'changes' ? 'Say what needs to change.' : 'Say what was wrong.'; return; }
+        if (d === 'approve' && points < full && !note) { msg.className = 'msg err'; msg.textContent = 'Say why it is paying fewer points.'; return; }
         if (d === 'reject' && !confirm('Decline this submission? The member gets an email.')) return;
+        if (d === 'violation' && !confirm('Mark this as a violation? It declines the work and pauses the member\'s bounties until someone clears the strike.')) return;
         Array.prototype.forEach.call(c.querySelectorAll('button'), function (b) { b.disabled = true; });
         msg.className = 'msg'; msg.textContent = d === 'approve' ? 'Paying the points...' : 'Saving...';
-        api({ action: 'review', id: c.getAttribute('data-id'), decision: d, note: note }).then(function (r) {
+        api({ action: 'review', id: c.getAttribute('data-id'), decision: d, note: note, coaching: f('coaching'), points: d === 'approve' ? points : undefined }).then(function (r) {
           if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; Array.prototype.forEach.call(c.querySelectorAll('button'), function (b) { b.disabled = false; }); return; }
           msg.textContent = d === 'approve' ? 'Approved. ' + (r.points || '') + ' points paid.' : 'Done. The member has been emailed.';
           setTimeout(load, 900);
         });
+      });
+
+      function eventCard(e) {
+        var c = e.community;
+        return '<details class="sub-card" data-event="' + esc(e.bounty_id) + '"><summary style="cursor:pointer"><b>' + esc(e.title) + '</b> &middot; <span class="meta">' + esc(day(e.starts_at, c)) + '</span>' +
+          (e.status === 'canceled' ? ' <span class="pill p-rejected">Canceled</span>' : '') +
+          (e.unanswered ? ' <span class="pill p-submitted">' + e.unanswered + ' to answer</span>' : '') + '</summary>' +
+          '<p class="meta" style="margin-top:8px">Claims close ' + esc(day(e.claims_close_at, c)) + ' &middot; due ' + esc(day(e.due_at, c)) + (e.address ? ' &middot; ' + esc(e.address) : '') + '</p>' +
+          '<div class="blist" style="margin-top:10px">' + e.bounties.map(function (b) {
+            return '<div><b>' + esc(b.title.replace(/^[^:]+:\s*/, '')) + '</b>' + b.points.toLocaleString() + ' points &middot; ' + b.holders.length + (b.slots != null ? ' of ' + b.slots : '') + ' spots taken' +
+              (b.holders.length ? '<br>' + b.holders.map(function (h) { return esc(h.name) + ' <span class="meta">(' + esc(LABEL[h.status] || h.status) + ')</span>'; }).join('<br>') : '') + '</div>';
+          }).join('') + '</div>' +
+          '<h2 style="margin-top:16px">Questions</h2><ul class="qa-list" data-qa style="list-style:none;display:grid;gap:6px"><li class="empty">Open to load.</li></ul>' +
+          '<div class="acts"><input type="text" data-f="answer" maxlength="2000" placeholder="Answer, or post an update to everyone covering this event" aria-label="Answer"><button type="button" class="btn" data-ev="answer">Post</button></div>' +
+          '<h2 style="margin-top:16px">Details only claimers see</h2>' +
+          '<textarea data-f="details" rows="4" style="width:100%;font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px" placeholder="Parking, who to ask for at the gate, organizer contact, set times, vendor list" aria-label="Event details">' + esc(e.details) + '</textarea>' +
+          '<div class="acts"><button type="button" class="btn btn-ghost" data-ev="details">Save details</button></div>' +
+          (e.status === 'canceled' ? '' :
+            '<h2 style="margin-top:16px">Moved or canceled?</h2>' +
+            '<div class="acts"><label class="meta">New start <input type="datetime-local" data-f="start" value="' + local(e.starts_at) + '"></label><label class="meta">End <input type="datetime-local" data-f="end" value="' + local(e.ends_at) + '"></label>' +
+            '<button type="button" class="btn btn-ghost" data-ev="move">Move the event</button><button type="button" class="btn btn-no" data-ev="cancel">Cancel the event</button></div>' +
+            '<p class="meta">Times are in your own time zone. Moving resets the clocks (claims close 48 hours before, due 7 days after) and emails everyone holding a spot.</p>') +
+          '<p class="msg" role="status"></p></details>';
+      }
+      function loadQa(card) {
+        var list = card.querySelector('[data-qa]');
+        return api({ action: 'thread', bounty_id: card.getAttribute('data-event') }).then(function (d) {
+          list.innerHTML = (d.messages || []).length ? d.messages.map(function (m) {
+            return '<li class="note" style="margin:0;' + (m.staff ? 'background:var(--ve-green-light)' : '') + '"><b>' + esc(m.name) + (m.staff ? ' (staff)' : '') + '</b> <span class="meta">' + esc(day(m.at)) + '</span><br>' + esc(m.body) + '</li>';
+          }).join('') : '<li class="empty">No questions yet.</li>';
+        });
+      }
+      $('events').addEventListener('toggle', function (e) { if (e.target.open && e.target.hasAttribute('data-event')) loadQa(e.target); }, true);
+      $('events').addEventListener('click', function (e) {
+        var act = e.target.getAttribute('data-ev'); if (!act) return;
+        var card = e.target.closest('[data-event]'), msg = card.querySelector('.msg'), id = card.getAttribute('data-event');
+        var f = function (k) { var el = card.querySelector('[data-f="' + k + '"]'); return el ? el.value : ''; };
+        var done = function (r, text) { if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; return false; } msg.className = 'msg'; msg.textContent = text; return true; };
+        if (act === 'answer') {
+          var text = f('answer').trim(); if (!text) return;
+          api({ action: 'ask', bounty_id: id, body: text }).then(function (r) { if (done(r, 'Posted.')) { card.querySelector('[data-f="answer"]').value = ''; loadQa(card); } });
+        } else if (act === 'details') {
+          api({ action: 'event_update', bounty_id: id, details: f('details') }).then(function (r) { done(r, 'Saved. Claimers see it on their bounty page.'); });
+        } else if (act === 'move') {
+          var s = f('start'), en = f('end'); if (!s) return;
+          if (!confirm('Move the event and email everyone holding a spot?')) return;
+          api({ action: 'event_update', bounty_id: id, starts_at: new Date(s).toISOString(), ends_at: en ? new Date(en).toISOString() : undefined }).then(function (r) { if (done(r, 'Moved. Claimers have been emailed.')) setTimeout(load, 900); });
+        } else if (act === 'cancel') {
+          if (!confirm('Cancel this event? Every bounty on it closes, spots are released with no strikes, and everyone holding one is emailed.')) return;
+          api({ action: 'event_update', bounty_id: id, cancel: true }).then(function (r) { if (done(r, 'Canceled. Claimers have been emailed.')) setTimeout(load, 900); });
+        }
+      });
+
+      $('strikes').addEventListener('click', function (e) {
+        var id = e.target.getAttribute('data-clear'); if (!id) return;
+        var c = e.target.closest('[data-strike]');
+        e.target.disabled = true;
+        api({ action: 'strike_clear', id: id, note: c.querySelector('input').value.trim() }).then(function (r) { if (r.error) { e.target.disabled = false; alert(r.message || 'That did not go through.'); return; } load(); });
       });
       $('filters').addEventListener('click', function (e) {
         var b = e.target.closest('button[data-s]'); if (!b) return;
