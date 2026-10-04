@@ -537,6 +537,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .evt-s{grid-column:2;justify-self:start}
 }
 </style>
+<script src="/public/ve-ad-creative.js"></script>
 </head>
 <body>
 <script>
@@ -1820,7 +1821,8 @@ function renderBillboardSlot(elId, ad){
   var el = document.getElementById(elId);
   if(!el || !ad || !ad.image_url) return;
   el.classList.add('bb-filled');
-  el.innerHTML = '<a class="bb-ad-link" href="'+esc(ad.link_url||'#')+'" target="_blank" rel="noopener noreferrer sponsored" onclick="veAdClick(\''+ad.placement_id+'\',\''+ad.campaign_id+'\')"><img class="bb-ad-img" src="'+esc(ad.image_url)+'" alt="Advertisement"></a>';
+  el.innerHTML = window.VEAdCreative ? VEAdCreative.markup(ad, { linkClass: 'bb-ad-link', imgClass: 'bb-ad-img' })
+    : '<a class="bb-ad-link" href="'+esc(ad.link_url||'#')+'" target="_blank" rel="noopener noreferrer sponsored" onclick="veAdClick(\''+ad.placement_id+'\',\''+ad.campaign_id+'\')"><img class="bb-ad-img" src="'+esc(ad.image_url)+'" alt="Advertisement"></a>';
 }
 
 function loadBillboardAds(){

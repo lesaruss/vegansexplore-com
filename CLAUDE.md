@@ -56,6 +56,8 @@ this list follows the rule above. A new exception goes on this list first.
   on them.
 - **Full-screen app shell**: `app/index.html` (the body does not scroll, so a
   footer would never be seen).
+- **Ad creatives**, HTML5 ads that load inside an ad slot's frame, not as pages:
+  everything in `ads/` (Sean, 2026-10-04).
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts;
 each hides them when embedded (`.ve-embedded .ve-nav, .ve-embedded
@@ -143,6 +145,17 @@ and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come fro
 (page_slug + slot_id) through the `ad-resolve` function; a rail fills, and counts an impression,
 only once it is on screen. A new page needs its slots added to `ad_placements` and to `PAGES` in
 the script.
+
+### Ad creatives (Sean, 2026-10-04)
+
+An ad's `creative_url` is an image or an HTML5 ad (a `.html` file in `ads/<brand>/`). Every slot
+renders through `/public/ve-ad-creative.js` (`VEAdCreative.markup(ad)`), which frames an HTML5 ad
+in a sandbox and passes the tracked link as `?clickTag=`; the ad opens that link itself and posts
+`{veAd:'click'}` so the click counts. GeekFon artist pages do the same in
+`components/AdCreative.tsx` (lesaruss/geekfon-society). Every ad link is a tracked `/go/` link.
+Our guides (River, Maya, Nori and the rest) are always drawn in the GeekFon illustration style,
+never photographs, in ads and everywhere else. Example: `/ads/humble-cabbage/ve-tee.html`, River
+in the tee, then Shop now plays the tee, Maya and Nori in Black, the $5 donation, and Shop now.
 
 ## Full width (LOCKED 2026-10-04)
 

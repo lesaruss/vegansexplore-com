@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Humble Cabbage: The Vegans Explore Tee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<!--
+  HTML5 ad creative (Sean, 2026-10-04). Served inside an ad slot by /public/ve-ad-creative.js, which
+  frames it and passes the tracked link as ?clickTag=. One file lays out tall (300x600) or wide
+  (300x250) from the slot's own shape. Opens on River in the tee; Shop now plays a short story
+  (the tee, Maya and Nori in Black, the $5 donation) that ends on the real Shop now, which opens
+  the clickTag link in a new tab and tells the host page so it can count the click.
+  Guides are always drawn in the GeekFon illustration style, never photographs.
+  Facts are from humblecabbage.com: $35 with US shipping included, Black or Natural, $5 of every
+  tee to the LESARUSS Foundation.
+-->
+<style>
+  :root{--green:#4B5D3A;--ink:#1E1E1B;--cream:#F3EEE2;--rust:#B5651D;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--cream);-webkit-font-smoothing:antialiased}
+  button{font:inherit;cursor:pointer;border:0}
+  .ad{position:relative;width:100%;height:100%;overflow:hidden}
+  .frame{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s}
+  .frame.on{opacity:1;visibility:visible}
+  .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .brand{position:absolute;top:10px;left:10px;z-index:3;background:var(--green);color:var(--cream);font-weight:900;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:4px;border:2px solid var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--rust);color:#fff;font-weight:800;font-size:14px;letter-spacing:.04em;text-transform:uppercase;padding:11px 16px;border-radius:999px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+  .btn:hover,.btn:focus-visible{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink);outline:none}
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .btn svg{width:14px;height:14px}
+
+  /* Opening frame: River rocking the tee, Shop now on the left. */
+  #hero .shop{position:absolute;left:12px;bottom:14px;z-index:3}
+  #hero .say{position:absolute;left:12px;right:12px;bottom:66px;z-index:3;background:var(--cream);color:var(--ink);font-weight:700;font-size:13px;line-height:1.3;padding:9px 12px;border-radius:12px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;pointer-events:none}
+  #hero .say::after{content:"";position:absolute;left:26px;bottom:-9px;width:14px;height:14px;background:var(--cream);border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg)}
+  .ad:hover #hero .say,#hero .say.peek{opacity:1;transform:none}
+
+  /* The story: each slide is a panel, progress bars on top, tap to move on. */
+  .bars{position:absolute;top:8px;left:10px;right:10px;z-index:5;display:flex;gap:4px}
+  .bars i{flex:1;height:3px;border-radius:2px;background:rgba(243,238,226,.3);overflow:hidden}
+  .bars i b{display:block;height:100%;width:0;background:var(--cream)}
+  .bars i.done b{width:100%}
+  .bars i.run b{animation:fill var(--dur,3.4s) linear forwards}
+  @keyframes fill{to{width:100%}}
+  .close{position:absolute;top:16px;right:8px;z-index:6;width:26px;height:26px;border-radius:50%;background:rgba(30,30,27,.75);color:var(--cream);font-size:16px;line-height:26px;text-align:center}
+  .panel{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:30px 18px 20px}
+  .kicker{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#d9c9a3;margin-bottom:8px}
+  .big{font-weight:900;font-size:26px;line-height:1.05;letter-spacing:-.01em;margin-bottom:10px}
+  .line{font-weight:600;font-size:13px;line-height:1.45;color:#e8e0cf}
+  .line strong{color:#fff}
+  .swatches{display:flex;gap:10px;margin-top:14px}
+  .sw{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+  .sw span{width:18px;height:18px;border-radius:50%;border:2px solid var(--cream)}
+  #s1{background:var(--green)}
+  #s1 .panel{justify-content:flex-start;padding-top:40px}
+  #s1 .peek-img{position:absolute;left:14px;right:14px;bottom:14px;width:calc(100% - 28px);height:62%;object-fit:cover;object-position:50% 25%;border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink)}
+  #s2{background:var(--cream);color:var(--ink)}
+  #s2 .duo{position:absolute;inset:30px 10px 52px;display:flex;gap:8px}
+  #s2 .duo figure{flex:1;position:relative;border:3px solid var(--ink);border-radius:12px;overflow:hidden;box-shadow:3px 3px 0 var(--ink)}
+  #s2 .duo img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
+  #s2 .duo figcaption{position:absolute;left:6px;bottom:6px;background:var(--ink);color:var(--cream);font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
+  #s2 .cap{position:absolute;left:14px;right:14px;bottom:14px;font-weight:800;font-size:14px;line-height:1.25}
+  #s3{background:var(--ink)}
+  #s3 .five{font-weight:900;font-size:68px;line-height:.9;color:var(--rust);text-shadow:4px 4px 0 var(--cream);margin-bottom:12px}
+  #s4{background:var(--ink)}
+  #s4 .panel{justify-content:flex-end;padding:0 12px 14px}
+  #s4 .card{width:100%;background:var(--cream);color:var(--ink);border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);padding:14px;text-align:center}
+  #s4 .kicker{color:var(--green)}
+  #s4 .big{margin-bottom:10px}
+  #s4 .btn{font-size:16px;padding:12px 22px}
+  #s4 .replay{display:block;margin:10px auto 0;background:none;color:var(--ink);font-size:11px;font-weight:700;text-decoration:underline;letter-spacing:.04em}
+
+  /* Wide slots (300x250): River on the right, copy on the left, Maya and Nori side by side. */
+  .wide #hero .shop{left:12px;bottom:12px}
+  .wide #hero .say{right:auto;width:62%;bottom:60px}
+  .wide .panel{padding:24px 16px 14px;max-width:64%}
+  .wide .big{font-size:21px}
+  .wide .line{font-size:12px}
+  .wide #s1 .panel{justify-content:center;padding-top:24px}
+  .wide #s1 .peek-img{left:auto;right:-10px;bottom:-6px;width:40%;height:80%;border-radius:14px 0 0 0;transform:rotate(-3deg);box-shadow:-4px -4px 0 var(--ink)}
+  .wide #s2 .duo{inset:24px 10px 44px}
+  .wide #s2 .cap{bottom:12px;font-size:13px}
+  .wide #s3 .five{font-size:48px}
+  .wide #s4 .panel{max-width:none;align-items:flex-start;padding:0 10px 10px}
+  .wide #s4 .card{width:58%;padding:10px}
+  .wide #s4 .big{font-size:18px;margin-bottom:8px}
+  .wide #s4 .btn{font-size:13px;padding:9px 14px}
+  .wide #s4 .replay{margin-top:6px}
+  .wide #s2 .long{display:none}
+  @media (prefers-reduced-motion:reduce){.frame{transition:none}.bars i.run b{animation:none;width:100%}}
+</style>
+</head>
+<body>
+<div class="ad" id="ad">
+
+  <section class="frame on" id="hero" aria-label="Humble Cabbage ad">
+    <img class="bg" id="heroImg" alt="River skating in the natural Vegans Explore Tee">
+    <div class="brand">Humble Cabbage</div>
+    <p class="say" id="say">River's rocking the Vegans Explore Tee. Tap Shop now to see it.</p>
+    <button class="btn shop" id="open" type="button">Shop now
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </section>
+
+  <section class="frame" id="story" aria-label="About the tee">
+    <div class="bars" id="bars"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+    <button class="close" id="close" type="button" aria-label="Back to the ad">&times;</button>
+
+    <div class="frame" id="s1" data-dur="3.6">
+      <img class="peek-img" id="s1Img" alt="">
+      <div class="panel">
+        <div class="kicker">Humble Cabbage</div>
+        <div class="big">The Vegans Explore Tee</div>
+        <p class="line"><strong>$35</strong>, US shipping included.</p>
+        <div class="swatches"><span class="sw"><span style="background:#111"></span>Black</span><span class="sw"><span style="background:#efe6d2"></span>Natural</span></div>
+      </div>
+    </div>
+
+    <div class="frame" id="s2" data-dur="3.6">
+      <div class="duo">
+        <figure><img id="mayaImg" alt="Maya in the black Vegans Explore Tee"><figcaption>Maya</figcaption></figure>
+        <figure><img id="noriImg" alt="Nori in the black Vegans Explore Tee"><figcaption>Nori</figcaption></figure>
+      </div>
+      <p class="cap">Maya and Nori in Black.<span class="long"> Wear it anywhere you explore.</span></p>
+    </div>
+
+    <div class="frame" id="s3" data-dur="3.8">
+      <div class="panel">
+        <div class="five">$5</div>
+        <div class="big">of every tee goes to the LESARUSS Foundation.</div>
+        <p class="line">Wear the community. Give back with every one.</p>
+      </div>
+    </div>
+
+    <div class="frame" id="s4" data-dur="0">
+      <img class="bg" id="s4Img" alt="River dancing in the natural Vegans Explore Tee">
+      <div class="panel"><div class="card">
+        <div class="kicker">Humble Cabbage</div>
+        <div class="big">Get yours.</div>
+        <button class="btn" id="buy" type="button">Shop now
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button class="replay" id="replay" type="button">Watch again</button>
+      </div></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var CDN = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/';
+  var IMG = {
+    riverTall: CDN + 'f3e30709-063d-436b-b579-9a3370737bef.jpg',
+    riverWide: CDN + '46d99e0b-7bfd-4059-b9f0-68ab06d18bbe.jpg',
+    maya: CDN + 'b4631f56-1d1a-4e9c-a1d7-b89d510fe5d9.jpg',
+    nori: CDN + '2f76b95b-9c55-4500-954c-599fe04c912f.jpg'
+  };
+  // The host passes the tracked link (?clickTag=). Only an https link is followed; anything else
+  // falls back to the store so a bad parameter can't send the visitor somewhere strange.
+  var q = new URLSearchParams(location.search);
+  var clickTag = q.get('clickTag') || '';
+  if (!/^https:\/\//.test(clickTag)) clickTag = 'https://humblecabbage.com/products/6abc6a2e5158794d5f0c9c6a';
+
+  var ad = document.getElementById('ad');
+  function layout() {
+    var wide = innerWidth / Math.max(innerHeight, 1) > 0.9;
+    ad.classList.toggle('wide', wide);
+    document.getElementById('heroImg').src = wide ? IMG.riverWide : IMG.riverTall;
+    document.getElementById('heroImg').style.objectPosition = wide ? '70% 30%' : '50% 30%';
+  }
+  layout();
+  addEventListener('resize', layout);
+  document.getElementById('s1Img').src = IMG.riverTall;
+  document.getElementById('mayaImg').src = IMG.maya;
+  document.getElementById('noriImg').src = IMG.nori;
+  document.getElementById('s4Img').src = IMG.riverWide;
+  document.getElementById('s4Img').style.objectPosition = '75% 30%';
+
+  function tell(type) { try { parent.postMessage({ veAd: type }, '*'); } catch (e) {} }
+
+  // Touch screens have no hover: show River's line once, a moment after the ad appears.
+  if (!matchMedia('(hover:hover)').matches) {
+    setTimeout(function () { var s = document.getElementById('say'); s.classList.add('peek'); setTimeout(function () { s.classList.remove('peek'); }, 3200); }, 1200);
+  }
+
+  var hero = document.getElementById('hero'), story = document.getElementById('story');
+  var slides = ['s1', 's2', 's3', 's4'].map(function (id) { return document.getElementById(id); });
+  var bars = Array.prototype.slice.call(document.querySelectorAll('#bars i'));
+  var at = -1, timer = null;
+
+  function show(n) {
+    clearTimeout(timer);
+    at = n;
+    slides.forEach(function (s, i) { s.classList.toggle('on', i === n); });
+    bars.forEach(function (b, i) {
+      b.className = i < n ? 'done' : '';
+      if (i === n) { b.style.setProperty('--dur', (slides[i].dataset.dur || 3.4) + 's'); void b.offsetWidth; b.className = n === slides.length - 1 ? 'done' : 'run'; }
+    });
+    var dur = parseFloat(slides[n].dataset.dur || 0);
+    if (dur && !matchMedia('(prefers-reduced-motion:reduce)').matches) timer = setTimeout(function () { show(n + 1); }, dur * 1000);
+  }
+  function openStory() { hero.classList.remove('on'); story.classList.add('on'); show(0); tell('engage'); }
+  function closeStory() { clearTimeout(timer); story.classList.remove('on'); hero.classList.add('on'); at = -1; }
+
+  document.getElementById('open').addEventListener('click', openStory);
+  document.getElementById('close').addEventListener('click', function (e) { e.stopPropagation(); closeStory(); });
+  document.getElementById('replay').addEventListener('click', function (e) { e.stopPropagation(); show(0); });
+  // Tap a slide to move on (the last slide waits for Shop now).
+  story.addEventListener('click', function (e) {
+    if (e.target.closest('button')) return;
+    if (at > -1 && at < slides.length - 1) show(at + 1);
+  });
+  document.getElementById('buy').addEventListener('click', function (e) {
+    e.stopPropagation();
+    tell('click');
+    window.open(clickTag, '_blank', 'noopener');
+  });
+})();
+</script>
+</body>
+</html>

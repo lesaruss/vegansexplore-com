@@ -399,6 +399,7 @@
     .hub-content-grid{display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start}
     @media(max-width:900px){.hub-content-grid{grid-template-columns:1fr}.bb-wrap{order:999}}
   </style>
+<script src="/public/ve-ad-creative.js"></script>
 </head>
 <body>
 
@@ -1079,7 +1080,8 @@
     var el = document.getElementById(elId);
     if(!el || !ad || !ad.image_url) return;
     el.classList.add('bb-filled');
-    el.innerHTML = '<a class="bb-ad-link" href="'+sfEsc(ad.link_url||'#')+'" target="_blank" rel="noopener noreferrer sponsored" onclick="veAdClick(\''+ad.placement_id+'\',\''+ad.campaign_id+'\')"><img class="bb-ad-img" src="'+sfEsc(ad.image_url)+'" alt="Advertisement"></a>';
+    el.innerHTML = window.VEAdCreative ? VEAdCreative.markup(ad, { linkClass: 'bb-ad-link', imgClass: 'bb-ad-img' })
+      : '<a class="bb-ad-link" href="'+sfEsc(ad.link_url||'#')+'" target="_blank" rel="noopener noreferrer sponsored" onclick="veAdClick(\''+ad.placement_id+'\',\''+ad.campaign_id+'\')"><img class="bb-ad-img" src="'+sfEsc(ad.image_url)+'" alt="Advertisement"></a>';
   }
 
   function loadBillboardAds(){
