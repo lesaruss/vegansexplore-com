@@ -1,3 +1,46 @@
+/* ---- Inside the dashboard window (Sean, 2026-10-04) ----
+ * Any page the dashboard opens in its console frame drops its own nav and footer (the dashboard
+ * keeps its own around it) and tells the dashboard its height, so the frame grows to fit and
+ * there is one scroll. Pages that already set ve-embedded themselves (Depot, Members, Board...)
+ * keep their own handling. A page that fits or fills the frame (a full-screen app) is left in the
+ * normal frame, and one whose layout grows with the frame (a 100vh hero) is put back to a fixed
+ * frame that scrolls inside, rather than growing forever. */
+(function () {
+  var root = document.documentElement, inDash = false;
+  try { inDash = window.self !== window.top && window.parent.location.origin === location.origin && /^\/dashboard(\/|$)/.test(window.parent.location.pathname); } catch (e) {}
+  if (!inDash) return;
+  var ownHandling = root.classList.contains('ve-embedded');
+  root.classList.add('ve-embedded');
+  var st = document.createElement('style');
+  st.textContent = '.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .ve-mob-menu,.ve-embedded .ve-mob-overlay{display:none !important}';
+  document.head.appendChild(st);
+  if (ownHandling) return;
+  var lastH = 0, lastVH = 0, stopped = false;
+  function send() {
+    if (stopped || !document.body) return;
+    var h = Math.ceil(Math.max(document.body.scrollHeight, root.scrollHeight)), vh = window.innerHeight;
+    if (lastH && vh !== lastVH && h > lastH && Math.abs((h - lastH) - (vh - lastVH)) < 3) {
+      stopped = true; window.parent.postMessage({ type: 've-frame-unsize' }, location.origin); return;
+    }
+    lastVH = vh;
+    // A page that fits the frame (or fills it, like a full-screen app) keeps the normal frame.
+    if (!lastH && h <= vh + 2) return;
+    if (Math.abs(h - lastH) < 2) return;
+    lastH = h; window.parent.postMessage({ type: 've-frame-height', h: h }, location.origin);
+  }
+  function watch() {
+    send();
+    if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+    window.addEventListener('load', send);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 've-frame-view') return;
+    root.style.setProperty('--ve-view-top', Math.max(0, Math.round(e.data.top)) + 'px');
+    root.style.setProperty('--ve-view-h', Math.max(200, Math.round(e.data.height)) + 'px');
+  });
+})();
+
 (function () {
   /* ---- Styles ---- */
   var css = [

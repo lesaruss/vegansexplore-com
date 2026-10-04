@@ -800,7 +800,7 @@
       <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
       <div class="dash-stats" id="dash-stats-row" style="display:none;">
         <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
-        <a class="dash-stat" href="/dashboard/opportunities" onclick="openToolInFrame('Pending Applications', '/dashboard/opportunities', false); return false;"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
+        <a class="dash-stat" href="/dashboard/opportunities" onclick="openConsoleFrame('/dashboard/opportunities', 'Pending Applications'); return false;"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
         <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
       </div>
 
@@ -3329,6 +3329,9 @@
       var h = Math.max(440, Math.min(40000, Math.round(+e.data.h || 0)));
       f.classList.add('ve-sized'); f.style.height = h + 'px'; f.setAttribute('scrolling', 'no');
       tellFrameView();
+    } else if (e.data.type === 've-frame-unsize') {
+      // The page's layout grows with the frame (a 100vh hero), so it scrolls inside a fixed frame.
+      f.classList.remove('ve-sized'); f.style.height = ''; f.setAttribute('scrolling', 'auto');
     } else if (e.data.type === 've-frame-scroll') {
       var m = consoleScroller(), r = f.getBoundingClientRect(), y = r.top + (+e.data.top || 0) - (m ? m.getBoundingClientRect().top : 0) - 12;
       (m || window).scrollBy({ top: y, behavior: e.data.smooth ? 'smooth' : 'auto' });
@@ -3345,6 +3348,33 @@
     if (host) host.innerHTML = '';
   }
   window.closeConsoleFrame = closeConsoleFrame;
+  // Every internal link opens in the window (Sean, 2026-10-04: newer sections still opened the
+  // full page outside the dashboard). Tiles and buttons with their own click handling run first
+  // and cancel the click; any plain link to a page on this site that is left lands here and
+  // opens in the console frame instead of navigating away. Outside sites (target=_blank),
+  // modifier-clicks and links back to the dashboard itself behave as normal links.
+  var DASH_SELF_PATH = /^\/dashboard(\/(center-console|profile|directory|events|bounties|campaigns|opportunities|pulse|guides|tools|communities))?\/?$/;
+  function frameLabelFor(a) {
+    if (a.getAttribute('data-frame-label')) return a.getAttribute('data-frame-label');
+    var t = a.querySelector('.dash-tile-title, .dash-preview-title, .gc-title');
+    var text = t && t.firstChild ? t.firstChild.textContent : a.textContent;
+    text = String(text || '').replace(/\s+/g, ' ').trim();
+    return text.length > 60 ? text.slice(0, 57) + '...' : (text || 'Vegans Explore');
+  }
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a || a.hasAttribute('download') || (a.target && a.target !== '_self')) return;
+    var content = document.getElementById('dash-content');
+    if (!content || !content.contains(a) || a.closest('#dash-console-detail, .rank-card')) return;
+    var raw = a.getAttribute('href') || '';
+    if (!raw || raw.charAt(0) === '#' || /^(mailto|tel|javascript):/i.test(raw)) return;
+    var url;
+    try { url = new URL(a.href, location.href); } catch (err) { return; }
+    if (url.origin !== location.origin || DASH_SELF_PATH.test(url.pathname)) return;
+    e.preventDefault();
+    openConsoleFrame(url.pathname + url.search + url.hash, frameLabelFor(a));
+  });
   // The tour runs on this dashboard itself (public/ve-tour.js, rebuilt 2026-10-03).
   function openTour() { if (window.VETour) VETour.start(); }
   window.openTour = openTour;
