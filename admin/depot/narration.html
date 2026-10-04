@@ -70,7 +70,7 @@
     <div id="oa-gate" class="gate" hidden></div>
     <div id="oa-app" hidden>
       <div class="bar">
-        <label>Page <select id="oa-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option></select></label>
+        <label>Page <select id="oa-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option><option value="dinner">Dinner invitation</option></select></label>
         <label>City <select id="oa-city">
           <option value="south-florida">South Florida</option>
           <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
@@ -132,9 +132,19 @@
           { key: 'board', label: 'The Community Board', words: ['board', 'ask'] },
           { key: 'unfinished', label: 'Unfinished on purpose', words: ['unfinished', 'purpose'] },
           { key: 'seat', label: 'Take your founding seat', words: ['seat', 'founding', 'join'] }
+        ],
+        // City dinner invitation, /dinners/<city> (2026-10-04).
+        dinner: [
+          { key: 'invite', label: 'You\u2019re invited', words: ['invite', 'invited'] },
+          { key: 'why', label: 'Why you, why now', words: ['why'] },
+          { key: 'build', label: 'What we\u2019re building', words: ['build', 'building'] },
+          { key: 'ask', label: 'A seat at the table', words: ['ask', 'table'] },
+          { key: 'evening', label: 'The evening', words: ['evening', 'night'] },
+          { key: 'seat', label: 'Take your seat', words: ['seat', 'rsvp'] },
+          { key: 'faq', label: 'Questions', words: ['faq', 'question'] }
         ]
       };
-      var VIEW = { cm: '/community-managers/onboarding', partners: '/partners', member: '/welcome' };
+      var VIEW = { cm: '/community-managers/onboarding', partners: '/partners', member: '/welcome', dinner: '/dinners/palm-beach' };
       var RATE = 32000, TARGET_RMS = 0.1, PEAK = 0.89, PAD = 0.35;
       var $ = function (id) { return document.getElementById(id); };
       var items = {}, current = {};
