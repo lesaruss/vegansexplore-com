@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your invitation — Vegans Explore</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The personal invitation (Sean, 2026-10-04): someone Sean invited from HQ > People lands here
+       from their tracked link (/go/<code> -> /invite?c=<code>). It says who invited them and why,
+       whether their Founding Membership is on us, and takes them through creating their account.
+       The invite is claimed by ve-invites (accept), or by the signup itself when the email matches. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-border:rgba(0,0,0,0.09);}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    main{padding:56px 40px 88px;}
+    .split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:56px;align-items:center;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
+    h1{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;font-size:clamp(32px,4.4vw,56px);margin-bottom:20px;}
+    .lede{font-size:17px;color:var(--ve-text-75);margin-bottom:16px;max-width:640px;}
+    .reason{font-size:18px;font-weight:800;line-height:1.45;border-left:4px solid var(--ve-orange);padding:6px 0 6px 16px;margin:0 0 20px;max-width:640px;}
+    .gift{display:inline-flex;align-items:center;gap:10px;background:var(--ve-green-light);color:var(--ve-green-deep);border:1px solid rgba(58,155,62,0.25);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:800;margin-bottom:18px;}
+    .points{list-style:none;display:grid;gap:10px;margin:6px 0 22px;max-width:640px;}
+    .points li{display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:600;line-height:1.45;}
+    .points li::before{content:"";flex:0 0 20px;height:20px;margin-top:1px;border-radius:50%;background:var(--ve-green-light) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%232d7d31' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center no-repeat;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 28px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;border:none;cursor:pointer;text-decoration:none;}
+    .btn-primary{background:#22C55E;color:#0b2e14;}
+    .btn-primary:hover{background:#4ade80;}
+    .btn-primary:disabled{background:#9CA3AF;color:#fff;cursor:default;}
+    .btn-link{background:none;color:var(--ve-green-deep);text-decoration:underline;text-underline-offset:3px;padding:14px 8px;letter-spacing:0.06em;}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .fine{font-size:12.5px;color:#6b6b6b;margin-top:14px;max-width:640px;}
+    .msg{font-size:14px;font-weight:700;margin-top:14px;max-width:640px;}
+    .msg.err{color:#b42318;}
+    .msg.ok{color:var(--ve-green-deep);}
+    .media{border-radius:16px;overflow:hidden;background:#0f1a10;aspect-ratio:4/5;max-height:calc(100vh - 180px);box-shadow:0 18px 40px rgba(0,0,0,0.18);}
+    .media img{width:100%;height:100%;object-fit:cover;object-position:50% 10%;display:block;}
+    .state{max-width:760px;}
+    .state h1{font-size:clamp(28px,3.6vw,44px);}
+    [hidden]{display:none !important;}
+    @media (max-width:900px){
+      main{padding:28px 16px 64px;}
+      .split{grid-template-columns:minmax(0,1fr);gap:28px;}
+      .media{aspect-ratio:16/11;max-height:none;order:-1;}
+      .media img{object-position:50% 12%;}
+    }
+  </style>
+</head>
+<body>
+  <script src="/public/nav.js"></script>
+
+  <main>
+    <section id="loading" class="state" aria-live="polite"><p class="lede">Opening your invitation...</p></section>
+
+    <section id="invite" class="split" hidden>
+      <div>
+        <div class="eyebrow" id="eyebrow">An invitation from Sean A. Russell</div>
+        <h1 id="title">You're invited.</h1>
+        <p class="reason" id="reason" hidden></p>
+        <p class="lede" id="lede">I'm building Vegans Explore, a nonprofit community for Vegans, city by city, and I'd like you to be part of it.</p>
+        <div class="gift" id="gift" hidden>Your Founding Membership is on us</div>
+        <ul class="points" id="points">
+          <li>Your city's Community Board: ask your city, find who can help, and the Daily Pulse</li>
+          <li>The Directory, events, guides and your own dashboard</li>
+          <li id="pt-points">1,100 points to start, for guides and rewards</li>
+        </ul>
+        <div class="cta-row">
+          <button class="btn btn-primary" id="accept" type="button">Accept your invitation</button>
+          <a class="btn btn-link" id="dinner-link" href="#" hidden>See your seat</a>
+        </div>
+        <p class="msg" id="msg" role="status" hidden></p>
+        <p class="fine" id="fine"></p>
+      </div>
+      <div class="media"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_191202_3f812ce9-9f99-4794-b08c-035aaa88559d.png" alt="Sean A. Russell welcoming guests to a Vegans Explore dinner"></div>
+    </section>
+
+    <section id="done" class="state" hidden>
+      <div class="eyebrow">You're in</div>
+      <h1 id="done-title">Welcome to Vegans Explore.</h1>
+      <p class="lede" id="done-lede">Your Founding Membership is active.</p>
+      <div class="cta-row"><a class="btn btn-primary" id="done-next" href="/dashboard">Go to your dashboard</a></div>
+    </section>
+
+    <section id="closed" class="state" hidden>
+      <div class="eyebrow">Your invitation</div>
+      <h1 id="closed-title">This invitation is no longer open.</h1>
+      <p class="lede" id="closed-lede">Reply to Sean's email and he can send you a new one.</p>
+      <div class="cta-row"><a class="btn btn-primary" href="/welcome">See Vegans Explore</a></div>
+    </section>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-invites';
+    var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    var code = (new URLSearchParams(location.search).get('c') || '').toLowerCase().replace(/[^a-f0-9]/g, '').slice(0, 12);
+    var $ = function (id) { return document.getElementById(id); };
+    var invite = null;
+
+    function call(action, token) {
+      return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (token || ANON) }, body: JSON.stringify({ action: action, code: code }) })
+        .then(function (r) { return r.json(); });
+    }
+    function show(id) { ['loading', 'invite', 'done', 'closed'].forEach(function (s) { $(s).hidden = s !== id; }); }
+    function say(text, kind) { var m = $('msg'); m.textContent = text; m.className = 'msg ' + (kind || ''); m.hidden = !text; }
+    function closed(title, lede) { $('closed-title').textContent = title; $('closed-lede').textContent = lede; show('closed'); }
+
+    function render(inv) {
+      invite = inv;
+      if (inv.status === 'joined') return closed('You already accepted this invitation.', 'Sign in to Vegans Explore to pick up where you left off.');
+      if (inv.status === 'expired') return closed('This invitation has expired.', 'Reply to Sean’s email and he can send you a new one.');
+      if (inv.status !== 'open') return closed('This invitation is no longer open.', 'Reply to Sean’s email if you think it should be.');
+      $('title').textContent = inv.first_name + ', you’re invited.';
+      if (inv.reason) { $('reason').textContent = inv.reason; $('reason').hidden = false; }
+      $('gift').hidden = !inv.comp;
+      $('pt-points').hidden = !inv.comp;
+      if (inv.points_to === 'community_manager') {
+        $('lede').textContent = 'I’m building Vegans Explore, a nonprofit community for Vegans, city by city, and I’d like you to lead ' + (inv.city || 'your city') + ' as its Community Manager.';
+      }
+      if (inv.dinner) {
+        $('dinner-link').href = inv.dinner.url; $('dinner-link').hidden = false;
+        $('lede').textContent = 'I’m building Vegans Explore, a nonprofit community for Vegans, city by city. I’d like you at our dinner in ' + inv.dinner.place + ' on ' + inv.dinner.date + ', and part of what we’re building.';
+      }
+      $('accept').textContent = inv.comp ? 'Accept your membership' : 'Accept your invitation';
+      if (inv.expires_at) {
+        var d = new Date(inv.expires_at);
+        $('fine').textContent = 'This invitation is just for you. It works once, until ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '.' + (inv.comp ? ' Nothing to pay, nothing owed.' : '');
+      }
+      show('invite');
+    }
+
+    function accept() {
+      var token = window.VEAuth && VEAuth.getToken();
+      if (!token) {
+        // Creating the account is the acceptance. The activate step that usually follows a signup
+        // is not shown here: this page finishes the invitation itself.
+        window.VE_ACTIVATE_HANDLER = function () { accept(); };
+        VEAuth.showAuthModal(invite.comp ? 'Create your account to accept. Your Founding Membership is on us.' : 'Create your account to accept your invitation.', accept, 'signup');
+        return;
+      }
+      $('accept').disabled = true; say('');
+      call('accept', token).then(function (d) {
+        $('accept').disabled = false;
+        if (d && d.ok) {
+          try { var m = VEAuth.getMember(); if (m && d.membership_status) VEAuth.setSession(token, Object.assign({}, m, { membership_status: d.membership_status })); } catch (e) {}
+          var next = d.next || '/dashboard';
+          $('done-next').href = next;
+          $('done-next').textContent = invite.dinner ? 'See your seat' : invite.points_to === 'community_manager' ? 'See the role' : 'Go to your dashboard';
+          $('done-lede').textContent = invite.comp ? 'Your Founding Membership is active, with 1,100 points to start. Thank you for what you do for this community.' : 'Your account is ready.';
+          if (d.membership_status !== 'active' && !invite.comp) $('done-lede').textContent = 'Your account is ready. Become a Founding Member any time from your dashboard.';
+          show('done');
+          return;
+        }
+        if (d && d.error === 'not_authenticated') { try { VEAuth.clearSession(); } catch (e) {} accept(); return; }
+        say((d && d.message) || 'That did not go through. Try again in a minute.', 'err');
+      }).catch(function () { $('accept').disabled = false; say('That did not go through. Check your connection and try again.', 'err'); });
+    }
+
+    $('accept').addEventListener('click', accept);
+    if (!code) { closed('This link is missing its invitation.', 'Open the link from Sean’s email again, or reply to it and he can send a new one.'); return; }
+    call('view').then(function (d) {
+      if (d && d.invite) render(d.invite);
+      else closed('We couldn’t find this invitation.', 'Open the link from Sean’s email again, or reply to it and he can send a new one.');
+    }).catch(function () { closed('We couldn’t open your invitation.', 'Check your connection and reload the page.'); });
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+</body>
+</html>

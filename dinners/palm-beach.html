@@ -89,6 +89,8 @@
     .seat-box .price b{font-size:28px;font-weight:900;color:var(--ve-green-deep);margin-right:8px;}
     .checks{list-style:none;display:grid;gap:6px;margin:10px 0 14px;}
     .checks li{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:700;line-height:1.4;}
+    .sb-gift{display:inline-block;background:#EAF7EA;color:#1f5f22;border:1px solid rgba(58,155,62,0.25);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:800;margin:0 0 12px;}
+    .sb-acct{font-size:12px;color:rgba(26,26,26,0.6);margin-top:8px;}
     .checks li::before{content:"";flex:0 0 20px;height:20px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/11px no-repeat;margin-top:1px;}
     .seat-box .btn{width:100%;}
     .seat-note{font-size:12.5px;font-weight:600;color:rgba(26,26,26,0.75);margin-top:8px;text-align:center;}
@@ -191,7 +193,7 @@
       <div class="body">
         <p class="eyebrow">A private dinner &middot; Palm Beach</p>
         <h1><span id="inv-hello"></span>You&rsquo;re invited <em>to dinner.</em></h1>
-        <p class="lede">A small table, set by name, for the people who have been building SoFlo Vegans. Three courses, hosted by <span data-venue>our restaurant partner</span>. One conversation about what we build next, together.</p>
+        <p class="lede">A small table, set by name, for the people who have been building SoFlo Vegans. You&rsquo;re invited in recognition of your work and what you&rsquo;ve given this community. Three courses, hosted by <span data-venue>our restaurant partner</span>. One conversation about what we build next, together.</p>
         <ul class="chips">
           <li><b>Fri</b> October 23</li>
           <li>Palm Beach</li>
@@ -243,7 +245,7 @@
         <h2>Not a sponsorship. A seat at the table.</h2>
         <p class="lede">This only works with the people in this room. Come hear the plan, and if it&rsquo;s right for you, pick how you want to be involved.</p>
         <div class="cards">
-          <div class="card"><div class="n">1</div><b>Join us</b><span>Become a Founding Member, $11 one time. I&rsquo;ll offer it at the table, and it puts you on the inside.</span></div>
+          <div class="card"><div class="n">1</div><b id="ask-join-t">Join us</b><span id="ask-join">Become a Founding Member, $11 one time. I&rsquo;ll offer it at the table, and it puts you on the inside.</span></div>
           <div class="card"><div class="n">2</div><b>Bring your people</b><span>Your business, your group, your audience. We help them find each other.</span></div>
           <div class="card"><div class="n">3</div><b>Lead something</b><span>A night, a cause, a corner of the city. We back the people who step up.</span></div>
         </div>
@@ -300,7 +302,9 @@
               <p class="sb-title" id="sb-hello">Say yes, and tell us one thing.</p>
               <label class="sb-label" for="sb-answer">What does SoFlo&rsquo;s Vegan community need that no one is doing yet?</label>
               <textarea id="sb-answer" rows="3" maxlength="1000" placeholder="One or two sentences is plenty."></textarea>
+              <p class="sb-gift" id="sb-gift" hidden>Your Founding Membership is on us.</p>
               <button type="button" class="btn btn-primary" id="sb-yes">Hold my seat</button>
+              <p class="sb-acct" id="sb-acct">Holding your seat creates your free Vegans Explore account.</p>
               <button type="button" class="sb-alt" id="sb-no-open">I can&rsquo;t make it</button>
               <div id="sb-no" hidden>
                 <label class="sb-label" for="sb-suggest">Who should sit here instead? (optional)</label>
@@ -311,6 +315,7 @@
             <div id="sb-yes-done" hidden>
               <p class="sb-title">Your seat is held.</p>
               <p class="sb-text" id="sb-when">Friday, October 23, Palm Beach. The venue and time come in your confirmation.</p>
+              <p class="sb-gift" id="sb-member" hidden>Your Founding Membership is active, with 1,100 points to start. Thank you for what you do for this community.</p>
               <p class="sb-label" id="sb-who-head" hidden>At the table so far</p>
               <ul class="sb-who" id="sb-who"></ul>
               <button type="button" class="sb-alt" id="sb-cancel">Can&rsquo;t make it after all?</button>
@@ -345,7 +350,9 @@
         <p class="eyebrow">Questions</p>
         <h2>Before you say yes.</h2>
         <details><summary>Is dinner really free?</summary><p>Yes, there&rsquo;s no ticket. Dinner is hosted by <span data-venue>our restaurant partner</span>, and we take care of the staff. All we ask is that you come ready to talk about what we can build together.</p></details>
-        <details><summary>Do I have to pay anything?</summary><p>No. At the table I&rsquo;ll offer Founding Membership, $11 one time, as one way to be part of this. It&rsquo;s your call, and your seat never depends on it.</p></details>
+        <details><summary>Do I have to pay anything?</summary><p id="faq-pay">No. At the table I&rsquo;ll offer Founding Membership, $11 one time, as one way to be part of this. It&rsquo;s your call, and your seat never depends on it.</p></details>
+        <details><summary>Why do I need an account?</summary><p>Holding your seat creates your free Vegans Explore account. It&rsquo;s how we confirm your seat, send you the venue and time, and keep you posted after the dinner. No payment, and you can leave any time.</p></details>
+        <details><summary>Can I contribute?</summary><p>Any time, from your dashboard, if you want to help us build faster. It&rsquo;s a contribution to our community, not a tax-deductible donation.</p></details>
         <details><summary>Can I bring someone?</summary><p>Seats are by name, so it&rsquo;s just you at dinner. Bring your people on Saturday, October 24, as our guests, and tell us who should be at the next dinner.</p></details>
         <details><summary>Why an answer in advance?</summary><p>So the night starts where you are. I&rsquo;ll read a few answers aloud, and they shape what we build next.</p></details>
         <details><summary>Can&rsquo;t make it on the 23rd?</summary><p>Tell us on the seat slide. You can suggest someone to sit in your place, and you&rsquo;ll be first on the list for the next dinner.</p></details>
@@ -360,6 +367,7 @@
     <button type="button" class="btn btn-primary" id="nav-next">Next</button>
   </nav>
 </main>
+<script src="/public/ve-auth.js"></script>
 <script src="/public/footer.js"></script>
 </div>
 <script src="/public/slide-audio.js"></script>
@@ -468,7 +476,10 @@
     var code = (new URLSearchParams(location.search).get('i') || '').replace(/[^a-z0-9]/gi, '').slice(0, 40);
     var msg = $('seat-msg'), st = null;
     function call(action, extra) {
-      return fetch(SEATS_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ action: action, dinner: DINNER, code: code }, extra || {})) })
+      var h = { 'Content-Type': 'application/json' };
+      var t = window.VEAuth && VEAuth.getToken();
+      if (t && action === 'hold') h.Authorization = 'Bearer ' + t;
+      return fetch(SEATS_FN, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ action: action, dinner: DINNER, code: code }, extra || {})) })
         .then(function (r) { return r.json(); });
     }
     function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -478,6 +489,14 @@
       if (st && st.venue_name) document.querySelectorAll('[data-venue]').forEach(function (el) { el.textContent = st.venue_name; });
       var inv = st && st.invite;
       if (inv && inv.first_name) $('inv-hello').textContent = inv.first_name + ', ';
+      // Membership on us (Sean, 2026-10-04): "in recognition of their work and contributions to the community".
+      if (inv && inv.comp) {
+        $('ask-join-t').textContent = 'Your membership is on us';
+        $('ask-join').textContent = 'Your Founding Membership is a thank-you for your work in this community. It comes with your seat, in good faith that you’ll help spread the word.';
+        $('faq-pay').textContent = 'No. Your Founding Membership is on us, in recognition of your work in this community, and it comes with your seat.';
+        $('sb-gift').hidden = false;
+      }
+      $('sb-member').hidden = !(inv && inv.comp && inv.comp_claimed);
       if (!inv || inv.status === 'requested') { view('sb-ask'); if (inv) msg.textContent = 'Thanks, Sean has your note.'; return; }
       if (inv.status === 'yes') {
         view('sb-yes-done');
@@ -497,14 +516,31 @@
     }
     function load() { return call('status').then(function (d) { if (d && !d.error) { st = d; paint(); } }).catch(function () {}); }
     function busy(b, on, label) { b.disabled = on; if (label) b.textContent = label; }
-    $('sb-yes').addEventListener('click', function () {
-      if (window.VE_PREVIEW || !st || !st.open) { msg.textContent = 'Seats open when invitations go out.'; return; }
-      var b = this; busy(b, true, 'Holding your seat...');
+    // Holding a seat needs a free account (Sean, 2026-10-04). A guest who is not signed in creates
+    // one (or signs in) in the account window, and the seat is held as soon as it closes. The
+    // activate step that usually follows a signup is skipped here: the $11 is offered at the table,
+    // or is on us.
+    function hold() {
+      var b = $('sb-yes');
+      if (!window.VEAuth || !VEAuth.getToken()) {
+        window.VE_ACTIVATE_HANDLER = function () { hold(); };
+        VEAuth.showAuthModal((st && st.invite && st.invite.comp) ? 'Create your free account to hold your seat. Your Founding Membership is on us.' : 'Create your free account to hold your seat.', hold, 'signup');
+        return;
+      }
+      busy(b, true, 'Holding your seat...');
       call('hold', { answer: $('sb-answer').value }).then(function (d) {
         busy(b, false, 'Hold my seat');
-        if (d && d.ok) return load();
+        if (d && d.ok) {
+          if (d.membership_status) { try { VEAuth.setSession(VEAuth.getToken(), Object.assign({}, VEAuth.getMember() || {}, { membership_status: d.membership_status })); } catch (e) {} }
+          return load();
+        }
+        if (d && d.error === 'not_authenticated') { try { VEAuth.clearSession(); } catch (e) {} return hold(); }
         msg.textContent = (d && d.message) || 'Your seat did not save. Try again.';
       }).catch(function () { busy(b, false, 'Hold my seat'); msg.textContent = 'Your seat did not save. Try again.'; });
+    }
+    $('sb-yes').addEventListener('click', function () {
+      if (window.VE_PREVIEW || !st || !st.open) { msg.textContent = 'Seats open when invitations go out.'; return; }
+      hold();
     });
     $('sb-no-open').addEventListener('click', function () { $('sb-no').hidden = false; $('sb-suggest').focus(); });
     function decline(b) {
