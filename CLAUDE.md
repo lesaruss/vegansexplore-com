@@ -173,6 +173,23 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
 - Example: Depot > Bounties (`/admin/depot/bounties`): Campaigns > campaign > job, with `#new`,
   `#campaign/<id>/edit`, `#review` and `#strikes` as their own views.
 
+## Guided view for mocks and walkthroughs (LOCKED 2026-10-04)
+
+Sean: "I say this every time... I don't like the scroll... put it in that view so we're
+navigating through and seeing everything." Canon `canon-sean-interface-defaults` rule 0.
+
+Any mock, demo, pitch walkthrough, illustrative report or concept page is built as the guided
+view on the first pass, never a long scroll: one full-height slide at a time on a dark stage,
+Back / "N of M" / Next at the bottom, nothing to scroll on desktop (nav, stage and footer share
+one screen), every slide fitting at 1440x900 and 1366x768, and on phones the slide stacks with
+the controls after it. The format is the `/partners` page; the shared shell is
+`/public/ve-guided.js` (see its header for the markup). Wrap the page in
+`<div class="page-frame">`, put slides in `<main class="vg-stage">` as
+`<section class="vg-slide" id="..." data-title="...">`, and load the script after the footer.
+Different audiences branch from a `data-vg-choose` slide into `data-path` slides. Example:
+`/campaign-engine` and `/campaign-engine/fieldhouse-protein/*`. Working tools and data pages
+(queues, lists, forms) are not mocks and follow Interface defaults.
+
 ## Tracked links (Sean, 2026-10-04)
 
 Every link we send for a campaign (a one-on-one message, an email, a post, a flyer) is a tracked
