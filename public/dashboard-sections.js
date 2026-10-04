@@ -27,8 +27,8 @@
     { key: 'cm-app', group: 'Dashboard tab', label: 'Community Manager application card', note: 'Only after someone applies: Received, On standby, Selected or Not right now.', today: [M, C], sel: ['#dash-cm-app-prompt'] },
     { key: 'tour', group: 'Dashboard tab', label: 'Take the tour', note: 'The guided tour prompt.', today: [M, C, S], sel: ['#dash-tour-prompt'] },
     { key: 'survey', group: 'Dashboard tab', label: 'Mission survey (250 points)', note: 'Shown until the member answers it.', today: [M, C, S], sel: ['#dash-survey-prompt'] },
-    { key: 'membership', group: 'Dashboard tab', label: 'Membership and Challenge Badges', note: 'The two big tiles: membership level and badges earned.', today: [M, C, S], sel: ['#dash-stats-hero'] },
-    { key: 'admin-previews', group: 'Dashboard tab', label: 'Admin previews', note: 'Recent Members, Event Submissions, Recent Leads, Guest Reviews. Superadmin only, always.', today: [S], sel: ['#dash-previews'] },
+    { key: 'membership', group: 'Dashboard tab', label: 'Challenge Badges', note: 'Badges earned, beside Points and Level at the top. The membership itself shows above the name.', today: [M, C, S], sel: ['#dash-hero-badges-tile'] },
+    { key: 'admin-previews', group: 'Dashboard tab', label: 'Your tools', note: 'Three across under Action items. Superadmins see Recent Members, Event Submissions, Recent Leads, Guest Reviews.', today: [S], sel: ['#dash-previews'] },
     { key: 'role-stats', group: 'Dashboard tab', label: 'Your Role: city and pending applications', note: 'The city they manage and the count of applications waiting.', today: [C, S], sel: ['#dash-role-label', '#dash-stats-row'] },
     { key: 'leaderboard', group: 'Dashboard tab', label: 'Leaderboard', note: 'This City and Global points ranking.', today: [M, C, S], sel: ['#dash-leaderboard-block'] },
 

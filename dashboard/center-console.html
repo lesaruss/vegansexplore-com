@@ -156,7 +156,7 @@
   .dash-mini-stat-sep{margin:0 4px;color:var(--ve-text-50);font-weight:700;}
   .dash-mini-stat-label{font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:4px;}
   .dash-mini-stat-progress{font-size:8px;font-weight:700;color:var(--ve-text-50);margin-top:2px;}
-  @media (max-width:640px){ .dash-welcome{flex-direction:column;} .dash-welcome-stats{width:100%;} .dash-mini-stat{flex:1;} }
+  @media (max-width:640px){ .dash-welcome{flex-direction:column;} .dash-welcome-stats{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;} .dash-mini-stat{min-width:0;padding:10px 6px;} .dash-mini-stat-value{font-size:17px;} .dash-mini-stat-label{font-size:8px;letter-spacing:0.06em;} .dash-mini-stat-progress{font-size:7px;} }
   .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
   .dash-welcome h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
   .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
@@ -209,7 +209,13 @@
   .dash-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:8px;}
   /* Home (Sean, 2026-10-04): Action items and the Leaderboard side by side. */
   .dash-home-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:4px;}
-  .dash-home-split .dash-preview-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
+  .dash-action-list{display:flex;flex-direction:column;gap:0;}
+  .dash-action-list .dash-tour-prompt{width:100%;}
+  .dash-action-empty{font-size:13px;color:var(--ve-text-50);border:1.5px dashed var(--ve-border);border-radius:14px;padding:16px 18px;margin:0;}
+  .dash-home-overview{margin-top:24px;}
+  .dash-home-overview .dash-preview-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+  @media (max-width:1000px){ .dash-home-overview .dash-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+  @media (max-width:640px){ .dash-home-overview .dash-preview-grid{grid-template-columns:minmax(0,1fr);} }
   @media (max-width:900px){ .dash-home-split{grid-template-columns:minmax(0,1fr);} }
   @media (max-width:760px){ .dash-preview-grid{grid-template-columns:1fr;} }
   .dash-preview-card{border:1.5px solid var(--ve-border);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,#fff,#fafdfa);display:flex;flex-direction:column;min-width:0;}
@@ -702,6 +708,12 @@
           <div class="dash-mini-stat-label">Level</div>
           <div class="dash-mini-stat-progress" id="dash-hero-level-progress"></div>
         </div>
+        <!-- Challenge Badges sits with Points and Level (Sean, 2026-10-04); the Membership tile went,
+             since the eyebrow above the name already says what membership this is. -->
+        <a class="dash-mini-stat" id="dash-hero-badges-tile" href="/passport/challenge" style="text-decoration:none;color:inherit">
+          <div class="dash-mini-stat-value" id="dash-hero-badges">0</div>
+          <div class="dash-mini-stat-label">Badges</div>
+        </a>
       </div>
     </div>
 
@@ -712,6 +724,26 @@
          Dashboard button in the nav alongside Directory, Events, Shows, Daily
          Pulse, Communities, Tools). -->
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
+
+      <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
+           tools. Superadmins see the 5 most recent Members, Event Submissions,
+           Leads and Guest Reviews (each with a "View all"); everyone else sees
+           preview/access cards for Bounties, Campaigns, Opportunities, Guides,
+           My List, Choose Your Guide (Passport) and new Communities. Filled by
+           renderDashboardPreviews(). Shown as Action items beside the Leaderboard. -->
+      <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
+      <div class="dash-stats" id="dash-stats-row" style="display:none;">
+        <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
+        <a class="dash-stat" href="/dashboard/opportunities" onclick="openConsoleFrame('/dashboard/opportunities', 'Pending Applications'); return false;"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
+        <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
+      </div>
+      <!-- Home layout (Sean, 2026-10-04): Membership and Challenge Badges on top, then Action items
+           (the preview cards) and the Leaderboard side by side. The Daily Pulse preview left the
+           home tab; the Daily Pulse tab has it. -->
+      <div class="dash-home-split">
+      <div class="dash-home-actions">
+      <p class="dash-section-title" style="margin-top:0;">Action items</p>
+      <div class="dash-action-list" id="dash-action-list">
       <!-- Community Manager Certification (2026-09-25, Sean): the first thing a
            Community Manager sees. renderCmCertPrompt() shows it for community
            managers and superadmins and fills in their progress from ve-learn. -->
@@ -778,36 +810,8 @@
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </button>
-      <div class="dash-stats-hero cols-2" id="dash-stats-hero">
-        <div class="dash-stats-hero-tile">
-          <div class="dash-stats-hero-value" id="dash-hero-membership">--</div>
-          <div class="dash-stats-hero-label">Membership</div>
-        </div>
-        <a class="dash-stats-hero-tile" id="dash-hero-badges-tile" href="/passport/challenge" style="text-decoration:none;color:inherit">
-          <div class="dash-stats-hero-value" id="dash-hero-badges">0</div>
-          <div class="dash-stats-hero-label">Challenge Badges</div>
-        </a>
+      <p class="dash-action-empty" id="dash-action-empty" hidden>You're all caught up. New tasks show up here.</p>
       </div>
-
-      <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
-           tools. Superadmins see the 5 most recent Members, Event Submissions,
-           Leads and Guest Reviews (each with a "View all"); everyone else sees
-           preview/access cards for Bounties, Campaigns, Opportunities, Guides,
-           My List, Choose Your Guide (Passport) and new Communities. Filled by
-           renderDashboardPreviews(). Shown as Action items beside the Leaderboard. -->
-      <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
-      <div class="dash-stats" id="dash-stats-row" style="display:none;">
-        <div class="dash-stat"><div class="dash-stat-label">Your City</div><div class="dash-stat-value" id="dash-stat-city">--</div></div>
-        <a class="dash-stat" href="/dashboard/opportunities" onclick="openConsoleFrame('/dashboard/opportunities', 'Pending Applications'); return false;"><div class="dash-stat-label">Pending Applications</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div></a>
-        <div class="dash-stat"><div class="dash-stat-label">Status</div><div class="dash-stat-value" style="color:var(--ve-green-dark);">Active</div></div>
-      </div>
-      <!-- Home layout (Sean, 2026-10-04): Membership and Challenge Badges on top, then Action items
-           (the preview cards) and the Leaderboard side by side. The Daily Pulse preview left the
-           home tab; the Daily Pulse tab has it. -->
-      <div class="dash-home-split">
-      <div class="dash-home-actions">
-      <p class="dash-section-title" style="margin-top:0;">Action items</p>
-      <div id="dash-previews"></div>
       </div>
 
 
@@ -830,6 +834,12 @@
       </div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
+      </div>
+
+      <!-- Everything else, three across (Sean, 2026-10-04). renderDashboardPreviews(). -->
+      <div class="dash-home-overview">
+      <p class="dash-section-title">Your tools</p>
+      <div id="dash-previews"></div>
       </div>
 
     </div>
@@ -3370,6 +3380,21 @@
     card.addEventListener('click', function (e) { e.preventDefault(); c.fn(); });
     return card;
   }
+  // Action items (Sean, 2026-10-04): the checklist cards each show or hide themselves; when none
+  // are showing, say so instead of leaving an empty column next to the Leaderboard.
+  (function () {
+    var list = document.getElementById('dash-action-list'), empty = document.getElementById('dash-action-empty');
+    if (!list || !empty) return;
+    function check() {
+      var any = Array.prototype.some.call(list.children, function (c) { return c !== empty && getComputedStyle(c).display !== 'none'; });
+      if (empty.hidden !== any) empty.hidden = any; // only on a real change, or the observer would loop
+    }
+    if (window.MutationObserver) new MutationObserver(function (records) {
+      if (records.some(function (r) { return r.target !== empty; })) check();
+    }).observe(list, { attributes: true, subtree: true, attributeFilter: ['style', 'hidden', 'class'] });
+    check(); window.addEventListener('load', check);
+  })();
+
   function renderDashboardPreviews(member) {
     var host = document.getElementById('dash-previews');
     if (!host) return;
