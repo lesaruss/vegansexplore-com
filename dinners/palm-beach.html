@@ -80,6 +80,8 @@
     .checks li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:700;line-height:1.4;}
     .checks li::before{content:"";flex:0 0 20px;height:20px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/11px no-repeat;margin-top:1px;}
     .seat-box .btn{width:100%;}
+    .seat-plus{font-size:13.5px;color:rgba(26,26,26,0.8);margin-top:14px;padding-top:12px;border-top:1px solid rgba(31,95,34,0.18);}
+    .seat-plus b{color:var(--ve-green-deep);}
     .seat-note{font-size:12.5px;font-weight:600;color:rgba(26,26,26,0.7);margin-top:10px;text-align:center;}
     .seat-msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;margin-top:8px;text-align:center;}
     .seats-left{font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-orange);margin-top:18px;}
@@ -225,6 +227,7 @@
           <li>1,100 points to start</li>
         </ul>
         <button type="button" class="btn btn-primary" id="seat-btn">Take my seat for $11</button>
+        <p class="seat-plus"><b>Bringing someone?</b> Add one guest for $30. That covers their dinner and their Founding Membership. Already a member? Then it&rsquo;s $15.</p>
         <p class="seat-note">Secure checkout. The venue and time come with your confirmation.</p>
         <p class="seat-msg" id="seat-msg" role="status" aria-live="polite"></p>
       </div>
@@ -238,6 +241,7 @@
       <h2 id="faq-title">Before you say yes.</h2>
       <details><summary>Is dinner really on you?</summary><p>Yes. Four courses, on us. The only thing we ask is that you come ready to talk about what we can build together.</p></details>
       <details><summary>Why $11?</summary><p>It&rsquo;s how you join Vegans Explore, one time, and it never renews. Showing up as a member is how we know everyone at the table is in it together.</p></details>
+      <details><summary>Can I bring someone?</summary><p>Yes, one guest. Their seat is $30, which covers their dinner and makes them a Founding Member too. If they&rsquo;re already a member, it&rsquo;s $15. Your guest takes one of the 20 seats.</p></details>
       <details><summary>Already a member?</summary><p>Then your seat is one tap away. Sign in with the button above and we&rsquo;ll save it.</p></details>
       <details><summary>Can&rsquo;t make it on the 23rd?</summary><p>Tell us. This is the first of these dinners, not the last, and you&rsquo;ll be first on the list for the next one.</p></details>
       </div>
