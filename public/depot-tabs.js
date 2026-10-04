@@ -13,6 +13,7 @@
     { href: '/admin/depot/pulse', label: 'Pulse' },
     { href: '/admin/depot/sources', label: 'Sources' },
     { href: '/admin/depot/links', label: 'Links' },
+    { href: '/admin/depot/dinners', label: 'Dinner guests' },
     { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },
     { href: '/admin/depot/logos', label: 'Logos' },
     { href: '/admin/depot/community-managers', label: 'Community Managers' },

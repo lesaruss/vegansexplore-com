@@ -70,7 +70,7 @@
     <div id="oa-gate" class="gate" hidden></div>
     <div id="oa-app" hidden>
       <div class="bar">
-        <label>Page <select id="oa-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option><option value="dinner">Dinner invitation</option></select></label>
+        <label>Page <select id="oa-page"><option value="cm">Community Manager onboarding</option><option value="partners">Partners</option><option value="member">Member (Join)</option><option value="dinner">Dinner invitation</option><option value="host">Host a dinner</option></select></label>
         <label>City <select id="oa-city">
           <option value="south-florida">South Florida</option>
           <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
@@ -142,9 +142,19 @@
           { key: 'evening', label: 'The evening', words: ['evening', 'night'] },
           { key: 'seat', label: 'Take your seat', words: ['seat', 'rsvp'] },
           { key: 'faq', label: 'Questions', words: ['faq', 'question'] }
+        ],
+        // Host the table, /dinners/host (2026-10-04): the page for restaurants we ask to host.
+        host: [
+          { key: 'invite', label: 'Host the table', words: ['invite', 'host'] },
+          { key: 'why', label: 'Why a dinner', words: ['why'] },
+          { key: 'table', label: 'Who\u2019s at the table', words: ['table', 'who'] },
+          { key: 'night', label: 'The night', words: ['night', 'evening'] },
+          { key: 'terms', label: 'Who pays for what', words: ['terms', 'pays'] },
+          { key: 'get', label: 'What you get', words: ['get', 'promise'] },
+          { key: 'talk', label: 'Let\u2019s talk', words: ['talk'] }
         ]
       };
-      var VIEW = { cm: '/community-managers/onboarding', partners: '/partners', member: '/welcome', dinner: '/dinners/palm-beach' };
+      var VIEW = { cm: '/community-managers/onboarding', partners: '/partners', member: '/welcome', dinner: '/dinners/palm-beach', host: '/dinners/host' };
       var RATE = 32000, TARGET_RMS = 0.1, PEAK = 0.89, PAD = 0.35;
       var $ = function (id) { return document.getElementById(id); };
       var items = {}, current = {};

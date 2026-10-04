@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>You're invited to dinner — Vegans Explore</title>
   <meta name="robots" content="noindex, nofollow">
-  <meta name="description" content="A private dinner in Palm Beach for the people building SoFlo Vegans. Friday, October 23. Invitation only, three courses, on us.">
+  <meta name="description" content="A private dinner in Palm Beach for the people building SoFlo Vegans. Friday, October 23. Invitation only, by name. Three courses, hosted for the table.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -92,6 +92,19 @@
     .checks li::before{content:"";flex:0 0 20px;height:20px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/11px no-repeat;margin-top:1px;}
     .seat-box .btn{width:100%;}
     .seat-note{font-size:12.5px;font-weight:600;color:rgba(26,26,26,0.75);margin-top:8px;text-align:center;}
+    .sb-title{font-size:17px;font-weight:900;color:var(--ve-green-deep);margin-bottom:8px;}
+    .sb-text{font-size:14px;font-weight:600;margin-bottom:10px;}
+    .sb-label{display:block;font-size:13px;font-weight:800;margin:8px 0 4px;}
+    .seat-box textarea,.seat-box input{width:100%;font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,0.35);border-radius:8px;background:#fff;color:#1a1a1a;margin-bottom:6px;}
+    .seat-box textarea{resize:vertical;min-height:72px;}
+    .seat-box .btn{margin-top:6px;}
+    .btn-ghost-dark{background:#fff;color:var(--ve-green-deep);border:1.5px solid var(--ve-green-deep);}
+    .sb-alt{display:block;margin:10px auto 0;background:none;border:0;font:inherit;font-size:13px;font-weight:700;color:#1a1a1a;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:32px;}
+    .sb-who{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px;}
+    .sb-who li{font-size:12.5px;font-weight:800;padding:5px 10px;border-radius:99px;background:#fff;border:1px solid rgba(31,95,34,0.35);}
+    .sb-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px;}
+    .sb-who{max-height:96px;overflow:auto;}
+    .sb-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
     .seat-msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;margin-top:6px;text-align:center;}
     .plus{font-size:14.5px;color:#fff;margin-top:14px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,0.4);}
     .plus b{color:var(--ve-mint);}
@@ -123,6 +136,12 @@
       .seat-box{padding:16px 18px 14px;}
       .tile div{padding:8px 12px 10px;}
       .faq details{padding:9px 0;}
+      .seat-box textarea,.seat-box input{padding:8px 10px;margin-bottom:2px;}
+      .seat-box textarea{min-height:60px;}
+      .sb-label{margin:6px 0 3px;}
+      .sb-text{margin-bottom:6px;}
+      .sb-who{max-height:64px;}
+      .plus{margin-top:10px;padding:10px 12px;}
     }
 
     /* Phones and tablets: slides stack and the page scrolls within a slide. */
@@ -149,7 +168,6 @@
     .stage-bg{display:none;}
     @media (max-width:900px){ .stage-bg{display:block;} }
   </style>
-  <script src="/public/ve-auth.js" defer></script>
 </head>
 <body>
 <div class="page-frame">
@@ -161,7 +179,9 @@
      background and the What's next cards come from ve_onboarding_panels and the narration
      from ve_onboarding_audio (page 'dinner', this page's city), so the Depot can swap them;
      the URLs below are the built-in defaults. Unlisted and noindex: reached only from
-     personal invitations. Seats stay closed until ve_dinners.seats_open is set for this dinner, once the venue confirms. -->
+     personal invitations. Version 3 (Sean, 2026-10-04, after BOSS and a PANEL): the seat is a gift, held by name through
+     a personal link (?i=<code>, ve_dinner_invites) with one answer in advance; no checkout, no
+     plus-ones; seats open when ve_dinners.seats_open is set. Guest list: Depot > Dinner guests. -->
 <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Dinner invitation">
   <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
 
@@ -170,13 +190,13 @@
       <div class="media" data-key="invite" style="--pos-m:0%" data-cap="You're invited"></div>
       <div class="body">
         <p class="eyebrow">A private dinner &middot; Palm Beach</p>
-        <h1>You&rsquo;re invited <em>to dinner.</em></h1>
-        <p class="lede">A small table, for the people who have been building SoFlo Vegans. Three courses, on us. One conversation about what we build next, together.</p>
+        <h1><span id="inv-hello"></span>You&rsquo;re invited <em>to dinner.</em></h1>
+        <p class="lede">A small table, set by name, for the people who have been building SoFlo Vegans. Three courses, hosted by <span data-venue>our restaurant partner</span>. One conversation about what we build next, together.</p>
         <ul class="chips">
           <li><b>Fri</b> October 23</li>
           <li>Palm Beach</li>
-          <li>Invitation only</li>
-          <li>Three courses, on us</li>
+          <li>By name only</li>
+          <li>Three courses, hosted</li>
         </ul>
         <div class="cta-row">
           <button type="button" class="btn btn-primary" data-go="1">See the invitation</button>
@@ -223,7 +243,7 @@
         <h2>Not a sponsorship. A seat at the table.</h2>
         <p class="lede">This only works with the people in this room. Come hear the plan, and if it&rsquo;s right for you, pick how you want to be involved.</p>
         <div class="cards">
-          <div class="card"><div class="n">1</div><b>Take your seat</b><span>Become a Founding Member. That&rsquo;s your RSVP, and it puts you on the inside.</span></div>
+          <div class="card"><div class="n">1</div><b>Join us</b><span>Become a Founding Member, $11 one time. I&rsquo;ll offer it at the table, and it puts you on the inside.</span></div>
           <div class="card"><div class="n">2</div><b>Bring your people</b><span>Your business, your group, your audience. We help them find each other.</span></div>
           <div class="card"><div class="n">3</div><b>Lead something</b><span>A night, a cause, a corner of the city. We back the people who step up.</span></div>
         </div>
@@ -240,10 +260,10 @@
         <h2>Friday, October 23.</h2>
         <div class="split2">
           <ul class="run">
-            <li><b>Arrive</b><span>Meet the table. We introduce everyone by name.</span></li>
-            <li><b>Dinner</b><span>Three courses, on us: appetizer, main and dessert.</span></li>
-            <li><b>Five minutes</b><span>What we&rsquo;re building, and where you fit.</span></li>
-            <li><b>Saturday, Oct 24</b><span>Come out with us as we support two community events.</span></li>
+            <li><b>Arrive</b><span>Meet the table. You introduce the person next to you.</span></li>
+            <li><b>Dinner</b><span>Three courses, hosted by <span data-venue>our restaurant partner</span>: appetizer, main and dessert.</span></li>
+            <li><b>After the main course</b><span>Five minutes from me, a few of your answers read aloud, and one next step each.</span></li>
+            <li><b>Saturday, Oct 24</b><span>Bring your people to two community events, as our guests.</span></li>
           </ul>
           <div>
             <div class="next-head">
@@ -267,26 +287,50 @@
     <div class="cols">
       <div class="media" data-key="seat" style="--pos-m:2%" data-cap="Take your seat"></div>
       <div class="body">
-        <p class="eyebrow">Your seat</p>
-        <h2>Take your seat.</h2>
+        <p class="eyebrow">By name</p>
+        <h2>Your seat.</h2>
         <div class="seat">
           <div>
-            <p class="lede">Your $11 Founding Membership is your RSVP. If you&rsquo;re at the table, you&rsquo;re a member, and so is everyone sitting with you.</p>
-            <p class="plus"><b>Want someone else in the room?</b> Send them this page. You get first dibs on a seat, and they take theirs the same way, with their own $11 Founding Membership.</p>
-            <p class="room">Seats are limited by the room. If it fills, you&rsquo;re first on the list for the next dinner.</p>
+            <p class="lede">This seat has your name on it. There&rsquo;s no ticket and no plus-one, just you and the people who already gather this city.</p>
+            <p class="plus"><b>Want your people there?</b> Bring them Saturday, October 24, to two community events as our guests. And tell us who should be at the next dinner.</p>
+            <p class="room">RSVPs close Friday, October 16, so our host knows exactly how many plates to make.</p>
           </div>
-          <div class="seat-box">
-            <p class="price"><b>$11</b>one time, it never renews</p>
-            <ul class="checks">
-              <li>Your seat at the table on October 23</li>
-              <li>Vote for and save your favorite places</li>
-              <li>Join the conversation on the Daily Pulse</li>
-              <li>Join your city&rsquo;s community</li>
-              <li>Guides, and your own dashboard</li>
-              <li>1,100 points to start</li>
-            </ul>
-            <button type="button" class="btn btn-primary" id="seat-btn">Take my seat for $11</button>
-            <p class="seat-note">Secure checkout. The venue and time come with your confirmation.</p>
+          <div class="seat-box" id="seat-box">
+            <div id="sb-hold" hidden>
+              <p class="sb-title" id="sb-hello">Say yes, and tell us one thing.</p>
+              <label class="sb-label" for="sb-answer">What does SoFlo&rsquo;s Vegan community need that no one is doing yet?</label>
+              <textarea id="sb-answer" rows="3" maxlength="1000" placeholder="One or two sentences is plenty."></textarea>
+              <button type="button" class="btn btn-primary" id="sb-yes">Hold my seat</button>
+              <button type="button" class="sb-alt" id="sb-no-open">I can&rsquo;t make it</button>
+              <div id="sb-no" hidden>
+                <label class="sb-label" for="sb-suggest">Who should sit here instead? (optional)</label>
+                <input id="sb-suggest" type="text" maxlength="500" placeholder="Their name, and why">
+                <button type="button" class="btn btn-ghost-dark" id="sb-no-send">Let Sean know</button>
+              </div>
+            </div>
+            <div id="sb-yes-done" hidden>
+              <p class="sb-title">Your seat is held.</p>
+              <p class="sb-text" id="sb-when">Friday, October 23, Palm Beach. The venue and time come in your confirmation.</p>
+              <p class="sb-label" id="sb-who-head" hidden>At the table so far</p>
+              <ul class="sb-who" id="sb-who"></ul>
+              <button type="button" class="sb-alt" id="sb-cancel">Can&rsquo;t make it after all?</button>
+            </div>
+            <div id="sb-declined" hidden>
+              <p class="sb-title">Thank you for telling us.</p>
+              <p class="sb-text">You&rsquo;re first on the list for the next dinner, and Sean will see who you suggested.</p>
+              <button type="button" class="sb-alt" id="sb-reopen">Changed your mind? Hold my seat</button>
+            </div>
+            <form id="sb-ask" hidden>
+              <p class="sb-title">This table is by invitation.</p>
+              <p class="sb-text">If you think you belong at it, tell us. Sean reads every one.</p>
+              <div class="sb-two">
+                <div><label class="sb-label" for="sb-name">Your name</label><input id="sb-name" type="text" maxlength="120" autocomplete="name" required></div>
+                <div><label class="sb-label" for="sb-email">Email</label><input id="sb-email" type="email" maxlength="200" autocomplete="email" required></div>
+              </div>
+              <label class="sb-label" for="sb-note">Why this table? (optional)</label><input id="sb-note" type="text" maxlength="1000">
+              <input id="sb-web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="sb-hp">
+              <button type="submit" class="btn btn-primary">Ask for a seat</button>
+            </form>
             <p class="seat-msg" id="seat-msg" role="status" aria-live="polite"></p>
           </div>
         </div>
@@ -300,12 +344,12 @@
       <div class="body faq">
         <p class="eyebrow">Questions</p>
         <h2>Before you say yes.</h2>
-        <details><summary>Is dinner really on you?</summary><p>Yes. Three courses, on us: appetizer, main and dessert. The only thing we ask is that you come ready to talk about what we can build together.</p></details>
-        <details><summary>Why $11?</summary><p>It&rsquo;s how you join Vegans Explore, one time, and it never renews. Showing up as a member is how we know everyone at the table is in it together.</p></details>
-        <details><summary>Can I bring someone?</summary><p>Yes. Send them this page. They take their own seat the same way you do: their $11 Founding Membership is their RSVP, so everyone at the table is a member.</p></details>
-        <details><summary>Already a member?</summary><p>Then your seat is one tap away. Sign in from the seat slide and we&rsquo;ll save it.</p></details>
-        <details><summary>Can&rsquo;t make it on the 23rd?</summary><p>Tell us. This is the first of these dinners, not the last, and you&rsquo;ll be first on the list for the next one.</p></details>
-        <div class="cta-row"><button type="button" class="btn btn-primary" data-go="5">Take your seat</button></div>
+        <details><summary>Is dinner really free?</summary><p>Yes, there&rsquo;s no ticket. Dinner is hosted by <span data-venue>our restaurant partner</span>, and we take care of the staff. All we ask is that you come ready to talk about what we can build together.</p></details>
+        <details><summary>Do I have to pay anything?</summary><p>No. At the table I&rsquo;ll offer Founding Membership, $11 one time, as one way to be part of this. It&rsquo;s your call, and your seat never depends on it.</p></details>
+        <details><summary>Can I bring someone?</summary><p>Seats are by name, so it&rsquo;s just you at dinner. Bring your people on Saturday, October 24, as our guests, and tell us who should be at the next dinner.</p></details>
+        <details><summary>Why an answer in advance?</summary><p>So the night starts where you are. I&rsquo;ll read a few answers aloud, and they shape what we build next.</p></details>
+        <details><summary>Can&rsquo;t make it on the 23rd?</summary><p>Tell us on the seat slide. You can suggest someone to sit in your place, and you&rsquo;ll be first on the list for the next dinner.</p></details>
+        <div class="cta-row"><button type="button" class="btn btn-primary" data-go="5">Go to your seat</button></div>
       </div>
     </div>
   </section>
@@ -324,7 +368,7 @@
     // The template: one page per city dinner. PAGE and CITY pick its panels and narration
     // in the Depot; DEFAULTS are the built-in pictures and sample narration until replaced.
     var PAGE = 'dinner', CITY = 'south-florida';
-    var DINNER = 'palm-beach-2026-10-23'; // ve_dinners.slug: seats_open and capacity live there
+    var DINNER = 'palm-beach-2026-10-23'; // ve_dinners.slug: seats_open, venue, capacity and the RSVP close live there
     var HF = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_';
     var BEDS = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/onboarding-audio/beds/';
     var DEFAULTS = {
@@ -339,12 +383,12 @@
       },
       // Sample narration in Sean's voice (Higgsfield) until his own recordings replace it.
       clips: {
-        invite: { url: HF + '164215_a0a7b9ac-0759-40bb-9740-efa668f91a8f.mp3', dur: 18, bed: BEDS + 'sanctuary-stroll-60.wav' },
+        invite: { url: HF + '195759_0f487afc-9395-45e2-8553-e89d34efa723.mp3', dur: 21, bed: BEDS + 'sanctuary-stroll-60.wav' },
         why: { url: HF + '154740_dbf98da1-1c18-49fd-b9e5-a91ddedd7250.mp3', dur: 24, bed: BEDS + 'earthy-reflections-60.wav' },
         build: { url: HF + '170231_08f1fae9-2da5-4f79-9845-fd9b7e4933ad.mp3', dur: 30, bed: BEDS + 'vegan-rhythms-60.wav' },
-        ask: { url: HF + '171440_5371af11-ce41-4306-bf67-0a452768b0df.mp3', dur: 27, bed: BEDS + 'green-bites-60.wav' },
-        evening: { url: HF + '164215_16be4996-f6b4-4579-a65f-691a82e0f1da.mp3', dur: 21, bed: BEDS + 'vegan-glow-60.wav' },
-        seat: { url: HF + '154740_54e309bd-a9d0-402d-89b6-b7ddd8c7af5e.mp3', dur: 18, bed: BEDS + 'manifesto-whisper-60.wav' },
+        ask: { url: HF + '195759_dc476cc7-78b6-4607-90f5-26556edb7401.mp3', dur: 33, bed: BEDS + 'green-bites-60.wav' },
+        evening: { url: HF + '195759_29c272ab-9944-4a68-aee4-e4d9a244fd6e.mp3', dur: 30, bed: BEDS + 'vegan-glow-60.wav' },
+        seat: { url: HF + '195759_ab6d67ec-f374-4125-971b-5e89b96e07a9.mp3', dur: 16, bed: BEDS + 'manifesto-whisper-60.wav' },
         faq: { url: HF + '154740_d54daf85-2cbe-4e9d-8d40-02a96e940639.mp3', dur: 9, bed: BEDS + 'earthy-reflections-v2-60.wav' }
       }
     };
@@ -417,54 +461,72 @@
     $('nx-next').addEventListener('click', function () { go(at() + 1); });
     mark(0);
 
-    // Seats (Sean, 2026-10-04): the $11 Founding Membership is the RSVP. ve-dinner-seats saves
-    // the seat for an active member; anyone else goes through checkout and the seat is saved when
-    // they come back (?activate=success). Open/closed and the room size live in ve_dinners.
+    // Seats, version 3 (Sean, 2026-10-04): the seat is a gift, held by name. A guest's personal
+    // link carries ?i=<code>; ve-dinner-seats holds the seat with a yes and one answer, takes a
+    // "can't make it" with an optional suggestion, and lets anyone without a link ask for a seat.
     var SEATS_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-dinner-seats';
-    var btn = $('seat-btn'), msg = $('seat-msg'), seatState = { open: false, full: false, mine: null };
-    function tok() { try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
-    function seats(action) {
-      var h = { 'Content-Type': 'application/json' }, t = tok();
-      if (t) h.Authorization = 'Bearer ' + t;
-      return fetch(SEATS_FN, { method: 'POST', headers: h, body: JSON.stringify({ action: action, dinner: DINNER }) })
+    var code = (new URLSearchParams(location.search).get('i') || '').replace(/[^a-z0-9]/gi, '').slice(0, 40);
+    var msg = $('seat-msg'), st = null;
+    function call(action, extra) {
+      return fetch(SEATS_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ action: action, dinner: DINNER, code: code }, extra || {})) })
         .then(function (r) { return r.json(); });
     }
+    function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function view(id) { ['sb-hold', 'sb-yes-done', 'sb-declined', 'sb-ask'].forEach(function (v) { $(v).hidden = v !== id; }); }
     function paint() {
-      if (seatState.mine === 'confirmed') { btn.textContent = 'Your seat is saved'; btn.disabled = true; msg.textContent = 'See you on the 23rd. The venue and time come in your confirmation.'; return; }
-      if (seatState.mine === 'waitlist') { btn.textContent = 'You\u2019re on the list'; btn.disabled = true; msg.textContent = 'The room is full. You\u2019re first in line if a seat opens, and first on the list for the next dinner.'; return; }
-      btn.disabled = false;
-      btn.textContent = seatState.open && seatState.full ? 'Join the waitlist' : 'Take my seat for $11';
+      msg.textContent = '';
+      if (st && st.venue_name) document.querySelectorAll('[data-venue]').forEach(function (el) { el.textContent = st.venue_name; });
+      var inv = st && st.invite;
+      if (inv && inv.first_name) $('inv-hello').textContent = inv.first_name + ', ';
+      if (!inv || inv.status === 'requested') { view('sb-ask'); if (inv) msg.textContent = 'Thanks, Sean has your note.'; return; }
+      if (inv.status === 'yes') {
+        view('sb-yes-done');
+        var when = 'Friday, October 23' + (st.start_time ? ' at ' + st.start_time : '') + '. ';
+        $('sb-when').textContent = st.venue_name ? when + st.venue_name + (st.venue_address ? ', ' + st.venue_address : '') + '.' : when + 'The venue and time come in your confirmation.';
+        var g = st.guests || [];
+        $('sb-who-head').hidden = !g.length;
+        $('sb-who').innerHTML = g.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('');
+        return;
+      }
+      if (inv.status === 'declined') { view('sb-declined'); $('sb-reopen').hidden = !!st.closed; return; }
+      view('sb-hold');
+      $('sb-hello').textContent = inv.first_name + ', say yes and tell us one thing.';
+      if (inv.answer) $('sb-answer').value = inv.answer;
+      if (!st.open || window.VE_PREVIEW) msg.textContent = 'Seats open when invitations go out.';
+      else if (st.closed) msg.textContent = 'RSVPs for this dinner have closed. Tell Sean, and you’ll be first for the next one.';
     }
-    function take(tries) {
-      msg.textContent = 'Saving your seat...';
-      return seats('take').then(function (d) {
-        if (d && d.seat) { seatState.mine = d.seat; paint(); return; }
-        if (d && d.need_membership) {
-          if (tries > 0) { setTimeout(function () { take(tries - 1); }, 2500); return; } // the payment is still landing
-          msg.textContent = 'Opening secure checkout...';
-          return VEAuth.startEntryCheckout(1100).then(function (c) { if (c && c.url) { location.href = c.url; return; } msg.textContent = 'Checkout did not open. Refresh and try again.'; });
-        }
-        msg.textContent = (d && d.message) || 'Your seat did not save. Refresh and try again.';
-      }).catch(function () { msg.textContent = 'Your seat did not save. Refresh and try again.'; });
-    }
-    function withAuth(fn) {
-      if (window.VEAuth) return fn();
-      var t = 0, iv = setInterval(function () { if (window.VEAuth || ++t > 50) { clearInterval(iv); if (window.VEAuth) fn(); else location.href = '/join'; } }, 100);
-    }
-    btn.addEventListener('click', function () {
-      if (window.VE_PREVIEW || !seatState.open) { msg.textContent = 'Seats open when invitations go out. This button will take you to secure $11 checkout and save your seat.'; return; }
-      withAuth(function () {
-        if (!VEAuth.isLoggedIn()) { VEAuth.showAuthModal('Create your account to take your seat at the table.', function () { take(0); }, 'signup'); return; }
-        take(0);
-      });
+    function load() { return call('status').then(function (d) { if (d && !d.error) { st = d; paint(); } }).catch(function () {}); }
+    function busy(b, on, label) { b.disabled = on; if (label) b.textContent = label; }
+    $('sb-yes').addEventListener('click', function () {
+      if (window.VE_PREVIEW || !st || !st.open) { msg.textContent = 'Seats open when invitations go out.'; return; }
+      var b = this; busy(b, true, 'Holding your seat...');
+      call('hold', { answer: $('sb-answer').value }).then(function (d) {
+        busy(b, false, 'Hold my seat');
+        if (d && d.ok) return load();
+        msg.textContent = (d && d.message) || 'Your seat did not save. Try again.';
+      }).catch(function () { busy(b, false, 'Hold my seat'); msg.textContent = 'Your seat did not save. Try again.'; });
     });
-    seats('status').then(function (d) {
-      if (!d || d.error) return;
-      seatState = { open: !!d.open, full: !!d.full, mine: d.mine || null }; paint();
-      var q = new URLSearchParams(location.search).get('activate');
-      if (q === 'success' && !seatState.mine && tok()) { show(5); withAuth(function () { take(6); }); }
-      if (q === 'cancelled') { show(5); msg.textContent = 'Checkout was cancelled. Your seat is not saved yet.'; }
-    }).catch(function () {});
+    $('sb-no-open').addEventListener('click', function () { $('sb-no').hidden = false; $('sb-suggest').focus(); });
+    function decline(b) {
+      busy(b, true);
+      call('decline', { suggestion: $('sb-suggest').value }).then(function (d) {
+        busy(b, false); if (d && d.ok) return load(); msg.textContent = 'That did not save. Try again.';
+      }).catch(function () { busy(b, false); msg.textContent = 'That did not save. Try again.'; });
+    }
+    $('sb-no-send').addEventListener('click', function () { decline(this); });
+    $('sb-cancel').addEventListener('click', function () { view('sb-hold'); $('sb-no').hidden = false; $('sb-suggest').focus(); });
+    $('sb-reopen').addEventListener('click', function () { view('sb-hold'); $('sb-no').hidden = true; });
+    $('sb-ask').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var b = this.querySelector('button'); busy(b, true);
+      call('request', { name: $('sb-name').value, email: $('sb-email').value, note: $('sb-note').value, website: $('sb-web').value }).then(function (d) {
+        busy(b, false);
+        if (d && d.ok) { $('sb-ask').reset(); msg.textContent = 'Thank you. Sean reads every one, and he’ll be in touch.'; return; }
+        msg.textContent = (d && d.message) || 'That did not send. Try again.';
+      }).catch(function () { busy(b, false); msg.textContent = 'That did not send. Try again.'; });
+    });
+    view(code ? 'sb-hold' : 'sb-ask');
+    load();
   })();
 </script>
 </body>

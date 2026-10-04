@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Dinner guests | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:20px;font-weight:900;line-height:1.2;margin-bottom:6px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:16px;}
+    .crumbs{font-size:13px;font-weight:800;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+    .crumbs a{color:var(--ve-green-deep);}
+    .crumbs span[aria-hidden]{color:var(--ve-text-75);}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+    .toolbar input,.toolbar select{font:inherit;font-size:13.5px;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;}
+    .toolbar input{flex:1;min-width:min(220px,100%);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:12px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;}
+    .card .name{font-size:16px;font-weight:900;line-height:1.3;}
+    .card .meta{font-size:12px;font-weight:700;color:var(--ve-text-75);}
+    .card .text{font-size:13.5px;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em;}
+    .card .btn{margin-top:auto;align-self:flex-start;}
+    .tag{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;}
+    .t-yes{background:#d6f5d8;color:#14501a;} .t-invited{background:#e6eefc;color:#1d3f8a;} .t-declined{background:#f1f1f1;color:#444;}
+    .t-requested{background:#fff1d6;color:#7a4b00;} .t-not_invited{background:#f6e3e3;color:#7a1f1f;} .t-open{background:#d6f5d8;color:#14501a;} .t-closed{background:#f1f1f1;color:#444;}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border-radius:8px;font:inherit;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:hover{background:#174a1a;}
+    .btn.ghost{background:#fff;color:var(--ve-green-deep);border:1.5px solid var(--ve-green-deep);}
+    .btn.danger{background:#fff;color:#a61b1b;border:1.5px solid #a61b1b;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:20px 22px;margin-bottom:14px;}
+    .form{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px 16px;}
+    .form label{display:block;font-size:12px;font-weight:800;letter-spacing:.04em;margin-bottom:4px;}
+    .form input,.form select,.form textarea{width:100%;font:inherit;font-size:14px;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;}
+    .form .wide{grid-column:1/-1;}
+    .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center;}
+    .link{font-size:13.5px;font-weight:700;word-break:break-all;background:var(--ve-green-light);padding:10px 12px;border-radius:8px;}
+    .quote{font-size:14.5px;border-left:4px solid var(--ve-orange);padding:4px 0 4px 14px;margin:6px 0 10px;white-space:pre-wrap;}
+    .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);min-height:20px;margin-top:8px;}
+    .msg.err{color:#a61b1b;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:24px 0;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .count{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:10px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Dinner guests</h1>
+    <div id="depot-tabs"></div>
+    <!-- City dinners, version 3 (Sean, 2026-10-04, after BOSS and a PANEL): seats are a gift,
+         held by name. Every guest gets a personal link (?i=<code>); send it as a tracked link
+         from Depot > Links. Backups fill seats that open; people who ask for a seat land here
+         as "Asked for a seat" for Sean to decide. Data: ve_dinners, ve_dinner_invites, through
+         ve-dinner-seats (admin_* actions, superadmin only). -->
+    <div id="gate" class="gate" hidden></div>
+    <div id="app" hidden>
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+      <div id="view"><p class="empty">Loading...</p></div>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-dinner-seats';
+      var SITE = 'https://vegansexplore.com';
+      var $ = function (id) { return document.getElementById(id); };
+      var STATUS = { yes: 'Said yes', invited: 'Invited', declined: 'Can’t make it', requested: 'Asked for a seat', not_invited: 'Not this time' };
+      var ORDER = { requested: 0, yes: 1, invited: 2, declined: 3, not_invited: 4 };
+      var dinners = [], cache = {};
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function tag(st) { return '<span class="tag t-' + esc(st) + '">' + esc(STATUS[st] || st) + '</span>'; }
+      function date(d) { return d ? new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : 'Not set'; }
+      function crumbs(parts) {
+        $('crumbs').innerHTML = parts.map(function (p, i) { return i < parts.length - 1 ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a><span aria-hidden="true">&rsaquo;</span>' : '<span aria-current="page">' + esc(p[0]) + '</span>'; }).join('');
+      }
+      function linkFor(d, inv) { return SITE + (d.page_path || '/dinners') + '?i=' + inv.code; }
+      function loadDinner(slug) {
+        return api({ action: 'admin_get', dinner: slug }).then(function (r) { if (!r.dinner) throw new Error(r.error || 'load'); cache[slug] = r; return r; });
+      }
+
+      // List: every dinner, soonest first.
+      function viewDinners() {
+        crumbs([['Dinners', '#']]);
+        $('view').innerHTML = '<p class="empty">Loading...</p>';
+        api({ action: 'admin_dinners' }).then(function (r) {
+          dinners = r.dinners || [];
+          if (!dinners.length) { $('view').innerHTML = '<p class="empty">No dinners yet.</p>'; return; }
+          $('view').innerHTML = '<p class="sub">Each dinner&rsquo;s guest list. Seats are by name: every guest gets a personal link, and backups fill seats that open.</p><div class="grid">' + dinners.map(function (d) {
+            var c = d.counts || {};
+            return '<article class="card"><p class="meta">' + esc(date(d.event_date)) + '</p><p class="name">' + esc(d.title) + '</p>' +
+              '<div class="tags"><span class="tag ' + (d.seats_open ? 't-open">Seats open' : 't-closed">Seats closed') + '</span>' +
+              ['yes', 'invited', 'requested', 'declined'].filter(function (k) { return c[k]; }).map(function (k) { return '<span class="tag t-' + k + '">' + c[k] + ' ' + esc(STATUS[k]) + '</span>'; }).join('') + '</div>' +
+              '<p class="text">' + esc(d.venue_name ? d.venue_name + (d.capacity ? ', ' + d.capacity + ' seats' : '') : 'Venue not confirmed yet') + '</p>' +
+              '<a class="btn" href="#dinner/' + esc(d.slug) + '">Open</a></article>';
+          }).join('') + '</div>';
+        }).catch(function () { $('view').innerHTML = '<p class="empty">Did not load. Refresh to try again.</p>'; });
+      }
+
+      // One dinner: its guests, most urgent first.
+      function viewDinner(slug) {
+        $('view').innerHTML = '<p class="empty">Loading...</p>';
+        loadDinner(slug).then(function (r) {
+          var d = r.dinner, list = r.invites.slice();
+          crumbs([['Dinners', '#'], [d.title, '#dinner/' + slug]]);
+          var yes = list.filter(function (i) { return i.status === 'yes'; });
+          $('view').innerHTML =
+            '<div class="panel"><h2>' + esc(d.title) + '</h2><p class="meta">' + esc(date(d.event_date)) + (d.start_time ? ', ' + esc(d.start_time) : '') + ' &middot; ' + esc(d.venue_name || 'Venue not confirmed yet') +
+            ' &middot; ' + (d.capacity ? esc(d.capacity) + ' seats' : 'Seat count not set') + ' &middot; RSVPs close ' + esc(date(d.rsvp_closes)) + '</p>' +
+            '<div class="tags" style="margin-top:8px"><span class="tag ' + (d.seats_open ? 't-open">Seats open' : 't-closed">Seats closed') + '</span><span class="tag t-yes">' + yes.length + ' said yes</span></div>' +
+            '<div class="row"><a class="btn ghost" href="#dinner/' + esc(slug) + '/edit">Dinner details</a><button type="button" class="btn ghost" id="copy-host">Copy the list for the host</button><a class="btn" href="#dinner/' + esc(slug) + '/new">New guest</a></div><p class="msg" id="dmsg" role="status"></p></div>' +
+            '<div class="toolbar"><input type="search" id="q" placeholder="Search by name or email" aria-label="Search guests"><select id="f" aria-label="Show"><option value="">Everyone</option>' +
+            Object.keys(STATUS).map(function (k) { return '<option value="' + k + '">' + esc(STATUS[k]) + '</option>'; }).join('') + '<option value="backup">Backup list</option></select></div>' +
+            '<p class="count" id="count"></p><div class="grid" id="guests"></div>';
+          function render() {
+            var q = $('q').value.trim().toLowerCase(), f = $('f').value;
+            var rows = list.filter(function (i) {
+              if (q && (i.name + ' ' + (i.email || '')).toLowerCase().indexOf(q) < 0) return false;
+              if (f === 'backup') return i.list === 'backup';
+              return !f || i.status === f;
+            }).sort(function (a, b) { return (ORDER[a.status] - ORDER[b.status]) || ((a.list === 'backup') - (b.list === 'backup')) || ((a.rank || 999) - (b.rank || 999)) || a.name.localeCompare(b.name); });
+            $('count').textContent = rows.length + ' of ' + list.length + ' guests';
+            $('guests').innerHTML = rows.length ? rows.map(function (i) {
+              return '<article class="card"><div class="tags">' + tag(i.status) + '<span class="tag t-closed">' + (i.list === 'backup' ? 'Backup' : 'A list') + (i.rank ? ' #' + esc(i.rank) : '') + '</span></div>' +
+                '<p class="name">' + esc(i.name) + '</p><p class="meta">' + esc(i.email || 'No email') + '</p>' +
+                '<p class="text">' + esc(i.answer || i.suggestion || i.note || 'No answer yet.') + '</p>' +
+                '<a class="btn" href="#dinner/' + esc(slug) + '/guest/' + esc(i.id) + '">Open</a></article>';
+            }).join('') : '<p class="empty">No guests match.</p>';
+          }
+          $('q').addEventListener('input', render); $('f').addEventListener('change', render); render();
+          $('copy-host').addEventListener('click', function () {
+            var text = d.title + '\n' + yes.length + ' guests\n' + yes.map(function (i) { return '- ' + i.name; }).join('\n');
+            (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { $('dmsg').textContent = 'Copied ' + yes.length + ' names for the host.'; }, function () { $('dmsg').textContent = text; });
+          });
+        }).catch(function () { $('view').innerHTML = '<p class="empty">Did not load. Refresh to try again.</p>'; });
+      }
+
+      // Dinner details: venue, time, seats, RSVP close, and the switch that opens seats.
+      function viewEdit(slug) {
+        (cache[slug] ? Promise.resolve(cache[slug]) : loadDinner(slug)).then(function (r) {
+          var d = r.dinner;
+          crumbs([['Dinners', '#'], [d.title, '#dinner/' + slug], ['Dinner details', '#dinner/' + slug + '/edit']]);
+          $('view').innerHTML = '<form class="panel" id="df"><h2>Dinner details</h2><p class="sub">Open seats once the venue and its seat count are confirmed. Guests see the venue and address after they say yes.</p><div class="form">' +
+            '<div><label for="d-venue">Venue</label><input id="d-venue" value="' + esc(d.venue_name || '') + '"></div>' +
+            '<div class="wide"><label for="d-addr">Address</label><input id="d-addr" value="' + esc(d.venue_address || '') + '"></div>' +
+            '<div><label for="d-time">Start time</label><input id="d-time" placeholder="7:00 pm" value="' + esc(d.start_time || '') + '"></div>' +
+            '<div><label for="d-cap">Seats the room holds</label><input id="d-cap" type="number" min="1" value="' + esc(d.capacity || '') + '"></div>' +
+            '<div><label for="d-close">RSVPs close</label><input id="d-close" type="date" value="' + esc(d.rsvp_closes || '') + '"></div>' +
+            '<div><label for="d-open">Seats</label><select id="d-open"><option value="0"' + (d.seats_open ? '' : ' selected') + '>Closed</option><option value="1"' + (d.seats_open ? ' selected' : '') + '>Open: links can hold seats</option></select></div>' +
+            '</div><div class="row"><button type="submit" class="btn">Save</button><a class="btn ghost" href="#dinner/' + esc(slug) + '">Back to guests</a></div><p class="msg" id="emsg" role="status"></p></form>';
+          $('df').addEventListener('submit', function (e) {
+            e.preventDefault();
+            api({ action: 'admin_dinner', dinner: slug, venue_name: $('d-venue').value, venue_address: $('d-addr').value, start_time: $('d-time').value, capacity: $('d-cap').value, rsvp_closes: $('d-close').value, seats_open: $('d-open').value === '1' })
+              .then(function (x) { if (!x.dinner) throw new Error(); cache[slug].dinner = x.dinner; $('emsg').className = 'msg'; $('emsg').textContent = 'Saved.'; })
+              .catch(function () { $('emsg').className = 'msg err'; $('emsg').textContent = 'Did not save. Try again.'; });
+          });
+        });
+      }
+
+      // One guest (or a new one): their personal link, what they said, and the edit form.
+      function viewGuest(slug, id) {
+        (cache[slug] ? Promise.resolve(cache[slug]) : loadDinner(slug)).then(function (r) {
+          var d = r.dinner, inv = id ? r.invites.filter(function (i) { return i.id === id; })[0] : null;
+          if (id && !inv) { location.hash = '#dinner/' + slug; return; }
+          crumbs([['Dinners', '#'], [d.title, '#dinner/' + slug], [inv ? inv.name : 'New guest', location.hash]]);
+          var html = '';
+          if (inv) {
+            html += '<div class="panel"><div class="tags">' + tag(inv.status) + '</div><h2 style="margin-top:8px">' + esc(inv.name) + '</h2>' +
+              '<p class="sub" style="margin-bottom:6px">Personal link. Make it a tracked link in Depot &gt; Links, one per person, so the click names them.</p>' +
+              '<p class="link" id="g-link">' + esc(linkFor(d, inv)) + '</p><div class="row"><button type="button" class="btn ghost" id="g-copy">Copy link</button><a class="btn ghost" href="/admin/depot/links" target="_blank" rel="noopener">Open Links</a></div>' +
+              (inv.answer ? '<p class="meta" style="margin-top:14px">Their answer</p><p class="quote">' + esc(inv.answer) + '</p>' : '') +
+              (inv.suggestion ? '<p class="meta">Who they suggested</p><p class="quote">' + esc(inv.suggestion) + '</p>' : '') +
+              (inv.status === 'requested' ? '<div class="row"><button type="button" class="btn" data-set="invited">Invite them</button><button type="button" class="btn ghost" data-set="not_invited">Not this time</button></div>' : '') +
+              '<p class="msg" id="gmsg" role="status"></p></div>';
+          }
+          html += '<form class="panel" id="gf"><h2>' + (inv ? 'Edit' : 'New guest') + '</h2><div class="form">' +
+            '<div><label for="g-name">Name</label><input id="g-name" required maxlength="120" value="' + esc(inv ? inv.name : '') + '"></div>' +
+            '<div><label for="g-email">Email</label><input id="g-email" type="email" maxlength="200" value="' + esc(inv ? inv.email || '' : '') + '"></div>' +
+            '<div><label for="g-phone">Phone</label><input id="g-phone" maxlength="40" value="' + esc(inv ? inv.phone || '' : '') + '"></div>' +
+            '<div><label for="g-list">List</label><select id="g-list"><option value="a">A list</option><option value="backup"' + (inv && inv.list === 'backup' ? ' selected' : '') + '>Backup</option></select></div>' +
+            '<div><label for="g-rank">Rank</label><input id="g-rank" type="number" min="1" value="' + esc(inv && inv.rank || '') + '"></div>' +
+            '<div><label for="g-status">Status</label><select id="g-status">' + Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + ((inv ? inv.status : 'invited') === k ? ' selected' : '') + '>' + esc(STATUS[k]) + '</option>'; }).join('') + '</select></div>' +
+            '<div><label for="g-show">Show their name to other guests</label><select id="g-show"><option value="1">Yes</option><option value="0"' + (inv && inv.show_name === false ? ' selected' : '') + '>No</option></select></div>' +
+            '<div class="wide"><label for="g-note">Why they&rsquo;re on the list (only you see this)</label><textarea id="g-note" rows="2" maxlength="1000">' + esc(inv ? inv.note || '' : '') + '</textarea></div>' +
+            '</div><div class="row"><button type="submit" class="btn">Save</button><a class="btn ghost" href="#dinner/' + esc(slug) + '">Back to guests</a>' + (inv ? '<button type="button" class="btn danger" id="g-del">Remove</button>' : '') + '</div><p class="msg" id="fmsg" role="status"></p></form>';
+          $('view').innerHTML = html;
+          function save(extra) {
+            return api(Object.assign({ action: 'admin_invite_save', dinner: slug, id: inv ? inv.id : undefined, name: $('g-name').value, email: $('g-email').value, phone: $('g-phone').value, list: $('g-list').value, rank: $('g-rank').value, status: $('g-status').value, show_name: $('g-show').value === '1', note: $('g-note').value }, extra || {}));
+          }
+          $('gf').addEventListener('submit', function (e) {
+            e.preventDefault();
+            save().then(function (x) {
+              if (!x.invite) throw new Error(x.message || '');
+              delete cache[slug];
+              location.hash = '#dinner/' + slug + '/guest/' + x.invite.id;
+              if (inv) viewGuest(slug, x.invite.id);
+            }).catch(function (err) { $('fmsg').className = 'msg err'; $('fmsg').textContent = err.message || 'Did not save. Try again.'; });
+          });
+          if (inv) {
+            $('g-copy').addEventListener('click', function () { var t = $('g-link').textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('gmsg').textContent = 'Link copied.'; }, function () { $('gmsg').textContent = 'Select the link above to copy it.'; }); });
+            document.querySelectorAll('[data-set]').forEach(function (b) { b.addEventListener('click', function () { $('g-status').value = b.getAttribute('data-set'); $('gf').requestSubmit(); }); });
+            $('g-del').addEventListener('click', function () {
+              if (!confirm('Remove ' + inv.name + ' from this dinner?')) return;
+              api({ action: 'admin_invite_delete', id: inv.id }).then(function (x) { if (!x.ok) throw new Error(); delete cache[slug]; location.hash = '#dinner/' + slug; })
+                .catch(function () { $('fmsg').className = 'msg err'; $('fmsg').textContent = 'Did not remove. Try again.'; });
+            });
+          }
+        });
+      }
+
+      function route() {
+        var h = location.hash.replace(/^#/, ''), m;
+        if ((m = h.match(/^dinner\/([a-z0-9-]+)\/edit$/))) return viewEdit(m[1]);
+        if ((m = h.match(/^dinner\/([a-z0-9-]+)\/new$/))) return viewGuest(m[1], null);
+        if ((m = h.match(/^dinner\/([a-z0-9-]+)\/guest\/([0-9a-f-]+)$/))) return viewGuest(m[1], m[2]);
+        if ((m = h.match(/^dinner\/([a-z0-9-]+)$/))) return viewDinner(m[1]);
+        viewDinners();
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('app').hidden = false;
+        window.addEventListener('hashchange', route); route();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
