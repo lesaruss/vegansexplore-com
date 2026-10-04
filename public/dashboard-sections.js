@@ -39,7 +39,7 @@
     { key: 'tab-communities', group: 'Tabs', label: 'Communities tab', note: 'Their communities and the city switcher.', today: [M, C, S], tab: 'communities', sel: ['#dash-community-section'] },
     { key: 'tab-tools', group: 'Tabs', label: 'Tools tab', note: 'Everything listed under "Tools tab" below.', today: [M, C, S], tab: 'tools', sel: ['#dash-tools-section'] },
 
-    { key: 'tools-bounties', group: 'Tools tab', label: 'Bounties', note: 'Point bounties by topic.', today: [M, C, S], section: 'dash-bounties-section' },
+    { key: 'tools-bounties', group: 'Tools tab', label: 'Bounties', note: 'Bounty campaigns in their city (opens the Bounties page in the dashboard window).', today: [M, C, S], section: 'dash-bounties-section' },
     { key: 'tools-campaigns', group: 'Tools tab', label: 'Your Campaigns', note: 'Campaigns they joined or can join.', today: [M, C, S], section: 'dash-campaigns-section' },
     { key: 'tools-opportunities', group: 'Tools tab', label: 'Your Opportunities', note: 'Volunteer and paid opportunities.', today: [M, C, S], section: 'dash-opportunities-section' },
     { key: 'tools-guides', group: 'Tools tab', label: 'Guides', note: 'Step-by-step guide catalog.', today: [M, C, S], section: 'dash-guides-section' },

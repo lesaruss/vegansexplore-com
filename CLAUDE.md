@@ -166,6 +166,10 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   is a colored tag in plain words (Live, Waiting for approval, Not live yet), never an action word.
 - Full width (above). Cards four across, most urgent first. Short lists cap and scroll inside the box.
   Summaries clamp to two rows. Queues filter, sort and search. New is a button to its own view.
+- Member features live in the universal frame (the dashboard window): `/dashboard/<feature>` opens
+  the page under "Dashboard / Feature". Opened on its own while signed in, the page moves into the
+  dashboard; signed out, it shows a sign-in gate and none of the content, and the server refuses the
+  data. Example: `/bounties` -> `/dashboard/bounties` (`openBounties` in center-console).
 - Example: Depot > Bounties (`/admin/depot/bounties`): Campaigns > campaign > job, with `#new`,
   `#campaign/<id>/edit`, `#review` and `#strikes` as their own views.
 

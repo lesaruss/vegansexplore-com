@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    // Bounties are for members, inside the dashboard window (Sean, 2026-10-04). Opened on its own by
+    // someone signed in, the page moves into /dashboard/bounties; signed out, it shows a sign-in gate.
+    (function () {
+      var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
+      var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
+      if (alone && signedIn) location.replace('/dashboard/bounties' + location.search + location.hash);
+    })();
+  </script>
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bounties | Vegans Explore</title>
+  <meta name="robots" content="noindex">
   <meta name="description" content="Pick a campaign in your city, take on a job and earn points: recap videos, vlogs, interviews, write-ups, restaurant features and more.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -173,6 +183,9 @@
     .check input { width: 20px; height: 20px; margin-top: 1px; flex: 0 0 auto; }
     .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     [hidden] { display: none !important; }
+    .gated .head .row { display: none; }
+    .gate { margin: 30px 0; }
+    .gate .btn { margin-top: 14px; }
     .ve-embedded .head { background: #fff; padding: 22px 0 14px; }
     .ve-embedded .wrap { max-width: none; padding: 0 22px; }
     @media (max-width: 720px) { .wrap { padding: 0 16px; } .head { padding: 30px 0 22px; } }
@@ -197,6 +210,7 @@
       </div>
     </header>
     <section class="wrap" aria-live="polite">
+      <div class="empty gate" id="gate" hidden><strong>Bounties are for members.</strong>Sign in to see the campaigns in your city, take on a job and earn points. New here? Join Vegans Explore first; claiming a job takes a Passport.<br><button type="button" class="btn btn-primary" id="gate-signin">Sign in or join</button></div>
       <nav class="crumbs" id="crumbs" aria-label="Breadcrumb" hidden></nav>
       <div id="list"></div>
       <div id="campaign" hidden>
@@ -263,6 +277,19 @@
     var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
+    var embedded = document.documentElement.classList.contains('ve-embedded');
+    // Signed out: no campaigns, only the way in. Signing in lands in the dashboard window.
+    if (!(window.VEAuth && VEAuth.isLoggedIn())) {
+      document.body.classList.add('gated');
+      $('gate').hidden = false;
+      $('gate-signin').addEventListener('click', function () {
+        if (window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to see bounties in your city.', function () { location.replace('/dashboard/bounties' + location.search); });
+      });
+      return;
+    }
+    // In the dashboard window the dashboard scrolls, and its address bar follows this page.
+    function toTop() { if (embedded) { try { window.parent.postMessage({ type: 've-frame-scroll', top: 0 }, location.origin); } catch (e) {} } else window.scrollTo(0, 0); }
+    function tellParent() { if (embedded) { try { window.parent.postMessage({ type: 've-frame-url', path: location.pathname.replace(/\.html$/, '') + location.search }, location.origin); } catch (e) {} } }
     var state = { city: '', bounties: [], campaigns: [], cslug: params.get('campaign') || '', jobId: params.get('id') || '', view: '', cfilter: 'all', current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
     var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
     var HOLDS = ['claimed', 'submitted', 'changes', 'approved', 'rejected'];
@@ -303,6 +330,7 @@
       if (state.cslug) u.searchParams.set('campaign', state.cslug); else u.searchParams.delete('campaign');
       if (state.jobId) u.searchParams.set('id', state.jobId); else u.searchParams.delete('id');
       (push ? history.pushState : history.replaceState).call(history, null, '', u.pathname + u.search);
+      tellParent();
     }
     function href(slug, id) { return '/bounties?community=' + encodeURIComponent(state.city) + (slug ? '&campaign=' + encodeURIComponent(slug) : '') + (id ? '&id=' + id : ''); }
     function short(t) { return String(t || '').replace(/^[^:]+:\s*/, ''); }
@@ -433,10 +461,10 @@
       $('c-jobs-h').textContent = jobs.length === 1 ? 'The job' : 'The jobs (' + jobs.length + ')';
       $('c-jobs').innerHTML = jobs.length ? '<div class="jrows"><div class="jrow jhead" aria-hidden="true"><span>Job</span><span>Points</span><span>Spots</span><span>Status</span><span></span></div>' + jobs.map(jobRow).join('') + '</div>' : '<p class="meta">No jobs open right now.</p>';
     }
-    function openCampaign(slug) { state.cslug = slug; state.jobId = ''; setUrl(true); route(); window.scrollTo(0, 0); }
-    function openJob(id) { state.jobId = id; setUrl(true); open(id).then(function () { window.scrollTo(0, 0); }); }
+    function openCampaign(slug) { state.cslug = slug; state.jobId = ''; setUrl(true); route(); toTop(); }
+    function openJob(id) { state.jobId = id; setUrl(true); open(id).then(toTop); }
     // Leaving a job reloads the list, so a claim or a submission shows on the way back.
-    function backTo(which) { var was = state.view; state.jobId = ''; if (which === 'list') state.cslug = ''; setUrl(true); window.scrollTo(0, 0); if (was === 'job') load(); else route(); }
+    function backTo(which) { var was = state.view; state.jobId = ''; if (which === 'list') state.cslug = ''; setUrl(true); toTop(); if (was === 'job') load(); else route(); }
     var plain = function (e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1); };
     $('list').addEventListener('click', function (e) {
       var f = e.target.closest('[data-cf]'); if (f) { state.cfilter = f.getAttribute('data-cf'); renderList(); tick(); return; }
@@ -447,6 +475,7 @@
     window.addEventListener('popstate', function () {
       var p = new URLSearchParams(location.search), was = state.view;
       state.cslug = p.get('campaign') || ''; state.jobId = p.get('id') || '';
+      tellParent();
       if (was === 'job' && !state.jobId) load(); else route();
     });
 

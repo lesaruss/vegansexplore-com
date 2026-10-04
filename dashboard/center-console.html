@@ -2775,7 +2775,6 @@
     // filters posts by active city), so it gets the same fix here too.
     renderCampaignsSection(member);
     renderDailyPulse(member);
-    renderBounties(member);
   }
   document.getElementById('dash-city-modal-close').addEventListener('click', closeCityModal);
   document.getElementById('dash-city-modal').addEventListener('click', function(e) {
@@ -3160,7 +3159,7 @@
   // opened in place from an entry tile, the same breadcrumb pattern My List and
   // Choose Your Guide already use.
   var TOOL_SECTIONS = [
-    { id: 'dash-bounties-section', key: 'bounties', label: 'Bounties', icon: '🏆', bg: 'linear-gradient(135deg,#F69820,#e07b00)', desc: 'Weekly tasks you can complete for points.' },
+    { id: 'dash-bounties-section', key: 'bounties', label: 'Bounties', icon: '🏆', bg: 'linear-gradient(135deg,#F69820,#e07b00)', desc: 'Campaigns in your city: take on a job and earn points.' },
     { id: 'dash-campaigns-section', key: 'campaigns', label: 'Your Campaigns', icon: '📣', bg: 'linear-gradient(135deg,#8B5CF6,#6D28D9)', desc: 'Campaigns you can attend, sponsor, or volunteer for.' },
     { id: 'dash-opportunities-section', key: 'opportunities', label: 'Your Opportunities', icon: '🎯', bg: 'linear-gradient(135deg,#0EA5E9,#0369A1)', desc: 'Ways to get involved and lead in your city.' },
     { id: 'dash-guides-section', key: 'guides', label: 'Guides', icon: '📚', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', desc: 'Step-by-step guides for wherever you are on the journey.' }
@@ -3241,7 +3240,7 @@
       tile.innerHTML = '<div class="dash-thumb" style="background:' + t.bg + ';">' + t.icon + '</div>' +
         '<div class="dash-tile-body"><div class="dash-tile-title">' + t.label + '</div>' +
         '<div class="dash-tile-desc">' + t.desc + '</div></div>';
-      tile.addEventListener('click', function (e) { e.preventDefault(); openToolSection(t.id, t.label); });
+      tile.addEventListener('click', function (e) { e.preventDefault(); if (t.key === 'bounties' && window.openBounties) openBounties(''); else openToolSection(t.id, t.label); });
       wrap.appendChild(tile);
       grid.appendChild(wrap);
     });
@@ -3284,6 +3283,19 @@
     try { window.scrollTo(0, 0); } catch (e) {}
   }
   window.openConsoleFrame = openConsoleFrame;
+  // Bounties live in the dashboard window (Sean, 2026-10-04: a member feature belongs in the
+  // universal frame). The campaigns page opens under "Dashboard / Bounties" and the address bar
+  // reads /dashboard/bounties, carrying the campaign and job the page is showing.
+  function openBounties(search, noPush) {
+    var q = String(search || '').replace(/^\?/, '');
+    if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
+    openConsoleFrame('/bounties' + (q ? '?' + q : ''), 'Bounties');
+    var url = '/dashboard/bounties' + (q ? '?' + q : '');
+    // Switching to Tools closes any open frame and can rewrite the address, so always set it back.
+    if (noPush) history.replaceState({ tabKey: 'tools', frame: 'bounties' }, '', url);
+    else if (location.pathname + location.search !== url) history.pushState({ tabKey: 'tools', frame: 'bounties' }, '', url);
+  }
+  window.openBounties = openBounties;
   // A page inside the frame can size it (the Depot pages do, /public/depot-tabs.js), so a tall
   // page scrolls with the dashboard instead of inside a fixed-height box (Sean, 2026-09-29).
   // The page is told which part of it is on screen, so its pop-ups open in view.
@@ -3308,6 +3320,12 @@
       var h = Math.max(440, Math.min(40000, Math.round(+e.data.h || 0)));
       f.classList.add('ve-sized'); f.style.height = h + 'px'; f.setAttribute('scrolling', 'no');
       tellFrameView();
+    } else if (e.data.type === 've-frame-url') {
+      var fp = String(e.data.path || '');
+      if (/^\/bounties(\?|$)/.test(fp) && /^\/dashboard\/bounties/.test(location.pathname)) {
+        var want = '/dashboard/bounties' + fp.replace(/^\/bounties/, '');
+        if (location.pathname + location.search !== want) history.replaceState(history.state, '', want);
+      }
     } else if (e.data.type === 've-frame-unsize') {
       // The page's layout grows with the frame (a 100vh hero), so it scrolls inside a fixed frame.
       f.classList.remove('ve-sized'); f.style.height = ''; f.setAttribute('scrolling', 'auto');
@@ -3324,7 +3342,9 @@
     var host = document.getElementById('dash-console-host');
     if (content) content.classList.remove('detail-open');
     if (detail) detail.style.display = 'none';
+    var wasBounties = !!(host && host.querySelector('iframe[src^="/bounties"]'));
     if (host) host.innerHTML = '';
+    if (wasBounties && /^\/dashboard\/bounties/.test(location.pathname)) history.replaceState({ tabKey: 'tools' }, '', '/dashboard/tools');
   }
   window.closeConsoleFrame = closeConsoleFrame;
   // Every internal link opens in the window (Sean, 2026-10-04: newer sections still opened the
@@ -3503,7 +3523,7 @@
 
     // Non-superadmin: access/preview cards for their tools.
     var access = [
-      { icon: '🏆', bg: '#FEF0DD', title: 'Bounties', desc: 'Weekly tasks you can complete for points.', fn: function () { gotoToolSection('dash-bounties-section', 'Bounties'); } },
+      { icon: '🏆', bg: '#FEF0DD', title: 'Bounties', desc: 'Campaigns in your city: take on a job and earn points.', fn: function () { openBounties(''); } },
       { icon: '📣', bg: '#F1EBFE', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
       { icon: '🎯', bg: '#E0F2FE', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
       { icon: '📚', bg: '#E8F8EF', title: 'Guides', desc: 'Step-by-step guides for your journey.', fn: function () { gotoToolSection('dash-guides-section', 'Guides'); } },
@@ -3631,6 +3651,7 @@
     mobileSelect.addEventListener('change', function () { activate(mobileSelect.value); });
 
     window.addEventListener('popstate', function (e) {
+      if (/^\/dashboard\/bounties\/?$/.test(location.pathname)) { openBounties(location.search, true); return; }
       var key = (e.state && e.state.tabKey) || tabKeyFromPath() || sections[0].getAttribute('data-tab-key');
       activate(key, { skipHistory: true });
     });
@@ -3639,7 +3660,9 @@
     // without rewriting the address bar on load; otherwise default to the
     // first tab, same as before. skipHistory avoids stacking a duplicate
     // history entry on top of the page the visitor actually landed on.
+    var landedOnBounties = /^\/dashboard\/bounties\/?$/.test(location.pathname) ? location.search : null;
     activate(tabKeyFromPath() || sections[0].getAttribute('data-tab-key'), { skipHistory: true });
+    if (landedOnBounties !== null) openBounties(landedOnBounties, true);
   }
 
   // Bounties topic toggle (2026-09-07, Logan, Sean direction). Only "All" is
@@ -3796,7 +3819,6 @@
     renderEventsTab(member);
     renderDailyPulse(member);
     renderHomePulsePreview(member);
-    renderBounties(member);
     initHomePulseSeeAll();
     renderCommunitySection(member);
     renderCampaignsSection(member);

@@ -9,8 +9,9 @@
 // is a no-show (a strike). ve_bounty_standing turns strikes into a cooldown.
 //
 // Members
-// POST { action: 'list', community }               public; spots left, clocks, the viewer's claim and standing
-// POST { action: 'get', id }                       public; once claimed: rundown, event details, Q&A
+// POST { action: 'list', community }               signed in; spots left, clocks, the viewer's claim and standing
+// POST { action: 'get', id }                       signed in; once claimed: rundown, event details, Q&A
+// Bounties are for members (Sean, 2026-10-04): signed out, list and get return not_authenticated.
 // POST { action: 'claim', bounty_id }              Passport holder
 // POST { action: 'release', bounty_id }            before submitting
 // POST { action: 'upload_url', bounty_id, name, size, type }  -> { url, path }
@@ -408,6 +409,7 @@ Deno.serve(async (req) => {
 
   switch (body.action) {
     case 'list': {
+      if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to see bounties.' }, 401);
       const community = clean(body.community, 40);
       if (!cityOk(viewer, community)) return json({ error: 'bad_community' }, 400);
       const { data } = await db.from('ve_bounties').select(BOUNTY_COLS).eq('community_slug', community).in('status', ['open', 'closed']).order('sort');
@@ -431,6 +433,7 @@ Deno.serve(async (req) => {
     }
 
     case 'get': {
+      if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to see bounties.' }, 401);
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
       const { data: raw } = await db.from('ve_bounties').select(BOUNTY_COLS + ', event_details').eq('id', body.id).maybeSingle();
       if (!raw || raw.status === 'draft' || !cityOk(viewer, raw.community_slug)) return json({ error: 'not_found' }, 404);
