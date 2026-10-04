@@ -264,6 +264,7 @@
             </div>
           </div>
           <aside class="jside">
+            <div class="cart" id="d-art" hidden style="margin-top:18px"></div>
             <div class="box" id="d-meta" style="margin-top:18px"></div>
             <div id="d-release" hidden style="margin-top:14px">
               <button type="button" class="linkbtn" id="release">Release my spot</button>
@@ -513,6 +514,14 @@
       facts.push(['Due', esc(when(b.due_at))]);
       if (b.slots != null && !mine) facts.push(['Spots', spotsHtml(b)]);
       if (b.example_url) facts.push(['Example', '<a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">See an example</a>']);
+      // The campaign's banner sits above At a glance on every job, so each job carries its event (Sean, 2026-10-04).
+      var cc = campOf(state.cslug), art = $('d-art');
+      if (cc && cc.cover_url) {
+        art.hidden = false; art.className = 'cart k-' + cc.kind;
+        art.innerHTML = '<img src="' + esc(cc.cover_url) + '" alt="' + esc(cc.title) + '">';
+        art.querySelector('img').onerror = function () { art.hidden = true; };
+      } else art.hidden = true;
+      $('d-meta').style.marginTop = art.hidden ? '18px' : '14px';
       $('d-meta').innerHTML = '<h3>At a glance</h3><dl class="facts">' + facts.map(function (f) { return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>';
       $('d-brief').textContent = b.brief + (cp && cp.meal ? '\n\nThe restaurant provides your meal and chooses what you eat.' : '');
       var parts = b.parts || [];
