@@ -38,11 +38,16 @@
   };
   // Final task totals; the festival booth task happens in week 5 only.
   var TASKS = [
-    { id: 'run', title: 'Run-club check-in', points: 30, cap: 'Once a week, up to 10', desc: 'Check in at a partner run club with the Passport.', total: 1420 },
-    { id: 'shake', title: 'Post-workout shake post', points: 50, cap: 'Once a week, up to 10', desc: 'Post your post-workout shake, labeled #ad.', total: 330 },
-    { id: 'friend', title: 'Bring a friend', points: 75, cap: 'Up to 4 friends', desc: 'A friend joins Vegans Explore through your link.', total: 290 },
-    { id: 'prep', title: 'Meal-prep video', points: 100, cap: 'Up to 4 videos', desc: 'A training-week meal prep with Fieldhouse, labeled #ad.', total: 80 },
-    { id: 'booth', title: 'Visit the festival booth', points: 40, cap: 'Once, festival weekend', desc: 'Check in at the Fieldhouse booth at the South Florida spring festival.', total: 980, week: 5 }
+    { id: 'run', title: 'Run-club check-in', points: 30, max: 10, verify: 'checkin', cap: 'Once a week, up to 10', desc: 'Check in at a partner run club with the Passport.', total: 1420,
+      how: ['Go to a partner run club on a Saturday.', 'Show your member QR code to the Community Manager when you arrive.', 'Once they mark you on the roster, it counts: 30 points.'] },
+    { id: 'shake', title: 'Post-workout shake post', points: 50, max: 10, verify: 'link', cap: 'Once a week, up to 10', desc: 'Post your post-workout shake, labeled #ad.', total: 330,
+      how: ['Post a photo or short video of your post-workout shake.', 'Label it #ad and add #HowDoYouFieldhouse.', 'Paste the link here. A Community Manager checks it, then the 50 points land.'] },
+    { id: 'friend', title: 'Bring a friend', points: 75, max: 4, verify: 'referral', cap: 'Up to 4 friends', desc: 'A friend joins Vegans Explore through your link.', total: 290,
+      how: ['Share your personal referral link. Every member has one.', 'When a friend joins Vegans Explore through it, it counts on its own: 75 points each, up to 4.'] },
+    { id: 'prep', title: 'Meal-prep video', points: 100, max: 4, verify: 'link', cap: 'Up to 4 videos', desc: 'A training-week meal prep with Fieldhouse, labeled #ad.', total: 80,
+      how: ['Film a training-week meal prep that uses Fieldhouse.', 'Post it labeled #ad and add #HowDoYouFieldhouse.', 'Paste the link here. A Community Manager reviews it, then you get 100 points.'] },
+    { id: 'booth', title: 'Visit the festival booth', points: 40, max: 1, verify: 'checkin', cap: 'Once, festival weekend', desc: 'Check in at the Fieldhouse booth at the South Florida spring festival.', total: 980, week: 5,
+      how: ['Visit the Fieldhouse booth at the South Florida spring festival.', 'Show your member QR code at the booth.', 'Once you are checked in, it counts: 40 points.'] }
   ];
   var BOOTH = 980;
   // Final leaderboard (top 5 per city); earlier weeks scale with tasks done.
@@ -81,7 +86,7 @@
     var tasks = TASKS.map(function (t) {
       var count = t.id === 'booth' ? (k >= 5 ? BOOTH : 0) : Math.round(t.total * nonBoothNow / nonBoothEnd);
       var ended = fin || (t.week && k > t.week), upcoming = t.week && k < t.week;
-      return { id: t.id, title: t.title, points: t.points, cap: t.cap, desc: t.desc, count: count, ended: ended, upcoming: upcoming };
+      return { id: t.id, title: t.title, points: t.points, max: t.max, verify: t.verify, how: t.how, cap: t.cap, desc: t.desc, count: count, ended: ended, upcoming: upcoming };
     });
     var scale = at(S.tasks, k) / 3100, board = {}, all = [];
     Object.keys(BOARD).forEach(function (c) {

@@ -498,6 +498,32 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .db-week span{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .db-week select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;padding:7px 30px 7px 10px;border-radius:6px;border:1px solid rgba(255,215,154,.45);background:#3a2808 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffd79a' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;color:#ffd79a;-webkit-appearance:none;appearance:none;cursor:pointer}
 .demo-bar .db-week button{padding:7px 10px}
+.cmp-prog{display:inline-block;font-size:11px;font-weight:800;color:var(--ve-green-dark);background:var(--ve-green-light);border-radius:20px;padding:2px 9px;margin-top:5px}
+.cmp-wait{display:inline-block;font-size:11px;font-weight:800;color:#7d5a12;background:#fdf3dc;border-radius:20px;padding:2px 9px;margin:5px 0 0 6px}
+.cmp-do.update{background:var(--ve-green);color:#fff}
+.tk-modal{margin:auto;border:0;border-radius:16px;padding:0;width:min(560px,calc(100% - 32px));max-height:calc(100vh - 40px);box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:Montserrat,sans-serif;color:var(--ve-text)}
+.tk-modal::backdrop{background:rgba(10,20,12,.6)}
+.tk-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 22px 12px;border-bottom:1px solid var(--ve-border)}
+.tk-head h2{font-size:19px;font-weight:900;line-height:1.25}
+.tk-head .tk-sub{font-size:12px;font-weight:700;color:var(--ve-green-dark);margin-top:4px}
+.tk-x{border:0;background:none;font-size:24px;line-height:1;cursor:pointer;color:var(--ve-text-50);width:40px;height:40px;border-radius:8px}
+.tk-x:hover{background:#f2f2f2}
+.tk-body{padding:16px 22px 22px;display:flex;flex-direction:column;gap:14px}
+.tk-steps{margin-left:20px;display:flex;flex-direction:column;gap:6px}
+.tk-steps li{font-size:14px;line-height:1.55;color:var(--ve-text-75)}
+.tk-box{border:1px solid var(--ve-border);border-radius:12px;padding:14px 16px;background:#fafbfa}
+.tk-box h3{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:8px}
+.tk-box p{font-size:13px;line-height:1.55;color:var(--ve-text-75)}
+.tk-qr{display:flex;gap:16px;align-items:center}
+.tk-qr svg{width:120px;height:120px;flex-shrink:0;background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:6px}
+.tk-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.tk-row input{flex:1;min-width:200px;font-family:Montserrat,sans-serif;font-size:13px;padding:11px 12px;border:1px solid var(--ve-border);border-radius:8px}
+.tk-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:11px 16px;border-radius:8px;border:0;background:var(--ve-green);color:#fff;cursor:pointer}
+.tk-btn.ghost{background:#fff;color:var(--ve-green-dark);border:1.5px solid var(--ve-green)}
+.tk-demo{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;padding:10px 14px;border-radius:8px;border:1.5px dashed #c9a14a;background:#fdf8ec;color:#7d5a12;cursor:pointer;text-align:left}
+.tk-status{font-size:13px;font-weight:800}
+.tk-status.ok{color:var(--ve-green-dark)}
+.tk-status.wait{color:#7d5a12}
 .demo-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:1000001}
 .demo-toast.show{opacity:1}
 @media(max-width:768px){
@@ -1167,7 +1193,7 @@ function getCommunityForListing(l){
 // /campaign-engine/<slug>) loads an illustrative listing from /campaign-engine/<slug>/listing-demo.js
 // instead of the database, and turns off everything that would save (votes, saves, claims).
 var DEMO = null;
-var CST = { view: 'member', joined: false, done: {}, points: 0, city: null, week: 6 };
+var CST = { view: 'member', joined: false, t: {}, points: 0, city: null, week: 6 };
 function demoSlug(){
   var q = ''; try { q = new URLSearchParams(location.search).get('demo') || ''; } catch(e){}
   var m = location.pathname.match(/^\/campaign-engine\/([a-z0-9-]+)\/?$/);
@@ -1191,7 +1217,7 @@ function campaignBanner(C){
       '<span class="cb-meta">'+esc(C.level)+' · '+esc(C.cities.join(', '))+' · '+esc(C.dates)+'</span></div>'+
     '<div class="cb-prog"><div class="bar"><i style="width:'+pct+'%"></i></div><span>'+(C.final?'Final results':'Week '+C.week+' of '+C.weeks)+'</span></div>'+
     (owner
-      ? '<a class="cb-btn" href="'+esc((DEMO&&DEMO.dashboardUrl)||'#')+'" style="text-decoration:none">Open your dashboard</a>'
+      ? '<a class="cb-btn" href="'+esc((DEMO&&DEMO.dashboardUrl)||'#')+'" style="text-decoration:none" title="Season Sponsors get a live results dashboard">See your results</a>'
       : C.final ? '<button type="button" class="cb-btn" data-camp-open>See the winners</button>'
       : '<button type="button" class="cb-btn" data-camp-open>'+(CST.joined?'Your tasks':'Join the challenge')+'</button>')+
   '</div>';
@@ -1213,14 +1239,17 @@ function campaignTab(C){
   // Tasks
   html += '<div class="cmp-grid"><div><div class="cmp-sub">Tasks and points</div><div class="cmp-tasks" id="cmp-tasks">'+
     C.tasks.map(function(t){
-      var done = !!CST.done[t.id];
+      var st = CST.t[t.id] || {}, max = t.max || 1, n = st.approved || 0, complete = n >= max;
+      var mine = st.accepted && !owner;
       var btn = t.ended ? '<span class="cmp-tc">Ended</span>'
         : t.upcoming ? '<span class="cmp-tc">Opens week 5</span>'
-        : owner ? '<span class="cmp-tc">'+fmtN(t.count + (done?1:0))+' done</span>'
-        : '<button type="button" class="cmp-do" data-task="'+t.id+'"'+(done?' disabled':'')+'>'+(done?'Done ✓':'Do this')+'</button>';
-      return '<div class="cmp-task'+(done?' done':'')+(t.ended?' ended':'')+(t.upcoming?' upcoming':'')+'"><div class="cmp-pts">'+t.points+' pts</div>'+
+        : owner ? '<span class="cmp-tc">'+fmtN(t.count + n)+' done</span>'
+        : complete ? '<button type="button" class="cmp-do" disabled>Complete ✓</button>'
+        : '<button type="button" class="cmp-do'+(st.accepted?' update':'')+'" data-task="'+t.id+'">'+(st.accepted?'Update':'Do this')+'</button>';
+      return '<div class="cmp-task'+(complete&&mine?' done':'')+(t.ended?' ended':'')+(t.upcoming?' upcoming':'')+'"><div class="cmp-pts">'+t.points+' pts</div>'+
         '<div><div class="cmp-tn">'+esc(t.title)+'</div><div class="cmp-td">'+esc(t.desc)+'</div>'+(t.cap?'<div class="cmp-cap">'+esc(t.cap)+'</div>':'')+
-        (owner?'':'<div class="cmp-tc">'+fmtN(t.count + (done?1:0))+' done so far</div>')+'</div>'+btn+'</div>';
+        (mine ? '<span class="cmp-prog">'+n+' of '+max+'</span>'+(st.pending?'<span class="cmp-wait">Waiting for review</span>':'') : '')+
+        (owner?'':'<div class="cmp-tc">'+fmtN(t.count + n)+' done so far</div>')+'</div>'+btn+'</div>';
     }).join('')+'</div></div>';
   // Right column: you, prizes, leaderboard
   var boards = Object.keys(C.leaderboard||{});
@@ -1233,7 +1262,7 @@ function campaignTab(C){
     (owner || C.final ? '' :
     '<div class="cmp-card cmp-me" id="cmp-me"><div class="cmp-sub">Your progress</div>'+
       (CST.joined
-        ? '<div class="big">'+fmtN(CST.points)+' pts</div><div class="lbl">'+Object.keys(CST.done).length+' task'+(Object.keys(CST.done).length===1?'':'s')+' done</div>'
+        ? '<div class="big">'+fmtN(CST.points)+' pts</div><div class="lbl">'+Object.keys(CST.t).length+' task'+(Object.keys(CST.t).length===1?'':'s')+' started · points land once each is verified</div><div class="tk-row"><button type="button" class="tk-btn ghost" data-my-qr>My member QR code</button></div>'
         : '<div class="lbl" style="font-size:13px;line-height:1.6">Join to start earning points. Tasks take minutes and fit what you already do.</div>')+
       (CST.joined ? '' : '<button type="button" class="cmp-join" data-camp-join>Join the challenge</button>')+
     '</div>')+
@@ -1256,7 +1285,7 @@ function campaignSideCard(C){
     return '<div class="side-card camp-side" id="camp-side"><div class="side-card-title">Your campaign · '+(C.final?'final':'week '+C.week)+'</div>'+
       '<div class="cs-title">'+esc(C.title)+'</div><div class="cs-meta">'+(C.final?'Final results':'Season to date')+'</div>'+
       '<div class="cs-stats">'+C.owner.tiles.slice(0,4).map(function(t){ return '<div><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span></div>'; }).join('')+'</div>'+
-      '<a class="cs-btn" href="'+esc((DEMO&&DEMO.dashboardUrl)||'#')+'">Open your dashboard</a></div>';
+      '<a class="cs-btn" href="'+esc((DEMO&&DEMO.dashboardUrl)||'#')+'">See your results dashboard</a><div class="cs-meta" style="margin:10px 0 0">Season Sponsors get a live results dashboard: every number above, week by week, and every budget move.</div></div>';
   }
   return '<div class="side-card camp-side" id="camp-side"><div class="side-card-title">'+(C.final?'Campaign complete':'Live campaign')+'</div>'+
     '<div class="cs-title">'+esc(C.title)+'</div><div class="cs-meta">'+(C.final?'Final':'Week '+C.week+' of '+C.weeks)+' · '+esc(C.cities.join(', '))+'</div>'+
@@ -1275,6 +1304,63 @@ function demoVideos(list){
     var bg = v.img ? '' : ' style="background:linear-gradient(135deg,'+esc(v.grad||'#1d2f4f,#3d6aa8')+')"';
     return '<div class="dv"><div class="dv-poster"'+bg+'>'+(v.img?'<img src="'+esc(v.img)+'" alt="" loading="lazy">':'')+'<span class="dv-kind">'+esc(v.kind)+'</span><span class="dv-play" aria-hidden="true"></span><span class="dv-len">'+esc(v.len)+'</span></div><div class="dv-body"><div class="dv-t">'+esc(v.t)+'</div><div class="dv-m">'+esc(v.m)+'</div></div></div>';
   }).join('')+'</div>';
+}
+// ── Task popup: accept, then submit proof; points land only once it is verified ──
+function qrSvg(seed){
+  var n = 25, cells = '', h = 0; for(var i=0;i<seed.length;i++) h = (h*31 + seed.charCodeAt(i)) >>> 0;
+  function rnd(){ h ^= h << 13; h >>>= 0; h ^= h >> 17; h ^= h << 5; h >>>= 0; return h % 100; }
+  function finder(x,y){ return '<rect x="'+x+'" y="'+y+'" width="7" height="7" fill="#111"/><rect x="'+(x+1)+'" y="'+(y+1)+'" width="5" height="5" fill="#fff"/><rect x="'+(x+2)+'" y="'+(y+2)+'" width="3" height="3" fill="#111"/>'; }
+  for(var y=0;y<n;y++) for(var x=0;x<n;x++){
+    if((x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9)) continue;
+    if(rnd() < 46) cells += '<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#111"/>';
+  }
+  return '<svg viewBox="0 0 '+n+' '+n+'" shape-rendering="crispEdges" role="img" aria-label="Member QR code (illustrative)">'+cells+finder(0,0)+finder(n-7,0)+finder(0,n-7)+'</svg>';
+}
+function taskDialog(){
+  var d = document.getElementById('tk-modal');
+  if(!d){ d = document.createElement('dialog'); d.id = 'tk-modal'; d.className = 'tk-modal'; document.body.appendChild(d);
+    d.addEventListener('close', function(){ if(window._veDemoListing) refreshCampaign(window._veDemoListing); });
+    d.addEventListener('click', function(e){ if(e.target === d) d.close(); }); }
+  return d;
+}
+function openQr(){
+  var d = taskDialog();
+  d.innerHTML = '<div class="tk-head"><div><h2>Your member QR code</h2><div class="tk-sub">Show it at check-ins</div></div><button type="button" class="tk-x" aria-label="Close" data-tk-close>&times;</button></div>'+
+    '<div class="tk-body"><div class="tk-qr">'+qrSvg('member-demo')+'<p style="font-size:13px;line-height:1.6;color:var(--ve-text-75)">Every member has one on their profile. A Community Manager scans it at a run club, a booth or an event, and every campaign task tied to that check-in counts for you. Faster than looking you up.<br><br><b>Illustrative code.</b></p></div></div>';
+  d.querySelector('[data-tk-close]').onclick = function(){ d.close(); };
+  if(!d.open) d.showModal();
+}
+function openTask(t, l){
+  var st = CST.t[t.id] || (CST.t[t.id] = { accepted: false, approved: 0, pending: false });
+  var first = !st.accepted;
+  st.accepted = true; CST.joined = true;
+  var max = t.max || 1, n = st.approved, d = taskDialog();
+  var how = '<ol class="tk-steps">'+(t.how||[t.desc]).map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ol>';
+  var status = n >= max ? '<p class="tk-status ok">Complete: '+n+' of '+max+'</p>'
+    : '<p class="tk-status'+(st.pending?' wait':'')+'">'+(st.pending?'Waiting for review · ':'')+n+' of '+max+' done · '+t.points+' points each</p>';
+  var verify = '';
+  if(t.verify === 'checkin'){
+    verify = '<div class="tk-box"><h3>How it is verified</h3><div class="tk-qr">'+qrSvg('member-demo')+'<p>Show this QR code to the Community Manager. When they scan it, or mark you on the event roster, it counts. Not before.</p></div>'+
+      (n < max ? '<div class="tk-row"><button type="button" class="tk-demo" data-tk-approve>Demo: the Community Manager checks you in</button></div>' : '')+'</div>';
+  } else if(t.verify === 'referral'){
+    verify = '<div class="tk-box"><h3>Your referral link</h3><p>This counts on its own when a friend joins through your link.</p><div class="tk-row"><input type="text" readonly value="vegansexplore.com/join?ref=YOURCODE" aria-label="Your referral link"><button type="button" class="tk-btn ghost" data-tk-copy>Copy</button></div>'+
+      (n < max ? '<div class="tk-row"><button type="button" class="tk-demo" data-tk-approve>Demo: a friend joins through your link</button></div>' : '')+'</div>';
+  } else {
+    verify = st.pending
+      ? '<div class="tk-box"><h3>Submitted</h3><p>A Community Manager is checking your post. The points land once it is approved.</p><div class="tk-row"><button type="button" class="tk-demo" data-tk-approve>Demo: the Community Manager approves it</button></div></div>'
+      : (n < max ? '<div class="tk-box"><h3>Submit your proof</h3><p>Paste the link to your post. It must be labeled #ad.</p><div class="tk-row"><input type="url" id="tk-link" placeholder="https://instagram.com/p/..." aria-label="Link to your post"><button type="button" class="tk-btn" data-tk-submit>Submit</button></div></div>' : '');
+  }
+  d.innerHTML = '<div class="tk-head"><div><h2>'+esc(t.title)+'</h2><div class="tk-sub">'+t.points+' points · '+esc(t.cap||'')+'</div></div><button type="button" class="tk-x" aria-label="Close" data-tk-close>&times;</button></div>'+
+    '<div class="tk-body">'+(first?'<p style="font-size:13px;font-weight:700;color:var(--ve-green-dark)">Task accepted. It is on your list; come back here with Update.</p>':'')+'<div><div class="cmp-sub" style="margin-bottom:8px">What to do</div>'+how+'</div>'+status+verify+'</div>';
+  d.querySelector('[data-tk-close]').onclick = function(){ d.close(); };
+  var ap = d.querySelector('[data-tk-approve]');
+  if(ap) ap.onclick = function(){ st.approved = Math.min(max, st.approved + 1); st.pending = false; CST.points += t.points; demoToast('+'+t.points+' points, verified.'); openTask(t, l); };
+  var sb = d.querySelector('[data-tk-submit]');
+  if(sb) sb.onclick = function(){ var v = (document.getElementById('tk-link')||{}).value || ''; if(!/^https?:\/\/\S+/.test(v)){ document.getElementById('tk-link').style.borderColor = '#c62828'; return; } st.pending = true; openTask(t, l); };
+  var cp = d.querySelector('[data-tk-copy]');
+  if(cp) cp.onclick = function(){ demoToast('Demo: your real link is on your dashboard.'); };
+  if(!d.open) d.showModal();
+  refreshCampaign(l);
 }
 function refreshCampaign(l){
   var C = l._campaign; if(!C) return;
@@ -1297,7 +1383,7 @@ function showListingTab(target){
 }
 window.veListingTab = showListingTab;
 function wireCampaign(l){
-  var C = l._campaign; if(!C) return;
+  if(!l._campaign) return;
   document.getElementById('listing-root').addEventListener('click', function(e){
     var el;
     if((el = e.target.closest('[data-goto-tab]'))){ showListingTab(el.getAttribute('data-goto-tab')); return; }
@@ -1308,11 +1394,10 @@ function wireCampaign(l){
     }
     if((el = e.target.closest('[data-task]'))){
       if(!DEMO) return;
-      var t = C.tasks.filter(function(x){ return x.id === el.getAttribute('data-task'); })[0];
-      if(!t || CST.done[t.id]) return;
-      CST.joined = true; CST.done[t.id] = true; CST.points += t.points;
-      refreshCampaign(l); demoToast('+'+t.points+' points. In the live version this opens the task: check in, post or upload.'); return;
+      var t = (l._campaign.tasks||[]).filter(function(x){ return x.id === el.getAttribute('data-task'); })[0];
+      if(t) openTask(t, l); return;
     }
+    if(e.target.closest('[data-my-qr]')){ openQr(); return; }
     if(e.target.closest('[data-creator-apply]')){ demoToast(DEMO ? 'Demo: in the live version creators apply here, and approved creators claim paid creator bounties.' : 'Creator applications open soon.'); return; }
   });
   document.getElementById('listing-root').addEventListener('change', function(e){
@@ -2140,7 +2225,7 @@ function registerDemoTour(){
       { before: view('member','overview'), sel: ['#camp-banner'], title: 'The campaign lives on the listing',
         body: 'While a brand runs a campaign, it sits at the top of its listing: the challenge, the cities, how far along it is, and one button to join.' },
       { before: view('member','campaign'), sel: ['#cmp-tasks'], title: 'Members take part right here',
-        body: 'Each task is a bounty with points. Members pick what fits their routine, and every post made for points is labeled #ad. Try one: press Do this.' },
+        body: 'Each task is a bounty with points. Do this opens it: what to do and how it is verified. Check-ins count when a Community Manager scans the member\'s QR code, posts once a Community Manager approves the link, and referrals on their own. Points land only once it is verified. Try one.' },
       { before: view('member','campaign'), sel: ['#cmp-prizes'], placement: 'left', title: 'Everyone starts at zero',
         body: 'There is a set number of points to earn this season. The most points at the end wins the grand prize, the top 10 in each city get a sampler box, and anyone can unlock digital coupons along the way. Joining Vegans Explore is how you enter.' },
       { before: view('member','campaign'), sel: ['#cmp-board'], placement: 'left', title: 'The leaderboard',
