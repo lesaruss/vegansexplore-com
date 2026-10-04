@@ -198,8 +198,12 @@ and a sidebar card whenever the listing carries a campaign (`l._campaign`), and 
 their Menu tab labeled Products. The demo, `/campaign-engine/fieldhouse-protein` (rewrite in
 `vercel.json`), is that real page in demo mode: `?demo=<slug>` or `/campaign-engine/<slug>` loads
 `/campaign-engine/<slug>/listing-demo.js` instead of the database, labels it Illustrative, turns
-off votes, saves and claims, adds a member / brand view switch, and starts a `ve-tour.js`
-spotlight tour of the campaign. Live campaigns are not wired yet: `ve_bounty_campaigns.host_listing_id`
+off votes, saves and claims, adds a member / brand view switch and a week stepper (the demo's
+`campaignAt(week)` returns the campaign as it stood that week, 1 to 10, then Final), and starts a
+`ve-tour.js` spotlight tour of the campaign. `/campaign-engine/fieldhouse-protein/social` shows the
+campaign in our Instagram, TikTok, Community Board, Daily Pulse and member feeds. Campaign rules:
+everyone starts at zero, a capped points total, joining Vegans Explore is how you enter, a grand
+prize for the most points, prizes for each city's top 10, and digital rewards (coupons) at set totals. Live campaigns are not wired yet: `ve_bounty_campaigns.host_listing_id`
 links a campaign to a listing, but the table has no public read, so it needs to come through the
 `ve-bounties` function first.
 

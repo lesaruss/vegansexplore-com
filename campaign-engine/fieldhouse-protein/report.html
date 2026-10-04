@@ -85,6 +85,11 @@
   .task .dn{font-size:20px;font-weight:900;margin-top:12px;color:var(--fh-gold)}
   .task .dn small{font-size:12px;color:#ececec;font-weight:700;margin-left:4px}
 
+  .photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .photos figure{overflow:hidden;margin:0}
+  .photos img{display:block;width:100%;height:clamp(150px,calc(100vh - 470px),360px);object-fit:cover}
+  .photos figcaption{padding:12px 14px;font-size:13.5px;font-weight:700;color:#fff}
+  @media (max-width:900px){.photos{grid-template-columns:minmax(0,1fr)}.photos img{height:200px}}
   .end-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 
   @media (max-width:1200px){.doors,.tiles.five,.flow,.tasks{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -121,6 +126,17 @@
       <div class="tile vg-glass"><div class="n">7,450</div><div class="l">tracked clicks to retailers</div><div class="s">From 22,000 profile visits</div></div>
       <div class="tile vg-glass"><div class="n">860</div><div class="l">new Vegans Explore members</div><div class="s">2,300 opted in to Fieldhouse offers</div></div>
     </div>
+  </section>
+
+  <section class="vg-slide" id="booth" data-title="The festival booth">
+    <p class="vg-eyebrow">On the ground · South Florida spring festival</p>
+    <h2 class="vg-h">The booth we took over</h2>
+    <div class="photos">
+      <figure class="vg-glass"><img data-img="booth" alt="The Fieldhouse booth at the festival"><figcaption>The booth: 9,800 samples over two days</figcaption></figure>
+      <figure class="vg-glass"><img data-img="sampling" alt="Sampling table with Passport check-in"><figcaption>980 members checked in with the Passport</figcaption></figure>
+      <figure class="vg-glass"><img data-img="volunteers" alt="Member volunteers at the booth"><figcaption>24 volunteer shifts, posted as paid bounties</figcaption></figure>
+    </div>
+    <p class="vg-fine">Illustrative images. In a real report these are the photos and video our team and the creators shot at the activation.</p>
   </section>
 
   <section class="vg-slide" id="moment" data-title="The moment that made it work">
@@ -318,16 +334,16 @@
     </div>
   </section>
 
-  <section class="vg-slide" id="member-2" data-path="member" data-title="What points bought">
+  <section class="vg-slide" id="member-2" data-path="member" data-title="Who won">
     <p class="vg-eyebrow">Member · 2 of 2</p>
-    <h2 class="vg-h">What points bought</h2>
+    <h2 class="vg-h">Everyone started at zero</h2>
     <div class="tiles four">
-      <div class="tile vg-glass"><div class="n">500</div><div class="l">Fieldhouse sampler box</div><div class="s">286 redeemed</div></div>
-      <div class="tile vg-glass"><div class="n">800</div><div class="l">A free Passport</div><div class="s">118 redeemed</div></div>
-      <div class="tile vg-glass"><div class="n">1,500</div><div class="l">Festival VIP pass</div><div class="s">40 redeemed</div></div>
-      <div class="tile vg-glass"><div class="n">Top 10</div><div class="l">in each city</div><div class="s">A year of Fieldhouse shakes</div></div>
+      <div class="tile vg-glass"><div class="n">1,465</div><div class="l">Grand prize: Nia H., South Florida</div><div class="s">Most points at the end. A year of Fieldhouse and a festival VIP pass</div></div>
+      <div class="tile vg-glass"><div class="n">30</div><div class="l">Fieldhouse sampler boxes</div><div class="s">The top 10 in each city</div></div>
+      <div class="tile vg-glass"><div class="n">512</div><div class="l">$1 off coupons</div><div class="s">Everyone who reached 300 points</div></div>
+      <div class="tile vg-glass"><div class="n">168</div><div class="l">Free shake coupons</div><div class="s">Everyone who reached 750 points</div></div>
     </div>
-    <p class="vg-lede" style="margin-top:22px">The challenge sat next to things members already do: running, training, eating well, going to events. The tasks took minutes, the leaderboard was by city, and 290 members brought in a friend.</p>
+    <p class="vg-lede" style="margin-top:22px">Up to 1,540 points were on offer, and joining Vegans Explore was how you entered. A few prizes people can hold, plus digital rewards anyone can reach, kept all 1,240 members playing. 290 brought in a friend.</p>
   </section>
 
   <!-- BUSINESS -->
@@ -390,6 +406,8 @@
 
 <script src="/public/footer.js"></script>
 </div>
+<script src="/campaign-engine/fieldhouse-protein/listing-demo.js"></script>
+<script>(function(){ var P = (window.VE_DEMO && VE_DEMO.images) || {}; document.querySelectorAll('img[data-img]').forEach(function(i){ var u = P[i.getAttribute('data-img')]; if(u) i.src = u; }); })();</script>
 <script src="/public/ve-guided.js"></script>
 <script>
 (function(){
