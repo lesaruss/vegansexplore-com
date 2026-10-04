@@ -925,6 +925,11 @@ Deno.serve(async (req: Request) => {
         return new Response(JSON.stringify({ received: true }), { headers: { 'Content-Type': 'application/json' } })
       }
 
+      // An active member contributing again (the dashboard's Contribute, Sean 2026-10-04) gets a
+      // thank-you, not "your Passport is active". Read before the update flips the status.
+      const { data: before } = await supabase.from('members').select('membership_status').eq('id', memberId).maybeSingle()
+      const repeat = before?.membership_status === 'active'
+
       const { error: memberUpdateError } = await supabase
         .from('members')
         .update({
@@ -964,7 +969,7 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: 'Your Passport is active - thank you for supporting the community',
+              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Passport is active - thank you for supporting the community',
               html: buildPointsReceiptEmail(points, result.balance)
             })
           })

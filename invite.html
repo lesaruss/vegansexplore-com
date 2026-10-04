@@ -67,7 +67,7 @@
         <ul class="points" id="points">
           <li>Your city's Community Board: ask your city, find who can help, and the Daily Pulse</li>
           <li>The Directory, events, guides and your own dashboard</li>
-          <li id="pt-points">1,100 points to start, for guides and rewards</li>
+          <li id="pt-points">Everything a paid member has. Contribute any time, and every dollar becomes 100 points</li>
         </ul>
         <div class="cta-row">
           <button class="btn btn-primary" id="accept" type="button">Accept your invitation</button>
@@ -152,7 +152,7 @@
           var next = d.next || '/dashboard';
           $('done-next').href = next;
           $('done-next').textContent = invite.dinner ? 'See your seat' : invite.points_to === 'community_manager' ? 'See the role' : 'Go to your dashboard';
-          $('done-lede').textContent = invite.comp ? 'Your Founding Membership is active, with 1,100 points to start. Thank you for what you do for this community.' : 'Your account is ready.';
+          $('done-lede').textContent = invite.comp ? 'Your Founding Membership is active. Thank you for what you do for this community.' : 'Your account is ready.';
           if (d.membership_status !== 'active' && !invite.comp) $('done-lede').textContent = 'Your account is ready. Become a Founding Member any time from your dashboard.';
           show('done');
           return;
