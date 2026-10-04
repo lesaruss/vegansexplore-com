@@ -200,8 +200,8 @@ Invites sends them from Sean (or copies the link). From then they work once, for
   `lesaruss_secrets.INVITES_KEY`). Each invite gets a personal tracked link (`ve_links`).
 - Claiming: `universe_invite_claim()`, run when the invited email signs up (members insert triggers
   `trg_zz_universe_invite_*`), when they accept on `/invite`, or when they hold their dinner seat. A
-  free membership is exactly an $11 Founding Membership: active, plus 1,100 points
-  (`points_ledger` reason `comp_membership`).
+  free membership opens everything an $11 Founding Membership does, with no points (Sean,
+  2026-10-04: points come from contributing, which is how a free member is encouraged to give).
 - Dinners: a dinner seat needs a free account (Hold my seat opens the account window). Depot > Dinner
   guests sets each guest's membership (on us by default) and holds the dinner's budget ($500 cap).
 - Contribute any time: active members have a Contribute button on the dashboard (ve-entry-checkout,
