@@ -10,25 +10,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-orange-ink:#8a4a00;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
     :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    a{color:var(--ve-green-deep);}
     .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
     @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
     h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
     h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
-    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:780px;margin-bottom:14px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
     .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 20px 20px;margin:0 0 16px;}
-    .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+    .filters{display:flex;flex-wrap:wrap;gap:8px;}
     .filters button{font:inherit;font-size:13px;font-weight:800;border:1.5px solid rgba(0,0,0,0.15);background:#fff;border-radius:99px;padding:8px 14px;cursor:pointer;min-height:40px;}
     .filters button[aria-pressed="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
-    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 16px;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;background:var(--ve-green-deep);color:#fff;cursor:pointer;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 16px;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;background:var(--ve-green-deep);color:#fff;cursor:pointer;text-decoration:none;white-space:nowrap;}
     .btn:hover{background:#174a1a;}
     .btn:disabled{opacity:0.5;cursor:default;}
     .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,0.25);}
     .btn-ghost:hover{background:#f4f4f4;}
     .btn-no{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .btn-no:hover{background:#fbeeec;}
+    .btn-sm{min-height:36px;padding:6px 14px;}
     .sub-card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px 18px;margin-bottom:12px;}
     .sub-card h3{font-size:15px;font-weight:800;line-height:1.3;}
     .meta{font-size:12.5px;color:var(--ve-text-75);}
@@ -37,10 +40,7 @@
     .p-approved{background:var(--ve-green-light);color:var(--ve-green-deep);}
     .p-changes,.p-rejected,.p-no_show{background:#fbeeec;color:#8a1c12;}
     .p-claimed{background:#eef3fb;color:#1d4f8a;}
-    details.sub-card summary{list-style:none;}
-    details.sub-card summary::-webkit-details-marker{display:none;}
-    .acts input[type=datetime-local]{flex:0 0 auto;margin-left:6px;}
-    .files{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin:10px 0;}
+    .files{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:6px;margin:10px 0;}
     .files a{display:block;font-size:13px;background:#f7f8f7;border-radius:8px;padding:8px 10px;color:var(--ve-green-deep);font-weight:700;overflow-wrap:anywhere;}
     .note{font-size:14px;white-space:pre-wrap;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin-top:8px;max-height:22em;overflow:auto;}
     .links a{display:block;font-size:13px;color:var(--ve-green-deep);font-weight:700;overflow-wrap:anywhere;}
@@ -48,37 +48,77 @@
     .acts input{flex:1 1 260px;font:inherit;font-size:14px;padding:9px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;min-width:0;}
     .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);min-height:20px;margin-top:6px;}
     .msg.err{color:#8a1c12;}
-    .blist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;}
-    .blist div{background:#f7f8f7;border-radius:10px;padding:10px 12px;font-size:13px;}
-    .blist b{display:block;font-size:13.5px;}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     .empty{font-size:14px;color:var(--ve-text-75);padding:6px 0;}
     [hidden]{display:none !important;}
-    /* Campaigns (Sean, 2026-10-04) */
-    .cform{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px 12px;margin-top:10px;align-items:start;}
-    .cform label,.cedit label{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
-    .cform input,.cform select,.cform textarea,.cedit input,.cedit select,.cedit textarea{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
-    .cform textarea,.cedit textarea{min-height:90px;resize:vertical;}
-    .cform .wide,.cedit .wide{grid-column:1/-1;}
+    /* One thing per view, breadcrumbs back (Sean, 2026-10-04: canon-sean-interface-defaults). */
+    .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-weight:800;margin:4px 0 16px;}
+    .crumbs a{color:var(--ve-green-deep);text-decoration:none;}
+    .crumbs a:hover{text-decoration:underline;}
+    .crumbs .sep{color:var(--ve-text-75);font-weight:600;}
+    .crumbs [aria-current]{color:var(--ve-text);}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px;}
+    .quick{margin:0 0 14px;}
+    .quick a{font-weight:800;}
+    /* Campaign cards: the same cards members see, four across, every card the same shape. */
+    .cgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
+    @media (max-width:1100px){.cgrid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    @media (max-width:820px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width:520px){.cgrid{grid-template-columns:minmax(0,1fr);}}
+    .ccard{display:flex;flex-direction:column;background:#fff;border:1.5px solid var(--ve-border);border-radius:16px;overflow:hidden;color:inherit;text-decoration:none;min-width:0;}
+    .ccard:hover{border-color:rgba(0,0,0,0.35);}
+    .ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;aspect-ratio:16/7;padding:12px;background:linear-gradient(135deg,var(--ve-green-dark),var(--ve-green-deep));background-size:cover;background-position:center;}
+    .ctop.k-place{background-image:linear-gradient(135deg,#b8640a,var(--ve-orange-ink));}
+    .ctop.k-ongoing{background-image:linear-gradient(135deg,#3b5998,#22345c);}
+    .ckind{white-space:nowrap;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;background:rgba(0,0,0,0.55);color:#fff;border-radius:99px;padding:3px 9px;}
+    .cbody{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px;flex:1;}
+    .cbody h3{font-size:15.5px;font-weight:800;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .alerts{margin-top:auto;padding-top:6px;}
+    /* Status is a tag, never a button: the only action on any row is the button at its end. */
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+    .t-wait{background:#fff4e2;color:#6b3f00;}
+    .t-live{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .t-off{background:#efefef;color:#3d3d3d;}
+    .ctop .tag{box-shadow:0 0 0 1px rgba(0,0,0,0.06);}
+    .head{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+    .head h2.title{font-size:clamp(20px,2.4vw,26px);letter-spacing:0;text-transform:none;color:var(--ve-text);margin:6px 0 4px;line-height:1.2;}
+    .head-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .head-acts input{font:inherit;font-size:14px;padding:9px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;min-width:0;width:220px;max-width:100%;}
+    .facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px 20px;}
+    .facts dt{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .facts dd{font-size:14px;}
+    .story{font-size:14.5px;white-space:pre-wrap;}
+    /* Jobs: one row per job, the same columns and the same Edit button on every row. */
+    .jrows{display:grid;}
+    .jrow{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) 90px;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--ve-border);font-size:14px;}
+    .jrow.jhead{border-top:none;padding-top:0;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .jname b{display:block;font-size:14.5px;}
+    .jname small{display:block;font-size:12.5px;color:var(--ve-text-75);}
+    .jact{text-align:right;}
+    @media (max-width:760px){
+      .jrow{grid-template-columns:1fr 1fr;gap:6px 12px;}
+      .jrow.jhead{display:none;}
+      .jname{grid-column:1/-1;}
+      .jrow [data-l]::before{content:attr(data-l) ": ";font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--ve-text-75);}
+      .jact{grid-column:1/-1;text-align:left;}
+    }
+    /* Forms */
+    .cform{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px 14px;align-items:start;}
+    .cform label{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .cform input,.cform select,.cform textarea{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .cform textarea{min-height:110px;resize:vertical;}
+    .cform .wide{grid-column:1/-1;}
     .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
-    .kinds{display:flex;flex-wrap:wrap;gap:8px;}
+    .kinds,.chk{display:flex;flex-wrap:wrap;gap:8px 16px;}
     .kinds label{flex-direction:row;align-items:center;gap:8px;border:1.5px solid rgba(0,0,0,0.15);border-radius:99px;padding:8px 14px;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ve-text);cursor:pointer;}
-    .kinds input{width:auto;min-height:0;}
-    .p-proposed{background:#fff4e2;color:#6b3f00;}
-    .p-open{background:var(--ve-green-light);color:var(--ve-green-deep);}
-    .p-closed,.p-declined,.p-canceled{background:#efefef;color:#3d3d3d;}
-    .cedit{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px 12px;margin-top:12px;}
-    .jobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;margin-top:10px;}
-    .job{background:#f7f8f7;border-radius:10px;padding:12px;font-size:13px;}
-    .job b{display:block;font-size:14px;}
-    .job details summary{cursor:pointer;font-weight:800;color:var(--ve-green-deep);margin-top:6px;}
-    .job .cedit{grid-template-columns:1fr 1fr;}
+    .chk label{flex-direction:row;align-items:center;gap:6px;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ve-text);}
+    .kinds input,.chk input{width:auto;min-height:0;}
     .hits{list-style:none;display:grid;gap:4px;margin-top:6px;}
     .hits button{width:100%;text-align:left;font:inherit;font-size:13px;background:#fff;border:1px solid rgba(0,0,0,0.15);border-radius:8px;padding:8px 10px;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600;}
     .hits button:hover{border-color:var(--ve-green-deep);}
-    .chk{display:flex;flex-wrap:wrap;gap:8px 16px;}
-    .chk label{flex-direction:row;align-items:center;gap:6px;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ve-text);}
-    .chk input{width:auto;min-height:0;}
+    .danger{border-color:#f0c9c4;}
+    .danger h2{color:#8a1c12;}
+    .qa{list-style:none;display:grid;gap:6px;}
   </style>
 </head>
 <body>
@@ -92,103 +132,375 @@
     <p class="eyebrow">The Depot</p>
     <h1>Bounties</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Campaigns, claims, questions and work for bounties (playbook: Bounty Lifecycle). Members see campaign cards at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>, soonest deadline first; a campaign shows only while it has jobs. Any leadership member can propose a campaign. The city's Community Manager decides. Review within 5 days: <b>Approve</b> at full points or fewer (say why), ask for <b>Changes</b> (2 rounds, 72 hours each), or <b>Decline</b>. A coaching note is optional and goes to the member either way.</p>
     <div id="bq-gate" class="gate" hidden></div>
-    <div id="bq-app" hidden>
-      <section class="panel" id="camp-panel">
-        <h2>Campaigns</h2>
-        <div id="camps"><p class="empty">Loading...</p></div>
-        <details class="sub-card" id="new-camp" style="margin-top:14px">
-          <summary style="cursor:pointer"><b>Propose a campaign</b> <span class="meta">An event, a restaurant night, or an ongoing call for content. Its jobs start from a template you can edit.</span></summary>
-          <form class="cform" id="cf">
-            <div class="wide"><span class="hint" style="display:block;margin-bottom:6px;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Kind</span><div class="kinds">
-              <label><input type="radio" name="kind" value="event" checked> Event (festival, party)</label>
-              <label><input type="radio" name="kind" value="place"> Restaurant night (a host)</label>
-              <label><input type="radio" name="kind" value="ongoing"> Ongoing (a window, no event day)</label></div></div>
-            <label>City<select id="cf-city"></select></label>
-            <label>Name<input id="cf-title" maxlength="140" required placeholder="Scavenger hunt: Little Haiti restaurants"></label>
-            <label class="wide">The story<textarea id="cf-story" maxlength="4000" placeholder="What it is, why we are there, what creators get, and exactly what is provided."></textarea><span class="hint">This is the top of the campaign page. Spell out what is provided (for a restaurant night, the meal the restaurant chooses).</span></label>
-            <label data-when="event place">Starts<input id="cf-start" type="datetime-local"></label>
-            <label data-when="event place">Ends<input id="cf-end" type="datetime-local"></label>
-            <label data-when="ongoing">Window closes<input id="cf-due" type="datetime-local"></label>
-            <label>Place<input id="cf-place" maxlength="200" placeholder="Venue or restaurant name"></label>
-            <label>Address<input id="cf-address" maxlength="300"></label>
-            <label>Cover image (optional)<input id="cf-cover" type="url" maxlength="1000" placeholder="https://"></label>
-            <label>Part of<select id="cf-family"><option value="">No larger campaign</option></select><span class="hint">A Vegans Explore campaign this creator work belongs to.</span></label>
-            <label data-when="place" class="wide">Host restaurant<input id="cf-host-q" maxlength="80" placeholder="Search the Directory by name"><ul class="hits" id="cf-hits"></ul><span class="hint" id="cf-host-picked">The host must be an active member (the one-time $11 membership) before it can go live.</span></label>
-            <label data-when="place">Host's email (if not the listing's owner)<input id="cf-host-email" type="email" maxlength="200"></label>
-            <label data-when="place">Creators seated<input id="cf-cap" type="number" min="1" max="500" value="10"></label>
-            <div class="wide"><label class="chk" style="flex-direction:row"><input type="checkbox" id="cf-publish"> Put it live now (you decide for this city)</label></div>
-            <div class="wide"><button type="submit" class="btn" id="cf-go">Propose campaign</button> <span class="msg" id="cf-msg" role="status"></span></div>
-          </form>
-        </details>
-      </section>
-      <section class="panel" id="review-panel">
-        <div class="filters" id="filters" role="group" aria-label="Show">
-          <button type="button" data-s="submitted" aria-pressed="true">To review <span data-c="submitted"></span></button>
-          <button type="button" data-s="changes" aria-pressed="false">Changes asked <span data-c="changes"></span></button>
-          <button type="button" data-s="claimed" aria-pressed="false">Claimed, not in yet <span data-c="claimed"></span></button>
-          <button type="button" data-s="approved" aria-pressed="false">Approved <span data-c="approved"></span></button>
-          <button type="button" data-s="rejected" aria-pressed="false">Declined <span data-c="rejected"></span></button>
-          <button type="button" data-s="no_show" aria-pressed="false">Missed <span data-c="no_show"></span></button>
-        </div>
-        <div id="subs"><p class="empty">Loading...</p></div>
-      </section>
-      <section class="panel" id="events-panel">
-        <h2>Events</h2>
-        <p class="meta" style="margin-bottom:10px">Who holds each spot, the claimers' questions, and the details only claimers see. Move or cancel an event here and every claimer is emailed.</p>
-        <div id="events"></div>
-      </section>
-      <section class="panel" id="strikes-panel">
-        <h2>Strikes</h2>
-        <p class="meta" style="margin-bottom:10px">1 strike: 30 days without claiming. 2 in 6 months: 90 days. 3, or a violation: paused until cleared. A release after claims close is half a strike. Clear one when a member explains what happened.</p>
-        <div id="strikes"></div>
-      </section>
-    </div>
+    <div id="view" hidden><p class="empty">Loading...</p></div>
   </div>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script>
+    // Depot > Bounties (playbook: Bounty Lifecycle). One thing per view, with breadcrumbs back
+    // (Sean, 2026-10-04): the campaign list, one campaign, one job, the campaign form (new or
+    // edit), the review queue, strikes. The address bar carries the view (#campaign/<id>,
+    // #campaign/<id>/job/<id>, #campaign/<id>/edit, #new, #review, #strikes), so back works.
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
       var $ = function (id) { return document.getElementById(id); };
-      var status = 'submitted', data = null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       var TZ = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles' };
-      function day(iso, city) { return iso ? new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ[city] || 'America/New_York', timeZoneName: 'short' }) : ''; }
+      function day(iso, city) { return iso ? new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ[city] || 'America/New_York', timeZoneName: 'short' }) : ''; }
       function size(n) { return n > 1073741824 ? (n / 1073741824).toFixed(1) + ' GB' : n > 1048576 ? Math.round(n / 1048576) + ' MB' : Math.max(1, Math.round((n || 0) / 1024)) + ' KB'; }
       function local(iso) { if (!iso) return ''; var d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); }
+      function iso(v) { return v ? new Date(v).toISOString() : null; }
       var LABEL = { submitted: 'To review', changes: 'Changes asked', approved: 'Approved', rejected: 'Declined', claimed: 'Claimed', no_show: 'Missed', released: 'Released' };
       var REASON = { no_show: 'No-show', late_release: 'Released after claims closed', violation: 'Violation' };
+      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', sandbox: 'Sandbox (test)' };
+      var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
+      var EXTRA = { photo_shoot: 'Photo shoot ($150)', reel: 'Reel ($200)', social_post: 'Social feature post ($75)', event_table: 'Sampling table ($100)', challenge_month: 'Passport Challenge stop ($100)' };
+      // Plain words for status, one look for every status tag.
+      var CSTATUS = { proposed: 'Waiting for approval', open: 'Live', closed: 'Closed', declined: 'Declined', canceled: 'Canceled' };
+      var JSTATUS = { draft: 'Not live yet', open: 'Live', closed: 'Closed', canceled: 'Removed' };
+      function tag(status, kind) {
+        var words = (kind === 'job' ? JSTATUS : CSTATUS)[status] || status;
+        var tone = status === 'open' ? 't-live' : (status === 'proposed' || status === 'draft') ? 't-wait' : 't-off';
+        return '<span class="tag ' + tone + '">' + esc(words) + '</span>';
+      }
+      function crumbs(items) {
+        return '<nav class="crumbs" aria-label="Breadcrumb">' + items.map(function (it, i) {
+          return i === items.length - 1 ? '<span aria-current="page">' + esc(it[0]) + '</span>' : '<a href="#' + it[1] + '">' + esc(it[0]) + '</a>';
+        }).join('<span class="sep" aria-hidden="true">&rsaquo;</span>') + '</nav>';
+      }
+      function short(t) { return String(t || '').replace(/^[^:]+:\s*/, ''); }
 
-      function load() {
-        $('subs').innerHTML = '<p class="empty">Loading...</p>';
-        return api({ action: 'review_list', status: status }).then(function (d) {
-          if (!d.submissions) throw new Error(d.error);
-          data = d;
-          Array.prototype.forEach.call(document.querySelectorAll('[data-c]'), function (el) { var n = (d.counts || {})[el.getAttribute('data-c')]; el.textContent = n ? '(' + n + ')' : ''; });
-          $('subs').innerHTML = d.submissions.length ? d.submissions.map(card).join('') : '<p class="empty">Nothing ' + esc((LABEL[status] || '').toLowerCase()) + ' right now.</p>';
-          $('events').innerHTML = (d.events || []).map(eventCard).join('') || '<p class="empty">No bounties yet.</p>';
-          $('strikes').innerHTML = (d.strikes || []).length ? d.strikes.map(function (s) {
-            return '<div class="sub-card" data-strike="' + s.id + '"><b>' + esc(s.member) + '</b> &middot; ' + esc(REASON[s.reason] || s.reason) + ' (' + s.weight + ') &middot; <span class="meta">' + esc(day(s.created_at)) + '</span>' +
-              '<div class="acts"><input type="text" maxlength="1000" placeholder="Why it is cleared (optional)" aria-label="Why it is cleared"><button type="button" class="btn btn-ghost" data-clear="' + s.id + '">Clear strike</button></div></div>';
-          }).join('') : '<p class="empty">No open strikes.</p>';
-        }).catch(function () { $('subs').innerHTML = '<p class="empty">Bounties did not load. Refresh to try again.</p>'; });
+      var state = { camps: null, review: null, reviewer: false, me: null, filter: 'all', rstatus: 'submitted' };
+      function loadAll() {
+        var ps = [api({ action: 'campaign_admin_list' }).then(function (d) { state.camps = d.campaigns ? d : { campaigns: [], cities: [], admin: false, families: [] }; })];
+        if (state.reviewer) ps.push(api({ action: 'review_list', status: 'submitted' }).then(function (d) { state.review = d.submissions ? d : null; }));
+        return Promise.all(ps);
+      }
+      function camp(id) { return (state.camps.campaigns || []).filter(function (c) { return c.id === id; })[0] || null; }
+      function liveJobs(c) { return (c.jobs || []).filter(function (j) { return j.status !== 'canceled'; }); }
+      function jobIds(c) { return (c.jobs || []).map(function (j) { return j.id; }); }
+      function waitingFor(c) {
+        if (!state.review) return 0;
+        var ids = jobIds(c);
+        return state.review.submissions.filter(function (s) { return s.bounty && ids.indexOf(s.bounty.id) > -1; }).length;
+      }
+      function eventFor(c) {
+        if (!state.review) return null;
+        var ids = jobIds(c);
+        return (state.review.events || []).filter(function (e) { return e.bounties.some(function (b) { return ids.indexOf(b.id) > -1; }); })[0] || null;
+      }
+      function holdersFor(jid) {
+        var out = [];
+        ((state.review && state.review.events) || []).forEach(function (e) { e.bounties.forEach(function (b) { if (b.id === jid) out = b.holders; }); });
+        return out;
+      }
+      function canEdit(c) { return c.can_decide || (c.status === 'proposed' && c.proposed_by === state.me); }
+      function when(c) {
+        var city = c.community_slug;
+        return c.kind === 'ongoing' ? (c.due_at ? 'Window closes ' + day(c.due_at, city) : 'No window set') : (c.starts_at ? day(c.starts_at, city) : 'No date set');
       }
 
-      function card(s) {
+      // ---- Router -----------------------------------------------------------------------------
+      function route() {
+        if (!state.camps) return;
+        var p = location.hash.replace(/^#\/?/, '').split('/');
+        window.scrollTo(0, 0);
+        if (p[0] === 'new') return viewForm(null);
+        if (p[0] === 'campaign' && p[1]) {
+          var c = camp(p[1]);
+          if (!c) return show(crumbs([['Campaigns', ''], ['Not found']]) + '<p class="empty">That campaign is not here any more.</p>');
+          if (p[2] === 'edit') return canEdit(c) ? viewForm(c) : viewCampaign(c);
+          if (p[2] === 'job' && p[3]) return viewJob(c, p[3]);
+          return viewCampaign(c);
+        }
+        if (p[0] === 'review' && state.reviewer) return viewReview(p[1] || '');
+        if (p[0] === 'strikes' && state.reviewer) return viewStrikes();
+        return viewHome();
+      }
+      window.addEventListener('hashchange', route);
+      function go(h) { if (location.hash.replace(/^#/, '') === h) route(); else location.hash = h; }
+      function reloadTo(h) { return loadAll().then(function () { go(h); }); }
+      // After a save, show the result for a moment, then reload; never pull someone back from a view they moved on to.
+      function soon(h, ms) { var at = location.hash; setTimeout(function () { if (location.hash === at) reloadTo(h); else loadAll(); }, ms); }
+      function show(html) { $('view').innerHTML = html; }
+      function say(el, r, okText) {
+        if (r && r.error) { el.className = 'msg err'; el.textContent = r.message || 'That did not go through.'; return false; }
+        el.className = 'msg'; el.textContent = okText; return true;
+      }
+
+      // ---- Campaigns: the list ----------------------------------------------------------------
+      var ORDER = { proposed: 0, open: 1, closed: 2, declined: 3, canceled: 4 };
+      var GROUP = { all: null, proposed: ['proposed'], open: ['open'], closed: ['closed', 'declined', 'canceled'] };
+      function viewHome() {
+        var all = state.camps.campaigns || [];
+        var n = function (k) { return GROUP[k] ? all.filter(function (c) { return GROUP[k].indexOf(c.status) > -1; }).length : all.length; };
+        var list = all.filter(function (c) { return !GROUP[state.filter] || GROUP[state.filter].indexOf(c.status) > -1; })
+          .sort(function (a, b) { return (ORDER[a.status] - ORDER[b.status]) || String(a.starts_at || a.due_at || '9').localeCompare(String(b.starts_at || b.due_at || '9')); });
+        var chips = [['all', 'All'], ['proposed', 'Waiting for approval'], ['open', 'Live'], ['closed', 'Closed']].map(function (x) {
+          return '<button type="button" data-filter="' + x[0] + '" aria-pressed="' + (state.filter === x[0]) + '">' + x[1] + ' (' + n(x[0]) + ')</button>';
+        }).join('');
+        var waiting = state.review ? state.review.submissions.length : 0, strikes = state.review ? (state.review.strikes || []).length : 0;
+        show(crumbs([['Campaigns']]) +
+          '<p class="sub">Members see live campaigns at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>. Any leadership member proposes a campaign; the city\'s Community Manager decides.</p>' +
+          '<div class="bar"><div class="filters" id="cfilter" role="group" aria-label="Show">' + chips + '</div><a class="btn" href="#new">New campaign</a></div>' +
+          (state.reviewer ? '<p class="meta quick"><a href="#review">Work to review (' + waiting + ')</a> &middot; <a href="#strikes">Open strikes (' + strikes + ')</a></p>' : '') +
+          (list.length ? '<div class="cgrid">' + list.map(campCard).join('') + '</div>' : '<p class="empty">No campaigns here. <a href="#new">Start a new one.</a></p>'));
+        $('cfilter').addEventListener('click', function (e) { var b = e.target.closest('[data-filter]'); if (!b) return; state.filter = b.getAttribute('data-filter'); viewHome(); });
+      }
+      function campCard(c) {
+        var jobs = liveJobs(c), slots = 0, taken = 0, open = false;
+        jobs.forEach(function (j) { taken += j.taken || 0; if (j.slots == null) open = true; else slots += j.slots; });
+        var wait = waitingFor(c), ev = eventFor(c), q = ev ? ev.unanswered : 0;
+        var cover = c.cover_url ? ' style="background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.15)),url(\'' + esc(c.cover_url).replace(/'/g, '%27') + '\')"' : '';
+        return '<a class="ccard" href="#campaign/' + c.id + '"><div class="ctop k-' + c.kind + '"' + cover + '>' + tag(c.status) + '<span class="ckind">' + esc(KIND[c.kind]) + '</span></div>' +
+          '<div class="cbody"><h3>' + esc(c.title) + '</h3><p class="meta">' + esc(CITY[c.community_slug] || c.community_slug) + ' &middot; ' + esc(when(c)) + '</p>' +
+          '<p class="meta">' + jobs.length + (jobs.length === 1 ? ' job' : ' jobs') + ' &middot; ' + taken + (open ? '' : ' of ' + slots) + ' spots taken</p>' +
+          (wait || q ? '<p class="alerts">' + (wait ? '<span class="pill p-submitted">' + wait + ' to review</span>' : '') + (q ? '<span class="pill p-claimed">' + q + ' to answer</span>' : '') + '</p>' : '') +
+          '</div></a>';
+      }
+
+      // ---- One campaign -----------------------------------------------------------------------
+      function viewCampaign(c) {
+        var city = c.community_slug, ed = canEdit(c), jobs = liveJobs(c), ev = eventFor(c), wait = waitingFor(c);
+        var acts = (ed ? '<a class="btn btn-ghost" href="#campaign/' + c.id + '/edit">Edit campaign</a>' : '') +
+          (c.can_decide && c.status === 'proposed' ? '<input type="text" id="dnote" maxlength="1000" placeholder="Note (optional)" aria-label="Decision note"><button type="button" class="btn" data-ca="approve">Approve and put it live</button><button type="button" class="btn btn-no" data-ca="decline">Decline</button>' : '') +
+          (c.can_decide && c.status === 'open' ? '<button type="button" class="btn btn-ghost" data-ca="close">Close campaign</button>' : '') +
+          (c.can_decide && c.status === 'closed' ? '<button type="button" class="btn" data-ca="approve">Reopen</button>' : '');
+        var host = c.host ? esc(c.host.name) + (c.host_member ? (c.host_member.active ? ' (host is an active member)' : ' <b style="color:#8a1c12">(host is not an active member yet)</b>') : ' <b style="color:#8a1c12">(no host member found)</b>') : '';
+        var facts = [
+          ['Kind', esc(KIND[c.kind])], ['City', esc(CITY[city] || city)],
+          [c.kind === 'ongoing' ? 'Window closes' : 'When', esc(c.kind === 'ongoing' ? day(c.due_at, city) || 'Not set' : (day(c.starts_at, city) || 'Not set') + (c.ends_at ? ' to ' + day(c.ends_at, city) : ''))],
+          ['Place', esc([c.place_name, c.address].filter(Boolean).join(', ') || 'Not set')],
+          c.kind === 'place' ? ['Host', host || '<b style="color:#8a1c12">No host listing yet</b>'] : null,
+          c.kind === 'place' ? ['Creators seated', String(c.creator_cap || 'No limit')] : null,
+          c.kind === 'place' && (c.host_extras || []).length ? ['Paid extras', esc(c.host_extras.map(function (x) { return EXTRA[x] || x; }).join(', '))] : null,
+          c.claims_close_at ? ['Claims close', esc(day(c.claims_close_at, city))] : null,
+          c.due_at && c.kind !== 'ongoing' ? ['Work due', esc(day(c.due_at, city))] : null,
+          c.host && c.host.featured_until ? ['Listing featured until', esc(day(c.host.featured_until, city))] : null,
+          c.proposer ? ['Proposed by', esc(c.proposer)] : null,
+          c.decision_note ? ['Decision note', esc(c.decision_note)] : null,
+        ].filter(Boolean);
+        var live = c.status === 'open' || c.status === 'closed';
+        show(crumbs([['Campaigns', ''], [c.title]]) +
+          '<div class="head"><div>' + tag(c.status) + '<h2 class="title">' + esc(c.title) + '</h2><p class="meta">' + esc(KIND[c.kind]) + ' &middot; ' + esc(CITY[city] || city) + ' &middot; ' + esc(when(c)) + '</p></div>' +
+          '<div class="head-acts">' + acts + '</div></div><p class="msg" id="cmsg" role="status"></p>' +
+          '<section class="panel"><h2>About</h2><dl class="facts">' + facts.map(function (f) { return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl></section>' +
+          '<section class="panel"><h2>The story</h2>' + (c.story ? '<p class="story">' + esc(c.story) + '</p>' : '<p class="empty">No story yet. It is the top of the campaign page, and it is needed before the campaign can go live.</p>') + '</section>' +
+          '<section class="panel"><h2>Jobs (' + jobs.length + ')</h2>' + jobRows(c, ed) + '</section>' +
+          (state.reviewer && live ? '<section class="panel"><h2>Work to review</h2>' + (wait ? '<p>' + wait + (wait === 1 ? ' submission is' : ' submissions are') + ' waiting.</p><div class="acts"><a class="btn" href="#review/' + c.id + '">Review them</a></div>' : '<p class="empty">Nothing waiting. <a href="#review/' + c.id + '">See all of this campaign\'s work</a>.</p>') + '</section>' : '') +
+          (state.reviewer && live ? '<section class="panel"><h2>Questions from claimers' + (ev && ev.unanswered ? ' (' + ev.unanswered + ' to answer)' : '') + '</h2><ul class="qa" id="qa"><li class="empty">Loading...</li></ul>' +
+            '<div class="acts"><input type="text" id="qa-text" maxlength="2000" placeholder="Answer, or post an update to everyone on this campaign" aria-label="Answer"><button type="button" class="btn" id="qa-post">Post</button></div><p class="msg" id="qa-msg" role="status"></p></section>' : '') +
+          '<section class="panel"><h2>Details only claimers see</h2>' + (c.details ? '<p class="story">' + esc(c.details) + '</p>' : '<p class="empty">None yet.' + (ed ? ' Add parking, who to ask for and set times in <a href="#campaign/' + c.id + '/edit">Edit campaign</a>.' : '') + '</p>') + '</section>');
+        $('view').querySelector('.head-acts').addEventListener('click', function (e) {
+          var act = e.target.getAttribute('data-ca'); if (!act) return;
+          if (act === 'decline' && !confirm('Decline this proposal?')) return;
+          if (act === 'close' && !confirm('Close this campaign? Its jobs stop taking claims; people holding a spot keep it.')) return;
+          e.target.disabled = true;
+          api({ action: 'campaign_decide', id: c.id, decision: act, note: $('dnote') ? $('dnote').value : '' }).then(function (r) {
+            e.target.disabled = false;
+            if (say($('cmsg'), r, act === 'approve' ? 'Live on the bounties page.' : act === 'close' ? 'Closed.' : 'Declined.')) soon('campaign/' + c.id, 700);
+          });
+        });
+        if ($('qa')) {
+          var first = jobs[0];
+          var loadQa = function () {
+            if (!first) { $('qa').innerHTML = '<li class="empty">No jobs yet.</li>'; return; }
+            api({ action: 'thread', bounty_id: first.id }).then(function (d) {
+              $('qa').innerHTML = (d.messages || []).length ? d.messages.map(function (m) {
+                return '<li class="note" style="margin:0;' + (m.staff ? 'background:var(--ve-green-light)' : '') + '"><b>' + esc(m.name) + (m.staff ? ' (staff)' : '') + '</b> <span class="meta">' + esc(day(m.at, city)) + '</span><br>' + esc(m.body) + '</li>';
+              }).join('') : '<li class="empty">No questions yet.</li>';
+            });
+          };
+          loadQa();
+          $('qa-post').addEventListener('click', function () {
+            var t = $('qa-text').value.trim(); if (!t || !first) return;
+            api({ action: 'ask', bounty_id: first.id, body: t }).then(function (r) { if (say($('qa-msg'), r, 'Posted.')) { $('qa-text').value = ''; loadQa(); } });
+          });
+        }
+      }
+      function jobRows(c, ed) {
+        var jobs = liveJobs(c);
+        if (!jobs.length) return '<p class="empty">No jobs on this campaign.</p>';
+        return '<div class="jrows"><div class="jrow jhead" aria-hidden="true"><span>Job</span><span>Points</span><span>Spots</span><span>Status</span><span></span></div>' + jobs.map(function (j) {
+          var holders = holdersFor(j.id);
+          return '<div class="jrow"><span class="jname"><b>' + esc(short(j.title)) + '</b>' +
+            ((j.parts || []).length ? '<small>Bundle: ' + j.parts.length + ' parts, all needed to earn the points</small>' : '<small>Pays on its own</small>') +
+            (holders.length ? '<small>Claimed by ' + holders.map(function (h) { return esc(h.name) + ' (' + esc((LABEL[h.status] || h.status).toLowerCase()) + ')'; }).join(', ') + '</small>' : '') + '</span>' +
+            '<span data-l="Points">' + (j.points || 0).toLocaleString() + '</span>' +
+            '<span data-l="Spots">' + (j.taken || 0) + (j.slots != null ? ' of ' + j.slots : ' (no limit)') + '</span>' +
+            '<span data-l="Status">' + tag(j.status, 'job') + '</span>' +
+            '<span class="jact">' + (ed ? '<a class="btn btn-ghost btn-sm" href="#campaign/' + c.id + '/job/' + j.id + '">Edit</a>' : '') + '</span></div>';
+        }).join('') + '</div>';
+      }
+
+      // ---- One job ----------------------------------------------------------------------------
+      function viewJob(c, jid) {
+        var j = (c.jobs || []).filter(function (x) { return x.id === jid; })[0];
+        if (!j || !canEdit(c)) return go('campaign/' + c.id);
+        show(crumbs([['Campaigns', ''], [c.title, 'campaign/' + c.id], [short(j.title)]]) +
+          '<div class="head"><div>' + tag(j.status, 'job') + '<h2 class="title">' + esc(short(j.title)) + '</h2><p class="meta">' + (j.taken || 0) + (j.slots != null ? ' of ' + j.slots : '') + ' spots taken</p></div></div>' +
+          '<section class="panel"><form class="cform" id="jf">' +
+          '<label class="wide">Name<input id="j-title" maxlength="120" value="' + esc(short(j.title)) + '" required></label>' +
+          '<label>Points<input id="j-points" type="number" min="1" max="10000" value="' + j.points + '"></label>' +
+          '<label>Spots<input id="j-slots" type="number" min="1" max="500" value="' + (j.slots || '') + '"><span class="hint">Leave empty for no limit.</span></label>' +
+          '<label class="wide">What to deliver<input id="j-deliverable" maxlength="400" value="' + esc(j.deliverable) + '"></label>' +
+          '<label class="wide">Brief<textarea id="j-brief" maxlength="4000">' + esc(j.brief) + '</textarea></label>' +
+          '<label class="wide">Parts, one per line<textarea id="j-parts">' + esc((j.parts || []).join('\n')) + '</textarea><span class="hint">With parts, this job is a bundle: every part is needed to earn the points. Leave empty for a job that pays on its own.</span></label>' +
+          '<div class="wide acts" style="margin-top:0"><button type="submit" class="btn">Save job</button><a class="btn btn-ghost" href="#campaign/' + c.id + '">Cancel</a></div>' +
+          '<p class="msg wide" id="jmsg" role="status"></p></form></section>' +
+          '<section class="panel danger"><h2>Remove this job</h2><p class="meta">It comes off the campaign. A job someone holds a spot on stays.</p><div class="acts"><button type="button" class="btn btn-no" id="j-remove">Remove job</button></div><p class="msg" id="jmsg2" role="status"></p></section>');
+        $('jf').addEventListener('submit', function (e) {
+          e.preventDefault();
+          api({ action: 'job_update', id: j.id, title: c.title + ': ' + $('j-title').value.trim(), points: $('j-points').value, slots: $('j-slots').value, deliverable: $('j-deliverable').value, brief: $('j-brief').value,
+            parts: $('j-parts').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean) }).then(function (r) { if (say($('jmsg'), r, 'Saved.')) soon('campaign/' + c.id, 500); });
+        });
+        $('j-remove').addEventListener('click', function () {
+          if (!confirm('Remove this job from the campaign?')) return;
+          api({ action: 'job_update', id: j.id, remove: true }).then(function (r) { if (say($('jmsg2'), r, 'Removed.')) soon('campaign/' + c.id, 500); });
+        });
+      }
+
+      // ---- The campaign form: new or edit -----------------------------------------------------
+      function viewForm(c) {
+        var d = state.camps, isNew = !c, k = c ? c.kind : 'event', pickedHost;
+        var cities = Object.keys(CITY).filter(function (x) { return d.admin || x !== 'sandbox'; });
+        var v = function (f) { return c ? esc(c[f] || '') : ''; };
+        show(crumbs(isNew ? [['Campaigns', ''], ['New campaign']] : [['Campaigns', ''], [c.title, 'campaign/' + c.id], ['Edit']]) +
+          '<section class="panel"><form class="cform" id="cf">' +
+          (isNew ? '<div class="wide"><span class="hint" style="display:block;margin-bottom:6px;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Kind</span><div class="kinds">' +
+            '<label><input type="radio" name="kind" value="event" checked> Event (festival, party)</label>' +
+            '<label><input type="radio" name="kind" value="place"> Restaurant night (a host)</label>' +
+            '<label><input type="radio" name="kind" value="ongoing"> Ongoing (a window, no event day)</label></div><span class="hint">Its jobs start from a template you can edit after.</span></div>' +
+            '<label>City<select id="f-city">' + cities.map(function (x) { return '<option value="' + x + '"' + ((d.cities || [])[0] === x ? ' selected' : '') + '>' + esc(CITY[x]) + '</option>'; }).join('') + '</select></label>'
+            : '<p class="meta wide">' + esc(KIND[c.kind]) + ' &middot; ' + esc(CITY[c.community_slug] || c.community_slug) + '</p>') +
+          '<label>Name<input id="f-title" maxlength="140" required value="' + v('title') + '" placeholder="Scavenger hunt: Little Haiti restaurants"></label>' +
+          '<label class="wide">The story<textarea id="f-story" maxlength="4000" placeholder="What it is, why we are there, what creators get, and exactly what is provided.">' + v('story') + '</textarea><span class="hint">The top of the campaign page. Spell out what is provided (for a restaurant night, the meal the restaurant chooses).</span></label>' +
+          '<label data-when="event place">Starts<input id="f-start" type="datetime-local" value="' + (c ? local(c.starts_at) : '') + '"></label>' +
+          '<label data-when="event place">Ends<input id="f-end" type="datetime-local" value="' + (c ? local(c.ends_at) : '') + '"></label>' +
+          '<label data-when="ongoing">Window closes<input id="f-due" type="datetime-local" value="' + (c ? local(c.due_at) : '') + '"></label>' +
+          '<label>Place<input id="f-place" maxlength="200" value="' + v('place_name') + '" placeholder="Venue or restaurant name"></label>' +
+          '<label>Address<input id="f-address" maxlength="300" value="' + v('address') + '"></label>' +
+          '<label>Cover image (optional)<input id="f-cover" type="url" maxlength="1000" value="' + v('cover_url') + '" placeholder="https://"></label>' +
+          '<label>Part of<select id="f-family"><option value="">No larger campaign</option>' + (d.families || []).map(function (f) { return '<option value="' + f.id + '"' + (c && c.campaign_id === f.id ? ' selected' : '') + '>' + esc(f.title) + '</option>'; }).join('') + '</select><span class="hint">A Vegans Explore campaign this creator work belongs to.</span></label>' +
+          '<label data-when="place" class="wide">Host restaurant<input id="f-host-q" maxlength="80" placeholder="Search the Directory by name"><ul class="hits" id="f-hits"></ul><span class="hint" id="f-host-picked">' + (c && c.host ? 'Host: ' + esc(c.host.name) + '. Search to change it.' : 'The host must be an active member (the one-time $11 membership) before it can go live.') + '</span></label>' +
+          '<label data-when="place">Host\'s email (if not the listing\'s owner)<input id="f-host-email" type="email" maxlength="200"></label>' +
+          '<label data-when="place">Creators seated<input id="f-cap" type="number" min="1" max="500" value="' + (c ? (c.creator_cap || '') : 10) + '"></label>' +
+          '<div data-when="place" class="wide"><span class="hint" style="display:block;margin-bottom:6px">Paid extras the host chose (each one that needs creators becomes a job)</span><div class="chk">' + Object.keys(EXTRA).map(function (x) { return '<label><input type="checkbox" data-extra="' + x + '"' + (c && (c.host_extras || []).indexOf(x) > -1 ? ' checked' : '') + '> ' + esc(EXTRA[x]) + '</label>'; }).join('') + '</div></div>' +
+          (isNew ? '' : '<label class="wide">Details only claimers see<textarea id="f-details" maxlength="6000" placeholder="Parking, who to ask for, organizer contact, set times">' + v('details') + '</textarea></label>') +
+          (isNew ? '<div class="wide" id="f-pub-row"><label class="chk" style="flex-direction:row"><input type="checkbox" id="f-publish"> Put it live now (you decide for this city)</label></div>' : '') +
+          '<div class="wide acts" style="margin-top:0"><button type="submit" class="btn" id="f-go">' + (isNew ? 'Propose campaign' : 'Save changes') + '</button><a class="btn btn-ghost" href="#' + (isNew ? '' : 'campaign/' + c.id) + '">Cancel</a></div>' +
+          '<p class="msg wide" id="fmsg" role="status"></p></form></section>' +
+          (!isNew && c.can_decide && c.status === 'open' ? '<section class="panel danger"><h2>Cancel the campaign</h2><p class="meta">Every job closes, spots are released with no strikes, and everyone holding one is emailed. To stop new claims but keep it running, use Close instead.</p><div class="acts"><button type="button" class="btn btn-no" id="f-cancel">Cancel the campaign</button></div><p class="msg" id="fmsg2" role="status"></p></section>' : ''));
+        var kindNow = function () { if (!isNew) return k; var r = document.querySelector('input[name="kind"]:checked'); return r ? r.value : 'event'; };
+        var sync = function () {
+          var kk = kindNow();
+          Array.prototype.forEach.call(document.querySelectorAll('#cf [data-when]'), function (el) { el.hidden = el.getAttribute('data-when').split(' ').indexOf(kk) < 0; });
+          if (isNew) { var mine = d.admin || (d.cities || []).indexOf($('f-city').value) > -1; $('f-pub-row').hidden = !mine; if (!mine) $('f-publish').checked = false; }
+        };
+        sync();
+        if (isNew) { document.querySelectorAll('input[name="kind"]').forEach(function (r) { r.addEventListener('change', sync); }); $('f-city').addEventListener('change', sync); }
+        var timer = null;
+        $('f-host-q').addEventListener('input', function () {
+          clearTimeout(timer); var q = this.value.trim(); pickedHost = null;
+          if (q.length < 2) { $('f-hits').innerHTML = ''; return; }
+          timer = setTimeout(function () {
+            api({ action: 'listing_search', q: q }).then(function (r) {
+              $('f-hits').innerHTML = (r.listings || []).map(function (l) {
+                return '<li><button type="button" data-host="' + l.id + '" data-name="' + esc(l.name) + '">' + esc(l.name) + (l.city ? ' &middot; ' + esc(l.city) : '') + ' &middot; ' + (l.member ? esc(l.member.name || l.member.email) + (l.member.active ? ' (active member)' : ' (not an active member)') : 'no owner on file') + '</button></li>';
+              }).join('') || '<li class="meta">No listing by that name.</li>';
+            });
+          }, 250);
+        });
+        $('f-hits').addEventListener('click', function (e) {
+          var b = e.target.closest('[data-host]'); if (!b) return;
+          pickedHost = b.getAttribute('data-host'); $('f-host-q').value = b.getAttribute('data-name'); $('f-hits').innerHTML = '';
+          $('f-host-picked').textContent = 'Host: ' + b.getAttribute('data-name') + '. The host must be an active member before it can go live.';
+          if (!$('f-place').value) $('f-place').value = b.getAttribute('data-name');
+        });
+        $('cf').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var kk = kindNow(), msg = $('fmsg');
+          var body = { action: isNew ? 'campaign_propose' : 'campaign_update', title: $('f-title').value, story: $('f-story').value, cover_url: $('f-cover').value, place_name: $('f-place').value, address: $('f-address').value, campaign_id: $('f-family').value || null };
+          if (isNew) { body.community = $('f-city').value; body.kind = kk; body.publish = $('f-publish').checked; } else { body.id = c.id; body.details = $('f-details').value; }
+          if (kk === 'ongoing') body.due_at = iso($('f-due').value); else { body.starts_at = iso($('f-start').value); body.ends_at = iso($('f-end').value); }
+          if (kk === 'place') {
+            if (pickedHost) body.host_listing_id = pickedHost;
+            if ($('f-host-email').value) body.host_email = $('f-host-email').value;
+            body.creator_cap = $('f-cap').value;
+            body.host_extras = Array.prototype.filter.call(document.querySelectorAll('#cf [data-extra]'), function (x) { return x.checked; }).map(function (x) { return x.getAttribute('data-extra'); });
+          }
+          $('f-go').disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
+          api(body).then(function (r) {
+            $('f-go').disabled = false;
+            if (!say(msg, r, isNew ? (r.status === 'open' ? 'It is live on the bounties page.' : 'Proposed.') : 'Saved.')) return;
+            soon('campaign/' + (isNew ? r.id : c.id), 500);
+          });
+        });
+        if ($('f-cancel')) $('f-cancel').addEventListener('click', function () {
+          if (!confirm('Cancel this campaign? Every job closes and everyone holding a spot is emailed.')) return;
+          var first = liveJobs(c)[0], msg2 = $('fmsg2');
+          var after = function () { return api({ action: 'campaign_decide', id: c.id, decision: 'close' }); };
+          (first ? api({ action: 'event_update', bounty_id: first.id, cancel: true }) : Promise.resolve({})).then(function (r) {
+            if (r && r.error) return say(msg2, r, '');
+            after().then(function (r2) { if (say(msg2, r2, 'Canceled. Claimers have been emailed.')) soon('campaign/' + c.id, 700); });
+          });
+        });
+      }
+
+      // ---- Review queue -----------------------------------------------------------------------
+      function viewReview(cid) {
+        var c = cid ? camp(cid) : null;
+        var all = (state.camps.campaigns || []).filter(function (x) { return x.status !== 'proposed' && x.status !== 'declined'; });
+        var chips = [['submitted', 'To review'], ['changes', 'Changes asked'], ['claimed', 'Claimed, not in yet'], ['approved', 'Approved'], ['rejected', 'Declined'], ['no_show', 'Missed']].map(function (x) {
+          return '<button type="button" data-s="' + x[0] + '" aria-pressed="' + (state.rstatus === x[0]) + '">' + x[1] + ' <span data-c="' + x[0] + '"></span></button>';
+        }).join('');
+        show(crumbs(c ? [['Campaigns', ''], [c.title, 'campaign/' + c.id], ['Work']] : [['Campaigns', ''], ['Work to review']]) +
+          '<p class="sub">Review within 5 days: <b>Approve</b> at full points or fewer (say why), ask for <b>Changes</b> (2 rounds, 72 hours each), or <b>Decline</b>. A coaching note is optional and goes to the member either way.</p>' +
+          '<div class="bar"><div class="filters" id="rfilter" role="group" aria-label="Show">' + chips + '</div>' +
+          '<label class="meta" style="display:flex;align-items:center;gap:8px">Campaign <select id="rcamp" style="font:inherit;font-size:14px;padding:8px 10px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;max-width:280px"><option value="">All campaigns</option>' + all.map(function (x) { return '<option value="' + x.id + '"' + (x.id === cid ? ' selected' : '') + '>' + esc(x.title) + '</option>'; }).join('') + '</select></label></div>' +
+          '<div id="subs"><p class="empty">Loading...</p></div>');
+        $('rfilter').addEventListener('click', function (e) { var b = e.target.closest('[data-s]'); if (!b) return; state.rstatus = b.getAttribute('data-s'); viewReview(cid); });
+        $('rcamp').addEventListener('change', function () { go(this.value ? 'review/' + this.value : 'review'); });
+        api({ action: 'review_list', status: state.rstatus }).then(function (d) {
+          if (!d.submissions) throw new Error(d.error);
+          if (!c) Array.prototype.forEach.call(document.querySelectorAll('[data-c]'), function (el) { var n = (d.counts || {})[el.getAttribute('data-c')]; el.textContent = n ? '(' + n + ')' : ''; });
+          var ids = c ? jobIds(c) : null;
+          var subs = d.submissions.filter(function (s) { return !ids || (s.bounty && ids.indexOf(s.bounty.id) > -1); });
+          $('subs').innerHTML = subs.length ? subs.map(subCard).join('') : '<p class="empty">Nothing ' + esc((LABEL[state.rstatus] || '').toLowerCase()) + ' right now.</p>';
+        }).catch(function () { $('subs').innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; });
+        $('subs').addEventListener('click', function (e) {
+          var dd = e.target.getAttribute('data-d'); if (!dd) return;
+          var card = e.target.closest('.sub-card'), msg = card.querySelector('.msg');
+          var f = function (k) { var el = card.querySelector('[data-f="' + k + '"]'); return el ? el.value.trim() : ''; };
+          var note = f('note'), points = Number(f('points')), full = Number(card.getAttribute('data-points'));
+          if ((dd === 'changes' || dd === 'violation') && !note) { msg.className = 'msg err'; msg.textContent = dd === 'changes' ? 'Say what needs to change.' : 'Say what was wrong.'; return; }
+          if (dd === 'approve' && points < full && !note) { msg.className = 'msg err'; msg.textContent = 'Say why it is paying fewer points.'; return; }
+          if (dd === 'reject' && !confirm('Decline this submission? The member gets an email.')) return;
+          if (dd === 'violation' && !confirm('Mark this as a violation? It declines the work and pauses the member\'s bounties until someone clears the strike.')) return;
+          Array.prototype.forEach.call(card.querySelectorAll('button'), function (b) { b.disabled = true; });
+          msg.className = 'msg'; msg.textContent = dd === 'approve' ? 'Paying the points...' : 'Saving...';
+          api({ action: 'review', id: card.getAttribute('data-id'), decision: dd, note: note, coaching: f('coaching'), points: dd === 'approve' ? points : undefined }).then(function (r) {
+            if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; Array.prototype.forEach.call(card.querySelectorAll('button'), function (b) { b.disabled = false; }); return; }
+            msg.textContent = dd === 'approve' ? 'Approved. ' + (r.points || '') + ' points paid.' : 'Done. The member has been emailed.';
+            setTimeout(function () { loadAll().then(function () { viewReview(cid); }); }, 900);
+          });
+        });
+      }
+      function subCard(s) {
         var b = s.bounty || {}, m = s.member || {}, h = s.history || { coaching: [], strikes: [] };
         var reviewable = s.status === 'submitted' || s.status === 'changes';
-        var hist = (h.coaching.length ? '<p class="meta" style="margin-top:8px"><b>Earlier coaching:</b> ' + h.coaching.map(function (c) { return esc(c.note) + ' <i>(' + esc(c.bounty) + ')</i>'; }).join(' &middot; ') + '</p>' : '') +
+        var hist = (h.coaching.length ? '<p class="meta" style="margin-top:8px"><b>Earlier coaching:</b> ' + h.coaching.map(function (x) { return esc(x.note) + ' <i>(' + esc(x.bounty) + ')</i>'; }).join(' &middot; ') + '</p>' : '') +
           (h.strikes.length ? '<p class="meta"><b>Strikes:</b> ' + h.strikes.map(function (x) { return esc(REASON[x.reason] || x.reason) + (x.cleared_at ? ' (cleared)' : ''); }).join(', ') + '</p>' : '');
+        var parts = (b.parts || []).length ? '<p class="meta" style="margin-top:6px"><b>Parts ticked:</b> ' + (s.parts_done || []).length + ' of ' + b.parts.length + '</p>' : '';
         return '<div class="sub-card" data-id="' + s.id + '" data-points="' + (b.points || 0) + '">' +
           '<span class="pill p-' + s.status + '">' + esc(LABEL[s.status] || s.status) + '</span>' +
           (s.overdue ? '<span class="pill p-rejected">Waiting ' + s.waited_days + ' days</span>' : '') +
           (s.auto_submitted ? '<span class="pill p-submitted">Sent in at the deadline</span>' : '') +
           '<span class="meta">' + esc(s.submitted_at ? 'Submitted ' + day(s.submitted_at) : 'Claimed ' + day(s.claimed_at)) + (s.revisions ? ' &middot; changes asked ' + s.revisions + ' of 2' : '') + '</span>' +
           '<h3>' + esc(b.title || 'Bounty') + ' &middot; ' + (b.points || 0).toLocaleString() + ' points</h3>' +
-          '<p class="meta">' + esc(m.name || 'Member') + (m.email ? ' &middot; ' + esc(m.email) : '') + '</p>' +
+          '<p class="meta">' + esc(m.name || 'Member') + (m.email ? ' &middot; ' + esc(m.email) : '') + '</p>' + parts +
           (s.files.length ? '<ul class="files">' + s.files.map(function (f) { return '<li><a href="' + esc(f.url || '#') + '" target="_blank" rel="noopener">' + esc(f.name) + ' (' + size(f.size) + ')</a></li>'; }).join('') + '</ul><p class="meta">' + s.files.length + (s.files.length === 1 ? ' file' : ' files') + '. Download links last one hour; refresh for new ones.</p>' : '') +
           (s.links && s.links.length ? '<div class="links" style="margin-top:8px">' + s.links.map(function (l) { return '<a href="' + esc(l) + '" target="_blank" rel="noopener noreferrer">' + esc(l) + '</a>'; }).join('') + '</div>' : '') +
           (s.note ? '<div class="note">' + esc(s.note) + '</div><p class="meta">' + s.note.trim().split(/\s+/).length.toLocaleString() + ' words</p>' : '') +
@@ -206,213 +518,22 @@
             '<button type="button" class="btn btn-no" data-d="violation" title="Recycled footage or someone else\'s work. Pauses their bounties.">Violation</button></div><p class="msg" role="status"></p>' : '') +
           '</div>';
       }
-      $('subs').addEventListener('click', function (e) {
-        var d = e.target.getAttribute('data-d'); if (!d) return;
-        var c = e.target.closest('.sub-card'), msg = c.querySelector('.msg');
-        var f = function (k) { var el = c.querySelector('[data-f="' + k + '"]'); return el ? el.value.trim() : ''; };
-        var note = f('note'), points = Number(f('points')), full = Number(c.getAttribute('data-points'));
-        if ((d === 'changes' || d === 'violation') && !note) { msg.className = 'msg err'; msg.textContent = d === 'changes' ? 'Say what needs to change.' : 'Say what was wrong.'; return; }
-        if (d === 'approve' && points < full && !note) { msg.className = 'msg err'; msg.textContent = 'Say why it is paying fewer points.'; return; }
-        if (d === 'reject' && !confirm('Decline this submission? The member gets an email.')) return;
-        if (d === 'violation' && !confirm('Mark this as a violation? It declines the work and pauses the member\'s bounties until someone clears the strike.')) return;
-        Array.prototype.forEach.call(c.querySelectorAll('button'), function (b) { b.disabled = true; });
-        msg.className = 'msg'; msg.textContent = d === 'approve' ? 'Paying the points...' : 'Saving...';
-        api({ action: 'review', id: c.getAttribute('data-id'), decision: d, note: note, coaching: f('coaching'), points: d === 'approve' ? points : undefined }).then(function (r) {
-          if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; Array.prototype.forEach.call(c.querySelectorAll('button'), function (b) { b.disabled = false; }); return; }
-          msg.textContent = d === 'approve' ? 'Approved. ' + (r.points || '') + ' points paid.' : 'Done. The member has been emailed.';
-          setTimeout(load, 900);
-        });
-      });
 
-      function eventCard(e) {
-        var c = e.community;
-        return '<details class="sub-card" data-event="' + esc(e.bounty_id) + '"><summary style="cursor:pointer"><b>' + esc(e.title) + '</b> &middot; <span class="meta">' + esc(day(e.starts_at, c)) + '</span>' +
-          (e.status === 'canceled' ? ' <span class="pill p-rejected">Canceled</span>' : '') +
-          (e.unanswered ? ' <span class="pill p-submitted">' + e.unanswered + ' to answer</span>' : '') + '</summary>' +
-          '<p class="meta" style="margin-top:8px">Claims close ' + esc(day(e.claims_close_at, c)) + ' &middot; due ' + esc(day(e.due_at, c)) + (e.address ? ' &middot; ' + esc(e.address) : '') + '</p>' +
-          '<div class="blist" style="margin-top:10px">' + e.bounties.map(function (b) {
-            return '<div><b>' + esc(b.title.replace(/^[^:]+:\s*/, '')) + '</b>' + b.points.toLocaleString() + ' points &middot; ' + b.holders.length + (b.slots != null ? ' of ' + b.slots : '') + ' spots taken' +
-              (b.holders.length ? '<br>' + b.holders.map(function (h) { return esc(h.name) + ' <span class="meta">(' + esc(LABEL[h.status] || h.status) + ')</span>'; }).join('<br>') : '') + '</div>';
-          }).join('') + '</div>' +
-          '<h2 style="margin-top:16px">Questions</h2><ul class="qa-list" data-qa style="list-style:none;display:grid;gap:6px"><li class="empty">Open to load.</li></ul>' +
-          '<div class="acts"><input type="text" data-f="answer" maxlength="2000" placeholder="Answer, or post an update to everyone covering this event" aria-label="Answer"><button type="button" class="btn" data-ev="answer">Post</button></div>' +
-          '<h2 style="margin-top:16px">Details only claimers see</h2>' +
-          '<textarea data-f="details" rows="4" style="width:100%;font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:8px" placeholder="Parking, who to ask for at the gate, organizer contact, set times, vendor list" aria-label="Event details">' + esc(e.details) + '</textarea>' +
-          '<div class="acts"><button type="button" class="btn btn-ghost" data-ev="details">Save details</button></div>' +
-          (e.status === 'canceled' ? '' :
-            '<h2 style="margin-top:16px">Moved or canceled?</h2>' +
-            '<div class="acts"><label class="meta">New start <input type="datetime-local" data-f="start" value="' + local(e.starts_at) + '"></label><label class="meta">End <input type="datetime-local" data-f="end" value="' + local(e.ends_at) + '"></label>' +
-            '<button type="button" class="btn btn-ghost" data-ev="move">Move the event</button><button type="button" class="btn btn-no" data-ev="cancel">Cancel the event</button></div>' +
-            '<p class="meta">Times are in your own time zone. Moving resets the clocks (claims close 48 hours before, due 7 days after) and emails everyone holding a spot.</p>') +
-          '<p class="msg" role="status"></p></details>';
-      }
-      function loadQa(card) {
-        var list = card.querySelector('[data-qa]');
-        return api({ action: 'thread', bounty_id: card.getAttribute('data-event') }).then(function (d) {
-          list.innerHTML = (d.messages || []).length ? d.messages.map(function (m) {
-            return '<li class="note" style="margin:0;' + (m.staff ? 'background:var(--ve-green-light)' : '') + '"><b>' + esc(m.name) + (m.staff ? ' (staff)' : '') + '</b> <span class="meta">' + esc(day(m.at)) + '</span><br>' + esc(m.body) + '</li>';
-          }).join('') : '<li class="empty">No questions yet.</li>';
+      // ---- Strikes ----------------------------------------------------------------------------
+      function viewStrikes() {
+        var list = (state.review && state.review.strikes) || [];
+        show(crumbs([['Campaigns', ''], ['Strikes']]) +
+          '<p class="sub">1 strike: 30 days without claiming. 2 in 6 months: 90 days. 3, or a violation: paused until cleared. A release after claims close is half a strike. Clear one when a member explains what happened.</p>' +
+          '<div id="strikes">' + (list.length ? list.map(function (s) {
+            return '<div class="sub-card" data-strike="' + s.id + '"><b>' + esc(s.member) + '</b> &middot; ' + esc(REASON[s.reason] || s.reason) + ' (' + s.weight + ') &middot; <span class="meta">' + esc(day(s.created_at)) + '</span>' +
+              '<div class="acts"><input type="text" maxlength="1000" placeholder="Why it is cleared (optional)" aria-label="Why it is cleared"><button type="button" class="btn btn-ghost" data-clear="' + s.id + '">Clear strike</button></div></div>';
+          }).join('') : '<p class="empty">No open strikes.</p>') + '</div>');
+        $('strikes').addEventListener('click', function (e) {
+          var id = e.target.getAttribute('data-clear'); if (!id) return;
+          var card = e.target.closest('[data-strike]'); e.target.disabled = true;
+          api({ action: 'strike_clear', id: id, note: card.querySelector('input').value.trim() }).then(function (r) { if (r.error) { e.target.disabled = false; alert(r.message || 'That did not go through.'); return; } reloadTo('strikes'); });
         });
       }
-      $('events').addEventListener('toggle', function (e) { if (e.target.open && e.target.hasAttribute('data-event')) loadQa(e.target); }, true);
-      $('events').addEventListener('click', function (e) {
-        var act = e.target.getAttribute('data-ev'); if (!act) return;
-        var card = e.target.closest('[data-event]'), msg = card.querySelector('.msg'), id = card.getAttribute('data-event');
-        var f = function (k) { var el = card.querySelector('[data-f="' + k + '"]'); return el ? el.value : ''; };
-        var done = function (r, text) { if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; return false; } msg.className = 'msg'; msg.textContent = text; return true; };
-        if (act === 'answer') {
-          var text = f('answer').trim(); if (!text) return;
-          api({ action: 'ask', bounty_id: id, body: text }).then(function (r) { if (done(r, 'Posted.')) { card.querySelector('[data-f="answer"]').value = ''; loadQa(card); } });
-        } else if (act === 'details') {
-          api({ action: 'event_update', bounty_id: id, details: f('details') }).then(function (r) { done(r, 'Saved. Claimers see it on their bounty page.'); });
-        } else if (act === 'move') {
-          var s = f('start'), en = f('end'); if (!s) return;
-          if (!confirm('Move the event and email everyone holding a spot?')) return;
-          api({ action: 'event_update', bounty_id: id, starts_at: new Date(s).toISOString(), ends_at: en ? new Date(en).toISOString() : undefined }).then(function (r) { if (done(r, 'Moved. Claimers have been emailed.')) setTimeout(load, 900); });
-        } else if (act === 'cancel') {
-          if (!confirm('Cancel this event? Every bounty on it closes, spots are released with no strikes, and everyone holding one is emailed.')) return;
-          api({ action: 'event_update', bounty_id: id, cancel: true }).then(function (r) { if (done(r, 'Canceled. Claimers have been emailed.')) setTimeout(load, 900); });
-        }
-      });
-
-      $('strikes').addEventListener('click', function (e) {
-        var id = e.target.getAttribute('data-clear'); if (!id) return;
-        var c = e.target.closest('[data-strike]');
-        e.target.disabled = true;
-        api({ action: 'strike_clear', id: id, note: c.querySelector('input').value.trim() }).then(function (r) { if (r.error) { e.target.disabled = false; alert(r.message || 'That did not go through.'); return; } load(); });
-      });
-      $('filters').addEventListener('click', function (e) {
-        var b = e.target.closest('button[data-s]'); if (!b) return;
-        status = b.getAttribute('data-s');
-        Array.prototype.forEach.call($('filters').querySelectorAll('button'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        load();
-      });
-      // ---- Campaigns ---------------------------------------------------------------------------
-      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', sandbox: 'Sandbox (test)' };
-      var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
-      var EXTRA = { photo_shoot: 'Photo shoot ($150)', reel: 'Reel ($200)', social_post: 'Social feature post ($75)', event_table: 'Sampling table ($100)', challenge_month: 'Passport Challenge stop ($100)' };
-      var cdata = null, pickedHost = null;
-      function iso(v) { return v ? new Date(v).toISOString() : null; }
-      function campCard(c) {
-        var city = c.community_slug, jobs = c.jobs || [];
-        var when = c.kind === 'ongoing' ? (c.due_at ? 'Window closes ' + day(c.due_at, city) : 'No window set') : (c.starts_at ? day(c.starts_at, city) : 'No date set');
-        var host = c.host ? esc(c.host.name) + (c.host_member ? (c.host_member.active ? ' &middot; host is an active member' : ' &middot; <b style="color:#8a1c12">host is not an active member yet</b>') : ' &middot; <b style="color:#8a1c12">no host member found</b>') +
-          (c.host.featured_until ? ' &middot; featured until ' + esc(day(c.host.featured_until, city)) : '') + (c.host.photos ? ' &middot; ' + c.host.photos + ' photos on the listing' : '') : '';
-        var ed = c.can_decide || (c.status === 'proposed');
-        return '<details class="sub-card" data-camp="' + c.id + '"' + (c.status === 'proposed' ? ' open' : '') + '><summary style="cursor:pointer"><span class="pill p-' + c.status + '">' + esc(c.status) + '</span><b>' + esc(c.title) + '</b> &middot; <span class="meta">' + esc(KIND[c.kind]) + ' &middot; ' + esc(CITY[city] || city) + ' &middot; ' + esc(when) + ' &middot; ' + jobs.length + ' jobs</span></summary>' +
-          '<p class="meta" style="margin-top:8px">' + (c.proposer ? 'Proposed by ' + esc(c.proposer) + '. ' : '') + (c.decision_note ? 'Note: ' + esc(c.decision_note) + '. ' : '') + (host ? '<br>Host: ' + host : '') + '</p>' +
-          (c.can_decide && c.status === 'proposed' ? '<div class="acts"><input type="text" data-f="dnote" maxlength="1000" placeholder="Note (optional)" aria-label="Decision note"><button type="button" class="btn" data-ca="approve">Approve and put it live</button><button type="button" class="btn btn-no" data-ca="decline">Decline</button></div>' : '') +
-          (c.can_decide && c.status === 'open' ? '<div class="acts"><button type="button" class="btn btn-ghost" data-ca="close">Close the campaign</button></div>' : '') +
-          (c.can_decide && c.status === 'closed' ? '<div class="acts"><button type="button" class="btn" data-ca="approve">Reopen</button></div>' : '') +
-          (ed ? '<div class="cedit">' +
-            '<label>Name<input data-f="title" maxlength="140" value="' + esc(c.title) + '"></label>' +
-            '<label>Cover image<input data-f="cover_url" type="url" maxlength="1000" value="' + esc(c.cover_url || '') + '"></label>' +
-            '<label class="wide">The story<textarea data-f="story" maxlength="4000">' + esc(c.story || '') + '</textarea></label>' +
-            (c.kind === 'ongoing' ? '<label>Window closes<input data-f="due_at" type="datetime-local" value="' + local(c.due_at) + '"></label>' :
-              '<label>Starts<input data-f="starts_at" type="datetime-local" value="' + local(c.starts_at) + '"></label><label>Ends<input data-f="ends_at" type="datetime-local" value="' + local(c.ends_at) + '"></label>') +
-            '<label>Place<input data-f="place_name" maxlength="200" value="' + esc(c.place_name || '') + '"></label>' +
-            '<label>Address<input data-f="address" maxlength="300" value="' + esc(c.address || '') + '"></label>' +
-            (c.kind === 'place' ? '<label>Creators seated<input data-f="creator_cap" type="number" min="1" max="500" value="' + (c.creator_cap || '') + '"></label>' +
-              '<label>Host\'s email (to change the host)<input data-f="host_email" type="email" maxlength="200"></label>' +
-              '<div class="wide"><span class="hint" style="display:block;margin-bottom:6px">Paid extras the host chose (each one that needs creators becomes a job)</span><div class="chk">' + Object.keys(EXTRA).map(function (k) { return '<label><input type="checkbox" data-extra="' + k + '"' + ((c.host_extras || []).indexOf(k) > -1 ? ' checked' : '') + '> ' + esc(EXTRA[k]) + '</label>'; }).join('') + '</div></div>' : '') +
-            '<label class="wide">Details only claimers see<textarea data-f="details" maxlength="6000" placeholder="Parking, who to ask for, organizer contact, set times">' + esc(c.details || '') + '</textarea></label>' +
-            '<div class="wide"><button type="button" class="btn btn-ghost" data-ca="save">Save changes</button></div></div>' : '') +
-          '<h2 style="margin-top:16px">Jobs</h2><div class="jobs">' + jobs.filter(function (j) { return j.status !== 'canceled'; }).map(function (j) {
-            return '<div class="job" data-job="' + j.id + '"><b>' + esc(j.title.replace(/^[^:]+:\s*/, '')) + '</b>' + j.points.toLocaleString() + ' points &middot; ' + j.taken + (j.slots != null ? ' of ' + j.slots : '') + ' spots taken &middot; ' + esc(j.status) +
-              ((j.parts || []).length ? '<br><span class="meta">' + j.parts.length + ' parts, all needed to earn the points</span>' : '') +
-              (ed ? '<details><summary>Edit</summary><div class="cedit">' +
-                '<label>Points<input data-j="points" type="number" min="1" max="10000" value="' + j.points + '"></label>' +
-                '<label>Spots<input data-j="slots" type="number" min="1" max="500" value="' + (j.slots || '') + '"></label>' +
-                '<label class="wide">What to deliver<input data-j="deliverable" maxlength="400" value="' + esc(j.deliverable) + '"></label>' +
-                '<label class="wide">Brief<textarea data-j="brief" maxlength="4000">' + esc(j.brief) + '</textarea></label>' +
-                '<label class="wide">Parts, one per line (leave empty for a job that is not a bundle)<textarea data-j="parts">' + esc((j.parts || []).join('\n')) + '</textarea></label>' +
-                '<div class="wide"><button type="button" class="btn btn-ghost" data-jact="save">Save job</button> <button type="button" class="btn btn-no" data-jact="remove">Remove job</button></div></div></details>' : '') + '</div>';
-          }).join('') + '</div><p class="msg" role="status"></p></details>';
-      }
-      function loadCamps() {
-        return api({ action: 'campaign_admin_list' }).then(function (d) {
-          if (!d.campaigns) { $('camp-panel').hidden = true; return; }
-          cdata = d;
-          var order = { proposed: 0, open: 1, closed: 2, declined: 3, canceled: 4 };
-          var list = d.campaigns.slice().sort(function (a, b) { return (order[a.status] - order[b.status]) || String(a.starts_at || a.due_at || '').localeCompare(String(b.starts_at || b.due_at || '')); });
-          $('camps').innerHTML = list.length ? list.map(campCard).join('') : '<p class="empty">No campaigns yet. Propose the first one below.</p>';
-          var cities = Object.keys(CITY).filter(function (k) { return d.admin || k !== 'sandbox'; });
-          $('cf-city').innerHTML = cities.map(function (k) { return '<option value="' + k + '"' + ((d.cities || [])[0] === k ? ' selected' : '') + '>' + esc(CITY[k]) + '</option>'; }).join('');
-          $('cf-family').innerHTML = '<option value="">No larger campaign</option>' + (d.families || []).map(function (f) { return '<option value="' + f.id + '">' + esc(f.title) + '</option>'; }).join('');
-          syncKind();
-        });
-      }
-      function kindNow() { var r = document.querySelector('input[name="kind"]:checked'); return r ? r.value : 'event'; }
-      function syncKind() {
-        var k = kindNow();
-        Array.prototype.forEach.call(document.querySelectorAll('#cf [data-when]'), function (el) { el.hidden = el.getAttribute('data-when').split(' ').indexOf(k) < 0; });
-        var mine = cdata && (cdata.admin || (cdata.cities || []).indexOf($('cf-city').value) > -1);
-        $('cf-publish').closest('div').hidden = !mine; if (!mine) $('cf-publish').checked = false;
-      }
-      document.querySelectorAll('input[name="kind"]').forEach(function (r) { r.addEventListener('change', syncKind); });
-      $('cf-city').addEventListener('change', syncKind);
-      var hostTimer = null;
-      $('cf-host-q').addEventListener('input', function () {
-        clearTimeout(hostTimer); var q = this.value.trim(); pickedHost = null;
-        if (q.length < 2) { $('cf-hits').innerHTML = ''; return; }
-        hostTimer = setTimeout(function () {
-          api({ action: 'listing_search', q: q }).then(function (d) {
-            $('cf-hits').innerHTML = (d.listings || []).map(function (l) {
-              return '<li><button type="button" data-host="' + l.id + '" data-name="' + esc(l.name) + '">' + esc(l.name) + (l.city ? ' &middot; ' + esc(l.city) : '') + ' &middot; ' + (l.member ? esc(l.member.name || l.member.email) + (l.member.active ? ' (active member)' : ' (not an active member)') : 'no owner on file') + '</button></li>';
-            }).join('') || '<li class="meta">No listing by that name.</li>';
-          });
-        }, 250);
-      });
-      $('cf-hits').addEventListener('click', function (e) {
-        var b = e.target.closest('[data-host]'); if (!b) return;
-        pickedHost = b.getAttribute('data-host'); $('cf-host-q').value = b.getAttribute('data-name'); $('cf-hits').innerHTML = '';
-        $('cf-host-picked').textContent = 'Host: ' + b.getAttribute('data-name') + '. The host must be an active member before it can go live.';
-        if (!$('cf-place').value) $('cf-place').value = b.getAttribute('data-name');
-      });
-      $('cf').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var k = kindNow(), msg = $('cf-msg');
-        var body = { action: 'campaign_propose', community: $('cf-city').value, kind: k, title: $('cf-title').value, story: $('cf-story').value, cover_url: $('cf-cover').value, place_name: $('cf-place').value, address: $('cf-address').value, campaign_id: $('cf-family').value || null, publish: $('cf-publish').checked };
-        if (k === 'ongoing') body.due_at = iso($('cf-due').value); else { body.starts_at = iso($('cf-start').value); body.ends_at = iso($('cf-end').value); }
-        if (k === 'place') { body.host_listing_id = pickedHost; body.host_email = $('cf-host-email').value; body.creator_cap = $('cf-cap').value; }
-        $('cf-go').disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
-        api(body).then(function (r) {
-          $('cf-go').disabled = false;
-          if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; return; }
-          msg.textContent = r.status === 'open' ? 'It is live on the bounties page.' : 'Proposed. The city\'s Community Manager decides; edit its jobs below.';
-          $('cf').reset(); pickedHost = null; syncKind(); loadCamps();
-        });
-      });
-      $('camps').addEventListener('click', function (e) {
-        var card = e.target.closest('[data-camp]'); if (!card) return;
-        var id = card.getAttribute('data-camp'), msg = card.querySelector('.msg:last-child') || card.querySelector('.msg');
-        var done = function (r, text) { if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; return false; } msg.className = 'msg'; msg.textContent = text; setTimeout(loadCamps, 900); return true; };
-        var act = e.target.getAttribute('data-ca');
-        if (act === 'approve' || act === 'decline' || act === 'close') {
-          if (act === 'decline' && !confirm('Decline this proposal?')) return;
-          if (act === 'close' && !confirm('Close this campaign? Its jobs stop taking claims; people holding a spot keep it.')) return;
-          var n = card.querySelector('[data-f="dnote"]');
-          api({ action: 'campaign_decide', id: id, decision: act, note: n ? n.value : '' }).then(function (r) { done(r, act === 'approve' ? 'Live on the bounties page.' : act === 'close' ? 'Closed.' : 'Declined.'); });
-          return;
-        }
-        if (act === 'save') {
-          var f = function (k) { var el = card.querySelector('.cedit [data-f="' + k + '"]'); return el ? el.value : undefined; };
-          var body = { action: 'campaign_update', id: id, title: f('title'), cover_url: f('cover_url'), story: f('story'), place_name: f('place_name'), address: f('address'), details: f('details') };
-          ['starts_at', 'ends_at', 'due_at'].forEach(function (k) { var v = f(k); if (v !== undefined) body[k] = iso(v); });
-          if (f('creator_cap') !== undefined) body.creator_cap = f('creator_cap');
-          if (f('host_email')) body.host_email = f('host_email');
-          var ex = card.querySelectorAll('[data-extra]'); if (ex.length) body.host_extras = Array.prototype.filter.call(ex, function (x) { return x.checked; }).map(function (x) { return x.getAttribute('data-extra'); });
-          api(body).then(function (r) { done(r, 'Saved.'); });
-          return;
-        }
-        var jact = e.target.getAttribute('data-jact');
-        if (jact) {
-          var job = e.target.closest('[data-job]'), jid = job.getAttribute('data-job');
-          var g = function (k) { var el = job.querySelector('[data-j="' + k + '"]'); return el ? el.value : ''; };
-          if (jact === 'remove') { if (!confirm('Remove this job?')) return; api({ action: 'job_update', id: jid, remove: true }).then(function (r) { done(r, 'Removed.'); }); return; }
-          api({ action: 'job_update', id: jid, points: g('points'), slots: g('slots'), deliverable: g('deliverable'), brief: g('brief'), parts: g('parts').split('\n').map(function (x) { return x.trim(); }).filter(Boolean) }).then(function (r) { done(r, 'Job saved.'); });
-        }
-      });
 
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
@@ -420,12 +541,11 @@
         if (!VEAuth.isLoggedIn()) { $('bq-gate').hidden = false; $('bq-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins and Community Managers.</p><button type="button" class="btn" id="bq-signin">Sign in</button>'; $('bq-signin').onclick = function () { VEAuth.showAuthModal('Sign in to review bounties.', function () { location.reload(); }); }; return; }
         var leader = m && (m.is_superadmin || m.ve_role === 'community_manager' || ['community_manager', 'creative_producer', 'executive_assistant'].indexOf(m.staff_role) > -1);
         if (!leader) { $('bq-gate').hidden = false; $('bq-gate').innerHTML = '<h2>Leadership only</h2><p>This page is for Vegans Explore leadership: admins, Community Managers and the production team.</p>'; return; }
-        $('bq-app').hidden = false;
-        loadCamps();
         // Reviewing claims and work is for admins and the city's Community Manager.
-        var reviewer = m.is_superadmin || m.ve_role === 'community_manager' || m.staff_role === 'community_manager';
-        ['review-panel', 'events-panel', 'strikes-panel'].forEach(function (id) { $(id).hidden = !reviewer; });
-        if (reviewer) load();
+        state.reviewer = !!(m.is_superadmin || m.ve_role === 'community_manager' || m.staff_role === 'community_manager');
+        state.me = m.id;
+        $('view').hidden = false;
+        loadAll().then(route).catch(function () { show('<p class="empty">Bounties did not load. Refresh to try again.</p>'); });
       }
       start();
     })();

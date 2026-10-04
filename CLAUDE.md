@@ -154,6 +154,21 @@ would read badly that wide (a long text column, a form), give the page the ad ra
 three-fourths content, one-fourth ads) rather than narrowing it. A line of body copy can keep its
 own reading width (`.sub{max-width:860px}`); the page around it cannot.
 
+## Interface defaults (Sean, 2026-10-04)
+
+Sean: "I feel like I keep asking for the same thing over." The full checklist is canon
+`canon-sean-interface-defaults` (always loaded, every brand). Build these in on the first pass:
+
+- One thing per view: a list, then one item on its own, with breadcrumbs back (List > Item > Sub-item).
+  Edit, New and sub-items get their own view. The address bar carries the view so back works.
+  No page that stacks every item, its editor and its children.
+- Every row in a list has the same fields and the same single action button in the same place. Status
+  is a colored tag in plain words (Live, Waiting for approval, Not live yet), never an action word.
+- Full width (above). Cards four across, most urgent first. Short lists cap and scroll inside the box.
+  Summaries clamp to two rows. Queues filter, sort and search. New is a button to its own view.
+- Example: Depot > Bounties (`/admin/depot/bounties`): Campaigns > campaign > job, with `#new`,
+  `#campaign/<id>/edit`, `#review` and `#strikes` as their own views.
+
 ## Tracked links (Sean, 2026-10-04)
 
 Every link we send for a campaign (a one-on-one message, an email, a post, a flyer) is a tracked

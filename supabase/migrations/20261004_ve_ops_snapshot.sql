@@ -51,7 +51,7 @@ begin
       from ve_initiative_interest i left join members mm on mm.id = i.member_id
       where i.status = 'new' and i.action_type <> 'link_click' -- clicks are an audience, not a decision (2026-10-04)
     union all
-    select 'bounty', b.id::text, coalesce(v.title, 'Bounty'), mm.name, v.community_slug, coalesce(b.submitted_at, b.updated_at), b.status, '/admin/depot/bounties'
+    select 'bounty', b.id::text, coalesce(v.title, 'Bounty'), mm.name, v.community_slug, coalesce(b.submitted_at, b.updated_at), b.status, '/admin/depot/bounties#review'
       from ve_bounty_submissions b join ve_bounties v on v.id = b.bounty_id left join members mm on mm.id = b.member_id
       where b.status = 'submitted'
     union all
