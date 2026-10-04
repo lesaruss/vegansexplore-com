@@ -904,7 +904,7 @@
         <p class="dash-section-title" style="margin-top:0;">Daily Pulse</p>
         <a class="dash-home-pulse-seeall" href="/board?lane=pulse" data-frame-label="Daily Pulse" style="text-decoration:none;">Join the conversation &rarr;</a>
       </div>
-      <p class="dash-tile-desc" style="margin:-4px 0 14px;-webkit-line-clamp:unset;">One story a day from your city and one from across the country, with a question to talk about together.</p>
+      <p class="dash-tile-desc" style="margin:-4px 0 14px;-webkit-line-clamp:unset;">Your city's daily briefing: what is happening, what people are talking about, what is coming up, and one thing you can do.</p>
       <div class="dash-grid" id="dash-pulse-grid"></div>
     </div>
 
@@ -2829,8 +2829,8 @@
   // (public/ve-pulse-topics.js draws the cards); a card opens the conversation in the dashboard
   // window. The old article Pulse (ve_pulse_content) is parked, not deleted: its pages still work.
   function pulseEmpty(cityName) {
-    return '<div class="vep-empty"><strong>Today\'s topic is on its way.</strong>Each day the Daily Pulse brings one story from ' +
-      (cityName ? cityName : 'your city') + ' and one from across the country, with a question to talk about together.</div>';
+    return '<div class="vep-empty"><strong>Today\'s briefing is on its way.</strong>Each day the Daily Pulse brings what is happening in ' +
+      (cityName ? cityName : 'your city') + ': the stories people are talking about, what is coming up, and one thing you can do.</div>';
   }
   function renderPulseInto(grid, member, pick) {
     if (!grid) return;

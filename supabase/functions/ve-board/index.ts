@@ -26,9 +26,10 @@
 // they reply to any post; nobody creates a topic from the Board itself.
 // POST { action: 'list', lane: 'pulse', community, q?, before? }  public: live topics, city + national
 // POST { action: 'topic_desk', community? }     desk -> drafts, live topics, story suggestions
-// POST { action: 'topic_draft', community, lead_id? | url?, note? }   desk: queue a draft for the writer
+// POST { action: 'topic_draft', community, lead_id? | url?, note? }   desk: queue today's briefing for the
+//                                               writer (a story or link, if given, leads it)
 // POST { action: 'topic_rewrite', id, note? }   desk: send a draft back to the writer
-// POST { action: 'topic_save', id, title, body, question, source_name, source_url }   desk (drafts)
+// POST { action: 'topic_save', id, title, body, question, briefing?, source_name?, source_url? }   desk (drafts)
 // POST { action: 'topic_publish', id, first_reply, title?, body?, question?, source_name?, source_url? }
 // POST { action: 'topic_discard', id }          desk (drafts)
 //
@@ -37,6 +38,11 @@
 // subscription, fills in the headline, intro and question. This function never calls a paid API.
 // Queuing nudges the dispatcher (lesaruss_dispatch_tick) so the writer starts within minutes
 // instead of at the next 15-minute check. Saving or publishing a draft takes it off the writer.
+//
+// A topic is a city briefing (Sean, 2026-10-04: "as if we're leading a movement in this city"):
+// an opening (body), up to five stories people are talking about, upcoming events, one action,
+// and the question. The sections are ve_board_posts.briefing (cleanBriefing below). Publishing
+// marks every Inbox story the briefing used, so tomorrow's briefing does not repeat it.
 //
 // Authorization: Bearer <ve_token>, checked here the same way ve-votes and ve-auth check it
 // (verify_jwt is false on deploy). Reports email that city's Community Manager with Sean
@@ -157,7 +163,7 @@ function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
     status: p.status, resolved_at: p.resolved_at, reply_count: p.reply_count, created_at: topic ? (p.published_at || p.created_at) : p.created_at,
     contact: viewer?.active ? p.contact : null, has_contact: !!p.contact,
     mine: !topic && !!viewer && viewer.id === p.member_id, poster: topic ? PULSE_POSTER : (cards[p.member_id] || null),
-    ...(topic ? { question: p.question, source_name: p.source_name, source_url: p.source_url, published_at: p.published_at } : {}),
+    ...(topic ? { question: p.question, source_name: p.source_name, source_url: p.source_url, published_at: p.published_at, briefing: p.briefing || null } : {}),
   };
 }
 
@@ -180,6 +186,29 @@ const tidy = (s: unknown, max: number) => String(s ?? '').replace(/\u0000/g, '')
   .replace(/\bvegan(ism|s)?\b/g, (_m: string, x?: string) => 'Vegan' + (x || '')).trim().slice(0, max);
 const isUrl = (u: string) => /^https?:\/\/[^\s]+$/i.test(u);
 const hostName = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+
+// The briefing sections, as the desk or the writer sent them, reduced to what the page shows. An
+// item without a working link is dropped; an action may link inside the site ("/board?...").
+const sitePath = (u: string) => /^\/(?!\/)[^\s]*$/.test(u);
+function cleanBriefing(b: any) {
+  if (!b || typeof b !== 'object') return null;
+  const str = (v: unknown, max: number) => tidy(typeof v === 'string' ? v : '', max);
+  const stories = (Array.isArray(b.stories) ? b.stories : []).map((x: any) => ({
+    title: str(x?.title, 140), take: str(x?.take, 300), source: str(x?.source, 120),
+    url: clean(x?.url, 1000), lead_id: isId(x?.lead_id) ? x.lead_id : null,
+  })).filter((x: any) => x.title && isUrl(x.url)).slice(0, 5);
+  const events = (Array.isArray(b.events) ? b.events : []).map((x: any) => {
+    const url = clean(x?.url, 1000);
+    return { title: str(x?.title, 140), when: str(x?.when, 60), where: str(x?.where, 120), url: isUrl(url) ? url : null };
+  }).filter((x: any) => x.title).slice(0, 3);
+  let action: any = null;
+  if (b.action && typeof b.action === 'object') {
+    const url = clean(b.action.url, 1000);
+    action = { title: str(b.action.title, 80), text: str(b.action.text, 300), label: str(b.action.label, 40) || 'Take action', url };
+    if (!action.title || !(isUrl(url) || sitePath(url))) action = null;
+  }
+  return stories.length || events.length || action ? { stories, events, action } : null;
+}
 
 // Read a pasted link for its title and outlet, so the queued draft names the story before the
 // writer gets to it.
@@ -251,7 +280,7 @@ Deno.serve(async (req) => {
       if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
       if (body.lane === 'pulse') {
         let t = db.from('ve_board_posts')
-          .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at')
+          .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, briefing')
           .eq('kind', 'topic').in('community_slug', [community, NATIONAL]).in('status', ['open', 'resolved'])
           .order('published_at', { ascending: false }).limit(PAGE);
         const before = clean(body.before, 40);
@@ -416,7 +445,7 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
       const scopes = await deskScopes(viewer);
       if (!scopes.length) return json({ error: 'forbidden', message: 'The Pulse desk is for Community Managers.' }, 403);
       const scope = scopes.includes(clean(body.community, 40)) ? clean(body.community, 40) : scopes[0];
-      const cols = 'id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, lead_id, write_status, write_note, write_error';
+      const cols = 'id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, lead_id, write_status, write_note, write_error, briefing';
       const since = new Date(Date.now() - 21 * DAY_MS).toISOString();
       // National has no feed of its own: it draws on the Vegan outlets, whatever city they name. A
       // city sees every story tagged to it, including ones members and Community Managers sent in.
@@ -455,16 +484,19 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
         if (taken && taken.length) return json({ error: 'already_draft', message: 'That story already has a draft below.' }, 409);
         story = { title: l.title || '', summary: l.summary || '', source: l.source_name || hostName(l.url), url: l.url };
         leadId = l.id;
-      } else {
+      } else if (clean(body.url, 1000)) {
         const url = clean(body.url, 1000);
         if (!isUrl(url)) return json({ error: 'bad_url', message: 'Paste the full link to the story, starting with https://' }, 400);
         const page = await readLink(url);
         story = { title: page.title, summary: page.description, source: page.site || hostName(url), url };
       }
+      // No story given: the writer builds today's briefing from the Inbox, events and ways to act.
+      const named = tidy(story.title, 140);
       const { data, error } = await db.from('ve_board_posts').insert({
         community_slug: scope, member_id: viewer!.id, kind: 'topic', category: 'pulse', status: 'draft',
-        title: tidy(story.title, 140).length >= 3 ? tidy(story.title, 140) : 'New topic', body: tidy(story.summary, 4000) || 'Waiting for the writer.', question: '',
-        source_name: tidy(story.source || hostName(story.url), 120), source_url: story.url, lead_id: leadId,
+        title: named.length >= 3 ? named : (scope === NATIONAL ? 'Daily Pulse' : SCOPE_NAME[scope] + ' Pulse'),
+        body: tidy(story.summary, 4000) || 'The Background writer is building today\'s briefing.', question: '',
+        source_name: story.url ? tidy(story.source || hostName(story.url), 120) : null, source_url: story.url || null, lead_id: leadId,
         write_status: 'queued', write_note: note || null, write_marked_at: new Date().toISOString(),
       }).select('id').single();
       if (error) return json({ error: 'draft_failed', message: error.message }, 500);
@@ -486,7 +518,7 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
     case 'topic_publish':
     case 'topic_discard': {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-      const { data: p } = await db.from('ve_board_posts').select('id, community_slug, kind, status, title, body, question, source_name, source_url, lead_id').eq('id', body.id).maybeSingle();
+      const { data: p } = await db.from('ve_board_posts').select('id, community_slug, kind, status, title, body, question, source_name, source_url, lead_id, briefing').eq('id', body.id).maybeSingle();
       if (!p || p.kind !== 'topic' || p.status !== 'draft') return json({ error: 'not_found', message: 'That draft is gone or already live.' }, 404);
       if (!(await deskScopes(viewer)).includes(p.community_slug)) return json({ error: 'forbidden' }, 403);
       if (body.action === 'topic_discard') {
@@ -497,24 +529,30 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
         title: body.title !== undefined ? tidy(body.title, 140) : p.title,
         body: body.body !== undefined ? tidy(body.body, 4000) : p.body,
         question: body.question !== undefined ? tidy(body.question, 300) : p.question,
-        source_name: body.source_name !== undefined ? tidy(body.source_name, 120) : p.source_name,
-        source_url: body.source_url !== undefined ? clean(body.source_url, 1000) : p.source_url,
+        source_name: body.source_name !== undefined ? (tidy(body.source_name, 120) || null) : p.source_name,
+        source_url: body.source_url !== undefined ? (clean(body.source_url, 1000) || null) : p.source_url,
+        briefing: body.briefing !== undefined ? cleanBriefing(body.briefing) : p.briefing,
       };
-      if (next.title.length < 3) return json({ error: 'bad_title', message: 'Give the topic a headline.' }, 400);
-      if (!next.body) return json({ error: 'bad_body', message: 'Write the short intro.' }, 400);
-      if (!next.source_name || !isUrl(next.source_url)) return json({ error: 'bad_source', message: 'Every topic needs its source: the outlet name and the full link.' }, 400);
+      // The first story is the briefing's lead source.
+      const lead = next.briefing?.stories?.[0];
+      if (lead) { next.source_name = lead.source || hostName(lead.url); next.source_url = lead.url; }
+      if (next.title.length < 3) return json({ error: 'bad_title', message: 'Give the briefing a headline.' }, 400);
+      if (!next.body) return json({ error: 'bad_body', message: 'Write the opening.' }, 400);
+      if (next.source_url && !isUrl(next.source_url)) return json({ error: 'bad_source', message: 'The source link does not look right.' }, 400);
       const now = new Date().toISOString();
       if (body.action === 'topic_save') {
         await db.from('ve_board_posts').update({ ...next, write_status: null, updated_at: now }).eq('id', p.id);
         return json({ ok: true });
       }
-      if (!next.question) return json({ error: 'bad_question', message: 'End the topic with one real question.' }, 400);
+      if (!next.question) return json({ error: 'bad_question', message: 'End the briefing with one real question.' }, 400);
+      if (!next.source_url && !next.briefing) return json({ error: 'bad_source', message: 'A briefing needs at least one story, event or action, or a source.' }, 400);
       const first = clean(body.first_reply, 2000);
       if (!first) return json({ error: 'first_reply', message: 'Write the first reply, so nobody walks into an empty room.' }, 400);
       const { error } = await db.from('ve_board_posts').update({ ...next, status: 'open', published_at: now, updated_at: now, reply_count: 1, write_status: null }).eq('id', p.id).eq('status', 'draft');
       if (error) return json({ error: 'publish_failed', message: error.message }, 500);
       await db.from('ve_board_replies').insert({ post_id: p.id, member_id: viewer!.id, body: first });
-      if (p.lead_id) await db.from('ve_news_leads').update({ topic_post_id: p.id }).eq('id', p.lead_id);
+      const used = [...new Set([p.lead_id, ...((next.briefing?.stories || []).map((x: any) => x.lead_id))].filter(Boolean))];
+      if (used.length) await db.from('ve_news_leads').update({ topic_post_id: p.id }).in('id', used).is('topic_post_id', null);
       return json({ ok: true, id: p.id });
     }
 
