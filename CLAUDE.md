@@ -106,7 +106,8 @@ Every card summary / excerpt / blurb on a member-facing surface is capped at
 two rows. Sean set this rule on 2026-09-13 after a Pulse entry rendered four
 rows on the live site. Summaries come from Supabase (`ve_pulse_content.summary`,
 `ve_community_news.summary`, `opportunities.description`,
-`store_products.description`, `campaigns.summary`) and are unbounded in length,
+`store_products.description`, `campaigns.summary`, `ve_board_posts.body`) and
+are unbounded in length,
 so the cap has to live in CSS, not in the copy.
 
 Any class that renders one of those fields must carry:
@@ -122,8 +123,11 @@ Classes currently under the rule:
   `hub-news.js`, `hub-community.js` opportunity and reward cards)
 - `.camp-card-desc` — `/dashboard/campaigns.html`
 - `.camp-tile-desc` — `/campaigns/index.html`
-- `.dash-tile-desc` and the `#dash-pulse-grid` / `#dash-home-pulse-grid`
-  title clamps — `/dashboard/center-console.html`
+- `.dash-tile-desc` — `/dashboard/center-console.html`
+- `.vep-intro` — Daily Pulse topic cards, `/public/ve-pulse-topics.js` (dashboard
+  Pulse tab and preview, city hubs), and `.post-body` on `/board.html`. The Daily
+  Pulse became discussion topics on the Community Board on 2026-10-04; the topic
+  intro (`ve_board_posts.body`) is the summary there.
 
 The cap applies to the card only. Full article and detail views
 (`.article-lede`, `.article-p`) are never clamped.

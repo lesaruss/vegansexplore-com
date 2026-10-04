@@ -59,9 +59,35 @@
       .catch(function () { return []; });
   }
 
+  // Daily Pulse (Sean, 2026-10-04): today's topics for this city and the nation sit above the
+  // local news, each opening its conversation on the Community Board. Nothing shows until a topic
+  // has gone up, so a hub never carries an empty Pulse box.
+  function loadPulse(cb) {
+    if (window.VEPulse) return cb();
+    var s = document.createElement('script'); s.src = '/public/ve-pulse-topics.js'; s.onload = cb; document.head.appendChild(s);
+  }
+  function renderPulseToday(grid, city) {
+    if (!grid || !grid.parentNode || document.getElementById('vep-hub-' + city)) return;
+    loadPulse(function () {
+      VEPulse.fetch(city, 10).then(function (topics) {
+        var today = VEPulse.todays(topics);
+        if (!today.length) return;
+        var box = document.createElement('div');
+        box.id = 'vep-hub-' + city;
+        box.style.margin = '0 0 28px';
+        box.innerHTML = '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;">' +
+          '<h3 style="font-size:18px;font-weight:900;margin:0;">Today on the Daily Pulse</h3>' +
+          '<a href="/board?lane=pulse&community=' + encodeURIComponent(city) + '" style="font-size:13px;font-weight:800;color:#2d7d31;">Join the conversation &rarr;</a></div>' +
+          '<div class="vep-grid">' + today.map(function (t) { return VEPulse.card(t, city); }).join('') + '</div>';
+        grid.parentNode.insertBefore(box, grid);
+      });
+    });
+  }
+
   function render(gridId, city) {
     var grid = document.getElementById(gridId);
     if (!grid) return;
+    renderPulseToday(grid, city);
     Promise.all([fetchCommunityNews(city), fetchPulseSpotlights(city)]).then(function (results) {
       var items = results[0].concat(results[1]);
       items.sort(function (a, b) {

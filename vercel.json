@@ -1646,6 +1646,11 @@
   ],
   "redirects": [
     {
+      "source": "/pulse",
+      "destination": "/board?lane=pulse",
+      "permanent": false
+    },
+    {
       "source": "/passport",
       "destination": "/welcome",
       "permanent": false

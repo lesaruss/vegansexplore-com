@@ -128,6 +128,9 @@
     <p class="sub">Every story idea in one place: links you paste, stories members send from their hub, and what our <a href="/admin/depot/sources">Sources</a> flag. <b>Approve</b> and it is written up as a Pulse draft; <b>Deny</b> and it is gone. Finished drafts come back under <b>Ready</b> for you to publish or send back. Nothing goes live without your tap.</p>
     <div id="ib-gate" class="gate" hidden></div>
     <div id="ib-app" hidden>
+      <!-- Daily Pulse topics (Sean, 2026-10-04): the national topic is approved here; the switch
+           in the desk reaches every city too. public/ve-pulse-desk.js. -->
+      <section id="ib-pulse" aria-label="Daily Pulse topics" style="margin-bottom:22px"></section>
       <section class="paste" aria-labelledby="paste-h">
         <h2 id="paste-h" style="margin-bottom:8px">Paste a link</h2>
         <form id="paste">
@@ -184,6 +187,13 @@
   <script src="/public/depot-preview.js"></script>
   <script src="/public/depot-cover.js"></script>
   <script src="/public/depot-outreach.js"></script>
+  <script src="/public/ve-pulse-desk.js"></script>
+  <script>
+    (function () {
+      function go() { var el = document.getElementById('ib-pulse'); if (el && window.VEPulseDesk && window.VEAuth && VEAuth.getToken()) VEPulseDesk.mount(el, { scope: 'national' }); }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+    })();
+  </script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-news-desk';

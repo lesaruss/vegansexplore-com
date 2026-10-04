@@ -73,11 +73,14 @@
       <div>
         <p class="eyebrow">Community Manager &middot; <span id="pd-city">Your city</span></p>
         <h1>Pulse Desk</h1>
-        <p class="sub">Tell me what&rsquo;s happening in your city, typed or out loud. I&rsquo;ll ask what I need, draft the story, and you give it a final look before it goes on your community page.</p>
+        <p class="sub">Your city&rsquo;s Daily Pulse topic each day, then local stories for your community page. Tell me what&rsquo;s happening, typed or out loud, and you give everything a final look before it goes up.</p>
       </div>
       <a class="back-dash" href="/dashboard">&larr; Dashboard</a>
     </div>
     <div id="pd-gate" class="gate" hidden></div>
+    <!-- Daily Pulse topics (Sean, 2026-10-04): approve today's topic for your city before the
+         story chat below. public/ve-pulse-desk.js; it renders nothing for someone without access. -->
+    <div id="pd-topics"></div>
     <div class="layout" id="pd-app" hidden>
       <section class="card chat" aria-label="Conversation with the Pulse desk">
         <div class="thread" id="pd-thread" aria-live="polite"></div>
@@ -100,6 +103,18 @@
   </div>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-pulse-desk.js"></script>
+  <script>
+    (function () {
+      var el = document.getElementById('pd-topics');
+      if (!el || !window.VEPulseDesk) return;
+      function go() {
+        if (!window.VEAuth || !VEAuth.getToken || !VEAuth.getToken()) return;
+        VEPulseDesk.mount(el, { scope: new URLSearchParams(location.search).get('city') || '' });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+    })();
+  </script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-cm-pulse-desk';

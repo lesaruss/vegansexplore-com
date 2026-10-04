@@ -18,10 +18,24 @@
 // POST { action: 'moderate', post_id? | reply_id?, op: 'hide'|'restore' }  moderator
 // POST { action: 'reports', community? }        moderator -> open reports
 //
+// Daily Pulse topics (Sean, 2026-10-04, playbook ve-daily-pulse-discussion): the Pulse is a lane of
+// the Board. A topic is a post with kind 'topic': a short intro, one question, and its source.
+// community 'national' holds the national topic, shown in every city's lane. Topics start as
+// drafts that only the desk sees; the city's Community Manager approves theirs, Sean the national
+// one, and approving needs a first reply so no topic opens to an empty room. Members reply the way
+// they reply to any post; nobody creates a topic from the Board itself.
+// POST { action: 'list', lane: 'pulse', community, q?, before? }  public: live topics, city + national
+// POST { action: 'topic_desk', community? }     desk -> drafts, live topics, story suggestions
+// POST { action: 'topic_draft', community, lead_id? | url?, note? }   desk: Claude drafts a topic
+// POST { action: 'topic_save', id, title, body, question, source_name, source_url }   desk (drafts)
+// POST { action: 'topic_publish', id, first_reply, title?, body?, question?, source_name?, source_url? }
+// POST { action: 'topic_discard', id }          desk (drafts)
+//
 // Authorization: Bearer <ve_token>, checked here the same way ve-votes and ve-auth check it
 // (verify_jwt is false on deploy). Reports email that city's Community Manager with Sean
 // copied (ve_partner_cities.manager_email), or Sean alone while a city has none. Three reports
 // from three different members hide a post or reply until a moderator looks at it.
+import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -35,6 +49,15 @@ const COMMUNITIES = ['south-florida', 'central-florida', 'atlanta', 'dmv', 'new-
 // Hub slug -> ve_partner_cities slug, where the two differ.
 const MANAGER_CITY: Record<string, string> = { 'central-florida': 'orlando-north-central-florida' };
 const KINDS = ['request', 'offer'];
+const NATIONAL = 'national';
+const TOPIC_SCOPES = [...COMMUNITIES, NATIONAL];
+// ve_partner_cities / ve_staff_invites slug -> hub slug (the reverse of MANAGER_CITY).
+const HUB_FOR_CITY: Record<string, string> = Object.fromEntries(Object.entries(MANAGER_CITY).map(([hub, city]) => [city, hub]));
+const SCOPE_NAME: Record<string, string> = {
+  'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York',
+  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', national: 'National',
+};
+const MODEL = 'claude-opus-5';
 const CATEGORIES = ['rescue', 'transport', 'fostering', 'food', 'services', 'volunteers', 'other'];
 const REASONS = ['not_who_they_say', 'unsafe', 'scam', 'spam', 'harassment', 'other'];
 const REASON_LABEL: Record<string, string> = {
@@ -78,17 +101,18 @@ const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/\
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 
-type Viewer = { id: string; name: string | null; email: string | null; active: boolean; moderator: boolean } | null;
+type Viewer = { id: string; name: string | null; email: string | null; active: boolean; moderator: boolean; admin: boolean; cm: boolean; home: string | null } | null;
 
 async function loadViewer(req: Request): Promise<Viewer> {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const id = token ? await verifyToken(token) : null;
   if (!id) return null;
   const { data: m } = await db.from('members')
-    .select('id, name, email, membership_status, is_superadmin, staff_role, ve_role').eq('id', id).maybeSingle();
+    .select('id, name, email, membership_status, is_superadmin, staff_role, ve_role, home_community').eq('id', id).maybeSingle();
   if (!m) return null;
-  const moderator = !!m.is_superadmin || m.staff_role === 'community_manager' || m.ve_role === 'community_manager';
-  return { id: m.id, name: m.name, email: m.email, active: m.membership_status === 'active', moderator };
+  const cm = m.staff_role === 'community_manager' || m.ve_role === 'community_manager';
+  const moderator = !!m.is_superadmin || cm;
+  return { id: m.id, name: m.name, email: m.email, active: m.membership_status === 'active', moderator, admin: !!m.is_superadmin, cm, home: m.home_community || null };
 }
 
 // What a reader can see about the person behind a post: enough to decide whether to trust
@@ -117,13 +141,92 @@ async function posterCards(ids: string[]) {
   return out;
 }
 
+// A topic is posted by the Daily Pulse, not by the person who approved it; their name shows on
+// the first reply instead.
+const PULSE_POSTER = { name: 'Daily Pulse', initials: 'DP', color: '#cfe8d0', avatar: null, pulse: true };
+
 function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
+  const topic = p.kind === 'topic';
   return {
     id: p.id, community: p.community_slug, kind: p.kind, category: p.category, title: p.title, body: p.body, area: p.area,
-    status: p.status, resolved_at: p.resolved_at, reply_count: p.reply_count, created_at: p.created_at,
+    status: p.status, resolved_at: p.resolved_at, reply_count: p.reply_count, created_at: topic ? (p.published_at || p.created_at) : p.created_at,
     contact: viewer?.active ? p.contact : null, has_contact: !!p.contact,
-    mine: !!viewer && viewer.id === p.member_id, poster: cards[p.member_id] || null,
+    mine: !topic && !!viewer && viewer.id === p.member_id, poster: topic ? PULSE_POSTER : (cards[p.member_id] || null),
+    ...(topic ? { question: p.question, source_name: p.source_name, source_url: p.source_url, published_at: p.published_at } : {}),
   };
+}
+
+// ---- Daily Pulse desk ---------------------------------------------------------------------
+// Which topic scopes this person may draft and approve: Sean every city and National, a
+// Community Manager their own city (their invite's city first, then their home community).
+async function deskScopes(viewer: Viewer): Promise<string[]> {
+  if (!viewer) return [];
+  if (viewer.admin) return TOPIC_SCOPES;
+  if (!viewer.cm) return [];
+  const { data: invite } = viewer.email
+    ? await db.from('ve_staff_invites').select('city_slug').ilike('email', viewer.email).maybeSingle()
+    : { data: null };
+  const raw = invite?.city_slug || viewer.home || '';
+  const hub = HUB_FOR_CITY[raw] || raw;
+  return COMMUNITIES.includes(hub) ? [hub] : [];
+}
+
+const tidy = (s: unknown, max: number) => String(s ?? '').replace(/\u0000/g, '').replace(/\s*\u2014\s*/g, ', ').replace(/\u2013/g, '-')
+  .replace(/\bvegan(ism|s)?\b/g, (_m: string, x?: string) => 'Vegan' + (x || '')).trim().slice(0, max);
+const isUrl = (u: string) => /^https?:\/\/[^\s]+$/i.test(u);
+const hostName = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+
+// Read a pasted link for its title, outlet and text, so the draft is about what the page says.
+async function readLink(url: string) {
+  const out = { title: '', site: '', description: '', text: '' };
+  try {
+    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
+    const res = await fetch(url, { signal: ctl.signal, redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VegansExploreBot/1.0; +https://vegansexplore.com)' } });
+    clearTimeout(t);
+    if (!res.ok) return out;
+    const html = (await res.text()).slice(0, 400000);
+    const meta = (name: string) => (html.match(new RegExp('<meta[^>]+(?:property|name)=["\']' + name + '["\'][^>]*content=["\']([^"\']*)', 'i')) || [])[1] || '';
+    const decode = (s: string) => s.replace(/&amp;/g, '&').replace(/&#39;|&#039;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+    out.title = decode(meta('og:title') || (html.match(/<title[^>]*>([^<]*)/i) || [])[1] || '').trim();
+    out.site = decode(meta('og:site_name')).trim();
+    out.description = decode(meta('og:description') || meta('description')).trim();
+    out.text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<nav[\s\S]*?<\/nav>|<footer[\s\S]*?<\/footer>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, 6000);
+  } catch { /* the draft falls back to what the Inbox already knows */ }
+  return out;
+}
+
+const TOPIC_SYSTEM = (scopeName: string) => `You write the Daily Pulse for Vegans Explore, a community for Vegans. The Daily Pulse is not an article: it is one conversation starter a day, posted to the community board${scopeName === 'National' ? ' for every city' : ' for ' + scopeName}. Members read it and talk about it underneath.
+
+From the story you are given, write three things:
+- title: a plain, specific headline in your own words, under 90 characters. Not the outlet's headline.
+- intro: two to four neutral sentences, under 600 characters, on what happened, using only facts in the story. Your own words; never copy sentences. If something is unconfirmed, say so ("according to the owner").
+- question: one real question, under 160 characters, that invites members to share their own experience or view, for example "Would you go?", "Has your city tried this?", "What would you order?". Never a loaded or bait question.
+
+Rules: write "Vegan" and "Veganism" with a capital V. Never use em dashes. No health or tax claims. Do not invent names, dates, prices, quotes or numbers. Stay neutral on controversies and attribute claims to their source.`;
+
+const TOPIC_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['title', 'intro', 'question'],
+  properties: { title: { type: 'string' }, intro: { type: 'string' }, question: { type: 'string' } },
+};
+
+async function draftTopic(scopeName: string, story: { title: string; summary: string; text: string; source: string; note: string }) {
+  const { data } = await db.from('lesaruss_secrets').select('value').eq('key', 'ANTHROPIC_API_KEY').maybeSingle();
+  const apiKey = (data?.value as string) || '';
+  if (!apiKey) return null;
+  const client = new Anthropic({ apiKey });
+  const prompt = `Source: ${story.source}\nHeadline: ${story.title}\n${story.summary ? 'Summary: ' + story.summary + '\n' : ''}${story.text ? 'Page text: ' + story.text + '\n' : ''}${story.note ? 'Note from the desk: ' + story.note + '\n' : ''}`;
+  try {
+    const response: any = await client.beta.messages.create({
+      model: MODEL, max_tokens: 4000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      output_config: { effort: 'low', format: { type: 'json_schema', schema: TOPIC_SCHEMA } },
+      system: TOPIC_SYSTEM(scopeName), messages: [{ role: 'user', content: prompt }],
+    } as any);
+    if (response.stop_reason === 'refusal') return null;
+    const text = (response.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
+    const out = JSON.parse(text);
+    return { title: tidy(out.title, 140), intro: tidy(out.intro, 4000), question: tidy(out.question, 300) };
+  } catch (e) { console.error('topic draft', e); return null; }
 }
 
 async function countSince(table: string, column: string, memberId: string) {
@@ -168,12 +271,25 @@ Deno.serve(async (req) => {
     case 'list': {
       const community = clean(body.community, 40);
       if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
+      if (body.lane === 'pulse') {
+        let t = db.from('ve_board_posts')
+          .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at')
+          .eq('kind', 'topic').in('community_slug', [community, NATIONAL]).in('status', ['open', 'resolved'])
+          .order('published_at', { ascending: false }).limit(PAGE);
+        const before = clean(body.before, 40);
+        if (before && !isNaN(Date.parse(before))) t = t.lt('published_at', before);
+        const text = clean(body.q, 120);
+        if (text) t = t.textSearch('search', text, { type: 'websearch', config: 'english' });
+        const { data, error } = await t;
+        if (error) return json({ error: 'list_failed', message: error.message }, 500);
+        return json({ posts: (data || []).map((p) => shapePost(p, {}, viewer)), more: (data || []).length === PAGE, viewer: viewerOut });
+      }
       let q = db.from('ve_board_posts')
         .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at')
-        .eq('community_slug', community).order('created_at', { ascending: false }).limit(PAGE);
+        .eq('community_slug', community).in('kind', KINDS).order('created_at', { ascending: false }).limit(PAGE);
       const status = clean(body.status, 10) || 'open';
       if (status === 'open' || status === 'resolved') q = q.eq('status', status);
-      else q = q.neq('status', 'hidden');
+      else q = q.in('status', ['open', 'resolved']);
       if (KINDS.includes(body.kind)) q = q.eq('kind', body.kind);
       if (CATEGORIES.includes(body.category)) q = q.eq('category', body.category);
       const before = clean(body.before, 40);
@@ -190,6 +306,7 @@ Deno.serve(async (req) => {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
       const { data: p } = await db.from('ve_board_posts').select('*').eq('id', body.id).maybeSingle();
       if (!p || (p.status === 'hidden' && !viewer?.moderator && viewer?.id !== p.member_id)) return json({ error: 'not_found' }, 404);
+      if (p.status === 'draft' && !(await deskScopes(viewer)).includes(p.community_slug)) return json({ error: 'not_found' }, 404);
       const { data: replies } = await db.from('ve_board_replies').select('id, member_id, body, status, created_at')
         .eq('post_id', p.id).order('created_at', { ascending: true }).limit(200);
       const visible = (replies || []).filter((r) => r.status === 'visible' || viewer?.moderator);
@@ -225,7 +342,7 @@ Deno.serve(async (req) => {
       const text = clean(body.body, 2000);
       if (!text) return json({ error: 'bad_body', message: 'Write a reply first.' }, 400);
       const { data: p } = await db.from('ve_board_posts').select('id, status').eq('id', body.post_id).maybeSingle();
-      if (!p || p.status === 'hidden') return json({ error: 'not_found' }, 404);
+      if (!p || p.status === 'hidden' || p.status === 'draft') return json({ error: 'not_found' }, 404);
       if (await countSince('ve_board_replies', 'member_id', viewer!.id) >= LIMITS.reply) return json({ error: 'rate_limited', message: 'You have replied a lot today. Try again tomorrow.' }, 429);
       const { data, error } = await db.from('ve_board_replies').insert({ post_id: p.id, member_id: viewer!.id, body: text }).select('id').single();
       if (error) return json({ error: 'reply_failed', message: error.message }, 500);
@@ -237,8 +354,8 @@ Deno.serve(async (req) => {
     case 'resolve': {
       if (!viewer) return json({ error: 'not_authenticated' }, 401);
       if (!isId(body.post_id)) return json({ error: 'bad_id' }, 400);
-      const { data: p } = await db.from('ve_board_posts').select('id, member_id, status').eq('id', body.post_id).maybeSingle();
-      if (!p || p.status === 'hidden') return json({ error: 'not_found' }, 404);
+      const { data: p } = await db.from('ve_board_posts').select('id, member_id, status, kind').eq('id', body.post_id).maybeSingle();
+      if (!p || p.status === 'hidden' || p.status === 'draft' || p.kind === 'topic') return json({ error: 'not_found' }, 404);
       if (p.member_id !== viewer.id && !viewer.moderator) return json({ error: 'forbidden', message: 'Only the person who posted can mark it resolved.' }, 403);
       const reopen = body.reopen === true;
       const { error } = await db.from('ve_board_posts').update({
@@ -259,12 +376,13 @@ Deno.serve(async (req) => {
         const { data: parent } = await db.from('ve_board_posts').select('id, community_slug, title').eq('id', reply.post_id).maybeSingle();
         post = parent;
       } else if (isId(body.post_id)) {
-        const { data } = await db.from('ve_board_posts').select('id, community_slug, member_id, title, body, report_count').eq('id', body.post_id).maybeSingle();
+        const { data } = await db.from('ve_board_posts').select('id, community_slug, member_id, kind, title, body, report_count').eq('id', body.post_id).maybeSingle();
         post = data;
       }
       if (!post) return json({ error: 'not_found' }, 404);
-      const reported = reply ? reply.member_id : post.member_id;
-      if (reported === viewer!.id) return json({ error: 'own_post', message: 'You cannot report your own post.' }, 400);
+      // A topic is the Daily Pulse's post: a report on it is about the topic, not the person who approved it.
+      const reported = reply ? reply.member_id : (post.kind === 'topic' ? null : post.member_id);
+      if (reported && reported === viewer!.id) return json({ error: 'own_post', message: 'You cannot report your own post.' }, 400);
       if (await countSince('ve_board_reports', 'reporter_member_id', viewer!.id) >= LIMITS.report) return json({ error: 'rate_limited', message: 'You have sent a lot of reports today. The team is on it.' }, 429);
       const { error } = await db.from('ve_board_reports').insert({
         community_slug: post.community_slug, reporter_member_id: viewer!.id, post_id: post.id, reply_id: reply?.id ?? null,
@@ -314,6 +432,103 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
         await db.from('ve_board_reports').update({ status: op === 'hide' ? 'actioned' : 'dismissed', reviewed_by: viewer.id, reviewed_at: now }).eq('post_id', body.post_id).is('reply_id', null).eq('status', 'open');
       } else return json({ error: 'bad_id' }, 400);
       return json({ ok: true });
+    }
+
+    case 'topic_desk': {
+      const scopes = await deskScopes(viewer);
+      if (!scopes.length) return json({ error: 'forbidden', message: 'The Pulse desk is for Community Managers.' }, 403);
+      const scope = scopes.includes(clean(body.community, 40)) ? clean(body.community, 40) : scopes[0];
+      const cols = 'id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, lead_id';
+      const since = new Date(Date.now() - 21 * DAY_MS).toISOString();
+      // National has no feed of its own: it draws on the Vegan outlets, whatever city they name. A
+      // city sees every story tagged to it, including ones members and Community Managers sent in.
+      const national = scope === NATIONAL;
+      let leads = db.from('ve_news_leads').select('id, title, summary, url, source_name, city_slug, published_at' + (national ? ', ve_news_feeds!inner(scope)' : ''))
+        .eq('brand_slug', 'vegans-explore').is('topic_post_id', null).neq('status', 'dismissed')
+        .or(`published_at.gte.${since},and(published_at.is.null,created_at.gte.${since})`)
+        .order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }).limit(15);
+      leads = national ? leads.eq('ve_news_feeds.scope', 'vegan') : leads.eq('city_slug', scope);
+      const [{ data: drafts }, { data: live }, { data: stories }] = await Promise.all([
+        db.from('ve_board_posts').select(cols).eq('kind', 'topic').eq('community_slug', scope).eq('status', 'draft').order('created_at', { ascending: false }).limit(20),
+        db.from('ve_board_posts').select(cols).eq('kind', 'topic').eq('community_slug', scope).in('status', ['open', 'resolved', 'hidden']).order('published_at', { ascending: false }).limit(10),
+        leads,
+      ]);
+      const latest = (live || [])[0];
+      return json({
+        scope, scope_name: SCOPE_NAME[scope], scopes: scopes.map((s) => ({ slug: s, name: SCOPE_NAME[s] })),
+        posted_today: !!latest && Date.now() - new Date(latest.published_at).getTime() < DAY_MS,
+        drafts: (drafts || []).map((p) => ({ ...shapePost(p, {}, viewer), lead_id: p.lead_id })),
+        live: (live || []).map((p) => shapePost(p, {}, viewer)),
+        stories: (stories || []).map((l: any) => ({ id: l.id, title: l.title, summary: l.summary, url: l.url, source_name: l.source_name || hostName(l.url), city: l.city_slug, published_at: l.published_at })),
+      });
+    }
+
+    case 'topic_draft': {
+      const scopes = await deskScopes(viewer);
+      const scope = clean(body.community, 40);
+      if (!scopes.includes(scope)) return json({ error: 'forbidden', message: 'You can draft topics for your own city.' }, 403);
+      const note = clean(body.note, 500);
+      let story = { title: '', summary: '', text: '', source: '', url: '' }, leadId: string | null = null;
+      if (isId(body.lead_id)) {
+        const { data: l } = await db.from('ve_news_leads').select('id, title, summary, url, source_name, topic_post_id').eq('id', body.lead_id).maybeSingle();
+        if (!l) return json({ error: 'not_found' }, 404);
+        if (l.topic_post_id) return json({ error: 'already_topic', message: 'That story is already a topic.' }, 409);
+        const page = await readLink(l.url);
+        story = { title: l.title || page.title, summary: l.summary || page.description, text: page.text, source: l.source_name || page.site || hostName(l.url), url: l.url };
+        leadId = l.id;
+      } else {
+        const url = clean(body.url, 1000);
+        if (!isUrl(url)) return json({ error: 'bad_url', message: 'Paste the full link to the story, starting with https://' }, 400);
+        const page = await readLink(url);
+        story = { title: page.title, summary: page.description, text: page.text, source: page.site || hostName(url), url };
+        if (!story.title && !note) return json({ error: 'unreadable', message: 'That page could not be read. Add a line about the story and try again.' }, 422);
+      }
+      const ai = await draftTopic(SCOPE_NAME[scope], { title: story.title, summary: story.summary, text: story.text, source: story.source, note });
+      // Without the writer the desk still gets a draft to finish by hand.
+      const draft = ai || { title: tidy(story.title || 'New topic', 140), intro: tidy(story.summary || note, 4000), question: '' };
+      const { data, error } = await db.from('ve_board_posts').insert({
+        community_slug: scope, member_id: viewer!.id, kind: 'topic', category: 'pulse', status: 'draft',
+        title: draft.title.length >= 3 ? draft.title : 'New topic', body: draft.intro || 'Intro to come.', question: draft.question,
+        source_name: tidy(story.source || hostName(story.url), 120), source_url: story.url, lead_id: leadId,
+      }).select('id').single();
+      if (error) return json({ error: 'draft_failed', message: error.message }, 500);
+      return json({ ok: true, id: data.id, written: !!ai });
+    }
+
+    case 'topic_save':
+    case 'topic_publish':
+    case 'topic_discard': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: p } = await db.from('ve_board_posts').select('id, community_slug, kind, status, title, body, question, source_name, source_url, lead_id').eq('id', body.id).maybeSingle();
+      if (!p || p.kind !== 'topic' || p.status !== 'draft') return json({ error: 'not_found', message: 'That draft is gone or already live.' }, 404);
+      if (!(await deskScopes(viewer)).includes(p.community_slug)) return json({ error: 'forbidden' }, 403);
+      if (body.action === 'topic_discard') {
+        await db.from('ve_board_posts').delete().eq('id', p.id);
+        return json({ ok: true });
+      }
+      const next = {
+        title: body.title !== undefined ? tidy(body.title, 140) : p.title,
+        body: body.body !== undefined ? tidy(body.body, 4000) : p.body,
+        question: body.question !== undefined ? tidy(body.question, 300) : p.question,
+        source_name: body.source_name !== undefined ? tidy(body.source_name, 120) : p.source_name,
+        source_url: body.source_url !== undefined ? clean(body.source_url, 1000) : p.source_url,
+      };
+      if (next.title.length < 3) return json({ error: 'bad_title', message: 'Give the topic a headline.' }, 400);
+      if (!next.body) return json({ error: 'bad_body', message: 'Write the short intro.' }, 400);
+      if (!next.source_name || !isUrl(next.source_url)) return json({ error: 'bad_source', message: 'Every topic needs its source: the outlet name and the full link.' }, 400);
+      const now = new Date().toISOString();
+      if (body.action === 'topic_save') {
+        await db.from('ve_board_posts').update({ ...next, updated_at: now }).eq('id', p.id);
+        return json({ ok: true });
+      }
+      if (!next.question) return json({ error: 'bad_question', message: 'End the topic with one real question.' }, 400);
+      const first = clean(body.first_reply, 2000);
+      if (!first) return json({ error: 'first_reply', message: 'Write the first reply, so nobody walks into an empty room.' }, 400);
+      const { error } = await db.from('ve_board_posts').update({ ...next, status: 'open', published_at: now, updated_at: now, reply_count: 1 }).eq('id', p.id).eq('status', 'draft');
+      if (error) return json({ error: 'publish_failed', message: error.message }, 500);
+      await db.from('ve_board_replies').insert({ post_id: p.id, member_id: viewer!.id, body: first });
+      if (p.lead_id) await db.from('ve_news_leads').update({ topic_post_id: p.id }).eq('id', p.lead_id);
+      return json({ ok: true, id: p.id });
     }
 
     case 'reports': {
