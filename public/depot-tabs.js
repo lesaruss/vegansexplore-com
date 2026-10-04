@@ -70,9 +70,12 @@
     var st2 = document.createElement('style');
     st2.textContent = '.ve-autosize dialog[open]{position:absolute;inset:auto 0 auto 0;margin:0 auto;top:calc(var(--ve-view-top,0px) + 24px);max-height:calc(var(--ve-view-h,100vh) - 48px) !important;overflow:auto;}';
     document.head.appendChild(st2);
+    // The page's own content, not the frame it sits in: measuring the document would report the frame's
+    // height back, so the frame could grow but never shrink (a short page after a tall one left a gap,
+    // Sean 2026-10-04). Open dialogs and overlays sit outside the flow and are counted so none is cut off.
+    function veContentHeight(){var b=document.body;if(!b)return 0;var h=b.scrollHeight;Array.prototype.forEach.call(document.querySelectorAll('dialog[open],.overlay,[role="dialog"]'),function(el){var cs=getComputedStyle(el);if(cs.display==='none'||cs.visibility==='hidden'||cs.position==='fixed')return;var r=el.getBoundingClientRect();if(r.height)h=Math.max(h,Math.ceil(r.bottom+window.scrollY));});return Math.ceil(h);}
     var send = function () {
-      var h = Math.ceil(Math.max(document.body ? document.body.scrollHeight : 0, root.scrollHeight));
-      // Ignore the frame's own height echoing back, so the sizes never climb.
+      var h = veContentHeight();
       if (Math.abs(h - lastH) < 2) return;
       lastH = h; window.parent.postMessage({ type: 've-frame-height', h: h }, location.origin);
     };

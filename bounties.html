@@ -69,14 +69,19 @@
     .back { display: inline-flex; align-items: center; gap: 6px; margin: 22px 0 0; background: none; border: none; font: inherit; font-size: 13px; font-weight: 800; color: var(--ve-green-dark); cursor: pointer; padding: 6px 0; text-decoration: none; }
     .back:hover { text-decoration: underline; }
     .back:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
-    .chero { margin-top: 14px; border-radius: 18px; min-height: 180px; background: linear-gradient(135deg, var(--ve-green-dark), var(--ve-green-deep)); background-size: cover; background-position: center; position: relative; overflow: hidden; display: flex; align-items: flex-end; }
-    .chero.k-place { background-image: linear-gradient(135deg, #b8640a, var(--ve-orange-ink)); }
-    .chero.k-ongoing { background-image: linear-gradient(135deg, #3b5998, #22345c); }
-    .chero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.1) 100%); }
-    .chero-in { position: relative; padding: 22px 24px; color: #fff; }
-    .chero-in h2 { font-size: clamp(24px, 3.4vw, 36px); font-weight: 900; line-height: 1.1; }
-    .chero-in p { font-size: 14px; font-weight: 600; opacity: 0.92; margin-top: 6px; }
-    .cstory { font-size: 16px; line-height: 1.7; color: var(--ve-text-75); margin-top: 18px; max-width: 860px; white-space: pre-wrap; }
+    /* Campaign intro, two columns (Sean, 2026-10-04): the title, date and story on the left, the whole
+       banner on the right, not a cropped strip across the page. The jobs follow below. */
+    .cintro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; margin-top: 16px; }
+    @media (max-width: 860px) { .cintro { grid-template-columns: minmax(0, 1fr); gap: 16px; } .cart { order: -1; } }
+    .ckind-tag { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; background: var(--ve-bg); border: 1px solid var(--ve-border); color: var(--ve-text); border-radius: 999px; padding: 4px 10px; }
+    .ctext h2 { font-size: clamp(24px, 3.2vw, 36px); font-weight: 900; line-height: 1.1; margin-top: 10px; }
+    .ctext .cwhen { font-size: 14px; font-weight: 700; color: var(--ve-text-60); margin-top: 8px; }
+    .cstory { font-size: 16px; line-height: 1.7; color: var(--ve-text-75); margin-top: 14px; white-space: pre-wrap; }
+    .cart { border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, var(--ve-green-dark), var(--ve-green-deep)); }
+    .cart.k-place { background-image: linear-gradient(135deg, #b8640a, var(--ve-orange-ink)); }
+    .cart.k-ongoing { background-image: linear-gradient(135deg, #3b5998, #22345c); }
+    .cart img { display: block; width: 100%; height: auto; max-height: 460px; object-fit: contain; background: #111; }
+    .cart .cart-none { display: flex; align-items: flex-end; aspect-ratio: 16 / 9; padding: 20px 22px; color: #fff; font-size: 18px; font-weight: 900; }
     .cnote { display: inline-block; margin-top: 14px; font-size: 14px; line-height: 1.55; background: var(--ve-orange-light); color: var(--ve-orange-ink); border-radius: 10px; padding: 10px 14px; }
     .jobs-h { font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-text-60); margin: 28px 0 0; }
     .parts { list-style: none; display: grid; gap: 6px; margin: 12px 0 0; }
@@ -214,9 +219,10 @@
       <nav class="crumbs" id="crumbs" aria-label="Breadcrumb" hidden></nav>
       <div id="list"></div>
       <div id="campaign" hidden>
-        <div class="chero" id="c-hero"><div class="chero-in"><span class="ckind" id="c-kind" style="position:static;display:inline-block;margin-bottom:10px"></span><h2 id="c-title"></h2><p id="c-meta"></p></div></div>
-        <p class="cstory" id="c-story"></p>
-        <div id="c-note"></div>
+        <div class="cintro">
+          <div class="ctext"><span class="ckind-tag" id="c-kind"></span><h2 id="c-title"></h2><p class="cwhen" id="c-meta"></p><p class="cstory" id="c-story"></p><div id="c-note"></div></div>
+          <div class="cart" id="c-hero"></div>
+        </div>
         <p class="jobs-h" id="c-jobs-h">The jobs</p>
         <div id="c-jobs"></div>
         <p class="fine" style="margin-top:14px">The event details, the rundown and a Q&amp;A with your Community Manager open once you claim a job.</p>
@@ -449,9 +455,10 @@
     }
     function renderCampaign(c) {
       setView('campaign');
-      var hero = $('c-hero');
-      hero.className = 'chero k-' + c.kind;
-      hero.style.backgroundImage = c.cover_url ? 'url(\'' + c.cover_url.replace(/'/g, '%27') + '\')' : '';
+      var art = $('c-hero');
+      art.className = 'cart k-' + c.kind;
+      art.innerHTML = c.cover_url ? '<img src="' + esc(c.cover_url) + '" alt="' + esc(c.title) + '">' : '<span class="cart-none">' + esc(KIND[c.kind] || 'Campaign') + '</span>';
+      var img = art.querySelector('img'); if (img) img.onerror = function () { art.innerHTML = '<span class="cart-none">' + esc(KIND[c.kind] || 'Campaign') + '</span>'; };
       $('c-kind').textContent = KIND[c.kind] || 'Campaign';
       $('c-title').textContent = c.title;
       $('c-meta').textContent = [dateLine(c), c.place_name, c.host ? 'Hosted by ' + c.host.name : ''].filter(Boolean).join(' · ');

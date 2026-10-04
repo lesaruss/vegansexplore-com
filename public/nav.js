@@ -16,9 +16,13 @@
   document.head.appendChild(st);
   if (ownHandling) return;
   var lastH = 0, lastVH = 0, stopped = false;
+  // The page's own content, not the frame it sits in: measuring the document would report the frame's
+  // height back, so the frame could grow but never shrink (a short page after a tall one left a gap,
+  // Sean 2026-10-04). Open dialogs and overlays sit outside the flow and are counted so none is cut off.
+  function veContentHeight(){var b=document.body;if(!b)return 0;var h=b.scrollHeight;Array.prototype.forEach.call(document.querySelectorAll('dialog[open],.overlay,[role="dialog"]'),function(el){var cs=getComputedStyle(el);if(cs.display==='none'||cs.visibility==='hidden'||cs.position==='fixed')return;var r=el.getBoundingClientRect();if(r.height)h=Math.max(h,Math.ceil(r.bottom+window.scrollY));});return Math.ceil(h);}
   function send() {
     if (stopped || !document.body) return;
-    var h = Math.ceil(Math.max(document.body.scrollHeight, root.scrollHeight)), vh = window.innerHeight;
+    var h = veContentHeight(), vh = window.innerHeight;
     if (lastH && vh !== lastVH && h > lastH && Math.abs((h - lastH) - (vh - lastVH)) < 3) {
       stopped = true; window.parent.postMessage({ type: 've-frame-unsize' }, location.origin); return;
     }
