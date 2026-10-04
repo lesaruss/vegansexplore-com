@@ -26,16 +26,22 @@
 // they reply to any post; nobody creates a topic from the Board itself.
 // POST { action: 'list', lane: 'pulse', community, q?, before? }  public: live topics, city + national
 // POST { action: 'topic_desk', community? }     desk -> drafts, live topics, story suggestions
-// POST { action: 'topic_draft', community, lead_id? | url?, note? }   desk: Claude drafts a topic
+// POST { action: 'topic_draft', community, lead_id? | url?, note? }   desk: queue a draft for the writer
+// POST { action: 'topic_rewrite', id, note? }   desk: send a draft back to the writer
 // POST { action: 'topic_save', id, title, body, question, source_name, source_url }   desk (drafts)
 // POST { action: 'topic_publish', id, first_reply, title?, body?, question?, source_name?, source_url? }
 // POST { action: 'topic_discard', id }          desk (drafts)
+//
+// The writing is done by the Background writer, not here (Sean, 2026-10-04): a draft is queued
+// (write_status 'queued') and the dispatcher's pulse_topic_write job, a routine on Sean's Claude
+// subscription, fills in the headline, intro and question. This function never calls a paid API.
+// Queuing nudges the dispatcher (lesaruss_dispatch_tick) so the writer starts within minutes
+// instead of at the next 15-minute check. Saving or publishing a draft takes it off the writer.
 //
 // Authorization: Bearer <ve_token>, checked here the same way ve-votes and ve-auth check it
 // (verify_jwt is false on deploy). Reports email that city's Community Manager with Sean
 // copied (ve_partner_cities.manager_email), or Sean alone while a city has none. Three reports
 // from three different members hide a post or reply until a moderator looks at it.
-import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -57,7 +63,6 @@ const SCOPE_NAME: Record<string, string> = {
   'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York',
   philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', national: 'National',
 };
-const MODEL = 'claude-opus-5';
 const CATEGORIES = ['rescue', 'transport', 'fostering', 'food', 'services', 'volunteers', 'other'];
 const REASONS = ['not_who_they_say', 'unsafe', 'scam', 'spam', 'harassment', 'other'];
 const REASON_LABEL: Record<string, string> = {
@@ -176,9 +181,10 @@ const tidy = (s: unknown, max: number) => String(s ?? '').replace(/\u0000/g, '')
 const isUrl = (u: string) => /^https?:\/\/[^\s]+$/i.test(u);
 const hostName = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
 
-// Read a pasted link for its title, outlet and text, so the draft is about what the page says.
+// Read a pasted link for its title and outlet, so the queued draft names the story before the
+// writer gets to it.
 async function readLink(url: string) {
-  const out = { title: '', site: '', description: '', text: '' };
+  const out = { title: '', site: '', description: '' };
   try {
     const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
     const res = await fetch(url, { signal: ctl.signal, redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VegansExploreBot/1.0; +https://vegansexplore.com)' } });
@@ -190,43 +196,15 @@ async function readLink(url: string) {
     out.title = decode(meta('og:title') || (html.match(/<title[^>]*>([^<]*)/i) || [])[1] || '').trim();
     out.site = decode(meta('og:site_name')).trim();
     out.description = decode(meta('og:description') || meta('description')).trim();
-    out.text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<nav[\s\S]*?<\/nav>|<footer[\s\S]*?<\/footer>/gi, ' ')
-      .replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, 6000);
-  } catch { /* the draft falls back to what the Inbox already knows */ }
+  } catch { /* the writer reads the page itself; this only names the draft */ }
   return out;
 }
 
-const TOPIC_SYSTEM = (scopeName: string) => `You write the Daily Pulse for Vegans Explore, a community for Vegans. The Daily Pulse is not an article: it is one conversation starter a day, posted to the community board${scopeName === 'National' ? ' for every city' : ' for ' + scopeName}. Members read it and talk about it underneath.
-
-From the story you are given, write three things:
-- title: a plain, specific headline in your own words, under 90 characters. Not the outlet's headline.
-- intro: two to four neutral sentences, under 600 characters, on what happened, using only facts in the story. Your own words; never copy sentences. If something is unconfirmed, say so ("according to the owner").
-- question: one real question, under 160 characters, that invites members to share their own experience or view, for example "Would you go?", "Has your city tried this?", "What would you order?". Never a loaded or bait question.
-
-Rules: write "Vegan" and "Veganism" with a capital V. Never use em dashes. No health or tax claims. Do not invent names, dates, prices, quotes or numbers. Stay neutral on controversies and attribute claims to their source.`;
-
-const TOPIC_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['title', 'intro', 'question'],
-  properties: { title: { type: 'string' }, intro: { type: 'string' }, question: { type: 'string' } },
-};
-
-async function draftTopic(scopeName: string, story: { title: string; summary: string; text: string; source: string; note: string }) {
-  const { data } = await db.from('lesaruss_secrets').select('value').eq('key', 'ANTHROPIC_API_KEY').maybeSingle();
-  const apiKey = (data?.value as string) || '';
-  if (!apiKey) return null;
-  const client = new Anthropic({ apiKey });
-  const prompt = `Source: ${story.source}\nHeadline: ${story.title}\n${story.summary ? 'Summary: ' + story.summary + '\n' : ''}${story.text ? 'Page text: ' + story.text + '\n' : ''}${story.note ? 'Note from the desk: ' + story.note + '\n' : ''}`;
-  try {
-    const response: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: 4000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
-      output_config: { effort: 'low', format: { type: 'json_schema', schema: TOPIC_SCHEMA } },
-      system: TOPIC_SYSTEM(scopeName), messages: [{ role: 'user', content: prompt }],
-    } as any);
-    if (response.stop_reason === 'refusal') return null;
-    const text = (response.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
-    const out = JSON.parse(text);
-    return { title: tidy(out.title, 140), intro: tidy(out.intro, 4000), question: tidy(out.question, 300) };
-  } catch (e) { console.error('topic draft', e); return null; }
+// Start the Background writer now rather than at the next 15-minute check. The tick does nothing
+// when a run is already going, and it never blocks the desk: a failure here only means the
+// writer starts at the next check.
+async function nudgeWriter() {
+  try { await db.rpc('lesaruss_dispatch_tick'); } catch (e) { console.error('dispatch tick', e); }
 }
 
 async function countSince(table: string, column: string, memberId: string) {
@@ -438,7 +416,7 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
       const scopes = await deskScopes(viewer);
       if (!scopes.length) return json({ error: 'forbidden', message: 'The Pulse desk is for Community Managers.' }, 403);
       const scope = scopes.includes(clean(body.community, 40)) ? clean(body.community, 40) : scopes[0];
-      const cols = 'id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, lead_id';
+      const cols = 'id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, lead_id, write_status, write_note, write_error';
       const since = new Date(Date.now() - 21 * DAY_MS).toISOString();
       // National has no feed of its own: it draws on the Vegan outlets, whatever city they name. A
       // city sees every story tagged to it, including ones members and Community Managers sent in.
@@ -457,7 +435,7 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
       return json({
         scope, scope_name: SCOPE_NAME[scope], scopes: scopes.map((s) => ({ slug: s, name: SCOPE_NAME[s] })),
         posted_today: !!latest && Date.now() - new Date(latest.published_at).getTime() < DAY_MS,
-        drafts: (drafts || []).map((p) => ({ ...shapePost(p, {}, viewer), lead_id: p.lead_id })),
+        drafts: (drafts || []).map((p) => ({ ...shapePost(p, {}, viewer), lead_id: p.lead_id, write_status: p.write_status, write_note: p.write_note, write_error: p.write_error })),
         live: (live || []).map((p) => shapePost(p, {}, viewer)),
         stories: (stories || []).map((l: any) => ({ id: l.id, title: l.title, summary: l.summary, url: l.url, source_name: l.source_name || hostName(l.url), city: l.city_slug, published_at: l.published_at })),
       });
@@ -468,31 +446,40 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
       const scope = clean(body.community, 40);
       if (!scopes.includes(scope)) return json({ error: 'forbidden', message: 'You can draft topics for your own city.' }, 403);
       const note = clean(body.note, 500);
-      let story = { title: '', summary: '', text: '', source: '', url: '' }, leadId: string | null = null;
+      let story = { title: '', summary: '', source: '', url: '' }, leadId: string | null = null;
       if (isId(body.lead_id)) {
         const { data: l } = await db.from('ve_news_leads').select('id, title, summary, url, source_name, topic_post_id').eq('id', body.lead_id).maybeSingle();
         if (!l) return json({ error: 'not_found' }, 404);
         if (l.topic_post_id) return json({ error: 'already_topic', message: 'That story is already a topic.' }, 409);
-        const page = await readLink(l.url);
-        story = { title: l.title || page.title, summary: l.summary || page.description, text: page.text, source: l.source_name || page.site || hostName(l.url), url: l.url };
+        const { data: taken } = await db.from('ve_board_posts').select('id').eq('lead_id', l.id).eq('status', 'draft').limit(1);
+        if (taken && taken.length) return json({ error: 'already_draft', message: 'That story already has a draft below.' }, 409);
+        story = { title: l.title || '', summary: l.summary || '', source: l.source_name || hostName(l.url), url: l.url };
         leadId = l.id;
       } else {
         const url = clean(body.url, 1000);
         if (!isUrl(url)) return json({ error: 'bad_url', message: 'Paste the full link to the story, starting with https://' }, 400);
         const page = await readLink(url);
-        story = { title: page.title, summary: page.description, text: page.text, source: page.site || hostName(url), url };
-        if (!story.title && !note) return json({ error: 'unreadable', message: 'That page could not be read. Add a line about the story and try again.' }, 422);
+        story = { title: page.title, summary: page.description, source: page.site || hostName(url), url };
       }
-      const ai = await draftTopic(SCOPE_NAME[scope], { title: story.title, summary: story.summary, text: story.text, source: story.source, note });
-      // Without the writer the desk still gets a draft to finish by hand.
-      const draft = ai || { title: tidy(story.title || 'New topic', 140), intro: tidy(story.summary || note, 4000), question: '' };
       const { data, error } = await db.from('ve_board_posts').insert({
         community_slug: scope, member_id: viewer!.id, kind: 'topic', category: 'pulse', status: 'draft',
-        title: draft.title.length >= 3 ? draft.title : 'New topic', body: draft.intro || 'Intro to come.', question: draft.question,
+        title: tidy(story.title, 140).length >= 3 ? tidy(story.title, 140) : 'New topic', body: tidy(story.summary, 4000) || 'Waiting for the writer.', question: '',
         source_name: tidy(story.source || hostName(story.url), 120), source_url: story.url, lead_id: leadId,
+        write_status: 'queued', write_note: note || null, write_marked_at: new Date().toISOString(),
       }).select('id').single();
       if (error) return json({ error: 'draft_failed', message: error.message }, 500);
-      return json({ ok: true, id: data.id, written: !!ai });
+      await nudgeWriter();
+      return json({ ok: true, id: data.id, queued: true });
+    }
+
+    case 'topic_rewrite': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: p } = await db.from('ve_board_posts').select('id, community_slug, kind, status').eq('id', body.id).maybeSingle();
+      if (!p || p.kind !== 'topic' || p.status !== 'draft') return json({ error: 'not_found', message: 'That draft is gone or already live.' }, 404);
+      if (!(await deskScopes(viewer)).includes(p.community_slug)) return json({ error: 'forbidden' }, 403);
+      await db.from('ve_board_posts').update({ write_status: 'queued', write_note: clean(body.note, 500) || null, write_error: null, write_marked_at: new Date().toISOString() }).eq('id', p.id);
+      await nudgeWriter();
+      return json({ ok: true, queued: true });
     }
 
     case 'topic_save':
@@ -518,13 +505,13 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
       if (!next.source_name || !isUrl(next.source_url)) return json({ error: 'bad_source', message: 'Every topic needs its source: the outlet name and the full link.' }, 400);
       const now = new Date().toISOString();
       if (body.action === 'topic_save') {
-        await db.from('ve_board_posts').update({ ...next, updated_at: now }).eq('id', p.id);
+        await db.from('ve_board_posts').update({ ...next, write_status: null, updated_at: now }).eq('id', p.id);
         return json({ ok: true });
       }
       if (!next.question) return json({ error: 'bad_question', message: 'End the topic with one real question.' }, 400);
       const first = clean(body.first_reply, 2000);
       if (!first) return json({ error: 'first_reply', message: 'Write the first reply, so nobody walks into an empty room.' }, 400);
-      const { error } = await db.from('ve_board_posts').update({ ...next, status: 'open', published_at: now, updated_at: now, reply_count: 1 }).eq('id', p.id).eq('status', 'draft');
+      const { error } = await db.from('ve_board_posts').update({ ...next, status: 'open', published_at: now, updated_at: now, reply_count: 1, write_status: null }).eq('id', p.id).eq('status', 'draft');
       if (error) return json({ error: 'publish_failed', message: error.message }, 500);
       await db.from('ve_board_replies').insert({ post_id: p.id, member_id: viewer!.id, body: first });
       if (p.lead_id) await db.from('ve_news_leads').update({ topic_post_id: p.id }).eq('id', p.lead_id);

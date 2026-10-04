@@ -2,8 +2,10 @@
    and approved before it goes up on the Community Board's Pulse lane. A Community Manager sees
    their own city here (in the Pulse Desk); Sean sees every city and National (Depot > Inbox opens
    on National). Nothing posts on its own: a story from the Inbox, or a pasted link, becomes a
-   draft (written by Claude when the writer is available, otherwise filled from the story to
-   finish by hand), and Publish needs a first reply so no topic opens to an empty room.
+   draft queued for the Background writer (the dispatcher's pulse_topic_write job, on Sean's
+   Claude subscription), which fills in the headline, intro and question, usually within minutes.
+   Anyone at the desk can also finish a draft by hand, which takes it off the writer. Publish
+   needs a first reply so no topic opens to an empty room.
 
      VEPulseDesk.mount(element, { scope: 'national' })   scope optional; defaults to the first allowed
 
@@ -39,6 +41,8 @@
     '.vpd-msg.err{color:#a61b1b;}',
     '.vpd-draft{border:1.5px solid #F69820;border-radius:12px;padding:16px;margin-top:14px;background:#fffdf8;}',
     '.vpd-warn{font-size:13px;font-weight:700;color:#7d4a00;background:#fff4e2;border-radius:8px;padding:8px 10px;margin-bottom:10px;}',
+    '.vpd-warn.ok{color:#1f5f22;background:#EAF7EA;}',
+    '.vpd-warn.err{color:#a61b1b;background:#fde8e8;}',
     '.vpd-list{list-style:none;display:grid;gap:8px;margin:0;padding:0;}',
     '.vpd-item{border:1px solid rgba(0,0,0,0.1);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;}',
     '.vpd-item b{display:block;font-size:14px;line-height:1.35;}',
@@ -60,7 +64,7 @@
   function mount(el, opts) {
     if (!el) return;
     if (!document.getElementById('vpd-style')) { var st = document.createElement('style'); st.id = 'vpd-style'; st.textContent = css; document.head.appendChild(st); }
-    var state = { scope: (opts && opts.scope) || '', data: null };
+    var state = { scope: (opts && opts.scope) || '', data: null, timer: null };
     el.classList.add('vpd');
     el.innerHTML = '<div class="vpd-card"><p class="vpd-empty">Loading the Daily Pulse desk&hellip;</p></div>';
 
@@ -71,6 +75,14 @@
           return;
         }
         state.data = d; state.scope = d.scope; render();
+        // While the writer has a draft, check back so it appears without a refresh. Not while
+        // someone is typing in a draft, so their edits are never wiped.
+        clearTimeout(state.timer);
+        var waiting = d.drafts.some(function (t) { return t.write_status === 'queued' || t.write_status === 'writing'; });
+        if (waiting) state.timer = setTimeout(function tick() {
+          if (el.contains(document.activeElement) && document.activeElement.closest('form[data-draft]')) { state.timer = setTimeout(tick, 20000); return; }
+          load();
+        }, 20000);
       });
     }
 
@@ -92,7 +104,7 @@
       html += '<div class="vpd-card"><h3>Start a topic</h3>' +
         '<form data-link><div class="vpd-two">' +
           '<label class="vpd-f">Link to the story<input type="url" name="url" required placeholder="https://" autocomplete="off"></label>' +
-          '<label class="vpd-f">A line about it <span class="vpd-hint">Optional; needed if the page cannot be read</span><input name="note" maxlength="500" autocomplete="off"></label>' +
+          '<label class="vpd-f">A line for the writer <span class="vpd-hint">Optional: what matters about it, or what to ask</span><input name="note" maxlength="500" autocomplete="off"></label>' +
         '</div><div class="vpd-row"><button type="submit" class="vpd-btn">Draft from link</button></div><p class="vpd-msg" data-link-msg role="status"></p></form>' +
         '<h3 style="margin-top:18px;">Stories from the Inbox</h3>' +
         (d.stories.length ? '<ul class="vpd-list">' + d.stories.map(function (s) {
@@ -114,15 +126,18 @@
     }
 
     function draftHtml(t) {
-      return '<form class="vpd-draft" data-draft="' + t.id + '">' +
-        (!t.question ? '<p class="vpd-warn">The writer was not available, so this draft is filled from the story. Write the intro in your own words and add the question.</p>' : '') +
+      var ws = t.write_status, banner = '';
+      if (ws === 'queued' || ws === 'writing') banner = '<p class="vpd-warn">' + (ws === 'writing' ? 'The Background writer is writing this now.' : 'Queued for the Background writer. It usually fills this in within a few minutes; this page updates on its own.') + ' You can also finish it yourself: saving or publishing takes it off the writer.</p>';
+      else if (ws === 'written') banner = '<p class="vpd-warn ok">Written by the Background writer. Check it against the source, write the first reply, and publish.</p>';
+      else if (ws === 'failed') banner = '<p class="vpd-warn err">The writer could not write this one' + (t.write_error ? ': ' + esc(t.write_error) : '.') + ' Finish it by hand, send it back with a note, or discard it.</p>';
+      return '<form class="vpd-draft" data-draft="' + t.id + '">' + banner +
         '<label class="vpd-f">Headline <span class="vpd-hint">Plain and specific, in our words</span><input name="title" maxlength="140" value="' + esc(t.title) + '"></label>' +
         '<label class="vpd-f">Intro <span class="vpd-hint">Two to four neutral sentences on what happened</span><textarea name="body" rows="4" maxlength="4000">' + esc(t.body) + '</textarea></label>' +
         '<label class="vpd-f">The question <span class="vpd-hint">One real question about members\' experience or view</span><input name="question" maxlength="300" value="' + esc(t.question || '') + '"></label>' +
         '<div class="vpd-two"><label class="vpd-f">Source name<input name="source_name" maxlength="120" value="' + esc(t.source_name) + '"></label>' +
         '<label class="vpd-f">Source link <a href="' + esc(safeUrl(t.source_url)) + '" target="_blank" rel="noopener noreferrer" class="vpd-hint">Open</a><input name="source_url" type="url" maxlength="1000" value="' + esc(t.source_url) + '"></label></div>' +
         '<label class="vpd-f">First reply <span class="vpd-hint">Posted under your name when it goes up, so nobody walks into an empty room</span><textarea name="first_reply" rows="3" maxlength="2000" placeholder="Start it off: what you think, or what you know about it."></textarea></label>' +
-        '<div class="vpd-row"><button type="submit" class="vpd-btn">Publish to the Board</button><button type="button" class="vpd-btn ghost" data-save>Save</button><button type="button" class="vpd-btn danger" data-discard>Discard</button></div>' +
+        '<div class="vpd-row"><button type="submit" class="vpd-btn">Publish to the Board</button><button type="button" class="vpd-btn ghost" data-save>Save</button><button type="button" class="vpd-btn ghost" data-rewrite>Send back to the writer</button><button type="button" class="vpd-btn danger" data-discard>Discard</button></div>' +
         '<p class="vpd-msg" role="status"></p></form>';
     }
 
@@ -142,6 +157,7 @@
         e.target.disabled = true; e.target.textContent = 'Drafting...';
         api({ action: 'topic_draft', community: state.scope, lead_id: storyId }).then(function (d) {
           if (d.error) { e.target.disabled = false; e.target.textContent = 'Draft topic'; alert(d.message || 'That did not go through. Try again.'); return; }
+          if (window.scrollTo) { try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (x) {} }
           load();
         });
         return;
@@ -153,6 +169,11 @@
         var f = fields(form); delete f.first_reply;
         say(msg, 'Saving...');
         api(Object.assign({ action: 'topic_save', id: form.getAttribute('data-draft') }, f)).then(function (d) { d.error ? say(msg, d.message || 'That did not save.', true) : say(msg, 'Saved.'); });
+      } else if (e.target.hasAttribute('data-rewrite')) {
+        var note = prompt('What should the writer change? (optional)', '');
+        if (note === null) return;
+        say(msg, 'Sending it back to the writer...');
+        api({ action: 'topic_rewrite', id: form.getAttribute('data-draft'), note: note }).then(function (d) { d.error ? say(msg, d.message || 'That did not go through.', true) : load(); });
       } else if (e.target.hasAttribute('data-discard')) {
         if (!confirm('Discard this draft?')) return;
         api({ action: 'topic_discard', id: form.getAttribute('data-draft') }).then(function (d) { d.error ? say(msg, d.message || 'That did not go through.', true) : load(); });
@@ -163,7 +184,7 @@
       var form = e.target;
       if (form.hasAttribute('data-link')) {
         var lm = form.querySelector('[data-link-msg]'), btn = form.querySelector('button');
-        btn.disabled = true; say(lm, 'Reading the page and drafting...');
+        btn.disabled = true; say(lm, 'Queuing it for the writer...');
         api({ action: 'topic_draft', community: state.scope, url: form.elements.url.value.trim(), note: form.elements.note.value.trim() }).then(function (d) {
           btn.disabled = false;
           if (d.error) { say(lm, d.message || 'That did not go through. Try again.', true); return; }
