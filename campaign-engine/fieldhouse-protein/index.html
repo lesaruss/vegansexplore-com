@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fieldhouse Protein (Illustrative) — Vegans Explore</title>
+<meta name="description" content="An illustrative Featured Profile: what a brand's page looks like in the Vegans Explore Directory.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#e8f5e9;
+    --ve-orange:#F69820;--ve-orange-text:#7d4a00;--ve-orange-bg:rgba(246,152,32,.1);
+    --ve-border:rgba(0,0,0,.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,.75);--ve-text-50:rgba(26,26,26,.55);
+    --fh-navy:#1d2f4f;--fh-navy-2:#2e4a78;--fh-gold:#e8b04b;
+  }
+  body{font-family:Montserrat,sans-serif;color:var(--ve-text);background:#fff;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--ve-orange);outline-offset:3px}
+
+  .ill-banner{background:var(--ve-orange-bg);border-bottom:1px solid rgba(246,152,32,.35);padding:12px 40px;font-size:12px;font-weight:600;color:var(--ve-orange-text);line-height:1.5}
+  .ill-banner strong{font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:10px;margin-right:8px}
+  .ill-banner a{font-weight:800}
+
+  .hero{background:linear-gradient(120deg,#0f1a2e 0%,var(--fh-navy) 55%,var(--fh-navy-2) 100%);padding:40px 40px 34px;display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+  .avatar{width:120px;height:120px;border-radius:14px;background:var(--fh-gold);color:var(--fh-navy);display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:900;letter-spacing:-.04em;flex-shrink:0}
+  .hero-body{flex:1;min-width:260px}
+  .crumbs{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:10px}
+  .crumbs a{color:#8ff0ac;text-decoration:none}
+  .crumbs a:hover{text-decoration:underline}
+  .name{font-size:34px;font-weight:900;color:#fff;letter-spacing:-.02em;line-height:1.1;margin-bottom:10px}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .badge{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:4px 12px;border-radius:20px}
+  .badge.cat{background:#5EC47A;color:#000}
+  .badge.feat{background:var(--fh-gold);color:var(--fh-navy)}
+  .badge.sub{background:rgba(255,255,255,.1);color:#ddd;border:1px solid rgba(255,255,255,.2)}
+  .tagline{font-size:14px;color:rgba(255,255,255,.75);line-height:1.6;max-width:860px}
+  .hero-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:13px 22px;border-radius:6px;text-decoration:none;border:1.5px solid transparent;cursor:pointer;white-space:nowrap}
+  .btn-primary{background:#5EC47A;color:#000}
+  .btn-primary:hover{background:#4db368}
+  .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+  .btn-ghost:hover{border-color:#fff}
+
+  .info-bar{background:#f9f9f9;border-bottom:1px solid var(--ve-border);padding:12px 40px;display:flex;gap:24px;flex-wrap:wrap}
+  .chip{font-size:11px;font-weight:700;color:var(--ve-text-75);letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+  .chip::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ve-green)}
+
+  .tabs{display:flex;overflow-x:auto;border-bottom:2px solid var(--ve-border);background:#fff;position:sticky;top:0;z-index:10;scrollbar-width:none;padding:0 28px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex-shrink:0;font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:15px 18px;border:none;background:none;color:var(--ve-text-50);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+  .tab:hover{color:var(--ve-text)}
+  .tab[aria-selected="true"]{color:var(--ve-green-dark);border-bottom-color:var(--ve-green)}
+
+  main{max-width:none;margin:0;padding:32px 40px 72px}
+  .panel[hidden]{display:none}
+  .grid-2{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:32px;align-items:start}
+  .section{margin-bottom:32px}
+  .section-title{font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--ve-green-light)}
+  .prose p{font-size:14px;line-height:1.8;color:var(--ve-text);margin-bottom:12px;max-width:860px}
+  .mission{border-left:4px solid var(--fh-gold);background:#fbf7ee;padding:18px 22px;border-radius:0 10px 10px 0;font-size:17px;font-weight:700;line-height:1.5;color:var(--fh-navy)}
+  .facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(160px,100%),1fr));gap:12px}
+  .fact{border:1px solid var(--ve-border);border-radius:10px;padding:16px}
+  .fact .k{font-size:22px;font-weight:900;color:var(--fh-navy)}
+  .fact .v{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-50);margin-top:2px}
+  .timeline{list-style:none;border-left:2px solid var(--ve-green-light);padding-left:18px;display:flex;flex-direction:column;gap:14px}
+  .timeline li{font-size:13px;line-height:1.6;color:var(--ve-text-75);position:relative}
+  .timeline li::before{content:'';position:absolute;left:-24px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--ve-green)}
+  .timeline strong{color:var(--ve-text);font-weight:800;margin-right:6px}
+
+  .side-card{border:1px solid var(--ve-border);border-radius:10px;padding:18px;margin-bottom:14px;background:#fff}
+  .side-title{font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px}
+  .camp-card{background:#0d1a10;color:#fff;border-color:#0d1a10}
+  .camp-card .side-title{color:#8ff0ac}
+  .camp-card p{font-size:13px;line-height:1.6;color:rgba(255,255,255,.8);margin-bottom:14px}
+
+  .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px}
+  .product{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  .pack{height:150px;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;color:#fff;position:relative}
+  .pack .brand{font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;opacity:.85}
+  .pack .flavor{font-size:20px;font-weight:900;line-height:1.1;letter-spacing:-.01em}
+  .pack .pg{position:absolute;right:16px;top:14px;font-size:11px;font-weight:900;background:rgba(255,255,255,.18);border-radius:20px;padding:3px 10px}
+  .p-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .p-type{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ve-text-50)}
+  .p-desc{font-size:13px;line-height:1.55;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .p-price{display:flex;justify-content:space-between;align-items:baseline;margin-top:auto;padding-top:8px;border-top:1px solid var(--ve-border)}
+  .p-price .each{font-size:18px;font-weight:900}
+  .p-price .box{font-size:11px;font-weight:700;color:var(--ve-text-50)}
+  .p-link{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-dark);background:none;border:none;cursor:pointer;font-family:Montserrat,sans-serif;text-align:left;padding:0}
+  .note{font-size:12px;color:var(--ve-text-50);line-height:1.6;margin-top:14px}
+
+  .nut-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .nut-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:20px;border:1px solid var(--ve-border);background:#fff;cursor:pointer;color:var(--ve-text-75)}
+  .nut-btn[aria-pressed="true"]{background:var(--fh-navy);border-color:var(--fh-navy);color:#fff}
+  .nut-wrap{display:grid;grid-template-columns:minmax(260px,380px) minmax(0,1fr);gap:28px;align-items:start}
+  .label{border:2px solid #111;padding:12px 14px;font-family:Arial,Helvetica,sans-serif;background:#fff}
+  .label h3{font-size:28px;font-weight:900;border-bottom:1px solid #111;line-height:1.1;padding-bottom:4px}
+  .label .serv{font-size:13px;border-bottom:8px solid #111;padding:4px 0 6px}
+  .label .cal{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:4px solid #111;padding:4px 0}
+  .label .cal span:first-child{font-size:20px;font-weight:900}
+  .label .cal span:last-child{font-size:34px;font-weight:900;line-height:1}
+  .label table{width:100%;border-collapse:collapse;font-size:13px}
+  .label td{border-bottom:1px solid #111;padding:4px 0}
+  .label td:last-child{text-align:right;font-weight:700}
+  .label .ind td:first-child{padding-left:16px}
+  .label .thick td{border-bottom:8px solid #111}
+  .label .foot{font-size:11px;padding-top:6px;line-height:1.4}
+  .ingredients p{font-size:14px;line-height:1.7;color:var(--ve-text-75);margin-bottom:12px}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .pill{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:20px;background:var(--ve-green-light);color:var(--ve-green-dark)}
+  .approved{display:flex;gap:10px;align-items:flex-start;background:#f7faf7;border:1px solid var(--ve-border);border-radius:10px;padding:14px 16px;font-size:12px;line-height:1.6;color:var(--ve-text-75)}
+  .approved strong{color:var(--ve-text)}
+
+  .videos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:18px}
+  .video{border-radius:12px;overflow:hidden;border:1px solid var(--ve-border)}
+  .poster{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;color:#fff}
+  .poster .play{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center}
+  .poster .play::after{content:'';border-left:16px solid var(--fh-navy);border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+  .poster .len{position:absolute;right:10px;bottom:10px;font-size:11px;font-weight:800;background:rgba(0,0,0,.6);padding:3px 8px;border-radius:4px}
+  .poster .kind{position:absolute;left:10px;top:10px;font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px}
+  .v-body{padding:14px 16px 16px}
+  .v-title{font-size:14px;font-weight:800;margin-bottom:4px}
+  .v-meta{font-size:12px;color:var(--ve-text-50);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  .retailers{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:16px}
+  .retailer{border:1px solid var(--ve-border);border-radius:12px;padding:20px}
+  .retailer h3{font-size:16px;font-weight:900;margin-bottom:4px}
+  .retailer p{font-size:13px;color:var(--ve-text-75);line-height:1.6;margin-bottom:14px}
+  .retailer .go{font-size:11px;font-weight:700;color:var(--ve-text-50);margin-top:10px;word-break:break-all}
+  .btn-dark{background:var(--fh-navy);color:#fff}
+  .btn-dark:hover{background:var(--fh-navy-2)}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:50}
+  .toast.show{opacity:1}
+
+  @media (max-width:900px){
+    .grid-2,.nut-wrap{grid-template-columns:1fr}
+  }
+  @media (max-width:640px){
+    .ill-banner,.info-bar{padding-left:16px;padding-right:16px}
+    .hero{padding:28px 16px}
+    .avatar{width:84px;height:84px;font-size:28px}
+    .name{font-size:26px}
+    .hero-actions{flex-direction:row;flex-wrap:wrap;width:100%}
+    .tabs{padding:0 8px}
+    main{padding:24px 16px 56px}
+  }
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="ill-banner" role="note"><strong>Illustrative</strong>Fieldhouse Protein is an invented brand. This is what a Featured Profile looks like in our Directory. <a href="/campaign-engine">Back to the Campaign Engine</a></div>
+
+<header class="hero">
+  <div class="avatar" aria-hidden="true">FH</div>
+  <div class="hero-body">
+    <div class="crumbs"><a href="/campaign-engine">Campaign Engine</a> / Fieldhouse Protein</div>
+    <h1 class="name">Fieldhouse Protein</h1>
+    <div class="badges">
+      <span class="badge cat">Brand</span>
+      <span class="badge feat">Featured Profile</span>
+      <span class="badge sub">Protein bars</span>
+      <span class="badge sub">Shakes</span>
+    </div>
+    <p class="tagline">Plant protein for people who train. Pea and pumpkin-seed protein bars and ready-to-drink shakes, made by two former college track athletes.</p>
+  </div>
+  <div class="hero-actions">
+    <button class="btn btn-primary" type="button" data-demo="buy">Where to buy</button>
+    <button class="btn btn-ghost" type="button" data-demo="save">Save to My List</button>
+  </div>
+</header>
+
+<div class="info-bar">
+  <span class="chip">100% plant-based</span>
+  <span class="chip">20 to 25g protein</span>
+  <span class="chip">Online and regional grocery</span>
+  <span class="chip">Season Sponsor, spring</span>
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Profile sections">
+  <button class="tab" role="tab" data-tab="overview" aria-selected="true" aria-controls="p-overview">Overview</button>
+  <button class="tab" role="tab" data-tab="products" aria-selected="false" aria-controls="p-products">Products</button>
+  <button class="tab" role="tab" data-tab="nutrition" aria-selected="false" aria-controls="p-nutrition">Nutrition</button>
+  <button class="tab" role="tab" data-tab="videos" aria-selected="false" aria-controls="p-videos">Videos</button>
+  <button class="tab" role="tab" data-tab="buy" aria-selected="false" aria-controls="p-buy">Where to buy</button>
+</nav>
+
+<main>
+  <!-- OVERVIEW -->
+  <section class="panel" id="p-overview" role="tabpanel">
+    <div class="grid-2">
+      <div>
+        <div class="section">
+          <div class="section-title">Our story</div>
+          <div class="prose">
+            <p>Fieldhouse started in a college locker room. Two sprinters went plant-based in their junior year and spent the next two seasons hunting for a protein bar that didn't taste like chalk or fall apart in a gym bag. They never found one, so after graduating they started making their own in a shared commercial kitchen.</p>
+            <p>The first batch was peanut butter, made with pea protein and roasted pumpkin seeds. Their old teammates ate the whole run in a week. Today Fieldhouse makes four bars and three ready-to-drink shakes, all plant-based, all built around one test: does it hold up to real training?</p>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Mission</div>
+          <div class="mission">Plant protein for people who train, from the first 5K to the last rep.</div>
+        </div>
+        <div class="section">
+          <div class="section-title">At a glance</div>
+          <div class="facts">
+            <div class="fact"><div class="k">7</div><div class="v">Products</div></div>
+            <div class="fact"><div class="k">20g</div><div class="v">Protein per bar</div></div>
+            <div class="fact"><div class="k">25g</div><div class="v">Protein per shake</div></div>
+            <div class="fact"><div class="k">0</div><div class="v">Animal ingredients</div></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">History</div>
+          <ul class="timeline">
+            <li><strong>Year 1</strong>First batch of Peanut Butter Sprint bars, made in a shared kitchen and sold to teammates.</li>
+            <li><strong>Year 2</strong>Online store opens. Cocoa Recovery and Salted Maple Oat join the line.</li>
+            <li><strong>Year 3</strong>Ready-to-drink shakes launch. First regional grocery chain picks them up.</li>
+            <li><strong>Year 4</strong>Season Sponsor with Vegans Explore across South Florida, Atlanta and the DMV.</li>
+          </ul>
+        </div>
+      </div>
+      <aside>
+        <div class="side-card camp-card">
+          <div class="side-title">Campaign this season</div>
+          <p>"How do you Fieldhouse?" Show how plant protein fits your training: a post-workout shake, a run-club check-in or a meal-prep video. Earn points for every task.</p>
+          <a class="btn btn-primary" href="/campaign-engine/fieldhouse-protein/report">See the final report</a>
+        </div>
+        <div class="side-card">
+          <div class="side-title">Best sellers</div>
+          <p style="font-size:13px;line-height:1.7;color:var(--ve-text-75)">Peanut Butter Sprint bar · Chocolate shake · Cocoa Recovery bar</p>
+        </div>
+        <div class="side-card">
+          <div class="side-title">Featured video</div>
+          <div class="poster" style="background:linear-gradient(135deg,#1d2f4f,#3d6aa8);border-radius:8px"><span class="kind">Brand film</span><span class="play" aria-hidden="true"></span><span class="len">2:14</span></div>
+          <p style="font-size:13px;font-weight:800;margin-top:10px">The locker room where it started</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="panel" id="p-products" role="tabpanel" hidden>
+    <div class="section-title">The full line</div>
+    <div class="products" id="product-grid"></div>
+    <p class="note">Prices are supplied and approved by the brand, and every "Buy" button goes to a retailer through a tracked link, so we never show a stale price and the brand sees what each visit led to.</p>
+  </section>
+
+  <!-- NUTRITION -->
+  <section class="panel" id="p-nutrition" role="tabpanel" hidden>
+    <div class="section-title">Nutrition</div>
+    <div class="nut-picker" id="nut-picker" role="group" aria-label="Choose a product"></div>
+    <div class="nut-wrap">
+      <div class="label" id="nut-label" aria-live="polite"></div>
+      <div class="ingredients">
+        <div class="pill-row" id="nut-pills"></div>
+        <p id="nut-ingredients"></p>
+        <div class="approved"><span aria-hidden="true">✓</span><span><strong>Supplied and approved by Fieldhouse Protein.</strong> Brands send us their nutrition panels and sign off before a profile goes live. When a recipe changes, the brand updates it here.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEOS -->
+  <section class="panel" id="p-videos" role="tabpanel" hidden>
+    <div class="section-title">Videos</div>
+    <div class="videos" id="video-grid"></div>
+    <p class="note">On a live profile these play the brand's own videos plus the creator collabs from its campaigns. Creator videos are labeled #ad.</p>
+  </section>
+
+  <!-- WHERE TO BUY -->
+  <section class="panel" id="p-buy" role="tabpanel" hidden>
+    <div class="section-title">Where to buy</div>
+    <div class="retailers">
+      <div class="retailer">
+        <h3>Fieldhouse online store</h3>
+        <p>The full line, boxes of 12, and a subscribe-and-save option. Ships in 2 to 4 days.</p>
+        <button class="btn btn-dark" type="button" data-demo="buy">Shop online</button>
+        <div class="go">vegansexplore.com/go/fh-store</div>
+      </div>
+      <div class="retailer">
+        <h3>Regional grocery</h3>
+        <p>Bars and shakes in the sports nutrition aisle at partner grocery stores across the Southeast and Mid-Atlantic.</p>
+        <button class="btn btn-dark" type="button" data-demo="buy">Find a store</button>
+        <div class="go">vegansexplore.com/go/fh-stores</div>
+      </div>
+      <div class="retailer">
+        <h3>Near you in the Directory</h3>
+        <p>Directory cafés and juice bars that stock Fieldhouse shakes, including run-club pickup spots in Atlanta.</p>
+        <button class="btn btn-dark" type="button" data-demo="buy">See the map</button>
+        <div class="go">vegansexplore.com/go/fh-local</div>
+      </div>
+    </div>
+    <p class="note">Every button is a tracked link made in Depot &gt; Links. A click is counted once, bots and link previews are filtered out, and the click is credited to the member's account when they're signed in. That is where the "7,450 retailer clicks" in the report comes from.</p>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var PRODUCTS=[
+    {id:'pb',type:'Protein bar',flavor:'Peanut Butter Sprint',grad:'#9a5b2a,#c98a4b',desc:'The original. Roasted peanut butter, pumpkin seeds and a soft-baked middle that holds together in a gym bag.',each:'$2.99',box:'$32.99 for 12',kind:'bar',best:true},
+    {id:'cocoa',type:'Protein bar',flavor:'Cocoa Recovery',grad:'#3b2417,#6b4430',desc:'Dark cocoa and sea salt with tart cherry, built for the hour after a hard session.',each:'$2.99',box:'$32.99 for 12',kind:'bar',best:true},
+    {id:'maple',type:'Protein bar',flavor:'Salted Maple Oat',grad:'#a8742c,#d9a656',desc:'Toasted oats, maple and a pinch of salt. Breakfast for early runs.',each:'$2.99',box:'$32.99 for 12',kind:'bar'},
+    {id:'lemon',type:'Protein bar',flavor:'Lemon Seed Crunch',grad:'#8a8a1e,#c4c13b',desc:'Bright lemon with a pumpkin and sunflower seed crunch. The lightest bar in the line.',each:'$2.99',box:'$32.99 for 12',kind:'bar'},
+    {id:'choc',type:'Ready-to-drink shake',flavor:'Chocolate',grad:'#2b1b14,#5a3a2a',desc:'25g of pea and pumpkin-seed protein, cold from the fridge. The best seller at run-club pickups.',each:'$3.99',box:'$44.99 for 12',kind:'shake',best:true},
+    {id:'vanilla',type:'Ready-to-drink shake',flavor:'Vanilla Bean',grad:'#8c7a5b,#bfae8a',desc:'Smooth vanilla that works on its own or blended with fruit.',each:'$3.99',box:'$44.99 for 12',kind:'shake'},
+    {id:'coldbrew',type:'Ready-to-drink shake',flavor:'Cold Brew',grad:'#1d2f4f,#3d5a8a',desc:'Protein and real cold brew coffee in one bottle, for mornings before the gym.',each:'$3.99',box:'$44.99 for 12',kind:'shake'}
+  ];
+  var NUT={
+    bar:{serv:'1 bar (60g)',cal:230,rows:[['Total Fat','9g','12%'],['Saturated Fat','1.5g','8%',1],['Trans Fat','0g','',1],['Cholesterol','0mg','0%'],['Sodium','190mg','8%'],['Total Carbohydrate','22g','8%'],['Dietary Fiber','7g','25%',1],['Total Sugars','6g','',1],['Includes 5g Added Sugars','','10%',2],['Protein','20g','40%']],vit:'Iron 15% · Potassium 6% · Calcium 4%',pills:['Vegan','Gluten-free','No sugar alcohols','Soy-free'],ing:'Pea protein, pumpkin seed protein, roasted pumpkin seeds, brown rice syrup, oats, sunflower oil, chicory root fiber, natural flavors, sea salt. Each flavor adds its own: peanut butter, cocoa and tart cherry, maple and oats, or lemon and sunflower seeds.'},
+    shake:{serv:'1 bottle (330ml)',cal:170,rows:[['Total Fat','5g','6%'],['Saturated Fat','1g','5%',1],['Trans Fat','0g','',1],['Cholesterol','0mg','0%'],['Sodium','220mg','10%'],['Total Carbohydrate','9g','3%'],['Dietary Fiber','3g','11%',1],['Total Sugars','4g','',1],['Includes 4g Added Sugars','','8%',2],['Protein','25g','50%']],vit:'Calcium 30% · Iron 20% · Vitamin D 25%',pills:['Vegan','Gluten-free','Shelf-stable','Soy-free'],ing:'Filtered water, pea protein, pumpkin seed protein, brown rice protein, cane sugar, sunflower oil, calcium phosphate, gellan gum, natural flavors, sea salt, vitamin D2. Cold Brew adds real cold brew coffee (about 90mg caffeine).'}
+  };
+  var VIDEOS=[
+    {t:'The locker room where it started',m:'Brand film · Fieldhouse Protein',len:'2:14',kind:'Brand film',grad:'#1d2f4f,#3d6aa8'},
+    {t:'Saturday long run, then a shake',m:'Creator collab · Atlanta · #ad',len:'0:58',kind:'Creator collab',grad:'#1b6b4a,#2fa36f'},
+    {t:'Meal prep for a training week',m:'Creator collab · South Florida · #ad',len:'1:42',kind:'Creator collab',grad:'#b0562a,#e08a4f'},
+    {t:'Run club check-in at sunrise',m:'Creator collab · DMV · #ad',len:'0:45',kind:'Creator collab',grad:'#4b3a8a,#7a66c4'},
+    {t:'How we test a bar: the gym-bag drop',m:'Brand short · Fieldhouse Protein',len:'0:38',kind:'Brand short',grad:'#2b1b14,#6b4430'},
+    {t:'Festival booth recap',m:'Event · South Florida spring festival',len:'1:20',kind:'Event recap',grad:'#7d4a00,#F69820'}
+  ];
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  document.getElementById('product-grid').innerHTML=PRODUCTS.map(function(p){
+    return '<article class="product"><div class="pack" style="background:linear-gradient(135deg,'+p.grad+')"><span class="brand">Fieldhouse</span>'+(p.best?'<span class="pg">Best seller</span>':'')+'<span class="flavor">'+esc(p.flavor)+'</span></div>'+
+      '<div class="p-body"><div class="p-type">'+esc(p.type)+'</div><p class="p-desc">'+esc(p.desc)+'</p>'+
+      '<button class="p-link" type="button" data-nut="'+p.id+'">Nutrition facts</button>'+
+      '<div class="p-price"><span class="each">'+p.each+'</span><span class="box">'+esc(p.box)+'</span></div>'+
+      '<button class="btn btn-dark" type="button" data-demo="buy" style="margin-top:6px">Buy</button></div></article>';
+  }).join('');
+
+  document.getElementById('video-grid').innerHTML=VIDEOS.map(function(v){
+    return '<article class="video"><div class="poster" style="background:linear-gradient(135deg,'+v.grad+')"><span class="kind">'+esc(v.kind)+'</span><span class="play" aria-hidden="true"></span><span class="len">'+v.len+'</span></div>'+
+      '<div class="v-body"><div class="v-title">'+esc(v.t)+'</div><div class="v-meta">'+esc(v.m)+'</div></div></article>';
+  }).join('');
+
+  var picker=document.getElementById('nut-picker');
+  picker.innerHTML=PRODUCTS.map(function(p){return '<button class="nut-btn" type="button" aria-pressed="false" data-id="'+p.id+'">'+esc(p.flavor)+'</button>';}).join('');
+  function showNut(id){
+    var p=PRODUCTS.filter(function(x){return x.id===id;})[0]||PRODUCTS[0];
+    var n=NUT[p.kind];
+    picker.querySelectorAll('.nut-btn').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.id===p.id?'true':'false');});
+    var rows=n.rows.map(function(r,i){
+      var cls=(r[3]?'ind':'')+(i===n.rows.length-1?' thick':'');
+      var label=r[3]===2?r[0]:(r[3]?r[0]+' '+r[1]:'<strong>'+r[0]+'</strong> '+r[1]);
+      return '<tr class="'+cls+'"><td>'+label+'</td><td>'+(r[2]||'')+'</td></tr>';
+    }).join('');
+    document.getElementById('nut-label').innerHTML='<h3>Nutrition Facts</h3><div class="serv"><strong>'+esc(p.flavor)+'</strong><br>Serving size '+n.serv+'</div>'+
+      '<div class="cal"><span>Calories</span><span>'+n.cal+'</span></div><table><tr><td></td><td style="font-size:11px">% Daily Value*</td></tr>'+rows+'</table>'+
+      '<div class="foot">'+n.vit+'<br>*The % Daily Value tells you how much a nutrient in a serving contributes to a daily diet. 2,000 calories a day is used for general nutrition advice.</div>';
+    document.getElementById('nut-pills').innerHTML=n.pills.map(function(x){return '<span class="pill">'+esc(x)+'</span>';}).join('');
+    document.getElementById('nut-ingredients').innerHTML='<strong>Ingredients.</strong> '+esc(n.ing);
+  }
+  picker.addEventListener('click',function(e){var b=e.target.closest('.nut-btn');if(b)showNut(b.dataset.id);});
+  showNut('pb');
+
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  function show(name){
+    if(!document.getElementById('p-'+name)) name='overview';
+    tabs.forEach(function(t){t.setAttribute('aria-selected',t.dataset.tab===name?'true':'false');});
+    document.querySelectorAll('.panel').forEach(function(p){p.hidden=p.id!=='p-'+name;});
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){location.hash=t.dataset.tab;});});
+  window.addEventListener('hashchange',function(){show(location.hash.slice(1));});
+  show(location.hash.slice(1)||'overview');
+
+  var toast=document.getElementById('toast'),tt;
+  function say(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('show');},3200);}
+  document.addEventListener('click',function(e){
+    var n=e.target.closest('[data-nut]');
+    if(n){location.hash='nutrition';showNut(n.dataset.nut);return;}
+    var d=e.target.closest('[data-demo]');
+    if(!d) return;
+    if(d.dataset.demo==='buy'){
+      if(d.closest('.hero')){location.hash='buy';return;}
+      say('Demo profile: on a live profile this opens the retailer through a tracked link.');
+    } else say('Demo profile: on a live profile this saves the brand to your list.');
+  });
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

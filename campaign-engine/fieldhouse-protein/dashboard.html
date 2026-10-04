@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fieldhouse Protein Sponsor Dashboard (Illustrative) — Vegans Explore</title>
+<meta name="description" content="An illustrative Season Sponsor dashboard: what a brand sees while its campaign runs on Vegans Explore.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#e8f5e9;
+    --ve-orange:#F69820;--ve-orange-text:#7d4a00;--ve-orange-bg:rgba(246,152,32,.1);
+    --ve-border:rgba(0,0,0,.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,.75);--ve-text-50:rgba(26,26,26,.55);
+    --fh-navy:#1d2f4f;--fh-navy-2:#2e4a78;--fh-gold:#e8b04b;
+    --surface:#fcfcfb;--grid:#e6e8e6;
+    --c-soflo:#2a78d6;--c-atl:#eb6834;--c-dmv:#1baf7a;
+  }
+  body{font-family:Montserrat,sans-serif;color:var(--ve-text);background:#f4f5f4;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--ve-orange);outline-offset:3px}
+
+  .ill-banner{background:var(--ve-orange-bg);border-bottom:1px solid rgba(246,152,32,.35);padding:12px 40px;font-size:12px;font-weight:600;color:var(--ve-orange-text);line-height:1.5}
+  .ill-banner strong{font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:10px;margin-right:8px}
+
+  .top{background:#fff;border-bottom:1px solid var(--ve-border);padding:24px 40px 20px}
+  .crumbs{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:10px}
+  .crumbs a{color:var(--ve-green-dark);text-decoration:none}
+  .crumbs a:hover{text-decoration:underline}
+  .top-row{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  .who{display:flex;gap:14px;align-items:center}
+  .logo{width:52px;height:52px;border-radius:10px;background:var(--fh-gold);color:var(--fh-navy);font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center}
+  .who h1{font-size:22px;font-weight:900;letter-spacing:-.01em}
+  .who .meta{font-size:12px;color:var(--ve-text-50);font-weight:600;margin-top:2px}
+  .status{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:6px}
+  .status.live{background:var(--ve-green-light);color:var(--ve-green-dark)}
+  .status.done{background:#eef0f5;color:var(--fh-navy)}
+  .status .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+
+  .scrub{background:#fff;border-bottom:1px solid var(--ve-border);padding:14px 40px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+  .scrub label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-75)}
+  .scrub input[type=range]{flex:1;min-width:180px;accent-color:var(--fh-navy)}
+  .scrub .wk{font-size:14px;font-weight:900;min-width:110px}
+  .scrub button{font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;cursor:pointer}
+  .scrub button:hover{border-color:var(--fh-navy)}
+
+  main{max-width:none;margin:0;padding:24px 40px 72px;display:flex;flex-direction:column;gap:18px}
+  .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px}
+  .card-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .card-h h2{font-size:14px;font-weight:900}
+  .card-h .hint{font-size:12px;color:var(--ve-text-50)}
+
+  .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(190px,100%),1fr));gap:12px}
+  .tile{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px 18px}
+  .tile .l{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50)}
+  .tile .n{font-size:30px;font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
+  .tile .s{font-size:12px;color:var(--ve-text-50);margin-top:4px}
+  .meter{height:6px;background:#eceeec;border-radius:3px;margin-top:10px;overflow:hidden}
+  .meter i{display:block;height:100%;background:var(--fh-navy);border-radius:3px}
+
+  .two{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:18px;align-items:start}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ve-text-75)}
+  .legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .chart{position:relative;width:100%}
+  .chart svg{display:block;width:100%;height:auto;overflow:visible}
+  .chart text{font-family:Montserrat,sans-serif}
+  .tt{position:absolute;pointer-events:none;background:#111;color:#fff;font-size:12px;line-height:1.6;padding:8px 12px;border-radius:6px;opacity:0;transition:opacity .1s;white-space:nowrap;z-index:5}
+  .tt b{font-weight:900}
+  .tt .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+  .toggle{font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;cursor:pointer}
+  table.data{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+  table.data th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);padding:8px 10px;border-bottom:2px solid var(--ve-border)}
+  table.data td{padding:9px 10px;border-bottom:1px solid var(--ve-border);color:var(--ve-text-75)}
+  table.data .num{text-align:right;font-variant-numeric:tabular-nums}
+  table.data tr.total td{font-weight:900;color:var(--ve-text)}
+  .table-wrap{overflow-x:auto}
+
+  .alloc{display:flex;flex-direction:column;gap:12px}
+  .alloc-row .top-line{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--ve-text-75);margin-bottom:5px;gap:8px}
+  .alloc-row .top-line b{color:var(--ve-text);font-variant-numeric:tabular-nums}
+  .alloc-row .track{height:10px;background:#eceeec;border-radius:5px;overflow:hidden}
+  .alloc-row .track i{display:block;height:100%;background:var(--fh-navy);border-radius:0 4px 4px 0;transition:width .3s}
+  .alloc-row .chg{font-size:11px;font-weight:800;margin-left:6px}
+  .alloc-row .chg.up{color:#1b7a43}
+  .alloc-row .chg.down{color:#a0441a}
+
+  .feed{list-style:none;display:flex;flex-direction:column;gap:2px;max-height:430px;overflow-y:auto}
+  .feed li{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:10px 4px;border-bottom:1px solid var(--ve-border);font-size:13px;line-height:1.5;color:var(--ve-text-75)}
+  .feed li .w{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);padding-top:2px}
+  .feed li b{color:var(--ve-text)}
+  .feed li.key{background:#fbf7ee;border-radius:8px;border-bottom-color:transparent;padding-left:8px}
+  .tag{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border-radius:4px;margin-right:6px;vertical-align:1px}
+  .tag.money{background:var(--fh-gold);color:var(--fh-navy)}
+  .tag.content{background:#e8eef8;color:var(--fh-navy)}
+  .tag.event{background:var(--ve-orange-bg);color:var(--ve-orange-text)}
+  .tag.member{background:var(--ve-green-light);color:var(--ve-green-dark)}
+
+  .foot-links{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:12px 18px;border-radius:6px;text-decoration:none;border:1.5px solid var(--ve-border);background:#fff}
+  .btn.main{background:var(--fh-navy);border-color:var(--fh-navy);color:#fff}
+  .btn:hover{border-color:var(--ve-green)}
+
+  .two>*{min-width:0}
+  @media (max-width:980px){.two{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:640px){
+    .ill-banner,.top,.scrub{padding-left:16px;padding-right:16px}
+    main{padding:18px 16px 56px}
+    .card{padding:16px}
+  }
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="ill-banner" role="note"><strong>Illustrative campaign</strong>A Season Sponsor dashboard for an invented brand. Drag the week slider to replay the season the way the sponsor saw it.</div>
+
+<div class="top">
+  <div class="crumbs"><a href="/campaign-engine">Campaign Engine</a> / <a href="/campaign-engine/fieldhouse-protein">Fieldhouse Protein</a> / Sponsor dashboard</div>
+  <div class="top-row">
+    <div class="who">
+      <div class="logo" aria-hidden="true">FH</div>
+      <div>
+        <h1>Fieldhouse Protein · "How do you Fieldhouse?"</h1>
+        <div class="meta">Season Sponsor · Managed · South Florida, Atlanta, DMV · $60,000</div>
+      </div>
+    </div>
+    <span class="status live" id="status"><span class="dot"></span><span id="status-text">Live</span></span>
+  </div>
+</div>
+
+<div class="scrub">
+  <label for="week">Replay the season</label>
+  <input type="range" id="week" min="1" max="10" value="10" step="1" aria-valuetext="Week 10 of 10">
+  <span class="wk" id="wk-label">Week 10 of 10</span>
+  <button type="button" id="play">Play from week 1</button>
+</div>
+
+<main>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="two">
+    <section class="card" aria-labelledby="clicks-h">
+      <div class="card-h">
+        <h2 id="clicks-h">Retailer clicks per week, by city</h2>
+        <div class="legend" aria-label="Legend">
+          <span><i style="background:var(--c-soflo)"></i>South Florida</span>
+          <span><i style="background:var(--c-atl)"></i>Atlanta</span>
+          <span><i style="background:var(--c-dmv)"></i>DMV</span>
+        </div>
+      </div>
+      <div class="chart" id="chart"><div class="tt" id="tt"></div></div>
+      <div style="margin-top:12px"><button class="toggle" type="button" id="tbl-toggle" aria-expanded="false">Show as a table</button></div>
+      <div class="table-wrap" id="tbl" hidden></div>
+    </section>
+
+    <section class="card" aria-labelledby="alloc-h">
+      <div class="card-h"><h2 id="alloc-h">Where the $51,000 is placed</h2><span class="hint" id="alloc-hint"></span></div>
+      <div class="alloc" id="alloc"></div>
+      <p style="font-size:12px;color:var(--ve-text-50);line-height:1.6;margin-top:14px">Plus the $9,000 service fee (15%, Founding Partner rate). On a managed plan we move money to what is working and log the reason below.</p>
+    </section>
+  </div>
+
+  <div class="two">
+    <section class="card" aria-labelledby="city-h">
+      <div class="card-h"><h2 id="city-h">By city, season to date</h2><span class="hint">Spend is each city's season budget</span></div>
+      <div class="table-wrap" id="city-table"></div>
+    </section>
+    <section class="card" aria-labelledby="feed-h">
+      <div class="card-h"><h2 id="feed-h">Campaign log</h2><span class="hint">Newest first</span></div>
+      <ul class="feed" id="feed"></ul>
+    </section>
+  </div>
+
+  <div class="foot-links">
+    <a class="btn main" href="/campaign-engine/fieldhouse-protein/report">Read the final report</a>
+    <a class="btn" href="/campaign-engine/fieldhouse-protein">See the brand profile</a>
+    <a class="btn" href="/campaign-engine">Back to the Campaign Engine</a>
+  </div>
+</main>
+
+<script>
+(function(){
+  var CITIES=[
+    {k:'soflo',name:'South Florida',color:'#2a78d6',clicks:[120,180,230,260,280,300,310,320,330,270],members:480,tasks:1150,posts:168,newm:330,spend:22700},
+    {k:'atl',name:'Atlanta',color:'#eb6834',clicks:[110,170,240,300,360,420,470,450,440,390],members:455,tasks:1270,posts:175,newm:340,spend:15700,spend0:12700},
+    {k:'dmv',name:'DMV',color:'#1baf7a',clicks:[80,110,140,160,170,170,170,175,170,155],members:305,tasks:680,posts:93,newm:190,spend:12600,spend0:15600}
+  ];
+  var WEEKLY={
+    members:[180,170,150,140,130,120,110,90,80,70],
+    tasks:[150,230,290,320,1260,250,190,160,140,110],
+    posts:[20,35,45,50,62,48,52,45,42,37],
+    spend:[3500,4200,4300,4500,14200,4600,4400,4000,3800,3500]
+  };
+  var PLAN=[['Creators',18000,20000],['Member challenge',12000,13000],['Event',10000,10000],['Featured Profile, kits and shipping',5000,5000],['Ad rail and Daily Pulse',6000,3000]];
+  var LOG=[
+    [1,'member','Challenge opened in all three cities. <b>180 members</b> joined in the first week.'],
+    [1,'content','Featured Profile went live with the full product line and nutrition panels, approved by Fieldhouse.'],
+    [2,'content','<b>Maya R.</b> (Atlanta) and <b>Dani M.</b> (South Florida) posted their collab videos, labeled #ad.'],
+    [3,'content','All six creator collab videos are live.'],
+    [4,'member','Run-club check-ins passed <b>500</b> since launch, more than half of them in Atlanta.'],
+    [5,'event','South Florida spring festival: <b>9,800 samples</b>, 980 member check-ins and 640 offer opt-ins at the booth.'],
+    [6,'money','<b>Budget moved: $3,000 from the DMV ad rail to Atlanta.</b> Atlanta run-club check-ins were turning into retailer clicks at twice the rate of the other cities, and DMV ad-rail clicks were the lowest of any line. $2,000 to two extra Atlanta creator posts, $1,000 to a run-club bounty.',true],
+    [7,'content','Extra Atlanta posts from <b>Maya R.</b> and <b>Jordan K.</b> went live. Atlanta hit its best week: <b>470 retailer clicks</b>.'],
+    [8,'member','All six creators passed their 400-click bonus goal.'],
+    [9,'member','286 sampler boxes redeemed with points so far.'],
+    [10,'money','Season complete. <b>$51,000 placed</b>, nothing added. Final report published.',true]
+  ];
+  var fmt=function(n){return n.toLocaleString('en-US');};
+  var money=function(n){return '$'+fmt(n);};
+  var sum=function(a,n){var t=0;for(var i=0;i<n;i++)t+=a[i];return t;};
+
+  var slider=document.getElementById('week');
+  var wk=10;
+
+  function tiles(){
+    var clicks=CITIES.reduce(function(t,c){return t+sum(c.clicks,wk);},0);
+    var spent=sum(WEEKLY.spend,wk);
+    var html=[
+      ['Retailer clicks',fmt(clicks),'Tracked links, bots filtered out'],
+      ['Members in the challenge',fmt(sum(WEEKLY.members,wk)),'Across three cities'],
+      ['Tasks completed',fmt(sum(WEEKLY.tasks,wk)),'Check-ins, posts, videos, referrals'],
+      ['Posts labeled #ad',fmt(sum(WEEKLY.posts,wk)),'Members and creators'],
+      ['Placed so far',money(spent),'of $51,000',spent/51000],
+      ['Cost per retailer click','$'+(spent/clicks).toFixed(2),'Placed so far ÷ clicks']
+    ].map(function(t){
+      return '<div class="tile"><div class="l">'+t[0]+'</div><div class="n">'+t[1]+'</div><div class="s">'+t[2]+'</div>'+(t[3]!=null?'<div class="meter" aria-hidden="true"><i style="width:'+(t[3]*100)+'%"></i></div>':'')+'</div>';
+    }).join('');
+    document.getElementById('tiles').innerHTML=html;
+  }
+
+  function alloc(){
+    var moved=wk>=6;
+    document.getElementById('alloc-hint').textContent=moved?'Updated in week 6':'Planned at launch';
+    document.getElementById('alloc').innerHTML=PLAN.map(function(p){
+      var v=moved?p[2]:p[1],d=p[2]-p[1];
+      var chg=moved&&d?'<span class="chg '+(d>0?'up':'down')+'">'+(d>0?'+':'−')+money(Math.abs(d))+'</span>':'';
+      return '<div class="alloc-row"><div class="top-line"><span>'+p[0]+'</span><span><b>'+money(v)+'</b>'+chg+'</span></div><div class="track"><i style="width:'+(v/20000*100)+'%"></i></div></div>';
+    }).join('');
+  }
+
+  function cityTable(){
+    var share=sum(WEEKLY.members,wk)/1240, tshare=sum(WEEKLY.tasks,wk)/3100, pshare=sum(WEEKLY.posts,wk)/436;
+    var rows=CITIES.map(function(c){
+      return {name:c.name,spend:(wk<6&&c.spend0)?c.spend0:c.spend,members:Math.round(c.members*share),tasks:Math.round(c.tasks*tshare),posts:Math.round(c.posts*pshare),clicks:sum(c.clicks,wk)};
+    });
+    var tot=rows.reduce(function(t,r){t.spend+=r.spend;t.members+=r.members;t.tasks+=r.tasks;t.posts+=r.posts;t.clicks+=r.clicks;return t;},{spend:0,members:0,tasks:0,posts:0,clicks:0});
+    var tr=function(r,cls){return '<tr'+(cls?' class="'+cls+'"':'')+'><td>'+r.name+'</td><td class="num">'+money(r.spend)+'</td><td class="num">'+fmt(r.members)+'</td><td class="num">'+fmt(r.tasks)+'</td><td class="num">'+fmt(r.posts)+'</td><td class="num">'+fmt(r.clicks)+'</td></tr>';};
+    tot.name='All cities';
+    document.getElementById('city-table').innerHTML='<table class="data"><thead><tr><th>City</th><th class="num">Spend</th><th class="num">Members</th><th class="num">Tasks</th><th class="num">Posts</th><th class="num">Clicks</th></tr></thead><tbody>'+rows.map(function(r){return tr(r);}).join('')+tr(tot,'total')+'</tbody></table>';
+  }
+
+  function feed(){
+    var items=LOG.filter(function(l){return l[0]<=wk;}).reverse();
+    document.getElementById('feed').innerHTML=items.map(function(l){
+      var label={money:'Budget',content:'Content',event:'Event',member:'Members'}[l[1]];
+      return '<li'+(l[3]?' class="key"':'')+'><span class="w">Wk '+l[0]+'</span><span><span class="tag '+l[1]+'">'+label+'</span>'+l[2]+'</span></li>';
+    }).join('');
+  }
+
+  // Line chart: one y-axis, 2px lines, end dots with a surface ring, direct end labels plus legend.
+  var chart=document.getElementById('chart'), tt=document.getElementById('tt');
+  function draw(){
+    var W=Math.max(chart.clientWidth,300), H=Math.round(Math.min(360,Math.max(240,W*0.42)));
+    var m={t:16,r:W<520?16:110,b:34,l:44};
+    var iw=W-m.l-m.r, ih=H-m.t-m.b, ymax=500;
+    var x=function(i){return m.l+(i/9)*iw;}, y=function(v){return m.t+ih-(v/ymax)*ih;};
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Retailer clicks per week by city, weeks 1 to '+wk+'">';
+    for(var g=0;g<=ymax;g+=100){s+='<line x1="'+m.l+'" x2="'+(m.l+iw)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="#e6e8e6" stroke-width="1"/><text x="'+(m.l-8)+'" y="'+(y(g)+4)+'" font-size="11" fill="rgba(26,26,26,.55)" text-anchor="end">'+g+'</text>';}
+    for(var i=0;i<10;i++){s+='<text x="'+x(i)+'" y="'+(H-10)+'" font-size="11" fill="rgba(26,26,26,.55)" text-anchor="middle">'+(i===0?'Wk 1':(i+1))+'</text>';}
+    if(wk>=6){
+      s+='<line x1="'+x(5)+'" x2="'+x(5)+'" y1="'+m.t+'" y2="'+(m.t+ih)+'" stroke="#c9a14a" stroke-width="1"/>';
+      s+='<text x="'+(x(5)+6)+'" y="'+(m.t+12)+'" font-size="11" font-weight="800" fill="#7d5a12">Budget moved to Atlanta</text>';
+    }
+    var labels=[];
+    CITIES.forEach(function(c){
+      var pts=c.clicks.slice(0,wk).map(function(v,i){return x(i).toFixed(1)+','+y(v).toFixed(1);}).join(' ');
+      s+='<polyline points="'+pts+'" fill="none" stroke="'+c.color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+      var lx=x(wk-1), ly=y(c.clicks[wk-1]);
+      s+='<circle cx="'+lx+'" cy="'+ly+'" r="5" fill="'+c.color+'" stroke="#fff" stroke-width="2"/>';
+      labels.push({y:ly,c:c,v:c.clicks[wk-1],x:lx});
+    });
+    if(m.r>50){
+      labels.sort(function(a,b){return a.y-b.y;});
+      for(var j=1;j<labels.length;j++){if(labels[j].y-labels[j-1].y<16)labels[j].y=labels[j-1].y+16;}
+      labels.forEach(function(L){s+='<text x="'+(L.x+10)+'" y="'+(L.y+4)+'" font-size="12" font-weight="800" fill="#1a1a1a">'+L.c.name+' '+L.v+'</text>';});
+    }
+    s+='<line id="xh" x1="0" x2="0" y1="'+m.t+'" y2="'+(m.t+ih)+'" stroke="rgba(26,26,26,.35)" stroke-width="1" opacity="0"/>';
+    s+='<rect x="'+m.l+'" y="'+m.t+'" width="'+iw+'" height="'+ih+'" fill="transparent" id="hit"/></svg>';
+    chart.innerHTML=s; chart.appendChild(tt);
+    var svg=chart.querySelector('svg'), xh=svg.querySelector('#xh');
+    svg.querySelector('#hit').addEventListener('mousemove',function(e){
+      var r=svg.getBoundingClientRect(), px=(e.clientX-r.left)*(W/r.width);
+      var i=Math.max(0,Math.min(wk-1,Math.round((px-m.l)/iw*9)));
+      xh.setAttribute('x1',x(i));xh.setAttribute('x2',x(i));xh.setAttribute('opacity',1);
+      tt.innerHTML='<b>Week '+(i+1)+'</b>'+(i===5?' · budget moved':'')+'<br>'+CITIES.map(function(c){return '<span class="sw" style="background:'+c.color+'"></span>'+c.name+': <b>'+c.clicks[i]+'</b>';}).join('<br>');
+      tt.style.opacity=1;
+      var left=x(i)/W*r.width+12; if(left>r.width-200) left=x(i)/W*r.width-200;
+      tt.style.left=left+'px'; tt.style.top='10px';
+    });
+    svg.querySelector('#hit').addEventListener('mouseleave',function(){tt.style.opacity=0;xh.setAttribute('opacity',0);});
+  }
+
+  function table(){
+    var head='<tr><th>Week</th>'+CITIES.map(function(c){return '<th class="num">'+c.name+'</th>';}).join('')+'<th class="num">Total</th></tr>';
+    var body='';
+    for(var i=0;i<wk;i++){var t=0;body+='<tr><td>Week '+(i+1)+'</td>'+CITIES.map(function(c){t+=c.clicks[i];return '<td class="num">'+c.clicks[i]+'</td>';}).join('')+'<td class="num">'+t+'</td></tr>';}
+    document.getElementById('tbl').innerHTML='<table class="data"><thead>'+head+'</thead><tbody>'+body+'</tbody></table>';
+  }
+
+  function render(){
+    document.getElementById('wk-label').textContent='Week '+wk+' of 10';
+    slider.setAttribute('aria-valuetext','Week '+wk+' of 10');
+    var st=document.getElementById('status');
+    st.className='status '+(wk===10?'done':'live');
+    document.getElementById('status-text').textContent=wk===10?'Season complete':'Live · week '+wk;
+    tiles();alloc();cityTable();feed();draw();table();
+  }
+
+  slider.addEventListener('input',function(){wk=+slider.value;render();});
+  var timer;
+  document.getElementById('play').addEventListener('click',function(){
+    clearInterval(timer); wk=1; slider.value=1; render();
+    timer=setInterval(function(){ if(wk>=10){clearInterval(timer);return;} wk++; slider.value=wk; render(); },900);
+  });
+  slider.addEventListener('pointerdown',function(){clearInterval(timer);});
+  document.getElementById('tbl-toggle').addEventListener('click',function(){
+    var t=document.getElementById('tbl'), open=t.hidden; t.hidden=!open;
+    this.setAttribute('aria-expanded',open?'true':'false'); this.textContent=open?'Hide the table':'Show as a table';
+  });
+  var rt; window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(draw,120);});
+  render();
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
