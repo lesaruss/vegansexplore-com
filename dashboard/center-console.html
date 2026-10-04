@@ -294,8 +294,8 @@
   .dash-survey-btn.ghost:hover{background:#f5f5f5;}
   .dash-survey-btn:disabled{opacity:.45;cursor:default;}
 
-  /* --- Daily Pulse + Bounties: explicit column grids (2026-09-07, Sean,
-     Fieldy field note; Pulse widened to 4 cols same day). Bounties keeps its
+  /* --- Daily Post + Bounties: explicit column grids (2026-09-07, Sean,
+     Fieldy field note; Daily Post widened to 4 cols same day). Bounties keeps its
      own 3-column desktop default (see .dash-bounty-scroll below) and its
      existing mobile steps. Distinct from the auto-fit full-width pattern
      used elsewhere on this page -- meant to hold many small items at a
@@ -303,11 +303,11 @@
      2026-09-07 (Logan, Sean direction 2nd pass): the square/contain thumb
      treatment below was over-applied here -- Sean's "full thumbnail, mister
      squares" ask was specifically for Your Shows (#dash-podcast-shows-row),
-     not the general Daily Pulse feed (a mix of articles + podcast clips).
+     not the general Daily Post feed (a mix of articles + podcast clips).
      Reverted this grid's thumb to the site default (8/5 cover) and added a
      title line-clamp so a long headline can never push the meta line below
      it out of view -- this was the "information below is cut off" report. */
-  /* Daily Pulse topic cards (2026-10-04): two across, one on phones. */
+  /* Daily Post topic cards (2026-10-04): two across, one on phones. */
   #dash-pulse-grid,#dash-home-pulse-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
   #dash-home-pulse-grid{margin-top:12px;}
   /* Bounties collapses to a single column on mobile (Sean, 2026-09-21: match
@@ -732,7 +732,7 @@
     <!-- Dashboard (home). The default/landing tab, first in the nav row, and
          also reachable via the top-left logo (Sean, 2026-09-22: keep an explicit
          Dashboard button in the nav alongside Directory, Events, Shows, Daily
-         Pulse, Communities, Tools). -->
+         Post, Communities, Tools). -->
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
 
       <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
@@ -743,7 +743,7 @@
            renderDashboardPreviews(). Shown as Action items beside the Leaderboard. -->
       <p class="dash-section-title" id="dash-role-label" style="display:none;">Your Role</p>
       <!-- Role row (Sean, 2026-10-04): what this person should know first, by role. Superadmin:
-           Platform Health, Submissions, This Week. Community Manager: Today's Pulse for their city,
+           Platform Health, Submissions, This Week. Community Manager: Today's Daily Post for their city,
            their city's Submissions, This Week in their city. Filled by renderRoleRow() from
            ve-ops action=summary. Replaced Your City / Pending Applications / Status Active. -->
       <div class="dash-stats" id="dash-stats-row" style="display:none;">
@@ -752,8 +752,8 @@
         <a class="dash-stat" id="dash-role-week" href="/dashboard/members" onclick="openConsoleFrame('/dashboard/members', 'Members'); return false;"><div class="dash-stat-label" id="dash-role-week-label">This Week</div><div class="dash-stat-value" id="dash-role-week-value">--</div><div class="dash-stat-sub" id="dash-role-week-sub">&nbsp;</div></a>
       </div>
       <!-- Home layout (Sean, 2026-10-04): Membership and Challenge Badges on top, then Action items
-           (the preview cards) and the Leaderboard side by side. The Daily Pulse preview left the
-           home tab; the Daily Pulse tab has it. -->
+           (the preview cards) and the Leaderboard side by side. The Daily Post preview left the
+           home tab; the Daily Post tab has it. -->
       <div class="dash-home-split">
       <div class="dash-home-actions">
       <p class="dash-section-title" style="margin-top:0;">Action items</p>
@@ -769,24 +769,24 @@
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
-      <!-- Pulse Desk (2026-09-26, Sean): Community Managers tell the assistant what is
+      <!-- Daily Post Desk (2026-09-26, Sean): Community Managers tell the assistant what is
            happening in their city and review the stories it drafts. Shown with the
            certification card, by renderCmCertPrompt(). -->
       <a href="/dashboard/pulse-desk" class="dash-tour-prompt" id="dash-cm-pulse-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;">
         <div class="dash-tour-prompt-icon">&#128240;</div>
         <div class="dash-tour-prompt-body">
-          <div class="dash-tour-prompt-title">Pulse Desk: what&rsquo;s happening in your city?</div>
+          <div class="dash-tour-prompt-title">Daily Post Desk: what&rsquo;s happening in your city?</div>
           <div class="dash-tour-prompt-desc">Tell our assistant, typed or out loud. It drafts the story, you give it a final look and publish.</div>
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
       <!-- Community Manager tour (Sean 2026-10-03: "the tour format for other things"):
-           dashboard, Certification and the Pulse Desk. public/ve-tour.js, tour 'cm'. -->
+           dashboard, Certification and the Daily Post Desk. public/ve-tour.js, tour 'cm'. -->
       <a href="/dashboard?tour=cm" class="dash-tour-prompt" id="dash-cm-tour-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;" onclick="if (window.VETour) { VETour.start('cm'); return false; }">
         <div class="dash-tour-prompt-icon">&#129517;</div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">Take the Community Manager tour</div>
-          <div class="dash-tour-prompt-desc">Your city, your certification, the Pulse Desk and your tools, in about a minute.</div>
+          <div class="dash-tour-prompt-desc">Your city, your certification, the Daily Post Desk and your tools, in about a minute.</div>
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
@@ -805,7 +805,7 @@
         <div class="dash-tour-prompt-icon">&#128075;</div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">New here? Take the 60-second tour</div>
-          <div class="dash-tour-prompt-desc">A quick look around your dashboard: your city, points, tabs, the Daily Pulse and your tools.</div>
+          <div class="dash-tour-prompt-desc">A quick look around your dashboard: your city, points, tabs, the Daily Post and your tools.</div>
         </div>
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
@@ -910,9 +910,9 @@
       <div class="dash-community-row" id="dash-community-row"></div>
     </div>
 
-    <!-- Shows and Daily Pulse split into two separate tabs (Sean, 2026-09-21:
+    <!-- Shows and Daily Post split into two separate tabs (Sean, 2026-09-21:
          "split the shows from the daily pulse"). Shows = the podcast/show row;
-         Daily Pulse = the article/clip feed. The element ids (#dash-podcast-
+         Daily Post = the article/clip feed. The element ids (#dash-podcast-
          shows-row, #dash-pulse-grid) are unchanged so renderDailyPulse() still
          populates both without a JS change. -->
     <div id="dash-shows-section" style="display:none;margin-bottom:28px;" data-tab-key="shows" data-tab-order="6" data-tab-label="Shows">
@@ -921,11 +921,11 @@
       <div class="dash-community-row" id="dash-podcast-shows-row"></div>
     </div>
 
-    <div id="dash-pulse-section" style="display:none;margin-bottom:28px;" data-tab-key="pulse" data-tab-order="7" data-tab-label="Daily Pulse">
+    <div id="dash-pulse-section" style="display:none;margin-bottom:28px;" data-tab-key="pulse" data-tab-order="7" data-tab-label="Daily Post">
       <p class="dash-eyebrow" style="margin-bottom:2px;">Feed</p>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <p class="dash-section-title" style="margin-top:0;">Daily Pulse</p>
-        <a class="dash-home-pulse-seeall" href="/board?lane=pulse" data-frame-label="Daily Pulse" style="text-decoration:none;">Join the conversation &rarr;</a>
+        <p class="dash-section-title" style="margin-top:0;">Daily Post</p>
+        <a class="dash-home-pulse-seeall" href="/board?lane=pulse" data-frame-label="Daily Post" style="text-decoration:none;">Join the conversation &rarr;</a>
       </div>
       <p class="dash-tile-desc" style="margin:-4px 0 14px;-webkit-line-clamp:unset;">Your city's daily briefing: what is happening, what people are talking about, what is coming up, and one thing you can do.</p>
       <!-- Three-fourths content, one-fourth ads (Sean, 2026-10-04). public/ve-ad-rail.js -->
@@ -1251,9 +1251,9 @@
   // Role row (Sean, 2026-10-04): "for me, what I would want to see is the health ... almost like a
   // sentinel page", then "any pending submissions ... very similar to how we have it on BCPS Marcom",
   // and Your City dropped ("you could be in any city"). The third tile is This Week: new members
-  // against the week before, and active Passports. A Community Manager gets Today's Pulse for their
+  // against the week before, and active Passports. A Community Manager gets Today's Daily Post for their
   // city in place of Platform Health, and their city's numbers in the other two.
-  var ROLE_TYPE_LABEL = { event: 'event', guest: 'Guest Passport', application: 'application', community_manager: 'Community Manager', partner: 'partner', claim: 'listing claim', interest: 'initiative lead', bounty: 'bounty', report: 'report', service: 'service order', pulse: 'Pulse draft' };
+  var ROLE_TYPE_LABEL = { event: 'event', guest: 'Guest Passport', application: 'application', community_manager: 'Community Manager', partner: 'partner', claim: 'listing claim', interest: 'initiative lead', bounty: 'bounty', report: 'report', service: 'service order', pulse: 'Daily Post draft' };
   function renderRoleRow(member) {
     function set(id, text, cls) { var el = document.getElementById(id); if (!el) return; el.textContent = text; if (cls !== undefined) el.className = 'dash-stat-value' + (cls ? ' ' + cls : ''); }
     fetch(SUPABASE_URL + '/functions/v1/ve-ops', {
@@ -1268,11 +1268,11 @@
         set('dash-role-first-value', h.state === 'ok' ? 'All clear' : (h.alerts ? h.alerts + ' alert' + (h.alerts === 1 ? '' : 's') : h.warnings + ' to watch'), 'is-' + h.state);
         set('dash-role-first-sub', h.headline);
       } else {
-        // Today's Pulse for the Community Manager's city: published in the last day, or not yet.
+        // Today's Daily Post for the Community Manager's city: published in the last day, or not yet.
         var city = d.city, mine = (d.pulse || []).filter(function (p) { return p.city === city; })[0];
         var fresh = mine && (Date.now() - new Date(mine.published_at).getTime()) < 30 * 3600 * 1000;
-        document.getElementById('dash-role-first-label').textContent = "Today's Pulse";
-        first.setAttribute('href', '/dashboard/pulse-desk'); first.dataset.frame = 'Pulse Desk';
+        document.getElementById('dash-role-first-label').textContent = "Today's Daily Post";
+        first.setAttribute('href', '/dashboard/pulse-desk'); first.dataset.frame = 'Daily Post Desk';
         set('dash-role-first-value', fresh ? 'Published' : 'Not yet', fresh ? 'is-ok' : 'is-warn');
         set('dash-role-first-sub', fresh ? mine.title : (VE_CITY_NAMES[city] || city) + ' needs today\'s edition.');
       }
@@ -1467,7 +1467,7 @@
 
   // Communities tab (Sean 2026-09-26): every community shows, four across, so
   // none are out of sight. Tapping one brings it up on the dashboard (city pill,
-  // Directory, Leaderboard, Events, Campaigns, Daily Pulse) and opens its landing page. Joined ones come
+  // Directory, Leaderboard, Events, Campaigns, Daily Post) and opens its landing page. Joined ones come
   // first and carry a Leave link; the rest carry a Join link.
   function renderCommunitySection(member) {
     currentMember = member;
@@ -1573,7 +1573,7 @@
   // to be hardcoded via addCmTiles (visibility 'staff'). Server-side
   // VALID_LAYOUT_MODULES in ve-auth must stay in sync with these keys.
   // defaultSection is only a fallback for tiles the superadmin hasn't moved
-  // yet -- Sean asked to "populate some sections", so Daily Pulse and
+  // yet -- Sean asked to "populate some sections", so Daily Post and
   // Podcasts start in Media and the rest start in Tools; dragging overrides
   // this permanently via member_dashboard_layout.
   var TILE_REGISTRY = null;
@@ -1598,7 +1598,7 @@
       // Media Library (2026-09-27, Sean: "make sure that it's located in my tool
       // section so we don't lose it"). Opens the library, which links to the page
       // picture and narration tools.
-      { key: 'sa-media', href: '/admin/depot', embed: true, embedLabel: 'The Depot', iconHtml: SA_MEDIA_SVG, bg: 'linear-gradient(135deg,#0e7490,#155e75)', title: 'The Depot', tagLabel: 'Superadmin', desc: 'Media, onboarding and the Pulse.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-media', href: '/admin/depot', embed: true, embedLabel: 'The Depot', iconHtml: SA_MEDIA_SVG, bg: 'linear-gradient(135deg,#0e7490,#155e75)', title: 'The Depot', tagLabel: 'Superadmin', desc: 'Media, onboarding and the Daily Post.', visibility: 'superadmin', defaultSection: 'superadmin' },
       // Community Manager Certification (2026-09-25, Sean): the handbook as a
       // course with module quizzes and a certificate. Reuses the cm-handbook
       // key, which ve-auth's VALID_LAYOUT_MODULES already accepts.
@@ -2238,12 +2238,12 @@
     });
   }
 
-  // Shows follow row, merged into Daily Pulse (2026-09-07, Sean direction:
+  // Shows follow row, merged into Daily Post (2026-09-07, Sean direction:
   // "podcast" is an inaccurate label since every show is also on YouTube,
   // so this is "Shows" everywhere now, and the standalone Podcast tab is
   // retired -- live data confirmed every published ve_pulse_content row is
   // podcast-episode content today, so a separate Podcast feed was already
-  // redundant with Daily Pulse; Daily Pulse below is now the one unified
+  // redundant with Daily Post; Daily Post below is now the one unified
   // catchall grid for all of it (episodes and any other post type that
   // gets added later), not a separate filtered feed. Mirrors Your
   // Communities exactly -- currentMember.podcast_follows is a plain array
@@ -2255,7 +2255,7 @@
   // mirrors the same hardcoded allow-list in the ve-auth edge function).
   // Cover art is the real square artwork already live on the public
   // /podcast network page (Apple Podcasts 600x600 art), not a placeholder
-  // gradient. Episodes render inside the unified Daily Pulse grid below --
+  // gradient. Episodes render inside the unified Daily Post grid below --
   // episodes with a youtube_id open a real embedded on-platform player in
   // a modal, episodes without one (mainly SoFlo Vegans Podcast, RSS-only
   // today with no per-episode video) link out to their source_url instead.
@@ -2771,7 +2771,7 @@
     // 2026-09-07 (Logan, Sean caught live): switching cities left Your
     // Campaigns showing the previous city's cards until a manual refresh --
     // same "city switch doesn't re-render" bug class already fixed for
-    // Events above. Daily Pulse is city-scoped the same way (renderDailyPulse
+    // Events above. Daily Post is city-scoped the same way (renderDailyPulse
     // filters posts by active city), so it gets the same fix here too.
     renderCampaignsSection(member);
     renderDailyPulse(member);
@@ -2879,13 +2879,13 @@
     });
   }
 
-  // Daily Pulse (Sean, 2026-10-04, playbook ve-daily-pulse-discussion): the Pulse is no longer
+  // Daily Post (Sean, 2026-10-04, playbook ve-daily-pulse-discussion): the Daily Post is no longer
   // articles. It is one discussion topic a day for each city plus one national topic, on the
-  // Community Board's Pulse lane. These two views show the topics for the member's active city
+  // Community Board's Daily Post lane. These two views show the topics for the member's active city
   // (public/ve-pulse-topics.js draws the cards); a card opens the conversation in the dashboard
-  // window. The old article Pulse (ve_pulse_content) is parked, not deleted: its pages still work.
+  // window. The old article Daily Post (ve_pulse_content) is parked, not deleted: its pages still work.
   function pulseEmpty(cityName) {
-    return '<div class="vep-empty"><strong>Today\'s briefing is on its way.</strong>Each day the Daily Pulse brings what is happening in ' +
+    return '<div class="vep-empty"><strong>Today\'s briefing is on its way.</strong>Each day the Daily Post brings what is happening in ' +
       (cityName ? cityName : 'your city') + ': the stories people are talking about, what is coming up, and one thing you can do.</div>';
   }
   function renderPulseInto(grid, member, pick) {
@@ -3544,7 +3544,7 @@
   // direction: "tabs underneath, Bounties etc, mobile dropdown variant").
   // Built from every element carrying data-tab-key rather than a hardcoded
   // list, so a future section only needs the attribute to join the tab set.
-  // Bounties/Campaigns/Opportunities/Communities/Pulse/Podcast all render
+  // Bounties/Campaigns/Opportunities/Communities/Daily Post/Podcast all render
   // unconditionally for every member (each falls back to an "Add" tile when
   // empty), so no visibility filtering is needed here -- every tab is real.
   function initDashTabs() {

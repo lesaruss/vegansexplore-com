@@ -246,7 +246,7 @@
       return call({ action: 'list', community: state.city }).then(function (d) {
         state.bounties = d.bounties || []; state.viewer = d.viewer || { signed_in: false };
         renderStanding();
-        if (!state.bounties.length) { $('list').innerHTML = '<div class="empty"><strong>No open bounties here yet.</strong>New ones go up with big events in your city. Check the Daily Pulse for what is coming.</div>'; return; }
+        if (!state.bounties.length) { $('list').innerHTML = '<div class="empty"><strong>No open bounties here yet.</strong>New ones go up with big events in your city. Check the Daily Post for what is coming.</div>'; return; }
         var groups = [], seen = {};
         state.bounties.forEach(function (b) { var k = b.event_id || b.event_title || 'other'; if (!seen[k]) { seen[k] = { event: b.event, title: b.event_title, items: [] }; groups.push(seen[k]); } seen[k].items.push(b); });
         $('list').innerHTML = groups.map(function (g) {

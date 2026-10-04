@@ -39,7 +39,7 @@ Now, the time. It's about three hours a week, rarely more than five. Every week,
 ## 06-pulse
 *Slide: "Be the first to know."*
 
-This one matters a lot to me. Be our eyes and ears. When something happens in our Vegan community, I want to hear it from you first. A place opening, or closing. A Vegan spot starting to add animal products. Whatever people are arguing about. Just tell our assistant on your dashboard. It turns that into stories for our Pulse, and you give them a final look. No code, just conversation. Then bring it to the huddle. When a city grows, we all celebrate. When a city stalls, we all rally. If it's still not working, we talk honestly, and sometimes the role changes hands.
+This one matters a lot to me. Be our eyes and ears. When something happens in our Vegan community, I want to hear it from you first. A place opening, or closing. A Vegan spot starting to add animal products. Whatever people are arguing about. Just tell our assistant on your dashboard. It turns that into stories for our Daily Post, and you give them a final look. No code, just conversation. Then bring it to the huddle. When a city grows, we all celebrate. When a city stalls, we all rally. If it's still not working, we talk honestly, and sometimes the role changes hands.
 
 ## 07-season
 *Slide: "Here's what a season looks like."*

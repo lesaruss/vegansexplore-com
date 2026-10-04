@@ -20,11 +20,11 @@
 // POST { action: 'pulse_cover', id, url, listing_id? }   put a Library picture on a Depot piece as its
 //   cover (the database copies its credit), and say which business the piece is about
 // POST { action: 'skip', refs }       older pictures Sean chose not to keep (never offered again)
-// POST { action: 'delete', ids }      removes the files and the rows; refuses anything a live page or Pulse piece uses
-// POST { action: 'pulse_list' }       pieces the Depot has published to the Pulse
+// POST { action: 'delete', ids }      removes the files and the rows; refuses anything a live page or Daily Post piece uses
+// POST { action: 'pulse_list' }       pieces the Depot has published to the Daily Post
 // POST { action: 'pulse_save', id?, content_type, title, summary, body_text, category, city_slug?,
 //        cover_url, video_url?, youtube?, audio_url?, author? }
-//   The Depot's Pulse pipeline (Sean, 2026-09-27: "it can go straight out"). A new piece is
+//   The Depot's Daily Post pipeline (Sean, 2026-09-27: "it can go straight out"). A new piece is
 //   published the moment it is saved; an id edits one. The body is plain text: blank lines
 //   make paragraphs, and it is escaped here, so nothing typed can inject markup.
 // POST { action: 'pulse_status', id, status }   'published' or 'archived' (take down / put back)
@@ -32,9 +32,9 @@
 //   status 'draft'. pulse_save on a draft keeps it a draft unless publish: true; publishing (by
 //   either action) needs a Library cover, stamps published_at, and marks its News Desk lead
 //   'published'. A draft can be saved without a cover.
-// POST { action: 'city_tags_list' }                every published Pulse piece (not podcast episodes) and its city tags
+// POST { action: 'city_tags_list' }                every published Daily Post piece (not podcast episodes) and its city tags
 // POST { action: 'city_tag', pulse_id, city_slug, on }   tag a piece into a city hub, or untag it
-//   The Depot's Pulse Cities tab (Sean, 2026-09-27: retire the old /admin pages). A tagged piece
+//   The Depot's Daily Post Cities tab (Sean, 2026-09-27: retire the old /admin pages). A tagged piece
 //   shows in that hub's Local News feed (public/hub-news.js reads ve_pulse_city_tags). This
 //   replaces /admin/pulse-city-tags, which wrote the table with the anon key and was refused.
 // POST { action: 'logo_list', region }            a region's directory listings and their logos
@@ -79,7 +79,7 @@ const saveError = (error: { message: string }) => /needs_real_photo/.test(error.
 const PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const REF_RE = /^[a-z0-9:/._-]{1,200}$/i;
 const PLACES = ['miami', 'broward', 'palm-beach'];
-// The Pulse: what a piece can be, and the city hubs that show city pieces (/communities/*).
+// The Daily Post: what a piece can be, and the city hubs that show city pieces (/communities/*).
 const PULSE_TYPES = ['article', 'video', 'interview', 'podcast'];
 const PULSE_CITIES = ['south-florida', 'central-florida', 'new-york', 'philadelphia', 'los-angeles', 'atlanta', 'dmv', 'london'];
 const PULSE_COLS = 'id, slug, title, content_type, category, summary, body, city_slug, thumbnail_url, video_url, audio_url, youtube_id, author, status, published_at, updated_at, cover_credit, cover_license, names_business, business_listing_id';
@@ -250,7 +250,7 @@ Deno.serve(async (req) => {
     } else {
       if (!cover) return json({ error: 'bad_cover' }, 400);
       // A slug nobody has used, so the piece gets its own /pulse/<slug> page, which is also
-      // its source_url (the table requires one; for Depot pieces the Pulse page is the source).
+      // its source_url (the table requires one; for Depot pieces the Daily Post page is the source).
       const base = slugify(title);
       const { data: taken } = await db.from('ve_pulse_content').select('slug').like('slug', base + '%');
       const used = new Set((taken || []).map((r: any) => r.slug));
@@ -262,7 +262,7 @@ Deno.serve(async (req) => {
       saved = data;
     }
     // A city piece also shows on that city's hub (/communities/<city>). Only the piece's own
-    // city tag moves; extra hubs tagged on the Pulse Cities tab stay.
+    // city tag moves; extra hubs tagged on the Daily Post Cities tab stay.
     if (before && before !== city) await db.from('ve_pulse_city_tags').delete().eq('pulse_id', saved.id).eq('city_slug', before);
     if (city) await db.from('ve_pulse_city_tags').upsert({ pulse_id: saved.id, city_slug: city }, { onConflict: 'pulse_id,city_slug', ignoreDuplicates: true });
     if (saved.status === 'published') await db.from('ve_news_leads').update({ status: 'published' }).eq('pulse_id', saved.id);
@@ -402,7 +402,7 @@ Deno.serve(async (req) => {
       db.from('ve_onboarding_audio').select('url').in('url', inList),
       db.from('ve_onboarding_slides').select('url:music_url').in('music_url', inList),
       db.from('ve_onboarding_slides').select('url:video_url').in('video_url', inList),
-      // ...and anything on a Pulse piece that is still up.
+      // ...and anything on a Daily Post piece that is still up.
       db.from('ve_pulse_content').select('url:thumbnail_url').eq('status', 'published').in('thumbnail_url', inList),
       db.from('ve_pulse_content').select('url:video_url').eq('status', 'published').in('video_url', inList),
       db.from('ve_pulse_content').select('url:audio_url').eq('status', 'published').in('audio_url', inList),

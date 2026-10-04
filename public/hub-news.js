@@ -1,6 +1,6 @@
 /* Shared "Local News & Updates" renderer for VE city hub pages.
    Merges community-submitted news (ve_community_news, approved) with
-   Pulse articles manually tagged into this city (ve_pulse_city_tags -> ve_pulse_content),
+   Daily Post articles manually tagged into this city (ve_pulse_city_tags -> ve_pulse_content),
    sorted pinned-first then newest-first. Usage:
      <div id="hub-news-grid"><p class="hub-dir-empty">Loading local news&hellip;</p></div>
      <script src="/public/hub-news.js"></script>
@@ -59,9 +59,9 @@
       .catch(function () { return []; });
   }
 
-  // Daily Pulse (Sean, 2026-10-04): today's topics for this city and the nation sit above the
+  // Daily Post (Sean, 2026-10-04): today's topics for this city and the nation sit above the
   // local news, each opening its conversation on the Community Board. Nothing shows until a topic
-  // has gone up, so a hub never carries an empty Pulse box.
+  // has gone up, so a hub never carries an empty Daily Post box.
   function loadPulse(cb) {
     if (window.VEPulse) return cb();
     var s = document.createElement('script'); s.src = '/public/ve-pulse-topics.js'; s.onload = cb; document.head.appendChild(s);
@@ -76,7 +76,7 @@
         box.id = 'vep-hub-' + city;
         box.style.margin = '0 0 28px';
         box.innerHTML = '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;">' +
-          '<h3 style="font-size:18px;font-weight:900;margin:0;">Today on the Daily Pulse</h3>' +
+          '<h3 style="font-size:18px;font-weight:900;margin:0;">Today on the Daily Post</h3>' +
           '<a href="/board?lane=pulse&community=' + encodeURIComponent(city) + '" style="font-size:13px;font-weight:800;color:#2d7d31;">Join the conversation &rarr;</a></div>' +
           '<div class="vep-grid">' + today.map(function (t) { return VEPulse.card(t, city); }).join('') + '</div>';
         grid.parentNode.insertBefore(box, grid);

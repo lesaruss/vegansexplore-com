@@ -1,5 +1,5 @@
 // public/depot-cover.js
-// The Depot's cover picker for a Pulse piece (Sean, 2026-09-29, BOSS "source reliable photos"):
+// The Depot's cover picker for a Daily Post piece (Sean, 2026-09-29, BOSS "source reliable photos"):
 // a piece about a real business goes out with a real photo we have the right to use, credited,
 // or with that business's logo card. Never a photo taken from the source article, never one
 // copied off a website without a press grant, never Google or Yelp photos.
@@ -134,7 +134,7 @@
     if (!l) { to.textContent = 'Pick the business above first.'; $('ve-cv-asktext').value = ''; mailLink(); return; }
     var hi = l.ve_contact_name ? 'Hi ' + l.ve_contact_name.split(' ')[0] + ',' : 'Hi ' + l.name + ' team,';
     $('ve-cv-asktext').value = hi + '\n\n' +
-      'We are writing a story about ' + l.name + ' for the Vegans Explore Pulse' + (opts.title ? ': "' + opts.title + '"' : '') + '. We would love to run one of your own photos with it, so readers see your food and your space as they really are.\n\n' +
+      'We are writing a story about ' + l.name + ' for the Vegans Explore Daily Post' + (opts.title ? ': "' + opts.title + '"' : '') + '. We would love to run one of your own photos with it, so readers see your food and your space as they really are.\n\n' +
       'Could you send one or two photos you are happy for us to use with the story? We will credit them "Courtesy of ' + l.name + '" and link back to you. Replying with the photos attached tells us we have your permission to use them for this story.\n\n' +
       'Thank you,\nSean A. Russell\nVegans Explore\nvegansexplore.com';
     var email = l.ve_contact_email || l.email || '';

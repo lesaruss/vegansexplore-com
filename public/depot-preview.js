@@ -1,5 +1,5 @@
 // public/depot-preview.js
-// Preview (Sean, 2026-09-29): shows a Pulse piece, draft or not, on its real article page in a
+// Preview (Sean, 2026-09-29): shows a Daily Post piece, draft or not, on its real article page in a
 // lightbox, with a Desktop / Phone toggle. Any button with data-preview="<ve_pulse_content id>"
 // (and optionally data-preview-title) opens it. The link comes from the ve-news-desk engine
 // (pulse_preview), lasts one hour, and is never indexed. The same Preview exists in HQ's Depot.

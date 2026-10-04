@@ -62,7 +62,7 @@ each hides them when embedded (`.ve-embedded .ve-nav, .ve-embedded
 .ve-footer{display:none}`). The old standalone `/admin/news-review`,
 `/admin/pulse-city-tags`, `/admin/opportunity-applications` and
 `/admin/partner-applications` pages were retired on 2026-09-27 and redirect
-to Depot > Inbox, Depot > Pulse Cities, `/dashboard/applications` and
+to Depot > Inbox, Depot > Daily Post Cities, `/dashboard/applications` and
 `/dashboard/partners`. Depot > News Desk and Depot > City News were merged into
 Depot > Inbox and Depot > Sources on 2026-09-28; their old URLs redirect to the Inbox.
 
@@ -103,7 +103,7 @@ of them. This rule prevents that drift from recurring.
 ## Summary two-row cap (LOCKED 2026-09-14)
 
 Every card summary / excerpt / blurb on a member-facing surface is capped at
-two rows. Sean set this rule on 2026-09-13 after a Pulse entry rendered four
+two rows. Sean set this rule on 2026-09-13 after a Daily Post entry rendered four
 rows on the live site. Summaries come from Supabase (`ve_pulse_content.summary`,
 `ve_community_news.summary`, `opportunities.description`,
 `store_products.description`, `campaigns.summary`, `ve_board_posts.body`) and
@@ -124,9 +124,9 @@ Classes currently under the rule:
 - `.camp-card-desc` — `/dashboard/campaigns.html`
 - `.camp-tile-desc` — `/campaigns/index.html`
 - `.dash-tile-desc` — `/dashboard/center-console.html`
-- `.vep-intro` — Daily Pulse topic cards, `/public/ve-pulse-topics.js` (dashboard
-  Pulse tab and preview, city hubs), and `.post-body` on `/board.html`. The Daily
-  Pulse became discussion topics on the Community Board on 2026-10-04; the topic
+- `.vep-intro` — Daily Post topic cards, `/public/ve-pulse-topics.js` (dashboard
+  Daily Post tab and preview, city hubs), and `.post-body` on `/board.html`. The Daily
+  Post became discussion topics on the Community Board on 2026-10-04; the topic
   intro (`ve_board_posts.body`) is the summary there.
 
 The cap applies to the card only. Full article and detail views
@@ -134,8 +134,8 @@ The cap applies to the card only. Full article and detail views
 
 ## Ad rail (Sean, 2026-10-04)
 
-Three-fourths content, one-fourth ads on the right, on: the Daily Pulse (`/board` Pulse list and
-Pulse posts, the dashboard Daily Pulse tab) and the dashboard Events tab. Not on Communities,
+Three-fourths content, one-fourth ads on the right, on: the Daily Post (`/board` Daily Post list and
+Daily Post topics, the dashboard Daily Post tab) and the dashboard Events tab. Not on Communities,
 Tools, Shows or the Directory (the Directory listing has its own billboard).
 
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
