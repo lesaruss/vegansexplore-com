@@ -34,8 +34,12 @@ const PAGES: Record<string, string[]> = {
   partners: ['problem', 'why', 'room', 'bring', 'only', 'seat'],
   // Member entry point, /welcome (2026-09-30).
   member: ['welcome', 'oldway', 'city', 'inperson', 'board', 'unfinished', 'seat'],
+  // City dinner invitation, /dinners/<city> (Sean, 2026-10-04: the template for every city we go into).
+  dinner: ['invite', 'why', 'build', 'ask', 'evening', 'seat', 'faq'],
 };
-const PAGE_LABEL: Record<string, string> = { cm: 'Community Manager', partners: 'Partners', member: 'Member' };
+const PAGE_LABEL: Record<string, string> = { cm: 'Community Manager', partners: 'Partners', member: 'Member', dinner: 'Dinner invitation' };
+// Picture-only keys a page has beyond its slides: the dinner's "What's next" cards.
+const PICTURE_KEYS: Record<string, string[]> = { dinner: ['next-1', 'next-2', 'next-3', 'next-4'] };
 // Picture-only keys every page has: its background, desktop (landscape) and phone
 // (portrait). These take a picture, never narration.
 const BG_KEYS = ['bg-desktop', 'bg-mobile'];
@@ -138,6 +142,19 @@ Deno.serve(async (req) => {
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       return json({ ok: true, key });
     }
+    // A Higgsfield take (the sample narration in Sean's voice) is copied into vegan-media
+    // first, so the page never depends on the CDN; anything else must already be ours.
+    if (typeof body.url === 'string' && /^https:\/\/[a-z0-9]+\.cloudfront\.net\/[^?#]+\.mp3$/i.test(body.url)) {
+      const res = await fetch(body.url);
+      const type = (res.headers.get('content-type') || '').split(';')[0];
+      if (!res.ok || !/^audio\//.test(type)) return json({ error: 'fetch_failed' }, 502);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      if (bytes.length < 1000 || bytes.length > MAX_BYTES) return json({ error: 'bad_size' }, 400);
+      const path = `onboarding-audio/${page}/${city}/sample/${key}-${Date.now()}.mp3`;
+      const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: 'audio/mpeg', upsert: false });
+      if (up.error) return json({ error: 'upload_failed', message: up.error.message }, 500);
+      body.url = db.storage.from('vegan-media').getPublicUrl(path).data.publicUrl;
+    }
     if (!ownFile(body.url, AUDIO_EXT)) return json({ error: 'bad_audio' }, 400);
     const dur = Math.round(Number(body.dur || 0) * 10) / 10 || null;
     const { error } = await db.from('ve_onboarding_audio').upsert({
@@ -150,7 +167,7 @@ Deno.serve(async (req) => {
 
   if (body.action === 'set_panel') {
     const key = String(body.key || '');
-    if (!PAGES[page].includes(key) && !BG_KEYS.includes(key)) return json({ error: 'bad_key' }, 400);
+    if (!PAGES[page].includes(key) && !BG_KEYS.includes(key) && !(PICTURE_KEYS[page] || []).includes(key)) return json({ error: 'bad_key' }, 400);
     const source = String(body.source || '');
     let url = '';
     if (/^\/public\/[a-z0-9/_.-]+\.(png|jpe?g|webp)$/i.test(source)) {
