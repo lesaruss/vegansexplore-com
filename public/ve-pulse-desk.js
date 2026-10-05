@@ -145,6 +145,9 @@
       if (ws === 'queued' || ws === 'writing') banner = '<p class="vpd-warn">' + (ws === 'writing' ? 'The Background writer is writing this now.' : 'Queued for the Background writer. It usually fills this in within a few minutes; this page updates on its own.') + ' You can also finish it yourself: saving or publishing takes it off the writer.</p>';
       else if (ws === 'written') banner = '<p class="vpd-warn ok">Written by the Background writer. Check each story against its source, keep what matters, write the first reply, and publish.</p>';
       else if (ws === 'failed') banner = '<p class="vpd-warn err">The writer could not write this one' + (t.write_error ? ': ' + esc(t.write_error) : '.') + ' Finish it by hand, send it back with a note, or discard it.</p>';
+      // Auto drafts (Sean, 2026-10-05: if I look at it, I look at it; if I don't, it goes out): queued the
+      // evening before by ve_pulse_auto_queue, published at 7 AM local by ve_pulse_auto_publish.
+      if (/^Auto:/.test(t.write_note || '')) banner += '<p class="vpd-warn">' + esc(t.write_note.replace(/^Auto:\s*/, '').replace(/\s*Write the first reply too\.?$/, '')) + ' To stop it, Discard. To change it, edit and Publish now.</p>';
       return '<form class="vpd-draft" data-draft="' + t.id + '">' + banner +
         '<label class="vpd-f">Headline <span class="vpd-hint">For example: South Florida Pulse: a new market, a rescue in need, Saturday\'s party</span><input name="title" maxlength="140" value="' + esc(t.title) + '"></label>' +
         '<label class="vpd-f">Opening <span class="vpd-hint">Two or three sentences: what is moving in the city today and why it matters</span><textarea name="body" rows="3" maxlength="4000">' + esc(t.body) + '</textarea></label>' +
@@ -153,7 +156,7 @@
         (t.briefing && t.briefing.stories && t.briefing.stories.length ? '' :
           '<div class="vpd-two"><label class="vpd-f">Source name <span class="vpd-hint">When there are no stories</span><input name="source_name" maxlength="120" value="' + esc(t.source_name || '') + '"></label>' +
           '<label class="vpd-f">Source link' + (t.source_url ? ' <a href="' + esc(safeUrl(t.source_url)) + '" target="_blank" rel="noopener noreferrer" class="vpd-hint">Open</a>' : '') + '<input name="source_url" type="url" maxlength="1000" value="' + esc(t.source_url || '') + '"></label></div>') +
-        '<label class="vpd-f">First reply <span class="vpd-hint">Posted under your name when it goes up, so nobody walks into an empty room</span><textarea name="first_reply" rows="3" maxlength="2000" placeholder="Start it off: what you think, or what you know about it."></textarea></label>' +
+        '<label class="vpd-f">First reply <span class="vpd-hint">Posted under your name when it goes up, so nobody walks into an empty room</span><textarea name="first_reply" rows="3" maxlength="2000" placeholder="Start it off: what you think, or what you know about it.">' + esc((t.briefing && t.briefing.first_reply) || '') + '</textarea></label>' +
         '<div class="vpd-row"><button type="submit" class="vpd-btn">Publish to the Board</button><button type="button" class="vpd-btn ghost" data-save>Save</button><button type="button" class="vpd-btn ghost" data-rewrite>Send back to the writer</button><button type="button" class="vpd-btn danger" data-discard>Discard</button></div>' +
         '<p class="vpd-msg" role="status"></p></form>';
     }

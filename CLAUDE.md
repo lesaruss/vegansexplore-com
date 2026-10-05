@@ -315,6 +315,19 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
   (`topic_post_id`) counts as done (migration `20261005_ve_news_leads_sponsor_only.sql`). HQ's Depot calls
   the same function, so its write-up needs a sponsor too.
 
+## Daily Pulse on autopilot (Sean, 2026-10-05)
+
+"Have it set up the day before. And then if I look at it, I look at it. If I don't, it goes out."
+At 6 PM Eastern (cron `ve-pulse-auto-queue`, 22:00 UTC) `ve_pulse_auto_queue()` queues tomorrow's draft
+for each community in the `pulse_auto` row of `lesaruss_dispatch_settings` (now `national` and
+`south-florida`; a city joins by adding its slug). The Background writer (dispatcher source
+`pulse_topic_write`, Station 2) builds the briefing and its first reply (`ve_board_posts.first_reply`,
+also `briefing.first_reply` so the desk shows it). Every 15 minutes `ve_pulse_auto_publish()` (cron
+`ve-pulse-auto-publish`) publishes what is due at 7:00 AM local (`auto_publish_at`) the way `ve-board`
+`topic_publish` does, under the account in `pulse_auto.member_id` (Sean's). A draft still being written,
+failed, missing a part, or more than 12 hours late does not go out on its own. To stop one: Discard in
+the Pulse desk (Depot > Inbox). Migration `20261005_ve_pulse_auto.sql`.
+
 ## Your Guide (Sean, 2026-10-04)
 
 Your Guide is for registered members, inside the dashboard window: `/dashboard/guide` opens `/guide`
