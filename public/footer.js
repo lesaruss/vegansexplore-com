@@ -63,7 +63,8 @@
    * 2026-09-10): "default to Liz's image rather than the current green
    * circle." */
   var VE_GUIDE_IMAGES = {
-    liz: '/public/guides/liz.png',
+    // Liz in the black Vegans Explore Tee, waving (Sean, 2026-10-05, version 2 of 2 from Higgsfield).
+    liz: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_015752_69e54fd1-337e-4e81-8708-8029766146a8_min.webp',
     maya: '/public/guides/maya.png',
     theo: '/public/guides/theo.png',
     nori: '/public/guides/nori.png',
