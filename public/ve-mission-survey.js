@@ -6,8 +6,10 @@
  * once, instead of in a dashboard pop-up.
  *
  * One question at a time (Sean, 2026-10-05: five stacked full-width fields read "blown out"), the way
- * the Community Manager application asks: the question large, its answer under it, Back / Skip / Next.
- * A one-tap answer moves on by itself; optional questions can be skipped.
+ * the Community Manager application asks: the question large, its answer under it, Back and Next.
+ * One button moves on (Sean, 2026-10-05: auto-advance plus Next plus Skip read as three ways to do one
+ * thing): picking an answer only marks it, and Next on an optional question left blank skips it.
+ * Question 7 is a Month and a Year list (the browser's month box showed only dashes), sent as YYYY-MM.
  *
  *   VEMissionSurvey.mount(host, {
  *     theme:      'dark'                                              white on a dark stage
@@ -28,24 +30,24 @@
       { id: 'q4_website', label: 'Website or business link', hint: 'optional', type: 'text', placeholder: 'https://' },
       { id: 'q5_instagram', label: 'Instagram or main social handle', hint: 'optional', type: 'text', placeholder: '@yourhandle' }
     ] },
-    { title: 'Your vegan journey', qs: [
-      { id: 'q6_stage', label: 'Where are you on your journey?', type: 'single', required: true, options: ['Curious / pre-vegan', 'Flexitarian', 'Vegetarian', 'New vegan (under 1 year)', 'Established (1-5 years)', 'Longtime (5+ years)'] },
-      { id: 'q7_vegan_since', label: 'Roughly when did you go (or start going) vegan?', hint: 'optional', type: 'month' },
+    { title: 'Your Vegan journey', qs: [
+      { id: 'q6_stage', label: 'Where are you on your journey?', type: 'single', required: true, options: ['Curious / pre-Vegan', 'Flexitarian', 'Vegetarian', 'New Vegan (under 1 year)', 'Established (1-5 years)', 'Longtime (5+ years)'] },
+      { id: 'q7_vegan_since', label: 'Roughly when did you go (or start going) Vegan?', hint: 'optional', type: 'month' },
       { id: 'q8_drivers', label: 'What first drew you to it?', hint: 'select all that apply', type: 'multi', options: ['Animals / ethics', 'Health', 'Environment', 'Faith / spirituality', 'Cost', 'Taste / curiosity', 'Family / friends'] },
-      { id: 'q9_challenges', label: 'Biggest challenge staying vegan?', hint: 'select all that apply', type: 'multi', options: ['Dining out', 'Social pressure', 'Cost', 'Convenience', 'Recipes / knowledge', 'Family', 'Travel'] }
+      { id: 'q9_challenges', label: 'Biggest challenge staying Vegan?', hint: 'select all that apply', type: 'multi', options: ['Dining out', 'Social pressure', 'Cost', 'Convenience', 'Recipes / knowledge', 'Family', 'Travel'] }
     ] },
     { title: 'Your community & region', qs: [
-      { id: 'q10_options_rating', label: 'How would you rate vegan options in your area today?', hint: '1 = poor, 5 = excellent', type: 'scale', scale: [1, 2, 3, 4, 5] },
+      { id: 'q10_options_rating', label: 'How would you rate Vegan options in your area today?', hint: '1 = poor, 5 = excellent', type: 'scale', scale: [1, 2, 3, 4, 5] },
       { id: 'q11_missing', label: "What's missing most where you live?", hint: 'select all that apply', type: 'multi', options: ['Restaurants', 'Grocery / products', 'Events', 'Social groups', 'Health / wellness services', 'Education', 'Kid / family options'] },
-      { id: 'q12_business_types', label: 'Which vegan businesses would you support if they opened here?', hint: 'select all that apply', type: 'multi', options: ['Restaurant / cafe', 'Bakery', 'Grocer', 'Food truck', 'Meal prep', 'Wellness', 'Clothing / goods'] },
-      { id: 'q13_eatout_freq', label: 'How often do you eat out or order vegan?', type: 'single', options: ['Daily', 'A few times a week', 'Weekly', 'Occasionally', 'Rarely'] },
-      { id: 'q14_spend', label: 'Roughly what do you spend on vegan food & products a month?', type: 'single', options: ['Under $50', '$50-$150', '$150-$300', '$300-$600', '$600+'] },
-      { id: 'q15_local_spots', label: 'Any local vegan spots or businesses we should add to the directory?', hint: 'optional', type: 'text', placeholder: 'Names, links, anything' }
+      { id: 'q12_business_types', label: 'Which Vegan businesses would you support if they opened here?', hint: 'select all that apply', type: 'multi', options: ['Restaurant / cafe', 'Bakery', 'Grocer', 'Food truck', 'Meal prep', 'Wellness', 'Clothing / goods'] },
+      { id: 'q13_eatout_freq', label: 'How often do you eat out or order Vegan?', type: 'single', options: ['Daily', 'A few times a week', 'Weekly', 'Occasionally', 'Rarely'] },
+      { id: 'q14_spend', label: 'Roughly what do you spend on Vegan food & products a month?', type: 'single', options: ['Under $50', '$50-$150', '$150-$300', '$300-$600', '$600+'] },
+      { id: 'q15_local_spots', label: 'Any local Vegan spots or businesses we should add to the directory?', hint: 'optional', type: 'text', placeholder: 'Names, links, anything' }
     ] },
     { title: 'How we can serve you', qs: [
       { id: 'q16_wants', label: 'What do you most want from Vegans Explore?', hint: 'select all that apply', type: 'multi', options: ['Directory', 'Community / meetups', 'Deals / rewards', 'Events', 'Guides / education', 'Activism', 'Business growth'] },
       { id: 'q17_connect', label: 'How do you like to connect?', hint: 'select all that apply', type: 'multi', options: ['In-person events', 'Online groups', '1:1', 'Social media', 'Not looking to connect'] },
-      { id: 'q18_events', label: 'Would you attend local vegan events if we hosted them?', type: 'single', options: ['Definitely', 'Maybe', 'No'] },
+      { id: 'q18_events', label: 'Would you attend local Vegan events if we hosted them?', type: 'single', options: ['Definitely', 'Maybe', 'No'] },
       { id: 'q19_nps', label: 'How likely are you to recommend this community to a friend?', hint: '0 = not likely, 10 = extremely', type: 'scale', scale: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
       { id: 'q20_contribute', label: 'Interested in contributing?', hint: 'select all that apply', type: 'multi', options: ['Volunteer', 'Lead my city', 'List my business', 'Sponsor', 'Create content', 'Not now'] }
     ] },
@@ -74,6 +76,7 @@
     + '.vms-btn:hover{background:#16A34A}.vms-btn:disabled{background:#9CA3AF;cursor:not-allowed}'
     + '.vms-link{background:none;border:none;font:inherit;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;cursor:pointer;color:inherit;padding:8px 4px}'
     + '.vms-link[hidden]{display:none}'
+    + '.vms-my{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;max-width:420px}'
     + '.vms-err{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:13px;color:#b91c1c;font-weight:600;margin-top:14px;max-width:620px}'
     // Dark stage: white words, glass answers (the Community Manager application look).
     + '.vms.dark{color:#fff}.vms.dark .vms-meta{color:#86efac}.vms.dark .vms-hint{color:rgba(255,255,255,.75)}'
@@ -97,15 +100,16 @@
   function mount(host, opts) {
     opts = opts || {};
     injectCss();
-    var answers = {}, at = 0, sending = false;
+    var answers = {}, at = 0, sending = false, monthPicked = false; // monthPicked: question 7 had a month, not just a year
 
     function empty(a) { return a === undefined || a === null || a === '' || (Array.isArray(a) && !a.length); }
 
     function control(q, next) {
       var set = function (v) { answers[q.id] = v; };
-      if (q.type === 'text' || q.type === 'longtext' || q.type === 'month') {
+      if (q.type === 'month') return monthYear(q, set);
+      if (q.type === 'text' || q.type === 'longtext') {
         var el = document.createElement(q.type === 'longtext' ? 'textarea' : 'input');
-        if (q.type !== 'longtext') el.type = q.type === 'month' ? 'month' : 'text';
+        if (q.type !== 'longtext') el.type = 'text';
         el.className = 'vms-input'; el.id = 'vms-' + q.id;
         if (q.placeholder) el.placeholder = q.placeholder;
         if (answers[q.id]) el.value = answers[q.id];
@@ -136,13 +140,33 @@
             set(arr); b.setAttribute('aria-pressed', i < 0 ? 'true' : 'false');
             return;
           }
-          // One tap answers it: mark it, then move on.
+          // A tap marks the answer; Next moves on.
           set(v);
           Array.prototype.forEach.call(box.children, function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
-          setTimeout(next, 260);
         });
         box.appendChild(b);
       });
+      return box;
+    }
+
+    // Month and Year lists for a rough date. The year alone is enough (sent as January of that year).
+    function monthYear(q, set) {
+      var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      var now = new Date().getFullYear(), years = [];
+      for (var y = now; y >= now - 70; y--) years.push(y);
+      var cur = /^(\d{4})-(\d{2})$/.exec(answers[q.id] || '') || [];
+      var box = document.createElement('div'); box.className = 'vms-my';
+      box.innerHTML =
+        '<select class="vms-input" id="vms-' + q.id + '" aria-label="Month"><option value="">Month</option>' +
+        MONTHS.map(function (m, i) { var v = (i < 9 ? '0' : '') + (i + 1); return '<option value="' + v + '"' + (cur[2] === v && monthPicked ? ' selected' : '') + '>' + m + '</option>'; }).join('') +
+        '</select><select class="vms-input" aria-label="Year"><option value="">Year</option>' +
+        years.map(function (y) { return '<option value="' + y + '"' + (cur[1] === String(y) ? ' selected' : '') + '>' + y + '</option>'; }).join('') + '</select>';
+      var sm = box.children[0], sy = box.children[1];
+      function upd() {
+        monthPicked = !!sm.value;
+        if (sy.value) set(sy.value + '-' + (sm.value || '01')); else delete answers[q.id];
+      }
+      sm.addEventListener('change', upd); sy.addEventListener('change', upd);
       return box;
     }
 
@@ -150,7 +174,7 @@
       var item = QUESTIONS[at], q = item.q, last = at === QUESTIONS.length - 1;
       host.innerHTML = '';
       var root = document.createElement('div'); root.className = 'vms' + (opts.theme === 'dark' ? ' dark' : '');
-      var hint = q.required ? (q.type === 'multi' ? 'Pick all that apply.' : '') : (q.type === 'multi' ? 'Pick all that apply, or skip.' : 'Optional.');
+      var hint = q.required ? (q.type === 'multi' ? 'Pick all that apply.' : '') : (q.type === 'multi' ? 'Pick all that apply, or press Next to skip.' : 'Optional. Press Next to skip.');
       if (q.type === 'scale' && q.hint) hint = q.hint.replace(/^(\d+) = /, '$1 is ').replace(/, (\d+) = /, ', $1 is ') + '.';
       root.innerHTML =
         '<div class="vms-meta">Question ' + (at + 1) + ' of ' + QUESTIONS.length + ' &middot; ' + esc(item.step.title) + '</div>' +
@@ -159,8 +183,7 @@
         (hint ? '<span class="vms-hint">' + esc(hint) + '</span>' : '') +
         '<div class="vms-ans"></div><div class="vms-err" role="alert"></div>' +
         '<div class="vms-nav"><button type="button" class="vms-link" data-back' + (at ? '' : ' hidden') + '>Back</button>' +
-        '<button type="button" class="vms-btn" data-next>' + (last ? 'Send my answers' : 'Next') + '</button>' +
-        '<button type="button" class="vms-link" data-skip' + (q.required || last ? ' hidden' : '') + '>Skip</button></div>';
+        '<button type="button" class="vms-btn" data-next>' + (last ? 'Send my answers' : 'Next') + '</button></div>';
       host.appendChild(root);
       var err = root.querySelector('.vms-err');
       function fail(t) { err.textContent = t; err.style.display = 'block'; }
@@ -174,7 +197,6 @@
       root.querySelector('.vms-ans').appendChild(ctl);
       root.querySelector('[data-next]').onclick = next;
       root.querySelector('[data-back]').onclick = function () { if (at) { at--; render(); } };
-      root.querySelector('[data-skip]').onclick = function () { delete answers[q.id]; at++; render(); };
       if (opts.onQuestion) opts.onQuestion({ index: at, total: QUESTIONS.length, stepIndex: item.stepIndex, step: item.step });
       if (ctl.focus && (ctl.tagName === 'INPUT' || ctl.tagName === 'TEXTAREA')) { try { ctl.focus({ preventScroll: true }); } catch (e) {} }
     }

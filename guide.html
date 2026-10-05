@@ -90,7 +90,22 @@
     .mic-btn.recording{border-color:#d33;background:#fdecec;color:#d33;}
 
     /* How to use your Guide: four ideas, each one a question you can send */
-    .uses{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px;margin:4px 0 18px;}
+    .uses{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:4px 0 18px;}
+    /* Sean, 2026-10-05: the Guide in a portrait on the right, the ideas in two columns on the left
+       (restaurants and things to do on top, can't find something and anything Vegan under them). */
+    .uses-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:32px;align-items:start;}
+    .uses-guide{border:1.5px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;}
+    .uses-guide img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;object-position:top center;}
+    .uses-guide-who{padding:14px 16px 16px;}
+    .uses-guide-who b{display:block;font-size:15px;font-weight:900;margin-bottom:8px;}
+    .uses-guide-who p{margin:0;font-size:14px;line-height:1.55;color:var(--ink);}
+    @media (max-width:860px){
+      .uses-split{grid-template-columns:minmax(0,1fr);gap:16px;}
+      .uses-guide{order:-1;display:flex;gap:12px;align-items:flex-start;padding:12px;}
+      .uses-guide img{flex:0 0 auto;width:56px;height:56px;border-radius:10px;}
+      .uses-guide-who{padding:0;}
+    }
+    @media (max-width:560px){ .uses{grid-template-columns:minmax(0,1fr);} }
     .use{border:1.5px solid var(--line);border-radius:14px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:6px;}
     .use b{font-size:14.5px;font-weight:900;}
     .use p{margin:0;font-size:13px;color:var(--ink-muted);line-height:1.5;}
@@ -114,16 +129,20 @@
     .gk-stage{position:relative;border-radius:16px;overflow:hidden;background:#0d130e center/cover no-repeat;}
     .gk-stage::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.93) 0%,rgba(0,0,0,.86) 50%,rgba(0,0,0,.55) 100%);}
     .gk-split{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:48px;align-items:center;padding:44px 48px;min-height:520px;}
-    .gk-guide{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:22px;color:#fff;text-align:center;}
-    .gk-guide img{display:block;margin:0 auto;height:min(380px,48vh);aspect-ratio:9/16;width:auto;max-width:100%;object-fit:cover;object-position:top center;border-radius:12px;background:#fff;}
-    .gk-name{font-size:16px;font-weight:900;margin-top:12px;}
+    .gk-guide{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.22);border-radius:14px;overflow:hidden;color:#fff;text-align:center;max-width:420px;justify-self:center;width:100%;}
+    /* The mid shot fills the card edge to edge, the words under it (Sean, 2026-10-05: the full body
+       "looks a little slapped on"; a mid shot filling the whole thing, almost a headshot). */
+    .gk-guide img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;object-position:top center;background:#fff;}
+    .gk-who{padding:16px 20px 20px;}
+    .gk-name{font-size:16px;font-weight:900;}
     .gk-meta{font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-top:4px;}
     .gk-line{background:#fff;color:#1a1a1a;border-radius:14px;border-top-left-radius:4px;padding:12px 16px;font-size:14.5px;line-height:1.5;margin-top:14px;text-align:left;}
     @media (max-width:860px){
       .gk-split{grid-template-columns:minmax(0,1fr);gap:20px;padding:22px 18px 26px;min-height:0;}
-      .gk-guide{order:-1;display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px;}
-      .gk-guide picture{flex:0 0 auto;}.gk-guide img{width:56px;height:56px;aspect-ratio:1/1;margin:0;border-radius:10px;}
-      .gk-name{margin-top:0;font-size:14px;}
+      .gk-guide{order:-1;display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px;max-width:none;}
+      .gk-guide img{flex:0 0 auto;width:56px;height:56px;border-radius:10px;}
+      .gk-who{padding:0;}
+      .gk-name{font-size:14px;}
       .gk-line{margin-top:8px;font-size:13.5px;}
     }
   </style>
@@ -308,8 +327,8 @@
         '<div class="gk-stage" style="background-image:url(\'' + cityArt() + '\')"><div class="gk-split">' +
           '<div class="gk-q" id="survey"></div>' +
           '<aside class="gk-guide" aria-label="' + g.name + ', your Guide">' +
-            // Tall card on desktop: the 9:16 full body. A strip on phones: the square mid shot.
-            '<picture><source media="(max-width:860px)" srcset="' + art(g, 'square') + '"><img src="' + art(g, 'tall') + '" alt=""></picture>' +
+            // The square mid shot, filling the card on desktop and a small square in the phone strip.
+            '<img src="' + art(g, 'square') + '" alt="">' +
             '<div class="gk-who"><div class="gk-name">' + g.name + ' is getting to know you</div>' +
             '<div class="gk-meta">About 3 minutes &middot; earns 250 points</div>' +
             '<div class="gk-line" id="gkLine"></div></div>' +
@@ -347,10 +366,13 @@
       var g = guideBySlug(status.guide_slug);
       app.innerHTML = stepper('uses') +
         '<div class="g-eyebrow">How your Guide helps</div><h1 class="g-title">Use ' + g.name + ' whenever you need something.</h1>' +
-        says(g, (firstName() ? 'Thanks, ' + esc(firstName()) + '. ' : '') + 'Here is how I can help. Try one now, or just ask me anything. I live in the Guide button at the bottom of your dashboard.') +
-        '<div class="uses" id="uses"></div>' +
-        '<div class="row-btns"><button type="button" class="btn primary" id="usesDone">I&rsquo;m all set</button></div>' +
-        '<p class="note">Each message uses 4 points. Every member gets 60 points a month for their Guide; Passport members get 300.</p>';
+        '<div class="uses-split"><div>' +
+          '<div class="uses" id="uses"></div>' +
+          '<div class="row-btns"><button type="button" class="btn primary" id="usesDone">I&rsquo;m all set</button></div>' +
+          '<p class="note">Each message uses 4 points. Every member gets 60 points a month for their Guide; Passport members get 300.</p>' +
+        '</div><aside class="uses-guide" aria-label="' + g.name + ', your Guide"><img src="' + art(g, 'square') + '" alt="">' +
+          '<div class="uses-guide-who"><b>' + g.name + '</b><p>' + (firstName() ? 'Thanks, ' + esc(firstName()) + '. ' : '') +
+          'Here is how I can help. Try one now, or just ask me anything. I live in the Guide button at the bottom of your dashboard.</p></div></aside></div>';
       var host = document.getElementById('uses');
       ideas().forEach(function(it){
         var d = document.createElement('div'); d.className = 'use';

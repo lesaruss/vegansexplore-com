@@ -285,6 +285,10 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
   it (`/public/ve-mission-survey.js`, the only copy of the questions; 250 points via ve-mission-survey),
   3. how the Guide helps (restaurants, things to do in their city, finding something, anything Vegan),
   each idea a question they can send. Then the dock icon opens the conversation.
+- Survey screen (Sean, 2026-10-05): one question at a time with one button. A tap only marks an answer,
+  Next moves on and skips an optional question left blank (no auto-advance, no Skip). "Vegan" is always
+  capitalized in the questions. Question 7 is Month and Year lists, sent as YYYY-MM. The last screen puts
+  the four ideas two by two on the left and the Guide's portrait (mid shot) on the right.
 - Data: `ve-guide` edge function (`status`, `setup`), `members.guide_slug` and `members.guide_setup_at`.
   The dock icon wears the Guide from `ve_guide_flow_state` (`/public/footer.js`), kept in step from
   `ve-guide` status.
@@ -302,7 +306,8 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
 we're doing more of a vertical nine by sixteen image." Every Guide has two pictures in one map,
 `VE_GUIDE_ART` in `/public/footer.js`: `square`, a mid shot (head to waist) for every square or
 near-square spot (the dock icon, avatars, the Guide picker, tiles, Choose Your Guide, phones), and
-`tall`, a 9:16 full body for tall spots only (the Guide card beside the survey on desktop). Ask for
+`tall`, a 9:16 full body for true 9:16 spots only (none on the site today: the survey card switched to
+the mid shot filling the card, words under it, on 2026-10-05, after Sean found the full body "slapped on"). Ask for
 them with `VEGuideArt(slug, 'square'|'tall')` or `VEGuideImage(shape)` for the member's own Guide;
 never point a page at a Guide file directly. Square spots use `background-size:cover` (or
 `object-fit:cover`), never `contain`. The Guides wear the Vegans Explore Tee (from 2026-10-05) and
