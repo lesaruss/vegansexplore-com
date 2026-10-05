@@ -87,20 +87,37 @@
   // supplies the marketing copy/image per role type, matched by opportunity_type;
   // the id, title, and application state now come from the database per city.
   var OPP_STATUS_LABEL = { pending: 'Application submitted', accepted: 'You are approved', rejected: 'Not selected this time' };
+  // A role type with no copy above (a sponsorship, say) gets its own name, not the Community Manager card.
+  function roleMeta(type) {
+    var known = COMMUNITY_ROLES.filter(function (r) { return r.type === type; })[0];
+    if (known) return known;
+    var label = String(type || 'Opportunity').replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    return { type: type, tier: label, desc: '', img: '/public/guides/thumb-community.jpg' };
+  }
 
   function renderOpportunities(listId, citySlug) {
     var wrap = document.getElementById(listId);
     if (!wrap) return;
     wrap.innerHTML = '<p class="hub-dir-empty">Loading opportunities&hellip;</p>';
-    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunities', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: window.VEAuth ? VEAuth.getToken() : null, city_slug: citySlug })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      var opps = (d && d.ok && d.opportunities) ? d.opportunities : [];
+    // Every open role (Sean, 2026-10-05): this city's and the ones open in every city. Members get
+    // theirs through ve-rewards, with where their application stands; anyone else reads the open
+    // roles directly (public read), since ve-rewards answers members only.
+    var member = !!(window.VEAuth && VEAuth.isLoggedIn());
+    var req = member
+      ? fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_opportunities', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+          body: JSON.stringify({ token: VEAuth.getToken(), city_slugs: [citySlug] })
+        }).then(function (r) { return r.json(); }).then(function (d) { return (d && d.ok && d.opportunities) ? d.opportunities : null; })
+      : Promise.resolve(null);
+    req.then(function (opps) {
+      if (opps) return opps;
+      return fetch(SUPABASE_URL + '/rest/v1/opportunities?select=id,title,description,opportunity_type,city_slug&is_active=eq.true&or=(city_slug.is.null,city_slug.eq.' + encodeURIComponent(citySlug) + ')&order=opportunity_type.asc', { headers: headers() })
+        .then(function (r) { return r.json(); }).then(function (rows) { return Array.isArray(rows) ? rows : []; });
+    }).then(function (opps) {
       if (!opps.length) { wrap.innerHTML = '<p class="hub-dir-empty">No open roles here right now. Check back soon.</p>'; return; }
       wrap.innerHTML = '<div class="news-grid">' + opps.map(function (row) {
-        var meta = COMMUNITY_ROLES.filter(function (r) { return r.type === row.opportunity_type; })[0] || COMMUNITY_ROLES[0];
+        var meta = roleMeta(row.opportunity_type);
         var statusNote = row.my_status ? '<p class="news-excerpt" style="font-weight:800;color:var(--ve-green-dark);">' + esc(OPP_STATUS_LABEL[row.my_status] || row.my_status) + '</p>' : '';
         var actionHtml = row.my_status
           ? ''

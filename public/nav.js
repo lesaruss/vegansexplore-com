@@ -7,7 +7,8 @@
  * frame that scrolls inside, rather than growing forever. */
 (function () {
   var root = document.documentElement, inDash = false;
-  try { inDash = window.self !== window.top && window.parent.location.origin === location.origin && /^\/dashboard(\/|$)/.test(window.parent.location.pathname); } catch (e) {}
+  // A city hub frames the Board and Bounties under the community the same way (Sean, 2026-10-05).
+  try { inDash = window.self !== window.top && window.parent.location.origin === location.origin && /^\/(dashboard(\/|$)|communities\/[a-z-]+\/?$)/.test(window.parent.location.pathname); } catch (e) {}
   if (!inDash) return;
   var ownHandling = root.classList.contains('ve-embedded');
   root.classList.add('ve-embedded');

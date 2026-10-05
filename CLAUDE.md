@@ -120,7 +120,7 @@ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hi
 Classes currently under the rule:
 
 - `.pulse-card-excerpt` — `/pulse.html`
-- `.news-excerpt` — all 8 `/communities/*/index.html` pages (shared by
+- `.news-excerpt` — the city hub page, `/communities/hub.html` (shared by
   `hub-news.js`, `hub-community.js` opportunity and reward cards)
 - `.camp-card-desc` — `/dashboard/campaigns.html`
 - `.camp-tile-desc` — `/campaigns/index.html`
@@ -272,6 +272,29 @@ component means the sections, badges, vegan filters, search, the public vetting 
 change the Directory there, not in the page. The page adds a city picker from `VE_HUBS`
 (`/public/ve-hubs.js`), a hero with that city's art (New York for all cities), `?city=<hub slug>` and
 `?tab=<section>` in the address bar, and the Founding Membership box for non-members.
+
+## City hubs: one page for every city (Sean, 2026-10-05)
+
+"South Florida is the prototype." Every city hub is one file, `/communities/hub.html`, served at
+`/communities/<slug>` by a rewrite in `vercel.json` (the eight per-city copies drifted apart and were
+removed). A city's details (title, regions, hero art, the "across ___" area, event cities, billboard
+slot ids, South Florida's counties and pinned event) live in `VE_HUBS[].page` in `/public/ve-hubs.js`;
+its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its art in
+`/communities/<slug>/`, its slug in the rewrite, and its three `ad_placements` rows. Change a hub in
+`hub.html` once and every city gets it.
+
+- Menu: one dropdown at every width (no scrolling tab row), sections News, Events, Directory,
+  Opportunities, Bounties, Community Board, Members and Rewards (the last two for members). The
+  address bar carries the section (`?tab=`). Newsletter is gone (the Daily Pulse does that job);
+  Community Partners is hidden but kept in the page; Chat was removed (it showed sample threads).
+- The Board and Bounties open inside the hub, under the community, in a frame
+  (`/board?community=<slug>&hub=1`, `/bounties?...&hub=1`, which hide their own city picker). The
+  framed page sizes the frame; `nav.js` treats a hub parent like the dashboard window.
+- The billboard sits beside every section except Members, Bounties and the Board (full width).
+  Opportunities are two across beside it and list every open role: the city's and the ones open in
+  every city (members through ve-rewards with their application status, anyone else by public read).
+- Members shows real members ranked by points (the leaderboard) to members; signed out, a plain
+  outline behind the Passport gate. Never sample people.
 
 ## Your Guide (Sean, 2026-10-04)
 

@@ -1,7 +1,7 @@
 /* VE Region Directory — shared, reusable component
    Mimics the feel of /directory (category tabs, subcat pills, one unified sorted/filtered list
    per category, real listing links, votes) but scoped to a single region's real listings.
-   Used by each /communities/[city]/index.html page. Self-contained: injects its own CSS,
+   Used by the city hub page (/communities/hub.html) and /directory. Self-contained: injects its own CSS,
    fetches real data from public.listings, and never sends the visitor to the unscoped /directory.
 */
 (function () {

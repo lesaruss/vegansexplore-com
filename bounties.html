@@ -285,12 +285,14 @@
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
     var embedded = document.documentElement.classList.contains('ve-embedded');
+    // Inside a city hub (?hub=1) the city is the hub's, so there is no city to pick.
+    if (params.get('hub')) { var cityRow = $('city') && $('city').closest('.row'); if (cityRow) cityRow.style.display = 'none'; }
     // Signed out: no campaigns, only the way in. Signing in lands in the dashboard window.
     if (!(window.VEAuth && VEAuth.isLoggedIn())) {
       document.body.classList.add('gated');
       $('gate').hidden = false;
       $('gate-signin').addEventListener('click', function () {
-        if (window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to see bounties in your city.', function () { location.replace('/dashboard/bounties' + location.search); });
+        if (window.VEAuth) VEAuth.showAuthModal('Sign in or create your account to see bounties in your city.', function () { if (embedded) location.reload(); else location.replace('/dashboard/bounties' + location.search); });
       });
       return;
     }

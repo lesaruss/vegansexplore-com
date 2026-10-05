@@ -8,7 +8,10 @@
   <meta name="description" content="Ask your city and find who can help. Requests and offers from the Vegans Explore community: rescue, fostering, transport, food, services and volunteers.">
   <!-- Inside the dashboard window the Board drops its own nav and footer, the way the Depot
        pages do; on the public site it keeps both. -->
-  <script>try { if (window.self !== window.top && window.parent.location.origin === location.origin) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
+  <script>try { if (window.self !== window.top && window.parent.location.origin === location.origin) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  // Inside a city hub (?hub=1) the board is that city's, so its city picker is hidden.
+  if (/[?&]hub=1/.test(location.search)) document.documentElement.classList.add('in-hub');</script>
+  <style>.in-hub .hub-hide { display: none !important; }</style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- Community Board (Sean, 2026-09-30). Open to see, join to interact: anyone can read and
@@ -195,8 +198,8 @@
         <h1 class="pulse-only">The Daily Pulse</h1>
         <p class="lede pulse-only">Your city's daily briefing: what is happening, what people are talking about, what is coming up, and one thing you can do about it. Then tell your city what you think.</p>
         <div class="head-row">
-          <label class="field-label" for="city">Your city</label>
-          <select id="city" class="select" aria-label="Choose your city"></select>
+          <label class="field-label hub-hide" for="city">Your city</label>
+          <select id="city" class="select hub-hide" aria-label="Choose your city"></select>
           <button type="button" class="btn btn-primary board-only" id="new-post">Post a request or offer</button>
         </div>
         <div class="join-note" id="join-note" role="note">
