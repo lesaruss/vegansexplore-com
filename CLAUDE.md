@@ -283,7 +283,7 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
 `/communities/<slug>/`, its slug in the rewrite, and its three `ad_placements` rows. Change a hub in
 `hub.html` once and every city gets it.
 
-- Menu: one dropdown at every width (no scrolling tab row), sections News, Events, Directory,
+- Menu: one dropdown at every width (no scrolling tab row), sections Daily Pulse, Events, Directory,
   Opportunities, Bounties, Community Board, Members and Rewards (the last two for members). The
   address bar carries the section (`?tab=`). Newsletter is gone (the Daily Pulse does that job);
   Community Partners is hidden but kept in the page; Chat was removed (it showed sample threads).
@@ -295,6 +295,21 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   every city (members through ve-rewards with their application status, anyone else by public read).
 - Members shows real members ranked by points (the leaderboard) to members; signed out, a plain
   outline behind the Passport gate. Never sample people.
+
+## No city news: the Daily Pulse (Sean, 2026-10-05)
+
+"We're not really doing news like that anymore. We're doing the Daily Pulse." Big local items go in
+that city's Daily Pulse topic and national ones in the daily national topic (`ve_board_posts`, kind
+`topic`, through `ve-board`). We don't write news articles: too many loopholes, and finding the right
+image isn't worth the time. The one exception is a sponsor, because a sponsor gives us the graphics.
+
+- A city hub opens on the Daily Pulse (`?tab=news` and `?tab=pulse` both land there): the city's
+  topics and the national one (`VEHubNews.render` in `/public/hub-news.js` draws them with `VEPulse`).
+  "Featured stories" under it shows only when an approved `ve_community_news` row or a published Pulse
+  piece is tagged to the city. The "Submit news" form is gone.
+- `ve-news-desk` (cron `ve-news-desk-6h`) keeps running: its leads feed the Pulse briefings.
+- Not yet: Depot > Inbox still offers Share to hub and Approve (write it up as an article). Narrowing
+  those to sponsor stories is the next step.
 
 ## Your Guide (Sean, 2026-10-04)
 

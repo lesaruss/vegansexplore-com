@@ -1,10 +1,12 @@
-/* Shared "Local News & Updates" renderer for VE city hub pages.
-   Merges community-submitted news (ve_community_news, approved) with
-   Pulse articles manually tagged into this city (ve_pulse_city_tags -> ve_pulse_content),
-   sorted pinned-first then newest-first. Usage:
-     <div id="hub-news-grid"><p class="hub-dir-empty">Loading local news&hellip;</p></div>
+/* City hub "Daily Pulse" section (Sean, 2026-10-05: "we're not really doing news like that anymore.
+   We're doing the Daily Pulse ... we may do an article if it's a sponsor").
+   The section is the city's Daily Pulse topics plus the national one (VEPulse, /public/ve-pulse-topics.js).
+   Under it, only when one exists, a featured story (a sponsor article, or our own): an approved ve_community_news row (a person approves
+   each one, guard trigger) or a published Pulse piece tagged into this city (ve_pulse_city_tags). Usage:
+     <div id="hub-pulse-grid"></div>
+     <div id="hub-stories" hidden><div id="hub-stories-grid"></div></div>
      <script src="/public/hub-news.js"></script>
-     <script>VEHubNews.render('hub-news-grid', 'new-york');</script>
+     <script>VEHubNews.render('hub-pulse-grid', 'south-florida', 'hub-stories-grid');</script>
 */
 (function () {
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
@@ -66,28 +68,28 @@
     if (window.VEPulse) return cb();
     var s = document.createElement('script'); s.src = '/public/ve-pulse-topics.js'; s.onload = cb; document.head.appendChild(s);
   }
-  function renderPulseToday(grid, city) {
-    if (!grid || !grid.parentNode || document.getElementById('vep-hub-' + city)) return;
+  // The section itself: this city's topics and the national one, newest first.
+  function renderPulse(grid, city) {
+    grid.className = 'vep-grid';
+    grid.innerHTML = '<p class="hub-dir-empty">Loading the Daily Pulse&hellip;</p>';
     loadPulse(function () {
-      VEPulse.fetch(city, 10).then(function (topics) {
-        var today = VEPulse.todays(topics);
-        if (!today.length) return;
-        var box = document.createElement('div');
-        box.id = 'vep-hub-' + city;
-        box.style.margin = '0 0 28px';
-        box.innerHTML = '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;">' +
-          '<h3 style="font-size:18px;font-weight:900;margin:0;">Today on the Daily Pulse</h3>' +
-          '<a href="/board?lane=pulse&community=' + encodeURIComponent(city) + '" style="font-size:13px;font-weight:800;color:#2d7d31;">Join the conversation &rarr;</a></div>' +
-          '<div class="vep-grid">' + today.map(function (t) { return VEPulse.card(t, city); }).join('') + '</div>';
-        grid.parentNode.insertBefore(box, grid);
+      VEPulse.fetch(city, 12).then(function (topics) {
+        grid.innerHTML = topics.length ? topics.map(function (t) { return VEPulse.card(t, city); }).join('')
+          : '<p class="hub-dir-empty">The first Daily Pulse for this city is on its way.</p>';
       });
     });
   }
 
-  function render(gridId, city) {
+  function render(pulseGridId, city, storiesGridId) {
+    var grid = document.getElementById(pulseGridId);
+    if (grid) renderPulse(grid, city);
+    if (storiesGridId) renderStories(storiesGridId, city);
+  }
+
+  function renderStories(gridId, city) {
     var grid = document.getElementById(gridId);
     if (!grid) return;
-    renderPulseToday(grid, city);
+    var wrap = grid.parentNode;
     Promise.all([fetchCommunityNews(city), fetchPulseSpotlights(city)]).then(function (results) {
       var items = results[0].concat(results[1]);
       items.sort(function (a, b) {
@@ -98,10 +100,8 @@
       });
       items = items.slice(0, 12);
 
-      if (!items.length) {
-        grid.innerHTML = '<p class="hub-dir-empty">Local stories are coming soon.</p>';
-        return;
-      }
+      if (!items.length) return;
+      wrap.hidden = false;
 
       grid.innerHTML = items.map(function (n) {
         var d = n.published_at ? new Date(n.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
@@ -119,9 +119,7 @@
             (n.url ? '<a href="' + esc(n.url) + '"' + (isExternal ? ' target="_blank" rel="noopener noreferrer"' : '') + ' class="news-read">Read story</a>' : '') +
           '</div></article>';
       }).join('');
-    }).catch(function () {
-      grid.innerHTML = '<p class="hub-dir-empty">Couldn\'t load news right now.</p>';
-    });
+    }).catch(function () {});
   }
 
   /* Live "Upcoming / Past Events" renderer, reused by newer hub pages.

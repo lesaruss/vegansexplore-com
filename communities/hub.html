@@ -425,23 +425,15 @@
     </div>
     <div class="section-hdr">
       <div>
-        <h2 class="section-title" id="hub-news-title">Local News &amp; Updates</h2>
-        <p class="section-sub" data-hub-text="What's happening in the {name} Vegan community."></p>
+        <h2 class="section-title" id="hub-news-title">The Daily Pulse</h2>
+        <p class="section-sub" data-hub-text="Today's briefing for {name} and the national one. Each topic opens a conversation on the Community Board."></p>
       </div>
     </div>
-    <div class="news-grid" id="hub-news-grid"><p class="hub-dir-empty">Loading local news&hellip;</p></div>
-    <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--ve-border);">
-      <div id="hub-news-submit-closed">
-        <button type="button" class="btn-outline" id="hub-news-submit-open" style="font-size:11px;padding:11px 20px;">Submit news to this community</button>
-      </div>
-      <form id="hub-news-submit-form" style="display:none;max-width:520px;">
-        <p style="font-size:12px;color:var(--ve-text-50);margin-bottom:14px;" data-hub-text="Share something happening in the {name} Vegan community. Submissions are reviewed before they go live."></p>
-        <div class="hub-modal-field"><label for="hub-news-headline">Headline</label><input type="text" id="hub-news-headline" maxlength="200" required></div>
-        <div class="hub-modal-field"><label for="hub-news-summary">What's the story?</label><textarea id="hub-news-summary" rows="3"></textarea></div>
-        <div class="hub-modal-field" style="margin-bottom:14px;"><label for="hub-news-url">Link (optional)</label><input type="url" id="hub-news-url" placeholder="https://"></div>
-        <button type="submit" class="btn-join" id="hub-news-submit-btn">Submit for review</button>
-        <p id="hub-news-submit-msg" style="font-size:12px;margin-top:10px;"></p>
-      </form>
+    <div id="hub-pulse-grid"><p class="hub-dir-empty">Loading the Daily Pulse&hellip;</p></div>
+    <!-- Stories (Sean, 2026-10-05: an article only when it is a sponsor). Hidden until one exists. -->
+    <div id="hub-stories" hidden style="margin-top:32px;padding-top:24px;border-top:1px solid var(--ve-border);">
+      <h3 style="font-size:18px;font-weight:900;margin:0 0 14px;">Featured stories</h3>
+      <div class="news-grid" id="hub-stories-grid"></div>
     </div>
   </section>
 
@@ -630,7 +622,7 @@
   // Partners is hidden for now, and the Board and Bounties open here, under the community.
   // Members and Rewards are for members. `wide` sections take the full width (no billboard).
   var TABS = [
-    { id: 'news', label: 'News' },
+    { id: 'news', label: 'Daily Pulse' },
     { id: 'events', label: 'Events' },
     { id: 'directory', label: 'Directory' },
     { id: 'opportunities', label: 'Opportunities' },
@@ -714,8 +706,7 @@
   window.addEventListener('resize', tellView);
 
   // ---- News, the Passport Challenge, events
-  VEHubNews.render('hub-news-grid', SLUG);
-  VEHubCommunity.wireNewsSubmit(SLUG);
+  VEHubNews.render('hub-pulse-grid', SLUG, 'hub-stories-grid');
   fetch(SUPABASE_URL + '/functions/v1/ve-hunt', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'current', community: SLUG }) })
     .then(function (r) { return r.json(); }).then(function (d) {
       var h = d && d.hunt; if (!h) return;
@@ -785,7 +776,7 @@
 
   // Open on ?tab= (a listing breadcrumb, a shared link, or back). Old tab names land somewhere useful.
   var wanted = new URLSearchParams(location.search).get('tab') || 'news';
-  if (wanted === 'newsletter' || wanted === 'chat' || wanted === 'partners') wanted = wanted === 'chat' ? 'board' : 'news';
+  if (wanted === 'pulse' || wanted === 'newsletter' || wanted === 'chat' || wanted === 'partners') wanted = wanted === 'chat' ? 'board' : 'news';
   switchTab(wanted, { initial: true, noPush: !new URLSearchParams(location.search).get('tab') });
 })();
 </script>
