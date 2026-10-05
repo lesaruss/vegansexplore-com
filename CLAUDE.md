@@ -308,8 +308,12 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
   "Featured stories" under it shows only when an approved `ve_community_news` row or a published Pulse
   piece is tagged to the city. The "Submit news" form is gone.
 - `ve-news-desk` (cron `ve-news-desk-6h`) keeps running: its leads feed the Pulse briefings.
-- Not yet: Depot > Inbox still offers Share to hub and Approve (write it up as an article). Narrowing
-  those to sponsor stories is the next step.
+- Depot > Inbox (2026-10-05): stories left alone feed the Pulse briefings; **Lead a Pulse topic** starts a
+  topic from one story (`ve-board` `topic_draft` with `lead_id`). **Sponsor story** is the only way to
+  write one up or share it to a hub: `ve-news-desk` `lead_write` and `lead_share` refuse without a
+  sponsor name (`sponsor_only`) and save it in `ve_news_leads.sponsor_name`. A story a topic used
+  (`topic_post_id`) counts as done (migration `20261005_ve_news_leads_sponsor_only.sql`). HQ's Depot calls
+  the same function, so its write-up needs a sponsor too.
 
 ## Your Guide (Sean, 2026-10-04)
 

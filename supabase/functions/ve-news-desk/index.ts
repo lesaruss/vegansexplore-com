@@ -35,8 +35,11 @@
 //   inbox_list { city? }         the Inbox: decide, being written, ready, done, plus counts
 //   link_add { url, city_slug?, note? }   paste any link: the page is read for its title, summary and picture
 //   lead_note { id, note }       Sean's line for the writer (also what a page that could not be read needs)
-//   lead_update { id, status?, notes?, city_slug? }   lead_write { id, note? }  (Approve)
-//   lead_deny { id }             lead_share { id, city_slug? }  share to a city hub as a link, no write-up
+//   lead_update { id, status?, notes?, city_slug? }   lead_write { id, sponsor, note? }  (write it up)
+//   lead_deny { id }             lead_share { id, sponsor, city_slug? }  share to a city hub as a link, no write-up
+//   No city news (Sean, 2026-10-05): the Inbox feeds the Daily Pulse. Writing a story up, or sharing it to a
+//   hub, is for a sponsor's story only: both need the sponsor's name (sponsor_name) or answer 'sponsor_only'.
+//   A story a Pulse topic used (topic_post_id) is done, not waiting on a decision.
 //   ready_publish { id }         publish the lead's draft (needs a Library cover)
 //   ready_send_back { id, note } back to the writer with what to change
 //   pulse_preview { pulse_id }   a one-hour link to the piece on its real article page, draft or not
@@ -350,7 +353,7 @@ async function readPage(link: string): Promise<{ readable: boolean; title: strin
   return out;
 }
 
-const LEAD_COLS = 'id, brand_slug, feed_id, origin, community_news_id, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug, cover_credit, cover_license, names_business, business_listing_id, track, publish_at, updated_note, ve_pulse_outreach(id, contact_name, contact_email, contact_channel, contact_url, contact_source, subject, status, sent_at, error)), ve_news_feeds(scope, feed_name)';
+const LEAD_COLS = 'id, brand_slug, feed_id, origin, community_news_id, topic_post_id, sponsor_name, submitted_by_name, sean_note, needs_line, decided_at, source_name, title, url, summary, image_url, published_at, city_slug, reason, matched_terms, headline_match, status, pulse_id, draft_error, notes, marked_at, drafted_at, created_at, ve_pulse_content(id, slug, status, title, summary, category, thumbnail_url, city_slug, cover_credit, cover_license, names_business, business_listing_id, track, publish_at, updated_note, ve_pulse_outreach(id, contact_name, contact_email, contact_channel, contact_url, contact_source, subject, status, sent_at, error)), ve_news_feeds(scope, feed_name)';
 const FEED_COLS = 'id, brand_slug, city_slug, feed_name, feed_url, scope, search_query, locale, is_active, last_fetched_at, last_status, last_count, notes, created_at';
 
 Deno.serve(async (req) => {
@@ -456,8 +459,10 @@ Deno.serve(async (req) => {
   // Approve: the story goes to the Background writer, which picks up every 'write' lead.
   if (body.action === 'lead_write') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const sponsor = plain(body.sponsor, 120);
+    if (!sponsor) return json({ error: 'sponsor_only' }, 409);
     const now = new Date().toISOString();
-    const patch: Record<string, unknown> = { status: 'write', marked_at: now, decided_at: now, draft_error: null };
+    const patch: Record<string, unknown> = { status: 'write', marked_at: now, decided_at: now, draft_error: null, sponsor_name: sponsor };
     if (body.note !== undefined) { patch.sean_note = plain(body.note, 1500) || null; if (patch.sean_note) patch.needs_line = false; }
     // A page we could not read needs Sean's one line before the writer can do anything with it.
     const { data: cur } = await db.from('ve_news_leads').select('needs_line, sean_note').eq('id', body.id).maybeSingle();
@@ -471,24 +476,26 @@ Deno.serve(async (req) => {
 
   if (body.action === 'inbox_list') {
     const city = HUB_SLUGS.includes(body.city) ? body.city : null;
-    const pick = (statuses: string[], order: string, limit: number) => {
+    const pick = (statuses: string[], order: string, limit: number, used?: boolean) => {
       let q = db.from('ve_news_leads').select(LEAD_COLS).in('status', statuses);
+      if (used === false) q = q.is('topic_post_id', null);
+      if (used === true) q = q.not('topic_post_id', 'is', null);
       if (brand) q = q.eq('brand_slug', brand);
       if (city) q = q.eq('city_slug', city);
       return q.order(order, { ascending: false, nullsFirst: false }).limit(limit);
     };
-    const [dec, wri, rdy, done, stats] = await Promise.all([
-      pick(['new'], 'published_at', 600), pick(['write', 'drafting'], 'marked_at', 200), pick(['drafted'], 'drafted_at', 200),
-      pick(['published', 'shared', 'dismissed'], 'decided_at', 60),
+    const [dec, wri, rdy, done, used, stats] = await Promise.all([
+      pick(['new'], 'published_at', 600, false), pick(['write', 'drafting'], 'marked_at', 200), pick(['drafted'], 'drafted_at', 200),
+      pick(['published', 'shared', 'dismissed'], 'decided_at', 60), pick(['new'], 'published_at', 60, true),
       db.rpc('ve_news_inbox_stats', { p_brand: brand }),
     ]);
-    const err = dec.error || wri.error || rdy.error || done.error || stats.error;
+    const err = dec.error || wri.error || rdy.error || done.error || used.error || stats.error;
     if (err) return json({ error: 'list_failed', message: err.message }, 500);
     // Sean's own links and member stories first, then the newest feed stories.
     const rank: Record<string, number> = { link: 0, member: 1, city_news: 2, feed: 3 };
     const decide = (dec.data || []).sort((a: any, b: any) => (rank[a.origin] - rank[b.origin]) || String(b.published_at || b.created_at).localeCompare(String(a.published_at || a.created_at)));
     const counts = stats.data?.counts || {};
-    return json({ brand, by_brand: stats.data?.by_brand || {}, decide, writing: wri.data || [], ready: rdy.data || [], done: done.data || [], counts, hubs: HUBS.map(({ slug, name }) => ({ slug, name })) });
+    return json({ brand, by_brand: stats.data?.by_brand || {}, decide, writing: wri.data || [], ready: rdy.data || [], done: (done.data || []).concat(used.data || []), counts, hubs: HUBS.map(({ slug, name }) => ({ slug, name })) });
   }
 
   if (body.action === 'link_add') {
@@ -540,6 +547,8 @@ Deno.serve(async (req) => {
   // (public/hub-news.js reads approved ve_community_news rows).
   if (body.action === 'lead_share') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const sponsor = plain(body.sponsor, 120);
+    if (!sponsor) return json({ error: 'sponsor_only' }, 409);
     const { data: lead } = await db.from('ve_news_leads').select(LEAD_COLS).eq('id', body.id).maybeSingle();
     if (!lead || !['new', 'dismissed'].includes(lead.status)) return json({ error: 'not_available' }, 409);
     // City hubs are Vegans Explore's.
@@ -563,7 +572,7 @@ Deno.serve(async (req) => {
       if (error) return denied(error.message);
       cnId = newId as string;
     }
-    const { data, error } = await db.from('ve_news_leads').update({ status: 'shared', city_slug: city, decided_at: now, community_news_id: cnId }).eq('id', body.id).select(LEAD_COLS).single();
+    const { data, error } = await db.from('ve_news_leads').update({ status: 'shared', city_slug: city, decided_at: now, community_news_id: cnId, sponsor_name: sponsor }).eq('id', body.id).select(LEAD_COLS).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, lead: data });
   }

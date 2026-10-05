@@ -125,7 +125,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Inbox</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Every story idea in one place: links you paste, stories members send from their hub, and what our <a href="/admin/depot/sources">Sources</a> flag. <b>Approve</b> and it is written up as a Pulse draft; <b>Deny</b> and it is gone. Finished drafts come back under <b>Ready</b> for you to publish or send back. Nothing goes live without your tap.</p>
+    <p class="sub">Every story idea in one place: links you paste, stories members send from their hub, and what our <a href="/admin/depot/sources">Sources</a> flag. These stories feed the Daily Pulse: the writer builds each day's briefing from what is here. <b>Lead a Pulse topic</b> starts a topic from one story; <b>Deny</b> and it is gone. We don't write news articles any more (Sean, Oct 5), so <b>Sponsor story</b> is the only way to write one up or share it to a hub. Nothing goes live without your tap.</p>
     <div id="ib-gate" class="gate" hidden></div>
     <div id="ib-app" hidden>
       <!-- Daily Pulse topics (Sean, 2026-10-04): the national topic is approved here; the switch
@@ -197,11 +197,13 @@
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-news-desk';
+      var BOARD = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-board';
       var $ = function (id) { return document.getElementById(id); };
       var HUBS = [], data = { decide: [], writing: [], ready: [], done: [], counts: {} }, lane = 'decide', shown = 30, poll = null;
       var FROM = { link: 'Your link', member: 'Member', city_news: 'City News' };
       var KIND = { vegan: 'Vegan outlet', local: 'Local outlet', search: 'Google News' };
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function board(body) { return fetch(BOARD, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function hub(slug) { var h = HUBS.filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : 'No city'; }
       function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
@@ -230,8 +232,12 @@
           (l.needs_line ? '<p class="ask">The page could not be read. Tell the writer the story in one line.</p>' : '') +
           (l.sean_note ? '<p class="mine"><b>Your line:</b> ' + esc(l.sean_note) + '</p>' : '') +
           '<div class="line"' + (l.needs_line || l.origin === 'link' ? '' : ' hidden') + ' data-linebox><input type="text" maxlength="400" data-line placeholder="One line about the story (optional unless asked)" aria-label="One line about the story" value="' + esc(l.sean_note || '') + '"></div>' +
-          '<div class="actions"><button type="button" class="btn" data-approve>Approve</button><button type="button" class="btn btn-deny" data-deny>Deny</button>' + cityPick(l) +
-          (safe(l.url) ? '<button type="button" class="btn-link" data-share>Share to the hub as a link</button>' : '') +
+          // Sponsor stories only (Sean, 2026-10-05): the name of the sponsor goes with the write-up or the share.
+          '<div class="line" hidden data-sponsorbox><input type="text" maxlength="120" data-sponsor placeholder="Sponsor name" aria-label="Sponsor name">' +
+            '<button type="button" class="btn" data-approve>Write it up</button>' +
+            (safe(l.url) ? '<button type="button" class="btn btn-ghost" data-share>Share to the hub as a link</button>' : '') + '</div>' +
+          '<div class="actions"><button type="button" class="btn" data-topic>Lead a Pulse topic</button><button type="button" class="btn btn-deny" data-deny>Deny</button>' + cityPick(l) +
+          '<button type="button" class="btn-link" data-sponsoropen>Sponsor story</button>' +
           (l.needs_line || l.origin === 'link' ? '' : '<button type="button" class="btn-link" data-addline>Add a line</button>') +
           '</div></div></article>';
       }
@@ -279,7 +285,8 @@
           '<div class="actions">' + (l.draft_error ? '<button type="button" class="btn btn-deny" data-deny>Deny</button>' : '') + '</div></div></article>';
       }
       function cardDone(l) {
-        var p = l.ve_pulse_content || {}, what = { published: 'Published on the Pulse', shared: 'Shared to the ' + hub(l.city_slug) + ' hub as a link', dismissed: 'Denied' }[l.status] || l.status;
+        var p = l.ve_pulse_content || {}, what = l.status === 'new' && l.topic_post_id ? 'Used in the Daily Pulse'
+          : ({ published: 'Published on the Pulse', shared: 'Shared to the ' + hub(l.city_slug) + ' hub as a link', dismissed: 'Denied' }[l.status] || l.status) + (l.sponsor_name ? ' (sponsor: ' + l.sponsor_name + ')' : '');
         return '<article class="card noimg" data-id="' + esc(l.id) + '">' + head(l, '') +
           '<p class="flag">' + esc(what) + (l.decided_at ? ', ' + esc(day(l.decided_at)) : '') + '</p>' +
           (l.status === 'published' && l.pulse_id ? outreachLine(p, true) : '') + '<div class="actions">' +
@@ -359,12 +366,28 @@
         var id = el.getAttribute('data-id'), l = find(id), line = el.querySelector('[data-line]');
         if (b.hasAttribute('data-addline')) { el.querySelector('[data-linebox]').hidden = false; line.focus(); b.remove(); return; }
         if (b.hasAttribute('data-backopen')) { el.querySelector('[data-backbox]').hidden = false; el.querySelector('[data-back]').focus(); return; }
+        if (b.hasAttribute('data-sponsoropen')) { el.querySelector('[data-sponsorbox]').hidden = false; el.querySelector('[data-sponsor]').focus(); b.remove(); return; }
+        if (b.hasAttribute('data-topic')) {
+          var scope = el.querySelector('[data-city]').value || 'national';
+          busy(el, true);
+          board({ action: 'topic_draft', community: scope, lead_id: id }).then(function (d) {
+            busy(el, false);
+            if (d.error) return fail(el, d.message || 'That did not start. Try again.');
+            var where = scope === 'national' ? 'national' : hub(scope);
+            el.querySelector('.actions').innerHTML = '<p class="working">Started as the ' + esc(where) + ' Pulse topic. The writer is building it; it shows in the Daily Pulse desk above (switch it to ' + esc(where) + ').</p>';
+            var sb = el.querySelector('[data-sponsorbox]'); if (sb) sb.remove();
+          }, function () { busy(el, false); fail(el, 'Could not connect. Try again.'); });
+          return;
+        }
+        var sponsor = (el.querySelector('[data-sponsor]') || {}).value;
+        sponsor = sponsor ? sponsor.trim() : '';
+        if ((b.hasAttribute('data-approve') || b.hasAttribute('data-share')) && !sponsor) { fail(el, 'Name the sponsor first. We only write up or share sponsor stories.'); el.querySelector('[data-sponsor]').focus(); return; }
         if (b.hasAttribute('data-approve')) {
           var note = line ? line.value.trim() : '';
           if (l.needs_line && !note) { el.querySelector('[data-linebox]').hidden = false; line.focus(); fail(el, 'Add one line first: the writer cannot read that page.'); return; }
           busy(el, true);
-          api(Object.assign({ action: 'lead_write', id: id }, note && note !== (l.sean_note || '') ? { note: note } : {})).then(function (d) {
-            if (!d.ok) return fail(el, d.error === 'needs_line' ? 'Add one line first: the writer cannot read that page.' : 'That did not save. Try again.');
+          api(Object.assign({ action: 'lead_write', id: id, sponsor: sponsor }, note && note !== (l.sean_note || '') ? { note: note } : {})).then(function (d) {
+            if (!d.ok) return fail(el, d.error === 'needs_line' ? 'Add one line first: the writer cannot read that page.' : d.error === 'sponsor_only' ? 'Name the sponsor first.' : 'That did not save. Try again.');
             drop(id, { lane: 'writing', lead: d.lead });
           }, function () { fail(el, 'Could not connect. Try again.'); });
           return;
@@ -379,7 +402,7 @@
           if (!city) { fail(el, 'Pick the city hub first.'); el.querySelector('[data-city]').focus(); return; }
           if (!confirm('Share this link on the ' + hub(city) + ' hub, without writing it up?')) return;
           busy(el, true);
-          api({ action: 'lead_share', id: id, city_slug: city }).then(function (d) { if (!d.ok) return fail(el, 'That did not save. Try again.'); drop(id, { lane: 'done', lead: d.lead }); }, function () { fail(el, 'Could not connect. Try again.'); });
+          api({ action: 'lead_share', id: id, city_slug: city, sponsor: sponsor }).then(function (d) { if (!d.ok) return fail(el, 'That did not save. Try again.'); drop(id, { lane: 'done', lead: d.lead }); }, function () { fail(el, 'Could not connect. Try again.'); });
           return;
         }
         if (b.hasAttribute('data-publish')) {
