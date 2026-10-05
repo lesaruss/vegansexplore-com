@@ -23,6 +23,10 @@
 // POST { action: 'set_narration', page?, city, key, url, dur, source_name }
 // POST { action: 'clear_narration', page?, city, key }
 //   Pick a narration take from the Depot for a slide, or go back to the page's built-in one.
+// POST { action: 'import_take', slug }                                   x-admin-token: <LESARUSS_ADMIN_TOKEN>
+//   Puts a take Sean uploaded in HQ > Recording Queue live (Sean, 2026-10-05): reads the row's
+//   target (page, city, clip key), levels the WAV exactly like the Depot does in the browser,
+//   stores it in vegan-media, points the slide at it and marks the queue row live.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -35,7 +39,8 @@ const PAGES: Record<string, string[]> = {
   // Member entry point, /welcome (2026-09-30).
   member: ['welcome', 'oldway', 'city', 'inperson', 'board', 'unfinished', 'seat'],
   // City dinner invitation, /dinners/<city> (Sean, 2026-10-04: the template for every city we go into).
-  dinner: ['invite', 'why', 'build', 'ask', 'evening', 'seat', 'faq'],
+  // 'voices' (Sean, 2026-10-05) is the slide only invitees whose membership is on us see.
+  dinner: ['invite', 'why', 'build', 'ask', 'voices', 'evening', 'seat', 'faq'],
   // Host the table, /dinners/host (2026-10-04): the page for restaurants we ask to host.
   host: ['invite', 'why', 'table', 'night', 'terms', 'get', 'talk'],
 };
@@ -52,6 +57,66 @@ const ownFile = (u: unknown, ext: RegExp) => typeof u === 'string' && u.startsWi
 const AUDIO_EXT = /\.(mp3|wav|m4a|aac|ogg)$/i, VIDEO_EXT = /\.(mp4|mov|webm)$/i;
 const CITIES = ['south-florida', 'orlando-north-central-florida', 'philadelphia', 'new-york', 'los-angeles'];
 const MAX_BYTES = 12 * 1024 * 1024;
+// Same leveling as the Depot's browser step (admin/depot/narration.html process()).
+const RATE = 32000, TARGET_RMS = 0.1, PEAK = 0.89, PAD = 0.35;
+
+// Decode a PCM or float WAV to mono samples in -1..1, then resample to RATE.
+function decodeWav(bytes: Uint8Array): Float32Array {
+  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const tag = (o: number) => String.fromCharCode(bytes[o], bytes[o + 1], bytes[o + 2], bytes[o + 3]);
+  if (tag(0) !== 'RIFF' || tag(8) !== 'WAVE') throw new Error('not_wav');
+  let o = 12, fmt = 0, ch = 0, rate = 0, bits = 0, dataOff = -1, dataLen = 0;
+  while (o + 8 <= bytes.length) {
+    const id = tag(o), len = dv.getUint32(o + 4, true);
+    if (id === 'fmt ') {
+      fmt = dv.getUint16(o + 8, true); ch = dv.getUint16(o + 10, true); rate = dv.getUint32(o + 12, true); bits = dv.getUint16(o + 22, true);
+      if (fmt === 0xfffe && len >= 26) fmt = dv.getUint16(o + 32, true); // WAVE_FORMAT_EXTENSIBLE: real format in the sub-format GUID
+    } else if (id === 'data') { dataOff = o + 8; dataLen = Math.min(len, bytes.length - dataOff); break; }
+    o += 8 + len + (len % 2);
+  }
+  if (dataOff < 0 || !ch || !rate || !(fmt === 1 || fmt === 3)) throw new Error('unsupported_wav');
+  const bps = bits / 8, frames = Math.floor(dataLen / (bps * ch)), mono = new Float32Array(frames);
+  const read = (at: number) => fmt === 3 ? (bits === 64 ? dv.getFloat64(at, true) : dv.getFloat32(at, true))
+    : bits === 16 ? dv.getInt16(at, true) / 32768
+    : bits === 24 ? ((dv.getUint8(at) | (dv.getUint8(at + 1) << 8) | (dv.getInt8(at + 2) << 16)) / 8388608)
+    : bits === 32 ? dv.getInt32(at, true) / 2147483648
+    : (dv.getUint8(at) - 128) / 128;
+  for (let f = 0; f < frames; f++) {
+    let sum = 0;
+    for (let c = 0; c < ch; c++) sum += read(dataOff + (f * ch + c) * bps);
+    mono[f] = sum / ch;
+  }
+  if (rate === RATE) return mono;
+  const n = Math.floor(frames * RATE / rate), out = new Float32Array(n), step = rate / RATE;
+  for (let i = 0; i < n; i++) { const x = i * step, a = Math.floor(x), t = x - a; out[i] = mono[a] * (1 - t) + (mono[Math.min(frames - 1, a + 1)] ?? 0) * t; }
+  return out;
+}
+
+// Trim long silence at the ends, level to a steady speaking volume under a peak ceiling,
+// short fades, 16-bit mono WAV at RATE.
+function levelWav(x: Float32Array): { wav: Uint8Array; dur: number } {
+  const n = x.length, win = Math.round(RATE * 0.05), rmsW: number[] = [];
+  for (let i = 0; i < n; i += win) { let s = 0, c = 0; for (let j = i; j < Math.min(n, i + win); j++) { s += x[j] * x[j]; c++; } rmsW.push(Math.sqrt(s / c)); }
+  const gate = 0.012, first = rmsW.findIndex((v) => v > gate);
+  if (first < 0) throw new Error('silent');
+  let last = rmsW.length - 1;
+  while (last > 0 && rmsW[last] <= gate) last--;
+  const start = Math.max(0, first * win - Math.round(PAD * RATE)), end = Math.min(n, (last + 1) * win + Math.round(PAD * RATE));
+  const act = rmsW.slice(first, last + 1).filter((v) => v > gate);
+  const rms = Math.sqrt(act.reduce((a, v) => a + v * v, 0) / act.length);
+  let peak = 0; for (let i = start; i < end; i++) peak = Math.max(peak, Math.abs(x[i]));
+  const gain = Math.min(TARGET_RMS / rms, PEAK / (peak || 1));
+  const m = end - start, fade = Math.round(RATE * 0.02), wav = new Uint8Array(44 + m * 2), dv = new DataView(wav.buffer);
+  const put = (o: number, t: string) => { for (let k = 0; k < t.length; k++) wav[o + k] = t.charCodeAt(k); };
+  put(0, 'RIFF'); dv.setUint32(4, 36 + m * 2, true); put(8, 'WAVE'); put(12, 'fmt '); dv.setUint32(16, 16, true);
+  dv.setUint16(20, 1, true); dv.setUint16(22, 1, true); dv.setUint32(24, RATE, true); dv.setUint32(28, RATE * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+  put(36, 'data'); dv.setUint32(40, m * 2, true);
+  for (let i = 0; i < m; i++) {
+    const f = Math.min(1, i / fade, (m - 1 - i) / fade), v = Math.max(-1, Math.min(1, x[start + i] * gain * f));
+    dv.setInt16(44 + i * 2, v < 0 ? v * 0x8000 : v * 0x7fff, true);
+  }
+  return { wav, dur: m / RATE };
+}
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -85,6 +150,8 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
+
+  if (body.action === 'import_take') return importTake(req, String(body.slug || ''));
 
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
@@ -234,3 +301,41 @@ Deno.serve(async (req) => {
 
   return json({ error: 'unknown_action' }, 400);
 });
+
+// A take from HQ > Recording Queue, put live on its slide. Server-to-server: the caller sends
+// the LESARUSS admin token, the same check url-probe uses.
+async function importTake(req: Request, slug: string) {
+  const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+  const given = req.headers.get('x-admin-token') || '';
+  if (!sec?.value || given !== sec.value) return json({ error: 'not_authenticated' }, 401);
+  const { data: row } = await db.from('recording_queue').select('slug, status, take_bucket, take_path, target, title').eq('slug', slug).maybeSingle();
+  if (!row) return json({ error: 'not_found' }, 404);
+  const t = (row.target || {}) as Record<string, string>;
+  const page = String(t.page || ''), city = String(t.city_slug || ''), key = String(t.clip_key || '');
+  if (t.system !== 've_onboarding_audio' || !PAGES[page]?.includes(key) || !CITIES.includes(city)) return json({ error: 'bad_target' }, 400);
+  if (!row.take_bucket || !row.take_path) return json({ error: 'no_take' }, 400);
+  const dl = await db.storage.from(row.take_bucket).download(row.take_path);
+  if (dl.error || !dl.data) return json({ error: 'download_failed', message: dl.error?.message }, 500);
+  let out: { wav: Uint8Array; dur: number };
+  try { out = levelWav(decodeWav(new Uint8Array(await dl.data.arrayBuffer()))); }
+  catch (e) { return json({ error: 'decode_failed', message: String((e as Error).message || e) }, 400); }
+  if (out.wav.length > MAX_BYTES) return json({ error: 'bad_size' }, 400);
+  const path = `onboarding-audio/${page}/${city}/sean/${key}-${Date.now()}.wav`;
+  const up = await db.storage.from('vegan-media').upload(path, out.wav, { contentType: 'audio/wav', upsert: false });
+  if (up.error) return json({ error: 'upload_failed', message: up.error.message }, 500);
+  const url = db.storage.from('vegan-media').getPublicUrl(path).data.publicUrl;
+  const dur = Math.round(out.dur * 10) / 10;
+  const source_name = `Sean's recording (HQ Recording Queue: ${row.title})`.slice(0, 200);
+  const { error } = await db.from('ve_onboarding_audio').upsert({
+    page, city_slug: city, clip_key: key, url, dur, source_name, uploaded_by: null, updated_at: new Date().toISOString(),
+  }, { onConflict: 'page,city_slug,clip_key' });
+  if (error) return json({ error: 'save_failed', message: error.message }, 500);
+  const hex = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', out.wav))).map((x) => x.toString(16).padStart(2, '0')).join('');
+  await db.from('ve_media_library').insert({
+    sha256: hex, kind: 'audio', mime: 'audio/wav', url, bytes: out.wav.length, duration: dur, uses: ['narration'],
+    labels: [page, key], source_name: `Narration: ${PAGE_LABEL[page] || page}, ${key}, Sean's recording`,
+    source_ref: `audio:${path.slice('onboarding-audio/'.length)}`,
+  });
+  await db.from('recording_queue').update({ status: 'live', updated_by: 'logan', updated_at: new Date().toISOString() }).eq('slug', slug);
+  return json({ ok: true, slug, page, city, key, url, dur });
+}

@@ -201,8 +201,8 @@
           <li>Three courses, hosted</li>
         </ul>
         <div class="cta-row">
-          <button type="button" class="btn btn-primary" data-go="1">See the invitation</button>
-          <button type="button" class="btn btn-ghost" data-go="5">Take your seat</button>
+          <button type="button" class="btn btn-primary" data-go="why">See the invitation</button>
+          <button type="button" class="btn btn-ghost" data-go="seat">Take your seat</button>
         </div>
       </div>
     </div>
@@ -250,6 +250,20 @@
           <div class="card"><div class="n">3</div><b>Lead something</b><span>A night, a cause, a corner of the city. We back the people who step up.</span></div>
         </div>
         <p class="spotlight">We&rsquo;re a nonprofit, and we always will be. The goal is to support hundreds of Vegan communities, in cities around the world.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- For our Voices (Sean, 2026-10-05): the complimentary membership is how we bring in the
+       city's influencers, so only invitees whose membership is on us see this slide. -->
+  <section class="slide" id="s-voices" data-comp-only aria-roledescription="slide" aria-label="Your membership is on us">
+    <div class="cols">
+      <div class="media" data-key="voices" style="--pos-m:42%" data-cap="Your membership is on us"></div>
+      <div class="body">
+        <p class="eyebrow">For you</p>
+        <h2>Your membership <em>is on us.</em></h2>
+        <p class="lede">We invited you because of your work and what you&rsquo;ve given this community. Your Founding Membership is our thank-you. It comes with your seat, and it opens everything a Founding Member has.</p>
+        <p class="spotlight">Nothing is asked in return. Our hope, said once and plainly: that you&rsquo;ll tell people about Vegans Explore.</p>
       </div>
     </div>
   </section>
@@ -352,7 +366,7 @@
         <details><summary>Can I bring someone?</summary><p>Seats are by name, so it&rsquo;s just you at dinner. Bring your people on Saturday, October 24, as our guests, and tell us who should be at the next dinner.</p></details>
         <details><summary>Why an answer in advance?</summary><p>So the night starts where you are. I&rsquo;ll read a few answers aloud, and they shape what we build next.</p></details>
         <details><summary>Can&rsquo;t make it on the 23rd?</summary><p>Tell us on the seat slide. You can suggest someone to sit in your place, and you&rsquo;ll be first on the list for the next dinner.</p></details>
-        <div class="cta-row"><button type="button" class="btn btn-primary" data-go="5">Go to your seat</button></div>
+        <div class="cta-row"><button type="button" class="btn btn-primary" data-go="seat">Go to your seat</button></div>
       </div>
     </div>
   </section>
@@ -379,7 +393,7 @@
       panels: {
         invite: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_191202_3f812ce9-9f99-4794-b08c-035aaa88559d.png', why: HF + '164150_1c29bf05-1f51-4e45-a3c3-4b3fae41dd4f.png',
         build: 'https://d2ol7oe51mr4n9.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/ed0eb5e8-7150-4da1-8a6f-0def5c0df104.png', ask: HF + '164149_9266428b-0d50-43c0-80e8-60fba5258309.png',
-        evening: HF + '164150_ad3e10f5-8514-4ebd-a019-ba5d999b2a02.png', seat: HF + '164149_501d6a50-0125-4b40-b2a4-40773b339081.png',
+        voices: HF + '164149_9266428b-0d50-43c0-80e8-60fba5258309.png', evening: HF + '164150_ad3e10f5-8514-4ebd-a019-ba5d999b2a02.png', seat: HF + '164149_501d6a50-0125-4b40-b2a4-40773b339081.png',
         faq: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261004_185514_7927c50c-6b46-424b-a65d-93e88a0d660f.png',
         'bg-desktop': HF + '154721_ab571b65-aac8-412c-a204-ebbc44120cb5.png', 'bg-mobile': HF + '154721_ab571b65-aac8-412c-a204-ebbc44120cb5.png',
         'next-1': HF + '154721_a1aed24b-5b7d-487b-a5f2-ab1e602ad22d.png', 'next-2': HF + '154721_8a98f994-df44-4353-ac55-58c50ae337ca.png',
@@ -400,8 +414,14 @@
     var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
     var H = { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } };
     var rq = '&page=eq.' + PAGE + '&city_slug=eq.' + CITY;
-    var ids = ['invite', 'why', 'build', 'ask', 'evening', 'seat', 'faq'];
-    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    // A slide marked data-comp-only joins the walk only for an invitee whose membership is on us.
+    var all = Array.prototype.slice.call(document.querySelectorAll('.slide')), COMP = false, slides = [], ids = [];
+    function pick() {
+      slides = all.filter(function (s) { return COMP || !s.hasAttribute('data-comp-only'); });
+      ids = slides.map(function (s) { return s.id.replace(/^s-/, ''); });
+    }
+    pick();
+    var HASH0 = location.hash.slice(1);
     var panels = Object.assign({}, DEFAULTS.panels), clips = JSON.parse(JSON.stringify(DEFAULTS.clips));
     var cur = 0, $ = function (id) { return document.getElementById(id); };
 
@@ -424,14 +444,20 @@
       fetch(REST + 've_onboarding_audio?select=clip_key,url,dur' + rq, H).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
     ]).then(function (res) {
       res[0].forEach(function (row) { if (row.url) panels[row.clip_key] = row.url; });
-      res[1].forEach(function (row) { if (row.url && clips[row.clip_key]) { clips[row.clip_key].url = row.url; if (row.dur) clips[row.clip_key].dur = row.dur; } });
+      // A slide with no built-in sample (voices) gets its player once Sean's take is in the Depot.
+      res[1].forEach(function (row) {
+        if (!row.url) return;
+        if (!clips[row.clip_key] && row.clip_key === 'voices') clips.voices = { bed: BEDS + 'green-bites-60.wav' };
+        if (clips[row.clip_key]) { clips[row.clip_key].url = row.url; if (row.dur) clips[row.clip_key].dur = row.dur; }
+      });
       startAudio(); if (window.VESlideAudio) VESlideAudio.onSlide(ids[cur]);
     });
     applyPictures();
 
     function show(n) {
       cur = Math.max(0, Math.min(slides.length - 1, n));
-      slides.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
+      all.forEach(function (s) { s.classList.toggle('active', s === slides[cur]); });
+      slides[cur].setAttribute('aria-label', (cur + 1) + ' of ' + slides.length);
       history.replaceState(null, '', location.pathname + location.search + (cur ? '#' + ids[cur] : ''));
       if (window.innerWidth <= 900) window.scrollTo(0, 0);
       $('nav-back').style.visibility = cur === 0 ? 'hidden' : '';
@@ -442,7 +468,7 @@
     }
     $('nav-back').addEventListener('click', function () { show(cur - 1); });
     $('nav-next').addEventListener('click', function () { show(cur + 1); });
-    document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(+b.getAttribute('data-go')); }); });
+    document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { show(ids.indexOf(b.getAttribute('data-go'))); }); });
     document.addEventListener('keydown', function (e) {
       if (/INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName) || (e.target && e.target.id === 'rail')) return;
       if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
@@ -486,6 +512,7 @@
       var inv = st && st.invite;
       if (inv && inv.first_name) $('inv-hello').textContent = inv.first_name + ', ';
       // Membership on us (Sean, 2026-10-04): "in recognition of their work and contributions to the community".
+      if (inv && inv.comp && !COMP) { var want = HASH0 === 'voices' && cur === 0 ? 'voices' : ids[cur]; COMP = true; pick(); show(Math.max(0, ids.indexOf(want))); }
       if (inv && inv.comp) {
         $('ask-join-t').textContent = 'Your membership is on us';
         $('ask-join').textContent = 'Your Founding Membership is a thank-you for your work in this community. It comes with your seat, in good faith that you’ll help spread the word.';
