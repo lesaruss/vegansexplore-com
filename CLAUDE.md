@@ -55,6 +55,8 @@ this list follows the rule above. A new exception goes on this list first.
   on them.
 - **Full-screen app shell**: `app/index.html` (the body does not scroll, so a
   footer would never be seen).
+- **Ad creatives**, HTML5 ads that load inside an ad slot's frame, not as pages:
+  everything in `ads/` (Sean, 2026-10-04).
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts;
 each hides them when embedded (`.ve-embedded .ve-nav, .ve-embedded
@@ -143,6 +145,17 @@ and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come fro
 only once it is on screen. A new page needs its slots added to `ad_placements` and to `PAGES` in
 the script.
 
+### Ad creatives (Sean, 2026-10-04)
+
+An ad's `creative_url` is an image or an HTML5 ad (a `.html` file in `ads/<brand>/`). Every slot
+renders through `/public/ve-ad-creative.js` (`VEAdCreative.markup(ad)`), which frames an HTML5 ad
+in a sandbox and passes the tracked link as `?clickTag=`; the ad opens that link itself and posts
+`{veAd:'click'}` so the click counts. GeekFon artist pages do the same in
+`components/AdCreative.tsx` (lesaruss/geekfon-society). Every ad link is a tracked `/go/` link.
+Our guides (River, Maya, Nori and the rest) are always drawn in the GeekFon illustration style,
+never photographs, in ads and everywhere else. Example: `/ads/humble-cabbage/ve-tee.html`, River
+in the tee, then Shop now plays the tee, Maya and Nori in Black, the $5 donation, and Shop now.
+
 ## Full width (LOCKED 2026-10-04)
 
 Sean, 2026-10-04: "everything full width. Just remember everything full width. We don't do fixed
@@ -171,6 +184,40 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   data. Example: `/bounties` -> `/dashboard/bounties` (`openBounties` in center-console).
 - Example: Depot > Bounties (`/admin/depot/bounties`): Campaigns > campaign > job, with `#new`,
   `#campaign/<id>/edit`, `#review` and `#strikes` as their own views.
+
+## Guided view for mocks and walkthroughs (LOCKED 2026-10-04)
+
+Sean: "I say this every time... I don't like the scroll... put it in that view so we're
+navigating through and seeing everything." Canon `canon-sean-interface-defaults` rule 0.
+
+Any mock, demo, pitch walkthrough, illustrative report or concept page is built as the guided
+view on the first pass, never a long scroll: one full-height slide at a time on a dark stage,
+Back / "N of M" / Next at the bottom, nothing to scroll on desktop (nav, stage and footer share
+one screen), every slide fitting at 1440x900 and 1366x768, and on phones the slide stacks with
+the controls after it. The format is the `/partners` page; the shared shell is
+`/public/ve-guided.js` (see its header for the markup). Wrap the page in
+`<div class="page-frame">`, put slides in `<main class="vg-stage">` as
+`<section class="vg-slide" id="..." data-title="...">`, and load the script after the footer.
+Different audiences branch from a `data-vg-choose` slide into `data-path` slides. Example:
+`/campaign-engine`, `/campaign-engine/fieldhouse-protein/report` and `/dashboard`. Working tools and data pages
+(queues, lists, forms) are not mocks and follow Interface defaults.
+
+## Campaigns on a listing (Sean, 2026-10-04)
+
+A brand's campaign runs on its Directory listing: `directory/listing.html` shows a campaign banner,
+a Campaign tab (tasks with points, your progress, a city leaderboard, the creators), an Events tab
+and a sidebar card whenever the listing carries a campaign (`l._campaign`), and Food Brands get
+their Menu tab labeled Products. The demo, `/campaign-engine/fieldhouse-protein` (rewrite in
+`vercel.json`), is that real page in demo mode: `?demo=<slug>` or `/campaign-engine/<slug>` loads
+`/campaign-engine/<slug>/listing-demo.js` instead of the database, labels it Illustrative, turns
+off votes, saves and claims, adds a member / brand view switch and a week stepper (the demo's
+`campaignAt(week)` returns the campaign as it stood that week, 1 to 10, then Final), and starts a
+`ve-tour.js` spotlight tour of the campaign. `/campaign-engine/fieldhouse-protein/social` shows the
+campaign in our Instagram, TikTok, Community Board, Daily Pulse and member feeds. Campaign rules:
+everyone starts at zero, a capped points total, joining Vegans Explore is how you enter, a grand
+prize for the most points, prizes for each city's top 10, and digital rewards (coupons) at set totals. Live campaigns are not wired yet: `ve_bounty_campaigns.host_listing_id`
+links a campaign to a listing, but the table has no public read, so it needs to come through the
+`ve-bounties` function first.
 
 ## Tracked links (Sean, 2026-10-04)
 

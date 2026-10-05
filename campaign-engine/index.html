@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The Campaign Engine — Vegans Explore</title>
+<meta name="description" content="How brands, creators, hosts and members run campaigns together on Vegans Explore. A guided walkthrough of an illustrative campaign.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Montserrat,sans-serif;color:#1a1a1a;background:#0d130e;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+
+  /* Loop: five steps in a row */
+  .loop{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:8px}
+  .loop li{padding:18px;position:relative}
+  .loop .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#22C55E;color:#03170a;font-weight:900;font-size:13px;margin-bottom:12px}
+  .loop b{display:block;font-size:15px;font-weight:900;margin-bottom:6px}
+  .loop span{font-size:13.5px;line-height:1.55;color:#ececec}
+  .loop li:not(:last-child)::after{content:'';position:absolute;right:-9px;top:32px;width:6px;height:6px;border-top:2px solid #c5f2c7;border-right:2px solid #c5f2c7;transform:rotate(45deg)}
+  .spot{font-size:17px;font-weight:800;line-height:1.4;border-left:4px solid #F69820;padding:6px 0 6px 16px;max-width:760px;margin-top:22px}
+
+  /* Levels */
+  .levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .level{padding:22px}
+  .level.top{border-color:#22C55E;background:rgba(6,32,12,0.72)}
+  .level .nm{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#c5f2c7;margin-bottom:8px}
+  .level .pr{font-size:26px;font-weight:900;letter-spacing:-.01em}
+  .level .pn{font-size:12px;color:#ececec;margin-bottom:14px}
+  .level ul{list-style:none;display:grid;gap:8px}
+  .level li{font-size:13.5px;line-height:1.5;padding-left:22px;position:relative;color:#fff}
+  .level li::before{content:'';position:absolute;left:2px;top:5px;width:9px;height:5px;border-left:2px solid #22C55E;border-bottom:2px solid #22C55E;transform:rotate(-45deg)}
+
+  /* Spend */
+  .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .opt{padding:26px}
+  .opt h3{font-size:20px;font-weight:900;margin-bottom:8px}
+  .opt p{font-size:15px;line-height:1.65;color:#ececec}
+  .opt .big{font-size:52px;font-weight:900;letter-spacing:-.03em;color:#22C55E;line-height:1;margin:10px 0 6px}
+  .opt .big small{font-size:16px;color:#c5f2c7;font-weight:800;letter-spacing:0;margin-left:8px}
+
+  /* Founding */
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:8px 0 22px}
+  .stat{padding:20px}
+  .stat .k{font-size:34px;font-weight:900;color:#22C55E;letter-spacing:-.02em}
+  .stat .v{font-size:13.5px;line-height:1.5;color:#fff;margin-top:4px}
+
+  /* Doors */
+  .doors{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+  .door{padding:18px;text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:border-color .15s}
+  .door:hover{border-color:#22C55E}
+  .door b{font-size:15px;font-weight:900}
+  .door span{font-size:13px;line-height:1.5;color:#ececec}
+  .door em{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#c5f2c7;margin-top:auto;padding-top:6px}
+
+  /* Campaigns */
+  .camps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .camp{overflow:hidden;display:flex;flex-direction:column}
+  .camp-top{padding:20px 20px 16px;min-height:112px;display:flex;flex-direction:column;justify-content:flex-end}
+  .camp-top .lv{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;opacity:.85;margin-bottom:6px}
+  .camp-top h3{font-size:22px;font-weight:900}
+  .camp-body{padding:16px 20px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .camp-desc{font-size:13.5px;line-height:1.55;color:#ececec;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.12);color:#fff}
+  .tag.live{background:#22C55E;color:#03170a}
+  .camp-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+  .camp-links .vg-btn{min-height:40px;padding:10px 14px;font-size:11px}
+  .soon{font-size:12px;font-weight:700;color:#c5f2c7}
+
+  .cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+  @media (max-width:1100px){.loop{grid-template-columns:repeat(3,minmax(0,1fr))}.loop li::after{display:none}.doors{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (max-width:900px){.loop,.levels,.two,.camps,.doors{grid-template-columns:minmax(0,1fr)}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+
+<div class="vg-note" role="note"><strong>Illustrative</strong>The brands and campaigns in this walkthrough are invented to show how the engine works. The numbers are realistic examples, not results from real campaigns.</div>
+
+<main class="vg-stage" data-bg="/communities/south-florida/banner.jpg" aria-label="The Campaign Engine">
+
+  <section class="vg-slide" id="start" data-title="The Campaign Engine">
+    <div style="max-width:820px;padding-top:4vh">
+      <p class="vg-eyebrow">For brands, sponsors, creators and hosts</p>
+      <h1 class="vg-h vg-xl">The Campaign Engine</h1>
+      <p class="vg-lede">We don't sell reach. We give everyone the same engine to run on: members who take part, local creators, events in every city, and a report showing where every dollar went.</p>
+      <p class="spot">The more people who walk through the door, the more it works for everyone.</p>
+      <div class="cta-row">
+        <button type="button" class="vg-btn" data-vg-next>Take the guided tour</button>
+        <a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein">See a campaign on a real listing</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="loop" data-title="How it works">
+    <p class="vg-eyebrow">How it works</p>
+    <h2 class="vg-h">One loop. It gets stronger with every city.</h2>
+    <p class="vg-lede">Each part feeds the next. None of it works alone, and all of it works better when more people take part.</p>
+    <ol class="loop">
+      <li class="vg-glass"><span class="n">1</span><b>Members get tools</b><span>The Directory, the Passport, the Daily Pulse and city events make vegan life easier.</span></li>
+      <li class="vg-glass"><span class="n">2</span><b>That builds an audience</b><span>Active members in every city we serve, around the things they actually use.</span></li>
+      <li class="vg-glass"><span class="n">3</span><b>Brands and events join</b><span>Brands, sponsors and hosts put their budgets into campaigns on the engine.</span></li>
+      <li class="vg-glass"><span class="n">4</span><b>Campaigns become paid work</b><span>Members earn points, creators get paid, hosts get sponsored events.</span></li>
+      <li class="vg-glass"><span class="n">5</span><b>More members join</b><span>Every campaign brings new members, so the next brand starts bigger.</span></li>
+    </ol>
+    <p class="spot">We are building this together. Season 1 is when we work it out, then we keep adding people and cities.</p>
+  </section>
+
+  <section class="vg-slide" id="levels" data-title="What a brand can buy">
+    <p class="vg-eyebrow">What a brand can buy</p>
+    <h2 class="vg-h">Three levels. Each one includes the last.</h2>
+    <div class="levels">
+      <div class="level vg-glass">
+        <div class="nm">Featured Profile</div><div class="pr">$250</div><div class="pn">per season</div>
+        <ul><li>A mini-site in the Directory: history, mission, the full product line</li><li>Prices and nutrition, supplied and approved by the brand</li><li>Your best videos on the page</li><li>Where to buy, through tracked links</li></ul>
+      </div>
+      <div class="level vg-glass">
+        <div class="nm">Campaign</div><div class="pr">Profile +</div><div class="pn">budget set per campaign</div>
+        <ul><li>A member challenge built from bounties, with points per task</li><li>One or two collabs with local creators</li><li>Every sponsored post labeled #ad</li><li>A final report: what happened, what it cost, what it produced</li></ul>
+      </div>
+      <div class="level vg-glass top">
+        <div class="nm">Season Sponsor</div><div class="pr">Campaign +</div><div class="pn">several cities, a full season</div>
+        <ul><li>The campaign in several cities at once</li><li>Presence at our events: booths, sampling, stage time</li><li>First position on the ad rail</li><li>The live sponsor dashboard</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="spend" data-title="Two ways to spend">
+    <p class="vg-eyebrow">Two ways to spend</p>
+    <h2 class="vg-h">Choose where it goes, or let us place it.</h2>
+    <div class="two">
+      <div class="opt vg-glass">
+        <h3>Self-directed</h3>
+        <div class="big" style="font-size:30px;margin:14px 0 10px">You pick</div>
+        <p>Look through the network (events, creators and cities) and choose where your money goes. You see everything we see.</p>
+      </div>
+      <div class="opt vg-glass" style="border-color:#22C55E">
+        <h3>Managed</h3>
+        <div class="big">20%<small>15% for Founding Partners</small></div>
+        <p>Give us the budget and we place it, moving money mid-season to whatever is working. You see every dollar, what it produced, and why we moved it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="founding" data-title="Founding Partners">
+    <p class="vg-eyebrow">Season 1</p>
+    <h2 class="vg-h">Founding Partners</h2>
+    <p class="vg-lede">The first season is when we build the engine together. Partners who join now help shape it, and keep what they locked in.</p>
+    <div class="stats">
+      <div class="stat vg-glass"><div class="k">5</div><div class="v">seats per city, season 1 only</div></div>
+      <div class="stat vg-glass"><div class="k">15%</div><div class="v">managed fee instead of 20 percent</div></div>
+      <div class="stat vg-glass"><div class="k">Locked</div><div class="v">your season 1 pricing as we grow</div></div>
+      <div class="stat vg-glass"><div class="k">Credited</div><div class="v">as a founder in every new city we open</div></div>
+    </div>
+    <a class="vg-btn" href="/partners">Talk to us about a seat</a>
+  </section>
+
+  <section class="vg-slide" id="doors" data-title="Five ways in">
+    <p class="vg-eyebrow">Find yourself in it</p>
+    <h2 class="vg-h">Every report opens from five sides.</h2>
+    <p class="vg-lede">Everyone sees their own part, and everyone else's too. Open the Fieldhouse Protein report from yours.</p>
+    <div class="doors">
+      <a class="door vg-glass" href="/campaign-engine/fieldhouse-protein/report#sponsor-1"><b>Brand or sponsor</b><span>Where the budget went and what it bought.</span><em>Open</em></a>
+      <a class="door vg-glass" href="/campaign-engine/fieldhouse-protein/report#creator-1"><b>Creator</b><span>The brief, the work, and what creators earned.</span><em>Open</em></a>
+      <a class="door vg-glass" href="/campaign-engine/fieldhouse-protein/report#host-1"><b>Host or event</b><span>How a sponsored event ran and who came.</span><em>Open</em></a>
+      <a class="door vg-glass" href="/campaign-engine/fieldhouse-protein/report#member-1"><b>Member</b><span>The challenge, the points and the perks.</span><em>Open</em></a>
+      <a class="door vg-glass" href="/campaign-engine/fieldhouse-protein/report#business-1"><b>Directory business</b><span>The featured profile and the traffic it sent.</span><em>Open</em></a>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="campaigns" data-title="See it run">
+    <p class="vg-eyebrow">See it run</p>
+    <h2 class="vg-h">Three illustrative campaigns</h2>
+    <p class="vg-lede">Three invented brands, one at each level, each showing a different kind of result.</p>
+    <div class="camps">
+      <article class="camp vg-glass">
+        <div class="camp-top" style="background:linear-gradient(135deg,#1d2f4f,#2e4a78)"><div class="lv">Season Sponsor · Managed</div><h3>Fieldhouse Protein</h3></div>
+        <div class="camp-body">
+          <p class="camp-desc">"How do you Fieldhouse?" Ten weeks in South Florida, Atlanta and the DMV: six creators, a festival booth, a member challenge and a live dashboard.</p>
+          <div class="tags"><span class="tag live">Ready</span><span class="tag">Reach and presence</span></div>
+          <div class="camp-links">
+            <a class="vg-btn" href="/campaign-engine/fieldhouse-protein">See it on the listing</a>
+            <a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein/report">Final report</a>
+            <a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein/dashboard">Dashboard</a>
+          </div>
+        </div>
+      </article>
+      <article class="camp vg-glass">
+        <div class="camp-top" style="background:linear-gradient(135deg,#6a3b1f,#a0582b)"><div class="lv">Campaign · Self-directed</div><h3>Crumble &amp; Kin</h3></div>
+        <div class="camp-body">
+          <p class="camp-desc">"How do you Crumble?" A one-city member recipe challenge with one creator, and the week-two fix that turned slow sign-ups around.</p>
+          <div class="tags"><span class="tag">Being built</span><span class="tag">Engagement and content</span></div>
+          <div class="camp-links"><span class="soon">Report coming next</span></div>
+        </div>
+      </article>
+      <article class="camp vg-glass">
+        <div class="camp-top" style="background:linear-gradient(135deg,#6b2346,#a63a6a)"><div class="lv">Featured Profile · One event</div><h3>Tumbleberry Snacks</h3></div>
+        <div class="camp-body">
+          <p class="camp-desc">A new snack launch: a Directory profile, samples at a host's dinner and tracked clicks to retailers, ending with a move up to a full Campaign.</p>
+          <div class="tags"><span class="tag">Being built</span><span class="tag">Trial and sales</span></div>
+          <div class="camp-links"><span class="soon">Report coming next</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+</body>
+</html>

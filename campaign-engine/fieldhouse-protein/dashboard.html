@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fieldhouse Protein Sponsor Dashboard (Illustrative) — Vegans Explore</title>
+<meta name="description" content="An illustrative Season Sponsor dashboard, as a guided walkthrough: what a brand sees while its campaign runs on Vegans Explore.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--fh-navy:#1d2f4f;--fh-gold:#e8b04b}
+  body{font-family:Montserrat,sans-serif;color:#1a1a1a;background:#0f1a2e;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+
+  .who{display:flex;gap:18px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+  .logo{width:72px;height:72px;border-radius:14px;background:var(--fh-gold);color:var(--fh-navy);font-weight:900;font-size:24px;display:flex;align-items:center;justify-content:center}
+  .who .meta{font-size:13px;color:#ececec;font-weight:600;margin-top:4px}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:20px;background:#22C55E;color:#03170a;margin-top:8px}
+  .status.done{background:var(--fh-gold);color:var(--fh-navy)}
+  .status i{width:7px;height:7px;border-radius:50%;background:currentColor}
+  .cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+  /* Replay bar: one control, moved into whichever slide is showing */
+  .replay{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 16px;margin-bottom:18px}
+  .replay label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#c5f2c7}
+  .replay input{flex:1;min-width:160px;accent-color:#22C55E}
+  .replay .wkl{font-size:14px;font-weight:900;min-width:104px;color:#fff}
+  .replay button{font-family:inherit;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;cursor:pointer}
+  .replay button:hover{border-color:#fff}
+
+  .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .tile{padding:18px 20px}
+  .tile .l{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#c5f2c7}
+  .tile .n{font-size:36px;font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-top:8px;color:#fff;font-variant-numeric:tabular-nums}
+  .tile .s{font-size:12.5px;color:#ececec;margin-top:4px}
+  .meter{height:6px;background:rgba(255,255,255,.18);border-radius:3px;margin-top:10px;overflow:hidden}
+  .meter i{display:block;height:100%;background:#22C55E;border-radius:3px}
+
+  .panel{padding:18px 22px}
+  .panel-h{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  .panel-h h3{font-size:15px;font-weight:900}
+  .legend{display:flex;gap:16px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:rgba(26,26,26,.75)}
+  .legend i{width:12px;height:12px;border-radius:3px}
+  .chart{position:relative;width:100%}
+  .chart svg{display:block;width:100%;height:auto;overflow:visible}
+  .chart text{font-family:Montserrat,sans-serif}
+  .tt{position:absolute;pointer-events:none;background:#111;color:#fff;font-size:12px;line-height:1.6;padding:8px 12px;border-radius:6px;opacity:0;transition:opacity .1s;white-space:nowrap;z-index:5}
+  .tt .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+  .toggle{font-family:inherit;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:#fff;cursor:pointer;margin-top:8px}
+  table.data{width:100%;border-collapse:collapse;font-size:14px}
+  table.data th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(26,26,26,.6);padding:9px 12px;border-bottom:2px solid rgba(0,0,0,.1)}
+  table.data td{padding:10px 12px;border-bottom:1px solid rgba(0,0,0,.08);color:rgba(26,26,26,.8)}
+  table.data .num{text-align:right;font-variant-numeric:tabular-nums}
+  table.data tr.total td{font-weight:900;color:#1a1a1a}
+  .scroll-x{overflow-x:auto}
+
+  .money{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
+  .alloc{display:flex;flex-direction:column;gap:14px}
+  .alloc-row .tl{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;color:rgba(26,26,26,.8);margin-bottom:5px}
+  .alloc-row .tl b{color:#1a1a1a;font-variant-numeric:tabular-nums}
+  .alloc-row .tr{height:12px;background:#eceeec;border-radius:6px;overflow:hidden}
+  .alloc-row .tr i{display:block;height:100%;background:var(--fh-navy);border-radius:0 4px 4px 0;transition:width .3s}
+  .chg{font-size:11px;font-weight:800;margin-left:6px}
+  .chg.up{color:#1b7a43}.chg.down{color:#a0441a}
+  .why{padding:22px;border-color:rgba(232,176,75,.6)}
+  .why .tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;background:var(--fh-gold);color:var(--fh-navy);padding:3px 8px;border-radius:4px;margin-bottom:10px}
+  .why p{font-size:14.5px;line-height:1.65;color:#fff}
+
+  .feed{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  @media (max-width:1200px){.feed{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .feed li{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;padding:12px 14px;font-size:13.5px;line-height:1.5;color:#ececec}
+  .feed li.key{border-color:rgba(232,176,75,.7)}
+  .feed .w{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#c5f2c7;padding-top:2px}
+  .feed b{color:#fff}
+  .kind{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border-radius:4px;margin-right:6px;background:rgba(255,255,255,.14);color:#fff}
+  .kind.money{background:var(--fh-gold);color:var(--fh-navy)}
+
+  @media (max-width:900px){.money,.feed{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{padding:14px 16px}.tile .n{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+
+<div class="vg-note" role="note"><strong>Illustrative campaign</strong>A Season Sponsor dashboard for an invented brand. Use the week slider on any slide to replay the season the way the sponsor saw it. <a href="/campaign-engine">Back to the Campaign Engine</a></div>
+
+<main class="vg-stage" data-bg="linear-gradient(120deg,#0b1424 0%,#1d2f4f 55%,#2e4a78 100%)" aria-label="Fieldhouse Protein sponsor dashboard">
+
+  <section class="vg-slide" id="start" data-title="Sponsor dashboard">
+    <div style="max-width:900px;padding-top:3vh">
+      <p class="vg-eyebrow">Season Sponsor dashboard</p>
+      <div class="who">
+        <div class="logo" aria-hidden="true">FH</div>
+        <div>
+          <h1 class="vg-h" style="margin:0">Fieldhouse Protein</h1>
+          <div class="meta">"How do you Fieldhouse?" · Managed · South Florida, Atlanta, DMV · $60,000</div>
+          <span class="status" id="status"><i></i><span id="status-text">Season complete</span></span>
+        </div>
+      </div>
+      <p class="vg-lede">This is what Fieldhouse saw while the campaign ran. Every number updates as the season goes, and every time we move money, the reason shows up here the same day.</p>
+      <p class="vg-lede">Each slide has a week slider. Drag it, or press "Play from week 1", to watch the season build.</p>
+      <div class="cta-row"><button type="button" class="vg-btn" data-vg-next>Open the dashboard</button></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="numbers" data-title="The numbers" data-replay>
+    <h2 class="vg-h">The numbers</h2>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="vg-slide" id="clicks" data-title="Clicks by city" data-replay>
+    <h2 class="vg-h">Retailer clicks per week, by city</h2>
+    <div class="panel vg-panel">
+      <div class="panel-h">
+        <h3>Tracked clicks to retailers</h3>
+        <div class="legend" aria-label="Legend"><span><i style="background:#2a78d6"></i>South Florida</span><span><i style="background:#eb6834"></i>Atlanta</span><span><i style="background:#1baf7a"></i>DMV</span></div>
+      </div>
+      <div class="chart" id="chart"><div class="tt" id="tt"></div></div>
+      <button class="toggle" type="button" id="tbl-toggle" aria-expanded="false">Show as a table</button>
+      <div class="scroll-x" id="tbl" hidden></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="money" data-title="Where the money is" data-replay>
+    <h2 class="vg-h">Where the $51,000 is placed</h2>
+    <div class="money">
+      <div class="panel vg-panel">
+        <div class="panel-h"><h3 id="alloc-h">Planned at launch</h3></div>
+        <div class="alloc" id="alloc"></div>
+        <p style="font-size:12px;color:rgba(26,26,26,.6);line-height:1.6;margin-top:14px">Plus the $9,000 service fee (15%, Founding Partner rate).</p>
+      </div>
+      <div class="why vg-glass" id="why"></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="cities" data-title="By city" data-replay>
+    <h2 class="vg-h">By city, season to date</h2>
+    <div class="panel vg-panel scroll-x" id="city-table"></div>
+    <p class="vg-fine">Spend is each city's season budget. South Florida's includes the $10,000 festival booth.</p>
+  </section>
+
+  <section class="vg-slide" id="log" data-title="Campaign log" data-replay>
+    <h2 class="vg-h">Campaign log</h2>
+    <ul class="feed" id="feed"></ul>
+  </section>
+
+  <section class="vg-slide" id="end" data-title="Next">
+    <p class="vg-eyebrow">That's the dashboard</p>
+    <h2 class="vg-h">Season Sponsors get this live, all season.</h2>
+    <p class="vg-lede">Campaign-level brands get the final report at the end. Season Sponsors get this dashboard from day one, and on the managed plan they see every move we make and why.</p>
+    <div class="cta-row">
+      <a class="vg-btn" href="/campaign-engine/fieldhouse-protein/report">Read the final report</a>
+      <a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein">The listing</a>
+      <a class="vg-btn vg-btn-ghost" href="/campaign-engine">Campaign Engine</a>
+    </div>
+  </section>
+
+</main>
+
+<script src="/public/footer.js"></script>
+</div>
+
+<div class="replay vg-glass" id="replay">
+  <label for="week">Replay the season</label>
+  <input type="range" id="week" min="1" max="10" value="10" step="1" aria-valuetext="Week 10 of 10">
+  <span class="wkl" id="wk-label">Week 10 of 10</span>
+  <button type="button" id="play">Play from week 1</button>
+</div>
+
+<script src="/public/ve-guided.js"></script>
+<script>
+(function(){
+  var CITIES=[
+    {name:'South Florida',color:'#2a78d6',clicks:[120,180,230,260,280,300,310,320,330,270],members:480,tasks:1150,posts:168,spend:22700},
+    {name:'Atlanta',color:'#eb6834',clicks:[110,170,240,300,360,420,470,450,440,390],members:455,tasks:1270,posts:175,spend:15700,spend0:12700},
+    {name:'DMV',color:'#1baf7a',clicks:[80,110,140,160,170,170,170,175,170,155],members:305,tasks:680,posts:93,spend:12600,spend0:15600}
+  ];
+  var WEEKLY={members:[180,170,150,140,130,120,110,90,80,70],tasks:[150,230,290,320,1260,250,190,160,140,110],posts:[20,35,45,50,62,48,52,45,42,37],spend:[3500,4200,4300,4500,14200,4600,4400,4000,3800,3500]};
+  var PLAN=[['Creators',18000,20000],['Member challenge',12000,13000],['Event',10000,10000],['Profile, kits and shipping',5000,5000],['Ad rail and Daily Pulse',6000,3000]];
+  var LOG=[
+    [1,'Members','Challenge opened in all three cities. <b>180 members</b> joined in the first week.'],
+    [1,'Content','Featured Profile went live with the full product line and nutrition panels, approved by Fieldhouse.'],
+    [2,'Content','<b>Maya R.</b> (Atlanta) and <b>Dani M.</b> (South Florida) posted their collab videos, labeled #ad.'],
+    [3,'Content','All six creator collab videos are live.'],
+    [4,'Members','Run-club check-ins passed <b>500</b> since launch, more than half of them in Atlanta.'],
+    [5,'Event','South Florida spring festival: <b>9,800 samples</b>, 980 member check-ins and 640 offer opt-ins.'],
+    [6,'Budget','<b>$3,000 moved from the DMV ad rail to Atlanta.</b> Atlanta run-club check-ins were turning into retailer clicks at twice the rate of the other cities. $2,000 to two extra creator posts, $1,000 to a run-club bounty.',1],
+    [7,'Content','Extra Atlanta posts from <b>Maya R.</b> and <b>Jordan K.</b> went live. Atlanta hit its best week: <b>470 clicks</b>.'],
+    [8,'Members','All six creators passed their 400-click bonus goal.'],
+    [9,'Members','512 members have unlocked the $1 off coupon, and 168 the free shake coupon.'],
+    [10,'Budget','Season complete. <b>$51,000 placed</b>, nothing added. Final report published.',1]
+  ];
+  var fmt=function(n){return n.toLocaleString('en-US');}, money=function(n){return '$'+fmt(n);};
+  var sum=function(a,n){var t=0;for(var i=0;i<n;i++)t+=a[i];return t;};
+  var wk=10, slider=document.getElementById('week'), replay=document.getElementById('replay');
+
+  function tiles(){
+    var clicks=CITIES.reduce(function(t,c){return t+sum(c.clicks,wk);},0), spent=sum(WEEKLY.spend,wk);
+    document.getElementById('tiles').innerHTML=[
+      ['Retailer clicks',fmt(clicks),'Tracked links, bots filtered out'],
+      ['Members in the challenge',fmt(sum(WEEKLY.members,wk)),'Across three cities'],
+      ['Tasks completed',fmt(sum(WEEKLY.tasks,wk)),'Check-ins, posts, videos, referrals'],
+      ['Posts labeled #ad',fmt(sum(WEEKLY.posts,wk)),'Members and creators'],
+      ['Placed so far',money(spent),'of $51,000',spent/51000],
+      ['Cost per retailer click','$'+(spent/clicks).toFixed(2),'Placed so far ÷ clicks']
+    ].map(function(t){return '<div class="tile vg-glass"><div class="l">'+t[0]+'</div><div class="n">'+t[1]+'</div><div class="s">'+t[2]+'</div>'+(t[3]!=null?'<div class="meter" aria-hidden="true"><i style="width:'+(t[3]*100)+'%"></i></div>':'')+'</div>';}).join('');
+  }
+  function alloc(){
+    var moved=wk>=6;
+    document.getElementById('alloc-h').textContent=moved?'Updated in week 6':'Planned at launch';
+    document.getElementById('alloc').innerHTML=PLAN.map(function(p){
+      var v=moved?p[2]:p[1], d=p[2]-p[1];
+      var c=moved&&d?'<span class="chg '+(d>0?'up':'down')+'">'+(d>0?'+':'−')+money(Math.abs(d))+'</span>':'';
+      return '<div class="alloc-row"><div class="tl"><span>'+p[0]+'</span><span><b>'+money(v)+'</b>'+c+'</span></div><div class="tr"><i style="width:'+(v/20000*100)+'%"></i></div></div>';
+    }).join('');
+    document.getElementById('why').innerHTML=moved
+      ?'<span class="tag">Week 6 · Budget moved</span><p><b>$3,000 from the DMV ad rail to Atlanta.</b></p><p style="margin-top:8px">Atlanta run-club check-ins were turning into retailer clicks at twice the rate of the other cities, and DMV ad-rail clicks were the lowest of any line. $2,000 went to two extra Atlanta creator posts and $1,000 to a run-club bounty. Nothing was added to the budget.</p>'
+      :'<span class="tag">Week '+wk+'</span><p><b>Running as planned.</b></p><p style="margin-top:8px">Every line is on its launch budget. When the numbers show one part working better than another, we move money there and explain why on this panel the same day. Drag the slider past week 6 to see it happen.</p>';
+  }
+  function cities(){
+    var ms=sum(WEEKLY.members,wk)/1240, ts=sum(WEEKLY.tasks,wk)/3100, ps=sum(WEEKLY.posts,wk)/436;
+    var rows=CITIES.map(function(c){return {name:c.name,spend:(wk<6&&c.spend0)?c.spend0:c.spend,m:Math.round(c.members*ms),t:Math.round(c.tasks*ts),p:Math.round(c.posts*ps),c:sum(c.clicks,wk)};});
+    var T=rows.reduce(function(a,r){a.spend+=r.spend;a.m+=r.m;a.t+=r.t;a.p+=r.p;a.c+=r.c;return a;},{name:'All cities',spend:0,m:0,t:0,p:0,c:0});
+    var tr=function(r,cl){return '<tr'+(cl?' class="'+cl+'"':'')+'><td>'+r.name+'</td><td class="num">'+money(r.spend)+'</td><td class="num">'+fmt(r.m)+'</td><td class="num">'+fmt(r.t)+'</td><td class="num">'+fmt(r.p)+'</td><td class="num">'+fmt(r.c)+'</td></tr>';};
+    document.getElementById('city-table').innerHTML='<table class="data"><thead><tr><th>City</th><th class="num">Spend</th><th class="num">Members</th><th class="num">Tasks</th><th class="num">Posts</th><th class="num">Retailer clicks</th></tr></thead><tbody>'+rows.map(function(r){return tr(r);}).join('')+tr(T,'total')+'</tbody></table>';
+  }
+  function feed(){
+    document.getElementById('feed').innerHTML=LOG.filter(function(l){return l[0]<=wk;}).reverse().map(function(l){
+      return '<li class="vg-glass'+(l[3]?' key':'')+'"><span class="w">Week '+l[0]+'</span><span><span class="kind'+(l[1]==='Budget'?' money':'')+'">'+l[1]+'</span>'+l[2]+'</span></li>';
+    }).join('');
+  }
+
+  var chart=document.getElementById('chart'), tt=document.getElementById('tt');
+  function draw(){
+    var W=chart.clientWidth; if(!W) return;
+    var sl=chart.closest('.vg-slide'), avail=sl?sl.clientHeight-330:340;
+    var H=Math.round(Math.max(190,Math.min(340,W*0.36,avail)));
+    var m={t:16,r:W<520?16:118,b:30,l:44}, iw=W-m.l-m.r, ih=H-m.t-m.b, ymax=500;
+    var x=function(i){return m.l+(i/9)*iw;}, y=function(v){return m.t+ih-(v/ymax)*ih;};
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Retailer clicks per week by city, weeks 1 to '+wk+'">';
+    for(var g=0;g<=ymax;g+=100) s+='<line x1="'+m.l+'" x2="'+(m.l+iw)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="#e6e8e6"/><text x="'+(m.l-8)+'" y="'+(y(g)+4)+'" font-size="11" fill="rgba(26,26,26,.6)" text-anchor="end">'+g+'</text>';
+    for(var i=0;i<10;i++) s+='<text x="'+x(i)+'" y="'+(H-8)+'" font-size="11" fill="rgba(26,26,26,.6)" text-anchor="middle">'+(i===0?'Wk 1':(i+1))+'</text>';
+    if(wk>=6) s+='<line x1="'+x(5)+'" x2="'+x(5)+'" y1="'+m.t+'" y2="'+(m.t+ih)+'" stroke="#c9a14a"/><text x="'+(x(5)+6)+'" y="'+(m.t+12)+'" font-size="11" font-weight="800" fill="#7d5a12">Budget moved to Atlanta</text>';
+    var labels=[];
+    CITIES.forEach(function(c){
+      s+='<polyline points="'+c.clicks.slice(0,wk).map(function(v,i){return x(i).toFixed(1)+','+y(v).toFixed(1);}).join(' ')+'" fill="none" stroke="'+c.color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+      var lx=x(wk-1), ly=y(c.clicks[wk-1]);
+      s+='<circle cx="'+lx+'" cy="'+ly+'" r="5" fill="'+c.color+'" stroke="#fff" stroke-width="2"/>';
+      labels.push({x:lx,y:ly,t:c.name+' '+c.clicks[wk-1]});
+    });
+    if(m.r>50){labels.sort(function(a,b){return a.y-b.y;});for(var j=1;j<labels.length;j++)if(labels[j].y-labels[j-1].y<16)labels[j].y=labels[j-1].y+16;labels.forEach(function(L){s+='<text x="'+(L.x+10)+'" y="'+(L.y+4)+'" font-size="12" font-weight="800" fill="#1a1a1a">'+L.t+'</text>';});}
+    s+='<line id="xh" y1="'+m.t+'" y2="'+(m.t+ih)+'" stroke="rgba(26,26,26,.35)" opacity="0"/><rect id="hit" x="'+m.l+'" y="'+m.t+'" width="'+iw+'" height="'+ih+'" fill="transparent"/></svg>';
+    chart.innerHTML=s; chart.appendChild(tt);
+    var svg=chart.querySelector('svg'), xh=svg.querySelector('#xh'), hit=svg.querySelector('#hit');
+    hit.addEventListener('mousemove',function(e){
+      var r=svg.getBoundingClientRect(), px=(e.clientX-r.left)*(W/r.width), k=Math.max(0,Math.min(wk-1,Math.round((px-m.l)/iw*9)));
+      xh.setAttribute('x1',x(k));xh.setAttribute('x2',x(k));xh.setAttribute('opacity',1);
+      tt.innerHTML='<b>Week '+(k+1)+'</b>'+(k===5?' · budget moved':'')+'<br>'+CITIES.map(function(c){return '<span class="sw" style="background:'+c.color+'"></span>'+c.name+': <b>'+c.clicks[k]+'</b>';}).join('<br>');
+      tt.style.opacity=1; var left=x(k)/W*r.width+12; if(left>r.width-200) left-=212; tt.style.left=left+'px'; tt.style.top='10px';
+    });
+    hit.addEventListener('mouseleave',function(){tt.style.opacity=0;xh.setAttribute('opacity',0);});
+  }
+  function table(){
+    var b='';for(var i=0;i<wk;i++){var t=0;b+='<tr><td>Week '+(i+1)+'</td>'+CITIES.map(function(c){t+=c.clicks[i];return '<td class="num">'+c.clicks[i]+'</td>';}).join('')+'<td class="num">'+t+'</td></tr>';}
+    document.getElementById('tbl').innerHTML='<table class="data"><thead><tr><th>Week</th>'+CITIES.map(function(c){return '<th class="num">'+c.name+'</th>';}).join('')+'<th class="num">Total</th></tr></thead><tbody>'+b+'</tbody></table>';
+  }
+  function render(){
+    document.getElementById('wk-label').textContent='Week '+wk+' of 10';
+    slider.value=wk; slider.setAttribute('aria-valuetext','Week '+wk+' of 10');
+    var st=document.getElementById('status'); st.className='status'+(wk===10?' done':'');
+    document.getElementById('status-text').textContent=wk===10?'Season complete':'Live · week '+wk;
+    tiles();alloc();cities();feed();draw();table();
+  }
+
+  // Move the one replay control into whichever data slide is showing.
+  document.addEventListener('vg:change',function(e){
+    var s=document.getElementById(e.detail.id);
+    if(s&&s.hasAttribute('data-replay')){ s.insertBefore(replay,s.firstChild); replay.hidden=false; draw(); }
+    else replay.hidden=true;
+  });
+  slider.addEventListener('input',function(){clearInterval(timer);wk=+slider.value;render();});
+  var timer;
+  document.getElementById('play').addEventListener('click',function(){
+    clearInterval(timer); wk=1; render();
+    timer=setInterval(function(){ if(wk>=10){clearInterval(timer);return;} wk++; render(); },900);
+  });
+  document.getElementById('tbl-toggle').addEventListener('click',function(){
+    var t=document.getElementById('tbl'), open=t.hidden; t.hidden=!open;
+    this.setAttribute('aria-expanded',open?'true':'false'); this.textContent=open?'Hide the table':'Show as a table';
+  });
+  var rt; window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(draw,120);});
+  render();
+  var cur=window.VEGuided&&VEGuided.current(); if(cur) document.dispatchEvent(new CustomEvent('vg:change',{detail:{id:cur}}));
+  else replay.hidden=true;
+})();
+</script>
+</body>
+</html>

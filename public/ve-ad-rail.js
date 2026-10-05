@@ -40,6 +40,10 @@
     '@media (max-width:900px){.vear-layout{grid-template-columns:minmax(0,1fr);}.vear-rail{position:static;flex-direction:row;flex-wrap:wrap;justify-content:center;border-top:1px solid rgba(0,0,0,0.1);padding-top:18px;}.vear-label{width:100%;}.vear-slot{flex:1 1 220px;max-width:300px;margin:0;}}'
   ].join('');
   var st = document.createElement('style'); st.id = 'vear-style'; st.textContent = css; document.head.appendChild(st);
+  // HTML5 ad creatives render through the shared helper; load it if the page did not.
+  if (!window.VEAdCreative && !document.querySelector('script[src="/public/ve-ad-creative.js"]')) {
+    var hs = document.createElement('script'); hs.src = '/public/ve-ad-creative.js'; document.head.appendChild(hs);
+  }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function click(placementId, campaignId) {
@@ -62,6 +66,7 @@
         (data && data.slots || []).forEach(function (ad) {
           if (!ad.image_url) return;
           var el = rail.querySelector('[data-slot="' + ad.slot_id + '"]'); if (!el) return;
+          if (window.VEAdCreative) { el.innerHTML = VEAdCreative.markup(ad, { linkClass: 'vear-ad' }); return; }
           el.innerHTML = '<a class="vear-ad" href="' + esc(ad.link_url || '#') + '" target="_blank" rel="noopener noreferrer sponsored"><img src="' + esc(ad.image_url) + '" alt="Advertisement"></a>';
           el.querySelector('a').addEventListener('click', function () { click(ad.placement_id, ad.campaign_id); });
         });

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fieldhouse Protein in the Feeds (Illustrative) — Vegans Explore</title>
+<meta name="description" content="An illustrative walkthrough: how a campaign shows up in Vegans Explore's Instagram, TikTok, Community Board, Daily Pulse and member feeds.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Montserrat,sans-serif;color:#1a1a1a;background:#0f1a2e;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .row{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+  .copy{flex:1;min-width:260px;max-width:520px}
+  .copy .vg-lede{font-size:15.5px}
+  .phones{display:flex;gap:20px;flex-wrap:wrap}
+  .cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tag{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:20px;background:rgba(255,255,255,.12);color:#fff}
+
+  /* Phone frame, sized by the screen height so a slide never scrolls */
+  .phone{height:min(500px,calc(100vh - 300px));min-height:360px;aspect-ratio:9/18.5;background:#000;border-radius:32px;padding:8px;box-shadow:0 20px 50px rgba(0,0,0,.5);flex-shrink:0}
+  .screen{width:100%;height:100%;border-radius:25px;overflow:hidden;position:relative;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
+
+  /* Instagram */
+  .ig-top{display:flex;justify-content:space-between;align-items:center;padding:12px 12px 8px;font-weight:800;font-size:15px}
+  .ig-head{display:flex;align-items:center;gap:8px;padding:6px 10px}
+  .ig-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af);padding:2px;flex-shrink:0}
+  .ig-av span{display:flex;width:100%;height:100%;border-radius:50%;background:#fff;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#2d7d31}
+  .ig-av.fh span{color:#1d2f4f}
+  .ig-name{font-size:12px;font-weight:700;line-height:1.2}
+  .ig-name small{display:block;font-size:10.5px;font-weight:400;color:#555}
+  .ig-media{flex:1;min-height:0;position:relative;background:#ddd}
+  .ig-media img{width:100%;height:100%;object-fit:cover;display:block}
+  .ig-actions{display:flex;gap:12px;padding:8px 10px 2px;font-size:17px}
+  .ig-text{padding:2px 10px 10px;font-size:11.5px;line-height:1.4}
+  .ig-text b{font-weight:700}
+  .ig-text .muted{color:#777}
+  .reel{background:#000;color:#fff}
+  .reel .ig-media{background:#000}
+  .reel-over{position:absolute;left:0;right:0;bottom:0;padding:12px;background:linear-gradient(to top,rgba(0,0,0,.75),transparent);font-size:11.5px;line-height:1.4}
+  .reel-side{position:absolute;right:8px;bottom:70px;display:flex;flex-direction:column;gap:12px;align-items:center;font-size:10px;font-weight:700}
+  .reel-side i{font-style:normal;font-size:19px;display:block;text-align:center}
+  .pp{display:inline-block;font-size:10px;font-weight:700;background:rgba(255,255,255,.2);padding:2px 6px;border-radius:4px;margin-bottom:4px}
+
+  /* TikTok */
+  .tt{background:#000;color:#fff}
+  .tt-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:center;gap:16px;padding:12px;font-size:12px;font-weight:700;z-index:2;color:rgba(255,255,255,.7)}
+  .tt-top b{color:#fff;border-bottom:2px solid #fff;padding-bottom:2px}
+
+  /* Board / Pulse / feed cards (Vegans Explore look) */
+  .ve{background:#f5f5f5;font-family:Montserrat,sans-serif}
+  .ve-bar{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:12px;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+  .ve-bar span{color:#2d7d31}
+  .ve-body{padding:10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+  .ve-card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:10px 12px}
+  .ve-card .k{font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2d7d31;margin-bottom:4px}
+  .ve-card .k.ad{color:#7d5a12}
+  .ve-card h4{font-size:12.5px;font-weight:900;line-height:1.3;margin-bottom:4px}
+  .ve-card p{font-size:11px;line-height:1.45;color:#444;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .ve-card img{width:100%;height:90px;object-fit:cover;border-radius:6px;margin-bottom:6px;display:block}
+  .ve-meta{font-size:10px;color:#777;margin-top:6px;font-weight:600}
+  .ve-btn{display:inline-block;margin-top:6px;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:5px;background:#2d7d31;color:#fff}
+  .ve-pts{display:flex;justify-content:space-between;align-items:center;background:#0a1a0f;color:#fff;border-radius:10px;padding:10px 12px}
+  .ve-pts b{font-size:20px;font-weight:900}
+  .ve-pts span{font-size:10px;color:#8ff0ac;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+  .comment{display:flex;gap:6px;font-size:10.5px;line-height:1.4;margin-top:6px}
+  .comment b{flex-shrink:0}
+
+  @media (max-width:900px){.phones{justify-content:center}.phone{height:500px}}
+</style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+
+<div class="vg-note" role="note"><strong>Illustrative</strong>Mockups of how an invented brand's campaign shows up in our channels. Not real posts. <a href="/campaign-engine/fieldhouse-protein">Back to the listing</a></div>
+
+<main class="vg-stage" data-bg="linear-gradient(120deg,#0b1424 0%,#1d2f4f 55%,#2e4a78 100%)" aria-label="Fieldhouse Protein in the feeds">
+
+  <section class="vg-slide" id="start" data-title="In the feeds">
+    <div style="max-width:860px;padding-top:4vh">
+      <p class="vg-eyebrow">How do you Fieldhouse? · Week 6</p>
+      <h1 class="vg-h vg-xl">The campaign, in the feeds</h1>
+      <p class="vg-lede">The listing is home base. Everything else points back to it: our Instagram and TikTok, the creators' own posts, the Community Board, the Daily Pulse in each city, and the dashboard feed of every member who joined.</p>
+      <p class="vg-lede">The goal is simple: send as many people as we can to the listing, through every channel we have.</p>
+      <div class="cta-row"><button type="button" class="vg-btn" data-vg-next>Show me</button><a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein">Back to the listing</a></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="instagram" data-title="Instagram">
+    <div class="row">
+      <div class="copy">
+        <p class="vg-eyebrow">Instagram · @vegansexplore</p>
+        <h2 class="vg-h">Native in our feed, and in theirs</h2>
+        <p class="vg-lede">A collab post on our account shows up in Fieldhouse's feed too, labeled as a paid partnership. Creator Reels run on the creators' own accounts with the same label, and every link goes to the listing through a tracked link.</p>
+        <div class="tags"><span class="tag">Collab post</span><span class="tag">Creator Reels</span><span class="tag">Paid partnership label</span><span class="tag">Tracked link in bio</span></div>
+      </div>
+      <div class="phones">
+        <div class="phone"><div class="screen">
+          <div class="ig-top">Instagram <span>♡ ✉</span></div>
+          <div class="ig-head"><div class="ig-av"><span>VE</span></div><div class="ig-name">vegansexplore and fieldhouseprotein<small>Paid partnership · South Florida</small></div></div>
+          <div class="ig-media"><img data-img="booth" alt="Festival booth"></div>
+          <div class="ig-actions">♡ 💬 ➤</div>
+          <div class="ig-text"><b>2,418 likes</b><br><b>vegansexplore</b> 9,800 samples in two days 🙌 How do you Fieldhouse? Join the challenge on the listing, link in bio. #ad #HowDoYouFieldhouse <span class="muted">View all 214 comments</span></div>
+        </div></div>
+        <div class="phone"><div class="screen reel">
+          <div class="ig-media"><img data-img="maya" alt="Creator Reel"></div>
+          <div class="reel-side"><span><i>♡</i>6.1K</span><span><i>💬</i>188</span><span><i>➤</i>940</span></div>
+          <div class="reel-over"><span class="pp">Paid partnership</span><br><b>maya.runs.atl</b> · Saturday long run, then a shake 🥤 Atlanta run clubs, double points this week. #ad #HowDoYouFieldhouse</div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="tiktok" data-title="TikTok">
+    <div class="row">
+      <div class="copy">
+        <p class="vg-eyebrow">TikTok</p>
+        <h2 class="vg-h">Short videos from local creators</h2>
+        <p class="vg-lede">Each creator's short clips are bounty deliverables: briefed, reviewed and paid through the engine. They post with #ad and the campaign tag, and their link sends people to the listing to join.</p>
+        <div class="tags"><span class="tag">#HowDoYouFieldhouse</span><span class="tag">Creator bounties</span><span class="tag">#ad on every post</span></div>
+      </div>
+      <div class="phones">
+        <div class="phone"><div class="screen tt">
+          <div class="tt-top"><span>Following</span><b>For You</b></div>
+          <div class="ig-media"><img data-img="jordan" alt="TikTok video"></div>
+          <div class="reel-side"><span><i>♡</i>12.4K</span><span><i>💬</i>302</span><span><i>↗</i>1.1K</span></div>
+          <div class="reel-over"><b>@jordan.trails</b><br>Trail day, three bars deep. Which flavor wins? #ad #HowDoYouFieldhouse #plantprotein<br>♫ original sound</div>
+        </div></div>
+        <div class="phone"><div class="screen tt">
+          <div class="tt-top"><span>Following</span><b>For You</b></div>
+          <div class="ig-media"><img data-img="dani" alt="TikTok video"></div>
+          <div class="reel-side"><span><i>♡</i>8.7K</span><span><i>💬</i>156</span><span><i>↗</i>820</span></div>
+          <div class="reel-over"><b>@danimealpreps</b><br>A training week of plant-based meals in 20 minutes. #ad #HowDoYouFieldhouse #mealprep<br>♫ original sound</div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="board" data-title="Community Board">
+    <div class="row">
+      <div class="copy">
+        <p class="vg-eyebrow">Community Board</p>
+        <h2 class="vg-h">Where members talk about it</h2>
+        <p class="vg-lede">The campaign gets a discussion thread on the Community Board. Members swap routines, ask about flavors and cheer each other up the leaderboard, and every reply keeps the listing in front of them.</p>
+      </div>
+      <div class="phones">
+        <div class="phone"><div class="screen ve">
+          <div class="ve-bar">Community Board <span>Atlanta</span></div>
+          <div class="ve-body">
+            <div class="ve-card"><div class="k ad">Campaign · #ad</div><h4>How do you Fieldhouse? Week 6 thread</h4><p>Atlanta run clubs are leading. Post your Saturday shakeout, double points this week.</p><div class="ve-meta">142 replies · Fieldhouse Protein</div></div>
+            <div class="ve-card"><div class="comment"><b>Tasha W.</b><span>Cocoa Recovery after hill repeats is unreal. 1,170 points and counting.</span></div><div class="comment"><b>Devon K.</b><span>Coming for that grand prize 😤</span></div><div class="comment"><b>Ari P.</b><span>Which run clubs have the shakes? Going Saturday.</span></div></div>
+            <div class="ve-card"><div class="k">Daily Pulse topic</div><h4>What's your post-run meal?</h4><p>38 members shared theirs today.</p></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="pulse" data-title="Daily Pulse">
+    <div class="row">
+      <div class="copy">
+        <p class="vg-eyebrow">The Daily Pulse</p>
+        <h2 class="vg-h">In every city's daily briefing</h2>
+        <p class="vg-lede">Each city's Daily Pulse can carry the campaign: a story when something happens, and "one thing to do" pointing members to this week's task. Sponsored items are labeled.</p>
+      </div>
+      <div class="phones">
+        <div class="phone"><div class="screen ve">
+          <div class="ve-bar">Daily Pulse <span>Atlanta</span></div>
+          <div class="ve-body">
+            <div class="ve-card"><img data-img="maya" alt=""><div class="k ad">Sponsored · Fieldhouse Protein</div><h4>Atlanta run clubs lead the Fieldhouse challenge</h4><p>More than half of all run-club check-ins this season are coming from Atlanta.</p></div>
+            <div class="ve-card"><div class="k">One thing to do</div><h4>Saturday shakeout, double points</h4><p>Check in at a partner run club with the Passport and grab a cold shake at the finish.</p><span class="ve-btn">See the listing</span></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="feed" data-title="Member feed">
+    <div class="row">
+      <div class="copy">
+        <p class="vg-eyebrow">The member dashboard</p>
+        <h2 class="vg-h">Updates go to everyone who joined</h2>
+        <p class="vg-lede">Joining a campaign adds it to the member's dashboard. Every update the brand posts lands in their feed, with their points and next task, so they keep coming back for ten weeks.</p>
+      </div>
+      <div class="phones">
+        <div class="phone"><div class="screen ve">
+          <div class="ve-bar">Your dashboard <span>Campaigns</span></div>
+          <div class="ve-body">
+            <div class="ve-pts"><div><span>How do you Fieldhouse?</span><br><b>410 pts</b></div><div style="text-align:right;font-size:10px">#38 in Atlanta<br>Week 6 of 10</div></div>
+            <div class="ve-card"><div class="k">Next task</div><h4>Saturday run-club check-in · 30 pts</h4><p>Double points this week.</p></div>
+            <div class="ve-card"><div class="k ad">Update · Fieldhouse Protein</div><h4>Week 6: Atlanta run clubs lead the challenge</h4><p>Two new creator posts and a double-points run-club bounty this Saturday.</p></div>
+            <div class="ve-card"><div class="k">Reward unlocked</div><h4>$1 off coupon</h4><p>You passed 300 points. Your code is in your wallet.</p></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="end" data-title="Next">
+    <p class="vg-eyebrow">Everything points to the listing</p>
+    <h2 class="vg-h">One home base, every channel</h2>
+    <p class="vg-lede">Every post, briefing and update sends people to the listing, where they join, earn points and buy, and every one of those steps is counted for the brand.</p>
+    <div class="cta-row">
+      <a class="vg-btn" href="/campaign-engine/fieldhouse-protein">Back to the listing</a>
+      <a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein/dashboard">Sponsor dashboard</a>
+      <a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein/report">Final report</a>
+    </div>
+  </section>
+
+</main>
+
+<script src="/public/footer.js"></script>
+</div>
+<script src="/campaign-engine/fieldhouse-protein/listing-demo.js"></script>
+<script>
+  // Images come from the same illustrative set as the listing.
+  (function(){ var P = (window.VE_DEMO && VE_DEMO.images) || {}; document.querySelectorAll('img[data-img]').forEach(function(i){ var u = P[i.getAttribute('data-img')]; if(u) i.src = u; }); })();
+</script>
+<script src="/public/ve-guided.js"></script>
+</body>
+</html>

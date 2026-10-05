@@ -251,6 +251,7 @@
     .pulse-comment-time { font-size: 11px; color: var(--ve-text-50); }
     .pulse-comment-text { font-size: 13px; color: var(--ve-text-75); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
   </style>
+<script src="/public/ve-ad-creative.js"></script>
 </head>
 <body>
   <div class="page-frame">
@@ -886,7 +887,8 @@
   function renderAdSlot(elId, ad) {
     var el = document.getElementById(elId);
     if (!el || !ad || !ad.image_url) return;
-    el.innerHTML = '<a href="' + pulseEsc(ad.link_url || '#') + '" target="_blank" rel="noopener noreferrer sponsored">'
+    el.innerHTML = window.VEAdCreative ? VEAdCreative.markup(ad)
+      : '<a href="' + pulseEsc(ad.link_url || '#') + '" target="_blank" rel="noopener noreferrer sponsored">'
       + '<img src="' + pulseEsc(ad.image_url) + '" alt="Advertisement"></a>';
   }
 

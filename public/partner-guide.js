@@ -105,7 +105,7 @@
     ['hosting', 'Host my people', 'Bring guests, clients or a team'],
     ['goodwill', 'Support the movement', 'Goodwill and community impact']
   ];
-  var BUDGETS = [['under_500', 'Under $500', '', 50000], ['500_2500', '$500 to $2,500', '', 250000], ['2500_8000', '$2,500 to $8,000', '', 799999], ['8k_plus', '$8,000 and up', 'Starts with a call with Sean', Infinity]];
+  var BUDGETS = [['under_500', 'Under $500', '', 50000], ['500_2500', '$500 to $2,500', '', 250000], ['2500_8000', '$2,500 and up', '', 799999], ['8k_plus', 'A larger, multi-city campaign', 'Starts with a call', Infinity]];
   var STARTS = [['before_oct_24', 'Before Oct 24', 'Get every event this quarter'], ['november', 'November', ''], ['december', 'December', ''], ['q1_2027', 'Early 2027', '']];
 
   var ERRORS = {
@@ -117,7 +117,7 @@
     sold_out: 'All five Activation Partner spots are taken. Ask a question to talk through other options.',
     too_many_requests: 'We received several requests from this email in the last hour. Please try again later.',
     city_not_live: 'Checkout opens when your city goes live. Leave your email and the team will reach out.',
-    meeting_requires_8k_budget: 'Meetings with Sean start at $8,000. Change your budget, or pick a self-serve option.',
+    meeting_requires_8k_budget: 'Calls are for larger, multi-city campaigns. Change your budget, or pick a self-serve option.',
     already_holding: 'You already have a spot on hold. Check your email for the details.'
   };
 
@@ -260,7 +260,7 @@
     else if (s.step === 'city') html = choiceStep('city', 'Which city?', 'South Florida is live. Each new city opens as its Community Manager comes on.',
       G.data.cities.map(function (c) { return [c.slug, c.name, c.status === 'live' ? 'Live now' : 'Coming soon']; }));
     else if (s.step === 'goal') html = choiceStep('goal', 'What do you want most?', '', GOALS);
-    else if (s.step === 'budget') html = choiceStep('budget', 'What is your budget?', 'Everything under $8,000 checks out right here, no meeting needed.', BUDGETS);
+    else if (s.step === 'budget') html = choiceStep('budget', 'What is your budget?', 'Most options check out right here, no meeting needed.', BUDGETS);
     else if (s.step === 'start') html = choiceStep('start', 'When do you want to start?', 'Sign before Oct 24 and you get every event this quarter.', STARTS);
     else if (s.step === 'coming') html = comingStep();
     else if (s.step === 'results') html = isFoundingMember() ? resultsStep() : gateStep();
@@ -356,12 +356,12 @@
     var s = G.state, list = matches();
     var head = s.audience === 'attendee' ? 'Your way in' : 'Here is what fits';
     var sub = s.audience === 'attendee' ? 'Founding Membership is the one ask for everyone: $11 one time, and you are in.'
-      : 'Options under $8,000 check out right here. $8,000 and up starts with a call with Sean.';
+      : 'Most options check out right here. A larger, multi-city campaign starts with a call.';
     var html = '<h2 class="vpg-q-title" id="vpg-q-title">' + head + '</h2><p class="vpg-q-sub">' + sub + '</p>';
     html += list.length ? '<div class="vpg-grid">' + list.map(function (o, i) { return card(o, i === 0); }).join('') + '</div>'
       : '<p class="vpg-q-sub">Nothing on the menu matches that budget yet. Go back and try a different range, or ask us a question.</p>';
     var hidden = s.budget !== '8k_plus' && G.data.offers.some(function (o) { return o.exit === 'meeting' && o.audiences.indexOf(s.audience) !== -1; });
-    if (hidden) html += '<p class="vpg-hint">Planning $8,000 or more? Go back and choose that budget to see Activation Partner and Season Partnership options.</p>';
+    if (hidden) html += '<p class="vpg-hint">Planning a larger, multi-city campaign? Go back and choose that budget to see Activation Partner and Season Partnership options.</p>';
     return html;
   }
 

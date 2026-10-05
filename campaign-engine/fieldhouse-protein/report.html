@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fieldhouse Protein Final Report (Illustrative) — Vegans Explore</title>
+<meta name="description" content="An illustrative final report: how a Season Sponsor campaign runs on the Vegans Explore engine, as a guided walkthrough from five sides.">
+<link rel="icon" href="/public/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--fh-navy:#1d2f4f;--fh-gold:#e8b04b}
+  body{font-family:Montserrat,sans-serif;color:#1a1a1a;background:#0f1a2e;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 22px}
+  .chip{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff}
+  .cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+  .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .tiles.five{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .tiles.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .tile{padding:20px}
+  .tile .n{font-size:36px;font-weight:900;letter-spacing:-.02em;line-height:1;color:#fff}
+  .tile .l{font-size:14px;font-weight:800;color:#fff;margin-top:10px;line-height:1.35}
+  .tile .s{font-size:12.5px;color:#ececec;margin-top:4px;line-height:1.45}
+
+  .moment{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start;padding:28px;max-width:1000px;border-color:rgba(232,176,75,.6)}
+  .wk{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;background:var(--fh-gold);color:var(--fh-navy);border-radius:10px;padding:12px 16px;text-align:center;line-height:1.2}
+  .wk b{display:block;font-size:34px;letter-spacing:-.02em}
+  .moment h3{font-size:22px;font-weight:900;line-height:1.25;margin-bottom:10px}
+  .moment p{font-size:15.5px;line-height:1.7;color:#fff}
+
+  .doors{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+  .door{padding:20px;display:flex;flex-direction:column;gap:8px;border:1px solid rgba(255,255,255,.22);color:#fff}
+  .door b{font-size:16px;font-weight:900}
+  .door span{font-size:13.5px;line-height:1.5;color:#ececec}
+  .door em{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#c5f2c7;margin-top:auto;padding-top:8px}
+  .door.vg-picked em{color:#22C55E}
+
+  .panel{padding:20px 22px}
+  table.data{width:100%;border-collapse:collapse;font-size:14px}
+  table.data caption{text-align:left;font-size:12px;color:rgba(26,26,26,.6);padding-bottom:10px}
+  table.data th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(26,26,26,.6);padding:9px 12px;border-bottom:2px solid rgba(0,0,0,.1);white-space:nowrap}
+  table.data td{padding:11px 12px;border-bottom:1px solid rgba(0,0,0,.08);color:rgba(26,26,26,.8);vertical-align:top}
+  table.data .num{text-align:right;font-variant-numeric:tabular-nums}
+  table.data tr.total td{font-weight:900;color:#1a1a1a;border-top:2px solid rgba(0,0,0,.1)}
+  table.data td strong{color:#1a1a1a}
+  .up{color:#1b7a43;font-weight:800}
+  .down{color:#a0441a;font-weight:800}
+  .scroll-x{overflow-x:auto}
+
+  .bars{display:flex;flex-direction:column;gap:14px}
+  .bar-row{display:grid;grid-template-columns:minmax(150px,260px) minmax(0,1fr);gap:16px;align-items:center}
+  .bar-label{font-size:14px;font-weight:700;color:rgba(26,26,26,.8)}
+  .bar-track{display:flex;align-items:center;gap:10px;height:24px}
+  .bar-fill{height:24px;background:#2a78d6;border-radius:0 4px 4px 0;min-width:2px}
+  .bar-val{font-size:13px;font-weight:800;color:#1a1a1a;white-space:nowrap}
+  .bar-val small{font-weight:700;color:rgba(26,26,26,.6);margin-left:6px}
+
+  .brief dl{display:grid;grid-template-columns:minmax(120px,170px) minmax(0,1fr);gap:12px 20px}
+  .brief dt{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#c5f2c7;padding-top:3px}
+  .brief dd{font-size:15px;line-height:1.55;color:#fff}
+
+  .people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .person{padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+  .ini{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.5)}
+  .person .nm{font-size:15px;font-weight:900}
+  .person .rl{font-size:12px;color:#c5f2c7;margin-bottom:6px}
+  .person .st{font-size:13px;line-height:1.55;color:#fff}
+
+  .flow{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;counter-reset:f}
+  .flow li{padding:18px;font-size:14px;line-height:1.55;color:#ececec}
+  .flow li::before{counter-increment:f;content:'Step ' counter(f);display:block;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#22C55E;margin-bottom:8px}
+  .flow b{color:#fff}
+
+  .tasks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+  .task{padding:18px}
+  .pts{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#22C55E;color:#03170a;padding:4px 10px;border-radius:20px;margin-bottom:10px}
+  .task .tn{font-size:15px;font-weight:800;margin-bottom:6px;color:#fff}
+  .task .td{font-size:13px;line-height:1.5;color:#ececec}
+  .task .dn{font-size:20px;font-weight:900;margin-top:12px;color:var(--fh-gold)}
+  .task .dn small{font-size:12px;color:#ececec;font-weight:700;margin-left:4px}
+
+  .photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .photos figure{overflow:hidden;margin:0}
+  .photos img{display:block;width:100%;height:clamp(150px,calc(100vh - 470px),360px);object-fit:cover}
+  .photos figcaption{padding:12px 14px;font-size:13.5px;font-weight:700;color:#fff}
+  @media (max-width:900px){.photos{grid-template-columns:minmax(0,1fr)}.photos img{height:200px}}
+  .end-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+  @media (max-width:1200px){.doors,.tiles.five,.flow,.tasks{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (max-width:900px){.tiles,.tiles.five,.tiles.four{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{padding:16px}.tile .n{font-size:26px}.doors,.people,.flow,.tasks{grid-template-columns:minmax(0,1fr)}.moment{grid-template-columns:minmax(0,1fr)}.bar-row{grid-template-columns:minmax(0,1fr);gap:6px}.brief dl{grid-template-columns:minmax(0,1fr);gap:4px}.brief dd{margin-bottom:10px}}
+</style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+
+<div class="vg-note" role="note"><strong>Illustrative campaign</strong>Fieldhouse Protein is an invented brand and this campaign did not happen. The numbers are realistic examples of what the engine reports. <a href="/campaign-engine">Back to the Campaign Engine</a></div>
+
+<main class="vg-stage" data-bg="linear-gradient(120deg,#0b1424 0%,#1d2f4f 55%,#2e4a78 100%)" aria-label="Fieldhouse Protein final report">
+
+  <!-- Shared opening -->
+  <section class="vg-slide" id="start" data-title="Final report">
+    <div style="max-width:900px;padding-top:4vh">
+      <p class="vg-eyebrow">Final report · Season Sponsor · Fieldhouse Protein</p>
+      <h1 class="vg-h vg-xl">"How do you Fieldhouse?"</h1>
+      <div class="chips"><span class="chip">10 weeks, spring</span><span class="chip">South Florida · Atlanta · DMV</span><span class="chip">$60,000, managed</span><span class="chip">Founding Partner</span></div>
+      <p class="vg-lede">Fieldhouse asked a simple question in three cities: how does plant protein fit your training? For ten weeks, members answered with run-club check-ins, post-workout shakes and meal-prep videos. Six local creators made the case on camera, and a festival booth put the product in 9,800 hands.</p>
+      <div class="cta-row"><button type="button" class="vg-btn" data-vg-next>Walk through the report</button><button type="button" class="vg-btn vg-btn-ghost" data-vg-go="pick">Go straight to your side</button></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="results" data-title="What it produced">
+    <p class="vg-eyebrow">The season in six numbers</p>
+    <h2 class="vg-h">What it produced</h2>
+    <div class="tiles">
+      <div class="tile vg-glass"><div class="n">1,240</div><div class="l">members joined the challenge</div><div class="s">3,100 tasks completed</div></div>
+      <div class="tile vg-glass"><div class="n">436</div><div class="l">posts labeled #ad</div><div class="s">410 from members, 26 from creators</div></div>
+      <div class="tile vg-glass"><div class="n">~1.1M</div><div class="l">views</div><div class="s">Estimated from the post links people submitted</div></div>
+      <div class="tile vg-glass"><div class="n">9,800</div><div class="l">samples handed out</div><div class="s">South Florida spring festival</div></div>
+      <div class="tile vg-glass"><div class="n">7,450</div><div class="l">tracked clicks to retailers</div><div class="s">From 22,000 profile visits</div></div>
+      <div class="tile vg-glass"><div class="n">860</div><div class="l">new Vegans Explore members</div><div class="s">2,300 opted in to Fieldhouse offers</div></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="booth" data-title="The festival booth">
+    <p class="vg-eyebrow">On the ground · South Florida spring festival</p>
+    <h2 class="vg-h">The booth we took over</h2>
+    <div class="photos">
+      <figure class="vg-glass"><img data-img="booth" alt="The Fieldhouse booth at the festival"><figcaption>The booth: 9,800 samples over two days</figcaption></figure>
+      <figure class="vg-glass"><img data-img="sampling" alt="Sampling table with Passport check-in"><figcaption>980 members checked in with the Passport</figcaption></figure>
+      <figure class="vg-glass"><img data-img="volunteers" alt="Member volunteers at the booth"><figcaption>24 volunteer shifts, posted as paid bounties</figcaption></figure>
+    </div>
+    <p class="vg-fine">Illustrative images. In a real report these are the photos and video our team and the creators shot at the activation.</p>
+  </section>
+
+  <section class="vg-slide" id="moment" data-title="The moment that made it work">
+    <p class="vg-eyebrow">The moment that made it work</p>
+    <h2 class="vg-h">Week 6: money moved to what was working</h2>
+    <div class="moment vg-glass">
+      <div class="wk">Week<b>6</b></div>
+      <div>
+        <h3>Atlanta's run clubs were turning into sales at twice the rate.</h3>
+        <p>The live dashboard showed Atlanta's run-club check-ins turning into retailer clicks at twice the rate of the other two cities, while DMV ad-rail clicks were the lowest of any line. Because the budget was managed, we moved $3,000 out of the DMV ad rail into two extra Atlanta creator posts and a run-club bounty. Fieldhouse saw the change, and the reason, on its dashboard the same day. Atlanta finished with the most retailer clicks of any city.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="pick" data-title="Pick your side" data-vg-choose>
+    <p class="vg-eyebrow">One report, five sides</p>
+    <h2 class="vg-h">Which side are you on?</h2>
+    <p class="vg-lede">Pick one and press Next. You can come back and see the others at the end.</p>
+    <div class="doors">
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="sponsor"><b>Brand or sponsor</b><span>Where the $60,000 went, what changed mid-season, what each city produced.</span><em>5 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="creator"><b>Creator</b><span>The brief, the six creators, what they made and what they earned.</span><em>3 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="host"><b>Host or event</b><span>How a sponsored festival booth ran, who came, what the host was paid.</span><em>3 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="member"><b>Member</b><span>The ten-week challenge, the tasks, the points and the perks.</span><em>2 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="business"><b>Directory business</b><span>The Featured Profile, its traffic, and the local cafés it sent people to.</span><em>3 slides</em></button>
+    </div>
+  </section>
+
+  <!-- SPONSOR -->
+  <section class="vg-slide" id="sponsor-1" data-path="sponsor" data-title="The budget">
+    <p class="vg-eyebrow">Brand or sponsor · 1 of 5</p>
+    <h2 class="vg-h">The budget</h2>
+    <p class="vg-lede">Fieldhouse joined as a Founding Partner on the managed plan: $60,000, a 15 percent service fee, and $51,000 placed across three cities.</p>
+    <div class="tiles five">
+      <div class="tile vg-glass"><div class="n">$60,000</div><div class="l">total budget</div><div class="s">Managed, Season Sponsor</div></div>
+      <div class="tile vg-glass"><div class="n">$9,000</div><div class="l">service fee</div><div class="s">15% Founding Partner rate (20% standard)</div></div>
+      <div class="tile vg-glass"><div class="n">$51,000</div><div class="l">placed in the network</div><div class="s">Creators, members, events, ads</div></div>
+      <div class="tile vg-glass"><div class="n">$6.85</div><div class="l">per retailer click</div><div class="s">$51,000 ÷ 7,450 clicks</div></div>
+      <div class="tile vg-glass"><div class="n">$41</div><div class="l">per member who took part</div><div class="s">$51,000 ÷ 1,240 members</div></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="sponsor-2" data-path="sponsor" data-title="Spend by line">
+    <p class="vg-eyebrow">Brand or sponsor · 2 of 5</p>
+    <h2 class="vg-h">Where the $51,000 went</h2>
+    <div class="panel vg-panel">
+      <div class="bars" id="spend-bars" role="img" aria-label="Final spend by line: creators $20,000, member challenge $13,000, event $10,000, Featured Profile kits and shipping $5,000, ad rail and Daily Pulse $3,000"></div>
+    </div>
+    <p class="vg-fine">Final spend after the week-6 move. The planned amount is shown next to each line that changed.</p>
+  </section>
+
+  <section class="vg-slide" id="sponsor-3" data-path="sponsor" data-title="Planned and final">
+    <p class="vg-eyebrow">Brand or sponsor · 3 of 5</p>
+    <h2 class="vg-h">Planned, final, and what it bought</h2>
+    <div class="panel vg-panel scroll-x">
+      <table class="data">
+        <thead><tr><th>Line</th><th class="num">Planned</th><th class="num">Final</th><th class="num">Change</th><th>What it bought</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Creators</strong></td><td class="num">$18,000</td><td class="num">$20,000</td><td class="num up">+$2,000</td><td>Six creators, 26 pieces, including two extra Atlanta posts</td></tr>
+          <tr><td><strong>Member challenge</strong></td><td class="num">$12,000</td><td class="num">$13,000</td><td class="num up">+$1,000</td><td>Points, perks and paid tasks for 1,240 members, plus the Atlanta run-club bounty</td></tr>
+          <tr><td><strong>Event</strong></td><td class="num">$10,000</td><td class="num">$10,000</td><td class="num">—</td><td>Festival booth: host fee, product and sampling, setup and staff</td></tr>
+          <tr><td><strong>Ad rail and Daily Pulse</strong></td><td class="num">$6,000</td><td class="num">$3,000</td><td class="num down">−$3,000</td><td>First position in all three cities, reduced in the DMV</td></tr>
+          <tr><td><strong>Profile, kits and shipping</strong></td><td class="num">$5,000</td><td class="num">$5,000</td><td class="num">—</td><td>The profile, sampler boxes for perks and creators, shipping</td></tr>
+          <tr class="total"><td>Placed</td><td class="num">$51,000</td><td class="num">$51,000</td><td class="num">$0</td><td>Nothing added; money moved to what was working</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="sponsor-4" data-path="sponsor" data-title="By city">
+    <p class="vg-eyebrow">Brand or sponsor · 4 of 5</p>
+    <h2 class="vg-h">What each city produced</h2>
+    <div class="panel vg-panel scroll-x">
+      <table class="data">
+        <thead><tr><th>City</th><th class="num">Spend</th><th class="num">Members</th><th class="num">Tasks</th><th class="num">Posts</th><th class="num">Retailer clicks</th><th class="num">New members</th></tr></thead>
+        <tbody>
+          <tr><td><strong>South Florida</strong></td><td class="num">$22,700</td><td class="num">480</td><td class="num">1,150</td><td class="num">168</td><td class="num">2,600</td><td class="num">330</td></tr>
+          <tr><td><strong>Atlanta</strong></td><td class="num">$15,700</td><td class="num">455</td><td class="num">1,270</td><td class="num">175</td><td class="num">3,350</td><td class="num">340</td></tr>
+          <tr><td><strong>DMV</strong></td><td class="num">$12,600</td><td class="num">305</td><td class="num">680</td><td class="num">93</td><td class="num">1,500</td><td class="num">190</td></tr>
+          <tr class="total"><td>All cities</td><td class="num">$51,000</td><td class="num">1,240</td><td class="num">3,100</td><td class="num">436</td><td class="num">7,450</td><td class="num">860</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="vg-fine">South Florida's spend includes the $10,000 festival booth. Posts count member and creator posts together. Views are estimated from submitted post links; we don't claim numbers we can't measure.</p>
+  </section>
+
+  <section class="vg-slide" id="sponsor-5" data-path="sponsor" data-title="Why managed paid off">
+    <p class="vg-eyebrow">Brand or sponsor · 5 of 5</p>
+    <h2 class="vg-h">Why managed paid for itself</h2>
+    <div class="moment vg-glass">
+      <div class="wk">Week<b>6</b></div>
+      <div>
+        <h3>$3,000 moved from the DMV ad rail to Atlanta.</h3>
+        <p>Atlanta's retailer clicks per week rose from 300 in week 4 to 470 in week 7, while the DMV held steady on its creators and members alone. On a self-directed plan, Fieldhouse would have seen the same numbers and made the call itself. On managed, we made it and showed the reasoning on the dashboard.</p>
+        <div class="cta-row"><a class="vg-btn" href="/campaign-engine/fieldhouse-protein/dashboard#money">See it on the dashboard</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATOR -->
+  <section class="vg-slide" id="creator-1" data-path="creator" data-title="The brief">
+    <p class="vg-eyebrow">Creator · 1 of 3</p>
+    <h2 class="vg-h">The brief every creator got</h2>
+    <div class="brief vg-glass" style="padding:24px;max-width:1100px">
+      <dl>
+        <dt>Ask</dt><dd>Show how plant protein fits your training, in your own words and your own routine.</dd>
+        <dt>Deliverables</dt><dd>One collab video (45 to 90 seconds) and three short clips over ten weeks.</dd>
+        <dt>Pay</dt><dd>$1,200 for the video and $500 per clip ($2,700), plus a $300 bonus at 400 retailer clicks on your tracked link. Extra posts: $1,000 each.</dd>
+        <dt>Must</dt><dd>Label every post #ad. Use your personal tracked link. Show the product being used, not just held.</dd>
+        <dt>Never</dt><dd>Make health or weight-loss claims, or say the product replaces a meal.</dd>
+        <dt>Rights</dt><dd>Fieldhouse can use the videos on its profile and social channels for 12 months, credited to you.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="creator-2" data-path="creator" data-title="Who made what">
+    <p class="vg-eyebrow">Creator · 2 of 3</p>
+    <h2 class="vg-h">Six creators, two per city</h2>
+    <div class="people">
+      <div class="person vg-glass"><div class="ini" style="background:#b0562a">DM</div><div><div class="nm">Dani M.</div><div class="rl">Meal-prep coach · South Florida</div><div class="st">4 pieces · about 120K views<br>Earned <b>$3,000</b></div></div></div>
+      <div class="person vg-glass"><div class="ini" style="background:#8a4b1f">AL</div><div><div class="nm">Andre L.</div><div class="rl">Strength coach · South Florida</div><div class="st">4 pieces · about 95K views<br>Earned <b>$3,000</b></div></div></div>
+      <div class="person vg-glass"><div class="ini" style="background:#1b6b4a">MR</div><div><div class="nm">Maya R.</div><div class="rl">Run-club captain · Atlanta</div><div class="st">5 pieces · about 165K views<br>Earned <b>$4,000</b> (one extra post)</div></div></div>
+      <div class="person vg-glass"><div class="ini" style="background:#2f8a5f">JK</div><div><div class="nm">Jordan K.</div><div class="rl">Trail runner · Atlanta</div><div class="st">5 pieces · about 110K views<br>Earned <b>$4,000</b> (one extra post)</div></div></div>
+      <div class="person vg-glass"><div class="ini" style="background:#4b3a8a">PS</div><div><div class="nm">Priya S.</div><div class="rl">Yoga and strength · DMV</div><div class="st">4 pieces · about 85K views<br>Earned <b>$3,000</b></div></div></div>
+      <div class="person vg-glass"><div class="ini" style="background:#6a58b0">MT</div><div><div class="nm">Marcus T.</div><div class="rl">Cyclist · DMV</div><div class="st">4 pieces · about 65K views<br>Earned <b>$3,000</b></div></div></div>
+    </div>
+    <p class="vg-fine">Creators are invented for this example. Totals: 26 pieces, about 640K views, $20,000 paid. All six passed the 400-click bonus goal.</p>
+  </section>
+
+  <section class="vg-slide" id="creator-3" data-path="creator" data-title="How to get a campaign">
+    <p class="vg-eyebrow">Creator · 3 of 3</p>
+    <h2 class="vg-h">How a creator gets a campaign like this</h2>
+    <ol class="flow">
+      <li class="vg-glass"><b>Join as a creator</b> in your city's community.</li>
+      <li class="vg-glass"><b>Claim a spot</b> when a sponsor's creator bounty opens.</li>
+      <li class="vg-glass"><b>Get the brief</b>, your tracked link and a sampler box.</li>
+      <li class="vg-glass"><b>Deliver and get reviewed</b>, with notes if something needs a fix.</li>
+      <li class="vg-glass"><b>Get paid</b> per piece, plus bonuses for results.</li>
+    </ol>
+    <p class="vg-fine">Payment runs through the same bounty system members use, so every creator sees their work, approval status and pay in one place.</p>
+  </section>
+
+  <!-- HOST -->
+  <section class="vg-slide" id="host-1" data-path="host" data-title="The festival booth">
+    <p class="vg-eyebrow">Host or event · 1 of 3</p>
+    <h2 class="vg-h">A sponsored booth at the spring festival</h2>
+    <p class="vg-lede">The festival listed itself on the engine and was matched with a sponsor. Fieldhouse paid for the booth, members staffed it through paid volunteer bounties, and the Passport counted every check-in.</p>
+    <div class="tiles five">
+      <div class="tile vg-glass"><div class="n">$4,000</div><div class="l">paid to the host</div><div class="s">Booth space and a stage mention</div></div>
+      <div class="tile vg-glass"><div class="n">9,800</div><div class="l">samples handed out</div><div class="s">Over two festival days</div></div>
+      <div class="tile vg-glass"><div class="n">980</div><div class="l">member check-ins</div><div class="s">Through the Passport</div></div>
+      <div class="tile vg-glass"><div class="n">640</div><div class="l">offer opt-ins</div><div class="s">Part of the season's 2,300</div></div>
+      <div class="tile vg-glass"><div class="n">24</div><div class="l">volunteer shifts</div><div class="s">Paid bounties for members</div></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="host-2" data-path="host" data-title="The event budget">
+    <p class="vg-eyebrow">Host or event · 2 of 3</p>
+    <h2 class="vg-h">Where the $10,000 event budget went</h2>
+    <div class="panel vg-panel scroll-x" style="max-width:1000px">
+      <table class="data">
+        <thead><tr><th>Item</th><th class="num">Amount</th><th>Who it went to</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Activation fee</strong></td><td class="num">$4,000</td><td>The festival host</td></tr>
+          <tr><td><strong>Product and sampling supplies</strong></td><td class="num">$3,500</td><td>Fieldhouse product at cost, cups, coolers and ice</td></tr>
+          <tr><td><strong>Booth build and staff</strong></td><td class="num">$2,500</td><td>Tent, signage, and the 24 member volunteer shifts</td></tr>
+          <tr class="total"><td>Event total</td><td class="num">$10,000</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="host-3" data-path="host" data-title="How a host runs it">
+    <p class="vg-eyebrow">Host or event · 3 of 3</p>
+    <h2 class="vg-h">How a host runs an event on the engine</h2>
+    <ol class="flow">
+      <li class="vg-glass"><b>List the event</b> with dates, expected crowd and what a sponsor gets.</li>
+      <li class="vg-glass"><b>Get matched</b> with a sponsor that fits, or pick one yourself.</li>
+      <li class="vg-glass"><b>Post volunteer shifts</b> as bounties members can claim.</li>
+      <li class="vg-glass"><b>Check people in</b> with the Passport, so attendance is counted.</li>
+      <li class="vg-glass"><b>Get the report</b> to show your next sponsor.</li>
+    </ol>
+  </section>
+
+  <!-- MEMBER -->
+  <section class="vg-slide" id="member-1" data-path="member" data-title="The challenge">
+    <p class="vg-eyebrow">Member · 1 of 2</p>
+    <h2 class="vg-h">Ten weeks, five kinds of task</h2>
+    <p class="vg-lede">Members joined from their dashboard, picked tasks that fit their routine, and earned points they could spend on perks. Every post made for points was labeled #ad.</p>
+    <div class="tasks">
+      <div class="task vg-glass"><span class="pts">30 pts</span><div class="tn">Run-club check-in</div><div class="td">Check in at a partner run club with the Passport.</div><div class="dn">1,420<small>times</small></div></div>
+      <div class="task vg-glass"><span class="pts">40 pts</span><div class="tn">Visit the booth</div><div class="td">Check in at the Fieldhouse festival booth.</div><div class="dn">980<small>times</small></div></div>
+      <div class="task vg-glass"><span class="pts">50 pts</span><div class="tn">Shake post</div><div class="td">Post your post-workout shake, labeled #ad.</div><div class="dn">330<small>times</small></div></div>
+      <div class="task vg-glass"><span class="pts">75 pts</span><div class="tn">Bring a friend</div><div class="td">A friend joins through your link.</div><div class="dn">290<small>times</small></div></div>
+      <div class="task vg-glass"><span class="pts">100 pts</span><div class="tn">Meal-prep video</div><div class="td">A training-week meal prep, labeled #ad.</div><div class="dn">80<small>times</small></div></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="member-2" data-path="member" data-title="Who won">
+    <p class="vg-eyebrow">Member · 2 of 2</p>
+    <h2 class="vg-h">Everyone started at zero</h2>
+    <div class="tiles four">
+      <div class="tile vg-glass"><div class="n">1,465</div><div class="l">Grand prize: Nia H., South Florida</div><div class="s">Most points at the end. A year of Fieldhouse and a festival VIP pass</div></div>
+      <div class="tile vg-glass"><div class="n">30</div><div class="l">Fieldhouse sampler boxes</div><div class="s">The top 10 in each city</div></div>
+      <div class="tile vg-glass"><div class="n">512</div><div class="l">$1 off coupons</div><div class="s">Everyone who reached 300 points</div></div>
+      <div class="tile vg-glass"><div class="n">168</div><div class="l">Free shake coupons</div><div class="s">Everyone who reached 750 points</div></div>
+    </div>
+    <p class="vg-lede" style="margin-top:22px">Up to 1,540 points were on offer, and joining Vegans Explore was how you entered. A few prizes people can hold, plus digital rewards anyone can reach, kept all 1,240 members playing. 290 brought in a friend.</p>
+  </section>
+
+  <!-- BUSINESS -->
+  <section class="vg-slide" id="business-1" data-path="business" data-title="The profile's traffic">
+    <p class="vg-eyebrow">Directory business · 1 of 3</p>
+    <h2 class="vg-h">The Featured Profile was home base</h2>
+    <p class="vg-lede">Every creator post, booth QR code and Daily Pulse mention pointed to Fieldhouse's profile, and the profile sent people on to retailers and local businesses.</p>
+    <div class="tiles four">
+      <div class="tile vg-glass"><div class="n">22,000</div><div class="l">profile visits</div><div class="s">Over the ten weeks</div></div>
+      <div class="tile vg-glass"><div class="n">1:52</div><div class="l">average time on the profile</div><div class="s">Products was the most-opened part</div></div>
+      <div class="tile vg-glass"><div class="n">7,450</div><div class="l">tracked clicks to retailers</div><div class="s">Counted once, bots filtered out</div></div>
+      <div class="tile vg-glass"><div class="n">6</div><div class="l">local Directory businesses</div><div class="s">Stocked shakes as run-club pickup spots</div></div>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="business-2" data-path="business" data-title="Where the clicks went">
+    <p class="vg-eyebrow">Directory business · 2 of 3</p>
+    <h2 class="vg-h">Where the clicks went</h2>
+    <div class="panel vg-panel scroll-x" style="max-width:1000px">
+      <table class="data">
+        <thead><tr><th>Tracked link</th><th class="num">Clicks</th><th>Goes to</th></tr></thead>
+        <tbody>
+          <tr><td><strong>/go/fh-store</strong></td><td class="num">3,900</td><td>Fieldhouse online store</td></tr>
+          <tr><td><strong>/go/fh-stores</strong></td><td class="num">2,350</td><td>Store finder for regional grocery</td></tr>
+          <tr><td><strong>/go/fh-local</strong></td><td class="num">1,200</td><td>Six Directory cafés and juice bars in Atlanta and South Florida</td></tr>
+          <tr class="total"><td>All links</td><td class="num">7,450</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="vg-slide" id="business-3" data-path="business" data-title="For a local business">
+    <p class="vg-eyebrow">Directory business · 3 of 3</p>
+    <h2 class="vg-h">What it means for a local business</h2>
+    <p class="vg-lede">Six Directory cafés and juice bars stocked Fieldhouse shakes as run-club pickup spots and got 1,200 visits from the profile's "Near you" link, without paying anything.</p>
+    <p class="vg-lede">Any business in the Directory can have its own Featured Profile for $250 a season: the full menu or product line, prices, videos, and tracked links that show what each visit led to.</p>
+    <div class="cta-row"><a class="vg-btn" href="/campaign-engine/fieldhouse-protein">See the listing</a><a class="vg-btn vg-btn-ghost" href="/campaign-engine#levels">What a profile includes</a></div>
+  </section>
+
+  <!-- Shared close -->
+  <section class="vg-slide" id="end" data-title="See another side" data-vg-choose>
+    <p class="vg-eyebrow">That's your side</p>
+    <h2 class="vg-h">See it from another side</h2>
+    <p class="vg-lede">Everyone in the campaign sees the same season from where they stand. Pick another side and press Next, or open the dashboard.</p>
+    <div class="doors">
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="sponsor"><b>Brand or sponsor</b><span>The budget, the week-6 move, the cities.</span><em>5 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="creator"><b>Creator</b><span>The brief, the work, the pay.</span><em>3 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="host"><b>Host or event</b><span>The booth, the budget, the steps.</span><em>3 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="member"><b>Member</b><span>The tasks, the points, the perks.</span><em>2 slides</em></button>
+      <button type="button" class="door vg-glass vg-pick" data-vg-path="business"><b>Directory business</b><span>The profile and its traffic.</span><em>3 slides</em></button>
+    </div>
+    <div class="end-links">
+      <a class="vg-btn" href="/campaign-engine/fieldhouse-protein/dashboard">Open the sponsor dashboard</a>
+      <a class="vg-btn vg-btn-ghost" href="/campaign-engine/fieldhouse-protein">The listing</a>
+      <a class="vg-btn vg-btn-ghost" href="/campaign-engine">Campaign Engine</a>
+    </div>
+  </section>
+
+</main>
+
+<script src="/public/footer.js"></script>
+</div>
+<script src="/campaign-engine/fieldhouse-protein/listing-demo.js"></script>
+<script>(function(){ var P = (window.VE_DEMO && VE_DEMO.images) || {}; document.querySelectorAll('img[data-img]').forEach(function(i){ var u = P[i.getAttribute('data-img')]; if(u) i.src = u; }); })();</script>
+<script src="/public/ve-guided.js"></script>
+<script>
+(function(){
+  var SPEND=[{k:'Creators',v:20000,p:18000},{k:'Member challenge',v:13000,p:12000},{k:'Event',v:10000,p:10000},{k:'Profile, kits and shipping',v:5000,p:5000},{k:'Ad rail and Daily Pulse',v:3000,p:6000}];
+  var fmt=function(n){return '$'+n.toLocaleString('en-US');};
+  document.getElementById('spend-bars').innerHTML=SPEND.map(function(s){
+    return '<div class="bar-row"><div class="bar-label">'+s.k+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(s.v/20000*82)+'%"></div><span class="bar-val">'+fmt(s.v)+(s.v!==s.p?'<small>planned '+fmt(s.p)+'</small>':'')+'</span></div></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
