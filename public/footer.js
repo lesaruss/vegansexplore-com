@@ -62,25 +62,36 @@
    * Liz is the default when the member has not picked a Guide yet (Sean,
    * 2026-09-10): "default to Liz's image rather than the current green
    * circle." */
-  var VE_GUIDE_IMAGES = {
-    // Liz in the black Vegans Explore Tee, waving (Sean, 2026-10-05, version 2 of 2 from Higgsfield).
-    liz: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_015752_69e54fd1-337e-4e81-8708-8029766146a8_min.webp',
-    maya: '/public/guides/maya.png',
-    theo: '/public/guides/theo.png',
-    nori: '/public/guides/nori.png',
-    dani: '/public/guides/dani.png',
-    river: '/public/guides/river.jpg'
+  // Each Guide has two pictures (Sean, 2026-10-05): a square mid shot, waist up, for every square
+  // or near-square spot (the dock icon, avatars, the picker, tiles), and a 9:16 full body for tall
+  // spots only. "I don't want to see a full body shot in a square image." All in the Vegans Explore
+  // Tee, drawn in our illustration style. A Guide without new art yet keeps its old picture.
+  var ART = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/';
+  var VE_GUIDE_ART = {
+    liz:   { square: ART + 'hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp',
+             tall:   ART + 'hf_20261005_021230_e7e80a66-1335-48aa-9765-3cb2f90dd979_min.webp' }, // version 2, extended to 9:16
+    maya:  { square: '/public/guides/maya.png', tall: '/public/guides/maya.png' },
+    theo:  { square: '/public/guides/theo.png', tall: '/public/guides/theo.png' },
+    nori:  { square: '/public/guides/nori.png', tall: '/public/guides/nori.png' },
+    dani:  { square: '/public/guides/dani.png', tall: '/public/guides/dani.png' },
+    river: { square: '/public/guides/river.jpg', tall: '/public/guides/river.jpg' }
   };
   var VE_DEFAULT_GUIDE_SLUG = 'liz';
 
   function veChosenGuideSlug() {
     try {
       var flow = JSON.parse(localStorage.getItem('ve_guide_flow_state') || 'null');
-      if (flow && flow.guide_slug && VE_GUIDE_IMAGES[flow.guide_slug]) return flow.guide_slug;
+      if (flow && flow.guide_slug && VE_GUIDE_ART[flow.guide_slug]) return flow.guide_slug;
     } catch (e) {}
     return VE_DEFAULT_GUIDE_SLUG;
   }
-  function veGuideImage() { return VE_GUIDE_IMAGES[veChosenGuideSlug()]; }
+  // VEGuideArt(slug, 'square' | 'tall'); VEGuideImage(shape) is the member's own Guide. Square by default.
+  function veGuideArt(slug, shape) {
+    var a = VE_GUIDE_ART[slug] || VE_GUIDE_ART[VE_DEFAULT_GUIDE_SLUG];
+    return a[shape === 'tall' ? 'tall' : 'square'];
+  }
+  function veGuideImage(shape) { return veGuideArt(veChosenGuideSlug(), shape); }
+  window.VEGuideArt = veGuideArt;
   window.VEGuideImage = veGuideImage;
   window.VEChosenGuideSlug = veChosenGuideSlug;
 })();

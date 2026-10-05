@@ -296,6 +296,19 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
 - Depot > Preview journeys > Your Guide walks every screen (`/guide?preview=<step>`, `PREVIEWS` in
   `guide.html`); a new screen gets a preview there and a line in `JOURNEYS.guide`.
 
+## Guide art: mid shot in squares, full body only at 9:16 (Sean, 2026-10-05)
+
+"I don't want to see a full body shot in a square image. The long shot should only be used when
+we're doing more of a vertical nine by sixteen image." Every Guide has two pictures in one map,
+`VE_GUIDE_ART` in `/public/footer.js`: `square`, a mid shot (head to waist) for every square or
+near-square spot (the dock icon, avatars, the Guide picker, tiles, Choose Your Guide, phones), and
+`tall`, a 9:16 full body for tall spots only (the Guide card beside the survey on desktop). Ask for
+them with `VEGuideArt(slug, 'square'|'tall')` or `VEGuideImage(shape)` for the member's own Guide;
+never point a page at a Guide file directly. Square spots use `background-size:cover` (or
+`object-fit:cover`), never `contain`. The Guides wear the Vegans Explore Tee (from 2026-10-05) and
+are drawn in our illustration style; new art is made in Higgsfield from the Guide's current picture
+and a tee reference, both shapes for each Guide.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.

@@ -459,7 +459,8 @@
   #dash-podcast-shows-row .dash-tile-desc{font-size:11px;}
   @media (max-width:900px){ #dash-podcast-shows-row{grid-template-columns:repeat(3,1fr);} }
   @media (max-width:480px){ #dash-podcast-shows-row{grid-template-columns:repeat(2,1fr);} }
-  .dash-thumb.guide-thumb{background-position:center bottom;background-size:contain !important;background-color:#fff;background-repeat:no-repeat;}
+  /* Guides in square or wide spots are the square mid shot, filling the spot (Sean, 2026-10-05: no full body in a square). */
+  .dash-thumb.guide-thumb{background-position:center 18%;background-size:cover !important;background-color:#fff;background-repeat:no-repeat;}
   /* --- Guides tab (2026-09-07, Sean correction): the real Guide Catalog
      from vegansexplore.com/guides, ported in-frame -- Sean specifically
      wants THIS experience (the gc-card catalog with Start/View/Notify Me),
@@ -539,12 +540,12 @@
   /* Guide portraits get real headroom (2026-09-10, Sean, Group I: "the head
      currently sits right at the top edge of the circular icon with no
      headroom. Add vertical white space above the head"). Same mechanism as
-     .lr-dock-ask-icon: the art is full-body 3:4 with a two-pixel top margin,
-     so no background-position can invent space. background-origin:content-box
+     .lr-dock-ask-icon: the art (since 2026-10-05 the square mid shot) sits close to
+     the top edge, so no background-position can invent space. background-origin:content-box
      puts the image inside the padding box and padding-top becomes white space
      above the hair, scaling with the element instead of a fixed nudge. */
   /* Guides show as a full mid shot on white (Sean 2026-09-26), not cropped. */
-  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-color:#fff;background-repeat:no-repeat;background-position:center bottom;background-size:contain;}
+  .dash-modal-opt-thumb.guide-thumb{aspect-ratio:1/1;background-color:#fff;background-repeat:no-repeat;background-position:center top;background-size:cover;}
   .dash-thumb.dash-thumb-guide{background-color:#fff;background-repeat:no-repeat;background-position:center bottom;background-size:contain !important;}
   .dash-modal-opt-name{padding:10px 12px;font-size:12.5px;font-weight:800;}
   .dash-modal-opt.selected{border-color:var(--ve-green);background:var(--ve-green-light);}
@@ -1326,7 +1327,7 @@
       var opt = document.createElement('a');
       opt.className = 'dash-modal-opt';
       opt.href = g.href;
-      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');"></div><div class="dash-modal-opt-name">' + g.title + '</div>';
+      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + personaArt(g) + '\');"></div><div class="dash-modal-opt-name">' + g.title + '</div>';
       grid.appendChild(opt);
     });
     document.getElementById('dash-guide-modal').classList.add('open');
@@ -1513,7 +1514,7 @@
   function dashTileImg(img) {
     if (img !== 'guide') return img;
     if (typeof window.VEGuideImage === 'function') return window.VEGuideImage();
-    return 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_015752_69e54fd1-337e-4e81-8708-8029766146a8_min.webp';
+    return 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp'; // Liz, square mid shot
   }
 
   var MODULES = [
@@ -1594,6 +1595,8 @@
   // pre-selected (2026-09-08, Sean) instead of the old /guides/ve-path-*
   // pages, which were static, unfinished mockups (their own <title> tags
   // say "(Mock)") that never talked to a real Guide.
+  // The square mid shot from the one map in /public/footer.js (VEGuideArt); g.img is the fallback.
+  function personaArt(g) { return window.VEGuideArt ? window.VEGuideArt(g.key.replace(/^guide-/, ''), 'square') : g.img; }
   var GUIDE_PERSONAS = [
     { key: 'guide-maya', href: '/dashboard/guide?guide=maya', img: '/public/guides/maya.png', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
     { key: 'guide-theo', href: '/dashboard/guide?guide=theo', img: '/public/guides/theo.png', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
@@ -1620,7 +1623,7 @@
       opt.href = g.href;
       // In the dashboard window, not a new page (Sean, 2026-10-04).
       opt.addEventListener('click', function (e) { e.preventDefault(); openGuide(g.href.split('?')[1] || ''); });
-      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + g.img + '\');"></div><div class="dash-modal-opt-name">' + g.title + '</div><p style="font-size:11.5px;color:var(--ve-text-50);padding:0 12px 12px;line-height:1.4;">' + g.desc + '</p>';
+      opt.innerHTML = '<div class="dash-modal-opt-thumb guide-thumb" style="background-image:url(\'' + personaArt(g) + '\');"></div><div class="dash-modal-opt-name">' + g.title + '</div><p style="font-size:11.5px;color:var(--ve-text-50);padding:0 12px 12px;line-height:1.4;">' + g.desc + '</p>';
       grid.appendChild(opt);
     });
   }
