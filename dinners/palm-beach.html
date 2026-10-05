@@ -327,11 +327,7 @@
             </div>
             <form id="sb-ask" hidden>
               <p class="sb-title">This table is by invitation.</p>
-              <p class="sb-text">If you think you belong at it, tell us. Sean reads every one.</p>
-              <div class="sb-two">
-                <div><label class="sb-label" for="sb-name">Your name</label><input id="sb-name" type="text" maxlength="120" autocomplete="name" required></div>
-                <div><label class="sb-label" for="sb-email">Email</label><input id="sb-email" type="email" maxlength="200" autocomplete="email" required></div>
-              </div>
+              <p class="sb-text">If you think you belong at it, create your free account and tell us why. Sean reads every one.</p>
               <label class="sb-label" for="sb-note">Why this table? (optional)</label><input id="sb-note" type="text" maxlength="1000">
               <input id="sb-web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="sb-hp">
               <button type="submit" class="btn btn-primary">Ask for a seat</button>
@@ -478,7 +474,7 @@
     function call(action, extra) {
       var h = { 'Content-Type': 'application/json' };
       var t = window.VEAuth && VEAuth.getToken();
-      if (t && action === 'hold') h.Authorization = 'Bearer ' + t;
+      if (t && (action === 'hold' || action === 'request')) h.Authorization = 'Bearer ' + t;
       return fetch(SEATS_FN, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ action: action, dinner: DINNER, code: code }, extra || {})) })
         .then(function (r) { return r.json(); });
     }
@@ -552,15 +548,24 @@
     $('sb-no-send').addEventListener('click', function () { decline(this); });
     $('sb-cancel').addEventListener('click', function () { view('sb-hold'); $('sb-no').hidden = false; $('sb-suggest').focus(); });
     $('sb-reopen').addEventListener('click', function () { view('sb-hold'); $('sb-no').hidden = true; });
-    $('sb-ask').addEventListener('submit', function (e) {
-      e.preventDefault();
-      var b = this.querySelector('button'); busy(b, true);
-      call('request', { name: $('sb-name').value, email: $('sb-email').value, note: $('sb-note').value, website: $('sb-web').value }).then(function (d) {
+    // Asking for a seat needs a free account too (Sean, 2026-10-04): first and last name and an
+    // email, so the request arrives with a real person behind it and Sean approves it in the Depot.
+    function ask() {
+      var b = $('sb-ask').querySelector('button');
+      if (!window.VEAuth || !VEAuth.getToken()) {
+        window.VE_ACTIVATE_HANDLER = function () { ask(); };
+        VEAuth.showAuthModal('Create your free account to ask for a seat. It takes a minute.', ask, 'signup');
+        return;
+      }
+      busy(b, true);
+      call('request', { note: $('sb-note').value, website: $('sb-web').value }).then(function (d) {
         busy(b, false);
-        if (d && d.ok) { $('sb-ask').reset(); msg.textContent = 'Thank you. Sean reads every one, and he’ll be in touch.'; return; }
+        if (d && d.ok) { $('sb-ask').reset(); msg.textContent = d.already ? 'Sean already has your request. He’ll be in touch.' : 'Thank you. Sean reads every one, and he’ll be in touch.'; return; }
+        if (d && d.error === 'not_authenticated') { try { VEAuth.clearSession(); } catch (e) {} return ask(); }
         msg.textContent = (d && d.message) || 'That did not send. Try again.';
       }).catch(function () { busy(b, false); msg.textContent = 'That did not send. Try again.'; });
-    });
+    }
+    $('sb-ask').addEventListener('submit', function (e) { e.preventDefault(); ask(); });
     view(code ? 'sb-hold' : 'sb-ask');
     load();
   })();
