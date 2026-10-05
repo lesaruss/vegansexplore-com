@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/communities/:city(south-florida|central-florida|atlanta|dmv|new-york|philadelphia|los-angeles|london)",
-      "destination": "/communities/hub.html"
+      "destination": "/communities/hub"
     },
     {
       "source": "/campaign-engine/fieldhouse-protein",
