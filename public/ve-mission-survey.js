@@ -5,10 +5,15 @@
  * Guide asks it, as the first part of setting up their Guide (/guide.html), so the questions live here,
  * once, instead of in a dashboard pop-up.
  *
+ * One question at a time (Sean, 2026-10-05: five stacked full-width fields read "blown out"), the way
+ * the Community Manager application asks: the question large, its answer under it, Back / Skip / Next.
+ * A one-tap answer moves on by itself; optional questions can be skipped.
+ *
  *   VEMissionSurvey.mount(host, {
- *     stepIntro: function (i, step) { return 'html above step i' },   optional, the Guide's line
- *     onDone:    function (result) { ... },                            after a saved submit
- *     preview:   true                                                  nothing is sent
+ *     theme:      'dark'                                              white on a dark stage
+ *     onQuestion: function (info) { ... }   { index, total, stepIndex, step }, after every move
+ *     onDone:     function (result) { ... }                           after a saved submit
+ *     preview:    true                                                nothing is sent
  *   })
  */
 (function () {
@@ -52,24 +57,32 @@
 
   var CSS = ''
     + '.vms{font-family:Montserrat,sans-serif;color:#1a1a1a}'
-    + '.vms-progress{height:6px;background:rgba(0,0,0,.09);border-radius:100px;overflow:hidden;margin-bottom:8px}'
-    + '.vms-bar{height:100%;background:#3A9B3E;width:0;transition:width .25s}'
-    + '.vms-meta{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.55);margin-bottom:14px}'
-    + '.vms-intro{margin-bottom:16px}'
-    + '.vms-q{margin-bottom:18px}'
-    + '.vms-label{display:block;font-size:14px;font-weight:800;line-height:1.35;margin-bottom:9px}'
-    + '.vms-req{color:#2d7d31}.vms-hint{font-size:11px;font-weight:600;color:rgba(26,26,26,.55)}'
-    + '.vms-opts{display:flex;flex-wrap:wrap;gap:8px}'
-    + '.vms-opt{border:1.5px solid rgba(0,0,0,.12);border-radius:100px;padding:8px 15px;font:inherit;font-size:12.5px;font-weight:700;color:rgba(26,26,26,.8);cursor:pointer;background:#fff}'
-    + '.vms-opt:hover{border-color:#3A9B3E}.vms-opt[aria-pressed="true"]{background:#3A9B3E;border-color:#3A9B3E;color:#fff}'
-    + '.vms-scale .vms-opt{min-width:40px;padding:9px 0;text-align:center}'
-    + '.vms-input{width:100%;padding:11px 14px;border:1.5px solid rgba(0,0,0,.12);border-radius:8px;font:inherit;font-size:13.5px;box-sizing:border-box;background:#fff}'
-    + '.vms-input:focus{outline:none;border-color:#3A9B3E}textarea.vms-input{min-height:96px;resize:vertical}'
-    + '.vms-nav{display:flex;justify-content:space-between;gap:10px;margin-top:6px}'
-    + '.vms-btn{padding:12px 22px;border-radius:8px;border:none;font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:#3A9B3E;color:#fff}'
-    + '.vms-btn:hover{background:#2d7d31}.vms-btn:disabled{background:#9CA3AF;cursor:not-allowed}'
-    + '.vms-btn.ghost{background:#fff;color:#2d7d31;border:1.5px solid #3A9B3E}'
-    + '.vms-err{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:12px;color:#b91c1c;font-weight:600;margin-bottom:12px}';
+    + '.vms-meta{font-size:11px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:#2d7d31;margin-bottom:12px}'
+    + '.vms-bar{height:4px;background:rgba(0,0,0,.1);border-radius:99px;overflow:hidden;margin-bottom:18px;max-width:560px}'
+    + '.vms-bar i{display:block;height:100%;background:#3A9B3E;transition:width .25s}'
+    + '.vms-qh{display:block;font-size:clamp(22px,2.4vw,30px);font-weight:900;line-height:1.2;letter-spacing:-.01em;margin:0 0 6px;max-width:640px}'
+    + '.vms-hint{display:block;font-size:13px;font-weight:600;color:rgba(26,26,26,.6);margin-bottom:16px}'
+    + '.vms-ans{margin-top:16px;max-width:620px}'
+    + '.vms-opts{display:flex;flex-wrap:wrap;gap:10px}'
+    + '.vms-opt{border:1.5px solid rgba(0,0,0,.15);border-radius:100px;padding:11px 18px;font:inherit;font-size:14px;font-weight:700;color:#1a1a1a;cursor:pointer;background:#fff}'
+    + '.vms-opt:hover{border-color:#3A9B3E}.vms-opt[aria-pressed="true"]{background:#22C55E;border-color:#22C55E;color:#03170a}'
+    + '.vms-scale .vms-opt{min-width:48px;padding:11px 0;text-align:center}'
+    + '.vms-input{width:100%;padding:14px 16px;border:1.5px solid rgba(0,0,0,.15);border-radius:10px;font:inherit;font-size:15px;box-sizing:border-box;background:#fff;color:#1a1a1a}'
+    + '.vms-input:focus{outline:none;border-color:#22C55E}textarea.vms-input{min-height:130px;resize:vertical}'
+    + '.vms-nav{display:flex;align-items:center;gap:14px;margin-top:22px;flex-wrap:wrap}'
+    + '.vms-btn{min-height:46px;padding:13px 26px;border-radius:6px;border:none;font:inherit;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;background:#22C55E;color:#03170a}'
+    + '.vms-btn:hover{background:#16A34A}.vms-btn:disabled{background:#9CA3AF;cursor:not-allowed}'
+    + '.vms-link{background:none;border:none;font:inherit;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;cursor:pointer;color:inherit;padding:8px 4px}'
+    + '.vms-link[hidden]{display:none}'
+    + '.vms-err{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;font-size:13px;color:#b91c1c;font-weight:600;margin-top:14px;max-width:620px}'
+    // Dark stage: white words, glass answers (the Community Manager application look).
+    + '.vms.dark{color:#fff}.vms.dark .vms-meta{color:#86efac}.vms.dark .vms-hint{color:rgba(255,255,255,.75)}'
+    + '.vms.dark .vms-bar{background:rgba(255,255,255,.2)}.vms.dark .vms-bar i{background:#22C55E}'
+    + '.vms.dark .vms-opt{background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.4);color:#fff}'
+    + '.vms.dark .vms-opt:hover{border-color:#22C55E}.vms.dark .vms-opt[aria-pressed="true"]{background:#22C55E;border-color:#22C55E;color:#03170a}'
+    + '.vms.dark .vms-input{background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.45);color:#fff}'
+    + '.vms.dark .vms-input::placeholder{color:rgba(255,255,255,.55)}.vms.dark .vms-input:focus{border-color:#F69820}'
+    + '.vms.dark select.vms-input option{color:#1a1a1a}';
   function injectCss() {
     if (document.getElementById('vms-css')) return;
     var st = document.createElement('style'); st.id = 'vms-css'; st.textContent = CSS; document.head.appendChild(st);
@@ -77,103 +90,112 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function token() { try { return localStorage.getItem('ve_token'); } catch (e) { return null; } }
 
+  // Every question in order, with the part of the survey it belongs to.
+  var QUESTIONS = [];
+  STEPS.forEach(function (s, si) { s.qs.forEach(function (q) { QUESTIONS.push({ q: q, stepIndex: si, step: s }); }); });
+
   function mount(host, opts) {
     opts = opts || {};
     injectCss();
-    var answers = {}, step = 0;
+    var answers = {}, at = 0, sending = false;
 
-    function question(q) {
-      var wrap = document.createElement('div'); wrap.className = 'vms-q';
-      var lab = document.createElement('label'); lab.className = 'vms-label';
-      lab.innerHTML = esc(q.label) + (q.required ? ' <span class="vms-req">*</span>' : '') + (q.hint ? ' <span class="vms-hint">(' + esc(q.hint) + ')</span>' : '');
-      wrap.appendChild(lab);
+    function empty(a) { return a === undefined || a === null || a === '' || (Array.isArray(a) && !a.length); }
+
+    function control(q, next) {
       var set = function (v) { answers[q.id] = v; };
       if (q.type === 'text' || q.type === 'longtext' || q.type === 'month') {
         var el = document.createElement(q.type === 'longtext' ? 'textarea' : 'input');
         if (q.type !== 'longtext') el.type = q.type === 'month' ? 'month' : 'text';
-        el.className = 'vms-input'; if (q.placeholder) el.placeholder = q.placeholder;
+        el.className = 'vms-input'; el.id = 'vms-' + q.id;
+        if (q.placeholder) el.placeholder = q.placeholder;
         if (answers[q.id]) el.value = answers[q.id];
         el.addEventListener('input', function () { set(el.value); });
-        lab.htmlFor = el.id = 'vms-' + q.id;
-        wrap.appendChild(el);
-      } else if (q.type === 'city') {
-        var sel = document.createElement('select'); sel.className = 'vms-input';
+        if (q.type !== 'longtext') el.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); next(); } });
+        return el;
+      }
+      if (q.type === 'city') {
+        var sel = document.createElement('select'); sel.className = 'vms-input'; sel.id = 'vms-' + q.id;
         sel.innerHTML = '<option value="">Select your community&hellip;</option>' +
           Object.keys(CITY_NAMES).map(function (k) { return '<option value="' + k + '">' + esc(CITY_NAMES[k]) + '</option>'; }).join('') +
           '<option value="other">Somewhere else</option>';
         if (answers[q.id]) sel.value = answers[q.id];
         sel.addEventListener('change', function () { set(sel.value); });
-        lab.htmlFor = sel.id = 'vms-' + q.id;
-        wrap.appendChild(sel);
-      } else {
-        var box = document.createElement('div');
-        box.className = 'vms-opts' + (q.type === 'scale' ? ' vms-scale' : '');
-        box.setAttribute('role', 'group'); box.setAttribute('aria-label', q.label);
-        (q.type === 'scale' ? q.scale.map(String) : q.options).forEach(function (v) {
-          var b = document.createElement('button'); b.type = 'button'; b.className = 'vms-opt'; b.textContent = v;
-          var on = q.type === 'multi' ? (answers[q.id] || []).indexOf(v) >= 0 : String(answers[q.id]) === v;
-          b.setAttribute('aria-pressed', on ? 'true' : 'false');
-          b.addEventListener('click', function () {
-            if (q.type === 'multi') {
-              var arr = (answers[q.id] || []).slice(), i = arr.indexOf(v);
-              if (i < 0) arr.push(v); else arr.splice(i, 1);
-              set(arr); b.setAttribute('aria-pressed', i < 0 ? 'true' : 'false');
-            } else {
-              set(v);
-              Array.prototype.forEach.call(box.children, function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
-            }
-          });
-          box.appendChild(b);
-        });
-        wrap.appendChild(box);
+        return sel;
       }
-      return wrap;
-    }
-
-    function missing(i) {
-      return STEPS[i].qs.filter(function (q) {
-        var a = answers[q.id];
-        return q.required && (a === undefined || a === null || a === '' || (Array.isArray(a) && !a.length));
-      }).map(function (q) { return q.label; });
+      var box = document.createElement('div');
+      box.className = 'vms-opts' + (q.type === 'scale' ? ' vms-scale' : '');
+      box.setAttribute('role', 'group'); box.setAttribute('aria-labelledby', 'vms-qh');
+      (q.type === 'scale' ? q.scale.map(String) : q.options).forEach(function (v) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'vms-opt'; b.textContent = v;
+        var on = q.type === 'multi' ? (answers[q.id] || []).indexOf(v) >= 0 : String(answers[q.id]) === v;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.addEventListener('click', function () {
+          if (q.type === 'multi') {
+            var arr = (answers[q.id] || []).slice(), i = arr.indexOf(v);
+            if (i < 0) arr.push(v); else arr.splice(i, 1);
+            set(arr); b.setAttribute('aria-pressed', i < 0 ? 'true' : 'false');
+            return;
+          }
+          // One tap answers it: mark it, then move on.
+          set(v);
+          Array.prototype.forEach.call(box.children, function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
+          setTimeout(next, 260);
+        });
+        box.appendChild(b);
+      });
+      return box;
     }
 
     function render() {
-      var s = STEPS[step], last = step === STEPS.length - 1;
+      var item = QUESTIONS[at], q = item.q, last = at === QUESTIONS.length - 1;
       host.innerHTML = '';
-      var root = document.createElement('div'); root.className = 'vms';
-      var intro = opts.stepIntro ? opts.stepIntro(step, s) : '';
-      root.innerHTML = (intro ? '<div class="vms-intro">' + intro + '</div>' : '') +
-        '<div class="vms-progress"><div class="vms-bar" style="width:' + Math.round((step + 1) / STEPS.length * 100) + '%"></div></div>' +
-        '<div class="vms-meta">Step ' + (step + 1) + ' of ' + STEPS.length + ' &middot; ' + esc(s.title) + '</div>' +
-        '<div class="vms-err" role="alert"></div><div class="vms-qs"></div>' +
-        '<div class="vms-nav"><button type="button" class="vms-btn ghost" data-back' + (step ? '' : ' style="visibility:hidden"') + '>Back</button>' +
-        '<button type="button" class="vms-btn" data-next>' + (last ? 'Send my answers' : 'Next') + '</button></div>';
-      var qs = root.querySelector('.vms-qs');
-      s.qs.forEach(function (q) { qs.appendChild(question(q)); });
+      var root = document.createElement('div'); root.className = 'vms' + (opts.theme === 'dark' ? ' dark' : '');
+      var hint = q.required ? (q.type === 'multi' ? 'Pick all that apply.' : '') : (q.type === 'multi' ? 'Pick all that apply, or skip.' : 'Optional.');
+      if (q.type === 'scale' && q.hint) hint = q.hint.replace(/^(\d+) = /, '$1 is ').replace(/, (\d+) = /, ', $1 is ') + '.';
+      root.innerHTML =
+        '<div class="vms-meta">Question ' + (at + 1) + ' of ' + QUESTIONS.length + ' &middot; ' + esc(item.step.title) + '</div>' +
+        '<div class="vms-bar" aria-hidden="true"><i style="width:' + Math.round((at + 1) / QUESTIONS.length * 100) + '%"></i></div>' +
+        '<label class="vms-qh" id="vms-qh" for="vms-' + q.id + '">' + esc(q.label) + '</label>' +
+        (hint ? '<span class="vms-hint">' + esc(hint) + '</span>' : '') +
+        '<div class="vms-ans"></div><div class="vms-err" role="alert"></div>' +
+        '<div class="vms-nav"><button type="button" class="vms-link" data-back' + (at ? '' : ' hidden') + '>Back</button>' +
+        '<button type="button" class="vms-btn" data-next>' + (last ? 'Send my answers' : 'Next') + '</button>' +
+        '<button type="button" class="vms-link" data-skip' + (q.required || last ? ' hidden' : '') + '>Skip</button></div>';
       host.appendChild(root);
       var err = root.querySelector('.vms-err');
       function fail(t) { err.textContent = t; err.style.display = 'block'; }
-      root.querySelector('[data-back]').onclick = function () { if (step) { step--; render(); } };
-      root.querySelector('[data-next]').onclick = function () {
-        var miss = missing(step);
-        if (miss.length) return fail('Please answer: ' + miss.join(', '));
-        if (!last) { step++; render(); try { host.scrollIntoView({ block: 'start' }); } catch (e) {} return; }
-        var btn = this;
-        if (opts.preview) return opts.onDone && opts.onDone({ ok: true, preview: true });
-        btn.disabled = true; btn.textContent = 'Sending...';
-        fetch(FN, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-          body: JSON.stringify({ token: token(), response_text: String(answers.q21_open || '').trim(), answers: answers })
-        }).then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d || {} }; }); }).then(function (res) {
-          if ((res.status < 300 && res.d.ok) || res.d.error === 'already_completed') return opts.onDone && opts.onDone(res.d);
-          btn.disabled = false; btn.textContent = 'Send my answers';
-          fail(res.d.error === 'not_eligible' ? 'This survey is for active members.' : (res.d.error || 'Something went wrong. Please try again.'));
-        }).catch(function () { btn.disabled = false; btn.textContent = 'Send my answers'; fail('Could not reach the server. Please try again.'); });
-      };
+      function next() {
+        if (sending) return;
+        if (q.required && empty(answers[q.id])) return fail(q.type === 'longtext' || q.type === 'text' ? 'Please answer this one; it is the one we read most closely.' : 'Please pick an answer.');
+        if (!last) { at++; render(); return; }
+        submit(root.querySelector('[data-next]'), fail);
+      }
+      var ctl = control(q, next);
+      root.querySelector('.vms-ans').appendChild(ctl);
+      root.querySelector('[data-next]').onclick = next;
+      root.querySelector('[data-back]').onclick = function () { if (at) { at--; render(); } };
+      root.querySelector('[data-skip]').onclick = function () { delete answers[q.id]; at++; render(); };
+      if (opts.onQuestion) opts.onQuestion({ index: at, total: QUESTIONS.length, stepIndex: item.stepIndex, step: item.step });
+      if (ctl.focus && (ctl.tagName === 'INPUT' || ctl.tagName === 'TEXTAREA')) { try { ctl.focus({ preventScroll: true }); } catch (e) {} }
     }
+
+    function submit(btn, fail) {
+      if (opts.preview) return opts.onDone && opts.onDone({ ok: true, preview: true });
+      sending = true; btn.disabled = true; btn.textContent = 'Sending...';
+      fetch(FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ token: token(), response_text: String(answers.q21_open || '').trim(), answers: answers })
+      }).then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d || {} }; }); }).then(function (res) {
+        sending = false;
+        if ((res.status < 300 && res.d.ok) || res.d.error === 'already_completed') return opts.onDone && opts.onDone(res.d);
+        btn.disabled = false; btn.textContent = 'Send my answers';
+        fail(res.d.error === 'not_eligible' ? 'This survey is for active members.' : (res.d.error || 'Something went wrong. Please try again.'));
+      }).catch(function () { sending = false; btn.disabled = false; btn.textContent = 'Send my answers'; fail('Could not reach the server. Please try again.'); });
+    }
+
     render();
   }
 
-  window.VEMissionSurvey = { mount: mount, steps: STEPS };
+  window.VEMissionSurvey = { mount: mount, steps: STEPS, count: QUESTIONS.length };
 })();

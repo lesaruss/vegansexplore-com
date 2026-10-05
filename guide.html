@@ -109,6 +109,23 @@
     .link-btn{background:none;border:none;font:inherit;font-size:12.5px;color:var(--ink-faint);text-decoration:underline;cursor:pointer;padding:0;}
     .done-card{border:1.5px solid var(--primary);background:var(--primary-light);border-radius:14px;padding:16px;font-size:14px;color:var(--primary-dark);font-weight:700;margin-bottom:16px;}
     :focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+    /* Getting to know you: the Community Manager application look. Full width, but the width goes to
+       the Guide beside the question, never to stretched fields. */
+    .gk-stage{position:relative;border-radius:16px;overflow:hidden;background:#0d130e center/cover no-repeat;}
+    .gk-stage::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.93) 0%,rgba(0,0,0,.86) 50%,rgba(0,0,0,.55) 100%);}
+    .gk-split{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:48px;align-items:center;padding:44px 48px;min-height:520px;}
+    .gk-guide{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:22px;color:#fff;text-align:center;}
+    .gk-guide img{width:min(220px,70%);aspect-ratio:3/4;object-fit:cover;object-position:top center;border-radius:12px;background:rgba(255,255,255,.08);}
+    .gk-name{font-size:16px;font-weight:900;margin-top:12px;}
+    .gk-meta{font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-top:4px;}
+    .gk-line{background:#fff;color:#1a1a1a;border-radius:14px;border-top-left-radius:4px;padding:12px 16px;font-size:14.5px;line-height:1.5;margin-top:14px;text-align:left;}
+    @media (max-width:860px){
+      .gk-split{grid-template-columns:minmax(0,1fr);gap:20px;padding:22px 18px 26px;min-height:0;}
+      .gk-guide{order:-1;display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px;}
+      .gk-guide img{width:56px;flex:0 0 auto;border-radius:10px;}
+      .gk-name{margin-top:0;font-size:14px;}
+      .gk-line{margin-top:8px;font-size:13.5px;}
+    }
   </style>
 </head>
 <body>
@@ -270,14 +287,40 @@
       'How can I and Vegans Explore be most useful to you?',
       'Last bit, in your own words.'
     ];
+    // One question at a time on a dark stage, the Guide beside it (Sean, 2026-10-05: five stacked
+    // full-width fields read "blown out"). The Community Manager application's layout: the question
+    // and its answer on the left, the Guide on the right with a line for each part, over the member's
+    // city art. On phones the Guide becomes a strip above the question.
+    var CITY_ART = { philadelphia: 'banner.png', dmv: 'banner.png' };
+    function cityArt(){
+      var slug = status && status.home_community, hubs = window.VE_HUBS || [];
+      var known = hubs.some(function(h){ return h.slug === slug; });
+      slug = known ? slug : 'south-florida';
+      return '/communities/' + slug + '/' + (CITY_ART[slug] || 'banner.jpg');
+    }
     function renderSurvey(){
       var g = guideBySlug(status.guide_slug);
       status.survey.here = true;
-      app.innerHTML = stepper('survey') + '<div class="g-eyebrow">' + g.name + ' is getting to know you</div><h1 class="g-title">Tell ' + g.name + ' about you.</h1>' +
-        '<p class="g-sub">Five short steps. It fills out your profile, helps your city, and earns you 250 points.</p><div id="survey"></div>';
+      app.innerHTML = stepper('survey') +
+        '<div class="gk-stage" style="background-image:url(\'' + cityArt() + '\')"><div class="gk-split">' +
+          '<div class="gk-q" id="survey"></div>' +
+          '<aside class="gk-guide" aria-label="' + g.name + ', your Guide">' +
+            '<img src="' + g.image + '" alt="">' +
+            '<div class="gk-who"><div class="gk-name">' + g.name + ' is getting to know you</div>' +
+            '<div class="gk-meta">About 3 minutes &middot; earns 250 points</div>' +
+            '<div class="gk-line" id="gkLine"></div></div>' +
+          '</aside>' +
+        '</div></div>';
+      var line = document.getElementById('gkLine'), lastStep = -1;
       VEMissionSurvey.mount(document.getElementById('survey'), {
+        theme: 'dark',
         preview: !!PREVIEW,
-        stepIntro: function(i){ return says(g, SURVEY_LINES[i] || ''); },
+        onQuestion: function(info){
+          if (info.stepIndex === lastStep) return;
+          lastStep = info.stepIndex;
+          var hi = info.index === 0 && firstName() ? 'Hi ' + firstName() + '! ' : '';
+          line.textContent = hi + (SURVEY_LINES[info.stepIndex] || '');
+        },
         onDone: function(){
           status.survey.completed = true;
           tellParent('ve-guide-progress');
