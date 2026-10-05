@@ -70,11 +70,21 @@
   var VE_GUIDE_ART = {
     liz:   { square: ART + 'hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp',
              tall:   ART + 'hf_20261005_021230_e7e80a66-1335-48aa-9765-3cb2f90dd979_min.webp' }, // version 2, extended to 9:16
-    maya:  { square: '/public/guides/maya.png', tall: '/public/guides/maya.png' },
-    theo:  { square: '/public/guides/theo.png', tall: '/public/guides/theo.png' },
-    nori:  { square: '/public/guides/nori.png', tall: '/public/guides/nori.png' },
-    dani:  { square: '/public/guides/dani.png', tall: '/public/guides/dani.png' },
-    river: { square: '/public/guides/river.jpg', tall: '/public/guides/river.jpg' }
+    // Square: the mid shot like Liz's (waving, head to waist). Tall: version 1 of 2 until Sean picks.
+    maya:   { square: ART + 'hf_20261005_024302_9c0f4bbf-2a50-4b44-8aa2-b252c337e94c_min.webp',
+              tall:   ART + 'hf_20261005_021228_c4d6da03-4abc-477b-886b-7b2fb8427a9f_min.webp' },
+    theo:   { square: ART + 'hf_20261005_024302_f6297bbc-32d0-4a4c-8adc-2821b8253f7a_min.webp',
+              tall:   ART + 'hf_20261005_021227_af42b1d0-8e0b-42b7-821a-a6ea8e5585f0_min.webp' },
+    nori:   { square: ART + 'hf_20261005_024302_0295e562-b710-4312-843b-591739f56439_min.webp',
+              tall:   ART + 'hf_20261005_021228_7539346c-a5aa-44a9-8a44-2a6cb463e378_min.webp' },
+    // Dani uses a wheelchair; she is always drawn seated in it.
+    dani:   { square: ART + 'hf_20261005_024303_76de8533-470a-4b1d-bb44-e5f56174e262_min.webp',
+              tall:   ART + 'hf_20261005_024303_762a3532-8e91-4be2-b1bb-0a12465f4c06_min.webp' },
+    river:  { square: ART + 'hf_20261005_024303_7f42e72b-fb79-4ee2-8ead-08a2709889ed_min.webp',
+              tall:   ART + 'hf_20261005_021227_3462df28-bdbf-44e8-966b-be725c189a21_min.webp' },
+    // Pascal, the Cultural Bridge (the guide chat demo and the pitches); not in the member picker.
+    pascal: { square: ART + 'hf_20261005_024303_7798f249-b17f-47e7-b7c5-704a8aae5ba5_min.webp',
+              tall:   ART + 'hf_20261005_024304_5e1634a6-d9de-43d5-919a-1af4001dbf45_min.webp' }
   };
   var VE_DEFAULT_GUIDE_SLUG = 'liz';
 

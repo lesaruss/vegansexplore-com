@@ -307,7 +307,10 @@ them with `VEGuideArt(slug, 'square'|'tall')` or `VEGuideImage(shape)` for the m
 never point a page at a Guide file directly. Square spots use `background-size:cover` (or
 `object-fit:cover`), never `contain`. The Guides wear the Vegans Explore Tee (from 2026-10-05) and
 are drawn in our illustration style; new art is made in Higgsfield from the Guide's current picture
-and a tee reference, both shapes for each Guide.
+and a tee reference, both shapes for each Guide. Dani uses a manual wheelchair and is always drawn seated in it
+(say so in every prompt; a reference picture alone is not enough). The square mid shots follow Liz's:
+a warm wave, head to waist, white background. Pascal (the Cultural Bridge) is in the map too, though
+not in the member Guide picker.
 
 ## Image conventions
 
