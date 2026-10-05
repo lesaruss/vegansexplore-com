@@ -27,6 +27,9 @@
 //   Puts a take Sean uploaded in HQ > Recording Queue live (Sean, 2026-10-05): reads the row's
 //   target (page, city, clip key), levels the WAV exactly like the Depot does in the browser,
 //   stores it in vegan-media, points the slide at it and marks the queue row live.
+//   A row whose target.system is 'site_audio' (a take for another LESARUSS site, such as the
+//   lesaruss.com pop-up) is leveled the same way and stored in the public site-audio bucket
+//   under target.path; the response carries its public URL for that site to play.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -311,6 +314,7 @@ async function importTake(req: Request, slug: string) {
   const { data: row } = await db.from('recording_queue').select('slug, status, take_bucket, take_path, target, title').eq('slug', slug).maybeSingle();
   if (!row) return json({ error: 'not_found' }, 404);
   const t = (row.target || {}) as Record<string, string>;
+  if (t.system === 'site_audio') return importSiteAudio(row, t);
   const page = String(t.page || ''), city = String(t.city_slug || ''), key = String(t.clip_key || '');
   if (t.system !== 've_onboarding_audio' || !PAGES[page]?.includes(key) || !CITIES.includes(city)) return json({ error: 'bad_target' }, 400);
   if (!row.take_bucket || !row.take_path) return json({ error: 'no_take' }, 400);
@@ -338,4 +342,23 @@ async function importTake(req: Request, slug: string) {
   });
   await db.from('recording_queue').update({ status: 'live', updated_by: 'logan', updated_at: new Date().toISOString() }).eq('slug', slug);
   return json({ ok: true, slug, page, city, key, url, dur });
+}
+
+async function importSiteAudio(row: { slug: string; take_bucket: string | null; take_path: string | null }, t: Record<string, string>) {
+  const dir = String(t.path || '');
+  if (!/^[a-z0-9][a-z0-9/_-]{2,120}$/.test(dir)) return json({ error: 'bad_target' }, 400);
+  if (!row.take_bucket || !row.take_path) return json({ error: 'no_take' }, 400);
+  const dl = await db.storage.from(row.take_bucket).download(row.take_path);
+  if (dl.error || !dl.data) return json({ error: 'download_failed', message: dl.error?.message }, 500);
+  let out: { wav: Uint8Array; dur: number };
+  try { out = levelWav(decodeWav(new Uint8Array(await dl.data.arrayBuffer()))); }
+  catch (e) { return json({ error: 'decode_failed', message: String((e as Error).message || e) }, 400); }
+  const path = `${dir}-${Date.now()}.wav`;
+  const up = await db.storage.from('site-audio').upload(path, out.wav, { contentType: 'audio/wav', upsert: false });
+  if (up.error) return json({ error: 'upload_failed', message: up.error.message }, 500);
+  const url = db.storage.from('site-audio').getPublicUrl(path).data.publicUrl;
+  const dur = Math.round(out.dur * 10) / 10;
+  // Stays 'recorded' until the site that plays it ships; that site's deploy marks it live.
+  await db.from('recording_queue').update({ target: { ...t, live_url: url, dur }, updated_by: 'logan', updated_at: new Date().toISOString() }).eq('slug', row.slug);
+  return json({ ok: true, slug: row.slug, url, dur });
 }
