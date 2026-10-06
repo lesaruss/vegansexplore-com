@@ -14,3 +14,10 @@ where a.brand_slug = 'vegans-explore' and a.question = v.q;
 -- Ask a person (2026-10-06): the answer about reaching a person points to it.
 update public.guide_kb_answers set answer = 'Tap Ask a person under any answer, and your question goes to the team. You’ll get an answer by email as soon as we can. You can also use Send us a message in your dashboard.', updated_at = now(), updated_by = 'Logan'
 where brand_slug = 'vegans-explore' and question = 'How do I reach a real person?';
+
+-- The 16 open questions (2026-10-06): answered by Logan from canon, the code and the current pages
+-- (Sean: "You should have the answers."), loaded from supabase/seed/guide_kb_answers_v2.json the same
+-- way (fetched by commit, md5-checked), made live, and seven reworded as a member would ask them
+-- (for example "How many points does a guide cost?"). Two live answers corrected in the same file:
+-- guides are 1,111 points (ve_guides.cost_lesars), and South Florida has its Community Manager
+-- (never named). The AI Guides' facts (ve-guide-platform-facts v6) carry the same corrections.
