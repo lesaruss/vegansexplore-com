@@ -347,13 +347,36 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
 - Data: `ve-guide` edge function (`status`, `setup`), `members.guide_slug` and `members.guide_setup_at`.
   The dock icon wears the Guide from `ve_guide_flow_state` (`/public/footer.js`), kept in step from
   `ve-guide` status.
-- Chat: `ve-auth` `guide_chat_send`, 4 points a message from a monthly allowance (60 points, 300 with
-  Passport). "Send us a message" in the conversation opens the old question box (a person answers by
-  email) through the dashboard (`ve-open-help`).
+- Quick answers first (Sean, 2026-10-06, see Guide answers below): a question goes to `ve-auth`
+  `guide_ask` (free, no AI). With no saved answer the member chooses "Ask <Guide> directly (4 points)".
+- Chat: `ve-auth` `guide_chat_send`, members only, 4 points a message from a monthly allowance (60
+  points, 300 with Passport). "Send us a message" in the conversation opens the old question box (a
+  person answers by email) through the dashboard (`ve-open-help`).
 - Not yet: the Guide's replies do not read the member's survey answers. That needs the shared reply
   engine (`character-respond`, used across LESARUSS) to take member context.
 - Depot > Preview journeys > Your Guide walks every screen (`/guide?preview=<step>`, `PREVIEWS` in
   `guide.html`); a new screen gets a preview there and a line in `JOURNEYS.guide`.
+
+## Guide answers: a free knowledge base in front of the Guides (Sean, 2026-10-06)
+
+"Make it more like a chat bot where it's essentially a knowledge base... once it has it, it should
+immediately pick up and pull into a database of potential questions and answers... not paying out of
+pocket for anything." Most questions repeat, so most answers cost nothing.
+
+- `guide_kb_answers`: saved answers (`live` are served, `draft` wait for a check, `needs_sean` are
+  questions only Sean can answer, saved for a session with him, `retired`). One row per question, with
+  `also_asked` paraphrases, one link, a topic, and `featured` for the chips under the chat.
+- `guide_kb_questions`: every question, what it matched, and what happened (`answered` free,
+  `no_match`, `sent_to_guide` with the AI reply, `guide_failed`). View `guide_kb_gaps` is the to-do
+  list: unanswered questions, most asked first, with the latest AI reply as a starting point.
+- `guide_kb_match()`: Postgres text search plus trigram similarity, zero tokens. `ve-auth` `guide_ask`
+  answers at a score of 0.42 or more and offers related questions at 0.22 or more; `guide_topics`
+  gives the featured chips. Anyone can ask (free); the AI Guide is members only.
+- Growing it: an AI Guide reply is saved as a `draft` answer automatically. Logan writes answers he can
+  source from the site and canon; anything else goes to `needs_sean` for a question session with Sean.
+  A draft goes live only after a check, so a wrong AI answer is never served as fact.
+- Facts must agree with `ve-guide-platform-facts` (what the AI Guides know). Change both together.
+- Migration `20261006_guide_kb.sql`. Brand-ready (`brand_slug`), so other brands can reuse it.
 
 ## Guide art: mid shot in squares, full body only at 9:16 (Sean, 2026-10-05)
 

@@ -77,6 +77,7 @@
     .msg{max-width:84%;font-size:14px;line-height:1.55;padding:10px 14px;border-radius:14px;}
     .msg.guide{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px;}
     .msg.user{align-self:flex-end;background:var(--primary-light);color:var(--primary-dark);border-bottom-right-radius:4px;font-weight:600;}
+    .msg.guide a{color:var(--primary-dark);font-weight:800;}
     .says{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;}
     .says img{width:44px;height:44px;border-radius:12px;object-fit:cover;object-position:top center;flex:0 0 auto;}
     .says .msg{max-width:none;}
@@ -224,6 +225,9 @@
     }
     function authCall(action, body){
       if (PREVIEW && action === 'guide_chat_send') return Promise.resolve({ reply: 'This is a preview, so I am not really answering. On the live page your Guide replies here.' });
+      if (PREVIEW && action === 'guide_ask') return Promise.resolve(/join|\$11|member/i.test(body.message)
+        ? { answer: { answer: 'This is a preview of a quick answer. On the live page, saved answers come back here free.', link_url: '/welcome', link_label: 'Join Vegans Explore' }, related: [{ question: 'How do points work?' }] }
+        : { answer: null, related: [{ question: 'How do I join Vegans Explore?' }] });
       if (PREVIEW) return Promise.resolve({});
       return fetch(SB + 've-auth?action=' + action, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify(body || {}) })
         .then(function(r){ return r.json().then(function(d){ return Object.assign({ _status: r.status }, d); }); });
@@ -369,7 +373,7 @@
         '<div class="uses-split"><div>' +
           '<div class="uses" id="uses"></div>' +
           '<div class="row-btns"><button type="button" class="btn primary" id="usesDone">I&rsquo;m all set</button></div>' +
-          '<p class="note">Each message uses 4 points. Every member gets 60 points a month for their Guide; Passport members get 300.</p>' +
+          '<p class="note">Quick answers are free. Asking your Guide directly uses 4 points a message: every member gets 60 points a month for their Guide, and Passport members get 300.</p>' +
         '</div><aside class="uses-guide" aria-label="' + g.name + ', your Guide"><img src="' + art(g, 'square') + '" alt="">' +
           '<div class="uses-guide-who"><b>' + g.name + '</b><p>' + (firstName() ? 'Thanks, ' + esc(firstName()) + '. ' : '') +
           'Here is how I can help. Try one now, or just ask me anything. I live in the Guide button at the bottom of your dashboard.</p></div></aside></div>';
@@ -402,16 +406,25 @@
         '<div class="chat-thread" id="thread"></div>' +
         '<div class="chips" id="chips" style="margin-top:12px"></div>' +
         '<div class="input-row"><input class="input-pill" id="ask" placeholder="Ask ' + g.name + ' anything" aria-label="Your question"><button class="mic-btn" id="mic" title="Say it out loud" aria-label="Record your question">&#127908;</button><button class="send-btn" id="send" aria-label="Send">&rarr;</button></div>' +
-        '<p class="note">' + (EMBEDDED ? 'Need a person instead? <button type="button" class="link-btn" id="human">Send us a message</button>. ' : '') + 'Each message uses 4 points from your monthly Guide allowance.</p>' +
+        '<p class="note">' + (EMBEDDED ? 'Need a person instead? <button type="button" class="link-btn" id="human">Send us a message</button>. ' : '') + 'Quick answers are free. Asking ' + g.name + ' directly uses 4 points from your monthly Guide allowance.</p>' +
         '</div>';
       thread = document.getElementById('thread');
       addMsg('guide', 'Hi' + (firstName() ? ' ' + firstName() : '') + ', what can I help you find today?');
       var chips = document.getElementById('chips');
-      ideas().forEach(function(it){
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'chip-btn'; b.textContent = it.ask;
-        b.onclick = function(){ sendQuestion(it.ask); };
-        chips.appendChild(b);
-      });
+      function fillChips(list){
+        if (!chips.isConnected) return;
+        chips.innerHTML = '';
+        list.forEach(function(q){
+          var b = document.createElement('button'); b.type = 'button'; b.className = 'chip-btn'; b.textContent = q;
+          b.onclick = function(){ sendQuestion(q); };
+          chips.appendChild(b);
+        });
+      }
+      // The most useful saved questions (guide_kb_answers, featured), the setup ideas until they load.
+      fillChips(ideas().map(function(it){ return it.ask; }));
+      authCall('guide_topics', {}).then(function(d){
+        if (d && d.topics && d.topics.length) fillChips(d.topics.map(function(t){ return t.question; }));
+      }).catch(function(){});
       var ch = document.getElementById('changeGuide'); if (ch) ch.onclick = function(){ show('change'); };
       var hu = document.getElementById('human'); if (hu) hu.onclick = function(){ tellParent('ve-open-help'); };
       var input = document.getElementById('ask');
@@ -423,16 +436,62 @@
       var m = document.createElement('div'); m.className = 'msg ' + role; m.textContent = text;
       thread.appendChild(m); thread.scrollTop = thread.scrollHeight; return m;
     }
+    // Quick answers first (Sean, 2026-10-06): a question goes to the Guide knowledge base, which is
+    // free (no AI, no points). With no saved answer, the member chooses whether to ask their Guide
+    // (AI, 4 points). Related questions and a person are always offered, so nobody hits a dead end,
+    // even with no points left.
+    function typingNow(){
+      var t = document.createElement('div'); t.className = 'typing'; t.textContent = guideBySlug(status.guide_slug).name + ' is typing...';
+      thread.appendChild(t); thread.scrollTop = thread.scrollHeight; return t;
+    }
+    function clearOffers(){ Array.prototype.forEach.call(thread.querySelectorAll('.offer'), function(o){ o.remove(); }); }
     function sendQuestion(text){
       if (!thread) return;
       var chips = document.getElementById('chips'); if (chips) chips.remove();
+      clearOffers();
       addMsg('user', text);
+      var typing = typingNow();
+      authCall('guide_ask', { agent_slug: status.guide_slug, message: text, token: token() }).then(function(d){
+        typing.remove();
+        if (d.answer) { addAnswer(d.answer); return offerNext(text, d.related, true); }
+        addMsg('guide', 'I don’t have a saved answer for that yet, so I’ve noted your question for the team to add.');
+        offerNext(text, d.related, false);
+      }).catch(function(){ typing.remove(); addMsg('guide', 'I couldn’t reach the server. Check your connection and try again.'); });
+    }
+    function addAnswer(a){
+      var m = addMsg('guide', a.answer);
+      if (a.link_url) {
+        var l = document.createElement('a'); l.href = a.link_url; l.textContent = a.link_label || a.link_url;
+        if (EMBEDDED) l.target = '_top';
+        m.appendChild(document.createElement('br')); m.appendChild(l);
+      }
+    }
+    function offerNext(text, related, answered){
       var g = guideBySlug(status.guide_slug);
-      var typing = document.createElement('div'); typing.className = 'typing'; typing.textContent = g.name + ' is typing...'; thread.appendChild(typing);
+      var box = document.createElement('div'); box.className = 'chips offer';
+      (related || []).forEach(function(r){
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'chip-btn'; b.textContent = r.question;
+        b.onclick = function(){ sendQuestion(r.question); };
+        box.appendChild(b);
+      });
+      var ask = document.createElement('button'); ask.type = 'button'; ask.className = 'btn ghost small';
+      ask.textContent = (answered ? 'Not what you needed? Ask ' : 'Ask ') + g.name + ' directly (4 points)';
+      ask.onclick = function(){ askGuide(text); };
+      box.appendChild(ask);
+      if (EMBEDDED) {
+        var hu = document.createElement('button'); hu.type = 'button'; hu.className = 'link-btn'; hu.textContent = 'Send us a message';
+        hu.onclick = function(){ tellParent('ve-open-help'); };
+        box.appendChild(hu);
+      }
+      thread.appendChild(box); thread.scrollTop = thread.scrollHeight;
+    }
+    function askGuide(text){
+      clearOffers();
+      var typing = typingNow();
       authCall('guide_chat_send', { agent_slug: status.guide_slug, message: text, token: token() }).then(function(d){
         typing.remove();
         if (d.reply) return addMsg('guide', d.reply);
-        if (d._status === 402) return addMsg('guide', 'You have used this month’s Guide messages. Your allowance refreshes next month' + (status.can_choose ? '.' : ', and Passport members get five times as many.'));
+        if (d._status === 402) return addMsg('guide', 'You have used this month’s Guide messages. Your allowance refreshes next month' + (status.can_choose ? '.' : ', and Passport members get five times as many.') + ' Quick answers stay free, so keep asking.');
         addMsg('guide', 'I can’t answer right now. Try again in a few minutes' + (EMBEDDED ? ', or tap Send us a message and a person will get back to you.' : '.'));
       }).catch(function(){ typing.remove(); addMsg('guide', 'I couldn’t reach the server. Check your connection and try again.'); });
     }

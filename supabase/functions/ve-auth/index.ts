@@ -1535,13 +1535,61 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ chapter: 'pending', community_slug: slug, is_founding: wantsFounding, founding_number }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    // ---- Guide answers: guide_ask / guide_topics (Sean, 2026-10-06) -----
+    // Free answers from the Guide knowledge base (guide_kb_answers): Postgres
+    // text search, no AI, no tokens, no points. A confident match is answered;
+    // otherwise the member can choose to ask their AI Guide (guide_chat_send,
+    // 4 points). Every question is logged in guide_kb_questions, so the ones
+    // without an answer become the list to write (view guide_kb_gaps).
+    if (action === 'guide_ask' || action === 'guide_topics') {
+      const KB_BRAND = 'vegans-explore';
+      const KB_ANSWER_MIN = 0.42;  // tuned 2026-10-06 against the live test questions
+      const KB_RELATED_MIN = 0.22;
+      const kbJson = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+      if (action === 'guide_topics') {
+        const { data } = await supabase.from('guide_kb_answers').select('id, question, topic')
+          .eq('brand_slug', KB_BRAND).eq('status', 'live').eq('featured', true)
+          .order('sort_order', { ascending: true }).order('times_served', { ascending: false }).limit(8);
+        return kbJson({ topics: data ?? [] });
+      }
+
+      const message = typeof body.message === 'string' ? body.message.trim().slice(0, 500) : '';
+      if (!message) return kbJson({ error: 'message required' }, 400);
+      const guideSlug = typeof body.agent_slug === 'string' && body.agent_slug ? body.agent_slug : null;
+      const askToken = typeof body.token === 'string' ? body.token : '';
+      const askDecoded = askToken ? await decodeToken(askToken) : null;
+      const askMemberId = askDecoded?.sub ?? null;
+
+      const { data: hits, error: matchErr } = await supabase.rpc('guide_kb_match', { p_brand: KB_BRAND, p_question: message, p_limit: 4 });
+      if (matchErr) console.error('guide_ask: guide_kb_match failed', matchErr);
+      const rows = (hits ?? []) as { id: string; question: string; answer: string | null; link_url: string | null; link_label: string | null; score: number }[];
+      const best = rows[0];
+      const answered = !!(best && best.answer && best.score >= KB_ANSWER_MIN);
+      const related = rows.filter((r) => r.score >= KB_RELATED_MIN && !(answered && r.id === best.id))
+        .slice(0, 3).map((r) => ({ id: r.id, question: r.question }));
+
+      if (answered) await supabase.rpc('guide_kb_served', { p_id: best.id });
+      await supabase.from('guide_kb_questions').insert({
+        brand_slug: KB_BRAND, member_id: askMemberId, guide_slug: guideSlug, question: message,
+        matched_answer_id: best?.id ?? null, score: best?.score ?? null, outcome: answered ? 'answered' : 'no_match',
+      });
+
+      return kbJson({
+        answer: answered ? { id: best.id, question: best.question, answer: best.answer, link_url: best.link_url, link_label: best.link_label } : null,
+        related,
+        can_ask_guide: !!askMemberId,
+      });
+    }
+
     // ---- Guide front door: guide_chat_send -----------------------------
     // Points-gated real conversation with a Vegans Explore Guide, running
-    // through the shared character-respond engine. Anonymous (pre-signup,
-    // during onboarding) messages are free and just rate-limited by
-    // character-respond itself; once a member is authenticated this spends
-    // real points (4/message) against a monthly allotment granted the first
-    // time they chat each month (60 free / 300 Passport).
+    // through the shared character-respond engine: 4 points a message from a
+    // monthly allotment granted the first time they chat each month (60 free /
+    // 300 Passport). Members only (2026-10-06): the free path for guests is
+    // the knowledge base (guide_ask), so every AI message spends a member's
+    // points. The
+    // reply is saved as a draft answer for the knowledge base.
     if (action === 'guide_chat_send') {
       const agent_slug = typeof body.agent_slug === 'string' ? body.agent_slug : '';
       const message = typeof body.message === 'string' ? body.message.trim() : '';
@@ -1583,9 +1631,7 @@ serve(async (req: Request) => {
         speakerKey = member.id;
         speakerName = member.name;
       } else {
-        const anonKey = typeof body.anon_key === 'string' && body.anon_key ? body.anon_key : null;
-        if (!anonKey) return new Response(JSON.stringify({ error: 'anon_key required for guest chat' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-        speakerKey = `anon-${anonKey}`;
+        return new Response(JSON.stringify({ error: 'sign_in_required' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
       const roomSlug = `ve-guide-${agent_slug}-${speakerKey}`;
@@ -1611,6 +1657,7 @@ serve(async (req: Request) => {
       const respondData = await respondRes.json().catch(() => ({}));
       if (!respondRes.ok || !respondData?.reply) {
         console.error('guide_chat_send: character-respond failed', respondRes.status, respondData?.error, respondData?.detail);
+        await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: chargeMemberId, guide_slug: agent_slug, question: message, outcome: 'guide_failed' });
         return new Response(JSON.stringify({ error: respondData?.error || 'guide_unavailable' }), { status: respondRes.ok ? 502 : respondRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
@@ -1618,6 +1665,15 @@ serve(async (req: Request) => {
         const { data: spend } = await supabase.rpc('spend_points_for_chat', { p_member_id: chargeMemberId, p_cost: CHAT_COST, p_agent_slug: agent_slug });
         balance = spend?.balance ?? null;
       }
+
+      // Into the knowledge base: the question and the Guide's reply are logged, and the reply becomes a
+      // draft answer (one per question) for Logan or Sean to check and make live, so the next member
+      // who asks gets it free. A question that already has an answer keeps it.
+      await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: chargeMemberId, guide_slug: agent_slug, question: message, outcome: 'sent_to_guide', reply: respondData.reply });
+      const { error: draftErr } = await supabase.from('guide_kb_answers').upsert(
+        { brand_slug: 'vegans-explore', question: message, answer: respondData.reply, status: 'draft', source: 'guide', created_by: `guide:${agent_slug}` },
+        { onConflict: 'brand_slug,question_key', ignoreDuplicates: true });
+      if (draftErr) console.error('guide_chat_send: draft answer not saved', draftErr);
 
       return new Response(JSON.stringify({ reply: respondData.reply, display_name: respondData.display_name, balance }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
