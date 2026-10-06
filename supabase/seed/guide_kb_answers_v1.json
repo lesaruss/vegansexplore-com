@@ -1,0 +1,1883 @@
+[
+ {
+  "topic": "about",
+  "question": "What is Vegans Explore?",
+  "also_asked": [
+   "what is this site",
+   "what is vegans explore",
+   "what do you do",
+   "what is this",
+   "tell me about vegans explore"
+  ],
+  "answer": "Vegans Explore is a home base for the Vegan community: city hubs, the Daily Pulse, a Directory of Vegan and Vegan-friendly places, the Community Board, events, guides, and Guides like me. Take a look around, no account needed.",
+  "link_url": "/explore",
+  "link_label": "Explore Vegans Explore",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, explore.html"
+ },
+ {
+  "topic": "about",
+  "question": "Who started Vegans Explore?",
+  "also_asked": [
+   "who is the founder",
+   "who runs this",
+   "who owns vegans explore",
+   "founder",
+   "who is behind this"
+  ],
+  "answer": "Vegans Explore was founded by Sean A. Russell, who has spent more than ten years building South Florida's Vegan community, first as SoFlo Vegans and now as Vegans Explore.",
+  "link_url": "/welcome",
+  "link_label": "Read the story",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: dinners/palm-beach.html, campaigns/plant-based-showcase-dolphins.html, invite.html"
+ },
+ {
+  "topic": "about",
+  "question": "How long has Vegans Explore been around?",
+  "also_asked": [
+   "how old is vegans explore",
+   "since when",
+   "how many events have you done",
+   "track record",
+   "is this new"
+  ],
+  "answer": "Since 2016 we have worked alongside hundreds of Vegan businesses, nonprofits and events, and hosted and backed more than 500 events.",
+  "link_url": "/welcome",
+  "link_label": "Our story",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: welcome.html"
+ },
+ {
+  "topic": "about",
+  "question": "Do I need an account to look around?",
+  "also_asked": [
+   "can i browse without signing up",
+   "is it free to look",
+   "no account",
+   "browse free",
+   "can i just look"
+  ],
+  "answer": "No. Anyone can browse the Directory, the Daily Pulse, the city hubs and the Community Board without an account.",
+  "link_url": "/explore",
+  "link_label": "Explore now",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, explore.html, welcome.html"
+ },
+ {
+  "topic": "about",
+  "question": "Is Vegans Explore free?",
+  "also_asked": [
+   "is it free",
+   "free",
+   "does it cost anything",
+   "do i have to pay",
+   "free to use"
+  ],
+  "answer": "Looking around is free for everyone. Taking part, like posting and replying on the Community Board, voting and reaching members directly, comes with the Founding Membership: $11 suggested, one time.",
+  "link_url": "/welcome",
+  "link_label": "See the Founding Membership",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, welcome.html"
+ },
+ {
+  "topic": "about",
+  "question": "What do I get as a member?",
+  "also_asked": [
+   "membership benefits",
+   "what does joining unlock",
+   "why join",
+   "perks",
+   "what's included"
+  ],
+  "answer": "Members post and reply on the Community Board, vote in the Directory, see members' contact details, and turn every dollar into points toward guides. You also get your own dashboard with a Guide to help you find your way.",
+  "link_url": "/welcome",
+  "link_label": "Join for $11",
+  "status": "live",
+  "featured": true,
+  "sort_order": 2,
+  "notes": "Sources: explore.html, welcome.html, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "about",
+  "question": "Why is there no free membership?",
+  "also_asked": [
+   "why do i have to pay to post",
+   "free account",
+   "why not free",
+   "can i join for free"
+  ],
+  "answer": "You can look around the Directory, the Pulse, the communities and the Board without an account. Joining is how you take part: posting, replying, voting and reaching people directly, and your contribution is how we grow and keep this running.",
+  "link_url": "/explore",
+  "link_label": "Look around first",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: welcome.html"
+ },
+ {
+  "topic": "joining",
+  "question": "How much does it cost to join?",
+  "also_asked": [
+   "how much is it",
+   "cost",
+   "price",
+   "how much",
+   "membership price",
+   "what does it cost"
+  ],
+  "answer": "The Founding Membership is $11 suggested, one time, and it never renews. You can give more if you want to help us build faster.",
+  "link_url": "/welcome",
+  "link_label": "Take your founding seat",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, welcome.html"
+ },
+ {
+  "topic": "joining",
+  "question": "Is the membership a subscription?",
+  "also_asked": [
+   "does it renew",
+   "monthly fee",
+   "recurring",
+   "will i be charged again",
+   "auto renew",
+   "subscription"
+  ],
+  "answer": "No. The Founding Membership is one contribution, one time, and it never renews. You can contribute again whenever you like.",
+  "link_url": "/welcome",
+  "link_label": "Founding Membership",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: welcome.html, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "joining",
+  "question": "Can I give more than $11?",
+  "also_asked": [
+   "can i pay more",
+   "give extra",
+   "more than 11",
+   "bigger contribution",
+   "25 dollars"
+  ],
+  "answer": "Yes. When you join you can pick $11, $25, $50, $111 or another amount, and every dollar becomes 100 points.",
+  "link_url": "/welcome",
+  "link_label": "Choose your amount",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: welcome.html, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "joining",
+  "question": "Is my $11 a donation?",
+  "also_asked": [
+   "is it tax deductible",
+   "tax deductible",
+   "donation",
+   "can i write it off",
+   "is this a charity donation",
+   "receipt for taxes"
+  ],
+  "answer": "No. It is a membership contribution to Vegans Explore, not a tax-deductible donation.",
+  "link_url": "/welcome",
+  "link_label": "Founding Membership",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, welcome.html, dashboard/center-console.html"
+ },
+ {
+  "topic": "joining",
+  "question": "How do I join?",
+  "also_asked": [
+   "sign up",
+   "how to join",
+   "become a member",
+   "join",
+   "register",
+   "create account"
+  ],
+  "answer": "Go to the welcome page, create your account, make your contribution, and you land on your dashboard. It takes three steps.",
+  "link_url": "/welcome",
+  "link_label": "Join Vegans Explore",
+  "status": "live",
+  "featured": true,
+  "sort_order": 1,
+  "notes": "Sources: welcome.html, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "joining",
+  "question": "How does checkout work?",
+  "also_asked": [
+   "is payment secure",
+   "stripe",
+   "how do i pay",
+   "payment",
+   "receipt",
+   "credit card"
+  ],
+  "answer": "Checkout is secure through Stripe, and Stripe emails your receipt. Your membership and points are added as soon as the payment goes through.",
+  "link_url": "/welcome",
+  "link_label": "Join now",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: welcome.html"
+ },
+ {
+  "topic": "joining",
+  "question": "How many points do I start with?",
+  "also_asked": [
+   "starting points",
+   "points when i join",
+   "11 dollars how many points",
+   "do i get points for joining"
+  ],
+  "answer": "Every dollar becomes 100 points, so an $11 Founding Membership starts you with 1,100 points.",
+  "link_url": "/welcome",
+  "link_label": "Founding Membership",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, welcome.html"
+ },
+ {
+  "topic": "joining",
+  "question": "Can I contribute again after I join?",
+  "also_asked": [
+   "give more later",
+   "contribute",
+   "add more money",
+   "donate again",
+   "top up",
+   "contribute button"
+  ],
+  "answer": "Yes. Active members have a Contribute button on the dashboard for $11 or more, and every dollar becomes 100 points. It is a contribution to our community, not a tax-deductible donation.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: dashboard/center-console.html, CLAUDE.md"
+ },
+ {
+  "topic": "joining",
+  "question": "What is a Founding Member?",
+  "also_asked": [
+   "founding member meaning",
+   "what does founding member mean",
+   "founding seat",
+   "founding membership"
+  ],
+  "answer": "A Founding Member is someone who joined with the one-time Founding Membership, $11 suggested. Founding members help fund what we are building and help decide what it becomes.",
+  "link_url": "/welcome",
+  "link_label": "Take your founding seat",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: welcome.html, public/nav.js"
+ },
+ {
+  "topic": "points",
+  "question": "What are points for?",
+  "also_asked": [
+   "what do points do",
+   "use points",
+   "points",
+   "what can i spend points on",
+   "why points"
+  ],
+  "answer": "Points unlock guides, and a guide is 1,100 points. They also cover chatting with your Guide, and you earn more by taking part.",
+  "link_url": "/guides",
+  "link_label": "See the guides",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, welcome.html"
+ },
+ {
+  "topic": "points",
+  "question": "How do I earn points?",
+  "also_asked": [
+   "earn points",
+   "get more points",
+   "ways to earn",
+   "free points",
+   "how to get points"
+  ],
+  "answer": "You earn points by completing onboarding (100), completing your profile details (250), referring a friend who joins (111), joining a community (25), commenting on the Daily Pulse (10), voting on a listing (5), saving a listing (3) and logging in each day (2).",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": true,
+  "sort_order": 3,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "points",
+  "question": "How many points do I get for referring a friend?",
+  "also_asked": [
+   "referral",
+   "refer a friend",
+   "invite a friend points",
+   "referral bonus",
+   "referral code"
+  ],
+  "answer": "You get 111 points when a friend you refer joins. They can enter your referral code when they sign up.",
+  "link_url": "/welcome",
+  "link_label": "Share the welcome page",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, join.html"
+ },
+ {
+  "topic": "points",
+  "question": "Do I get points for logging in?",
+  "also_asked": [
+   "daily login",
+   "login points",
+   "points every day",
+   "daily bonus"
+  ],
+  "answer": "Yes, 2 points for logging in each day.",
+  "link_url": "/login",
+  "link_label": "Log in",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "points",
+  "question": "Do I get points for voting or saving listings?",
+  "also_asked": [
+   "vote points",
+   "save points",
+   "points for voting",
+   "points for saving"
+  ],
+  "answer": "Yes. Voting on a listing earns 5 points and saving a listing earns 3.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "points",
+  "question": "Do I get points for commenting on the Daily Pulse?",
+  "also_asked": [
+   "pulse points",
+   "comment points",
+   "reply points"
+  ],
+  "answer": "Yes, 10 points for a comment on the Daily Pulse.",
+  "link_url": "/pulse",
+  "link_label": "Open the Daily Pulse",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "points",
+  "question": "Do I get points for finishing my profile?",
+  "also_asked": [
+   "profile points",
+   "onboarding points",
+   "complete profile",
+   "setup points"
+  ],
+  "answer": "Yes. Completing your onboarding earns 100 points and completing your profile details earns 250.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "points",
+  "question": "How can I add points with money?",
+  "also_asked": [
+   "buy points",
+   "purchase points",
+   "more points for money",
+   "get points fast"
+  ],
+  "answer": "Every dollar you contribute becomes 100 points. Members can contribute any time with the Contribute button on the dashboard, $11 or more.",
+  "link_url": "/dashboard",
+  "link_label": "Contribute from your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, dashboard/center-console.html, CLAUDE.md"
+ },
+ {
+  "topic": "points",
+  "question": "Does a free membership come with points?",
+  "also_asked": [
+   "gifted membership points",
+   "membership on us points",
+   "why do i have 0 points",
+   "invite points"
+  ],
+  "answer": "A membership given to you opens everything an $11 Founding Membership does, but it starts without points. Points come from taking part and contributing.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: CLAUDE.md"
+ },
+ {
+  "topic": "points",
+  "question": "What is the difference between a guide and my Guide?",
+  "also_asked": [
+   "guides vs guide",
+   "what are guides",
+   "step by step guides",
+   "what does a guide unlock"
+  ],
+  "answer": "Guides (small g) are step-by-step guides you unlock with points, like the free Welcome Guide. Your Guide is the helper who lives in your dashboard and answers questions.",
+  "link_url": "/guides",
+  "link_label": "See the guides",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guides/index.html, guide.html, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "guide",
+  "question": "What can my Guide help with?",
+  "also_asked": [
+   "what does the guide do",
+   "what is my guide",
+   "guide help",
+   "ai guide",
+   "how can you help"
+  ],
+  "answer": "Your Guide helps you find Vegan places to eat, things to do in your city, something you can't find, and anything about Vegan life. Just ask.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Talk to your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html, CLAUDE.md"
+ },
+ {
+  "topic": "guide",
+  "question": "How do I set up my Guide?",
+  "also_asked": [
+   "guide setup",
+   "set up your guide",
+   "start guide",
+   "activate guide"
+  ],
+  "answer": "Open Set up your Guide from your dashboard action items. You meet your Guide, answer the Mission Survey if you haven't, and see how your Guide can help.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Set up your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: CLAUDE.md, guide.html"
+ },
+ {
+  "topic": "guide",
+  "question": "Can I choose a different Guide?",
+  "also_asked": [
+   "change guide",
+   "switch guide",
+   "pick my guide",
+   "choose guide",
+   "different guide"
+  ],
+  "answer": "Passport members can choose from six Guides. Everyone else is matched with Liz.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html, CLAUDE.md"
+ },
+ {
+  "topic": "guide",
+  "question": "Who are the Guides?",
+  "also_asked": [
+   "list of guides",
+   "guide names",
+   "which guides are there",
+   "meet the guides"
+  ],
+  "answer": "There are six: Liz the Explorer, Maya the Pre-Vegan, Theo the Seasoned Vegan, Nori the Entrepreneur, Dani for Nonprofits and River the Creator.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Meet your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html"
+ },
+ {
+  "topic": "guide",
+  "question": "How much does it cost to chat with my Guide?",
+  "also_asked": [
+   "guide cost",
+   "points per message",
+   "does chatting cost",
+   "message cost",
+   "is the guide free"
+  ],
+  "answer": "Quick answers like this one are free. Asking your Guide directly uses 4 points a message from your monthly Guide allowance.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Talk to your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html, CLAUDE.md, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "guide",
+  "question": "How many Guide messages do I get each month?",
+  "also_asked": [
+   "monthly allowance",
+   "guide limit",
+   "how many messages",
+   "guide points per month"
+  ],
+  "answer": "Quick answers are always free. For asking your Guide directly, every member gets 60 points a month (15 messages), and Passport members get 300.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html, CLAUDE.md"
+ },
+ {
+  "topic": "guide",
+  "question": "What happens when I run out of Guide messages?",
+  "also_asked": [
+   "out of messages",
+   "guide stopped",
+   "used my allowance",
+   "no more messages"
+  ],
+  "answer": "Quick answers stay free, so keep asking. Your Guide allowance refreshes next month, and if you need a person in the meantime, use Send us a message in your dashboard.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "guide",
+  "question": "Where do I find my Guide?",
+  "also_asked": [
+   "where is the guide",
+   "open guide",
+   "guide button",
+   "guide icon"
+  ],
+  "answer": "Your Guide lives in the Guide button at the bottom of your dashboard.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Open your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html, CLAUDE.md"
+ },
+ {
+  "topic": "guide",
+  "question": "What is the Mission Survey?",
+  "also_asked": [
+   "mission survey",
+   "survey",
+   "questionnaire",
+   "tell your guide about you",
+   "survey points"
+  ],
+  "answer": "It's a short survey your Guide asks when you set it up, about 3 minutes, and finishing it earns 250 points.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Set up your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: guide.html, public/ve-mission-survey.js, CLAUDE.md"
+ },
+ {
+  "topic": "guide",
+  "question": "Does my Guide know my survey answers?",
+  "also_asked": [
+   "does the guide remember me",
+   "personalized",
+   "does it use my survey",
+   "does it know me"
+  ],
+  "answer": "Not yet. Your Guide's replies do not read your survey answers today.",
+  "link_url": "/dashboard/guide",
+  "link_label": "Your Guide",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: CLAUDE.md"
+ },
+ {
+  "topic": "guide",
+  "question": "Is my Guide a real person?",
+  "also_asked": [
+   "is this ai",
+   "am i talking to a bot",
+   "real person",
+   "human"
+  ],
+  "answer": "Your Guide is one of our AI Guides. If you want a person, use Send us a message in your dashboard and someone replies by email.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: welcome.html, supabase/migrations/20261006_ve_guide_platform_facts.sql, guide.html"
+ },
+ {
+  "topic": "directory",
+  "question": "Where can I find Vegan food near me?",
+  "also_asked": [
+   "where should i eat",
+   "restaurants near me",
+   "vegan restaurant",
+   "food near me",
+   "where to eat",
+   "best vegan spot"
+  ],
+  "answer": "The Directory is the place: pick your city and the Food section to see Vegan and Vegan-friendly spots, ranked by member votes.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": true,
+  "sort_order": 4,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, directory/index.html"
+ },
+ {
+  "topic": "directory",
+  "question": "Is the Directory free to use?",
+  "also_asked": [
+   "directory free",
+   "can anyone use the directory",
+   "directory account"
+  ],
+  "answer": "Yes. The Directory is open to everyone, and anyone can browse, search and see vote counts.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, CLAUDE.md"
+ },
+ {
+  "topic": "directory",
+  "question": "How do I search the Directory by city?",
+  "also_asked": [
+   "search by city",
+   "change city",
+   "directory city",
+   "filter by city"
+  ],
+  "answer": "Use the city picker at the top of the Directory, then choose a section and search it.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: directory/index.html, supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "directory",
+  "question": "What is in the Directory?",
+  "also_asked": [
+   "directory sections",
+   "categories",
+   "what can i find",
+   "directory categories"
+  ],
+  "answer": "The Directory has five sections: Food, Products, Services, Media and Community, each with its own categories like restaurants, bakeries, wellness, podcasts and nonprofits.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: public/ve-region-directory.js"
+ },
+ {
+  "topic": "directory",
+  "question": "Can I see only 100% Vegan places?",
+  "also_asked": [
+   "fully vegan only",
+   "100% vegan",
+   "vegan friendly filter",
+   "vegan options filter"
+  ],
+  "answer": "Yes. In the Food section you can filter to 100% Vegan only, Vegan-friendly, or Vegan options.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: public/ve-region-directory.js"
+ },
+ {
+  "topic": "directory",
+  "question": "How do votes work in the Directory?",
+  "also_asked": [
+   "voting",
+   "how do rankings work",
+   "votes",
+   "who ranks the list"
+  ],
+  "answer": "Founding Members vote once a day for every business they love, and the votes decide who leads each list.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: directory/index.html, public/ve-votes.js"
+ },
+ {
+  "topic": "directory",
+  "question": "Why can't I vote?",
+  "also_asked": [
+   "vote not working",
+   "can't vote",
+   "sign in to vote",
+   "voting locked"
+  ],
+  "answer": "Voting asks you to sign in first, and then it's part of the $11 Founding Membership.",
+  "link_url": "/welcome",
+  "link_label": "Become a Founding Member",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: CLAUDE.md, public/ve-votes.js, directory/index.html"
+ },
+ {
+  "topic": "directory",
+  "question": "How do I save a listing?",
+  "also_asked": [
+   "save a place",
+   "my list",
+   "favorites",
+   "bookmark",
+   "saved places"
+  ],
+  "answer": "Members can save listings to My List, and each save earns 3 points.",
+  "link_url": "/account/my-list",
+  "link_label": "Open My List",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: public/nav.js, supabase/migrations/20261006_ve_guide_platform_facts.sql, join.html"
+ },
+ {
+  "topic": "directory",
+  "question": "Can you recommend a restaurant?",
+  "also_asked": [
+   "recommend a place",
+   "best restaurant",
+   "where should i go tonight",
+   "your favorite spot"
+  ],
+  "answer": "I don't name places from memory. The Directory for your city shows Vegan spots ranked by member votes, so that's the best place to look.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "cities",
+  "question": "Which cities does Vegans Explore have?",
+  "also_asked": [
+   "what cities",
+   "cities",
+   "locations",
+   "where are you",
+   "which communities"
+  ],
+  "answer": "There are city hubs for South Florida, Central Florida, New York, Los Angeles, Atlanta, the DMV, Philadelphia and London.",
+  "link_url": "/communities",
+  "link_label": "See all communities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, public/ve-hubs.js, vercel.json"
+ },
+ {
+  "topic": "cities",
+  "question": "Where is the South Florida hub?",
+  "also_asked": [
+   "south florida",
+   "miami",
+   "fort lauderdale",
+   "palm beach",
+   "soflo",
+   "broward"
+  ],
+  "answer": "South Florida covers Miami-Dade, Broward and Palm Beach, and it's our first and most active community.",
+  "link_url": "/communities/south-florida",
+  "link_label": "South Florida hub",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, public/ve-hubs.js"
+ },
+ {
+  "topic": "cities",
+  "question": "Is there an Orlando community?",
+  "also_asked": [
+   "orlando",
+   "central florida",
+   "cflo",
+   "tampa"
+  ],
+  "answer": "Yes. Central Florida, including Orlando, has its own hub.",
+  "link_url": "/communities/central-florida",
+  "link_label": "Central Florida hub",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, public/ve-hubs.js"
+ },
+ {
+  "topic": "cities",
+  "question": "Is there a New York community?",
+  "also_asked": [
+   "new york",
+   "nyc",
+   "brooklyn",
+   "manhattan"
+  ],
+  "answer": "Yes. New York has its own hub.",
+  "link_url": "/communities/new-york",
+  "link_label": "New York hub",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, public/ve-hubs.js"
+ },
+ {
+  "topic": "cities",
+  "question": "Is there a Los Angeles community?",
+  "also_asked": [
+   "los angeles",
+   "la",
+   "california"
+  ],
+  "answer": "Yes. Los Angeles has its own hub.",
+  "link_url": "/communities/los-angeles",
+  "link_label": "Los Angeles hub",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, public/ve-hubs.js"
+ },
+ {
+  "topic": "cities",
+  "question": "Is there a hub for Atlanta, DC, Philadelphia or London?",
+  "also_asked": [
+   "atlanta",
+   "dmv",
+   "washington dc",
+   "philly",
+   "philadelphia",
+   "london"
+  ],
+  "answer": "Yes. Atlanta, the DMV, Philadelphia and London each have a hub, and you can find all of them on the communities page.",
+  "link_url": "/communities",
+  "link_label": "See all communities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, public/ve-hubs.js, vercel.json"
+ },
+ {
+  "topic": "cities",
+  "question": "My city isn't listed. What now?",
+  "also_asked": [
+   "my city",
+   "no hub for my city",
+   "other city",
+   "when is my city coming"
+  ],
+  "answer": "Start at the communities page to see every hub. We are growing city by city.",
+  "link_url": "/communities",
+  "link_label": "See all communities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, communities/index.html"
+ },
+ {
+  "topic": "cities",
+  "question": "Which cities are launching first?",
+  "also_asked": [
+   "launch order",
+   "what's next",
+   "next city",
+   "when does my city launch"
+  ],
+  "answer": "South Florida is first and most active. Central Florida and New York come next, then Los Angeles.",
+  "link_url": "/communities",
+  "link_label": "See all communities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "cities",
+  "question": "What is in a city hub?",
+  "also_asked": [
+   "city hub",
+   "what's on the hub",
+   "hub sections",
+   "community page"
+  ],
+  "answer": "Each city hub has the Daily Pulse, Events, the Directory, Opportunities and the Community Board for that city.",
+  "link_url": "/communities",
+  "link_label": "Find your city",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, CLAUDE.md"
+ },
+ {
+  "topic": "cities",
+  "question": "How do I join a community?",
+  "also_asked": [
+   "join my city",
+   "join a hub",
+   "pick my community",
+   "home city"
+  ],
+  "answer": "Open your city's hub and join it. Joining a community earns 25 points.",
+  "link_url": "/communities",
+  "link_label": "Find your community",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "pulse",
+  "question": "What is the Daily Pulse?",
+  "also_asked": [
+   "daily pulse",
+   "pulse",
+   "what is the pulse",
+   "news",
+   "daily briefing"
+  ],
+  "answer": "Every morning there is a new discussion topic for the nation and for South Florida on the Community Board. Members reply and talk it through.",
+  "link_url": "/pulse",
+  "link_label": "Open the Daily Pulse",
+  "status": "live",
+  "featured": true,
+  "sort_order": 5,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, board.html"
+ },
+ {
+  "topic": "pulse",
+  "question": "When does the Daily Pulse come out?",
+  "also_asked": [
+   "what time",
+   "pulse time",
+   "when is the new topic",
+   "daily pulse schedule"
+  ],
+  "answer": "A new Daily Pulse topic goes up every morning.",
+  "link_url": "/pulse",
+  "link_label": "Open the Daily Pulse",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, CLAUDE.md"
+ },
+ {
+  "topic": "pulse",
+  "question": "How do I join the Daily Pulse conversation?",
+  "also_asked": [
+   "reply to pulse",
+   "comment",
+   "talk about the topic",
+   "join discussion"
+  ],
+  "answer": "Members reply to each day's topic, and every comment on the Daily Pulse earns 10 points.",
+  "link_url": "/pulse",
+  "link_label": "Open the Daily Pulse",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, board.html"
+ },
+ {
+  "topic": "pulse",
+  "question": "Can I submit a news story?",
+  "also_asked": [
+   "submit news",
+   "news tip",
+   "write an article",
+   "post news",
+   "local news"
+  ],
+  "answer": "We don't write news articles anymore. Big local happenings go into your city's Daily Pulse topic, so bring it up in the conversation there.",
+  "link_url": "/pulse",
+  "link_label": "Open the Daily Pulse",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: CLAUDE.md"
+ },
+ {
+  "topic": "board",
+  "question": "What is the Community Board?",
+  "also_asked": [
+   "community board",
+   "board",
+   "requests and offers",
+   "bulletin board"
+  ],
+  "answer": "The Community Board is where people in a city post requests and offers: rescue, fostering, rides, food and more.",
+  "link_url": "/board",
+  "link_label": "Open the Community Board",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, board.html"
+ },
+ {
+  "topic": "board",
+  "question": "How do I post on the Community Board?",
+  "also_asked": [
+   "post a request",
+   "make a post",
+   "ask for help",
+   "offer help",
+   "new post"
+  ],
+  "answer": "Members can post a request or an offer with a category, an area, a title and the details. Join to post, reply and see contact details.",
+  "link_url": "/board",
+  "link_label": "Open the Community Board",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: board.html, welcome.html"
+ },
+ {
+  "topic": "board",
+  "question": "What can I post about?",
+  "also_asked": [
+   "board categories",
+   "what kind of posts",
+   "topics allowed"
+  ],
+  "answer": "Posts go under Rescue, Fostering, Transport, Food, Services, Volunteers or Other.",
+  "link_url": "/board",
+  "link_label": "Open the Community Board",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: board.html"
+ },
+ {
+  "topic": "board",
+  "question": "Who can see my contact details on a post?",
+  "also_asked": [
+   "privacy",
+   "contact info",
+   "who sees my phone",
+   "is my info public"
+  ],
+  "answer": "Adding how to reach you is optional, and only members who are signed in can see it.",
+  "link_url": "/board",
+  "link_label": "Open the Community Board",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: board.html"
+ },
+ {
+  "topic": "board",
+  "question": "How do I report a post?",
+  "also_asked": [
+   "report",
+   "scam",
+   "unsafe post",
+   "flag a post",
+   "harassment"
+  ],
+  "answer": "Open the post and choose Report. Reports are private, and the team takes a look.",
+  "link_url": "/board",
+  "link_label": "Open the Community Board",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: board.html, welcome.html"
+ },
+ {
+  "topic": "board",
+  "question": "How do I close my post once it's handled?",
+  "also_asked": [
+   "mark resolved",
+   "close post",
+   "resolved",
+   "reopen post"
+  ],
+  "answer": "Open your post and choose Mark resolved. You can reopen it later if you need to.",
+  "link_url": "/board",
+  "link_label": "Open the Community Board",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: board.html"
+ },
+ {
+  "topic": "events",
+  "question": "Where can I find events?",
+  "also_asked": [
+   "events",
+   "what's happening",
+   "things to do",
+   "events near me",
+   "upcoming events"
+  ],
+  "answer": "Each city hub has an Events tab with what's coming up in that city.",
+  "link_url": "/communities",
+  "link_label": "Find your city's events",
+  "status": "live",
+  "featured": true,
+  "sort_order": 6,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, events/index.html"
+ },
+ {
+  "topic": "events",
+  "question": "When is the Plant-Based Showcase with the Miami Dolphins?",
+  "also_asked": [
+   "dolphins",
+   "dolphins game",
+   "plant based showcase",
+   "hard rock stadium",
+   "showcase date",
+   "dolphins event"
+  ],
+  "answer": "The Plant-Based Showcase with the Miami Dolphins is on Sunday, November 29, 2026, at Hard Rock Stadium, when the Dolphins host the Jets.",
+  "link_url": "/campaigns/plant-based-showcase-dolphins",
+  "link_label": "See the Showcase",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, campaigns/plant-based-showcase-dolphins.html, events/dolphins-plant-based-game-night/index.html"
+ },
+ {
+  "topic": "events",
+  "question": "Can I volunteer at the Plant-Based Showcase?",
+  "also_asked": [
+   "volunteer at dolphins",
+   "showcase volunteer",
+   "help at the showcase"
+  ],
+  "answer": "Yes. The Showcase page has a volunteer path with the open roles, and a real person on the team reviews every application and reaches out.",
+  "link_url": "/campaigns/plant-based-showcase-dolphins",
+  "link_label": "See the Showcase",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: campaigns/plant-based-showcase-dolphins.html"
+ },
+ {
+  "topic": "events",
+  "question": "What are Community Nights?",
+  "also_asked": [
+   "community night",
+   "in person events",
+   "meetups",
+   "community nights"
+  ],
+  "answer": "Community Nights are our in-person events, starting in South Florida this fall. Check the Events tab on the South Florida hub for what's coming up.",
+  "link_url": "/communities/south-florida?tab=events",
+  "link_label": "South Florida events",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, welcome.html"
+ },
+ {
+  "topic": "events",
+  "question": "Can I submit or host an event?",
+  "also_asked": [
+   "add an event",
+   "submit event",
+   "host an event",
+   "list my event"
+  ],
+  "answer": "Yes. You can submit an event directly from your city hub.",
+  "link_url": "/communities",
+  "link_label": "Find your city hub",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: events/index.html"
+ },
+ {
+  "topic": "events",
+  "question": "How do I get invited to a Vegans Explore dinner?",
+  "also_asked": [
+   "dinner",
+   "private dinner",
+   "dinner invite",
+   "palm beach dinner"
+  ],
+  "answer": "Our dinners are by invitation, set by name. If you were invited, holding your seat takes a free account.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: dinners/palm-beach.html, CLAUDE.md"
+ },
+ {
+  "topic": "involved",
+  "question": "How can I get involved?",
+  "also_asked": [
+   "volunteer",
+   "get involved",
+   "help out",
+   "open roles",
+   "opportunities"
+  ],
+  "answer": "Members find open roles under Opportunities on their dashboard. Each city is built by a volunteer Community Manager with Vegan Explorers helping.",
+  "link_url": "/dashboard/opportunities",
+  "link_label": "See Opportunities",
+  "status": "live",
+  "featured": true,
+  "sort_order": 7,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "involved",
+  "question": "What is a Community Manager?",
+  "also_asked": [
+   "community manager",
+   "cm",
+   "city leader",
+   "lead my city"
+  ],
+  "answer": "A Community Manager is a volunteer who knows the local scene and builds their city's community on Vegans Explore, with Vegan Explorers helping.",
+  "link_url": "/dashboard/opportunities",
+  "link_label": "See Opportunities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "involved",
+  "question": "Are Community Managers or Vegan Explorers paid?",
+  "also_asked": [
+   "is it paid",
+   "salary",
+   "do volunteers get paid",
+   "stipend",
+   "compensation"
+  ],
+  "answer": "No. Community Managers and Vegan Explorers are volunteers and are not paid.",
+  "link_url": "/dashboard/opportunities",
+  "link_label": "See Opportunities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "involved",
+  "question": "What is a Vegan Explorer?",
+  "also_asked": [
+   "vegan explorer",
+   "explorer role",
+   "explorer"
+  ],
+  "answer": "Vegan Explorers are volunteers who help their city's Community Manager build the community.",
+  "link_url": "/dashboard/opportunities",
+  "link_label": "See Opportunities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "involved",
+  "question": "Does my city have a Community Manager?",
+  "also_asked": [
+   "who is my community manager",
+   "is there a cm in my city",
+   "orlando community manager",
+   "new york community manager"
+  ],
+  "answer": "South Florida is forming first, and most cities, Orlando and New York included, are still looking for their Community Manager. Open roles are under Opportunities on your dashboard.",
+  "link_url": "/dashboard/opportunities",
+  "link_label": "See Opportunities",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql"
+ },
+ {
+  "topic": "involved",
+  "question": "What are Bounties?",
+  "also_asked": [
+   "bounties",
+   "bounty",
+   "earn points at events",
+   "cover an event"
+  ],
+  "answer": "Bounties are jobs covering your city's events: claim a spot, show up, capture it and send it in. When it's approved, the points are yours.",
+  "link_url": "/dashboard/bounties",
+  "link_label": "See Bounties",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: bounties.html, CLAUDE.md"
+ },
+ {
+  "topic": "involved",
+  "question": "How do Bounties work?",
+  "also_asked": [
+   "claim a bounty",
+   "bounty deadline",
+   "submit bounty",
+   "bounty rules"
+  ],
+  "answer": "Claim a spot before claims close, 48 hours before the event, then submit your work within 7 days of the event. The team reviews it, and approved work earns the points.",
+  "link_url": "/dashboard/bounties",
+  "link_label": "See Bounties",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: bounties.html"
+ },
+ {
+  "topic": "account",
+  "question": "I got an invitation. How do I accept it?",
+  "also_asked": [
+   "accept invite",
+   "invitation",
+   "invite link",
+   "i was invited"
+  ],
+  "answer": "Open the link in your invitation and choose Accept your invitation. An invitation works once, for 30 days.",
+  "link_url": "/dashboard",
+  "link_label": "Your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: invite.html, CLAUDE.md"
+ },
+ {
+  "topic": "account",
+  "question": "My invitation says it's no longer open. What do I do?",
+  "also_asked": [
+   "invite expired",
+   "invitation not working",
+   "invite closed",
+   "expired link"
+  ],
+  "answer": "Reply to Sean's email and he can send you a new one.",
+  "link_url": "/explore",
+  "link_label": "See Vegans Explore",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: invite.html"
+ },
+ {
+  "topic": "account",
+  "question": "What does a membership on us include?",
+  "also_asked": [
+   "free membership",
+   "gifted membership",
+   "membership is on us",
+   "comped membership"
+  ],
+  "answer": "A membership on us opens everything an $11 Founding Membership does. It starts without points, and you can contribute any time to add them.",
+  "link_url": "/dashboard",
+  "link_label": "Your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: CLAUDE.md, invite.html"
+ },
+ {
+  "topic": "account",
+  "question": "How do I sign in?",
+  "also_asked": [
+   "log in",
+   "login",
+   "sign in",
+   "can't find login"
+  ],
+  "answer": "Use Log In at the top of any page and sign in with Google or your email and password.",
+  "link_url": "/login",
+  "link_label": "Log in",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: login.html, public/nav.js"
+ },
+ {
+  "topic": "account",
+  "question": "I forgot my password.",
+  "also_asked": [
+   "reset password",
+   "forgot password",
+   "can't log in",
+   "password help",
+   "change password"
+  ],
+  "answer": "Enter your email on the forgot password page and we'll send you a link to reset it.",
+  "link_url": "/forgot-password",
+  "link_label": "Reset your password",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: forgot-password.html"
+ },
+ {
+  "topic": "account",
+  "question": "How do I confirm my email?",
+  "also_asked": [
+   "verify email",
+   "email verification",
+   "confirm account",
+   "verification link"
+  ],
+  "answer": "Open the confirmation link we email you, and the page confirms it for you.",
+  "link_url": "/login",
+  "link_label": "Log in",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: verify-email.html, public/ve-auth.js"
+ },
+ {
+  "topic": "account",
+  "question": "How do I unsubscribe from emails?",
+  "also_asked": [
+   "unsubscribe",
+   "stop emails",
+   "email preferences",
+   "too many emails"
+  ],
+  "answer": "Use the unsubscribe link at the bottom of any of our emails. If you change your mind, the same page lets you get back on the list.",
+  "link_url": "/",
+  "link_label": "Vegans Explore",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: unsubscribe.html"
+ },
+ {
+  "topic": "account",
+  "question": "Where is my account page?",
+  "also_asked": [
+   "my account",
+   "account settings",
+   "profile",
+   "my list"
+  ],
+  "answer": "When you're signed in, open the menu under your name for My Account and My List.",
+  "link_url": "/account",
+  "link_label": "My Account",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: public/nav.js, account.html"
+ },
+ {
+  "topic": "account",
+  "question": "Where is my dashboard?",
+  "also_asked": [
+   "dashboard",
+   "member dashboard",
+   "home page for members"
+  ],
+  "answer": "Your dashboard is at /dashboard once you're signed in. It's where you find your Guide, Opportunities, Events and the Contribute button.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: public/nav.js, dashboard/center-console.html, CLAUDE.md"
+ },
+ {
+  "topic": "help",
+  "question": "How do I reach a real person?",
+  "also_asked": [
+   "contact",
+   "talk to a human",
+   "support",
+   "help",
+   "customer service",
+   "send a message"
+  ],
+  "answer": "Inside your dashboard, Send us a message reaches the team, and a person replies by email.",
+  "link_url": "/dashboard",
+  "link_label": "Open your dashboard",
+  "status": "live",
+  "featured": true,
+  "sort_order": 8,
+  "notes": "Sources: supabase/migrations/20261006_ve_guide_platform_facts.sql, guide.html, CLAUDE.md"
+ },
+ {
+  "topic": "business",
+  "question": "How do I claim my business listing?",
+  "also_asked": [
+   "claim listing",
+   "claim my business",
+   "own a restaurant",
+   "update my listing",
+   "business owner"
+  ],
+  "answer": "Find your business on the claim page and claim it. Claiming comes with a contribution of $11 or more, which also makes you a Founding Member, and we review every claim by hand.",
+  "link_url": "/claim",
+  "link_label": "Claim your listing",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: claim.html"
+ },
+ {
+  "topic": "business",
+  "question": "Someone else claimed my business. What do I do?",
+  "also_asked": [
+   "listing already claimed",
+   "wrong owner",
+   "dispute claim"
+  ],
+  "answer": "Email hello@vegansexplore.com and we will sort it out.",
+  "link_url": "/claim",
+  "link_label": "Claim your listing",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: claim.html"
+ },
+ {
+  "topic": "business",
+  "question": "How can my business partner with Vegans Explore?",
+  "also_asked": [
+   "partner",
+   "sponsor",
+   "partnership",
+   "advertise",
+   "vendor",
+   "business partnership"
+  ],
+  "answer": "In South Florida, partners start with the $11 Founding Membership, then choose a part: goodie bag placement, a table at a Community Night, growing your Vegan menu, or something bigger across the season.",
+  "link_url": "/partners",
+  "link_label": "Partner with us",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: partners/index.html"
+ },
+ {
+  "topic": "business",
+  "question": "Is a partnership a donation?",
+  "also_asked": [
+   "partner donation",
+   "sponsorship tax",
+   "is sponsoring a donation"
+  ],
+  "answer": "No. It's a marketing partnership: you get a table, goodie bag placement, an activation or a custom program in return.",
+  "link_url": "/partners",
+  "link_label": "Partner with us",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: partners/index.html"
+ },
+ {
+  "topic": "business",
+  "question": "Can I sell food at a Community Night table?",
+  "also_asked": [
+   "sell food",
+   "vendor food rules",
+   "sampling",
+   "food permit"
+  ],
+  "answer": "Community Night food is sampling only, unless your business holds the right temporary food event permit.",
+  "link_url": "/partners",
+  "link_label": "Partner with us",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: partners/index.html"
+ },
+ {
+  "topic": "business",
+  "question": "How do I become a sponsor of the Dolphins Showcase?",
+  "also_asked": [
+   "showcase sponsor",
+   "sponsor dolphins",
+   "vendor at dolphins",
+   "showcase booth"
+  ],
+  "answer": "The Showcase page has a path for businesses and sponsors with every option laid out, and a person on the team reviews each submission.",
+  "link_url": "/campaigns/plant-based-showcase-dolphins",
+  "link_label": "See the Showcase",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: campaigns/plant-based-showcase-dolphins.html"
+ },
+ {
+  "topic": "about",
+  "question": "Does Vegans Explore have a podcast?",
+  "also_asked": [
+   "podcast",
+   "shows",
+   "podcasts",
+   "listen"
+  ],
+  "answer": "Yes. The Vegans Explore Podcast Network has four shows: the Vegans Explore Podcast, the SoFlo Vegans Podcast, the Pre-Vegans Podcast and the Vegans Who Lift Podcast.",
+  "link_url": "/podcast",
+  "link_label": "Browse the podcasts",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: podcast/index.html, public/nav.js"
+ },
+ {
+  "topic": "business",
+  "question": "Can my podcast join the network?",
+  "also_asked": [
+   "podcast network",
+   "join podcast network",
+   "i have a podcast",
+   "podcast host"
+  ],
+  "answer": "Yes. Podcast hosts can apply on the podcast page, and we review and follow up by email. It runs as a trial, with no contracts.",
+  "link_url": "/podcast",
+  "link_label": "Apply to the network",
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Sources: podcast/index.html"
+ },
+ {
+  "topic": null,
+  "question": "How much is Passport, and how is it different from the $11 Founding Membership?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: guide.html (lines 275, 372, 471-473) and dashboard/center-console.html (1015-1020, 1612) sell a separate paid Passport upgrade (ve-passport-checkout) that unlocks choosing a Guide and a 300-point Guide allowance, but no current non-stale page states its price or terms. join.html line 59 says 'Founding Member for $11, one time, or go further with a Passport'. passport.html ($11/month) is stale and /passport redirects to /welcome. dashboard/center-console.html 2353-2355 also labels plain members 'Founding Member Passport', so 'Passport' means two things."
+ },
+ {
+  "topic": null,
+  "question": "Who can claim Bounties: any member, or only Passport holders?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: bounties.html says both 'Bounties are for members' and 'claiming a job takes a Passport' / 'Bounties are for Passport holders'. Unclear whether that Passport is the $11 Founding Membership (labeled 'Founding Member Passport' on the dashboard) or the separate paid Passport."
+ },
+ {
+  "topic": null,
+  "question": "Do I need a game ticket for the Plant-Based Showcase, and is it free?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: campaigns/plant-based-showcase-dolphins.html says 'Free to attend with your normal game ticket ... there's no separate Showcase ticket'. events/dolphins-plant-based-game-night/index.html says 'No tickets required to walk through', 'free and open to all fans', and promises member group ticket pricing and a 1:00 PM ET kickoff. Also says ticket proceeds support 'nonprofit work'. Need one answer."
+ },
+ {
+  "topic": null,
+  "question": "What are the Community Night dates?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: partners/index.html and community-managers/onboarding.html list Sat Oct 24 West Palm Beach, Sat Nov 21 Miami, Sun Nov 29 Hard Rock Stadium, Sat Dec 12 Fort Lauderdale. The Guide facts deliberately say only 'starting this fall' and to send people to the Events tab. Confirm whether Guides may state these dates."
+ },
+ {
+  "topic": null,
+  "question": "Does South Florida have a Community Manager?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: dinners/palm-beach.html names 'Ron Arrindell, South Florida Community Manager'; the facts say South Florida 'is forming first' and never to say a city already has one; community-managers/onboarding.html still recruits for South Florida."
+ },
+ {
+  "topic": null,
+  "question": "Which cities are next after South Florida?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: Facts: Central Florida and New York, then Los Angeles. dinners/palm-beach.html: 'Orlando, Philadelphia, New York and Los Angeles are next'. welcome.html line 329: 'Community Managers lined up in Orlando and North Central Florida, Philadelphia, New York and Los Angeles' (also conflicts with 'never say a city already has one')."
+ },
+ {
+  "topic": null,
+  "question": "How many points does a guide cost: 1,100 or 1,111?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: Facts and welcome.html line 420 say 1,100. guides/index.html shows 1,111 / ~1,111 Points and 'Join free to unlock'. dashboard/center-console.html line 1372 says mini-guides are '$11 or 1,100 points each'."
+ },
+ {
+  "topic": null,
+  "question": "Can I buy points packages?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: account/lesars.html ('Buy Points', e.g. 6,000 points for $55) is still in the repo and not redirected, while the current model is contributions where every dollar is 100 points. Is that page live, retired, or should it redirect?"
+ },
+ {
+  "topic": null,
+  "question": "How do I contact you if I'm not a member (about, policies, contact, privacy, terms)?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: public/footer.js lines 31-34: ABOUT, POLICIES and CONTACT link to '#'. vercel.json rewrites /about, /contact, /privacy-policy and /terms-of-use to archive.vegansexplore.com. join.html links Terms of Service and Privacy Policy. Only hello@vegansexplore.com appears (claim.html, business/index.html). Need the official contact path and policy pages."
+ },
+ {
+  "topic": null,
+  "question": "Is there a Vegans Explore app?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: app/index.html says 'Launching July 13' (past) with iOS/Android and '2,800+ listings at launch'; community-managers/onboarding.html says 'the app that's coming'. Need current status."
+ },
+ {
+  "topic": null,
+  "question": "Can I get a refund or cancel my membership?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: No current page covers refunds for the one-time $11. claim.html covers quarterly business plans only ('email hello@vegansexplore.com')."
+ },
+ {
+  "topic": null,
+  "question": "How do I delete my account or change my email?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: No page documents account deletion or email change."
+ },
+ {
+  "topic": null,
+  "question": "How do I suggest a Vegan place that isn't in the Directory?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: No current member flow documented. account.html describes Vegan Explorers submitting listings (stale page), and claim.html is for owners only."
+ },
+ {
+  "topic": null,
+  "question": "Is Vegans Explore a nonprofit?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: invite.html ('a nonprofit community'), dinners/palm-beach.html and dinners/host.html ('We're a nonprofit, and we always will be'), index.html line 376 ('nonprofit under LESARUSS Foundation, so you can make donations') and the events page ('nonprofit work') say yes. Brief says never call the $11 a donation or mention 501(c)(3); unsubscribe.html says 'a LESARUSS brand'. Need the approved wording, if any."
+ },
+ {
+  "topic": null,
+  "question": "What are Passport Stop and Passport Anchor plans for businesses, and what do they cost?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: claim.html and business/index.html sell quarterly business plans (Passport Stop / Anchor, Verified badge), while dashboard/center-console.html line 1573 says Passport Challenge and Tours are planned for 2027. Unclear if Guides should mention them."
+ },
+ {
+  "topic": null,
+  "question": "How do I become a Community Manager, and is /lead or /community-managers the right page?",
+  "also_asked": [],
+  "answer": null,
+  "link_url": null,
+  "link_label": null,
+  "status": "needs_sean",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Why Sean: The nav links 'Lead Your City' (/lead) and /community-managers redirects to /community-managers/onboarding. Both, plus account.html, use pay language that conflicts with the volunteer rule (see conflicts). Facts only say 'Opportunities on your dashboard'. Need the approved application path."
+ }
+]
