@@ -224,6 +224,7 @@
         .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw d; return d; }); });
     }
     function authCall(action, body){
+      if (PREVIEW && action === 'guide_chat_send' && /no points/i.test(body.message)) return Promise.resolve({ _status: 402, error: 'insufficient_points' });
       if (PREVIEW && action === 'guide_chat_send') return Promise.resolve({ reply: 'This is a preview, so I am not really answering. On the live page your Guide replies here.', memory: { used: 18, max: 20 }, balance: 8 });
       if (PREVIEW && action === 'guide_ask_person') return Promise.resolve({ ok: true, to_cm: false });
       if (PREVIEW && action === 'guide_ask') return Promise.resolve(/join|\$11|member/i.test(body.message)
@@ -410,6 +411,9 @@
         '<p class="note">' + (EMBEDDED ? 'Need a person instead? <button type="button" class="link-btn" id="human">Send us a message</button>. ' : '') + 'Quick answers and Ask a person are free. Asking ' + g.name + ' directly uses 4 points from your monthly Guide allowance.</p>' +
         '</div>';
       thread = document.getElementById('thread');
+      var topup = new URLSearchParams(location.search).get('topup');
+      if (topup === 'success') addMsg('guide', 'Thank you! Your points land in a minute, then ask me anything.');
+      else if (topup === 'cancelled') addMsg('guide', 'No charge was made. You can add points any time.');
       addMsg('guide', 'Hi' + (firstName() ? ' ' + firstName() : '') + ', what can I help you find today?');
       var chips = document.getElementById('chips');
       function fillChips(list){
@@ -519,13 +523,42 @@
       box.appendChild(p); box.appendChild(b);
       thread.appendChild(box); thread.scrollTop = thread.scrollHeight;
     }
+    // Add points right in the chat (Sean, 2026-10-06: "could they re-up their points right there?").
+    // The same contribution as the dashboard's Contribute (ve-entry-checkout, $11 or more, every dollar
+    // becomes 100 points), opened in the whole window because Stripe checkout cannot run in a frame,
+    // and back to the Guide afterwards (?topup=success).
+    function topUpBox(){
+      var box = document.createElement('div'); box.className = 'chips offer';
+      var p = document.createElement('p'); p.className = 'note'; p.style.margin = '0 0 6px'; p.style.width = '100%';
+      p.textContent = 'Add points now: every dollar becomes 100 points. A contribution to our community, not a tax-deductible donation.';
+      box.appendChild(p);
+      [11, 25, 50].forEach(function(a){
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'chip-btn';
+        b.textContent = '$' + a + ' (' + (a * 100).toLocaleString('en-US') + ' points)';
+        b.onclick = function(){ topUp(a, b); };
+        box.appendChild(b);
+      });
+      return box;
+    }
+    function topUp(dollars, btn){
+      if (PREVIEW) return addMsg('guide', 'This is a preview, so checkout does not open. On the live page this goes to a secure checkout and comes back here.');
+      btn.disabled = true; btn.textContent = 'Opening checkout...';
+      var back = location.origin + '/dashboard/guide?topup=';
+      fetch(SB + 've-entry-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() },
+        body: JSON.stringify({ amount_cents: dollars * 100, success_url: back + 'success', cancel_url: back + 'cancelled' }) })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d && d.url) { (window.top || window).location.href = d.url; return; }
+          btn.disabled = false; btn.textContent = '$' + dollars; addMsg('guide', 'Checkout didn’t open. Try again in a minute.');
+        }).catch(function(){ btn.disabled = false; btn.textContent = '$' + dollars; addMsg('guide', 'I couldn’t reach the server. Check your connection and try again.'); });
+    }
     function pointsNote(balance){
       if (balance == null || balance >= 12) return;
       var left = Math.floor(balance / 4);
       var p = document.createElement('p'); p.className = 'note offer'; p.style.margin = '0';
       p.textContent = left > 0 ? 'Heads up: you have ' + left + ' Guide message' + (left === 1 ? '' : 's') + ' left this month. Quick answers and Ask a person stay free.'
                                : 'That was your last Guide message this month. Quick answers and Ask a person stay free.';
-      thread.appendChild(p); thread.scrollTop = thread.scrollHeight;
+      thread.appendChild(p); thread.appendChild(topUpBox()); thread.scrollTop = thread.scrollHeight;
     }
     function askGuide(text){
       clearOffers();
@@ -534,8 +567,8 @@
         typing.remove();
         if (d.reply) { addMsg('guide', d.reply); memoryNote(d.memory); return pointsNote(d.balance); }
         if (d._status === 402) {
-          addMsg('guide', 'You have used this month’s Guide messages. Your allowance refreshes next month' + (status.can_choose ? '.' : ', and Passport members get five times as many.') + ' Quick answers stay free, and a person can still answer this one.');
-          var box = document.createElement('div'); box.className = 'chips offer'; box.appendChild(personBtn(text)); thread.appendChild(box); return;
+          addMsg('guide', 'You have used this month’s Guide messages. Add points to keep going now, or your allowance refreshes next month. Quick answers stay free, and a person can still answer this one.');
+          var box = topUpBox(); box.appendChild(personBtn(text)); thread.appendChild(box); thread.scrollTop = thread.scrollHeight; return;
         }
         addMsg('guide', 'I can’t answer right now. Try again in a few minutes' + (EMBEDDED ? ', or tap Send us a message and a person will get back to you.' : '.'));
       }).catch(function(){ typing.remove(); addMsg('guide', 'I couldn’t reach the server. Check your connection and try again.'); });

@@ -21,3 +21,8 @@ where brand_slug = 'vegans-explore' and question = 'How do I reach a real person
 -- (for example "How many points does a guide cost?"). Two live answers corrected in the same file:
 -- guides are 1,111 points (ve_guides.cost_lesars), and South Florida has its Community Manager
 -- (never named). The AI Guides' facts (ve-guide-platform-facts v6) carry the same corrections.
+
+-- Add points in the chat (2026-10-06): the out-of-messages answer points to it.
+update public.guide_kb_answers set answer = 'Quick answers stay free, so keep asking. To keep asking your Guide directly, add points right in the chat (every dollar becomes 100 points), or wait for your allowance to refresh next month. You can also tap Ask a person.',
+  also_asked = also_asked || array['add points', 'top up points', 'get more points', 'out of points'], updated_at = now(), updated_by = 'Logan'
+where brand_slug = 'vegans-explore' and question = 'What happens when I run out of Guide messages?';

@@ -386,6 +386,10 @@ pocket for anything." Most questions repeat, so most answers cost nothing.
   remembers the latest 20 messages of a conversation. `guide_chat_send` returns `memory {used, max}`;
   from 16 the chat warns and offers Start a new conversation (a new `conversation` id, its own room).
   Under 3 messages of allowance left, it says so; quick answers and Ask a person stay free.
+- Add points in the chat (Sean, 2026-10-06): when the allowance is low or used up, the chat offers
+  $11 / $25 / $50 (every dollar becomes 100 points) through `ve-entry-checkout`, the same contribution as
+  the dashboard's Contribute. Checkout opens in the whole window (Stripe cannot run in a frame) and comes
+  back to `/dashboard/guide?topup=success`, where the Guide says thank you.
 - Migration `20261006_guide_kb.sql`. Brand-ready (`brand_slug`), so other brands can reuse it.
 
 ## Guide art: mid shot in squares, full body only at 9:16 (Sean, 2026-10-05)
