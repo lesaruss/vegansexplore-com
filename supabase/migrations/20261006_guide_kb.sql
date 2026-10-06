@@ -70,21 +70,25 @@ create index if not exists guide_kb_questions_key on public.guide_kb_questions (
 create index if not exists guide_kb_questions_created on public.guide_kb_questions (created_at desc);
 alter table public.guide_kb_questions enable row level security;
 
--- Best matches for a question, highest score first. Score 0 to 1: trigram similarity to the question
--- and its paraphrases, plus a text-search rank on any shared word (OR, not AND, so a long question
--- still finds a short answer). The brand name is dropped first because it is in half the questions.
+-- Best matches for a question, highest score first. Score 0 to 1: 60% trigram similarity to the
+-- question or its closest paraphrase, 40% the share of the question's words the answer covers. The
+-- brand name and the word Vegan are left out of the word share because they are in half of everything
+-- (tuned live 2026-10-06: one shared word like "dinner" or "vegan" no longer answers a question).
 create or replace function public.guide_kb_match(p_brand text, p_question text, p_limit integer default 4)
 returns table (id uuid, question text, answer text, link_url text, link_label text, score real)
 language sql stable set search_path = public as $$
   with q as (
-    select lower(regexp_replace(p_question, 'vegans?\s+explore', ' ', 'gi')) as qt,
-           nullif(replace(plainto_tsquery('english', regexp_replace(p_question, 'vegans?\s+explore', ' ', 'gi'))::text, ' & ', ' | '), '')::tsquery as tq
+    select lower(regexp_replace(p_question, 'vegans?\s+explore', ' ', 'gi')) as qt
+  ), ql as (
+    select q.qt, array(select l from unnest(tsvector_to_array(to_tsvector('english', q.qt))) l where l not in ('vegan', 'vegans')) as lex
+    from q
   )
   select a.id, a.question, a.answer, a.link_url, a.link_label,
-         (0.6 * greatest(similarity(q.qt, lower(a.question)),
-                         coalesce((select max(similarity(q.qt, lower(x))) from unnest(a.also_asked) x), 0))
-          + 0.4 * least(1, coalesce(ts_rank_cd(a.search, q.tq, 32) * 2, 0)))::real as score
-  from public.guide_kb_answers a, q
+         (0.6 * greatest(similarity(ql.qt, lower(a.question)),
+                         coalesce((select max(similarity(ql.qt, lower(x))) from unnest(a.also_asked) x), 0))
+          + 0.4 * case when cardinality(ql.lex) = 0 then 0
+                       else (select count(*) from unnest(ql.lex) l where l = any(tsvector_to_array(a.search)))::real / cardinality(ql.lex) end)::real as score
+  from public.guide_kb_answers a, ql
   where a.brand_slug = p_brand and a.status = 'live'
   order by score desc
   limit greatest(1, least(p_limit, 10))
