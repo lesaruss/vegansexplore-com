@@ -433,8 +433,8 @@
         typing.remove();
         if (d.reply) return addMsg('guide', d.reply);
         if (d._status === 402) return addMsg('guide', 'You have used this month’s Guide messages. Your allowance refreshes next month' + (status.can_choose ? '.' : ', and Passport members get five times as many.'));
-        addMsg('guide', 'Sorry, I am having trouble answering right now. Try again in a moment.');
-      }).catch(function(){ typing.remove(); addMsg('guide', 'Sorry, I could not reach the server. Try again in a moment.'); });
+        addMsg('guide', 'I can’t answer right now. Try again in a few minutes' + (EMBEDDED ? ', or tap Send us a message and a person will get back to you.' : '.'));
+      }).catch(function(){ typing.remove(); addMsg('guide', 'I couldn’t reach the server. Check your connection and try again.'); });
     }
     function wireMic(btn, onText){
       var rec = null, chunks = [], on = false;

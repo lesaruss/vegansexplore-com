@@ -1551,6 +1551,7 @@ serve(async (req: Request) => {
       let speakerKey: string;
       let speakerName: string | undefined;
       let balance: number | null = null;
+      let chargeMemberId: string | null = null;
 
       const token = typeof body.token === 'string' ? body.token : '';
       const decoded = token ? await decodeToken(token) : null;
@@ -1570,11 +1571,15 @@ serve(async (req: Request) => {
           });
         } catch (e) { console.error('guide chat monthly allotment failed:', e); }
 
-        const { data: spend } = await supabase.rpc('spend_points_for_chat', { p_member_id: member.id, p_cost: CHAT_COST, p_agent_slug: agent_slug });
-        if (spend?.error) {
-          return new Response(JSON.stringify({ error: spend.error, balance: spend.balance ?? 0 }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        // Check the allowance now, spend it only once the Guide has answered
+        // (2026-10-06): a failed reply (engine down, provider out of credit)
+        // must never cost the member points.
+        const { data: wallet } = await supabase.from('member_points').select('available_points').eq('member_id', member.id).maybeSingle();
+        const available = wallet?.available_points ?? 0;
+        if (available < CHAT_COST) {
+          return new Response(JSON.stringify({ error: 'insufficient_points', balance: available }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
-        balance = spend?.balance ?? null;
+        chargeMemberId = member.id;
         speakerKey = member.id;
         speakerName = member.name;
       } else {
@@ -1590,9 +1595,10 @@ serve(async (req: Request) => {
         .select('role, content, created_at')
         .eq('character_slug', agent_slug)
         .eq('room_slug', roomSlug)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: false })
         .limit(20);
-      const history = (priorRows ?? []).map((r: { role: string; content: string }) => ({ role: r.role, content: r.content }));
+      // Newest 20, back in time order, so a long conversation keeps its latest turns.
+      const history = (priorRows ?? []).reverse().map((r: { role: string; content: string }) => ({ role: r.role, content: r.content }));
 
       const respondRes = await fetch(`${SUPABASE_URL}/functions/v1/character-respond`, {
         method: 'POST',
@@ -1603,8 +1609,14 @@ serve(async (req: Request) => {
         }),
       });
       const respondData = await respondRes.json().catch(() => ({}));
-      if (!respondRes.ok) {
-        return new Response(JSON.stringify({ error: respondData?.error || 'guide_unavailable' }), { status: respondRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (!respondRes.ok || !respondData?.reply) {
+        console.error('guide_chat_send: character-respond failed', respondRes.status, respondData?.error, respondData?.detail);
+        return new Response(JSON.stringify({ error: respondData?.error || 'guide_unavailable' }), { status: respondRes.ok ? 502 : respondRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      if (chargeMemberId) {
+        const { data: spend } = await supabase.rpc('spend_points_for_chat', { p_member_id: chargeMemberId, p_cost: CHAT_COST, p_agent_slug: agent_slug });
+        balance = spend?.balance ?? null;
       }
 
       return new Response(JSON.stringify({ reply: respondData.reply, display_name: respondData.display_name, balance }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
