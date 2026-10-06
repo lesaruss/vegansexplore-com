@@ -10,3 +10,7 @@ from (values
  ('How do I reach a real person?', array['how do i talk to someone', 'talk to a human', 'contact you', 'customer service', 'speak to a person'])
 ) v(q, extra)
 where a.brand_slug = 'vegans-explore' and a.question = v.q;
+
+-- Ask a person (2026-10-06): the answer about reaching a person points to it.
+update public.guide_kb_answers set answer = 'Tap Ask a person under any answer, and your question goes to Sean and your city’s Community Manager, who reply by email as soon as they can. You can also use Send us a message in your dashboard.', updated_at = now(), updated_by = 'Logan'
+where brand_slug = 'vegans-explore' and question = 'How do I reach a real person?';
