@@ -483,8 +483,8 @@
       box.appendChild(personBtn(text));
       thread.appendChild(box); thread.scrollTop = thread.scrollHeight;
     }
-    // Ask a person (Sean, 2026-10-06): one tap sends the question to Sean and the city's Community
-    // Manager, who reply by email (ve-auth guide_ask_person).
+    // Ask a person (Sean, 2026-10-06): one tap sends the question to the team (Sean and the city's
+    // Community Manager, never named to the member), who reply by email (ve-auth guide_ask_person).
     function personBtn(text){
       var b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost small'; b.textContent = 'Ask a person';
       b.onclick = function(){ askPerson(text); };
@@ -493,7 +493,7 @@
     function askPerson(text){
       clearOffers();
       authCall('guide_ask_person', { agent_slug: status.guide_slug, message: text, token: token() }).then(function(d){
-        if (d.ok) return addMsg('guide', 'Sent to Sean' + (d.to_cm ? ' and your Community Manager' : '') + '. You’ll get an answer by email as soon as we can.');
+        if (d.ok) return addMsg('guide', 'Sent to the team. You’ll get an answer by email as soon as we can.');
         if (d._status === 429) return addMsg('guide', 'You’ve sent the team five questions today, so this one has to wait until tomorrow. Quick answers are still free here.');
         addMsg('guide', 'That didn’t send. Try again in a minute.');
       }).catch(function(){ addMsg('guide', 'I couldn’t reach the server. Check your connection and try again.'); });

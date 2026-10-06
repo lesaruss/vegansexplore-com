@@ -380,7 +380,8 @@ pocket for anything." Most questions repeat, so most answers cost nothing.
   CM or myself." Next to every answer and every miss, Ask a person (`ve-auth` `guide_ask_person`,
   members, five a day) emails the question to contact@lesaruss.com and to the member's city Community
   Manager (`members.ve_role = 'community_manager'`, same `home_community`), Reply-To the member. Logged
-  as `sent_to_person`, so it stays on `guide_kb_gaps` until it has a saved answer.
+  as `sent_to_person`, so it stays on `guide_kb_gaps` until it has a saved answer. Members only ever
+  see "the team", never Sean's name or the Community Manager (Sean, 2026-10-06).
 - Conversation memory (Sean, 2026-10-06: warn them near the limit and prompt a new one): the Guide
   remembers the latest 20 messages of a conversation. `guide_chat_send` returns `memory {used, max}`;
   from 16 the chat warns and offers Start a new conversation (a new `conversation` id, its own room).
