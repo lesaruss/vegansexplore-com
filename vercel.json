@@ -1682,6 +1682,7 @@
     {"source": "/admin/depot/news", "destination": "/admin/depot/inbox", "permanent": true},
     {"source": "/admin/pulse-city-tags", "destination": "/admin/depot/pulse-cities", "permanent": true},
     {"source": "/admin/opportunity-applications", "destination": "/dashboard/applications", "permanent": true},
+    {"source": "/account/lesars", "destination": "/dashboard", "permanent": false},
     {"source": "/admin/partner-applications", "destination": "/dashboard/partners", "permanent": true},
     {
       "source": "/partner",

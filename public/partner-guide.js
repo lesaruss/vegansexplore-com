@@ -276,7 +276,7 @@
   function comingStep() {
     var c = city();
     return '<h2 class="vpg-q-title" id="vpg-q-title">' + esc(c.name) + ' is coming.</h2>' +
-      '<p class="vpg-q-sub">A Community Manager is already lined up. The city opens when the season can support it. Leave your email and the team will reach out when it opens.</p>' +
+      '<p class="vpg-q-sub">The city opens when the season can support it. Leave your email and the team will reach out when it opens.</p>' +
       form('notify-city', 'notify', null, 'Put me on the list', true);
   }
 

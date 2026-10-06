@@ -52,7 +52,7 @@
     if (viewAs) {
       var COST = 1000; // matches the Points price shown on the Guide Catalog card
       if (viewAs.mode === 'public') {
-        setBtn('Join Free to Get Started', function(){ alert('Preview only - this is what a logged-out visitor sees. No real action was taken.'); }, false);
+        setBtn('Join to Get Started', function(){ alert('Preview only - this is what a logged-out visitor sees. No real action was taken.'); }, false);
         return;
       }
       var bal = viewAs.points || 0;
@@ -66,7 +66,7 @@
 
     var loggedIn = !!(window.VEAuth && VEAuth.isLoggedIn());
     if (!loggedIn) {
-      setBtn('Join Free to Get Started', goJoin, false);
+      setBtn('Join to Get Started', goJoin, false);
       return;
     }
     var token = VEAuth.getToken();

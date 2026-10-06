@@ -70,7 +70,7 @@
     {
       type: 'community_manager',
       tier: 'Leadership Role',
-      desc: 'The official face of VEGANS EXPLORE in your city. Build the local community, manage events, and grow from volunteer to a paid role as your city grows.',
+      desc: 'The official face of VEGANS EXPLORE in your city. Build the local community, manage events, and grow toward Community Coordinator as your city grows. A volunteer role.',
       img: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260609_213628_278b3739-d852-4571-b0de-7b324f25f6be.png'
     },
     {
