@@ -26,3 +26,15 @@ where brand_slug = 'vegans-explore' and question = 'How do I reach a real person
 update public.guide_kb_answers set answer = 'Quick answers stay free, so keep asking. To keep asking your Guide directly, add points right in the chat (every dollar becomes 100 points), or wait for your allowance to refresh next month. You can also tap Ask a person.',
   also_asked = also_asked || array['add points', 'top up points', 'get more points', 'out of points'], updated_at = now(), updated_by = 'Logan'
 where brand_slug = 'vegans-explore' and question = 'What happens when I run out of Guide messages?';
+
+-- Everyday Vegan questions (2026-10-06, Sean: "why couldn't the guide answer is honey vegan without a
+-- team member?"): "Is honey Vegan?" plus 30 everyday answers from supabase/seed/guide_kb_answers_v3_vegan_life.json
+-- (topic vegan-life), loaded by commit and md5. Then "do Vegans eat ..." phrasings so each lands on its own answer:
+update public.guide_kb_answers a set also_asked = a.also_asked || v.extra, updated_at = now()
+from (values
+ ('Are eggs Vegan?', array['do vegans eat eggs', 'can vegans eat eggs', 'why dont vegans eat eggs']),
+ ('What can I use instead of dairy milk?', array['do vegans drink milk', 'can vegans have dairy']),
+ ('What do Vegans use instead of cheese?', array['do vegans eat cheese', 'can vegans eat cheese']),
+ ('Is gelatin Vegan?', array['do vegans eat gelatin', 'can vegans eat gummies']),
+ ('Is wine Vegan?', array['can vegans drink wine', 'can vegans drink beer'])
+) v(q, extra) where a.brand_slug = 'vegans-explore' and a.question = v.q;
