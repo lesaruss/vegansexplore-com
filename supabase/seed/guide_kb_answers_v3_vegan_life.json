@@ -1,0 +1,508 @@
+[
+ {
+  "topic": "vegan-life",
+  "question": "Is wine Vegan?",
+  "answer": "Not always. Some wines are filtered with animal products like gelatin, egg whites or fish bladder (isinglass). Look for wines labeled Vegan, or check the winery's site.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is wine vegan",
+   "vegan wine",
+   "is beer vegan",
+   "vegan alcohol",
+   "is beer or wine vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Is sugar Vegan?",
+  "answer": "Usually, but not always. Some white cane sugar is filtered through bone char. Beet sugar, organic sugar and sugar labeled Vegan are not processed that way.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is sugar vegan",
+   "bone char sugar",
+   "is brown sugar vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Is gelatin Vegan?",
+  "answer": "No. Gelatin is made from animal skin and bones. Look for agar agar, pectin or products labeled Vegan instead, especially in gummies, marshmallows and desserts.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is gelatin vegan",
+   "what is gelatin made of",
+   "vegan gummies",
+   "vegan marshmallows"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Are eggs Vegan?",
+  "answer": "No. Vegans leave out eggs. For baking, try a flax egg (1 tablespoon ground flaxseed and 3 tablespoons water), mashed banana or a store-bought egg replacer. For scrambles, tofu or a plant-based egg works well.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "are eggs vegan",
+   "egg substitute",
+   "vegan egg replacement",
+   "what can i use instead of eggs"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What can I use instead of dairy milk?",
+  "answer": "Oat, soy, almond, coconut and pea milk are all easy swaps. Oat and soy work well in coffee, and soy has the most protein.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "milk alternatives",
+   "plant milk",
+   "dairy free milk",
+   "best vegan milk",
+   "what milk do vegans drink"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What do Vegans use instead of cheese?",
+  "answer": "There are cheeses made from cashews, almonds, coconut and soy, and they melt well on pizza and grilled cheese. Nutritional yeast adds a cheesy flavor to sauces and popcorn.",
+  "link_url": "/directory",
+  "link_label": "Find Vegan shops",
+  "also_asked": [
+   "vegan cheese",
+   "cheese alternatives",
+   "dairy free cheese",
+   "what is nutritional yeast"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Where do Vegans get protein?",
+  "answer": "Beans, lentils, tofu, tempeh, seitan, edamame, nuts, seeds and whole grains are all good sources. Eating a variety through the day covers most people's needs.",
+  "link_url": "/guides",
+  "link_label": "See the guides",
+  "also_asked": [
+   "vegan protein",
+   "how do vegans get protein",
+   "high protein vegan foods",
+   "protein sources"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Do Vegans need vitamin B12?",
+  "answer": "Yes. B12 is the one nutrient Vegans should plan for, through fortified foods or a supplement. Talk with your doctor about what is right for you.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "vitamin b12",
+   "b12 vegan",
+   "what supplements do vegans need",
+   "do vegans need supplements"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What is the difference between Vegan and vegetarian?",
+  "answer": "Vegetarians leave out meat and fish but may eat eggs, dairy and honey. Vegans leave out all animal products, and many also avoid them in clothing and other products.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "vegan vs vegetarian",
+   "difference between vegan and vegetarian",
+   "what does vegan mean",
+   "what is a vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What does plant-based mean?",
+  "answer": "Plant-based usually describes food made from plants, with no animal products. Vegan goes further, covering how people live beyond food too, like clothing and products.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "plant based meaning",
+   "what is plant based",
+   "plant based vs vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "How do I start going Vegan?",
+  "answer": "Start with meals you already like and swap one thing at a time: plant milk, a Vegan burger, a bean chili. Your Guide and the guides can help, and the Directory shows Vegan spots near you.",
+  "link_url": "/guides",
+  "link_label": "See the guides",
+  "also_asked": [
+   "how to go vegan",
+   "going vegan",
+   "new to vegan",
+   "beginner vegan",
+   "tips for going vegan",
+   "how do i become vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What are easy Vegan swaps for comfort food?",
+  "answer": "Try plant-based burgers and sausages, Vegan mac and cheese with cashew sauce, jackfruit for pulled pork, and coconut or oat ice cream. Most comfort food has a Vegan version.",
+  "link_url": "/guides",
+  "link_label": "See the guides",
+  "also_asked": [
+   "vegan swaps",
+   "comfort food swaps",
+   "easy swaps",
+   "vegan versions of my favorite foods",
+   "what are easy vegan swaps for my favorite comfort foods"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "How do I eat Vegan at a non-Vegan restaurant?",
+  "answer": "Check the menu online first, look for dishes you can adjust, and ask for no butter, cheese or cream. Many restaurants are happy to help. The Directory shows Vegan-friendly spots with Vegan options.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "also_asked": [
+   "eating out vegan",
+   "vegan at restaurants",
+   "ordering vegan",
+   "dining out"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Is Vegan food expensive?",
+  "answer": "It doesn't have to be. Beans, lentils, rice, pasta, oats, frozen vegetables and seasonal produce are some of the cheapest foods there are. Specialty products cost more, so treat them as extras.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is vegan expensive",
+   "vegan on a budget",
+   "cheap vegan food",
+   "budget vegan meals"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Is leather Vegan?",
+  "answer": "No. Leather comes from animal skin. Vegans choose alternatives like plant-based leathers, cotton, canvas and recycled materials.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is leather vegan",
+   "vegan leather",
+   "vegan clothing",
+   "is wool vegan",
+   "is silk vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Is wool or silk Vegan?",
+  "answer": "No. Wool comes from sheep and silk from silkworms. Cotton, linen, hemp and recycled fibers are common Vegan choices.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is wool vegan",
+   "is silk vegan",
+   "vegan fabrics"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What is tofu, and how do I cook it?",
+  "answer": "Tofu is made from soybeans and takes on whatever flavor you give it. Press out the water, cut it up, season it, then bake, pan-fry or air-fry until golden.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "how to cook tofu",
+   "what is tofu",
+   "tofu tips",
+   "is tofu healthy"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What is seitan?",
+  "answer": "Seitan is made from wheat gluten and has a chewy, meaty texture. It is high in protein and great in stir-fries, sandwiches and stews. It is not for anyone avoiding gluten.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "what is seitan",
+   "wheat meat",
+   "seitan protein"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What is tempeh?",
+  "answer": "Tempeh is fermented soybeans pressed into a firm block, with a nutty flavor and lots of protein. Slice it thin and marinate it for sandwiches, bowls and stir-fries.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "what is tempeh",
+   "how to cook tempeh"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Are Vegan meat alternatives healthy?",
+  "answer": "They can be part of a good diet, and they make swapping easier. Like any packaged food, check the label for sodium. Whole foods like beans, lentils and tofu are great everyday staples.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is beyond meat healthy",
+   "is impossible burger healthy",
+   "fake meat healthy",
+   "plant based meat"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Can kids be Vegan?",
+  "answer": "Yes, with planning, and many families raise Vegan kids. Work with your pediatrician to make sure they get enough B12, iron, calcium, vitamin D and omega-3s.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "vegan kids",
+   "raising vegan children",
+   "vegan baby",
+   "vegan family"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Can athletes be Vegan?",
+  "answer": "Yes. Many athletes and bodybuilders are Vegan. Plan for enough calories and protein from beans, tofu, tempeh, seitan and protein powders. The Vegans Who Lift Podcast covers it in depth.",
+  "link_url": "/podcast",
+  "link_label": "Our podcasts",
+  "also_asked": [
+   "vegan athletes",
+   "vegan bodybuilding",
+   "vegan fitness",
+   "can you build muscle vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Is chocolate Vegan?",
+  "answer": "Dark chocolate often is, but check the label for milk, milk fat or butterfat. Many brands make Vegan milk-style chocolate with oat or rice milk.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "is chocolate vegan",
+   "vegan chocolate",
+   "is dark chocolate vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Is bread Vegan?",
+  "answer": "Most bread is, but some has milk, eggs, butter or honey. Check the label, or ask at the bakery. The Directory lists Vegan bakeries near you.",
+  "link_url": "/directory",
+  "link_label": "Find Vegan bakeries",
+  "also_asked": [
+   "is bread vegan",
+   "vegan bread",
+   "vegan bakery"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What are good honey alternatives?",
+  "answer": "Maple syrup, agave, date syrup and brown rice syrup all work well in tea, baking and dressings.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "honey substitute",
+   "honey alternative",
+   "vegan honey",
+   "what can i use instead of honey"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "Are Vegan cosmetics different from cruelty-free?",
+  "answer": "Yes. Cruelty-free means not tested on animals. Vegan means no animal ingredients, like beeswax, lanolin or carmine. Look for products that are both.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "vegan cosmetics",
+   "cruelty free vs vegan",
+   "vegan makeup",
+   "vegan skincare"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "How do I talk to family about going Vegan?",
+  "answer": "Lead with why it matters to you, keep it positive, and share good food. Offering to bring a dish to family meals helps a lot. Your Guide can help you find recipes everyone will enjoy.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "telling family im vegan",
+   "family doesnt support vegan",
+   "how to talk about veganism",
+   "holidays as a vegan"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "What should I eat for a quick Vegan breakfast?",
+  "answer": "Oatmeal with fruit and nut butter, a tofu scramble, avocado toast, a smoothie with plant milk and protein powder, or overnight oats are all quick and filling.",
+  "link_url": null,
+  "link_label": null,
+  "also_asked": [
+   "vegan breakfast",
+   "quick vegan breakfast",
+   "breakfast ideas"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "How do I find Vegan catering?",
+  "answer": "Search the Directory for your city and look under Food and Services for Vegan caterers and chefs. You can also ask in your city's Community Board for recommendations.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "also_asked": [
+   "vegan catering",
+   "vegan caterer",
+   "catering for a party",
+   "where can i find vegan catering for a birthday party"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ },
+ {
+  "topic": "vegan-life",
+  "question": "How do I find Vegan groceries near me?",
+  "answer": "The Directory lists Vegan and Vegan-friendly shops and markets by city. Most big grocery stores also carry plant milks, tofu and Vegan meats.",
+  "link_url": "/directory",
+  "link_label": "Open the Directory",
+  "also_asked": [
+   "vegan grocery store",
+   "where to buy vegan food",
+   "vegan shops near me"
+  ],
+  "status": "live",
+  "featured": false,
+  "sort_order": 100,
+  "notes": "Everyday Vegan question, written by Logan 2026-10-06"
+ }
+]
