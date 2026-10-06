@@ -376,6 +376,15 @@ pocket for anything." Most questions repeat, so most answers cost nothing.
   source from the site and canon; anything else goes to `needs_sean` for a question session with Sean.
   A draft goes live only after a check, so a wrong AI answer is never served as fact.
 - Facts must agree with `ve-guide-platform-facts` (what the AI Guides know). Change both together.
+- Ask a person (Sean, 2026-10-06): "if we aren't getting the answers, they can reach out to either the
+  CM or myself." Next to every answer and every miss, Ask a person (`ve-auth` `guide_ask_person`,
+  members, five a day) emails the question to contact@lesaruss.com and to the member's city Community
+  Manager (`members.ve_role = 'community_manager'`, same `home_community`), Reply-To the member. Logged
+  as `sent_to_person`, so it stays on `guide_kb_gaps` until it has a saved answer.
+- Conversation memory (Sean, 2026-10-06: warn them near the limit and prompt a new one): the Guide
+  remembers the latest 20 messages of a conversation. `guide_chat_send` returns `memory {used, max}`;
+  from 16 the chat warns and offers Start a new conversation (a new `conversation` id, its own room).
+  Under 3 messages of allowance left, it says so; quick answers and Ask a person stay free.
 - Migration `20261006_guide_kb.sql`. Brand-ready (`brand_slug`), so other brands can reuse it.
 
 ## Guide art: mid shot in squares, full body only at 9:16 (Sean, 2026-10-05)

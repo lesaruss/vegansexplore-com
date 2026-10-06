@@ -1582,6 +1582,61 @@ serve(async (req: Request) => {
       });
     }
 
+    // ---- Guide answers: guide_ask_person (Sean, 2026-10-06) -------------
+    // "If we aren't getting the answers, they can reach out to either the CM
+    // or myself for a quick answer." One tap sends the member's question,
+    // as asked, to Sean (contact@lesaruss.com) and to their city's Community
+    // Manager when the city has one, with Reply-To set to the member so a
+    // reply goes straight to them. Members only (a reply needs an email);
+    // five a day. Logged as sent_to_person, so it stays on the to-do list
+    // (guide_kb_gaps) until it has a saved answer.
+    if (action === 'guide_ask_person') {
+      const personJson = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const message = typeof body.message === 'string' ? body.message.trim().slice(0, 1000) : '';
+      if (!message) return personJson({ error: 'message required' }, 400);
+      const pToken = typeof body.token === 'string' ? body.token : '';
+      const pDecoded = pToken ? await decodeToken(pToken) : null;
+      if (!pDecoded) return personJson({ error: 'sign_in_required' }, 401);
+      const { data: asker } = await supabase.from('members').select('id, name, email, home_community').eq('id', pDecoded.sub).maybeSingle();
+      if (!asker?.email) return personJson({ error: 'Member not found' }, 404);
+
+      const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+      const { count: sentToday } = await supabase.from('guide_kb_questions').select('id', { count: 'exact', head: true })
+        .eq('member_id', asker.id).eq('outcome', 'sent_to_person').gte('created_at', since);
+      if ((sentToday ?? 0) >= 5) return personJson({ error: 'daily_limit' }, 429);
+
+      const { data: cms } = asker.home_community
+        ? await supabase.from('members').select('name, email').eq('ve_role', 'community_manager').eq('home_community', asker.home_community).not('email', 'is', null)
+        : { data: [] };
+      const cmEmails = (cms ?? []).map((c: { email: string }) => c.email);
+      const city = asker.home_community ? String(asker.home_community).replace(/-/g, ' ') : 'no city set';
+      const guideSlug = typeof body.agent_slug === 'string' ? body.agent_slug : null;
+      const safe = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      const sendRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
+          to: ['contact@lesaruss.com', ...cmEmails],
+          reply_to: asker.email,
+          subject: `Guide question from ${asker.name || 'a member'}: ${message.slice(0, 60)}`,
+          html: `<div style="font-family:sans-serif;max-width:560px;line-height:1.55;color:#1a1a1a">
+  <p style="margin:0 0 6px;font-size:13px;color:#666">A member asked their Guide and there was no saved answer, so they asked a person.</p>
+  <blockquote style="margin:12px 0;padding:12px 16px;background:#f3faf5;border-left:4px solid #16a34a;font-size:16px">${safe(message)}</blockquote>
+  <p style="margin:0;font-size:14px"><b>${safe(asker.name || 'Member')}</b> &middot; ${safe(asker.email)} &middot; ${safe(city)}${guideSlug ? ' &middot; Guide: ' + safe(guideSlug) : ''}</p>
+  <p style="margin:16px 0 0;font-size:13px;color:#666">Reply to this email and it goes straight to them. If others will ask the same thing, send the answer to Logan too and it becomes a free quick answer for everyone.</p>
+</div>`,
+        }),
+      });
+      if (!sendRes.ok) {
+        console.error('guide_ask_person: email failed', sendRes.status, await sendRes.text().catch(() => ''));
+        return personJson({ error: 'send_failed' }, 502);
+      }
+      await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: asker.id, guide_slug: guideSlug, question: message, outcome: 'sent_to_person' });
+      return personJson({ ok: true, to_cm: cmEmails.length > 0 });
+    }
+
     // ---- Guide front door: guide_chat_send -----------------------------
     // Points-gated real conversation with a Vegans Explore Guide, running
     // through the shared character-respond engine: 4 points a message from a
@@ -1596,6 +1651,7 @@ serve(async (req: Request) => {
       if (!agent_slug || !message) return new Response(JSON.stringify({ error: 'agent_slug and message required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       const CHAT_COST = 4;
+      const GUIDE_MEMORY = 20;  // messages the Guide remembers (character-respond also keeps 20)
       let speakerKey: string;
       let speakerName: string | undefined;
       let balance: number | null = null;
@@ -1634,7 +1690,10 @@ serve(async (req: Request) => {
         return new Response(JSON.stringify({ error: 'sign_in_required' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      const roomSlug = `ve-guide-${agent_slug}-${speakerKey}`;
+      // A conversation id (from "Start a new conversation" in the chat) gives the member a fresh memory;
+      // without one it is the member's ongoing conversation with this Guide.
+      const conversation = typeof body.conversation === 'string' && /^[a-z0-9]{4,16}$/.test(body.conversation) ? body.conversation : '';
+      const roomSlug = `ve-guide-${agent_slug}-${speakerKey}` + (conversation ? `-${conversation}` : '');
 
       const { data: priorRows } = await supabase
         .from('character_agent_conversations')
@@ -1642,7 +1701,7 @@ serve(async (req: Request) => {
         .eq('character_slug', agent_slug)
         .eq('room_slug', roomSlug)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(GUIDE_MEMORY);
       // Newest 20, back in time order, so a long conversation keeps its latest turns.
       const history = (priorRows ?? []).reverse().map((r: { role: string; content: string }) => ({ role: r.role, content: r.content }));
 
@@ -1675,7 +1734,10 @@ serve(async (req: Request) => {
         { onConflict: 'brand_slug,question_key', ignoreDuplicates: true });
       if (draftErr) console.error('guide_chat_send: draft answer not saved', draftErr);
 
-      return new Response(JSON.stringify({ reply: respondData.reply, display_name: respondData.display_name, balance }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      // How full the Guide's memory is: the reply engine reads the latest 20 messages, so the chat can
+      // warn the member and offer a new conversation before the start of this one is forgotten.
+      const memory = { used: Math.min(GUIDE_MEMORY, (priorRows ?? []).length + 2), max: GUIDE_MEMORY };
+      return new Response(JSON.stringify({ reply: respondData.reply, display_name: respondData.display_name, balance, memory }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // 2026-09-07 (Sean field note): voice input on the Guide open-question
