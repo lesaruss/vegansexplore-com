@@ -1,0 +1,230 @@
+{
+ "answer_needs_sean": [
+  {
+   "question": "How much is Passport, and how is it different from the $11 Founding Membership?",
+   "topic": "joining",
+   "answer": "The $11 Founding Membership is a one-time contribution that makes you a member. Passport is an optional upgrade on top of it: $11 a month or $111 a year. Each renewal adds 1,100 points, and Passport lets you choose your Guide and gives you 300 Guide points a month instead of 60.",
+   "link_url": "/dashboard",
+   "link_label": "Open your dashboard",
+   "also_asked": [
+    "what is passport",
+    "how much is passport",
+    "passport price",
+    "passport vs founding membership",
+    "is passport a subscription",
+    "what does passport get me"
+   ]
+  },
+  {
+   "question": "Who can claim Bounties: any member, or only Passport holders?",
+   "topic": "involved",
+   "answer": "Any active member can claim a Bounty spot. Sign in and open Bounties from your dashboard or your city hub.",
+   "link_url": "/dashboard/bounties",
+   "link_label": "See Bounties",
+   "also_asked": [
+    "who can claim bounties",
+    "do i need passport for bounties",
+    "can i do bounties",
+    "how do i claim a bounty"
+   ]
+  },
+  {
+   "question": "Do I need a game ticket for the Plant-Based Showcase, and is it free?",
+   "topic": "events",
+   "answer": "The Showcase is free with your regular game ticket for the Dolphins vs. Jets on Sunday, November 29, 2026, at Hard Rock Stadium. There is no separate Showcase ticket.",
+   "link_url": "/campaigns/plant-based-showcase-dolphins",
+   "link_label": "About the Showcase",
+   "also_asked": [
+    "do i need a ticket for the showcase",
+    "is the dolphins showcase free",
+    "showcase tickets",
+    "how do i get into the plant-based showcase"
+   ]
+  },
+  {
+   "question": "What are the Community Night dates?",
+   "topic": "events",
+   "answer": "In South Florida: the launch Community Night is Saturday, October 24 in West Palm Beach, then Saturday, November 21 in Miami and Saturday, December 12 in Fort Lauderdale. The Plant-Based Showcase is Sunday, November 29 at Hard Rock Stadium.",
+   "link_url": "/communities/south-florida?tab=events",
+   "link_label": "South Florida events",
+   "also_asked": [
+    "when is the next community night",
+    "community night schedule",
+    "upcoming community nights",
+    "community nights in south florida"
+   ]
+  },
+  {
+   "question": "Does South Florida have a Community Manager?",
+   "topic": "involved",
+   "answer": "Yes. South Florida is our first chapter, and its Community Manager is helping it get started now. Other cities are still looking for theirs, and open roles are under Opportunities on your dashboard.",
+   "link_url": "/communities/south-florida",
+   "link_label": "South Florida hub",
+   "also_asked": [
+    "who runs south florida",
+    "south florida community manager",
+    "is there a community manager in miami"
+   ]
+  },
+  {
+   "question": "Which cities are next after South Florida?",
+   "topic": "cities",
+   "answer": "Central Florida (Orlando) and New York are next, then Los Angeles.",
+   "link_url": "/communities",
+   "link_label": "All communities",
+   "also_asked": [
+    "what city is next",
+    "when is orlando launching",
+    "when is new york launching",
+    "next chapters"
+   ]
+  },
+  {
+   "question": "How many points does a guide cost: 1,100 or 1,111?",
+   "topic": "points",
+   "answer": "Guides are 1,111 points each, and the Welcome Guide is free.",
+   "link_url": "/guides",
+   "link_label": "See the guides",
+   "also_asked": [
+    "how much is a guide",
+    "how many points is a guide",
+    "guide price",
+    "how do i unlock a guide"
+   ]
+  },
+  {
+   "question": "Can I buy points packages?",
+   "topic": "points",
+   "answer": "Points come from contributing: every dollar becomes 100 points. Members can contribute any time with the Contribute button on the dashboard, $11 or more.",
+   "link_url": "/dashboard",
+   "link_label": "Open your dashboard",
+   "also_asked": [
+    "can i buy points",
+    "buy points",
+    "points packages",
+    "purchase points"
+   ]
+  },
+  {
+   "question": "How do I contact you if I'm not a member (about, policies, contact, privacy, terms)?",
+   "topic": "help",
+   "answer": "Email hello@vegansexplore.com and the team will get back to you. Members can also tap Ask a person in their Guide.",
+   "link_url": "mailto:hello@vegansexplore.com",
+   "link_label": "Email the team",
+   "also_asked": [
+    "contact",
+    "contact us",
+    "email address",
+    "how do i contact vegans explore",
+    "phone number",
+    "privacy policy"
+   ]
+  },
+  {
+   "question": "Is there a Vegans Explore app?",
+   "topic": "about",
+   "answer": "Not yet. Vegans Explore works in your phone's browser, and you can add it to your home screen so it opens like an app.",
+   "link_url": "/",
+   "link_label": "Open Vegans Explore",
+   "also_asked": [
+    "is there an app",
+    "download the app",
+    "iphone app",
+    "android app",
+    "app store"
+   ]
+  },
+  {
+   "question": "Can I get a refund or cancel my membership?",
+   "topic": "joining",
+   "answer": "Your Founding Membership is a one-time contribution, so there is nothing to cancel. If something went wrong with a payment, tap Ask a person or email hello@vegansexplore.com and the team will sort it out.",
+   "link_url": "mailto:hello@vegansexplore.com",
+   "link_label": "Email the team",
+   "also_asked": [
+    "refund",
+    "can i get my money back",
+    "cancel membership",
+    "cancel my subscription",
+    "charged twice"
+   ]
+  },
+  {
+   "question": "How do I delete my account or change my email?",
+   "topic": "account",
+   "answer": "Tap Ask a person, or email hello@vegansexplore.com from the address on your account, and the team will take care of it.",
+   "link_url": "mailto:hello@vegansexplore.com",
+   "link_label": "Email the team",
+   "also_asked": [
+    "delete my account",
+    "change my email",
+    "close my account",
+    "update my email address",
+    "remove my data"
+   ]
+  },
+  {
+   "question": "How do I suggest a Vegan place that isn't in the Directory?",
+   "topic": "directory",
+   "answer": "Tap Ask a person with the place's name and city, and the team will look at adding it. If you own the business, you can claim its listing on the claim page.",
+   "link_url": "/claim",
+   "link_label": "Claim a listing",
+   "also_asked": [
+    "suggest a restaurant",
+    "add a place to the directory",
+    "a place is missing",
+    "recommend a business",
+    "submit a listing"
+   ]
+  },
+  {
+   "question": "Is Vegans Explore a nonprofit?",
+   "topic": "about",
+   "answer": "Yes. Vegans Explore is run by Vegans Explore Inc., a Florida nonprofit corporation. Your $11 is a membership contribution, not a tax-deductible donation.",
+   "link_url": "/welcome",
+   "link_label": "About membership",
+   "also_asked": [
+    "are you a nonprofit",
+    "is this a charity",
+    "is vegans explore a charity",
+    "nonprofit status"
+   ]
+  },
+  {
+   "question": "What are Passport Stop and Passport Anchor plans for businesses, and what do they cost?",
+   "topic": "business",
+   "answer": "They are quarterly plans for businesses. Passport Stop is $250 a quarter: a Passport Challenge stop all three months, the register kit, our visit and the Verified badge, a photo shoot, a social post and a results sheet. Passport Anchor is $500 a quarter: everything in Passport Stop, plus the anchor month, a Tour slot, a social campaign and the featured spot in your section.",
+   "link_url": "/claim",
+   "link_label": "See the business plans",
+   "also_asked": [
+    "business plans",
+    "how much for my business",
+    "passport stop price",
+    "passport anchor price",
+    "verified badge"
+   ]
+  },
+  {
+   "question": "How do I become a Community Manager, and is /lead or /community-managers the right page?",
+   "topic": "involved",
+   "answer": "Apply on the Community Manager page. It is a volunteer role, and the team reviews every application.",
+   "link_url": "/community-managers",
+   "link_label": "Community Managers",
+   "also_asked": [
+    "how do i become a community manager",
+    "apply to be a community manager",
+    "lead my city",
+    "start a chapter"
+   ]
+  }
+ ],
+ "fix_live": [
+  {
+   "question": "What are points for?",
+   "answer": "Points unlock guides, which are 1,111 points each. They also cover asking your Guide directly, and you earn more by taking part."
+  },
+  {
+   "question": "Does my city have a Community Manager?",
+   "answer": "South Florida has its Community Manager, and the chapter is getting started now. Most other cities, Orlando and New York included, are still looking for theirs. Open roles are under Opportunities on your dashboard."
+  }
+ ]
+}
