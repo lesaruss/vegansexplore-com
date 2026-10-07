@@ -120,7 +120,7 @@
         videoSlide('Shopping dairy-free with Maya', 'A quick walk through the aisle: what to grab first.')
       ],
       swaps: [
-        textSlide('Free example', 'Swap it out', exampleSwap),
+        textSlide('Free example', 'One swap, free to try', exampleSwap),
         textSlide('16 swaps', 'Replace anything dairy', '<p>From the shelf, or from what is already in your pantry. Search them, or browse by milk and cream, butter, cheese, and yogurt and sour cream.</p>' + chips(['Milk', 'Butter, baking', 'Heavy cream', 'Whipped cream', 'Sour cream', 'Cream cheese', 'Parmesan', 'Cheese sauce', 'Ricotta', 'Ghee'])),
         videoSlide('Three swaps to start with', 'Maya shows the easiest swaps for your first week.')
       ],
@@ -310,7 +310,7 @@
   function cookRecipes() {
     var ours = MEM.recipes.map(function (r) { return { title: r.title, from: 'Vegans Explore kitchen', time: r.time, steps: r.steps, tip: r.tip }; });
     var pantry = MEM.swaps.filter(function (s) { return /blend|pulse|simmer|whip|stir|warm|tbsp|cup/i.test(s.pantry) && s.pantry.length > 40; })
-      .map(function (s) { return { title: s.replace + ', homemade', from: 'From the swap list', time: '', steps: [s.pantry], tip: s.tip }; });
+      .map(function (s) { return { title: 'Homemade ' + s.replace.toLowerCase().replace(/, (cooking|baking)$/, ''), from: 'From the swap list', time: '', steps: [s.pantry], tip: s.tip }; });
     return ours.concat(pantry);
   }
   var pantryPick = {};
@@ -347,7 +347,10 @@
       var grid = document.getElementById('dgMake'), all = cookRecipes();
       var draw = function () {
         var picked = Object.keys(pantryPick).filter(function (k) { return pantryPick[k]; }).map(Number);
-        if (!picked.length) { grid.innerHTML = '<p class="dg-empty">Pick at least one ingredient above.</p>'; return; }
+        if (!picked.length) {
+          grid.innerHTML = all.map(function (r) { return '<div class="dg-card dg-recipe"><h3>' + esc(r.title) + '</h3><div class="dg-bcat">' + esc(r.from) + '</div>' + (r.steps.length > 1 ? '<ol>' + r.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' : '<p style="margin-top:8px">' + esc(r.steps[0]) + '</p>') + '</div>'; }).join('');
+          return;
+        }
         var rows = all.map(function (r) {
           var txt = r.title + ' ' + r.steps.join(' ');
           var uses = picked.filter(function (i) { return PANTRY[i][1].test(txt); });
