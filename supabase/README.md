@@ -631,3 +631,15 @@ Migration `depot_outreach_and_schedule`:
 - The writer (news_desk_write step 7) sets the track and saves the contact it found, only an
   address the business publishes, with where it was found. It never sends or schedules. The writer
   was paused on 2026-09-29 until Sean resumes it.
+
+## ve-guide-unlock
+
+Access to a Vegans Explore Guide. `verify_jwt` is **false** (same reason as
+ve-auth: the VE app token travels in `body.token` and the function checks its
+HMAC itself). `ve_guides.access_rule` picks the rule: `points` (the Restaurant
+Survival Guide, unlocked by spending points) or `membership` (The Vegan Dairy
+Guide, open to any member whose `membership_status` is `active`). `?action=open`
+returns the Guide's members-only screens (`ve_guides.content_html`) only to
+someone with access; that content is kept in the database, never in this repo,
+because Vercel serves the repo. Deployed as v15 on 2026-10-07 (migration
+`20261007_ve_guides_dairy_membership.sql`).

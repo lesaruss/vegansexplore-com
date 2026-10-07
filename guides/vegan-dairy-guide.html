@@ -3,19 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex">
   <title>The Vegan Dairy Guide - Vegans Explore Guides</title>
   <meta name="description" content="Everything you need to go dairy-free: why it matters, the brands to buy, how to swap dairy in cooking, recipes and books.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     /* The Vegan Dairy Guide, Guide one of Vegans Explore Guides (Sean, 2026-10-07).
-       Content source: HQ playbook vegan-dairy-guide-content. Brand data below lists only
-       confirmed brands; the ones still marked Check in the playbook stay out until confirmed. */
+       Content source: HQ playbook vegan-dairy-guide-content. This file is the public shell:
+       Start, the Learn preview and Get the Guide. The members-only screens come from
+       ve-guide-unlock once membership is confirmed (see /guide-scripts/vegan-dairy-guide.js). */
+    html:not(.vg-on) .vg-slide{display:none;}
+    html:not(.vg-on) .vg-stage{min-height:calc(100vh - 61px);background:#0d130e;}
+    .dg-lock{display:block;margin-top:6px;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffd79a;}
+    .dg-offer{max-width:none;}
+    .dg-price{font-size:44px;font-weight:900;line-height:1;color:#fff;margin-bottom:10px;}
+    .dg-price span{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;margin-left:6px;}
+    .dg-offer p{font-size:14px;line-height:1.6;color:#ececec;margin:0 0 6px;}
+    .dg-offer .vg-btn{margin-top:14px;}
+    .dg-offer .vg-btn[disabled]{opacity:0.6;cursor:default;}
+    .dg-offer a{color:#c5f2c7;text-decoration:underline;text-underline-offset:2px;}
+    .dg-status{min-height:1.4em;margin-top:10px !important;color:#ffd79a !important;font-weight:700;}
     .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px;}
     .dg-3{grid-template-columns:repeat(3,minmax(0,1fr));}
     .dg-4{grid-template-columns:repeat(4,minmax(0,1fr));}
-    .dg-brand{height:118px;overflow:hidden;}
+    body{margin:0;}
+    .dg-brand{height:118px;overflow:hidden;box-sizing:border-box;}
     .dg-pager{display:flex;gap:8px;margin-top:12px;}
     .dg-chip[disabled]{opacity:0.35;cursor:default;}
     .dg-card{padding:18px 20px;}
@@ -54,7 +66,7 @@
     .dg-books{columns:2 320px;column-gap:28px;margin:0;padding-left:20px;}
     .dg-books li{font-size:14px;line-height:1.55;color:#fff;margin-bottom:8px;break-inside:avoid;}
     .dg-books li span{color:#ececec;}
-    @media (min-width:901px) and (max-height:820px){.dg-swap td{padding:5px 8px;font-size:12.5px;line-height:1.45;}.dg-swap th{padding-bottom:4px;}.dg-card{padding:14px 16px;}.dg-card p{font-size:13px;line-height:1.5;}}
+    @media (min-width:901px) and (max-height:820px){.dg-brand{height:100px;padding:10px 14px;}.dg-chips{margin-bottom:10px;}.dg-search{margin-bottom:8px;}.dg-swap td{padding:5px 8px;font-size:12.5px;line-height:1.45;}.dg-swap th{padding-bottom:4px;}.dg-card{padding:14px 16px;}.dg-card p{font-size:13px;line-height:1.5;}}
     @media (max-width:1100px){.dg-3,.dg-4{grid-template-columns:repeat(2,minmax(0,1fr));}}
     @media (max-width:900px){.dg-3,.dg-4{grid-template-columns:minmax(0,1fr);}.dg-brand{height:auto;}.dg-swap thead{display:none;}.dg-swap tr{display:block;border-top:1px solid rgba(255,255,255,0.16);padding:10px 0;}.dg-swap td{display:block;border:0;padding:3px 0;white-space:normal !important;}.dg-swap td[data-l]::before{content:attr(data-l) ": ";font-weight:800;color:#c5f2c7;}}
   </style>
@@ -90,122 +102,24 @@
     </div>
   </section>
 
-  <section class="vg-slide" id="learn-2" data-title="Health and planet">
-    <div class="vg-eyebrow">Learn</div>
-    <h2 class="vg-h">Health and the planet</h2>
-    <div class="dg-grid dg-3">
-      <div class="vg-glass dg-card"><h3>What the cancer research shows</h3><p>In a 2020 study of nearly 53,000 North American women, those who drank even 1/4 to 1/3 cup of cow's milk a day had about a 30 percent higher rate of breast cancer than women who drank none; soy milk was not linked to higher risk. A 2015 analysis of 32 studies linked more dairy, including low-fat milk and cheese, to a modestly higher rate of prostate cancer. Both are links, not proof, and the World Cancer Research Fund rates the evidence as limited.</p><span class="dg-src"><a href="https://pubmed.ncbi.nlm.nih.gov/32095830/" target="_blank" rel="noopener">Fraser 2020</a><a href="https://ajcn.nutrition.org/article/S0002-9165(23)27252-4/fulltext" target="_blank" rel="noopener">Aune 2015</a><a href="https://www.wcrf.org/sites/default/files/Meat-Fish-and-Dairy-products.pdf" target="_blank" rel="noopener">WCRF</a></span></div>
-      <div class="vg-glass dg-card"><h3>Plants cover the nutrients</h3><p>An ounce of peanuts has about as much protein as an ounce of cheddar, roughly 7 grams. Match cheddar's calcium (about 200 mg an ounce) with chia seeds plus calcium-set tofu or fortified soy milk. Choose kale and bok choy over spinach, whose calcium the body absorbs poorly. Federal guidelines count fortified soy milk and soy yogurt in the dairy group.</p><span class="dg-src"><a href="https://pubmed.ncbi.nlm.nih.gov/3354496/" target="_blank" rel="noopener">Heaney 1988</a><a href="https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf" target="_blank" rel="noopener">Dietary Guidelines</a></span></div>
-      <div class="vg-glass dg-card"><h3>Better for the planet</h3><p>Per liter, cow's milk has about three times the climate impact of any plant milk and uses roughly ten times the land.</p><span class="dg-src"><a href="https://www.leap.ox.ac.uk/article/reducing-foods-environmental-impacts" target="_blank" rel="noopener">Poore and Nemecek 2018, Science</a></span></div>
-    </div>
-  </section>
-
-  <section class="vg-slide" id="door" data-title="See for yourself" data-vg-choose>
-    <div class="vg-eyebrow">Optional</div>
-    <h2 class="vg-h">See for yourself</h2>
-    <div class="vg-glass dg-door">
-      <p class="vg-lede" style="margin:0">This section covers how milk is produced on US dairy farms, including calf separation and painful procedures. It uses plain facts from USDA and dairy-industry sources, and no graphic images. Read on if and when you're ready, or skip it. The rest of the Guide works either way.</p>
-      <div class="dg-btns">
-        <button class="vg-btn" data-vg-path="look">See for yourself</button>
-        <button class="vg-btn vg-btn-ghost" data-vg-go="find">Skip to the brands</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="vg-slide" id="look" data-path="look" data-title="How milk is made">
-    <div class="vg-eyebrow">See for yourself</div>
-    <h2 class="vg-h">How milk is made</h2>
+  <section class="vg-slide" id="unlock" data-title="Get the Guide">
+    <div class="vg-eyebrow">The full Guide</div>
+    <h2 class="vg-h">The rest comes with membership</h2>
     <div class="vg-split">
-      <ol class="dg-facts">
-        <li><strong>A cow only makes milk after she gives birth.</strong> She gives milk for about 305 days after each calf, is usually bred again about three months after calving, and gets about two months off before the next birth.</li>
-        <li><strong>Calves are usually taken from their mothers within hours.</strong> In USDA's 2014 national dairy study, most operations removed calves less than 12 hours after birth.</li>
-        <li><strong>Male calves leave the farm within days.</strong> As of 2014, 97.6 percent of operations sold bull calves before weaning, at a median of 4 days old, to be raised for beef or veal.</li>
-        <li><strong>Most cows leave the herd young.</strong> US dairy cows spend on average about 35 months in the milking herd, fewer than three lactations. A cow can live up to about 20 years.</li>
-      </ol>
-      <div>
-        <ol class="dg-facts" start="5">
-          <li><strong>Nearly all heifer calves have their horn buds removed.</strong> As of 2014, on 94.3 percent of operations; only 28.2 percent of those used pain relief. The industry added a pain-management standard in 2020.</li>
-          <li><strong>Tail docking was common and is being phased out.</strong> In 2014, a third of cows had docked tails. The industry began phasing it out in 2017.</li>
-          <li><strong>Most cows live on large farms.</strong> In 2022, 65 percent of US milk cows were on operations with more than 1,000 cows, up from 17 percent in 1997.</li>
-        </ol>
-        <span class="dg-src"><a href="https://www.aphis.usda.gov/sites/default/files/dairy14_dr_partiii.pdf" target="_blank" rel="noopener">USDA NAHMS Dairy 2014</a><a href="https://extension.psu.edu/have-your-cows-repaid-their-debts" target="_blank" rel="noopener">Penn State Extension</a><a href="https://farmdocdaily.illinois.edu/?p=36456" target="_blank" rel="noopener">farmdoc daily</a><a href="https://extension.unh.edu/node/22539" target="_blank" rel="noopener">UNH Extension</a></span>
-        <p class="vg-fine"><strong>Go further:</strong> Dominion (2018, contains graphic footage), Milked (2021), Farm Sanctuary, and the Global Federation of Animal Sanctuaries directory to find a sanctuary near you.</p>
+      <ul class="dg-facts">
+        <li><strong>Find.</strong> 76 brands across 12 categories, with where to buy them. Filter and search.</li>
+        <li><strong>Swap.</strong> 16 ways to replace milk, butter, cream, cheese and more, from the shelf or from your pantry.</li>
+        <li><strong>Learn.</strong> The health and planet research, every claim with its source.</li>
+        <li><strong>See for yourself.</strong> How milk is made, behind a clear warning. Optional.</li>
+        <li><strong>Make and Read.</strong> Nut milk and ice cream at home, 12 books and two resources.</li>
+      </ul>
+      <div class="vg-glass dg-door dg-offer">
+        <div class="dg-price">$11<span>one time</span></div>
+        <p>Founding Membership. The Dairy Guide comes with it, and so does the full Vegans Explore community: your member dashboard, Directory votes, the Community Board and points.</p>
+        <button type="button" class="vg-btn" id="dgJoin">Become a Founding Member</button>
+        <p id="dgSignInLine">Already a member? <a href="#" id="dgSignIn">Sign in</a> and the Guide opens.</p>
+        <p class="dg-status" id="dgStatus" role="status" aria-live="polite"></p>
       </div>
-    </div>
-  </section>
-
-  <section class="vg-slide" id="find" data-title="Find">
-    <div class="vg-eyebrow">Find</div>
-    <h2 class="vg-h">The brands to buy</h2>
-    <div class="dg-chips" id="dgCats" role="group" aria-label="Category"></div>
-    <input class="dg-search" id="dgSearch" type="search" placeholder="Search brands or ingredients (oat, cashew...)" aria-label="Search brands">
-    <div class="dg-count" id="dgCount" aria-live="polite"></div>
-    <div class="dg-grid dg-4" id="dgBrands"></div>
-    <div class="dg-pager" id="dgPager"></div>
-  </section>
-
-  <section class="vg-slide" id="swap" data-title="Swap: milk, cream, butter">
-    <div class="vg-eyebrow">Swap</div>
-    <h2 class="vg-h">Replace milk, cream and butter</h2>
-    <table class="dg-swap">
-      <thead><tr><th>Replace</th><th>From the shelf</th><th>From your pantry</th><th>Tip</th></tr></thead>
-      <tbody data-swap="1"></tbody>
-    </table>
-  </section>
-
-  <section class="vg-slide" id="swap-2" data-title="Swap: cheese and more">
-    <div class="vg-eyebrow">Swap (2 of 2)</div>
-    <h2 class="vg-h">Replace cheese, yogurt and more</h2>
-    <table class="dg-swap">
-      <thead><tr><th>Replace</th><th>From the shelf</th><th>From your pantry</th><th>Tip</th></tr></thead>
-      <tbody data-swap="2"></tbody>
-    </table>
-    <span class="dg-src"><a href="https://www.kingarthurbaking.com/blog/2024/08/12/best-non-dairy-milk-for-baking" target="_blank" rel="noopener">King Arthur Baking</a><a href="https://www.thekitchn.com/how-to-make-whipped-cream-from-152490" target="_blank" rel="noopener">The Kitchn</a><a href="https://minimalistbaker.com/how-to-make-vegan-parmesan-cheese/" target="_blank" rel="noopener">Minimalist Baker</a></span>
-  </section>
-
-  <section class="vg-slide" id="make" data-title="Make">
-    <div class="vg-eyebrow">Make</div>
-    <h2 class="vg-h">Make it at home</h2>
-    <div class="dg-grid">
-      <div class="vg-glass dg-card dg-recipe"><h3>Nut milk</h3>
-        <ol><li>Soak 1 cup raw nuts in water for 6 to 8 hours or overnight.</li><li>Drain and rinse.</li><li>Blend with 4 cups fresh filtered water on high for 60 to 90 seconds.</li><li>Strain through a nut milk bag or clean towel, squeezing out all the milk.</li><li>Refrigerate in a sealed bottle and use within 3 to 4 days.</li></ol>
-        <p style="margin-top:8px">Tip: save the pulp for crackers, nut flour or smoothies.</p></div>
-      <div class="vg-glass dg-card dg-recipe"><h3>Banana ice cream</h3>
-        <ol><li>Put frozen ripe bananas, frozen fruit of your choice and a few pitted dates in a blender.</li><li>Add plant milk halfway up the fruit, then water to the top.</li><li>Add 1 tbsp vanilla extract.</li><li>Blend about a minute, until smooth.</li><li>Top with mulberries and enjoy.</li></ol></div>
-    </div>
-  </section>
-
-  <section class="vg-slide" id="read" data-title="Read">
-    <div class="vg-eyebrow">Read</div>
-    <h2 class="vg-h">Books and resources</h2>
-    <ul class="dg-books">
-      <li><strong>The Vegan Creamery</strong> <span>Miyoko Schinner, 2025</span></li>
-      <li><strong>Breaking Up with Dairy</strong> <span>Bailey Ruskus, 2025</span></li>
-      <li><strong>The Vegan Dairy Cookbook</strong> <span>Marleen Visser, 2024</span></li>
-      <li><strong>The Oat Milk Cookbook</strong> <span>Kim Lutz, 2020</span></li>
-      <li><strong>The Vegan Dairy</strong> <span>Catherine Atkinson, 2020</span></li>
-      <li><strong>Vegan Dairy</strong> <span>Emelie Holm, 2019</span></li>
-      <li><strong>One-Hour Dairy-Free Cheese</strong> <span>Claudia Lucero, 2019</span></li>
-      <li><strong>Incredible Vegan Ice Cream</strong> <span>Deena Jalal, 2019</span></li>
-      <li><strong>Super Easy Vegan Cheese Cookbook</strong> <span>Janice Buckingham, 2018</span></li>
-      <li><strong>Artisan Vegan Cheese</strong> <span>Miyoko Schinner, 2012</span></li>
-      <li><strong>The Vegan Scoop</strong> <span>Wheeler del Torro, 2009</span></li>
-      <li><strong>The Cheese Trap</strong> <span>Neal D. Barnard, MD, 2017. His case that cheese is habit-forming.</span></li>
-    </ul>
-    <div class="dg-grid" style="margin-top:16px">
-      <div class="vg-glass dg-card"><h3>Switch4Good</h3><p>A women-led nonprofit founded by Olympic cycling medalist Dotsie Bausch. It runs athlete, campus and food-justice programs that support dairy-free living.</p><span class="dg-src"><a href="https://switch4good.org/" target="_blank" rel="noopener">switch4good.org</a></span></div>
-      <div class="vg-glass dg-card"><h3>Physicians Committee for Responsible Medicine</h3><p>A Washington, D.C. nonprofit founded in 1985 by Dr. Neal Barnard that promotes plant-based nutrition and preventive medicine.</p><span class="dg-src"><a href="https://www.pcrm.org/" target="_blank" rel="noopener">pcrm.org</a></span></div>
-    </div>
-  </section>
-
-  <section class="vg-slide" id="end" data-title="Keep going">
-    <div class="vg-eyebrow">You're set</div>
-    <h2 class="vg-h">Keep going</h2>
-    <p class="vg-lede">This Guide keeps growing: doctor interviews and member votes on the best brands are next. Products change: if something is gone from your store or a recipe changed, tell us and we'll update it.</p>
-    <div class="dg-btns">
-      <button class="vg-btn" data-vg-go="find">Back to the brands</button>
-      <button class="vg-btn vg-btn-ghost" data-vg-go="swap">Swap chart</button>
-      <a class="vg-btn vg-btn-ghost" href="/guides">All Guides</a>
     </div>
   </section>
 
@@ -213,80 +127,7 @@
 
 <script src="/public/footer.js"></script>
 </div>
-<script src="/public/ve-guided.js"></script>
-<script>
-(function () {
-  var FIND = [{"cat": "Milk", "items": [{"b": "Oatly", "base": "Oats", "where": "Walmart, Target, Kroger, Albertsons", "note": ""}, {"b": "Silk", "base": "Almond, soy, oat, cashew", "where": "Nationwide", "note": ""}, {"b": "Califia Farms", "base": "Almonds, oats", "where": "Whole Foods, ShopRite", "note": "Vitamin D2"}, {"b": "Ripple", "base": "Pea protein", "where": "Target, Whole Foods, ShopRite", "note": ""}, {"b": "Good Karma", "base": "Flax seeds", "where": "Target, Kroger, Sprouts, Albertsons", "note": ""}, {"b": "So Delicious", "base": "Coconut", "where": "Walmart, Amazon", "note": ""}, {"b": "Milkadamia", "base": "Macadamias", "where": "Whole Foods", "note": ""}, {"b": "Planet Oat", "base": "Oats", "where": "Nationwide", "note": ""}]}, {"cat": "Coffee Creamer", "items": [{"b": "So Delicious", "base": "Coconut", "where": "Whole Foods", "note": "Certified Vegan"}, {"b": "Sown", "base": "Oats", "where": "Whole Foods, Sprouts, Target", "note": ""}, {"b": "Califia Farms", "base": "Almond, oat", "where": "ShopRite, Whole Foods, Kroger", "note": ""}, {"b": "Ripple", "base": "Pea protein", "where": "Giant and others", "note": ""}, {"b": "Oatly", "base": "Oats", "where": "Walmart, Target, Kroger", "note": ""}, {"b": "Natural Bliss Plant-Based", "base": "Oat milk, coconut oil, pea protein", "where": "Kroger, Food Lion, ShopRite", "note": "Plant-Based oat line only; regular Natural Bliss is dairy"}, {"b": "Planet Oat", "base": "Oats", "where": "Stop & Shop, Food Lion, Hannaford", "note": ""}, {"b": "Nutpods", "base": "Almond, coconut, oat", "where": "Walmart, Stop & Shop, Amazon", "note": ""}, {"b": "Silk", "base": "Almond", "where": "Walmart, ShopRite", "note": ""}]}, {"cat": "Butter", "items": [{"b": "Miyoko's", "base": "Cashew, coconut oil", "where": "Sprouts, Whole Foods, Kroger, Safeway", "note": "New owner; back on shelves May 2026"}, {"b": "Melt Organic", "base": "Plant oil blend", "where": "Stop & Shop, Giant, Albertsons", "note": ""}, {"b": "Wayfare", "base": "Butter beans, coconut and safflower oil", "where": "Albertsons, Jewel-Osco", "note": "New butter sticks 2026"}, {"b": "Om Sweet Home", "base": "Coconut", "where": "Brand site, Instacart", "note": "Sold online"}, {"b": "Country Crock Plant Butter", "base": "Olive, avocado, almond oils", "where": "Nationwide", "note": "Plant Butter line only; other Country Crock spreads are not covered"}, {"b": "Earth Balance", "base": "Plant oil blend", "where": "Walmart, Whole Foods, ShopRite", "note": "Now called Plant Butter Sticks"}]}, {"cat": "Cheese Slices", "items": [{"b": "Field Roast Chao", "base": "Coconut oil, fermented tofu", "where": "Walmart, Costco, Whole Foods", "note": ""}, {"b": "Daiya", "base": "Oat cream blend", "where": "Nationwide", "note": ""}, {"b": "Parmela Creamery", "base": "Cashews", "where": "Publix, Whole Foods, Wegmans", "note": ""}, {"b": "365 by Whole Foods", "base": "Plant-based slices", "where": "Whole Foods", "note": "Certified Vegan"}, {"b": "Violife", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Follow Your Heart", "base": "Coconut oil", "where": "Nationwide", "note": ""}]}, {"cat": "Cheese Spreads", "items": [{"b": "Kite Hill", "base": "Almond milk", "where": "Nationwide", "note": ""}, {"b": "Misha's Kind Foods", "base": "Cashews, almond milk", "where": "Walmart, natural grocers", "note": ""}, {"b": "Boursin Dairy-Free", "base": "Coconut oil", "where": "Stop & Shop, HEB, Hannaford", "note": ""}, {"b": "Follow Your Heart", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Treeline", "base": "Cashews", "where": "Kroger, natural grocers, online", "note": ""}]}, {"cat": "Shredded Cheese", "items": [{"b": "Violife", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "So Delicious", "base": "Coconut milk", "where": "Kroger, Target, Walmart, HEB", "note": ""}, {"b": "Follow Your Heart", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Daiya", "base": "Oat cream blend", "where": "Nationwide", "note": ""}, {"b": "Field Roast Chao", "base": "Coconut oil, fermented tofu", "where": "Walmart, Whole Foods", "note": ""}, {"b": "Parmela Creamery", "base": "Cashews", "where": "Publix, Whole Foods, Wegmans", "note": ""}]}, {"cat": "Parmesan", "items": [{"b": "Go Veggie Vegan Grated Topping", "base": "Coconut", "where": "Regional grocers, Instacart", "note": "This product only; some Go Veggie items are not Vegan"}, {"b": "Parma!", "base": "Walnuts, sunflower, hemp (nut-free flavors too)", "where": "HEB, QFC, Amazon", "note": ""}, {"b": "Follow Your Heart", "base": "Coconut oil", "where": "Kroger, Wegmans", "note": ""}, {"b": "Violife", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Vlendedful", "base": "Almonds, nutritional yeast", "where": "vlendedful.com", "note": "Miami brand"}]}, {"cat": "Sour Cream", "items": [{"b": "Violife", "base": "Coconut oil", "where": "Walmart", "note": ""}, {"b": "Forager Project", "base": "Cashew, coconut", "where": "Wegmans, ShopRite, Hannaford", "note": ""}, {"b": "Follow Your Heart", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Kite Hill", "base": "Almond milk, coconut", "where": "Nationwide", "note": ""}, {"b": "Tofutti Better Than Sour Cream", "base": "Soy", "where": "Nationwide", "note": "Renamed from Sour Supreme"}]}, {"cat": "Feta", "items": [{"b": "Violife", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Follow Your Heart", "base": "Coconut oil", "where": "Nationwide", "note": ""}]}, {"cat": "Cream Cheese", "items": [{"b": "Kite Hill", "base": "Almond milk", "where": "Nationwide", "note": ""}, {"b": "Daiya", "base": "Oat cream blend", "where": "Nationwide", "note": ""}, {"b": "Follow Your Heart", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Miyoko's", "base": "Cashews", "where": "Sprouts, Whole Foods, Kroger", "note": "Back May 2026"}, {"b": "Treeline", "base": "Cashews", "where": "Kroger, online", "note": ""}, {"b": "Oatly", "base": "Oats", "where": "Kroger family", "note": ""}, {"b": "So Delicious", "base": "Coconut oil, potato protein", "where": "Kroger, Target, Walmart", "note": ""}, {"b": "Violife", "base": "Coconut oil", "where": "Nationwide", "note": ""}, {"b": "Tofutti Better Than Cream Cheese", "base": "Soy", "where": "HEB, Whole Foods, Stop & Shop", "note": ""}]}, {"cat": "Yogurt", "items": [{"b": "Kite Hill", "base": "Almonds (Blissful line is coconut)", "where": "Nationwide", "note": ""}, {"b": "Silk", "base": "Almond, soy, coconut", "where": "Nationwide", "note": ""}, {"b": "Forager Project", "base": "Cashew, coconut", "where": "Whole Foods", "note": ""}, {"b": "Siggi's Plant-Based", "base": "Coconut, macadamia, pea protein", "where": "Sprouts, Whole Foods, Giant", "note": ""}, {"b": "Cocoyo", "base": "Young coconut", "where": "Whole Foods, Safeway", "note": ""}, {"b": "Oatly", "base": "Oats", "where": "Instacart, natural grocers", "note": ""}, {"b": "Harmless Harvest", "base": "Coconut meat", "where": "Sprouts, Whole Foods", "note": ""}, {"b": "Lavva", "base": "Pili nuts", "where": "Select Whole Foods, online", "note": "Back after a two-year gap"}]}, {"cat": "Ice Cream", "items": [{"b": "Oatly", "base": "Oats", "where": "Whole Foods, Target, Albertsons, Wegmans", "note": ""}, {"b": "NadaMoo!", "base": "Coconut", "where": "Natural grocers", "note": ""}, {"b": "Jeni's Dairy-Free", "base": "Coconut, cashew", "where": "Scoop shops, online", "note": ""}, {"b": "Ben & Jerry's Non-Dairy", "base": "Oats", "where": "Nationwide", "note": "Now oat-based"}, {"b": "Breyers Non-Dairy", "base": "Oats", "where": "Stop & Shop, Giant, HEB", "note": "Now oat-based"}, {"b": "Wicked Kitchen", "base": "Lupin beans", "where": "Kroger family", "note": ""}, {"b": "Mauna Loa", "base": "Macadamia milk", "where": "Sprouts, Whole Foods, Kroger", "note": "Certified Vegan"}]}];
-  var SWAP = [["Milk", "Unsweetened soy, oat, almond or pea milk.", "Use unsweetened plant milk 1:1. For baking, choose soy.", "Soy has about as much protein as cow's milk, so it bakes most like it."], ["Milk in coffee", "Barista-style plant milk.", "Let very hot coffee cool for a minute before adding milk.", "Plant milks can split in hot, acidic coffee; barista versions are made not to."], ["Buttermilk", "Make it: it takes 5 minutes.", "1 tbsp lemon juice or vinegar, then soy milk to the 1-cup line. Rest 5 to 10 minutes. Use 1:1.", "Soy curdles best; room-temperature milk curdles faster."], ["Butter, baking", "Vegan butter sticks (not tubs), 1:1.", "Solid refined coconut oil: 3/4 the amount plus 1/4 plant milk or water.", "Keep coconut oil solid for flaky crusts."], ["Butter, cooking", "Vegan butter, tub or stick.", "Olive oil for sautéing; avocado or refined coconut oil for high heat.", "Swirl Vegan butter into a pan sauce off the heat for gloss."], ["Heavy cream, cooking", "Plant-based cooking cream.", "Cashew cream: 1 cup soaked raw cashews blended with 3/4 to 1 cup water.", "Less water makes a thick dip."], ["Whipped cream", "Canned full-fat coconut cream.", "Chill a can of full-fat coconut milk overnight, whip the solid cream 3 to 5 minutes. Or whip chickpea liquid (aquafaba) with a pinch of cream of tartar for 10 to 15 minutes.", "Light coconut milk will not whip."], ["Sour cream", "Plant-based sour cream.", "Blend 1 cup soaked cashews, 2 tbsp lemon juice, 2 tsp cider vinegar, 1/2 tsp salt, 1/3 cup water.", "Keeps 4 to 5 days in the fridge."], ["Cream cheese", "Plant-based cream cheese.", "Blend 1 1/2 cups soaked cashews, 2 tbsp lemon juice, 2 tsp cider vinegar, 1 tsp refined coconut oil; chill to firm.", "The coconut oil is what sets it."], ["Yogurt", "Plain plant yogurt with live cultures.", "Stir a starter (probiotic powder or a few spoons of live plant yogurt) into 4 cups plain soy milk; keep warm 8 to 12 hours.", "Save 1/2 cup to start the next batch."], ["Parmesan", "Plant-based grated topping.", "Pulse 3/4 cup raw cashews, 3 tbsp nutritional yeast, 3/4 tsp salt, 1/4 tsp garlic powder into fine crumbs.", "Stop before it turns to paste."], ["Cheese sauce", "Plant-based shreds labeled \"melts\".", "Blend 2 cups boiled potato and 1 cup boiled carrot with 1/2 cup water, 1/2 cup nutritional yeast, 2 tbsp oil, 1 tbsp lemon juice, 1 tsp salt.", "Nut-free. Carrot gives the color."], ["Ricotta", "Almond or tofu ricotta.", "Pulse 12 oz firm tofu with 3 tbsp lemon juice, 3 tbsp nutritional yeast, 1/2 tsp garlic powder, salt and pepper.", "Pulse, don't purée."], ["Evaporated milk", "Canned full-fat coconut milk.", "Simmer plant milk on low about 40 minutes until reduced by half.", "Start with soy, cashew or coconut."], ["Sweetened condensed milk", "Sweetened condensed coconut milk.", "Simmer a can of full-fat coconut milk with sugar until reduced by half; chill.", "Lite coconut milk will not thicken."], ["Ghee", "Plant-based ghee.", "Warm refined coconut oil with turmeric, salt and a pinch of asafoetida; steep, strain.", "Use cardamom instead of asafoetida for sweets."]];
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-
-  var cat = 'All', q = '', page = 0, per = 12;
-  var catsEl = document.getElementById('dgCats'), listEl = document.getElementById('dgBrands');
-  var countEl = document.getElementById('dgCount'), searchEl = document.getElementById('dgSearch');
-  catsEl.innerHTML = ['All'].concat(FIND.map(function (c) { return c.cat; })).map(function (c) {
-    return '<button type="button" class="dg-chip" data-cat="' + esc(c) + '" aria-pressed="' + (c === cat) + '">' + esc(c) + '</button>';
-  }).join('');
-  function matches() {
-    var out = [];
-    FIND.forEach(function (c) {
-      if (cat !== 'All' && c.cat !== cat) return;
-      c.items.forEach(function (it) {
-        var hay = (it.b + ' ' + it.base + ' ' + c.cat).toLowerCase();
-        if (!q || hay.indexOf(q) >= 0) out.push({ c: c.cat, it: it });
-      });
-    });
-    return out;
-  }
-  function card(m) {
-    var it = m.it;
-    return '<div class="vg-glass dg-brand"><b>' + esc(it.b) + '</b>' +
-      '<div class="dg-base">' + (cat === 'All' ? esc(m.c) + ' &middot; ' : '') + esc(it.base) + '</div>' +
-      '<div class="dg-where">' + esc(it.where) + '</div>' +
-      (it.note ? '<div class="dg-note">' + esc(it.note) + '</div>' : '') + '</div>';
-  }
-  // Desktop shows one page of cards that fits the slide (nothing scrolls); phones show 12 a page.
-  function fit() {
-    if (window.innerWidth <= 900) return 12;
-    var slide = listEl.closest('.vg-slide');
-    var cols = getComputedStyle(listEl).gridTemplateColumns.split(' ').length || 1;
-    var avail = slide.getBoundingClientRect().bottom - listEl.getBoundingClientRect().top - 150;
-    var rows = Math.max(1, Math.floor((avail + 12) / (118 + 12)));
-    return cols * rows;
-  }
-  function draw() {
-    var all = matches();
-    listEl.innerHTML = card({ c: 'x', it: { b: 'x', base: 'x', where: 'x' } });
-    per = fit();
-    var pages = Math.max(1, Math.ceil(all.length / per));
-    if (page >= pages) page = pages - 1;
-    var shown = all.slice(page * per, page * per + per);
-    listEl.innerHTML = shown.map(card).join('') || '<p class="vg-fine">No match. Try another word or category.</p>';
-    countEl.textContent = all.length + (all.length === 1 ? ' product' : ' products') + (pages > 1 ? ' \u00b7 page ' + (page + 1) + ' of ' + pages : '') + ' \u00b7 checked October 2026';
-    pagerEl.innerHTML = pages > 1 ? '<button type="button" class="dg-chip" data-pg="-1"' + (page ? '' : ' disabled') + '>Previous</button><button type="button" class="dg-chip" data-pg="1"' + (page < pages - 1 ? '' : ' disabled') + '>More brands</button>' : '';
-  }
-  var pagerEl = document.getElementById('dgPager');
-  pagerEl.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-pg]'); if (!b || b.disabled) return;
-    page += +b.getAttribute('data-pg'); draw();
-  });
-  document.addEventListener('vg:change', function (e) { if (e.detail.id === 'find') draw(); });
-  window.addEventListener('resize', function () { if (document.querySelector('#find.vg-active')) draw(); });
-  catsEl.addEventListener('click', function (e) {
-    var b = e.target.closest('.dg-chip'); if (!b) return;
-    cat = b.getAttribute('data-cat');
-    [].forEach.call(catsEl.children, function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-    page = 0; draw();
-  });
-  searchEl.addEventListener('input', function () { q = searchEl.value.trim().toLowerCase(); page = 0; draw(); });
-  draw();
-
-  [].forEach.call(document.querySelectorAll('[data-swap]'), function (tb) {
-    var part = tb.getAttribute('data-swap') === '1' ? SWAP.slice(0, 8) : SWAP.slice(8);
-    tb.innerHTML = part.map(function (r) {
-    return '<tr><td>' + esc(r[0]) + '</td><td data-l="Shelf">' + esc(r[1]) + '</td><td data-l="Pantry">' + esc(r[2]) + '</td><td data-l="Tip">' + esc(r[3]) + '</td></tr>';
-  }).join('');
-  });
-})();
-</script>
+<script src="/public/ve-auth.js"></script>
+<script src="/guide-scripts/vegan-dairy-guide.js"></script>
 </body>
 </html>
