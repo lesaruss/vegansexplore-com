@@ -1,231 +1,410 @@
-/* The Vegan Dairy Guide: access and the members-only screens (Sean, 2026-10-07).
+/* The Vegan Dairy Guide: a mini website on all things dairy (Sean, 2026-10-07).
  *
- * The Guide comes with the $11 Founding Membership. This page file holds only what
- * everyone sees: Start, the Learn preview and the "Get the Guide" slide. The rest
- * (Health and planet, See for yourself, Find, Swap, Make, Read, Keep going, and the
- * brand and swap data) is stored in ve_guides.content_html and handed out by
- * ve-guide-unlock ?action=open only to a member whose membership is active (or who
- * holds a ve_guide_purchases row). Signed out or not yet a member, the server sends
- * nothing, so view-source never shows the Guide.
+ * One page, a menu that is always there, and one search bar across everything. The address
+ * bar carries the view (#/brands/milk, #/swaps, #/search/oat) so Back works and links open
+ * the same place.
  *
- * Joining reuses what the site already has: VEAuth.showAuthModal to create the account,
- * then the Founding Membership modal (VEAuth.showActivateModal -> ve-entry-checkout).
- * Checkout returns here with ?activate=success; ve-stripe-webhook flips the member to
- * active, and this script checks again until the Guide opens.
+ *   Home        tiles into every section, the Why preview, and Maya (the Guide) on the right
+ *   Why         six sourced facts (three public, three with membership)
+ *   Brands      Directory listings tagged vegan-dairy-guide (category Food Brands), each with its
+ *               products in listings.details.dairy_guide; filter by product, sort, vote (ve-votes)
+ *   Swaps       how to replace each dairy item, from the shelf or the pantry; filter and search
+ *   Recipes     make it at home
+ *   Cookbooks   Directory listings tagged dairy-guide-book (category Books), plus two resources
+ *   See for yourself   how milk is made, behind a warning
  *
- * To change the members-only screens, update ve_guides.content_html for slug
- * vegan-dairy-guide (the editorial source is the HQ playbook vegan-dairy-guide-content).
- * Never add them back to this repo: Vercel serves it, so anything here is public.
+ * Access: the Guide comes with the $11 Founding Membership. Home and the Why preview are open
+ * to everyone. The members-only text (Why 4-6, See for yourself, swaps, recipes, resources) is
+ * ve_guides.content_html for slug vegan-dairy-guide-site, handed out by ve-guide-unlock ?action=open
+ * only to active members. Never add it back to this repo: Vercel serves it, so anything here is
+ * public. Joining reuses VEAuth.showAuthModal and the Founding Membership window
+ * (ve-entry-checkout); checkout returns with ?activate=success and the page re-checks.
+ * To add a brand or a cookbook: list it in the Directory with the tag; it shows up here.
  */
 (function () {
-  var SLUG = 'vegan-dairy-guide';
-  var UNLOCK_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-guide-unlock';
+  var SLUG = 'vegan-dairy-guide-site'; // ve_guides row for this version (the slide version used vegan-dairy-guide)
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var LISTINGS_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=name,slug&status=eq.approved&tags=cs.%7Bvegan-dairy-guide%7D';
-  var MEMBER_SLIDES = ['learn-2', 'door', 'look', 'find', 'swap', 'swap-2', 'make', 'read', 'end'];
+  var LISTING_FIELDS = 'id,slug,name,initials,color,vote_count,website,vegan_status,details';
+  var BRANDS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Food%20Brands&tags=cs.%7Bvegan-dairy-guide%7D';
+  var BOOKS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Books&tags=cs.%7Bdairy-guide-book%7D';
+  var CATS = ['Milk', 'Coffee Creamer', 'Butter', 'Cheese Slices', 'Cheese Spreads', 'Shredded Cheese', 'Parmesan', 'Sour Cream', 'Feta', 'Cream Cheese', 'Yogurt', 'Ice Cream'];
+  var SWAP_GROUPS = ['Milk & cream', 'Butter', 'Cheese', 'Yogurt & sour cream'];
+  var MENU = [
+    ['home', 'Home'], ['why', 'Why dairy-free'], ['brands', 'Brands'], ['swaps', 'Swaps'],
+    ['recipes', 'Recipes'], ['books', 'Cookbooks'], ['look', 'See for yourself']
+  ];
+  var LOCKED = { brands: 1, swaps: 1, recipes: 1, books: 1, look: 1 };
 
-  var stage = document.querySelector('.vg-stage');
-  var unlockSlide = document.getElementById('unlock');
-  var joinBtn = document.getElementById('dgJoin');
-  var signInLine = document.getElementById('dgSignInLine');
-  var statusEl = document.getElementById('dgStatus');
+  var ICON = {
+    brands: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linejoin="round"><path d="M8 2h8l-1 3h-6z"/><path d="M9 5h6l3 4v12a1 1 0 01-1 1H7a1 1 0 01-1-1V9z"/><path d="M6 12h12"/></svg>',
+    swaps: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/></svg>',
+    recipes: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a8 8 0 01-8 8h-2a8 8 0 01-8-8z"/><path d="M8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3"/></svg>',
+    books: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linejoin="round"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>',
+    why: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></svg>',
+    look: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8a5a00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'
+  };
 
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function say(msg) { statusEl.textContent = msg || ''; }
+  var main = document.getElementById('dgMain'), wrap = document.getElementById('dgWrap');
+  var menuEl = document.getElementById('dgMenu'), menuSel = document.getElementById('dgMenuSelect');
+  var qEl = document.getElementById('dgQ');
+  var homeHTML = main.querySelector('[data-view="home"]').outerHTML;
+  var PUB = JSON.parse(document.getElementById('dg-public').textContent);
+
+  var access = 'checking';       // checking | guest | pending | member
+  var MEM = null;                // members-only payload
+  var BRANDS = null, BOOKS = null;
+  var lookOpen = false;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function slugify(s) { return String(s).toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function catBySlug(s) { for (var i = 0; i < CATS.length; i++) if (slugify(CATS[i]) === s) return CATS[i]; return null; }
+  function groupBySlug(s) { for (var i = 0; i < SWAP_GROUPS.length; i++) if (slugify(SWAP_GROUPS[i]) === s) return SWAP_GROUPS[i]; return null; }
   function auth() { return window.VEAuth || null; }
-  function token() { var a = auth(); return a && a.isLoggedIn() ? a.getToken() : null; }
+  function sources(list) { return list && list.length ? '<span class="dg-src">' + list.map(function (s) { return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>'; }).join('') + '</span>' : ''; }
 
-  function open(tok) {
-    return fetch(UNLOCK_URL + '?action=open', {
-      method: 'POST',
-      headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug: SLUG, token: tok || undefined })
-    }).then(function (r) { return r.json(); });
-  }
-
-  // Start the guided view once the slides are final. A link to a members-only slide
-  // lands on "Get the Guide" when the Guide is locked.
-  var started = false;
-  function startGuided(locked) {
-    if (started) return;
-    started = true;
-    var id = (location.hash || '').slice(1);
-    if (locked && MEMBER_SLIDES.indexOf(id) >= 0) history.replaceState(null, '', location.pathname + location.search + '#unlock');
-    if (locked) {
-      [].forEach.call(document.querySelectorAll('#start [data-vg-go]'), function (b) {
-        if (MEMBER_SLIDES.indexOf(b.getAttribute('data-vg-go')) < 0) return;
-        b.setAttribute('data-vg-go', 'unlock');
-        b.insertAdjacentHTML('beforeend', '<em class="dg-lock">With membership</em>');
-      });
-    }
-    var s = document.createElement('script');
-    s.src = '/public/ve-guided.js';
-    document.body.appendChild(s);
-  }
-
-  function showGuide(html) {
-    var tpl = document.createElement('template');
-    tpl.innerHTML = html;
-    var dataEl = tpl.content.getElementById('dg-data');
-    var data = dataEl ? JSON.parse(dataEl.textContent) : { find: [], swap: [] };
-    if (dataEl) dataEl.remove();
-    unlockSlide.replaceWith(tpl.content);
-    renderFind(data.find || []);
-    renderSwap(data.swap || []);
-    startGuided(false);
-  }
-
-  function showLocked(state) {
-    // state: 'guest' (signed out) or 'pending' (account, no membership yet)
-    signInLine.hidden = state !== 'guest';
-    joinBtn.disabled = false;
-    joinBtn.onclick = function () {
-      var a = auth();
-      if (!a) return;
-      if (state === 'guest') {
-        a.showAuthModal('Create your account. Then become a Founding Member and the Dairy Guide opens.', function () { location.reload(); }, 'signup');
-      } else {
-        a.showActivateModal('The Dairy Guide comes with the $11 Founding Membership, one time. It also opens the full community.');
-      }
-    };
-    startGuided(true);
-  }
-
-  // Back from checkout: the webhook may take a few seconds to mark the membership active.
-  function confirmAfterCheckout(tok, tries) {
-    say('Confirming your membership...');
-    joinBtn.disabled = true;
-    open(tok).then(function (d) {
-      if (d && d.unlocked && d.html) { showGuide(d.html); return; }
-      if (tries > 0) { setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); return; }
-      say('Your payment went through. Confirming can take a minute: refresh this page shortly and the Guide opens.');
-      showLocked('pending');
-    }).catch(function () { if (tries > 0) setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); else showLocked('pending'); });
-  }
-
-  function init() {
-    var a = auth();
-    // Super Admin "View As": a simulated visitor or member sees the locked page, and
-    // nothing is read from the real account.
-    var viewAs = a && a.getViewAs ? a.getViewAs() : null;
-    if (viewAs) { showLocked(viewAs.mode === 'public' ? 'guest' : 'pending'); return; }
-
-    var tok = token();
-    if (!tok) { showLocked('guest'); return; }
-
-    var params = new URLSearchParams(location.search);
-    var back = params.get('activate');
-    if (back) { params.delete('activate'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
-    if (back === 'success') { confirmAfterCheckout(tok, 8); return; }
-
-    say('Checking your membership...');
-    joinBtn.disabled = true;
-    open(tok).then(function (d) {
-      say('');
-      if (d && d.unlocked && d.html) showGuide(d.html);
-      else showLocked(d && d.loggedIn ? 'pending' : 'guest');
-    }).catch(function () {
-      say('We could not check your membership just now. Refresh to try again.');
-      showLocked('pending');
-    });
-  }
-
-  document.getElementById('dgSignIn').addEventListener('click', function (e) {
-    e.preventDefault();
-    var a = auth();
-    if (a) a.showAuthModal('Sign in and the Dairy Guide opens if you are a member.', function () { location.reload(); }, 'login');
-  });
-
-  // ---- Members-only screens: the brand finder and the swap chart ----
-
-  function renderFind(FIND) {
-    var cat = 'All', q = '', page = 0, per = 12;
-    var catsEl = document.getElementById('dgCats'), listEl = document.getElementById('dgBrands');
-    var countEl = document.getElementById('dgCount'), searchEl = document.getElementById('dgSearch');
-    var pagerEl = document.getElementById('dgPager');
-    if (!catsEl) return;
-    catsEl.innerHTML = ['All'].concat(FIND.map(function (c) { return c.cat; })).map(function (c) {
-      return '<button type="button" class="dg-chip" data-cat="' + esc(c) + '" aria-pressed="' + (c === cat) + '">' + esc(c) + '</button>';
+  // ---------- menu ----------
+  function drawMenu(cur) {
+    var locked = access !== 'member';
+    menuEl.innerHTML = MENU.map(function (m) {
+      return '<a href="#/' + (m[0] === 'home' ? '' : m[0]) + '"' + (m[0] === cur ? ' aria-current="page"' : '') + '>' + esc(m[1]) +
+        (locked && LOCKED[m[0]] ? ' <svg class="dg-lk" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-label="with membership"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>' : '') + '</a>';
     }).join('');
-    function matches() {
-      var out = [];
-      FIND.forEach(function (c) {
-        if (cat !== 'All' && c.cat !== cat) return;
-        c.items.forEach(function (it) {
-          var hay = (it.b + ' ' + it.base + ' ' + c.cat).toLowerCase();
-          if (!q || hay.indexOf(q) >= 0) out.push({ c: c.cat, it: it });
-        });
+    menuSel.innerHTML = MENU.map(function (m) { return '<option value="' + m[0] + '"' + (m[0] === cur ? ' selected' : '') + '>' + esc(m[1]) + (locked && LOCKED[m[0]] ? ' (members)' : '') + '</option>'; }).join('') +
+      (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
+  }
+  menuSel.addEventListener('change', function () { location.hash = '#/' + (menuSel.value === 'home' ? '' : menuSel.value); });
+
+  // ---------- pieces ----------
+  function crumb(parts) {
+    return '<div class="dg-crumb"><a href="#/">Dairy Guide</a>' + parts.map(function (p) { return ' &rsaquo; ' + (p[1] ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a>' : esc(p[0])); }).join('') + '</div>';
+  }
+  function whyCard(w) { return '<div class="dg-card"><h3>' + esc(w.title) + '</h3><p>' + esc(w.text) + '</p>' + sources(w.sources) + '</div>'; }
+
+  function lockPanel(what) {
+    var state = access;
+    return '<div class="dg-lock">' +
+      '<div><div class="dg-eyebrow" style="color:var(--g)">With membership</div><h2>' + esc(what) + ' comes with membership</h2>' +
+      '<ul><li><strong>Brands.</strong> 76 products from 43 brands across 12 kinds of dairy, with where to buy them. Vote for your favorites.</li>' +
+      '<li><strong>Swaps.</strong> 16 ways to replace milk, butter, cream, cheese and more, from the shelf or from your pantry.</li>' +
+      '<li><strong>Recipes and cookbooks.</strong> Make it at home, and 12 cookbooks to go further.</li>' +
+      '<li><strong>The research.</strong> Every claim with its source, plus how milk is made, behind a clear warning.</li></ul></div>' +
+      '<div class="dg-offer"><div class="dg-price">$11<span>one time</span></div>' +
+      '<p>Founding Membership. The Dairy Guide comes with it, and so does the full Vegans Explore community: your member dashboard, Directory votes, the Community Board and points.</p>' +
+      '<button type="button" class="dg-btn" data-join>' + (state === 'checking' ? 'Checking your membership...' : 'Become a Founding Member') + '</button>' +
+      (state === 'guest' ? '<p>Already a member? <a href="#" data-signin>Sign in</a> and the Guide opens.</p>' : '') +
+      '<p class="dg-status" role="status"></p></div></div>';
+  }
+
+  function brandCard(l, cat) {
+    var items = (l.details && l.details.dairy_guide) || [];
+    var shown = cat ? items.filter(function (i) { return i.cat === cat; }) : items;
+    var it = shown[0] || {};
+    var cats = items.map(function (i) { return i.cat; });
+    var lines = cat
+      ? '<div class="dg-line"><b>Made from</b> ' + esc(it.base) + '</div><div class="dg-line"><b>Where</b> ' + esc(it.where) + '</div>' + (it.note ? '<div class="dg-note">' + esc(it.note) + '</div>' : '')
+      : '<div class="dg-line"><b>Makes</b> ' + esc(cats.join(', ')) + '</div><div class="dg-line"><b>Made from</b> ' + esc(ingredients(items)) + '</div>';
+    return '<div class="rank-card" data-votes="' + (l.vote_count || 0) + '">' +
+      '<div class="dg-bhead"><div class="dg-av" style="background:' + esc(l.color || '#1f5f22') + '">' + esc(l.initials || l.name.charAt(0)) + '</div>' +
+      '<div><div class="dg-bname">' + esc(l.name) + '</div><div class="dg-bcat">' + esc(cat || (cats.length + (cats.length === 1 ? ' product' : ' products'))) + '</div></div></div>' + lines +
+      '<div class="dg-bfoot"><span class="vote-count">' + (l.vote_count || 0).toLocaleString() + '</span><span class="dg-vl">votes</span>' +
+      '<button type="button" class="vote-btn" data-listing-id="' + esc(l.id) + '">Vote</button>' +
+      '<a class="dg-listing" href="/directory/' + encodeURIComponent(l.slug) + '">Listing &rsaquo;</a></div></div>';
+  }
+  // Each ingredient once across a brand's products: "Almond milk, coconut", not "Almond milk; Almond milk, coconut".
+  function ingredients(items) {
+    var seen = {}, out = [];
+    items.forEach(function (i) {
+      String(i.base || '').split(/[,;]/).forEach(function (w) {
+        w = w.trim(); var k = w.toLowerCase();
+        if (w && !seen[k]) { seen[k] = 1; out.push(out.length ? w.charAt(0).toLowerCase() + w.slice(1) : w); }
       });
-      return out;
+    });
+    return out.join(', ');
+  }
+
+  function bookCard(l) {
+    var b = (l.details && l.details.dairy_guide_book) || {};
+    return '<div class="rank-card" data-votes="' + (l.vote_count || 0) + '"><div class="dg-book"><div class="dg-cover" aria-hidden="true">' + esc(b.title || l.name) + '</div>' +
+      '<div><div class="dg-bname">' + esc(b.title || l.name) + '</div><div class="dg-line">' + esc(b.author || '') + '</div>' +
+      '<div class="dg-line">' + esc([b.publisher, b.year].filter(Boolean).join(', ')) + '</div><div class="dg-bcat" style="margin-top:4px">' + esc(b.topic || '') + '</div>' +
+      (b.note ? '<div class="dg-note">' + esc(b.note) + '</div>' : '') + '</div></div>' +
+      '<div class="dg-bfoot"><span class="vote-count">' + (l.vote_count || 0).toLocaleString() + '</span><span class="dg-vl">votes</span>' +
+      '<button type="button" class="vote-btn" data-listing-id="' + esc(l.id) + '">Vote</button>' +
+      '<a class="dg-listing" href="/directory/' + encodeURIComponent(l.slug) + '">Listing &rsaquo;</a></div></div>';
+  }
+
+  function swapCard(s) {
+    return '<div class="dg-swap"><h3>' + esc(s.replace) + '</h3><dl><dt>Shelf</dt><dd>' + esc(s.shelf) + '</dd><dt>Pantry</dt><dd>' + esc(s.pantry) + '</dd></dl>' +
+      (s.tip ? '<div class="dg-tip">' + esc(s.tip) + '</div>' : '') + '</div>';
+  }
+  function recipeCard(r) {
+    return '<div class="dg-card dg-recipe"><h3>' + esc(r.title) + '</h3><div class="dg-bcat">' + esc(r.time) + '</div><ol>' + r.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' +
+      (r.tip ? '<div class="dg-note">Tip: ' + esc(r.tip) + '</div>' : '') + '</div>';
+  }
+
+  function sortBy(list, how) {
+    return list.slice().sort(function (a, b) { return how === 'az' ? a.name.localeCompare(b.name) : (b.vote_count || 0) - (a.vote_count || 0) || a.name.localeCompare(b.name); });
+  }
+  var sortPref = 'votes';
+
+  // ---------- views ----------
+  function viewHome() {
+    var tiles = [
+      ['brands', 'Brands', '76 products from 43 brands, sorted by what you are replacing.'],
+      ['swaps', 'Swaps', '16 ways to replace dairy when you cook.'],
+      ['why', 'Why dairy-free', 'What the research says, with sources.'],
+      ['recipes', 'Recipes', 'Nut milk and ice cream at home.'],
+      ['books', 'Cookbooks', '12 cookbooks and two resources.'],
+      ['look', 'See for yourself', 'How milk is made. Optional.']
+    ];
+    main.innerHTML = homeHTML;
+    document.getElementById('dgTiles').innerHTML = tiles.map(function (t) {
+      return '<a class="dg-tile' + (t[0] === 'look' ? ' dg-warm' : '') + '" href="#/' + t[0] + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) +
+        (access !== 'member' && LOCKED[t[0]] ? '</span><span class="dg-mlock">With membership' : '') + '</span></div></a>';
+    }).join('');
+    document.getElementById('dgWhyPreview').innerHTML = PUB.why.map(whyCard).join('');
+    if (access === 'member' && BRANDS && BRANDS.length) {
+      main.querySelector('[data-view="home"]').insertAdjacentHTML('beforeend',
+        '<div class="dg-sec-h"><h2>Most voted brands</h2><a href="#/brands">All brands</a></div><div class="dg-grid">' + sortBy(BRANDS, 'votes').slice(0, 4).map(function (l) { return brandCard(l); }).join('') + '</div>');
     }
-    // A brand whose Directory listing is live (approved, tagged vegan-dairy-guide) links to
-    // it. Drafts are not public, so their cards stay plain until the listing is approved.
-    var listingSlug = {};
-    fetch(LISTINGS_URL, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
-      .then(function (r) { return r.json(); })
-      .then(function (rows) {
-        (rows || []).forEach(function (r) { if (r.slug) listingSlug[String(r.name).toLowerCase()] = r.slug; });
-        if (document.querySelector('#find.vg-active')) draw();
-      }).catch(function () {});
-    function card(m) {
-      var it = m.it, slug = listingSlug[it.b.toLowerCase()];
-      var inner = '<b>' + esc(it.b) + (slug ? ' <span class="dg-go" aria-hidden="true">&rsaquo;</span>' : '') + '</b>' +
-        '<div class="dg-base">' + (cat === 'All' ? esc(m.c) + ' &middot; ' : '') + esc(it.base) + '</div>' +
-        '<div class="dg-where">' + esc(it.where) + '</div>' +
-        (it.note ? '<div class="dg-note">' + esc(it.note) + '</div>' : '');
-      return slug
-        ? '<a class="vg-glass dg-brand dg-linked" href="/directory/' + encodeURIComponent(slug) + '" aria-label="' + esc(it.b) + ', Directory listing">' + inner + '</a>'
-        : '<div class="vg-glass dg-brand">' + inner + '</div>';
-    }
-    // Desktop shows one page of cards that fits above the slide controls (nothing scrolls),
-    // measured from a real card; phones show 12 a page.
-    function fit() {
-      if (window.innerWidth <= 900) return 12;
-      var nav = document.querySelector('.vg-nav');
-      var cols = getComputedStyle(listEl).gridTemplateColumns.split(' ').length || 1;
-      var cardH = (listEl.firstElementChild && listEl.firstElementChild.offsetHeight) || 118;
-      var slide = listEl.closest('.vg-slide'), stageEl = slide.parentNode;
-      var bottom = nav ? nav.getBoundingClientRect().top : slide.getBoundingClientRect().bottom - 96;
-      // The slide animates in from 6px below; measure from where it settles.
-      var shift = slide.getBoundingClientRect().top - stageEl.getBoundingClientRect().top;
-      var avail = bottom - (listEl.getBoundingClientRect().top - shift) - 66; // room for the pager row (12px gap plus the buttons)
-      var rows = Math.max(1, Math.floor((avail + 14) / (cardH + 14)));
-      return cols * rows;
-    }
+  }
+
+  function viewWhy() {
+    var all = PUB.why.concat(MEM ? MEM.why : []);
+    main.innerHTML = crumb([['Why dairy-free']]) + '<h2 class="dg-h1">Why go dairy-free</h2><p class="dg-lede">What the research actually says, with every source linked. Links, not proof, where the research says so.</p>' +
+      '<div class="dg-grid dg-3">' + all.map(whyCard).join('') + '</div>' + (MEM ? '' : '<div style="margin-top:26px">' + lockPanel('The rest of the research') + '</div>');
+  }
+
+  function viewBrands(catSlug) {
+    var cat = catSlug ? catBySlug(catSlug) : null;
+    var head = crumb(cat ? [['Brands', '#/brands'], [cat]] : [['Brands']]) + '<h2 class="dg-h1">' + (cat ? esc(cat) : 'The brands to buy') + '</h2>';
+    if (!MEM) { main.innerHTML = head + lockPanel('The brand finder'); return; }
+    if (!BRANDS) { main.innerHTML = head + '<div class="dg-loading">Loading brands...</div>'; return; }
+    var list = cat ? BRANDS.filter(function (l) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === cat; }); }) : BRANDS;
+    var chips = '<div class="dg-chips">' + ['All'].concat(CATS).map(function (c) {
+      var on = (c === 'All' && !cat) || c === cat;
+      return '<a class="dg-chip" aria-pressed="' + on + '" href="#/brands' + (c === 'All' ? '' : '/' + slugify(c)) + '">' + esc(c) + '</a>';
+    }).join('') + '</div>';
+    main.innerHTML = head + '<p class="dg-lede">Every brand here is in the Vegans Explore Directory. Checked October 2026. Vote once a day for the ones you love.</p>' + chips +
+      '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Filter by name or ingredient (oat, cashew...)" aria-label="Filter brands">' +
+      '<select id="dgSort" aria-label="Sort"><option value="votes">Most voted</option><option value="az">A to Z</option></select><span class="dg-count" id="dgCountB"></span></div>' +
+      '<div class="dg-grid" id="dgList"></div>';
+    var sortEl = document.getElementById('dgSort'), fEl = document.getElementById('dgFilter');
+    sortEl.value = sortPref;
     function draw() {
-      var all = matches();
-      listEl.innerHTML = card({ c: 'x', it: { b: 'x', base: 'x', where: 'x' } });
-      per = fit();
-      var pages = Math.max(1, Math.ceil(all.length / per));
-      if (page >= pages) page = pages - 1;
-      var shown = all.slice(page * per, page * per + per);
-      listEl.innerHTML = shown.map(card).join('') || '<p class="vg-fine">No match. Try another word or category.</p>';
-      countEl.textContent = all.length + (all.length === 1 ? ' product' : ' products') + (pages > 1 ? ' · page ' + (page + 1) + ' of ' + pages : '') + ' · checked October 2026';
-      pagerEl.innerHTML = pages > 1 ? '<button type="button" class="dg-chip" data-pg="-1"' + (page ? '' : ' disabled') + '>Previous</button><button type="button" class="dg-chip" data-pg="1"' + (page < pages - 1 ? '' : ' disabled') + '>More brands</button>' : '';
+      var q = fEl.value.trim().toLowerCase();
+      var rows = sortBy(list, sortPref).filter(function (l) {
+        if (!q) return true;
+        var hay = (l.name + ' ' + JSON.stringify((l.details && l.details.dairy_guide) || [])).toLowerCase();
+        return hay.indexOf(q) >= 0;
+      });
+      document.getElementById('dgCountB').textContent = rows.length + (rows.length === 1 ? ' brand' : ' brands');
+      var listEl = document.getElementById('dgList');
+      listEl.innerHTML = rows.map(function (l) { return brandCard(l, cat); }).join('') || '<p class="dg-empty">No match. Try another word.</p>';
+      if (window.VEVotes) VEVotes.wire(listEl);
     }
-    pagerEl.addEventListener('click', function (e) {
-      var b = e.target.closest('[data-pg]'); if (!b || b.disabled) return;
-      page += +b.getAttribute('data-pg'); draw();
-    });
-    document.addEventListener('vg:change', function (e) { if (e.detail.id === 'find') draw(); });
-    window.addEventListener('resize', function () { if (document.querySelector('#find.vg-active')) draw(); });
-    catsEl.addEventListener('click', function (e) {
-      var b = e.target.closest('.dg-chip'); if (!b) return;
-      cat = b.getAttribute('data-cat');
-      [].forEach.call(catsEl.children, function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      page = 0; draw();
-    });
-    searchEl.addEventListener('input', function () { q = searchEl.value.trim().toLowerCase(); page = 0; draw(); });
+    sortEl.addEventListener('change', function () { sortPref = sortEl.value; draw(); });
+    fEl.addEventListener('input', draw);
     draw();
   }
 
-  function renderSwap(SWAP) {
-    [].forEach.call(document.querySelectorAll('[data-swap]'), function (tb) {
-      var part = tb.getAttribute('data-swap') === '1' ? SWAP.slice(0, 8) : SWAP.slice(8);
-      tb.innerHTML = part.map(function (r) {
-        return '<tr><td>' + esc(r[0]) + '</td><td data-l="Shelf">' + esc(r[1]) + '</td><td data-l="Pantry">' + esc(r[2]) + '</td><td data-l="Tip">' + esc(r[3]) + '</td></tr>';
-      }).join('');
+  function viewSwaps(groupSlug) {
+    var group = groupSlug ? groupBySlug(groupSlug) : null;
+    var head = crumb(group ? [['Swaps', '#/swaps'], [group]] : [['Swaps']]) + '<h2 class="dg-h1">' + (group ? esc(group) : 'Swap it out') + '</h2>';
+    if (!MEM) { main.innerHTML = head + lockPanel('The swap list'); return; }
+    var chips = '<div class="dg-chips">' + ['All'].concat(SWAP_GROUPS).map(function (g) {
+      var on = (g === 'All' && !group) || g === group;
+      return '<a class="dg-chip" aria-pressed="' + on + '" href="#/swaps' + (g === 'All' ? '' : '/' + slugify(g)) + '">' + esc(g) + '</a>';
+    }).join('') + '</div>';
+    main.innerHTML = head + '<p class="dg-lede">How to replace each dairy item: grab one from the shelf, or make it from what is already in your pantry.</p>' + chips +
+      '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search swaps (buttermilk, cream cheese...)" aria-label="Search swaps"><span class="dg-count" id="dgCountS"></span></div>' +
+      '<div class="dg-grid" id="dgList"></div><div style="margin-top:16px">' + sources(MEM.swap_sources) + '</div>';
+    var fEl = document.getElementById('dgFilter');
+    function draw() {
+      var q = fEl.value.trim().toLowerCase();
+      var rows = MEM.swaps.filter(function (s) { return (!group || s.group === group) && (!q || JSON.stringify(s).toLowerCase().indexOf(q) >= 0); });
+      document.getElementById('dgCountS').textContent = rows.length + (rows.length === 1 ? ' swap' : ' swaps');
+      document.getElementById('dgList').innerHTML = rows.map(swapCard).join('') || '<p class="dg-empty">No match. Try another word.</p>';
+    }
+    fEl.addEventListener('input', draw);
+    draw();
+  }
+
+  function viewRecipes() {
+    var head = crumb([['Recipes']]) + '<h2 class="dg-h1">Make it at home</h2>';
+    if (!MEM) { main.innerHTML = head + lockPanel('Recipes'); return; }
+    main.innerHTML = head + '<p class="dg-lede">Simple dairy-free staples you can make with a blender.</p><div class="dg-grid">' + MEM.recipes.map(recipeCard).join('') + '</div>';
+  }
+
+  function viewBooks() {
+    var head = crumb([['Cookbooks']]) + '<h2 class="dg-h1">Cookbooks and resources</h2>';
+    if (!MEM) { main.innerHTML = head + lockPanel('Cookbooks'); return; }
+    if (!BOOKS) { main.innerHTML = head + '<div class="dg-loading">Loading cookbooks...</div>'; return; }
+    main.innerHTML = head + '<p class="dg-lede">Cookbooks from the Vegans Explore Directory, most voted first. Vote for the ones that helped you.</p>' +
+      '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search cookbooks (cheese, ice cream...)" aria-label="Search cookbooks"><select id="dgSort" aria-label="Sort"><option value="votes">Most voted</option><option value="az">A to Z</option></select></div>' +
+      '<div class="dg-grid" id="dgList"></div>' +
+      '<div class="dg-sec-h"><h2>Resources</h2></div><div class="dg-grid">' + MEM.resources.map(function (r) {
+        return '<div class="dg-card"><h3>' + esc(r.title) + '</h3><p>' + esc(r.text) + '</p>' + sources([[r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), r.url]]) + '</div>';
+      }).join('') + '</div>';
+    var sortEl = document.getElementById('dgSort'), fEl = document.getElementById('dgFilter');
+    sortEl.value = sortPref;
+    function draw() {
+      var q = fEl.value.trim().toLowerCase();
+      var rows = sortBy(BOOKS, sortPref).filter(function (l) { return !q || (l.name + ' ' + JSON.stringify(l.details || {})).toLowerCase().indexOf(q) >= 0; });
+      var listEl = document.getElementById('dgList');
+      listEl.innerHTML = rows.map(bookCard).join('') || '<p class="dg-empty">No match. Try another word.</p>';
+      if (window.VEVotes) VEVotes.wire(listEl);
+    }
+    sortEl.addEventListener('change', function () { sortPref = sortEl.value; draw(); });
+    fEl.addEventListener('input', draw);
+    draw();
+  }
+
+  function viewLook() {
+    var head = crumb([['See for yourself']]) + '<h2 class="dg-h1">See for yourself</h2>';
+    if (!MEM) { main.innerHTML = head + lockPanel('See for yourself'); return; }
+    var L = MEM.look;
+    if (!lookOpen) {
+      main.innerHTML = head + '<div class="dg-door"><p>' + esc(L.door) + '</p><div class="dg-btns"><button type="button" class="dg-btn" id="dgLookGo">Read on</button><a class="dg-btn dg-ghost" href="#/brands">Skip to the brands</a></div></div>';
+      document.getElementById('dgLookGo').addEventListener('click', function () { lookOpen = true; viewLook(); });
+      return;
+    }
+    main.innerHTML = head + '<p class="dg-lede">How milk is produced on US dairy farms, in plain facts from USDA and dairy-industry sources.</p><ol class="dg-facts">' +
+      L.facts.map(function (f) { return '<li><strong>' + esc(f[0]) + '</strong> ' + esc(f[1]) + '</li>'; }).join('') + '</ol>' + sources(L.sources) +
+      '<p class="dg-lede" style="margin-top:18px"><strong>Go further:</strong> ' + esc(L.further) + '</p>';
+  }
+
+  // ---------- search ----------
+  function index() {
+    var out = [];
+    PUB.why.concat(MEM ? MEM.why : []).forEach(function (w) { out.push({ t: 'Why dairy-free', title: w.title, text: w.text, href: '#/why' }); });
+    if (!MEM) return out;
+    (BRANDS || []).forEach(function (l) {
+      ((l.details && l.details.dairy_guide) || []).forEach(function (i) {
+        out.push({ t: 'Brands', title: l.name + ', ' + i.cat, text: 'Made from ' + i.base + '. Where: ' + i.where + (i.note ? '. ' + i.note : ''), href: '#/brands/' + slugify(i.cat) });
+      });
     });
+    MEM.swaps.forEach(function (s) { out.push({ t: 'Swaps', title: s.replace, text: 'Shelf: ' + s.shelf + ' Pantry: ' + s.pantry + (s.tip ? ' ' + s.tip : ''), href: '#/swaps/' + slugify(s.group) }); });
+    MEM.recipes.forEach(function (r) { out.push({ t: 'Recipes', title: r.title, text: r.steps.join(' '), href: '#/recipes' }); });
+    (BOOKS || []).forEach(function (l) { var b = (l.details && l.details.dairy_guide_book) || {}; out.push({ t: 'Cookbooks', title: b.title || l.name, text: [b.author, b.topic].filter(Boolean).join(', '), href: '#/books' }); });
+    MEM.look.facts.forEach(function (f) { out.push({ t: 'See for yourself', title: f[0], text: f[1], href: '#/look' }); });
+    return out;
+  }
+  function viewSearch(q) {
+    if (qEl.value !== q) qEl.value = q;
+    var words = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var hits = index().filter(function (h) { var hay = (h.title + ' ' + h.text).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
+    var groups = {};
+    hits.forEach(function (h) { (groups[h.t] = groups[h.t] || []).push(h); });
+    var order = ['Brands', 'Swaps', 'Recipes', 'Cookbooks', 'Why dairy-free', 'See for yourself'];
+    var html = crumb([['Search']]) + '<h2 class="dg-h1">' + hits.length + (hits.length === 1 ? ' result' : ' results') + ' for &ldquo;' + esc(q) + '&rdquo;</h2><div class="dg-res">';
+    order.forEach(function (g) {
+      if (!groups[g]) return;
+      html += '<h2>' + esc(g) + ' (' + groups[g].length + ')</h2><div class="dg-grid">' + groups[g].slice(0, 24).map(function (h) {
+        return '<a class="dg-card dg-hit" href="' + h.href + '"><h3>' + esc(h.title) + '</h3><p>' + esc(h.text.length > 160 ? h.text.slice(0, 157) + '...' : h.text) + '</p></a>';
+      }).join('') + '</div>';
+    });
+    if (!hits.length) html += '<p class="dg-empty">Nothing matched. Try a brand (Oatly), an item (cream cheese) or an ingredient (cashew).</p>';
+    html += '</div>';
+    if (!MEM) html += '<div style="margin-top:26px">' + lockPanel('Searching brands, swaps, recipes and cookbooks') + '</div>';
+    main.innerHTML = html;
+  }
+  var tSearch;
+  qEl.addEventListener('input', function () {
+    clearTimeout(tSearch);
+    tSearch = setTimeout(function () {
+      var q = qEl.value.trim();
+      var h = q ? '#/search/' + encodeURIComponent(q) : '#/';
+      if (/^#\/search\//.test(location.hash) && q) history.replaceState(null, '', location.pathname + location.search + h); else location.hash = h;
+      route();
+    }, 180);
+  });
+  document.getElementById('dgSearchForm').addEventListener('submit', function (e) { e.preventDefault(); var q = qEl.value.trim(); if (q) location.hash = '#/search/' + encodeURIComponent(q); });
+
+  // ---------- router ----------
+  function route() {
+    var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
+    var view = parts[0] || 'home', sub = parts.slice(1).join('/');
+    if (view === 'search' && !sub) view = 'home';
+    var known = { home: 1, why: 1, brands: 1, swaps: 1, recipes: 1, books: 1, look: 1, search: 1 };
+    if (!known[view]) view = 'home';
+    drawMenu(view);
+    wrap.classList.toggle('dg-wide', view !== 'home');
+    if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
+    ({ home: viewHome, why: viewWhy, brands: function () { viewBrands(sub); }, swaps: function () { viewSwaps(sub); },
+       recipes: viewRecipes, books: viewBooks, look: viewLook, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+    if (view !== 'search') window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+
+  // ---------- access ----------
+  function api(action, tok) {
+    return fetch(UNLOCK_URL + '?action=' + action, {
+      method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: SLUG, token: tok || undefined })
+    }).then(function (r) { return r.json(); });
+  }
+  function rest(url) { return fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (r) { return r.json(); }); }
+  function becomeMember(html) {
+    var t = document.createElement('template'); t.innerHTML = html;
+    var el = t.content.getElementById('dg-data');
+    MEM = el ? JSON.parse(el.textContent) : null;
+    if (!MEM) { access = 'pending'; route(); return; }
+    access = 'member';
+    route();
+    Promise.all([rest(BRANDS_URL), rest(BOOKS_URL)]).then(function (r) {
+      BRANDS = Array.isArray(r[0]) ? r[0] : []; BOOKS = Array.isArray(r[1]) ? r[1] : [];
+      route();
+    }).catch(function () { BRANDS = BRANDS || []; BOOKS = BOOKS || []; route(); });
+  }
+  function setStatus(msg) { [].forEach.call(document.querySelectorAll('.dg-status'), function (e) { e.textContent = msg; }); }
+
+  main.addEventListener('click', function (e) {
+    var a = auth();
+    if (e.target.closest('[data-signin]')) {
+      e.preventDefault();
+      if (a) a.showAuthModal('Sign in and the Dairy Guide opens if you are a member.', function () { location.reload(); }, 'login');
+      return;
+    }
+    if (e.target.closest('[data-join]')) {
+      if (!a || access === 'checking') return;
+      if (access === 'guest') a.showAuthModal('Create your account. Then become a Founding Member and the Dairy Guide opens.', function () { location.reload(); }, 'signup');
+      else a.showActivateModal('The Dairy Guide comes with the $11 Founding Membership, one time. It also opens the full community.');
+    }
+  });
+
+  function confirmAfterCheckout(tok, tries) {
+    setStatus('Confirming your membership...');
+    api('open', tok).then(function (d) {
+      if (d && d.unlocked && d.html) { becomeMember(d.html); return; }
+      if (tries > 0) { setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); return; }
+      access = 'pending'; route();
+      setStatus('Your payment went through. Confirming can take a minute: refresh this page shortly and the Guide opens.');
+    }).catch(function () { if (tries > 0) setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); else { access = 'pending'; route(); } });
+  }
+
+  function init() {
+    // Maya on the right. A video drops in here when it is ready: set data-video on #dgVideo.
+    var v = document.getElementById('dgVideo');
+    if (window.VEGuideArt) { var art = VEGuideArt('maya', 'tall'); if (art) v.style.backgroundImage = "url('" + art + "')"; }
+    if (v.getAttribute('data-video')) v.insertAdjacentHTML('afterbegin', '<video src="' + esc(v.getAttribute('data-video')) + '" controls playsinline preload="metadata"></video>');
+
+    route();
+    var a = auth();
+    var viewAs = a && a.getViewAs ? a.getViewAs() : null;
+    if (viewAs) { access = viewAs.mode === 'public' ? 'guest' : 'pending'; route(); return; }
+    var tok = a && a.isLoggedIn() ? a.getToken() : null;
+    if (!tok) { access = 'guest'; route(); return; }
+
+    var params = new URLSearchParams(location.search), back = params.get('activate');
+    if (back) { params.delete('activate'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+    if (back === 'success') { confirmAfterCheckout(tok, 8); return; }
+    api('open', tok).then(function (d) {
+      if (d && d.unlocked && d.html) becomeMember(d.html);
+      else { access = d && d.loggedIn ? 'pending' : 'guest'; route(); }
+    }).catch(function () { access = 'pending'; route(); setStatus('We could not check your membership just now. Refresh to try again.'); });
   }
 
   if (window.VEAuth) init(); else window.addEventListener('load', init);
