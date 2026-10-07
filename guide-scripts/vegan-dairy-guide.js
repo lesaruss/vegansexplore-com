@@ -33,14 +33,22 @@
   var SWAP_GROUPS = ['Milk & cream', 'Butter', 'Cheese', 'Yogurt & sour cream'];
   var MENU = [
     ['home', 'Home'], ['why', 'Why dairy-free'], ['brands', 'Brands'], ['swaps', 'Swaps'],
-    ['recipes', 'Recipes'], ['books', 'Cookbooks'], ['look', 'See for yourself']
+    ['cookbook', 'Cookbook'], ['look', 'See for yourself']
   ];
-  var LOCKED = { brands: 1, swaps: 1, recipes: 1, books: 1, look: 1 };
+  var LOCKED = { brands: 1, swaps: 1, cookbook: 1, look: 1 };
+  // Pantry ingredients for "What can I make?": each matches recipe and swap text.
+  var PANTRY = [
+    ['Cashews', /cashew/i], ['Soy milk', /soy milk/i], ['Plant milk', /plant milk/i], ['Coconut milk or cream', /coconut (milk|cream)/i],
+    ['Coconut oil', /coconut oil/i], ['Lemon juice', /lemon/i], ['Vinegar', /vinegar/i], ['Nutritional yeast', /nutritional yeast/i],
+    ['Tofu', /tofu/i], ['Raw nuts', /raw nuts|almond/i], ['Potatoes and carrots', /potato|carrot/i], ['Bananas', /banana/i],
+    ['Dates', /dates/i], ['Chickpeas (aquafaba)', /aquafaba|chickpea/i]
+  ];
 
   var ICON = {
     brands: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linejoin="round"><path d="M8 2h8l-1 3h-6z"/><path d="M9 5h6l3 4v12a1 1 0 01-1 1H7a1 1 0 01-1-1V9z"/><path d="M6 12h12"/></svg>',
     swaps: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/></svg>',
     recipes: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a8 8 0 01-8 8h-2a8 8 0 01-8-8z"/><path d="M8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3"/></svg>',
+    cookbook: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linejoin="round"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>',
     books: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linejoin="round"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>',
     why: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19l7-7"/></svg>',
     look: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8a5a00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'
@@ -82,19 +90,84 @@
   }
   function whyCard(w) { return '<div class="dg-card"><h3>' + esc(w.title) + '</h3><p>' + esc(w.text) + '</p>' + sources(w.sources) + '</div>'; }
 
-  function lockPanel(what) {
+  // A locked section shows what is inside before anyone pays (Sean, 2026-10-07: "until they
+  // could see something, it's not going to convince them"): a preview slideshow on the left,
+  // a video slide among them, and the $11 one time as its own green tile on the right.
+  var slideTimer = null;
+  function videoSlide(title, line) {
+    var art = window.VEGuideArt ? VEGuideArt('maya', 'tall') : '';
+    return '<div class="dg-pv dg-pv-video"><div class="dg-pv-vframe" style="' + (art ? "background-image:url('" + esc(art) + "')" : '') + '"><span class="dg-vtag">Video coming soon</span></div>' +
+      '<div><div class="dg-pv-k">Watch</div><h3>' + esc(title) + '</h3><p>' + esc(line) + '</p></div></div>';
+  }
+  function textSlide(k, title, body) { return '<div class="dg-pv"><div><div class="dg-pv-k">' + esc(k) + '</div><h3>' + esc(title) + '</h3>' + body + '</div></div>'; }
+  function previewSlides(section) {
+    var b = BRANDS || [], bk = BOOKS || [];
+    var find = function (n) { for (var i = 0; i < b.length; i++) if (b[i].name === n) return b[i]; return null; };
+    var ex = PUB.swap_example;
+    var exampleSwap = ex ? '<div class="dg-swap dg-pv-card"><h3>' + esc(ex.replace) + '</h3><dl><dt>Shelf</dt><dd>' + esc(ex.shelf) + '</dd><dt>Pantry</dt><dd>' + esc(ex.pantry) + '</dd></dl>' + (ex.tip ? '<div class="dg-tip">' + esc(ex.tip) + '</div>' : '') + '</div>' : '';
+    var names = function (cat) { return b.filter(function (l) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === cat; }); }).map(function (l) { return l.name; }); };
+    var chips = function (arr) { return '<div class="dg-pv-chips">' + arr.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('') + '</div>'; };
+    var S = {
+      why: [
+        textSlide('With membership', 'Three more facts, every one sourced', '<p>What the cancer research shows, how plants cover the nutrients, and the planet: each with its studies linked.</p>'),
+        videoSlide('Why Maya went dairy-free', 'A short video from your Guide on the research and what changed for her.')
+      ],
+      brands: [
+        textSlide('Brands', '76 products from 43 brands', '<p>Sorted by what you are replacing: milk, butter, cheese, yogurt, ice cream and more. Every one is in the Vegans Explore Directory.</p>' + chips(CATS)),
+        find('Oatly') ? textSlide('Example', 'Oatly', '<p>' + esc(((find('Oatly').details || {}).dairy_guide || []).map(function (i) { return i.cat; }).join(', ')) + '. Made from oats. Where to buy it, for each one.</p>') : '',
+        textSlide('Cream cheese', names('Cream Cheese').length + ' brands to try', chips(names('Cream Cheese'))),
+        textSlide('Vote', 'The best ones rise to the top', '<p>Members vote once a day for the products they love, so the list sorts itself by what people actually buy again.</p>'),
+        videoSlide('Shopping dairy-free with Maya', 'A quick walk through the aisle: what to grab first.')
+      ],
+      swaps: [
+        textSlide('Free example', 'Swap it out', exampleSwap),
+        textSlide('16 swaps', 'Replace anything dairy', '<p>From the shelf, or from what is already in your pantry. Search them, or browse by milk and cream, butter, cheese, and yogurt and sour cream.</p>' + chips(['Milk', 'Butter, baking', 'Heavy cream', 'Whipped cream', 'Sour cream', 'Cream cheese', 'Parmesan', 'Cheese sauce', 'Ricotta', 'Ghee'])),
+        videoSlide('Three swaps to start with', 'Maya shows the easiest swaps for your first week.')
+      ],
+      cookbook: [
+        videoSlide('In the kitchen with Maya', 'Nut milk in ten minutes, start to finish.'),
+        textSlide('Recipes', 'Make it at home', '<p>Nut milk, ice cream, and dairy-free staples you can make from your pantry: sour cream, cream cheese, parmesan, ricotta and more.</p>' + chips(['Nut milk', 'Banana ice cream', 'Cashew sour cream', 'Cashew cream cheese', 'Potato cheese sauce', 'Tofu ricotta'])),
+        textSlide('What can I make?', 'Start from what you have', '<p>Tick what is in your kitchen and the Cookbook shows what you can make right now.</p>' + chips(PANTRY.slice(0, 8).map(function (p) { return p[0]; }))),
+        textSlide('Cookbooks', bk.length ? bk.length + ' cookbooks' : 'Cookbooks', '<p>The best dairy-free cookbooks, voted on by members.</p>' + chips(bk.slice(0, 6).map(function (l) { return ((l.details || {}).dairy_guide_book || {}).title || l.name; }))),
+        textSlide('Chefs', 'Learn from the chefs', '<p>Chefs who specialize in dairy-free cooking share their recipes here, each linked to their profile and what they offer.</p>')
+      ],
+      look: [
+        textSlide('See for yourself', 'How milk is made', '<p>Plain facts from USDA and dairy-industry sources about how milk is produced on US farms. No graphic images, and always behind a clear warning.</p>'),
+        videoSlide('What we wish we had known', 'Maya on the questions people ask after this section.')
+      ],
+      search: [textSlide('Search', 'Search all of it', '<p>Members search every brand, swap, recipe and cookbook at once.</p>')]
+    };
+    return (S[section] || S.search).filter(Boolean);
+  }
+  function lockPanel(section) {
     var state = access;
-    return '<div class="dg-lock">' +
-      '<div><div class="dg-eyebrow" style="color:var(--g)">With membership</div><h2>' + esc(what) + ' comes with membership</h2>' +
-      '<ul><li><strong>Brands.</strong> 76 products from 43 brands across 12 kinds of dairy, with where to buy them. Vote for your favorites.</li>' +
-      '<li><strong>Swaps.</strong> 16 ways to replace milk, butter, cream, cheese and more, from the shelf or from your pantry.</li>' +
-      '<li><strong>Recipes and cookbooks.</strong> Make it at home, and 12 cookbooks to go further.</li>' +
-      '<li><strong>The research.</strong> Every claim with its source, plus how milk is made, behind a clear warning.</li></ul></div>' +
-      '<div class="dg-offer"><div class="dg-price">$11<span>one time</span></div>' +
-      '<p>Founding Membership. The Dairy Guide comes with it, and so does the full Vegans Explore community: your member dashboard, Directory votes, the Community Board and points.</p>' +
+    var slides = previewSlides(section);
+    return '<div class="dg-lock2">' +
+      '<div class="dg-show" data-show>' + slides.map(function (s, i) { return '<div class="dg-show-slide' + (i ? '' : ' on') + '" aria-hidden="' + (i ? 'true' : 'false') + '">' + s + '</div>'; }).join('') +
+      (slides.length > 1 ? '<div class="dg-show-nav"><button type="button" class="dg-show-b" data-show-go="-1" aria-label="Previous">&lsaquo;</button><div class="dg-show-dots">' + slides.map(function (s, i) { return '<button type="button" data-show-to="' + i + '"' + (i ? '' : ' class="on"') + ' aria-label="Slide ' + (i + 1) + '"></button>'; }).join('') + '</div><button type="button" class="dg-show-b" data-show-go="1" aria-label="Next">&rsaquo;</button></div>' : '') +
+      '</div>' +
+      '<div class="dg-offer2"><div class="dg-eyebrow" style="color:#c5f2c7">Founding Membership</div><div class="dg-price">$11<span>one time</span></div>' +
+      '<p>The Dairy Guide comes with it, and so does the full Vegans Explore community: your member dashboard, Directory votes, the Community Board and points.</p>' +
       '<button type="button" class="dg-btn" data-join>' + (state === 'checking' ? 'Checking your membership...' : 'Become a Founding Member') + '</button>' +
       (state === 'guest' ? '<p>Already a member? <a href="#" data-signin>Sign in</a> and the Guide opens.</p>' : '') +
       '<p class="dg-status" role="status"></p></div></div>';
+  }
+  function startShow() {
+    clearInterval(slideTimer);
+    var show = main.querySelector('[data-show]'); if (!show) return;
+    var slides = show.querySelectorAll('.dg-show-slide'), dots = show.querySelectorAll('[data-show-to]'), cur = 0, paused = false;
+    function go(n) {
+      cur = (n + slides.length) % slides.length;
+      [].forEach.call(slides, function (s, i) { s.classList.toggle('on', i === cur); s.setAttribute('aria-hidden', i === cur ? 'false' : 'true'); });
+      [].forEach.call(dots, function (d, i) { d.classList.toggle('on', i === cur); });
+    }
+    show.addEventListener('click', function (e) {
+      var g = e.target.closest('[data-show-go]'), to = e.target.closest('[data-show-to]');
+      if (g) go(cur + +g.getAttribute('data-show-go')); else if (to) go(+to.getAttribute('data-show-to'));
+    });
+    show.addEventListener('mouseenter', function () { paused = true; });
+    show.addEventListener('mouseleave', function () { paused = false; });
+    if (slides.length > 1) slideTimer = setInterval(function () { if (!paused && document.body.contains(show)) go(cur + 1); }, 6000);
   }
 
   function brandCard(l, cat) {
@@ -155,8 +228,7 @@
       ['brands', 'Brands', '76 products from 43 brands, sorted by what you are replacing.'],
       ['swaps', 'Swaps', '16 ways to replace dairy when you cook.'],
       ['why', 'Why dairy-free', 'What the research says, with sources.'],
-      ['recipes', 'Recipes', 'Nut milk and ice cream at home.'],
-      ['books', 'Cookbooks', '12 cookbooks and two resources.'],
+      ['cookbook', 'Cookbook', 'Recipes, cookbooks, chefs, and what you can make from your pantry.'],
       ['look', 'See for yourself', 'How milk is made. Optional.']
     ];
     main.innerHTML = homeHTML;
@@ -174,13 +246,14 @@
   function viewWhy() {
     var all = PUB.why.concat(MEM ? MEM.why : []);
     main.innerHTML = crumb([['Why dairy-free']]) + '<h2 class="dg-h1">Why go dairy-free</h2><p class="dg-lede">What the research actually says, with every source linked. Links, not proof, where the research says so.</p>' +
-      '<div class="dg-grid dg-3">' + all.map(whyCard).join('') + '</div>' + (MEM ? '' : '<div style="margin-top:26px">' + lockPanel('The rest of the research') + '</div>');
+      '<div class="dg-grid dg-3">' + all.map(whyCard).join('') + '</div>' + (MEM ? '' : '<div style="margin-top:26px">' + lockPanel('why') + '</div>');
+    startShow();
   }
 
   function viewBrands(catSlug) {
     var cat = catSlug ? catBySlug(catSlug) : null;
     var head = crumb(cat ? [['Brands', '#/brands'], [cat]] : [['Brands']]) + '<h2 class="dg-h1">' + (cat ? esc(cat) : 'The brands to buy') + '</h2>';
-    if (!MEM) { main.innerHTML = head + lockPanel('The brand finder'); return; }
+    if (!MEM) { main.innerHTML = head + lockPanel('brands'); startShow(); return; }
     if (!BRANDS) { main.innerHTML = head + '<div class="dg-loading">Loading brands...</div>'; return; }
     var list = cat ? BRANDS.filter(function (l) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === cat; }); }) : BRANDS;
     var chips = '<div class="dg-chips">' + ['All'].concat(CATS).map(function (c) {
@@ -213,7 +286,7 @@
   function viewSwaps(groupSlug) {
     var group = groupSlug ? groupBySlug(groupSlug) : null;
     var head = crumb(group ? [['Swaps', '#/swaps'], [group]] : [['Swaps']]) + '<h2 class="dg-h1">' + (group ? esc(group) : 'Swap it out') + '</h2>';
-    if (!MEM) { main.innerHTML = head + lockPanel('The swap list'); return; }
+    if (!MEM) { main.innerHTML = head + lockPanel('swaps'); startShow(); return; }
     var chips = '<div class="dg-chips">' + ['All'].concat(SWAP_GROUPS).map(function (g) {
       var on = (g === 'All' && !group) || g === group;
       return '<a class="dg-chip" aria-pressed="' + on + '" href="#/swaps' + (g === 'All' ? '' : '/' + slugify(g)) + '">' + esc(g) + '</a>';
@@ -232,39 +305,84 @@
     draw();
   }
 
-  function viewRecipes() {
-    var head = crumb([['Recipes']]) + '<h2 class="dg-h1">Make it at home</h2>';
-    if (!MEM) { main.innerHTML = head + lockPanel('Recipes'); return; }
-    main.innerHTML = head + '<p class="dg-lede">Simple dairy-free staples you can make with a blender.</p><div class="dg-grid">' + MEM.recipes.map(recipeCard).join('') + '</div>';
+  // The Cookbook (Sean, 2026-10-07): recipes, cookbooks and chefs in one place, plus
+  // "What can I make?" from what is already in the kitchen.
+  function cookRecipes() {
+    var ours = MEM.recipes.map(function (r) { return { title: r.title, from: 'Vegans Explore kitchen', time: r.time, steps: r.steps, tip: r.tip }; });
+    var pantry = MEM.swaps.filter(function (s) { return /blend|pulse|simmer|whip|stir|warm|tbsp|cup/i.test(s.pantry) && s.pantry.length > 40; })
+      .map(function (s) { return { title: s.replace + ', homemade', from: 'From the swap list', time: '', steps: [s.pantry], tip: s.tip }; });
+    return ours.concat(pantry);
   }
-
-  function viewBooks() {
-    var head = crumb([['Cookbooks']]) + '<h2 class="dg-h1">Cookbooks and resources</h2>';
-    if (!MEM) { main.innerHTML = head + lockPanel('Cookbooks'); return; }
-    if (!BOOKS) { main.innerHTML = head + '<div class="dg-loading">Loading cookbooks...</div>'; return; }
-    main.innerHTML = head + '<p class="dg-lede">Cookbooks from the Vegans Explore Directory, most voted first. Vote for the ones that helped you.</p>' +
-      '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search cookbooks (cheese, ice cream...)" aria-label="Search cookbooks"><select id="dgSort" aria-label="Sort"><option value="votes">Most voted</option><option value="az">A to Z</option></select></div>' +
-      '<div class="dg-grid" id="dgList"></div>' +
-      '<div class="dg-sec-h"><h2>Resources</h2></div><div class="dg-grid">' + MEM.resources.map(function (r) {
-        return '<div class="dg-card"><h3>' + esc(r.title) + '</h3><p>' + esc(r.text) + '</p>' + sources([[r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), r.url]]) + '</div>';
+  var pantryPick = {};
+  function viewCookbook(sub) {
+    var tabs = [['', 'Recipes'], ['make', 'What can I make?'], ['books', 'Cookbooks'], ['chefs', 'Chefs']];
+    var cur = { make: 1, books: 1, chefs: 1 }[sub] ? sub : '';
+    var head = crumb(cur ? [['Cookbook', '#/cookbook'], [tabs.filter(function (x) { return x[0] === cur; })[0][1]]] : [['Cookbook']]) + '<h2 class="dg-h1">The Cookbook</h2>';
+    if (!MEM) { main.innerHTML = head + '<p class="dg-lede">Recipes, cookbooks and chefs in one place, and a way to cook from what you already have.</p>' + lockPanel('cookbook'); startShow(); return; }
+    var tabHtml = '<div class="dg-chips">' + tabs.map(function (x) { return '<a class="dg-chip" aria-pressed="' + (x[0] === cur) + '" href="#/cookbook' + (x[0] ? '/' + x[0] : '') + '">' + esc(x[1]) + '</a>'; }).join('') + '</div>';
+    var body = '';
+    if (cur === '') {
+      body = '<p class="dg-lede">Dairy-free staples you can make at home. Search the whole Guide from the bar at the top.</p><div class="dg-grid">' + cookRecipes().map(function (r) {
+        return '<div class="dg-card dg-recipe"><h3>' + esc(r.title) + '</h3><div class="dg-bcat">' + esc(r.from + (r.time ? ' · ' + r.time : '')) + '</div>' +
+          (r.steps.length > 1 ? '<ol>' + r.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' : '<p style="margin-top:8px">' + esc(r.steps[0]) + '</p>') +
+          (r.tip ? '<div class="dg-note">Tip: ' + esc(r.tip) + '</div>' : '') + '</div>';
       }).join('') + '</div>';
-    var sortEl = document.getElementById('dgSort'), fEl = document.getElementById('dgFilter');
-    sortEl.value = sortPref;
-    function draw() {
-      var q = fEl.value.trim().toLowerCase();
-      var rows = sortBy(BOOKS, sortPref).filter(function (l) { return !q || (l.name + ' ' + JSON.stringify(l.details || {})).toLowerCase().indexOf(q) >= 0; });
-      var listEl = document.getElementById('dgList');
-      listEl.innerHTML = rows.map(bookCard).join('') || '<p class="dg-empty">No match. Try another word.</p>';
-      if (window.VEVotes) VEVotes.wire(listEl);
+    } else if (cur === 'make') {
+      body = '<p class="dg-lede">Tick what you have. Recipes that use the most of it come first.</p><div class="dg-chips" id="dgPantry">' + PANTRY.map(function (p, i) {
+        return '<button type="button" class="dg-chip" data-p="' + i + '" aria-pressed="' + !!pantryPick[i] + '">' + esc(p[0]) + '</button>';
+      }).join('') + '</div><div class="dg-grid" id="dgMake"></div>';
+    } else if (cur === 'books') {
+      body = '<p class="dg-lede">Cookbooks from the Vegans Explore Directory, most voted first. Vote for the ones that helped you.</p>' +
+        '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search cookbooks (cheese, ice cream...)" aria-label="Search cookbooks"><select id="dgSort" aria-label="Sort"><option value="votes">Most voted</option><option value="az">A to Z</option></select></div>' +
+        '<div class="dg-grid" id="dgList">' + (BOOKS ? '' : '<div class="dg-loading">Loading cookbooks...</div>') + '</div>' +
+        '<div class="dg-sec-h"><h2>Resources</h2></div><div class="dg-grid">' + MEM.resources.map(function (r) {
+          return '<div class="dg-card"><h3>' + esc(r.title) + '</h3><p>' + esc(r.text) + '</p>' + sources([[r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), r.url]]) + '</div>';
+        }).join('') + '</div>';
+    } else {
+      body = '<div class="dg-chef-empty"><div><h3>Chefs are coming to the Cookbook</h3><p>We are partnering with chefs who specialize in dairy-free cooking. Each one shares recipes here, linked to their profile with their classes, books and services.</p></div>' +
+        '<a class="dg-btn" href="/partners">Are you a chef? Get featured</a></div>';
     }
-    sortEl.addEventListener('change', function () { sortPref = sortEl.value; draw(); });
-    fEl.addEventListener('input', draw);
-    draw();
+    main.innerHTML = head + tabHtml + body;
+    if (cur === 'make') {
+      var grid = document.getElementById('dgMake'), all = cookRecipes();
+      var draw = function () {
+        var picked = Object.keys(pantryPick).filter(function (k) { return pantryPick[k]; }).map(Number);
+        if (!picked.length) { grid.innerHTML = '<p class="dg-empty">Pick at least one ingredient above.</p>'; return; }
+        var rows = all.map(function (r) {
+          var txt = r.title + ' ' + r.steps.join(' ');
+          var uses = picked.filter(function (i) { return PANTRY[i][1].test(txt); });
+          return { r: r, uses: uses };
+        }).filter(function (x) { return x.uses.length; }).sort(function (a, b) { return b.uses.length - a.uses.length; });
+        grid.innerHTML = rows.map(function (x) {
+          return '<div class="dg-card dg-recipe"><h3>' + esc(x.r.title) + '</h3><div class="dg-bcat">Uses ' + esc(x.uses.map(function (i) { return PANTRY[i][0].toLowerCase(); }).join(', ')) + '</div>' +
+            (x.r.steps.length > 1 ? '<ol>' + x.r.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' : '<p style="margin-top:8px">' + esc(x.r.steps[0]) + '</p>') + '</div>';
+        }).join('') || '<p class="dg-empty">Nothing uses those yet. Try adding another ingredient.</p>';
+      };
+      document.getElementById('dgPantry').addEventListener('click', function (e) {
+        var c = e.target.closest('[data-p]'); if (!c) return;
+        var i = c.getAttribute('data-p'); pantryPick[i] = !pantryPick[i]; c.setAttribute('aria-pressed', String(!!pantryPick[i])); draw();
+      });
+      draw();
+    }
+    if (cur === 'books' && BOOKS) {
+      var sortEl = document.getElementById('dgSort'), fEl = document.getElementById('dgFilter');
+      sortEl.value = sortPref;
+      var drawB = function () {
+        var q = fEl.value.trim().toLowerCase();
+        var rows = sortBy(BOOKS, sortPref).filter(function (l) { return !q || (l.name + ' ' + JSON.stringify(l.details || {})).toLowerCase().indexOf(q) >= 0; });
+        var listEl = document.getElementById('dgList');
+        listEl.innerHTML = rows.map(bookCard).join('') || '<p class="dg-empty">No match. Try another word.</p>';
+        if (window.VEVotes) VEVotes.wire(listEl);
+      };
+      sortEl.addEventListener('change', function () { sortPref = sortEl.value; drawB(); });
+      fEl.addEventListener('input', drawB);
+      drawB();
+    }
   }
 
   function viewLook() {
     var head = crumb([['See for yourself']]) + '<h2 class="dg-h1">See for yourself</h2>';
-    if (!MEM) { main.innerHTML = head + lockPanel('See for yourself'); return; }
+    if (!MEM) { main.innerHTML = head + lockPanel('look'); startShow(); return; }
     var L = MEM.look;
     if (!lookOpen) {
       main.innerHTML = head + '<div class="dg-door"><p>' + esc(L.door) + '</p><div class="dg-btns"><button type="button" class="dg-btn" id="dgLookGo">Read on</button><a class="dg-btn dg-ghost" href="#/brands">Skip to the brands</a></div></div>';
@@ -287,8 +405,8 @@
       });
     });
     MEM.swaps.forEach(function (s) { out.push({ t: 'Swaps', title: s.replace, text: 'Shelf: ' + s.shelf + ' Pantry: ' + s.pantry + (s.tip ? ' ' + s.tip : ''), href: '#/swaps/' + slugify(s.group) }); });
-    MEM.recipes.forEach(function (r) { out.push({ t: 'Recipes', title: r.title, text: r.steps.join(' '), href: '#/recipes' }); });
-    (BOOKS || []).forEach(function (l) { var b = (l.details && l.details.dairy_guide_book) || {}; out.push({ t: 'Cookbooks', title: b.title || l.name, text: [b.author, b.topic].filter(Boolean).join(', '), href: '#/books' }); });
+    MEM.recipes.forEach(function (r) { out.push({ t: 'Cookbook', title: r.title, text: r.steps.join(' '), href: '#/cookbook' }); });
+    (BOOKS || []).forEach(function (l) { var b = (l.details && l.details.dairy_guide_book) || {}; out.push({ t: 'Cookbook', title: b.title || l.name, text: 'Cookbook by ' + [b.author, b.topic].filter(Boolean).join(', '), href: '#/cookbook/books' }); });
     MEM.look.facts.forEach(function (f) { out.push({ t: 'See for yourself', title: f[0], text: f[1], href: '#/look' }); });
     return out;
   }
@@ -298,7 +416,7 @@
     var hits = index().filter(function (h) { var hay = (h.title + ' ' + h.text).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
     var groups = {};
     hits.forEach(function (h) { (groups[h.t] = groups[h.t] || []).push(h); });
-    var order = ['Brands', 'Swaps', 'Recipes', 'Cookbooks', 'Why dairy-free', 'See for yourself'];
+    var order = ['Brands', 'Swaps', 'Cookbook', 'Why dairy-free', 'See for yourself'];
     var html = crumb([['Search']]) + '<h2 class="dg-h1">' + hits.length + (hits.length === 1 ? ' result' : ' results') + ' for &ldquo;' + esc(q) + '&rdquo;</h2><div class="dg-res">';
     order.forEach(function (g) {
       if (!groups[g]) return;
@@ -308,8 +426,9 @@
     });
     if (!hits.length) html += '<p class="dg-empty">Nothing matched. Try a brand (Oatly), an item (cream cheese) or an ingredient (cashew).</p>';
     html += '</div>';
-    if (!MEM) html += '<div style="margin-top:26px">' + lockPanel('Searching brands, swaps, recipes and cookbooks') + '</div>';
+    if (!MEM) html += '<div style="margin-top:26px">' + lockPanel('search') + '</div>';
     main.innerHTML = html;
+    startShow();
   }
   var tSearch;
   qEl.addEventListener('input', function () {
@@ -328,13 +447,16 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'home', sub = parts.slice(1).join('/');
     if (view === 'search' && !sub) view = 'home';
-    var known = { home: 1, why: 1, brands: 1, swaps: 1, recipes: 1, books: 1, look: 1, search: 1 };
+    if (view === 'recipes') view = 'cookbook';
+    if (view === 'books') { view = 'cookbook'; sub = 'books'; }
+    var known = { home: 1, why: 1, brands: 1, swaps: 1, cookbook: 1, look: 1, search: 1 };
     if (!known[view]) view = 'home';
+    clearInterval(slideTimer);
     drawMenu(view);
     wrap.classList.toggle('dg-wide', view !== 'home');
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     ({ home: viewHome, why: viewWhy, brands: function () { viewBrands(sub); }, swaps: function () { viewSwaps(sub); },
-       recipes: viewRecipes, books: viewBooks, look: viewLook, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+       cookbook: function () { viewCookbook(sub); }, look: viewLook, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     if (view !== 'search') window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
@@ -354,6 +476,10 @@
     if (!MEM) { access = 'pending'; route(); return; }
     access = 'member';
     route();
+  }
+  // Brands and cookbooks are public Directory listings, so everyone loads them: members
+  // browse them, and the preview slides show real names to everyone else.
+  function loadDirectory() {
     Promise.all([rest(BRANDS_URL), rest(BOOKS_URL)]).then(function (r) {
       BRANDS = Array.isArray(r[0]) ? r[0] : []; BOOKS = Array.isArray(r[1]) ? r[1] : [];
       route();
@@ -392,6 +518,7 @@
     if (v.getAttribute('data-video')) v.insertAdjacentHTML('afterbegin', '<video src="' + esc(v.getAttribute('data-video')) + '" controls playsinline preload="metadata"></video>');
 
     route();
+    loadDirectory();
     var a = auth();
     var viewAs = a && a.getViewAs ? a.getViewAs() : null;
     if (viewAs) { access = viewAs.mode === 'public' ? 'guest' : 'pending'; route(); return; }

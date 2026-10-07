@@ -120,6 +120,35 @@
     .dg-offer p{font-size:14px;line-height:1.6;color:var(--ink75);margin:10px 0;}
     .dg-offer a{color:var(--g);}
     .dg-status{min-height:1.3em;font-weight:700;color:#8a5a00 !important;}
+    .dg-lock2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px;align-items:stretch;}
+    .dg-show{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;min-height:340px;display:flex;flex-direction:column;overflow:hidden;}
+    .dg-show-slide{display:none;flex:1;padding:28px 30px 8px;}
+    .dg-show-slide.on{display:flex;animation:dgIn .35s ease;}
+    @keyframes dgIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+    .dg-pv{display:flex;gap:24px;align-items:center;width:100%;}
+    .dg-pv h3{font-size:22px;font-weight:900;margin:4px 0 10px;line-height:1.2;}
+    .dg-pv p{font-size:14.5px;line-height:1.65;color:var(--ink75);margin:0 0 12px;max-width:640px;}
+    .dg-pv-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
+    .dg-pv-video .dg-pv-vframe{position:relative;flex:0 0 150px;aspect-ratio:9/16;border-radius:12px;background:#14301c center top/cover no-repeat;}
+    .dg-pv-video .dg-pv-vframe::after{content:"";position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,0.9) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='18' viewBox='0 0 16 18'%3E%3Cpath d='M2 1l13 8-13 8z' fill='%231f5f22'/%3E%3C/svg%3E") no-repeat 55% 50%;}
+    .dg-pv-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+    .dg-pv-chips span{font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;background:var(--gl);color:var(--g);}
+    .dg-pv-card{max-width:560px;}
+    .dg-show-nav{display:flex;align-items:center;justify-content:center;gap:14px;padding:12px 16px 16px;}
+    .dg-show-b{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:20px;line-height:1;cursor:pointer;color:var(--ink);}
+    .dg-show-dots{display:flex;gap:7px;}
+    .dg-show-dots button{width:9px;height:9px;padding:0;border-radius:50%;border:none;background:rgba(0,0,0,0.2);cursor:pointer;}
+    .dg-show-dots button.on{background:var(--g2);transform:scale(1.25);}
+    .dg-offer2{border-radius:16px;background:linear-gradient(160deg,#1f5f22,#14301c);color:#fff;padding:28px 26px;display:flex;flex-direction:column;gap:6px;}
+    .dg-offer2 .dg-price{color:#fff;margin-top:6px;}
+    .dg-offer2 .dg-price span{color:#c5f2c7;}
+    .dg-offer2 p{font-size:14px;line-height:1.6;color:#e6f4e7;margin:8px 0;}
+    .dg-offer2 a{color:#c5f2c7;}
+    .dg-offer2 .dg-btn{margin-top:8px;}
+    .dg-offer2 .dg-status{color:#ffd79a !important;}
+    .dg-chef-empty{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed var(--gm);background:var(--gl);border-radius:16px;padding:26px 28px;}
+    .dg-chef-empty h3{font-size:18px;font-weight:900;margin:0 0 6px;}
+    .dg-chef-empty p{font-size:14px;line-height:1.6;color:var(--ink75);margin:0;max-width:640px;}
     .dg-res h2{font-size:13px;font-weight:900;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);margin:26px 0 12px;}
     .dg-res h2:first-child{margin-top:0;}
     .dg-hit{display:block;text-decoration:none;color:inherit;}
@@ -136,6 +165,11 @@
       .dg-wrap{padding:20px 16px 56px;gap:24px;}
       .dg-tiles,.dg-grid.dg-3{grid-template-columns:minmax(0,1fr);}
       .dg-lock{grid-template-columns:minmax(0,1fr);padding:22px 20px;}
+      .dg-lock2{grid-template-columns:minmax(0,1fr);}
+      .dg-show{min-height:0;}
+      .dg-show-slide{padding:22px 20px 6px;}
+      .dg-pv{flex-direction:column;align-items:flex-start;gap:16px;}
+      .dg-pv-video .dg-pv-vframe{flex:0 0 auto;width:130px;}
     }
     @media (max-width:560px){.dg-rail{grid-template-columns:minmax(0,1fr);}.dg-video{max-width:300px;width:100%;margin:0 auto;}}
   </style>
@@ -187,12 +221,13 @@
   </aside>
 </div>
 
-<!-- The public half of Why go dairy-free. The other three facts come with membership. -->
+<!-- Public on purpose: the first three Why facts and one example swap (the free preview). The rest comes with membership. -->
 <script type="application/json" id="dg-public">{"why":[
 {"title":"Cheese is hard to put down","text":"In a 2015 University of Michigan survey of about 500 adults, highly processed foods high in fat and refined carbohydrates were the ones people most often linked to out-of-control eating. Pizza ranked near the top; cheese on its own landed in the middle. Some researchers suspect casein, the main protein in milk, plays a role, but that has not been proven in people.","sources":[["Schulte 2015, PLoS ONE","https://pmc.ncbi.nlm.nih.gov/articles/PMC4334652/"]]},
 {"title":"Many adults don't digest milk well","text":"About a third of people in the US have trouble digesting lactose, the natural sugar in milk. It is much more common among Black, Native American, Asian American and Latino people than among people of European descent.","sources":[["National Institutes of Health","https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts"]]},
 {"title":"Milk isn't the bone protector it's sold as","text":"A 2015 review in The BMJ found that most studies show no link between drinking milk or eating dairy and fewer broken bones (25 of 28 milk studies, 11 of 13 dairy studies). Calcium matters, but dairy is not the only way to get it.","sources":[["Bolland 2015, The BMJ","https://pubmed.ncbi.nlm.nih.gov/26420387/"]]}
-]}</script>
+],
+"swap_example":{"replace":"Buttermilk","shelf":"Make it: it takes 5 minutes.","pantry":"1 tbsp lemon juice or vinegar, then soy milk to the 1-cup line. Rest 5 to 10 minutes. Use 1:1.","tip":"Soy curdles best; room-temperature milk curdles faster."}}</script>
 
 <script src="/public/footer.js"></script>
 </div>
