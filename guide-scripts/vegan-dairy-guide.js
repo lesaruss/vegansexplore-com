@@ -21,6 +21,7 @@
   var SLUG = 'vegan-dairy-guide';
   var UNLOCK_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-guide-unlock';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var LISTINGS_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=name,slug&status=eq.approved&tags=cs.%7Bvegan-dairy-guide%7D';
   var MEMBER_SLIDES = ['learn-2', 'door', 'look', 'find', 'swap', 'swap-2', 'make', 'read', 'end'];
 
   var stage = document.querySelector('.vg-stage');
@@ -157,12 +158,24 @@
       });
       return out;
     }
+    // A brand whose Directory listing is live (approved, tagged vegan-dairy-guide) links to
+    // it. Drafts are not public, so their cards stay plain until the listing is approved.
+    var listingSlug = {};
+    fetch(LISTINGS_URL, { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        (rows || []).forEach(function (r) { if (r.slug) listingSlug[String(r.name).toLowerCase()] = r.slug; });
+        if (document.querySelector('#find.vg-active')) draw();
+      }).catch(function () {});
     function card(m) {
-      var it = m.it;
-      return '<div class="vg-glass dg-brand"><b>' + esc(it.b) + '</b>' +
+      var it = m.it, slug = listingSlug[it.b.toLowerCase()];
+      var inner = '<b>' + esc(it.b) + (slug ? ' <span class="dg-go" aria-hidden="true">&rsaquo;</span>' : '') + '</b>' +
         '<div class="dg-base">' + (cat === 'All' ? esc(m.c) + ' &middot; ' : '') + esc(it.base) + '</div>' +
         '<div class="dg-where">' + esc(it.where) + '</div>' +
-        (it.note ? '<div class="dg-note">' + esc(it.note) + '</div>' : '') + '</div>';
+        (it.note ? '<div class="dg-note">' + esc(it.note) + '</div>' : '');
+      return slug
+        ? '<a class="vg-glass dg-brand dg-linked" href="/directory/' + encodeURIComponent(slug) + '" aria-label="' + esc(it.b) + ', Directory listing">' + inner + '</a>'
+        : '<div class="vg-glass dg-brand">' + inner + '</div>';
     }
     // Desktop shows one page of cards that fits above the slide controls (nothing scrolls),
     // measured from a real card; phones show 12 a page.
