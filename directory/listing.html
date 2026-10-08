@@ -349,7 +349,50 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-rank{margin:0;padding:0;list-style:none}
 .bd-rank li{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:7px 0;border-bottom:1px solid var(--ve-border)}
 .bd-rank b{font-weight:900}
-@media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}}
+/* The narrator: the brand's Guide in the right column while For <Brand> is open (in the tab itself on phones) */
+.bd-narr{display:none}
+@media(min-width:769px){
+  .listing-page-grid.door-on .bsite-rail .bb-wrap,.listing-page-grid.door-on .bsite-nf{display:none}
+  .listing-page-grid.door-on #bd-narr{display:block;position:sticky;top:72px}
+}
+@media(max-width:768px){#bd-narr{display:none !important}.bd-narr.bd-narr-m{display:block;margin-bottom:14px}}
+.bd-narr{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px}
+.bd-narr-who{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.bd-narr-pic{width:64px;height:64px;flex:0 0 64px;border-radius:50%;background:#f0faf4 center/cover no-repeat;border:2px solid #5EC47A}
+.bd-narr-who b{display:block;font-size:16px;font-weight:900}
+.bd-narr-who span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-50)}
+.bd-bubble{position:relative;background:#f0faf4;border:1px solid #c8e6c9;border-radius:12px;padding:14px 16px;font-size:14.5px;line-height:1.6;color:#1a1a1a}
+.bd-bubble::before{content:'';position:absolute;top:-8px;left:26px;width:14px;height:14px;background:#f0faf4;border-left:1px solid #c8e6c9;border-top:1px solid #c8e6c9;transform:rotate(45deg)}
+.bd-play{font-family:inherit;margin-top:12px;width:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;border-radius:8px;border:1.5px solid #1f5f22;background:#1f5f22;color:#fff;cursor:pointer}
+.bd-play[aria-pressed="true"]{background:#fff;color:#1f5f22}
+/* Slides that show a lot: words on top, the picture across */
+.bd-slide.wide{grid-template-columns:minmax(0,1fr);align-items:start}
+.bd-lives{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.bd-live{margin:0}
+.bd-live-win{position:relative;height:300px;border-radius:10px;overflow:hidden;background:#fff;border:1px solid rgba(255,255,255,.2)}
+.bd-live-win iframe{position:absolute;left:0;top:0;width:400%;height:400%;border:0;transform:scale(.25);transform-origin:0 0;pointer-events:auto}
+.bd-live figcaption{font-size:12px;font-weight:800;color:rgba(255,255,255,.85);margin-top:8px}
+.bd-live figcaption a{color:#8fe3a6;margin-left:6px}
+.bd-feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bd-feat div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px}
+.bd-feat b{display:block;font-size:16px;font-weight:900;color:#8fe3a6;margin-bottom:4px}
+.bd-feat span{font-size:13px;line-height:1.5;color:rgba(255,255,255,.78)}
+.bd-chips{display:flex;flex-wrap:wrap;gap:8px}
+.bd-chips span{font-size:13px;font-weight:800;padding:10px 14px;border-radius:99px;border:1px solid rgba(143,227,166,.45);color:#fff;background:rgba(255,255,255,.05)}
+.bd-sample{max-width:340px;margin:0 auto;background:#fff;border-radius:12px;padding:12px}
+.bd-sample-h{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:8px}
+.bd-sample-h em{font-style:normal;color:#b45309}
+.bd-sample img{display:block;width:100%;border-radius:8px}
+/* The house ad in a brand page's billboard */
+.bb-house{display:block;text-decoration:none;color:#fff;border-radius:8px;overflow:hidden;position:relative;aspect-ratio:6/5;background:#0d1a10}
+.bb-house-pic{position:absolute;inset:0;background:center/cover no-repeat}
+.bb-house::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 55%,transparent 75%)}
+.bb-house-txt{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;display:flex;flex-direction:column;gap:3px}
+.bb-house-txt small{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fe3a6}
+.bb-house-txt b{font-size:19px;font-weight:900;line-height:1.15}
+.bb-house-txt span{font-size:12.5px;color:rgba(255,255,255,.85)}
+.bb-house-txt em{font-style:normal;align-self:flex-start;margin-top:6px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#5EC47A;color:#0d2a12;padding:7px 11px;border-radius:6px}
+@media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}.bd-lives{grid-template-columns:minmax(0,1fr)}.bd-feat{grid-template-columns:minmax(0,1fr)}}
 .bsite-pad{padding:32px 40px 48px}
 .bsite-sec{margin-bottom:34px}
 .bsite-sec h3,.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
@@ -1444,14 +1487,17 @@ function loadBrandSite(l){
       var nav = document.querySelector('.listing-tabs');
       if(nav && nav.getBoundingClientRect().top < 0) window.scrollTo(0, nav.getBoundingClientRect().top + window.pageYOffset - 70);
     }
-    // ---- For <Brand>: the brand's own door (Sean, 2026-10-08: "a tab that's locked just for the brand to see the
-    // opportunities and performance of their page... give them a tour of the platform"). It shows to the brand's
-    // owner, a super admin, and anyone who arrives with ?tab=brand (the link we send the brand). Two views:
-    //   The offer   a walkthrough, one slide at a time: the page we built, where they show up, the cities, campaigns,
-    //               Brand Partner at $111 a quarter, and the dashboard
+    // ---- For <Brand>: the brand's door (Sean, 2026-10-08: "a tab that's locked just for the brand to see the
+    // opportunities and performance of their page... when you go to For Oatly, you actually have a guide on the right
+    // hand side letting them know the reason why they should become a brand partner... all that is being narrated").
+    // It shows to the brand's owner, a super admin, and anyone who arrives with ?tab=brand (the link we send). Two views:
+    //   The offer   a guided tour, one slide at a time, narrated by the Guide of the brand's Guide (Maya for the Dairy
+    //               Guide) in the right column: her words on each slide, and her voice when listings.details.brand_door
+    //               .audio has the recordings (el-media tts, vegan-media/media/<guide>/brand-door/<slug>-<n>.mp3)
     //   Dashboard   ve-claims brand_stats for the owner or a super admin; everyone else sees the outline, no numbers
     var door = document.getElementById('bsite-door');
-    var DOOR = { view: new URLSearchParams(location.search).get('door') === 'dashboard' ? 'dashboard' : 'offer', i: 0, days: 30 };
+    var DOOR = { view: new URLSearchParams(location.search).get('door') === 'dashboard' ? 'dashboard' : 'offer', i: 0, days: 30, playing: false };
+    var BD = d.brand_door || {};
     function viewer(){ try{ return window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){ return null; } }
     function canSee(){ var m = viewer(); return !!(m && (m.is_superadmin || m.id === l.owner_member_id || m.id === l.claimed_by_member_id)); }
     var claimHref = '/claim?listing=' + encodeURIComponent(l.slug) + '&plan=brand';
@@ -1459,81 +1505,123 @@ function loadBrandSite(l){
     var withVersions = rows.filter(function(p){ return Array.isArray(p.variants) && p.variants.length > 1; })[0] || rows[0];
     var hubs = Array.isArray(window.VE_HUBS) ? window.VE_HUBS : [];
     var guides = {}; rows.forEach(function(p){ (p.guides || []).forEach(function(g){ if(VEProducts.GUIDES[g]) guides[g] = VEProducts.GUIDES[g]; }); });
-    var guideNames = Object.keys(guides).map(function(g){ return guides[g][0]; });
+    var guideKeys = Object.keys(guides), firstGuide = guideKeys.length ? guides[guideKeys[0]] : null;
+    var guideNames = guideKeys.map(function(g){ return guides[g][0]; });
+    // The narrator: the Guide of the brand's Guide (VEProducts.GUIDES[...][2]), else Liz.
+    var NARR = BD.narrator || (firstGuide && firstGuide[2]) || 'liz';
+    var NARR_NAME = NARR.charAt(0).toUpperCase() + NARR.slice(1);
+    var narrArt = window.VEGuideArt ? VEGuideArt(NARR, 'square') : '/public/guides/' + NARR + '.png';
+    var firstStore = storeList[0];
     var LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
+    var B = esc(l.name);
     function pics(list){ return '<div class="bd-pics">' + list.slice(0, 6).map(function(u){ return '<span style="background-image:url(\'' + esc(u) + '\')"></span>'; }).join('') + '</div>'; }
+    function tiles(list){ return '<div class="bd-feat">' + list.map(function(x){ return '<div><b>' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>'; }
+    // A real page, live and scaled down, so the brand sees exactly what people see (?preview=1: not counted).
+    function live(src, cap, open){ return '<figure class="bd-live"><div class="bd-live-win"><iframe data-src="' + esc(src) + '" title="' + esc(cap) + '" loading="lazy" tabindex="-1"></iframe></div>' +
+      '<figcaption>' + esc(cap) + ' <a href="' + esc(open) + '" target="_blank" rel="noopener">Open</a></figcaption></figure>'; }
+    function withPreview(u){ return u + (u.indexOf('?') < 0 ? '?' : '&') + 'preview=1'; }
+    var milk = withVersions && withVersions.slug;
     var SLIDES = [
-      { t: 'The page we built', h: 'We built ' + esc(l.name) + ' a page on Vegans Explore',
-        body: '<p>' + esc(l.name) + ' is ' + (l._featured ? 'a featured brand' : 'a brand') + ' in our Directory: ' + rows.length + (rows.length === 1 ? ' product' : ' products') +
-          (guideNames.length ? ' from the ' + esc(guideNames.join(' and the ')) : '') + ', each with its versions, Nutrition Facts and USDA label record, and the ' + storeList.length +
-          ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. It is live, and it is yours to keep.</p>' +
-          '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="overview">See the page</button>' + (withVersions ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(withVersions.slug) + '">Open ' + esc(title(withVersions)) + '</button>' : '') + '</div>',
+      { t: 'Welcome', h: 'We built ' + B + ' a page on Vegans Explore',
+        say: 'Hi ' + l.name + ', I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. Your products are already in it, so we built ' + l.name + ' its own page on Vegans Explore. Let me show you around.',
+        body: '<p>' + rows.length + (rows.length === 1 ? ' product' : ' products') + (guideNames.length ? ' from the ' + esc(guideNames.join(' and the ')) : '') + ', every version with its Nutrition Facts and USDA label record, and the ' +
+          storeList.length + ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. Live today, and yours to keep.</p>' +
+          '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="overview">See the page</button>' + (milk ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(milk) + '">Open ' + esc(title(withVersions)) + '</button>' : '') + '</div>',
         pic: pics([l.logo_url].concat(rows.map(function(p){ return p.image_url; })).filter(Boolean)) },
-      { t: 'Where people find you', h: 'Where people find ' + esc(l.name),
-        body: '<ul class="bd-list">' + (guideNames.length ? '<li><b>' + esc(guideNames.join(', ')) + '.</b> Our Guides are small websites that bring the Directory, votes and recipes together. ' + esc(l.name) + ' is in ' + (guideNames.length === 1 ? 'it' : 'them') + '.</li>' : '') +
-          '<li><b>Each store\'s Vegan aisle.</b> Every grocery store has a page listing the Vegan products our Guides found there, and each one links back here.</li>' +
-          '<li><b>The Directory.</b> Members vote for the brands they love and save them to their dashboard.</li>' +
-          '<li><b>Product pages.</b> Every product has its own link to share, with its versions and Nutrition Facts.</li></ul>',
-        pic: '<div class="bd-logos">' + storeList.slice(0, 12).map(function(s){ return VEProductView.logo(s, 'pv-slogo'); }).join('') + '</div>' },
-      { t: 'The cities', h: 'The cities we are building',
-        body: '<p>Vegans Explore is a community, city by city: each one has its Daily Pulse, events, a Directory and members who earn points for showing up. South Florida is first. Our goal is a thousand chapters by 2030.</p>' +
-          '<div class="bd-btns"><a class="bd-btn o" href="/communities/south-florida" target="_top">Visit South Florida</a></div>',
-        pic: '<div class="bd-cities">' + hubs.map(function(h){ var b = h.page && h.page.banner; return '<a href="/communities/' + esc(h.slug) + '" target="_top" style="' + (b ? "background-image:url('" + esc(b) + "')" : '') + '"><span>' + esc(h.name) + '</span></a>'; }).join('') + '</div>' },
-      { t: 'Campaigns', h: 'Campaigns, from the front row',
-        body: '<p>A brand runs a campaign on its page: tasks worth points, photos and videos members make for it (every one labeled #ad), a leaderboard in each city, and prizes. The Campaigns tab opens on this page while one is running.</p>' +
-          '<p>Brand Partners see every campaign first and choose what to join, a la carte through LESARUSS AI, or with our team for something custom.</p>' +
-          '<div class="bd-btns"><a class="bd-btn o" href="/campaign-engine/fieldhouse-protein" target="_blank" rel="noopener">See an example campaign</a></div>',
-        pic: '<div class="bd-note">An example campaign, labeled Illustrative, shows how one runs on a brand\'s page week by week.</div>' },
+      { t: 'Where people find you', h: 'Where people find ' + B + ' today',
+        say: 'This is where people find you today: in the ' + (firstGuide ? firstGuide[0] : 'Directory') + ', in every grocery store\'s Vegan aisle, and on your own product pages, with every version, its Nutrition Facts, and its USDA label.',
+        body: '<p>These are the real pages, live. Scroll inside any of them, or open it.</p>',
+        pic: '<div class="bd-lives">' + (firstGuide ? live(withPreview(firstGuide[1]), 'The ' + firstGuide[0], firstGuide[1]) : '') +
+          (firstStore ? live(withPreview('/directory/' + firstStore.slug + (milk && BY[milk] ? '?product=' + BY[milk].id : '')), firstStore.name + '\'s Vegan aisle', '/directory/' + firstStore.slug) : '') +
+          (milk ? live(withPreview('/directory/' + l.slug + '?tab=products&product=' + milk), title(withVersions), '/products/' + milk) : '') + '</div>', wide: true },
+      { t: 'Your ad', h: 'An ad we drew for ' + B,
+        say: 'We even drew this one for you. Our Guides, enjoying your products, in ads that run across Vegans Explore, on the pages where people are already looking for you.',
+        body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run ads like this across Vegans Explore: on the Daily Pulse, in the Guides, beside the Directory.</p><p class="bd-small">A sample, made for ' + B + '. It does not run anywhere yet.</p>',
+        pic: BD.sample_ad ? '<div class="bd-sample"><div class="bd-sample-h">Billboard <em>Sample for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>'
+          : '<div class="bd-note">We draw a sample ad for every brand we partner with: our Guides, enjoying your products.</div>' },
+      { t: 'The mission', h: 'A thousand chapters by 2030',
+        say: 'Vegans Explore is a community, built city by city. South Florida is first, and our goal is a thousand chapters by twenty thirty. Brand Partners help us get there.',
+        body: '<p>Each city has its Daily Pulse, events, a Directory and members who earn points for showing up. South Florida is first.</p><div class="bd-btns"><a class="bd-btn o" href="/communities/south-florida" target="_blank" rel="noopener">Visit South Florida</a></div>',
+        pic: '<div class="bd-cities">' + hubs.map(function(h){ var b = h.page && h.page.banner; return '<a href="/communities/' + esc(h.slug) + '" target="_blank" rel="noopener" style="' + (b ? "background-image:url('" + esc(b) + "')" : '') + '"><span>' + esc(h.name) + '</span></a>'; }).join('') + '</div>' },
+      { t: 'In person and online', h: 'Straight to the people who use your products',
+        say: 'We bring brands like yours straight to the people who use your products: at events, online, through activations, and in games like our Passport Challenge.',
+        body: '<p>Members meet in person and keep talking online, and brands are part of both.</p>',
+        pic: tiles([['Events', 'Dinners, meetups and tastings in each city'], ['Activations', 'Your product in members\' hands, with tasks worth points'], ['Games', 'The Passport Challenge: stamps, points and prizes'], ['Online', 'The Daily Pulse and the Community Board, every day']]) },
+      { t: 'Campaigns', h: 'Campaigns, points and giveaways',
+        say: 'Run a campaign with us, and members earn points for joining in. Tie those points to giveaways, run ads alongside it, and our team will sit down with you and build the whole campaign around your budget.',
+        body: '<p>Brand Partners see every campaign first, and choose what to join, a la carte through LESARUSS AI, or with our team for something custom.</p><div class="bd-btns"><a class="bd-btn o" href="/campaign-engine/fieldhouse-protein" target="_blank" rel="noopener">See an example campaign</a></div>',
+        pic: tiles([['Points', 'Members earn them for every task they finish'], ['Giveaways', 'Tie points to your prizes and coupons'], ['Ads', 'Run ads alongside the campaign'], ['Your budget', 'Our team builds the campaign around it']]) },
+      { t: 'Your dashboard', h: 'Your dashboard, live',
+        say: 'As a Brand Partner, you get a dashboard right on this page. See in real time who\'s visiting, which products they open, which stores they look for you in, and how your campaigns are doing.',
+        body: '<p>It counts from the day we built your page, so the numbers are waiting for you.</p><div class="bd-btns"><button type="button" class="bd-btn" data-bdview="dashboard">Open the dashboard</button></div>',
+        pic: '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' },
+      { t: 'Beyond this page', h: 'Everywhere your audience lives',
+        say: 'And it goes beyond this page: our Guides, the Daily Pulse, the Community Board, our social channels, and the wider LESARUSS universe of brands, where your audience already lives.',
+        body: '<p>Many ways to feature ' + B + ', on Vegans Explore and across the LESARUSS universe of brands.</p>',
+        pic: '<div class="bd-chips">' + ['Our Guides', 'The Daily Pulse', 'The Community Board', 'Instagram', 'TikTok', 'Ad slots', 'Events', 'The LESARUSS universe'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>' },
       { t: 'Brand Partner', h: 'Brand Partner: $111 a quarter',
-        body: '<p>A seat at the table. It keeps ' + esc(l.name) + ' in everything we build from here.</p><ul class="bd-list bd-perks">' +
-          '<li>Your featured brand page, kept up with your products, photos, videos and creator content</li>' +
-          '<li>Your brand dashboard: page views, products opened, store aisles opened, videos played</li>' +
-          '<li>Front-row access to every campaign before it opens</li>' +
-          '<li>Sponsorships a la carte through LESARUSS AI, or a call with our team for custom options</li>' +
-          '<li>A look at each city as we open it</li></ul>' +
+        say: 'It all starts with Brand Partner: a hundred and eleven dollars a quarter for a seat at the table, and the whole platform to explore. Claim ' + l.name + '\'s page, and let\'s build something together.',
+        body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products, photos, videos and creator content</li>' +
+          '<li>Your live dashboard: visits, products opened, store aisles opened, campaigns</li><li>Front-row access to every campaign before it opens</li>' +
+          '<li>Sponsorships a la carte through LESARUSS AI, or a call with our team</li><li>The whole platform to explore: the Directory, events and every community</li></ul>' +
           '<p class="bd-small">Your quarter helps us build the platform and open more cities this year.</p>' +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + esc(l.name) + ' as a Brand Partner</a><a class="bd-btn o" href="' + esc(talkHref) + '">Talk with our team</a></div>',
-        pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months.</em></div>' },
-      { t: 'Your dashboard', h: 'Your dashboard',
-        body: '<p>Once ' + esc(l.name) + ' claims this page, this tab shows how it performs: who visits, which products they open, which stores they look for you in, and which videos they play.</p>' +
-          '<div class="bd-btns"><button type="button" class="bd-btn" data-bdview="dashboard">Open the dashboard</button></div>',
-        pic: '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' }
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + B + ' as a Brand Partner</a><a class="bd-btn o" href="' + esc(talkHref) + '">Talk with our team</a></div>',
+        pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months.</em></div>' }
     ];
+    var AUDIO = Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
+    var player = AUDIO ? new Audio() : null;
+    if(player){ player.preload = 'none'; player.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); }); }
+    var grid = document.querySelector('.listing-page-grid'), rail = document.querySelector('.bsite-rail');
+    var narr = null;
+    if(rail && door){ narr = document.createElement('div'); narr.className = 'bd-narr'; narr.id = 'bd-narr'; rail.insertBefore(narr, rail.firstChild); }
+    function narrHtml(){
+      var sl = SLIDES[DOOR.i];
+      return '<div class="bd-narr-who"><span class="bd-narr-pic" style="background-image:url(\'' + esc(narrArt) + '\')"></span><div><b>' + esc(NARR_NAME) + '</b><span>Your Guide to Vegans Explore</span></div></div>' +
+        '<div class="bd-bubble">' + esc(DOOR.view === 'offer' ? sl.say : 'This is ' + l.name + '\'s dashboard: what people do on your page, live.') + '</div>' +
+        (AUDIO && DOOR.view === 'offer' ? '<button type="button" class="bd-play" data-bd-play aria-pressed="' + DOOR.playing + '">' + (DOOR.playing ? 'Pause ' + esc(NARR_NAME) : '&#9654; Hear ' + esc(NARR_NAME)) + '</button>' : '');
+    }
+    function drawNarr(){ [narr, door && door.querySelector('.bd-narr-m')].forEach(function(el){ if(el) el.innerHTML = narrHtml(); }); }
+    function play(){ if(!player) return; player.src = AUDIO[DOOR.i]; player.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); }); }
+    function stop(){ if(player){ player.pause(); } DOOR.playing = false; }
+    function syncRail(){ var on = !!document.querySelector('.tab-btn.active[data-tab="brand"]'); if(grid) grid.classList.toggle('door-on', on); if(!on && DOOR.playing){ stop(); drawNarr(); } }
+    function lazyLive(){ [].forEach.call(door.querySelectorAll('iframe[data-src]'), function(f){ f.src = f.getAttribute('data-src'); f.removeAttribute('data-src'); }); }
     function drawDoor(){
       if(!door) return;
       var i = Math.max(0, Math.min(SLIDES.length - 1, DOOR.i)), sl = SLIDES[i];
-      door.innerHTML = '<div class="bd-top"><div class="bd-hello">For ' + esc(l.name) + '</div><div class="bsite-pills" role="group" aria-label="View">' +
+      door.innerHTML = '<div class="bd-top"><div class="bd-hello">For ' + B + '</div><div class="bsite-pills" role="group" aria-label="View">' +
         [['offer', 'The offer'], ['dashboard', 'Dashboard']].map(function(o){ return '<button type="button" class="bsite-pill" data-bdview="' + o[0] + '" aria-pressed="' + (DOOR.view === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+        '<div class="bd-narr bd-narr-m"></div>' +
         (DOOR.view === 'offer'
-          ? '<section class="bd-slide"><div class="bd-words"><div class="bd-kicker">' + esc(sl.t) + '</div><h2>' + sl.h + '</h2>' + sl.body + '</div><div class="bd-pic">' + sl.pic + '</div></section>' +
+          ? '<section class="bd-slide' + (sl.wide ? ' wide' : '') + '"><div class="bd-words"><div class="bd-kicker">' + (i + 1) + ' &middot; ' + esc(sl.t) + '</div><h2>' + sl.h + '</h2>' + sl.body + '</div><div class="bd-pic">' + sl.pic + '</div></section>' +
             '<div class="bd-ctrl"><button type="button" class="bd-nav" data-bd="prev"' + (i ? '' : ' disabled') + '>Back</button><span>' + (i + 1) + ' of ' + SLIDES.length + '</span>' +
             '<button type="button" class="bd-nav" data-bd="next"' + (i < SLIDES.length - 1 ? '' : ' disabled') + '>Next</button></div>'
           : '<div class="bd-dash"></div>');
-      if(DOOR.view === 'dashboard') drawDash();
+      drawNarr();
+      if(DOOR.view === 'dashboard') drawDash(); else lazyLive();
     }
     function tile(label, n){ return '<div><b>' + (n == null ? '0' : Number(n).toLocaleString()) + '</b><span>' + label + '</span></div>'; }
     function drawDash(){
       var el = door.querySelector('.bd-dash'); if(!el) return;
       if(!canSee()){
         el.innerHTML = '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened', 'Videos played'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' +
-          '<div class="bd-locked"><p><b>This is ' + esc(l.name) + '\'s dashboard.</b> It opens for ' + esc(l.name) + ' once the page is claimed, and shows how it performs: visits, the products people open, the stores they look for you in, and the videos they play.</p>' +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + esc(l.name) + ' as a Brand Partner</a>' +
+          '<div class="bd-locked"><p><b>This is ' + B + '\'s dashboard.</b> It opens for ' + B + ' once the page is claimed, and shows how it performs: visits, the products people open, the stores they look for you in, and the videos they play.</p>' +
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + B + ' as a Brand Partner</a>' +
           (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>';
         return;
       }
       el.innerHTML = '<div class="aisle-empty">Loading the numbers...</div>';
       fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
-        body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: DOOR.days }) }).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){
-        if(!d || !d.stats){ el.innerHTML = '<div class="aisle-empty">We could not load the numbers just now. Try again in a moment.</div>'; return; }
-        var s = d.stats, T = s.totals || {}, days = [], byDay = {};
+        body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: DOOR.days }) }).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(dd){
+        if(!dd || !dd.stats){ el.innerHTML = '<div class="aisle-empty">We could not load the numbers just now. Try again in a moment.</div>'; return; }
+        var s = dd.stats, T = s.totals || {}, days = [], byDay = {};
         (s.daily || []).forEach(function(x){ byDay[x.day] = x.views; });
         for(var k = s.days - 1; k >= 0; k--){ var dt = new Date(Date.now() - k * 864e5).toISOString().slice(0, 10); days.push([dt, byDay[dt] || 0]); }
         var max = Math.max.apply(null, days.map(function(x){ return x[1]; }).concat([1]));
         function named(list, fn){ return list.length ? '<ol class="bd-rank">' + list.slice(0, 6).map(function(x){ return '<li><span>' + esc(fn(x.ref)) + '</span><b>' + Number(x.n).toLocaleString() + '</b></li>'; }).join('') + '</ol>' : '<p class="bd-small">None yet.</p>'; }
         var VIA = { page: 'On Vegans Explore', guide: 'Inside a Guide', link: 'From a link we sent' };
-        el.innerHTML = (d.admin ? '<p class="bd-admin">You are seeing ' + esc(l.name) + '\'s dashboard as a super admin.</p>' : '') +
+        el.innerHTML = (dd.admin ? '<p class="bd-admin">You are seeing ' + B + '\'s dashboard as a super admin.</p>' : '') +
           '<div class="bd-dhead"><div class="bsite-pills" role="group" aria-label="Period">' + [7, 30, 90].map(function(n){ return '<button type="button" class="bsite-pill" data-bddays="' + n + '" aria-pressed="' + (DOOR.days === n) + '">' + n + ' days</button>'; }).join('') + '</div>' +
-          '<span class="bd-small">' + (d.plan ? esc(d.plan.name) + (d.plan.renews_at ? ', renews ' + esc(new Date(d.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })) : '') : 'Not a Brand Partner yet. <a href="' + esc(claimHref) + '" target="_top">Become one</a>') + '</span></div>' +
+          '<span class="bd-small">' + (dd.plan ? esc(dd.plan.name) + (dd.plan.renews_at ? ', renews ' + esc(new Date(dd.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })) : '') : 'Not a Brand Partner yet. <a href="' + esc(claimHref) + '" target="_top">Become one</a>') + '</span></div>' +
           '<div class="bd-tiles">' + tile('Page views', T.view) + tile('Visitors', s.visitors) + tile('Products opened', T.product) + tile('Store aisles opened', T.store) + tile('Videos played', T.video) + '</div>' +
           '<div class="bd-card"><h3>Page views, last ' + s.days + ' days</h3><div class="bd-bars" role="img" aria-label="Page views by day">' + days.map(function(x){
             return '<i style="height:' + Math.max(x[1] ? 6 : 2, Math.round(x[1] / max * 100)) + '%" data-tip="' + esc(new Date(x[0] + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + ': ' + x[1] + (x[1] === 1 ? ' view' : ' views') + '"></i>'; }).join('') + '</div>' +
@@ -1547,22 +1635,24 @@ function loadBrandSite(l){
     }
     function setDoor(view){
       DOOR.view = view;
+      if(view !== 'offer' && DOOR.playing) stop();
       var u = new URL(location.href); if(view === 'dashboard') u.searchParams.set('door', 'dashboard'); else u.searchParams.delete('door');
       history.replaceState(history.state, '', u.pathname + u.search + u.hash);
       drawDoor();
     }
     function doorClick(e){
       var el;
+      if(e.target.closest('[data-bd-play]')){ if(DOOR.playing){ stop(); drawNarr(); } else play(); return true; }
       if(!door || !door.contains(e.target)) return false;
       if((el = e.target.closest('[data-bdview]'))){ setDoor(el.getAttribute('data-bdview')); return true; }
-      if((el = e.target.closest('[data-bd]'))){ DOOR.i += el.getAttribute('data-bd') === 'next' ? 1 : -1; drawDoor(); return true; }
+      if((el = e.target.closest('[data-bd]'))){ DOOR.i = Math.max(0, Math.min(SLIDES.length - 1, DOOR.i + (el.getAttribute('data-bd') === 'next' ? 1 : -1))); drawDoor(); if(DOOR.playing) play(); return true; }
       if((el = e.target.closest('[data-bddays]'))){ DOOR.days = +el.getAttribute('data-bddays'); drawDash(); return true; }
-      if((el = e.target.closest('[data-bd-goto]'))){ showListingTab(el.getAttribute('data-bd-goto')); window.scrollTo(0, 0); return true; }
-      if((el = e.target.closest('[data-bd-product]'))){ go(el.getAttribute('data-bd-product')); return true; }
+      if((el = e.target.closest('[data-bd-goto]'))){ showListingTab(el.getAttribute('data-bd-goto')); syncRail(); window.scrollTo(0, 0); return true; }
+      if((el = e.target.closest('[data-bd-product]'))){ go(el.getAttribute('data-bd-product')); syncRail(); return true; }
       if(e.target.closest('[data-bd-signin]')){ if(window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in with the account that claimed ' + l.name + '.', function(){ location.reload(); }); return true; }
       return false;
     }
-    drawDoor();
+    drawDoor(); syncRail();
     var root = document.getElementById('listing-root');
     root.addEventListener('click', function(e){
       var el;
@@ -1573,6 +1663,7 @@ function loadBrandSite(l){
         if(tab === 'products' && new URLSearchParams(location.search).get('product')){ go(''); return; }
         if(tab !== 'products') sideOff(); else route();
         if(tab === 'gallery') veTrack(l, 'gallery');
+        syncRail();
         return;
       }
       if((el = e.target.closest('a.pv-store[href^="/directory/"]'))) veTrack(l, 'store', el.getAttribute('href').split('?')[0].split('/').pop());
@@ -1589,7 +1680,7 @@ function loadBrandSite(l){
     });
     root.addEventListener('change', function(e){ if(e.target.matches && e.target.matches('[data-gabout]')) setGallery('about', e.target.value); });
     window.addEventListener('popstate', function(){
-      showListingTab(new URLSearchParams(location.search).get('tab') || 'overview'); route();
+      showListingTab(new URLSearchParams(location.search).get('tab') || 'overview'); route(); syncRail();
     });
     route();
   });
@@ -2332,7 +2423,8 @@ var VE_BB_SLOT_ELS = {
 // owner or a super admin, through ve-claims brand_stats.
 function veTrack(l, kind, ref){
   try{
-    if(!l || !l.id || DEMO || navigator.webdriver) return;
+    // ?preview=1: a page shown inside a brand's tour, not a visit.
+    if(!l || !l.id || DEMO || navigator.webdriver || new URLSearchParams(location.search).get('preview')) return;
     var vid = null;
     try{ vid = localStorage.getItem('ve_vid'); if(!vid){ vid = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('ve_vid', vid); } }catch(e){}
     var via = document.documentElement.classList.contains('ve-embedded') ? 'guide' : (new URLSearchParams(location.search).get('vl') ? 'link' : 'page');
@@ -2340,6 +2432,20 @@ function veTrack(l, kind, ref){
       headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ p_listing: l.id, p_kind: kind, p_ref: ref || null, p_visitor: vid, p_via: via }) }).catch(function(){});
   }catch(e){}
+}
+
+// A brand page's billboard carries our own ad, for the Guide its products are in (Sean, 2026-10-08: "on these pages
+// we put internal ads... and then we promote the guide on this page as well, the dairy guide"). VEProducts.GUIDES
+// holds each Guide's house ad: its Guide's picture, a line, and a /go/ tracked link.
+function houseAd(l){
+  var el = document.getElementById('bb-ad-landscape-1'); if(!el || !window.VEProducts) return;
+  var d = l.details || {}, g = null;
+  (VEProducts.SOURCES || []).forEach(function(k){ if(!g && Array.isArray(d[k]) && d[k].length){ Object.keys(VEProducts.GUIDES).forEach(function(s){ if(!g && VEProducts.GUIDES[s][3]) g = VEProducts.GUIDES[s]; }); } });
+  if(!g) return loadBillboardAds();
+  var art = window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.png';
+  el.classList.add('bb-filled');
+  el.innerHTML = '<a class="bb-house" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
+    '<span class="bb-house-txt"><small>From Vegans Explore</small><b>The Vegan ' + esc(g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
 }
 
 function veAdClick(placementId, campaignId){
@@ -2685,7 +2791,7 @@ if(!slug || slug === 'listing'){
           hr.appendChild(eb);
         }
       }
-      loadBillboardAds();
+      if(l._brandSite) houseAd(l); else loadBillboardAds();
       veTrack(l, 'view');
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);

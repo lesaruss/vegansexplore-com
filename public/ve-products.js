@@ -12,13 +12,14 @@
  *                                      or loads), then the store's website. null when there is none.
  *   VEProducts.label(n)                a Nutrition Facts panel from ve_products.nutrition
  *   VEProducts.css()                   the panel's styles, once
- *   VEProducts.GUIDES                  guide slug -> [name, link]
+ *   VEProducts.GUIDES                  guide slug -> [name, link, its Guide (narrates its brands' For <Brand> tour),
+ *                                      house ad link (a /go/ tracked link), house ad line]
  *   VEProducts.SOURCES                 the listings.details keys that hold a Guide's products (the same keys as
  *                                      ve_guide_product_sources). A brand with one of them is a brand page with
  *                                      a Products tab.
  */
 (function () {
-  var GUIDES = { 'vegan-dairy-guide': ['Dairy Guide', '/guides/vegan-dairy-guide'] };
+  var GUIDES = { 'vegan-dairy-guide': ['Dairy Guide', '/guides/vegan-dairy-guide', 'maya', '/go/ve-dairy-guide', 'Brands, swaps and recipes, with Maya'] };
   var SOURCES = ['dairy_guide'];
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function title(p, brandName) { return ((brandName || '') + ' ' + (p.name || p.product_type || '')).trim(); }

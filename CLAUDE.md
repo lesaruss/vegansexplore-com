@@ -392,8 +392,16 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   offers it, and a Food Brands or Brands listing is offered only that plan. The tier checks were widened by
   `supabase/migrations/20261008_brand_partner_tier.sql`, run in the dashboard SQL editor (it drops constraints).
 - **For <Brand>** tab (`?tab=brand`): the brand's door. It shows to the owner, a super admin, and anyone arriving on the
-  link we send (it then stays for the visit). The offer, one slide at a time (the page we built, where people find them,
-  the cities, campaigns, Brand Partner, the dashboard), and the Dashboard (`?door=dashboard`): views, visitors, products
+  link we send (it then stays for the visit). The offer is a narrated tour, nine slides (the page we built; where people
+  find them, as live scaled previews of the real pages, `?preview=1` so they are not counted; a sample ad we drew of our
+  Guide enjoying their product; the mission, a thousand chapters by 2030; events, activations and games; campaigns,
+  points and giveaways; the live dashboard; everywhere their audience lives, the LESARUSS universe included; Brand
+  Partner). The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
+  (`VEProducts.GUIDES[..][2]`), her words on each slide and her voice from `listings.details.brand_door.audio` (el-media
+  tts, `vegan-media/media/<guide>/brand-door/<slug>-<n>.mp3`; the spoken text is the slide's `say` in `loadBrandSite`,
+  so record again when it changes). `brand_door.sample_ad` is the sample ad (Sean, 2026-10-08: "show our characters
+  consuming their products in the ads just for their pages"); it shows only in the tour, never as a live ad. On a brand
+  page's other tabs the billboard carries our own ad for its Guide (`houseAd`, `/go/ve-dairy-guide`). The Dashboard (`?door=dashboard`): views, visitors, products
   opened, store aisles opened, videos played, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
   admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
   (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
