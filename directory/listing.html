@@ -279,7 +279,18 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 /* A brand page (Sean, 2026-10-08): a brand with products in our Guides is a small site of its own. Tabs Overview
    (about, products, where to find it, the gallery) and Products (the list, then one product: Products > Oatly Milk);
    Campaign, Video and Pulse appear once the brand partners with us. The right column is one ad that stays in place. */
-@media(min-width:769px){.listing-page-grid.bsite{grid-template-columns:minmax(0,1fr) 380px}.listing-sidebar.bsite-rail{top:72px;max-height:none;overflow:visible}}
+@media(min-width:769px){.listing-page-grid.bsite{grid-template-columns:minmax(0,1fr) 380px}.listing-sidebar.bsite-rail{position:relative;top:auto;align-self:stretch;max-height:none;overflow:visible}.bsite-rail .bb-wrap{position:sticky;top:72px}}
+.bsite-nf{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:16px;margin-bottom:14px}
+.bsite-nf .vep-nf{max-width:none}
+.bsite-gtools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px}
+.bsite-gtools select{font-family:inherit;font-size:13px;font-weight:700;padding:9px 12px;border-radius:8px;border:1px solid var(--ve-border);background:#fff;min-width:200px}
+.bsite-pills{display:flex;gap:6px;flex-wrap:wrap}
+.bsite-pill{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:99px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text-75);cursor:pointer}
+.bsite-pill[aria-pressed="true"]{background:#1f5f22;border-color:#1f5f22;color:#fff}
+.bsite-gcount{font-size:12px;font-weight:700;color:var(--ve-text-50);margin-left:auto}
+#bsite-gallery h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
+.bsite-gal + h3{margin-top:28px}
+@media(max-width:768px){.bsite-nf{display:none}.bsite-gcount{margin-left:0}}
 .bsite-pad{padding:32px 40px 48px}
 .bsite-sec{margin-bottom:34px}
 .bsite-sec h3,.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
@@ -1135,7 +1146,9 @@ function renderSidebar(l){
 
   // A brand page keeps its right column for the ad (Sean, 2026-10-08: "keep the right hand side for advertisement...
   // the shorter ad... stationary throughout that page").
-  if(l._brandSite) return '<div class="listing-sidebar bsite-rail">'+(l._campaign ? campaignSideCard(l._campaign) : '')+billboardHtml+'</div>';
+  // With a product open, its Nutrition Facts sit at the top and the billboard under them, pinned (Sean, 2026-10-08:
+  // "put the barcode back on the right-hand side and push the billboard down").
+  if(l._brandSite) return '<div class="listing-sidebar bsite-rail">'+(l._campaign ? campaignSideCard(l._campaign) : '')+'<div class="bsite-nf" id="bsite-nf" hidden></div>'+billboardHtml+'</div>';
   return '<div class="listing-sidebar">'+
     (l._campaign ? campaignSideCard(l._campaign) : '')+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
@@ -1236,10 +1249,13 @@ function loadAisle(l){
 
 // A brand page (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini
 // web experience for Oatly and then as they become partners more tabs open"). A brand with products in our Guides
-// (a listings.details key in VEProducts.SOURCES) gets: Overview (about the brand, its products, where to find them,
-// the gallery: the brand's videos, product photos, and creator content once we make it) and Products (the list, then
-// one product, ?tab=products&product=<slug>&v=<version>, drawn by /public/ve-product-view.js). /products/<slug> forwards
-// here. The Campaign tab shows only while the brand runs a campaign with us; the right column is the ad alone.
+// (a listings.details key in VEProducts.SOURCES) gets three tabs:
+//   Overview  about the brand (details.about), its products, where to find them
+//   Products  the list, then one product (?tab=products&product=<slug>&v=<version>), drawn by /public/ve-product-view.js;
+//             its Nutrition Facts sit at the top of the right column, the billboard under them
+//   Gallery   videos (details.videos, the brand's own YouTube uploads) and images (product photos, and creator content
+//             from details.creator_posts once we make it), sorted by product (?tab=gallery&media=videos|images&about=<slug>)
+// /products/<slug> forwards here. The Campaign tab shows only while the brand runs a campaign with us.
 function isProductBrand(l){
   var d = l.details || {};
   return !isGroceryStore(l) && !!window.VEProducts && !!window.VEProductView && (VEProducts.SOURCES || []).some(function(k){ return Array.isArray(d[k]) && d[k].length; });
@@ -1248,7 +1264,8 @@ var BSITE_SELECT = 'id,slug,product_type,name,made_from,note,guides,department,n
   've_product_stores(removed_at,listings(slug,name,status,logo_url,color,initials))';
 function loadBrandSite(l){
   var url = SUPABASE_URL + '/rest/v1/ve_products?brand_listing_id=eq.' + encodeURIComponent(l.id) + '&guides=neq.%7B%7D&select=' + BSITE_SELECT + '&order=product_type';
-  var pane = document.getElementById('bsite-products'), ov = document.querySelector('#tab-overview > div');
+  var pane = document.getElementById('bsite-products'), gpane = document.getElementById('bsite-gallery'), side = document.getElementById('bsite-nf');
+  var ov = document.querySelector('#tab-overview > div');
   VEProductView.css();
   fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
     rows = Array.isArray(rows) ? rows : [];
@@ -1264,42 +1281,64 @@ function loadBrandSite(l){
     }
     function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides'; }
 
-    // ---- Overview: the brand at a glance
-    var stores = {}, photos = [], seen = {};
-    rows.forEach(function(p){
-      VEProductView.stores(p).forEach(function(s){ stores[s.slug] = s; });
-      (Array.isArray(p.gallery) ? p.gallery : []).forEach(function(g){ if(g && g.url && !seen[g.url]){ seen[g.url] = 1; photos.push(g); } });
-    });
+    // ---- Overview: about the brand, its products, where to find them
+    var stores = {};
+    rows.forEach(function(p){ VEProductView.stores(p).forEach(function(s){ stores[s.slug] = s; }); });
     var storeList = Object.keys(stores).map(function(k){ return stores[k]; }).sort(function(a, b){ return a.name.localeCompare(b.name); });
-    var vids = (Array.isArray(d.videos) ? d.videos : []).filter(function(v){ return v && /^[\w-]{11}$/.test(v.youtube_id || ''); });
-    var creators = Array.isArray(d.creator_posts) ? d.creator_posts : [];
+    var aboutText = (d.about && d.about.text) || l.description || '';
     var html = '';
-    if(d.about && d.about.text) html += '<div class="bsite-sec"><h3>About ' + esc(l.name) + '</h3><div class="bsite-about"><div><p>' + esc(d.about.text) + '</p>' +
-      (d.about.source ? '<p class="bsite-src">Source: <a href="' + esc(d.about.source) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a></p>' : '') + '</div></div></div>';
+    if(aboutText) html += '<div class="bsite-sec"><h3>About ' + esc(l.name) + '</h3><div class="bsite-about"><div><p>' + esc(aboutText) + '</p>' +
+      (d.about && d.about.source ? '<p class="bsite-src">Source: <a href="' + esc(d.about.source) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a></p>' : '') + '</div></div></div>';
     if(rows.length) html += '<div class="bsite-sec"><div class="bp-head"><h3>Products</h3><span>' + count(rows.length) + '</span></div><div class="bp-grid">' + rows.slice(0, 6).map(card).join('') + '</div>' +
       (rows.length > 6 ? '<button type="button" class="bsite-link" data-bsite-tab="products">See all ' + rows.length + ' products</button>' : '') + '</div>';
     if(storeList.length) html += '<div class="bsite-sec"><h3>Where to find ' + esc(l.name) + '</h3><div class="pv-stores">' + storeList.map(function(s){
       return '<a class="pv-store" href="/directory/' + encodeURIComponent(s.slug) + '" title="' + esc(s.name) + '\'s Vegan aisle">' + VEProductView.logo(s, 'pv-slogo') + '<b>' + esc(s.name) + '</b></a>';
     }).join('') + '</div><p class="bsite-src">Each store opens its Vegan aisle on Vegans Explore. Stock changes by location, so check your store.</p></div>';
-    if(vids.length || photos.length || creators.length){
-      html += '<div class="bsite-sec"><h3>Gallery</h3>' + (vids.length ? '<div class="bsite-gal vids">' +
-        vids.map(function(v){
-          return '<figure><button type="button" class="vid" data-yt="' + esc(v.youtube_id) + '" aria-label="Play ' + esc(v.title || 'video') + '" style="background-image:url(\'https://i.ytimg.com/vi/' + esc(v.youtube_id) + '/hqdefault.jpg\')"></button>' +
-            '<figcaption>' + esc(v.title || '') + '<span>' + (v.channel_url ? '<a href="' + esc(v.channel_url) + '" target="_blank" rel="noopener">' + esc(v.channel || l.name) + ' on YouTube</a>' : esc(v.channel || '')) + '</span></figcaption></figure>';
-        }).join('') + '</div>' : '') + '<div class="bsite-gal">' +
-        creators.map(function(c){
-          return '<figure><div class="ph" style="background-image:url(\'' + esc(c.image_url || '') + '\');background-size:cover" role="img" aria-label="' + esc(c.caption || '') + '"></div><figcaption>' + esc(c.caption || '') +
-            '<span>' + esc(c.creator ? 'By ' + c.creator : '') + (c.ad ? ' · #ad' : '') + '</span></figcaption></figure>';
-        }).join('') +
-        photos.map(function(g){
-          return '<figure><div class="ph" style="background-image:url(\'' + esc(g.url) + '\')" role="img" aria-label="' + esc(g.caption || '') + '"></div><figcaption>' + esc(g.caption || '') +
-            '<span>' + (g.source ? '<a href="' + esc(g.source) + '" target="_blank" rel="noopener">' + esc(g.credit || 'Source') + '</a>' : esc(g.credit || '')) + '</span></figcaption></figure>';
-        }).join('') + '</div></div>';
-    }
     if(ov && html){ var box = document.createElement('div'); box.className = 'bsite-overview'; box.innerHTML = html; ov.insertBefore(box, ov.firstChild); }
 
-    // ---- Products: the list, then one product
+    // ---- Gallery: videos and images, each tagged with the product it shows ('' is the brand as a whole)
+    var media = [], seen = {};
+    (Array.isArray(d.videos) ? d.videos : []).forEach(function(v){ if(v && /^[\w-]{11}$/.test(v.youtube_id || '')) media.push({ kind: 'video', about: v.product || '', v: v }); });
+    (Array.isArray(d.creator_posts) ? d.creator_posts : []).forEach(function(c){ if(c && c.image_url) media.push({ kind: 'image', about: c.product || '', c: c }); });
+    rows.forEach(function(p){ (Array.isArray(p.gallery) ? p.gallery : []).forEach(function(g){ if(g && g.url && !seen[g.url]){ seen[g.url] = 1; media.push({ kind: 'image', about: p.slug, g: g }); } }); });
+    var G = { media: '', about: '' };
+    function tile(m){
+      if(m.v) return '<figure><button type="button" class="vid" data-yt="' + esc(m.v.youtube_id) + '" aria-label="Play ' + esc(m.v.title || 'video') + '" style="background-image:url(\'https://i.ytimg.com/vi/' + esc(m.v.youtube_id) + '/hqdefault.jpg\')"></button>' +
+        '<figcaption>' + esc(m.v.title || '') + '<span>' + (m.v.channel_url ? '<a href="' + esc(m.v.channel_url) + '" target="_blank" rel="noopener">' + esc(m.v.channel || l.name) + ' on YouTube</a>' : esc(m.v.channel || '')) + '</span></figcaption></figure>';
+      if(m.c) return '<figure><div class="ph" style="background-image:url(\'' + esc(m.c.image_url) + '\');background-size:cover" role="img" aria-label="' + esc(m.c.caption || '') + '"></div><figcaption>' + esc(m.c.caption || '') +
+        '<span>' + esc(m.c.creator ? 'By ' + m.c.creator : '') + (m.c.ad ? ' · #ad' : '') + '</span></figcaption></figure>';
+      var g = m.g;
+      return '<figure><div class="ph" style="background-image:url(\'' + esc(g.url) + '\')" role="img" aria-label="' + esc(g.caption || '') + '"></div><figcaption>' + esc(g.caption || '') +
+        '<span>' + (g.source ? '<a href="' + esc(g.source) + '" target="_blank" rel="noopener">' + esc(g.credit || 'Source') + '</a>' : esc(g.credit || '')) + '</span></figcaption></figure>';
+    }
+    function drawGallery(){
+      if(!gpane) return;
+      if(!media.length){ gpane.innerHTML = '<div class="aisle-empty">No videos or photos of ' + esc(l.name) + ' yet.</div>'; return; }
+      var abouts = [];
+      rows.forEach(function(p){ if(media.some(function(m){ return m.about === p.slug; })) abouts.push([p.slug, title(p)]); });
+      if(media.some(function(m){ return !m.about; })) abouts.push(['brand', l.name + ' (the brand)']);
+      var pick = media.filter(function(m){ return (!G.about || (G.about === 'brand' ? !m.about : m.about === G.about)); });
+      var vids = pick.filter(function(m){ return m.kind === 'video'; }), imgs = pick.filter(function(m){ return m.kind === 'image'; });
+      var shown = (G.media !== 'images' ? vids.length : 0) + (G.media !== 'videos' ? imgs.length : 0);
+      gpane.innerHTML = '<div class="bsite-gtools"><div class="bsite-pills" role="group" aria-label="Show">' +
+        [['', 'All'], ['videos', 'Videos'], ['images', 'Images']].map(function(o){ return '<button type="button" class="bsite-pill" data-gmedia="' + o[0] + '" aria-pressed="' + (G.media === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>' +
+        '<select aria-label="Product" data-gabout><option value="">All products</option>' + abouts.map(function(a){ return '<option value="' + esc(a[0]) + '"' + (G.about === a[0] ? ' selected' : '') + '>' + esc(a[1]) + '</option>'; }).join('') + '</select>' +
+        '<span class="bsite-gcount">' + shown + (shown === 1 ? ' item' : ' items') + '</span></div>' +
+        (G.media !== 'images' && vids.length ? '<h3>Videos</h3><div class="bsite-gal vids">' + vids.map(tile).join('') + '</div>' : '') +
+        (G.media !== 'videos' && imgs.length ? '<h3>Images</h3><div class="bsite-gal">' + imgs.map(tile).join('') + '</div>' : '') +
+        (shown ? '' : '<div class="aisle-empty">Nothing here for that pick yet.</div>');
+    }
+    function setGallery(k, v){
+      G[k] = v;
+      var u = new URL(location.href); if(v) u.searchParams.set(k, v); else u.searchParams.delete(k);
+      history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+      drawGallery();
+    }
+
+    // ---- Products: the list, then one product; its Nutrition Facts go in the right column
+    function sideOff(){ if(side){ side.hidden = true; side.innerHTML = ''; } }
     function showList(){
+      sideOff();
       if(!pane) return;
       pane.innerHTML = rows.length ? '<div class="bp-head"><h3>Products</h3><span>' + count(rows.length) + '</span></div><div class="bp-grid">' + rows.map(card).join('') + '</div>'
         : '<div class="aisle-empty">No products from ' + esc(l.name) + ' in our Guides yet.</div>';
@@ -1307,15 +1346,18 @@ function loadBrandSite(l){
     }
     function showProduct(p, version){
       pane.innerHTML = '<div class="bsite-crumb"><a href="/directory/' + esc(encodeURIComponent(l.slug)) + '?tab=products" data-bsite-list>Products</a> &rsaquo; ' + esc(title(p)) + '</div><div class="bsite-pv"></div>';
-      VEProductView.render(pane.querySelector('.bsite-pv'), p, l, { others: rows, href: href, version: version, onVersion: function(k){
+      if(side) side.hidden = false;
+      VEProductView.render(pane.querySelector('.bsite-pv'), p, l, { others: rows, href: href, version: version, side: side, onVersion: function(k){
         var u = new URL(location.href); if(k) u.searchParams.set('v', k); else u.searchParams.delete('v');
         history.replaceState(history.state, '', u.pathname + u.search + u.hash);
       } });
       document.title = title(p) + ' — Vegans Explore';
     }
     function route(){
-      var q = new URLSearchParams(location.search), p = BY[q.get('product') || ''];
-      if(q.get('tab') === 'products' && p) showProduct(p, q.get('v')); else showList();
+      var q = new URLSearchParams(location.search), t = q.get('tab'), p = BY[q.get('product') || ''];
+      G.media = { videos: 1, images: 1 }[q.get('media')] ? q.get('media') : ''; G.about = q.get('about') || '';
+      drawGallery();
+      if(t === 'products' && p) showProduct(p, q.get('v')); else { showList(); if(t !== 'products') sideOff(); }
     }
     function go(slug){
       var u = new URL(location.href);
@@ -1326,17 +1368,27 @@ function loadBrandSite(l){
       var nav = document.querySelector('.listing-tabs');
       if(nav && nav.getBoundingClientRect().top < 0) window.scrollTo(0, nav.getBoundingClientRect().top + window.pageYOffset - 70);
     }
-    document.getElementById('listing-root').addEventListener('click', function(e){
+    var root = document.getElementById('listing-root');
+    root.addEventListener('click', function(e){
       var el;
+      if((el = e.target.closest('.tab-btn[data-tab]'))){
+        // Products while a product is open goes back to the list; any other tab puts the Nutrition Facts away.
+        var tab = el.getAttribute('data-tab');
+        if(tab === 'products' && new URLSearchParams(location.search).get('product')){ go(''); return; }
+        if(tab !== 'products') sideOff(); else route();
+        return;
+      }
       if((el = e.target.closest('button.vid[data-yt]'))){
         el.outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(el.getAttribute('data-yt')) + '?autoplay=1&rel=0" title="' + esc(el.getAttribute('aria-label') || 'Video') + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
         return;
       }
+      if((el = e.target.closest('[data-gmedia]'))){ setGallery('media', el.getAttribute('data-gmedia')); return; }
       if((el = e.target.closest('[data-bsite-tab]'))){ go(''); return; }
       if(e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
       if((el = e.target.closest('a[data-product]')) && BY[el.getAttribute('data-product')]){ e.preventDefault(); go(el.getAttribute('data-product')); return; }
       if(e.target.closest('a[data-bsite-list]')){ e.preventDefault(); go(''); }
     });
+    root.addEventListener('change', function(e){ if(e.target.matches && e.target.matches('[data-gabout]')) setGallery('about', e.target.value); });
     window.addEventListener('popstate', function(){
       showListingTab(new URLSearchParams(location.search).get('tab') || 'overview'); route();
     });
@@ -1630,6 +1682,7 @@ function showListingTab(target){
   var u = new URL(location.href);
   if(target === 'overview') u.searchParams.delete('tab'); else u.searchParams.set('tab', target);
   if(target !== 'products' && document.getElementById('tab-products')){ u.searchParams.delete('v'); u.searchParams.delete('product'); }
+  if(target !== 'gallery'){ u.searchParams.delete('media'); u.searchParams.delete('about'); }
   if(u.href !== location.href) history.replaceState(history.state, '', u.pathname + u.search + u.hash);
 }
 window.veListingTab = showListingTab;
@@ -1726,7 +1779,7 @@ function renderListing(l){
 
   // OVERVIEW content
   var overviewContent = '';
-  if(l.description || l.tagline) {
+  if(!l._brandSite && (l.description || l.tagline)) {
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
 
@@ -1821,7 +1874,7 @@ function renderListing(l){
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
-          (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button>' : '')+
+          (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button><button class="tab-btn" data-tab="gallery" role="tab" aria-selected="false">Gallery</button>' : '')+
           '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
           (l._brandSite ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
@@ -1834,7 +1887,8 @@ function renderListing(l){
         '</div>'+
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
-        (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' : '')+
+        (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' +
+          '<div class="tab-panel" id="tab-gallery" role="tabpanel"><div class="bsite-pad" id="bsite-gallery"><div class="aisle-empty">Loading the gallery...</div></div></div>' : '')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video', l)+'</div>' : '')+

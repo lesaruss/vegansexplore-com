@@ -376,16 +376,20 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
 - Brand pages (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini
   web experience for Oatly"): a brand with products in our Guides (a `listings.details` key in `VEProducts.SOURCES`,
   the same keys as `ve_guide_product_sources`) is one page, its Directory listing, with tabs Overview (about the brand
-  from `details.about`, its products, where to find them, and a Gallery: the brand's YouTube videos from
-  `details.videos`, product photos, creator content from `details.creator_posts` once we make it) and Products (the
-  list, then one product: Products > Oatly Milk, `?tab=products&product=<slug>&v=<version>`). The Campaign, Video and
-  Pulse tabs appear only once the brand partners with us. The right column is the listing billboard alone, pinned
-  while the page scrolls. It wears our city art (South Florida for now). Code: `loadBrandSite` in `directory/listing.html`.
+  from `details.about`, its products, where to find them), Products (the list, then one product: Products > Oatly
+  Milk, `?tab=products&product=<slug>&v=<version>`; Products again goes back to the list) and Gallery (Videos and
+  Images, filtered by product, `?tab=gallery&media=videos|images&about=<slug>`: the brand's YouTube videos from
+  `details.videos`, tagged with `product` when one is about a product, product photos, and creator content from
+  `details.creator_posts` once we make it). The Campaign, Video and Pulse tabs appear only once the brand partners
+  with us. The right column holds the open product's Nutrition Facts on top (Sean, 2026-10-08: "put the barcode back on
+  the right-hand side and push the billboard down") and the billboard under them, pinned while the page scrolls. It
+  wears our city art (South Florida for now). Code: `loadBrandSite` in `directory/listing.html`.
 - A product (`/public/ve-product-view.js`): the photo with its versions (`ve_products.variants`) as round thumbnails
   under it, the chosen version's name, the brand's own description and ingredients, certifications, its Nutrition
   Facts (each version's own, cited; `ve_products.nutrition` only from a cited source such as USDA FoodData Central),
-  the USDA record in full (`ve_products.fdc`, from `fdc.nal.usda.gov/portal-data/external/<id>`, which works when the
-  api.nal.usda.gov DEMO_KEY is rate limited), Where to find it (each store a button, logo and name, to its Vegan aisle
+  the USDA record in full, also per version (`variants[].fdc`, else `ve_products.fdc` for the first; from
+  `fdc.nal.usda.gov/portal-data/external/<id>`, found with a POST to `/portal-data/external/search`, both of which work
+  when the api.nal.usda.gov DEMO_KEY is rate limited; a version with no record says so), Where to find it (each store a button, logo and name, to its Vegan aisle
   on Vegans Explore; never the store's own site: "we want to keep them in our environment"), and more from the brand.
   `/products/<slug>` (`directory/product.html`, rewrite in `vercel.json`) is the shareable link and forwards to the
   brand page with that product open. In a Guide it opens as `#/product/<slug>`. Shared helpers: `/public/ve-products.js`.

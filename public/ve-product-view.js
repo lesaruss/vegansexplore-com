@@ -8,13 +8,17 @@
  *   VEProductView.css()                       the view's styles, once
  *   VEProductView.render(el, p, brand, opts)  the product: the photo and its versions as round thumbnails, the
  *                                             chosen version's name, the brand's description and ingredients,
- *                                             certifications, its Nutrition Facts, the USDA record, the stores that
+ *                                             certifications, its Nutrition Facts and USDA record (both follow the
+ *                                             chosen version: variants[].fdc, else the product's), the stores that
  *                                             carry it (each opens that store's Vegan aisle on Vegans Explore, never
  *                                             the store's own site) and more from the brand.
  *       opts.others    the brand's other products (rows with slug, product_type, name)
  *       opts.href(s)   the link for another product's slug
  *       opts.version   the version key to start on
  *       opts.onVersion(key)  called when a version is picked ('' for the first)
+ *       opts.side      an element in the page's right column for the Nutrition Facts (Sean, 2026-10-08: "put the
+ *                      barcode back on the right-hand side and push the billboard down... people see that it
+ *                      changes"). On a phone they stay right under the product.
  *   VEProductView.stores(p)                   the approved stores carrying a product, by name
  *   VEProductView.logo(l, cls)                a listing's logo in a rounded square, or its initials
  *
@@ -44,6 +48,8 @@
       /* The product: photo and versions | the chosen version | its Nutrition Facts */
       '.pv-prod{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr) 290px;grid-template-areas:"img info nf";gap:28px;margin:20px 0 36px;align-items:start}',
       '.pv-img{grid-area:img}.pv-info{grid-area:info}.pv-nf{grid-area:nf}',
+      '.pv-prod.side{grid-template-columns:minmax(0,300px) minmax(0,1fr);grid-template-areas:"img info"}',
+      '@media (min-width:769px){.pv-prod.side .pv-nf{display:none}}',
       '.pv-main{aspect-ratio:1/1;border-radius:16px;border:1px solid rgba(0,0,0,.09);background:#f6f7f6 center/contain no-repeat}',
       '.pv-vars{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}',
       '.pv-var{width:52px;height:52px;border-radius:50%;border:2px solid rgba(0,0,0,.09);background:#fff center/76% no-repeat;cursor:pointer;padding:0}',
@@ -81,16 +87,18 @@
       'a.pv-store b{flex:1;min-width:0;font-size:15px;font-weight:800}',
       '.pv-slogo{width:44px;height:44px;flex:0 0 44px;border-radius:12px;border:1px solid rgba(0,0,0,.09);background:#fff center/72% no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff}',
       '.pv-more{display:flex;flex-wrap:wrap;gap:8px}',
+      '.pv-sidehead{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(26,26,26,.5);margin:0 0 10px}',
       '.pv-more a{font-size:12px;font-weight:800;letter-spacing:.04em;padding:8px 13px;border-radius:99px;border:1.5px solid rgba(0,0,0,.09);color:#1a1a1a;text-decoration:none}',
       '.pv-more a:hover{border-color:#3A9B3E;color:#1f5f22}',
-      '@media (max-width:1280px){.pv-prod{grid-template-columns:minmax(0,290px) minmax(0,1fr);grid-template-areas:"img info" "nf info"}}',
-      '@media (max-width:760px){.pv-prod{grid-template-columns:minmax(0,1fr);grid-template-areas:"img" "info" "nf"}.pv-main{max-width:340px}' +
+      '@media (max-width:1280px){.pv-prod:not(.side){grid-template-columns:minmax(0,290px) minmax(0,1fr);grid-template-areas:"img info" "nf info"}}',
+      '@media (max-width:768px){.pv-prod,.pv-prod.side{grid-template-columns:minmax(0,1fr);grid-template-areas:"img" "info" "nf"}.pv-main{max-width:340px}' +
         '.pv-rec dl{grid-template-columns:minmax(0,1fr)}.pv-rec dt{border-bottom:0;padding-bottom:2px}.pv-rec dd{padding-top:2px}}'
     ].join('');
     document.head.appendChild(s);
   }
 
   function record(f) {
+    if (!f) return '<div class="pv-sec"><h3>From the label: the USDA record</h3><p class="pv-text">The USDA has no label record for this version yet.</p></div>';
     var rec = [
       ['Product on the record', esc(titleCase(f.description)) + (f.brandName ? ' (' + esc(f.brandName) + ')' : '')],
       ['Brand owner', esc(f.brandOwner)], ['UPC', esc(f.gtinUpc)], ['Package size', esc(f.packageWeight)],
@@ -118,7 +126,7 @@
     var st = stores(p), others = (opts.others || []).filter(function (o) { return o.slug !== p.slug; });
     var html = '<h2 class="pv-h">' + esc(name) + '</h2>' +
       '<div class="pv-sub">' + (vars.length > 1 ? vars.length + ' versions' : '') + (p.made_from ? (vars.length > 1 ? ' &middot; ' : '') + 'Made from ' + esc(lc(p.made_from)) : '') + '</div>' +
-      '<div class="pv-prod"><div class="pv-img"><div class="pv-main" role="img"></div>' +
+      '<div class="pv-prod' + (opts.side ? ' side' : '') + '"><div class="pv-img"><div class="pv-main" role="img"></div>' +
       (vars.length > 1 ? '<div class="pv-vars" role="group" aria-label="Versions">' + vars.map(function (v, i) {
         return '<button type="button" class="pv-var" data-var="' + i + '" title="' + esc(v.name) + '" aria-label="' + esc(v.name) + '" style="background-image:url(\'' + esc(v.image || '') + '\')"></button>';
       }).join('') + '</div><div class="pv-varnote">Pick a version to see its details and nutrition.</div>' : '') + '</div>' +
@@ -128,7 +136,8 @@
         return '<span class="pv-cert"><img src="' + esc(c.url) + '" alt="" loading="lazy">' + esc(c.name) + '</span>';
       }).join('') + '</div>' : '') + '</div>' +
       '<div class="pv-nf"></div></div>';
-    if (p.fdc) html += record(p.fdc);
+    var anyRecord = !!p.fdc || vars.some(function (v) { return v.fdc; });
+    html += '<div class="pv-recwrap"></div>';
     html += '<div class="pv-sec"><h3>Where to find it</h3>' + (st.length ? '<div class="pv-stores">' + st.map(function (s) {
       return '<a class="pv-store" href="/directory/' + encodeURIComponent(s.slug) + '?product=' + encodeURIComponent(p.id) + '" title="' + esc(s.name) + '\'s Vegan aisle">' + logo(s, 'pv-slogo') + '<b>' + esc(s.name) + '</b></a>';
     }).join('') + '</div><p class="pv-src">Each store opens its Vegan aisle on Vegans Explore. Stock changes by location, so check your store.</p>'
@@ -150,9 +159,13 @@
         : (p.made_from ? esc(name) + ' is made from ' + esc(lc(p.made_from)) + '.' : '');
       el.querySelector('.pv-ingr').innerHTML = v.ingredients ? '<b>Ingredients:</b> ' + esc(v.ingredients) : '';
       var nf = v.nutrition || (i === 0 ? p.nutrition : null);
-      el.querySelector('.pv-nf').innerHTML = nf ? VEProducts.label(nf) + '<p class="pv-src">' + esc(nf.product || '') + (nf.per_container ? '. ' + esc(nf.per_container) : '') + '. ' +
+      var nfHtml = nf ? VEProducts.label(nf) + '<p class="pv-src">' + esc(nf.product || '') + (nf.per_container ? '. ' + esc(nf.per_container) : '') + '. ' +
         (v.nutrition && v.source ? 'From <a href="' + esc(v.source) + '" target="_blank" rel="noopener">' + esc(b.name) + '\'s product page</a>' : esc(p.nutrition_source || '')) +
         '. Recipes change, so check the package.</p>' : '<p class="pv-src">Nutrition Facts for this one are not added yet.</p>';
+      el.querySelector('.pv-nf').innerHTML = nfHtml;
+      if (opts.side) opts.side.innerHTML = '<h3 class="pv-sidehead">Nutrition Facts' + (vars.length > 1 ? ' &middot; ' + esc(v.name) : '') + '</h3>' + nfHtml;
+      // The USDA record follows the version too: its own record, else the product's for the first version.
+      el.querySelector('.pv-recwrap').innerHTML = anyRecord ? record(v.fdc || (i === 0 ? p.fdc : null)) : '';
       [].forEach.call(el.querySelectorAll('.pv-var'), function (x) { x.setAttribute('aria-pressed', String(+x.getAttribute('data-var') === i)); });
       if (!quiet && opts.onVersion) opts.onVersion(i && vars[i] && vars[i].key ? vars[i].key : '');
     }
