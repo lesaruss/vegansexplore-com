@@ -91,7 +91,7 @@
       '.pv-more a{font-size:12px;font-weight:800;letter-spacing:.04em;padding:8px 13px;border-radius:99px;border:1.5px solid rgba(0,0,0,.09);color:#1a1a1a;text-decoration:none}',
       '.pv-more a:hover{border-color:#3A9B3E;color:#1f5f22}',
       '@media (max-width:1280px){.pv-prod:not(.side){grid-template-columns:minmax(0,290px) minmax(0,1fr);grid-template-areas:"img info" "nf info"}}',
-      '@media (max-width:768px){.pv-prod,.pv-prod.side{grid-template-columns:minmax(0,1fr);grid-template-areas:"img" "info" "nf"}.pv-main{max-width:340px}' +
+      '@media (max-width:768px){.pv-prod,.pv-prod.side{grid-template-columns:minmax(0,1fr);grid-template-areas:"img" "info" "nf"}.pv-main{width:100%;max-width:none}' +
         '.pv-rec dl{grid-template-columns:minmax(0,1fr)}.pv-rec dt{border-bottom:0;padding-bottom:2px}.pv-rec dd{padding-top:2px}}'
     ].join('');
     document.head.appendChild(s);
