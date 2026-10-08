@@ -328,6 +328,26 @@ also `briefing.first_reply` so the desk shows it). Every 15 minutes `ve_pulse_au
 failed, missing a part, or more than 12 hours late does not go out on its own. To stop one: Discard in
 the Pulse desk (Depot > Inbox). Migration `20261005_ve_pulse_auto.sql`.
 
+## Guides are mini apps (Sean, 2026-10-08)
+
+"This is how all of our guides should be... mini apps bringing all these components together." A
+Vegans Explore Guide is never a PDF or a slide deck: it is a small website that spotlights the bigger
+tools we already run (the Directory, votes, the Cookbook and its recipes and chefs, the Daily Pulse,
+the ad rail) and combines them into something new. The reference is the Vegan Dairy Guide
+(`guides/vegan-dairy-guide.html`, `guide-scripts/vegan-dairy-guide.js`): a menu, search for members,
+brands as approved Directory listings with votes, a Cookbook, and Maya as the Guide.
+
+- Signed out: the header holds the $11 Founding Membership box (members get search there). Each
+  locked section previews itself as a slideshow, words left and a picture right, real examples (a
+  product's Nutrition Facts from USDA FoodData Central, a real swap, real cookbook covers), no autoplay,
+  and a closing Founding Membership slide with a free next step.
+- The Cookbook is the recipe and chef tool: every cookbook listed and ranked, chefs with profiles,
+  official recipes from us and invited chefs, member votes and comments, and "didn't work for me"
+  reports that pull a recipe for retesting.
+- Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
+  and a preview of their ad in place (not built yet).
+- Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
+
 ## Your Guide (Sean, 2026-10-04)
 
 Your Guide is for registered members, inside the dashboard window: `/dashboard/guide` opens `/guide`
