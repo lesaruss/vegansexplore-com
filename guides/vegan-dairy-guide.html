@@ -4,133 +4,229 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Vegan Dairy Guide - Vegans Explore Guides</title>
-  <meta name="description" content="Everything you need to go dairy-free: why it matters, the brands to buy, how to swap dairy in cooking, recipes and books.">
+  <meta name="description" content="Everything about dairy and going Vegan in one place: the brands to buy, how to swap dairy when you cook, recipes, cookbooks and the research, with a Guide to help.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* The Vegan Dairy Guide, Guide one of Vegans Explore Guides (Sean, 2026-10-07).
-       Content source: HQ playbook vegan-dairy-guide-content. This file is the public shell:
-       Start, the Learn preview and Get the Guide. The members-only screens come from
+    /* The Vegan Dairy Guide, a mini website on all things dairy (Sean, 2026-10-07: "more like a web
+       tool and less like a guide... a menu you can always choose from... a search bar... an actual
+       guide attached to this... on the right-hand side"). Content source: HQ playbook
+       vegan-dairy-guide-content. This file is the public shell: Home and the Why preview. Brands and
+       cookbooks are Directory listings (tag vegan-dairy-guide); the members-only views come from
        ve-guide-unlock once membership is confirmed (see /guide-scripts/vegan-dairy-guide.js). */
-    html:not(.vg-on) .vg-slide{display:none;}
-    html:not(.vg-on) .vg-stage{min-height:calc(100vh - 61px);background:#0d130e;}
-    .dg-lock{display:block;margin-top:6px;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffd79a;}
-    .dg-offer{max-width:none;}
-    .dg-price{font-size:44px;font-weight:900;line-height:1;color:#fff;margin-bottom:10px;}
-    .dg-price span{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;margin-left:6px;}
-    .dg-offer p{font-size:14px;line-height:1.6;color:#ececec;margin:0 0 6px;}
-    .dg-offer .vg-btn{margin-top:14px;}
-    .dg-offer .vg-btn[disabled]{opacity:0.6;cursor:default;}
-    .dg-offer a{color:#c5f2c7;text-decoration:underline;text-underline-offset:2px;}
-    .dg-status{min-height:1.4em;margin-top:10px !important;color:#ffd79a !important;font-weight:700;}
-    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px;}
-    .dg-3{grid-template-columns:repeat(3,minmax(0,1fr));}
-    .dg-4{grid-template-columns:repeat(4,minmax(0,1fr));}
-    body{margin:0;}
-    .dg-brand{height:118px;overflow:hidden;box-sizing:border-box;}
-    .dg-pager{display:flex;gap:8px;margin-top:12px;}
-    .dg-chip[disabled]{opacity:0.35;cursor:default;}
-    .dg-card{padding:18px 20px;}
-    .dg-card h3{font-size:15px;font-weight:800;margin:0 0 6px;color:#fff;}
-    .dg-card p{font-size:13.5px;line-height:1.6;color:#ececec;margin:0;}
-    .dg-src{display:block;margin-top:8px;font-size:11px;font-weight:700;letter-spacing:0.04em;color:#c5f2c7;}
-    .dg-src a{color:#c5f2c7;text-decoration:underline;text-underline-offset:2px;margin-right:10px;}
-    .dg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;margin-top:22px;}
-    .dg-tile{display:block;padding:16px 18px;text-align:left;color:#fff;font-family:inherit;cursor:pointer;border:1px solid rgba(255,255,255,0.22);}
-    .dg-tile:hover{border-color:#22C55E;background:rgba(6,32,12,0.78);}
-    .dg-tile b{display:block;font-size:13px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
-    .dg-tile span{font-size:13px;color:#ececec;line-height:1.5;}
-    .dg-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 16px;}
-    .dg-chip{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:7px 12px;border-radius:99px;border:1.5px solid rgba(255,255,255,0.4);background:transparent;color:#fff;cursor:pointer;}
-    .dg-chip[aria-pressed="true"]{background:#22C55E;border-color:#22C55E;color:#03170a;}
-    .dg-search{font-family:inherit;font-size:14px;padding:9px 14px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.4);background:rgba(0,0,0,0.45);color:#fff;width:min(360px,100%);margin-bottom:12px;}
-    .dg-search::placeholder{color:#cfcfcf;}
-    .dg-brand{padding:14px 16px;}
-    .dg-brand b{display:block;font-size:14px;font-weight:800;color:#fff;}
-    .dg-brand .dg-base{font-size:12.5px;color:#c5f2c7;font-weight:700;margin:3px 0 4px;}
-    .dg-brand .dg-where{font-size:12.5px;color:#ececec;line-height:1.5;}
-    a.dg-brand{display:block;text-decoration:none;color:inherit;}
-    a.dg-brand:hover,a.dg-brand:focus-visible{border-color:#22C55E;background:rgba(6,32,12,0.78);}
-    .dg-go{color:#22C55E;font-weight:900;}
-    .dg-brand .dg-note{font-size:12px;color:#ffd79a;margin-top:4px;line-height:1.45;}
-    .dg-count{font-size:12px;color:#ececec;margin-bottom:10px;}
-    .dg-swap{width:100%;border-collapse:collapse;font-size:13px;color:#fff;}
-    .dg-swap th{text-align:left;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;padding:0 10px 8px;}
-    .dg-swap td{padding:8px 10px;border-top:1px solid rgba(255,255,255,0.16);vertical-align:top;line-height:1.55;}
-    .dg-swap td:first-child{font-weight:800;white-space:nowrap;}
-    .dg-swap td:last-child{color:#ffd79a;}
-    .dg-door{max-width:760px;padding:26px 28px;}
-    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;}
-    .dg-facts{margin:0;padding-left:20px;}
-    .dg-facts li{font-size:14px;line-height:1.6;color:#fff;margin-bottom:10px;}
-    .dg-facts li strong{color:#fff;}
-    .dg-recipe ol{margin:8px 0 0 20px;padding:0;}
-    .dg-recipe li{font-size:13.5px;line-height:1.6;color:#ececec;margin-bottom:4px;}
-    .dg-books{columns:2 320px;column-gap:28px;margin:0;padding-left:20px;}
-    .dg-books li{font-size:14px;line-height:1.55;color:#fff;margin-bottom:8px;break-inside:avoid;}
-    .dg-books li span{color:#ececec;}
-    @media (min-width:901px) and (max-height:820px){.dg-brand{height:100px;padding:10px 14px;}.dg-chips{margin-bottom:10px;}.dg-search{margin-bottom:8px;}.dg-swap td{padding:5px 8px;font-size:12.5px;line-height:1.45;}.dg-swap th{padding-bottom:4px;}.dg-card{padding:14px 16px;}.dg-card p{font-size:13px;line-height:1.5;}}
-    @media (max-width:1100px){.dg-3,.dg-4{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    @media (max-width:900px){.dg-3,.dg-4{grid-template-columns:minmax(0,1fr);}.dg-brand{height:auto;}.dg-swap thead{display:none;}.dg-swap tr{display:block;border-top:1px solid rgba(255,255,255,0.16);padding:10px 0;}.dg-swap td{display:block;border:0;padding:3px 0;white-space:normal !important;}.dg-swap td[data-l]::before{content:attr(data-l) ": ";font-weight:800;color:#c5f2c7;}}
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    *,*::before,*::after{box-sizing:border-box;}
+    .dg-top{background:linear-gradient(120deg,#0d130e 0%,#14301c 60%,#1f5f22 100%);color:#fff;padding:26px 40px 0;}
+    .dg-top-row{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+    .dg-brand-mark{flex:1 1 320px;min-width:0;}
+    .dg-eyebrow{font-size:11px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
+    .dg-title{font-size:clamp(26px,3.4vw,40px);font-weight:900;line-height:1.05;letter-spacing:-0.01em;margin:6px 0 0;text-transform:uppercase;}
+    .dg-searchbox{flex:0 1 520px;position:relative;}
+    .dg-searchbox input{width:100%;font-family:inherit;font-size:15px;padding:14px 18px 14px 46px;border-radius:999px;border:2px solid transparent;background:#fff;color:var(--ink);}
+    .dg-searchbox input:focus{outline:none;border-color:#22C55E;}
+    .dg-searchbox svg{position:absolute;left:17px;top:50%;transform:translateY(-50%);}
+    .dg-menu{display:flex;gap:4px;margin-top:20px;overflow:hidden;}
+    .dg-menu a{display:flex;align-items:center;gap:6px;padding:12px 16px 14px;color:#e6f4e7;text-decoration:none;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border-radius:8px 8px 0 0;white-space:nowrap;}
+    .dg-menu a:hover{background:rgba(255,255,255,0.08);color:#fff;}
+    .dg-menu a[aria-current="page"]{background:#fff;color:var(--g);}
+    .dg-menu .dg-lk{opacity:0.7;}
+    .dg-menu-select{display:none;}
+    .dg-wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:36px;padding:32px 40px 72px;align-items:start;}
+    .dg-wrap.dg-wide{grid-template-columns:minmax(0,1fr);}
+    .dg-wrap.dg-wide .dg-rail{display:none;}
+    .dg-crumb{font-size:12px;font-weight:700;color:var(--ink55);margin-bottom:10px;}
+    .dg-crumb a{color:var(--g);text-decoration:none;}
+    .dg-h1{font-size:clamp(24px,2.4vw,32px);font-weight:900;margin:0 0 8px;letter-spacing:-0.01em;}
+    .dg-lede{font-size:15.5px;line-height:1.65;color:var(--ink75);margin:0 0 22px;max-width:860px;}
+    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;}
+    .dg-grid.dg-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:18px 20px;}
+    .dg-card h3{font-size:15px;font-weight:800;margin:0 0 6px;}
+    .dg-card p{font-size:13.5px;line-height:1.6;color:var(--ink75);margin:0;}
+    .dg-src{display:block;margin-top:10px;font-size:11.5px;font-weight:700;}
+    .dg-src a{color:var(--g);margin-right:12px;}
+    .dg-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:6px;}
+    .dg-tile{display:flex;gap:16px;align-items:center;padding:20px;border-radius:14px;text-decoration:none;color:var(--ink);background:var(--gl);border:1px solid var(--gm);transition:transform .12s,box-shadow .12s;}
+    .dg-tile:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.08);}
+    .dg-tile .dg-ic{flex:0 0 56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;}
+    .dg-tile b{display:block;font-size:15px;font-weight:900;}
+    .dg-tile span{display:block;font-size:12.5px;color:var(--ink75);line-height:1.45;margin-top:2px;}
+    .dg-tile.dg-warm{background:var(--warm);border-color:var(--warmline);}
+    .dg-hero{display:flex;flex-direction:column;gap:6px;margin-bottom:26px;}
+    .dg-hero p{font-size:16px;line-height:1.65;color:var(--ink75);margin:6px 0 0;max-width:860px;}
+    .dg-sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:32px 0 14px;}
+    .dg-sec-h h2{font-size:13px;font-weight:900;letter-spacing:0.16em;text-transform:uppercase;margin:0;color:var(--g);}
+    .dg-sec-h a{font-size:12px;font-weight:800;color:var(--g);text-decoration:none;}
+    .dg-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;}
+    .dg-chip{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:8px 13px;border-radius:99px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
+    .dg-chip[aria-pressed="true"]{background:var(--g);border-color:var(--g);color:#fff;}
+    .dg-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px;}
+    .dg-tools input{flex:0 1 340px;font-family:inherit;font-size:14px;padding:10px 14px;border-radius:8px;border:1.5px solid var(--line);}
+    .dg-tools input:focus{outline:none;border-color:var(--g2);}
+    .dg-tools select{font-family:inherit;font-size:13px;font-weight:700;padding:10px 40px 10px 12px;border-radius:8px;border:1.5px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/10px 6px;-webkit-appearance:none;appearance:none;}
+    .dg-count{font-size:12.5px;font-weight:700;color:var(--ink55);}
+    .rank-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
+    .dg-bhead{display:flex;gap:12px;align-items:center;margin-bottom:8px;}
+    .dg-av{flex:0 0 42px;height:42px;border-radius:10px;color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
+    .dg-bname{font-size:15px;font-weight:800;line-height:1.25;}
+    .dg-bcat{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--g);}
+    .dg-line{font-size:13px;line-height:1.55;color:var(--ink75);margin:2px 0;}
+    .dg-line b{color:var(--ink);font-weight:700;}
+    .dg-note{font-size:12px;line-height:1.45;color:#8a5a00;background:var(--warm);border-radius:6px;padding:5px 8px;margin-top:6px;}
+    .dg-bfoot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;}
+    .dg-bfoot .vote-count{font-size:13px;font-weight:900;}
+    .dg-bfoot .dg-vl{font-size:11px;color:var(--ink55);font-weight:700;}
+    .vote-btn{font-family:inherit;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:7px 12px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;}
+    .vote-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A;}
+    .dg-listing{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--g);text-decoration:none;}
+    .dg-book{display:flex;gap:14px;}
+    .dg-cover{flex:0 0 64px;height:92px;border-radius:4px 8px 8px 4px;background:linear-gradient(135deg,#1f5f22,#0d3b13);color:#fff;font-size:8px;font-weight:800;line-height:1.25;padding:8px 6px;text-transform:uppercase;letter-spacing:0.02em;overflow-wrap:anywhere;box-shadow:inset 4px 0 0 rgba(255,255,255,0.18);overflow:hidden;}
+    .dg-swap{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff;}
+    .dg-swap h3{font-size:15px;font-weight:900;margin:0 0 8px;}
+    .dg-swap dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;line-height:1.5;}
+    .dg-swap dt{font-weight:800;color:var(--g);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;padding-top:2px;}
+    .dg-swap dd{margin:0;color:var(--ink75);}
+    .dg-swap .dg-tip{margin-top:8px;font-size:12.5px;color:#8a5a00;background:var(--warm);border-radius:6px;padding:6px 9px;}
+    .dg-recipe ol{margin:8px 0 0 18px;padding:0;}
+    .dg-recipe li{font-size:13.5px;line-height:1.6;color:var(--ink75);margin-bottom:4px;}
+    .dg-facts{margin:0;padding-left:20px;columns:2 380px;column-gap:32px;}
+    .dg-facts li{font-size:14px;line-height:1.6;margin-bottom:12px;break-inside:avoid;color:var(--ink75);}
+    .dg-facts li strong{color:var(--ink);}
+    .dg-door{border:1px solid var(--warmline);background:var(--warm);border-radius:14px;padding:24px 26px;max-width:860px;}
+    .dg-door p{font-size:15px;line-height:1.65;margin:0 0 16px;}
+    .dg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;background:#22C55E;color:#03170a;}
+    .dg-btn:hover{background:#4ade80;}
+    .dg-btn.dg-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+    .dg-btn[disabled]{opacity:0.6;cursor:default;}
+    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;}
+    .dg-rail{position:sticky;top:76px;display:flex;flex-direction:column;gap:14px;}
+    .dg-portrait{position:relative;aspect-ratio:1/1;border-radius:16px;overflow:hidden;background:#14301c center top/cover no-repeat;}
+    .dg-portrait .dg-vcap{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 16px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);color:#fff;}
+    .dg-vcap b{display:block;font-size:17px;font-weight:900;}
+    .dg-vcap span{font-size:12.5px;color:#e6f4e7;}
+    .dg-guide-card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+    .dg-guide-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0 0 12px;}
+    .dg-guide-card .dg-btn{width:100%;}
+    .dg-lock{border:1px solid var(--gm);background:var(--gl);border-radius:16px;padding:28px 30px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:center;}
+    .dg-lock h2{font-size:24px;font-weight:900;margin:0 0 8px;}
+    .dg-lock ul{margin:0;padding-left:18px;}
+    .dg-lock li{font-size:14px;line-height:1.6;color:var(--ink75);margin-bottom:6px;}
+    .dg-lock li strong{color:var(--ink);}
+    .dg-price{font-size:46px;font-weight:900;line-height:1;}
+    .dg-price span{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
+    .dg-offer p{font-size:14px;line-height:1.6;color:var(--ink75);margin:10px 0;}
+    .dg-offer a{color:var(--g);}
+    .dg-status{min-height:1.3em;font-weight:700;color:#8a5a00 !important;}
+    .dg-lock2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px;align-items:stretch;}
+    .dg-show{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;min-height:340px;display:flex;flex-direction:column;overflow:hidden;}
+    .dg-show-slide{display:none;flex:1;padding:28px 30px 8px;}
+    .dg-show-slide.on{display:flex;animation:dgIn .35s ease;}
+    @keyframes dgIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+    .dg-pv{display:flex;gap:24px;align-items:center;width:100%;}
+    .dg-pv h3{font-size:22px;font-weight:900;margin:4px 0 10px;line-height:1.2;}
+    .dg-pv p{font-size:14.5px;line-height:1.65;color:var(--ink75);margin:0 0 12px;max-width:640px;}
+    .dg-pv-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
+    .dg-pv-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+    .dg-pv-chips span{font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;background:var(--gl);color:var(--g);}
+    .dg-pv-card{max-width:560px;}
+    .dg-show-nav{display:flex;align-items:center;justify-content:center;gap:14px;padding:12px 16px 16px;}
+    .dg-show-b{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:20px;line-height:1;cursor:pointer;color:var(--ink);}
+    .dg-show-dots{display:flex;gap:7px;}
+    .dg-show-dots button{width:9px;height:9px;padding:0;border-radius:50%;border:none;background:rgba(0,0,0,0.2);cursor:pointer;}
+    .dg-show-dots button.on{background:var(--g2);transform:scale(1.25);}
+    .dg-offer2{border-radius:16px;background:linear-gradient(160deg,#1f5f22,#14301c);color:#fff;padding:28px 26px;display:flex;flex-direction:column;gap:6px;}
+    .dg-offer2 .dg-price{color:#fff;margin-top:6px;}
+    .dg-offer2 .dg-price span{color:#c5f2c7;}
+    .dg-offer2 p{font-size:14px;line-height:1.6;color:#e6f4e7;margin:8px 0;}
+    .dg-offer2 a{color:#c5f2c7;}
+    .dg-offer2 .dg-btn{margin-top:8px;}
+    .dg-offer2 .dg-status{color:#ffd79a !important;}
+    .dg-chef-empty{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed var(--gm);background:var(--gl);border-radius:16px;padding:26px 28px;}
+    .dg-chef-empty h3{font-size:18px;font-weight:900;margin:0 0 6px;}
+    .dg-chef-empty p{font-size:14px;line-height:1.6;color:var(--ink75);margin:0;max-width:640px;}
+    .dg-res h2{font-size:13px;font-weight:900;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);margin:26px 0 12px;}
+    .dg-res h2:first-child{margin-top:0;}
+    .dg-hit{display:block;text-decoration:none;color:inherit;}
+    .dg-hit:hover{border-color:var(--g2);}
+    .dg-empty{font-size:14px;color:var(--ink55);padding:12px 0;}
+    .dg-mlock{font-size:11px;font-weight:800;color:#8a5a00;letter-spacing:0.06em;text-transform:uppercase;}
+    .dg-loading{padding:40px 0;font-size:14px;font-weight:700;color:var(--ink55);}
+    @media (max-width:1180px){.dg-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.dg-grid.dg-3{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width:1000px){.dg-wrap{grid-template-columns:minmax(0,1fr);}.dg-rail{position:static;display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);align-items:start;}}
+    @media (max-width:900px){
+      .dg-top{padding:20px 16px 16px;}
+      .dg-menu{display:none;}
+      .dg-menu-select{display:block;margin-top:14px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 40px 12px 14px;border-radius:8px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}
+      .dg-wrap{padding:20px 16px 56px;gap:24px;}
+      .dg-tiles,.dg-grid.dg-3{grid-template-columns:minmax(0,1fr);}
+      .dg-lock{grid-template-columns:minmax(0,1fr);padding:22px 20px;}
+      .dg-lock2{grid-template-columns:minmax(0,1fr);}
+      .dg-show{min-height:0;}
+      .dg-show-slide{padding:22px 20px 6px;}
+      .dg-pv{flex-direction:column;align-items:flex-start;gap:16px;}
+      }
+    @media (max-width:560px){.dg-rail{grid-template-columns:minmax(0,1fr);}.dg-portrait{max-width:300px;width:100%;margin:0 auto;}}
   </style>
 </head>
 <body>
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
-<main class="vg-stage" data-bg="linear-gradient(135deg,#0d130e 0%,#14301c 55%,#0d130e 100%)" aria-label="The Vegan Dairy Guide">
-
-  <section class="vg-slide" id="start" data-title="Start">
-    <div class="vg-eyebrow">Vegans Explore Guides</div>
-    <h1 class="vg-h vg-xl">The Vegan Dairy Guide</h1>
-    <p class="vg-lede">Everything you need to go dairy-free: why it matters, the brands to buy, how to replace dairy when you cook, and recipes and books to go further. Go through it in order, or jump to what you need.</p>
-    <div class="dg-tiles">
-      <button class="vg-glass dg-tile" data-vg-go="learn"><b>Why dairy-free</b><span>What the research says, with sources.</span></button>
-      <button class="vg-glass dg-tile" data-vg-go="door"><b>See for yourself</b><span>How milk is made. Optional.</span></button>
-      <button class="vg-glass dg-tile" data-vg-go="find"><b>Find</b><span>76 brands across 12 categories.</span></button>
-      <button class="vg-glass dg-tile" data-vg-go="swap"><b>Swap</b><span>Replace dairy in cooking.</span></button>
-      <button class="vg-glass dg-tile" data-vg-go="make"><b>Make</b><span>Nut milk and ice cream at home.</span></button>
-      <button class="vg-glass dg-tile" data-vg-go="read"><b>Read</b><span>Cookbooks and resources.</span></button>
+<header class="dg-top">
+  <div class="dg-top-row">
+    <div class="dg-brand-mark">
+      <div class="dg-eyebrow">Vegans Explore Guides</div>
+      <h1 class="dg-title">The Vegan Dairy Guide</h1>
     </div>
-  </section>
+    <form class="dg-searchbox" role="search" id="dgSearchForm">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="search" id="dgQ" placeholder="Search brands, swaps, recipes, books..." aria-label="Search the Dairy Guide" autocomplete="off">
+    </form>
+  </div>
+  <nav class="dg-menu" id="dgMenu" aria-label="Dairy Guide menu"></nav>
+  <select class="dg-menu-select" id="dgMenuSelect" aria-label="Dairy Guide menu"></select>
+</header>
 
-  <section class="vg-slide" id="learn" data-title="Why dairy-free">
-    <div class="vg-eyebrow">Learn</div>
-    <h2 class="vg-h">Why go dairy-free</h2>
-    <p class="vg-lede">Ditching dairy is one of the hardest parts of going Vegan. Culture, habit and taste all play a part. Here is what the research actually says.</p>
-    <div class="dg-grid dg-3">
-      <div class="vg-glass dg-card"><h3>Cheese is hard to put down</h3><p>In a 2015 University of Michigan survey of about 500 adults, highly processed foods high in fat and refined carbohydrates were the ones people most often linked to out-of-control eating. Pizza ranked near the top; cheese on its own landed in the middle. Some researchers suspect casein, the main protein in milk, plays a role, but that has not been proven in people.</p><span class="dg-src"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4334652/" target="_blank" rel="noopener">Schulte 2015, PLoS ONE</a></span></div>
-      <div class="vg-glass dg-card"><h3>Many adults don't digest milk well</h3><p>About a third of people in the US have trouble digesting lactose, the natural sugar in milk. It is much more common among Black, Native American, Asian American and Latino people than among people of European descent.</p><span class="dg-src"><a href="https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts" target="_blank" rel="noopener">National Institutes of Health</a></span></div>
-      <div class="vg-glass dg-card"><h3>Milk isn't the bone protector it's sold as</h3><p>A 2015 review in The BMJ found that most studies show no link between drinking milk or eating dairy and fewer broken bones (25 of 28 milk studies, 11 of 13 dairy studies). Calcium matters, but dairy is not the only way to get it.</p><span class="dg-src"><a href="https://pubmed.ncbi.nlm.nih.gov/26420387/" target="_blank" rel="noopener">Bolland 2015, The BMJ</a></span></div>
-    </div>
-  </section>
+<div class="dg-wrap" id="dgWrap">
+  <main id="dgMain" aria-live="polite">
 
-  <section class="vg-slide" id="unlock" data-title="Get the Guide">
-    <div class="vg-eyebrow">The full Guide</div>
-    <h2 class="vg-h">The rest comes with membership</h2>
-    <div class="vg-split">
-      <ul class="dg-facts">
-        <li><strong>Find.</strong> 76 brands across 12 categories, with where to buy them. Filter and search.</li>
-        <li><strong>Swap.</strong> 16 ways to replace milk, butter, cream, cheese and more, from the shelf or from your pantry.</li>
-        <li><strong>Learn.</strong> The health and planet research, every claim with its source.</li>
-        <li><strong>See for yourself.</strong> How milk is made, behind a clear warning. Optional.</li>
-        <li><strong>Make and Read.</strong> Nut milk and ice cream at home, 12 books and two resources.</li>
-      </ul>
-      <div class="vg-glass dg-door dg-offer">
-        <div class="dg-price">$11<span>one time</span></div>
-        <p>Founding Membership. The Dairy Guide comes with it, and so does the full Vegans Explore community: your member dashboard, Directory votes, the Community Board and points.</p>
-        <button type="button" class="vg-btn" id="dgJoin">Become a Founding Member</button>
-        <p id="dgSignInLine">Already a member? <a href="#" id="dgSignIn">Sign in</a> and the Guide opens.</p>
-        <p class="dg-status" id="dgStatus" role="status" aria-live="polite"></p>
+    <section data-view="home">
+      <div class="dg-hero">
+        <div class="dg-eyebrow" style="color:var(--g)">Everything dairy, made Vegan</div>
+        <h2 class="dg-h1">Going dairy-free, without the guesswork</h2>
+        <p>Dropping dairy is one of the hardest parts of going Vegan. Culture, habit and taste all play a part. Here is everything in one place: the brands to buy, how to swap dairy when you cook, recipes, cookbooks and what the research says. Search for anything, or pick where to start.</p>
       </div>
-    </div>
-  </section>
+      <div class="dg-tiles" id="dgTiles"></div>
+      <div class="dg-sec-h"><h2>Why go dairy-free</h2><a href="#/why">See all</a></div>
+      <div class="dg-grid dg-3" id="dgWhyPreview"></div>
+    </section>
 
-</main>
+  </main>
+
+  <aside class="dg-rail" id="dgRail" aria-label="Your Dairy Guide">
+    <div class="dg-portrait" id="dgPortrait" role="img" aria-label="Maya, your Guide">
+      <div class="dg-vcap"><b>Maya</b><span>Your Guide to going dairy-free</span></div>
+    </div>
+    <div class="dg-guide-card">
+      <p>Hi, I'm Maya. Dairy was the hardest thing for me to give up too. Search above, or ask me anything about going dairy-free.</p>
+      <a class="dg-btn" href="/dashboard/guide">Ask your Guide</a>
+    </div>
+  </aside>
+</div>
+
+<!-- Public on purpose: the first three Why facts and one example swap (the free preview). The rest comes with membership. -->
+<script type="application/json" id="dg-public">{"why":[
+{"title":"Cheese is hard to put down","text":"In a 2015 University of Michigan survey of about 500 adults, highly processed foods high in fat and refined carbohydrates were the ones people most often linked to out-of-control eating. Pizza ranked near the top; cheese on its own landed in the middle. Some researchers suspect casein, the main protein in milk, plays a role, but that has not been proven in people.","sources":[["Schulte 2015, PLoS ONE","https://pmc.ncbi.nlm.nih.gov/articles/PMC4334652/"]]},
+{"title":"Many adults don't digest milk well","text":"About a third of people in the US have trouble digesting lactose, the natural sugar in milk. It is much more common among Black, Native American, Asian American and Latino people than among people of European descent.","sources":[["National Institutes of Health","https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts"]]},
+{"title":"Milk isn't the bone protector it's sold as","text":"A 2015 review in The BMJ found that most studies show no link between drinking milk or eating dairy and fewer broken bones (25 of 28 milk studies, 11 of 13 dairy studies). Calcium matters, but dairy is not the only way to get it.","sources":[["Bolland 2015, The BMJ","https://pubmed.ncbi.nlm.nih.gov/26420387/"]]}
+],
+"swap_example":{"replace":"Buttermilk","shelf":"Make it: it takes 5 minutes.","pantry":"1 tbsp lemon juice or vinegar, then soy milk to the 1-cup line. Rest 5 to 10 minutes. Use 1:1.","tip":"Soy curdles best; room-temperature milk curdles faster."}}</script>
 
 <script src="/public/footer.js"></script>
 </div>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-votes.js"></script>
 <script src="/guide-scripts/vegan-dairy-guide.js"></script>
 </body>
 </html>
