@@ -54,8 +54,9 @@
     .toggle { display:grid; grid-template-columns:1fr 1fr; background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:4px; gap:4px; }
     .toggle button { font:700 13px 'Montserrat', system-ui, sans-serif; border:0; border-radius:7px; padding:9px 6px; background:transparent; color:var(--muted); cursor:pointer; }
     .toggle button[aria-selected="true"] { background:var(--green); color:#fff; }
-    .media { position:relative; border-radius:10px; overflow:hidden; aspect-ratio:16/10; background:var(--green) center/cover no-repeat; display:flex; align-items:flex-end; }
-    .media .cap { position:relative; width:100%; padding:12px 14px; color:#fff; font-weight:800; font-size:15px; background:linear-gradient(to top, rgba(0,0,0,.75), transparent); }
+    .media { position:relative; border-radius:10px; overflow:hidden; aspect-ratio:16/10; background:#eef1ea; border:1px solid var(--line); }
+    .media img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
+    .media .cap { position:absolute; left:0; right:0; bottom:0; padding:12px 14px; color:#fff; font-weight:800; font-size:15px; background:linear-gradient(to top, rgba(0,0,0,.75), transparent); }
     .side audio { width:100%; }
     .side ul { margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px; font-size:14px; line-height:1.5; }
     .toggle button:focus-visible { outline:3px solid var(--green); outline-offset:2px; }
@@ -104,7 +105,7 @@
           <button type="button" role="tab" id="tabLF" aria-selected="false" data-tab="lf">LESARUSS Foundation</button>
         </div>
         <div id="panelVE" role="tabpanel" aria-labelledby="tabVE" style="display:flex;flex-direction:column;gap:12px">
-          <div class="media" style="background-image:url('/public/events/vegan-foodie-fest-2025.jpg')"><span class="cap">Sean on Vegans Explore</span></div>
+          <div class="media"><img src="https://api.microlink.io/?url=https%3A%2F%2Fvegansexplore.com&screenshot=true&meta=false&embed=screenshot.url" alt="The vegansexplore.com home page" loading="lazy" onerror="this.onerror=null;this.src='/public/events/vegan-foodie-fest-2025.jpg'"><span class="cap">Sean on Vegans Explore</span></div>
           <audio controls preload="none" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/site-audio/lesaruss-com/vegans-explore.mp3"></audio>
           <ul>
             <li>$11 Founding Membership is open.</li>
@@ -115,8 +116,8 @@
           </ul>
         </div>
         <div id="panelLF" role="tabpanel" aria-labelledby="tabLF" style="display:flex;flex-direction:column;gap:12px" hidden>
-          <div class="media" style="background-image:url('/public/founder/sean-hero.jpg');background-position:center 12%"><span class="cap">Sean on the LESARUSS Foundation</span></div>
-          <audio controls preload="none" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/site-audio/lesaruss-com/lesaruss-foundation.mp3"></audio>
+          <div class="media"><img src="https://api.microlink.io/?url=https%3A%2F%2Flesaruss.foundation&screenshot=true&meta=false&embed=screenshot.url" alt="The lesaruss.foundation home page" loading="lazy" onerror="this.onerror=null;this.src='/public/founder/sean-hero.jpg'"><span class="cap">The LESARUSS Foundation</span></div>
+          <!-- Foundation recording hidden until it is trimmed: it ends "...and Vegans Explore", which no longer applies (Sean, 2026-10-08). -->
           <ul>
             <li>Vegans Explore Inc. is being renamed LESARUSS Foundation, Inc.</li>
             <li>Grants for animal rescues, Vegan community groups and K through 12 education initiatives.</li>
