@@ -540,6 +540,17 @@
   }
   function setStatus(msg) { [].forEach.call(document.querySelectorAll('.dg-status'), function (e) { e.textContent = msg; }); }
 
+  // Maya's welcome: the play button on her picture and the green button both start it.
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-intro]')) return;
+    var box = document.getElementById('dgPortrait'), v = document.getElementById('dgIntro');
+    if (!box || !v) return;
+    box.classList.add('playing'); v.controls = true;
+    v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {});
+  });
+  document.addEventListener('ended', function (e) {
+    if (e.target && e.target.id === 'dgIntro') { var box = document.getElementById('dgPortrait'); if (box) box.classList.remove('playing'); e.target.controls = false; }
+  }, true);
   document.addEventListener('click', function (e) {
     var a = auth();
     if (e.target.closest('[data-signin]')) {

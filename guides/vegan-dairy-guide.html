@@ -122,6 +122,13 @@
     .dg-guide-card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
     .dg-guide-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0 0 12px;}
     .dg-guide-card .dg-btn{width:100%;}
+    .dg-intro video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:#fff;}
+    .dg-intro.playing video{display:block;}
+    .dg-intro video::cue{font-size:13px;line-height:1.35;background:rgba(0,0,0,0.72);}
+    .dg-intro.playing .dg-play,.dg-intro.playing .dg-vcap{display:none;}
+    .dg-play{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;border-radius:50%;border:none;background:rgba(255,255,255,0.94);box-shadow:0 6px 24px rgba(0,0,0,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;padding-left:5px;transition:transform .15s;}
+    .dg-play:hover{transform:scale(1.07);}
+    .dg-play:focus-visible{outline:3px solid #22C55E;outline-offset:3px;}
     .dg-lock{border:1px solid var(--gm);background:var(--gl);border-radius:16px;padding:28px 30px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:center;}
     .dg-lock h2{font-size:24px;font-weight:900;margin:0 0 8px;}
     .dg-lock ul{margin:0;padding-left:18px;}
@@ -257,12 +264,20 @@
   </main>
 
   <aside class="dg-rail" id="dgRail" aria-label="Your Dairy Guide">
-    <div class="dg-portrait" id="dgPortrait" role="img" aria-label="Maya, your Guide">
+    <!-- Maya's welcome (Sean, 2026-10-08): she explains the Guide out loud. Video made in Higgsfield
+         (Seed Audio voice "Maya", Wan 2.7 lip sync), captions in maya-dairy-welcome.vtt. -->
+    <div class="dg-portrait dg-intro" id="dgPortrait">
+      <video id="dgIntro" preload="none" playsinline aria-label="Maya's welcome to the Vegan Dairy Guide">
+        <source src="/public/guides/maya-dairy-welcome.mp4" type="video/mp4">
+        <source src="/public/guides/maya-dairy-welcome.webm" type="video/webm">
+        <track kind="captions" src="/public/guides/maya-dairy-welcome.vtt" srclang="en" label="English" default>
+      </video>
+      <button type="button" class="dg-play" data-intro aria-label="Play Maya's welcome"><svg width="26" height="28" viewBox="0 0 16 18" aria-hidden="true"><path d="M2 1l13 8-13 8z" fill="#1f5f22"/></svg></button>
       <div class="dg-vcap"><b>Maya</b><span>Your Guide to going dairy-free</span></div>
     </div>
     <div class="dg-guide-card">
-      <p>Hi, I'm Maya. Dairy was the hardest thing for me to give up too. Search above, or ask me anything about going dairy-free.</p>
-      <a class="dg-btn" href="/dashboard/guide">Ask Maya</a>
+      <p>New here? Maya shows you around the Dairy Guide in under a minute.</p>
+      <button type="button" class="dg-btn" data-intro>Watch Maya's welcome</button>
     </div>
   </aside>
 </div>
