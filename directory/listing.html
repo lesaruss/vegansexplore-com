@@ -276,8 +276,18 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .aisle-sub{font-size:12.5px;line-height:1.45;color:var(--ve-text-75);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .aisle-foot{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
 .aisle-votes{font-size:11px;font-weight:700;color:var(--ve-text-50)}
-.aisle-buy{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;text-decoration:none;white-space:nowrap}
-.aisle-buy:hover{background:#5EC47A;color:#000;border-color:#5EC47A}
+.brand-products{margin-bottom:28px}
+.bp-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50)}
+.bp-head span{font-size:12px;font-weight:700;color:var(--ve-text-50)}
+.bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
+.bp-card{display:flex;gap:12px;align-items:center;border:1px solid var(--ve-border);border-radius:12px;padding:12px;text-decoration:none;color:inherit;background:#fff}
+.bp-card:hover{border-color:#5EC47A}
+.bp-pic{flex:0 0 64px;height:64px;border-radius:10px;border:1px solid var(--ve-border);background:#fff center/80% no-repeat;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
+.bp-main{min-width:0}
+.bp-type{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-50)}
+.bp-name{font-size:15px;font-weight:800;line-height:1.25;margin-top:2px}
+.bp-sub{font-size:12px;color:var(--ve-text-75);margin-top:2px}
 .aisle-more{display:block;margin:16px auto 0;font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:20px;border:1px solid var(--ve-border);background:#fff;cursor:pointer}
 .aisle-more:hover{border-color:#5EC47A;color:#2d7a4f}
 .aisle-empty{padding:28px 0;color:var(--ve-text-50);font-size:14px;grid-column:1/-1}
@@ -1159,14 +1169,13 @@ function loadAisle(l){
     dEl.innerHTML = '<option value="">All departments</option>' + uniq('department').map(function(d){ return '<option value="' + esc(d) + '"' + (d === S.dept ? ' selected' : '') + '>' + esc(d) + ' (' + count('department', d) + ')</option>'; }).join('');
     fillCats();
     function card(r){
-      var p = r.ve_products, b = p.listings, buy = VEProducts.buy(l, r, p, b.name);
+      var p = r.ve_products, b = p.listings;
       var pic = p.image_url || b.logo_url;
       var av = pic ? '<div class="aisle-av" style="background-image:url(\'' + esc(pic) + '\')"></div>' : '<div class="aisle-av" style="background:' + esc(b.color || '#1f5f22') + '">' + esc(b.initials || b.name.charAt(0)) + '</div>';
       return '<a class="aisle-card' + (p.id === want ? ' hit' : '') + '" id="product-' + esc(p.id) + '" href="/products/' + encodeURIComponent(p.slug) + '">' + av +
         '<div class="aisle-main"><div class="aisle-type">' + esc(p.product_type) + '</div><div class="aisle-name">' + esc(VEProducts.title(p, b.name)) + '</div>' +
         (p.made_from ? '<div class="aisle-sub">Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) + (p.note ? '. ' + esc(p.note) : '') + '</div>' : '') +
-        '<div class="aisle-foot"><span class="aisle-votes">' + (b.vote_count || 0) + ' votes for ' + esc(b.name) + '</span>' +
-        (buy ? '<span class="aisle-buy" data-href="' + esc(buy.href) + '">' + esc(buy.label) + '</span>' : '') + '</div></div></a>';
+        '<div class="aisle-foot"><span class="aisle-votes">' + (b.vote_count || 0) + ' votes for ' + esc(b.name) + '</span></div></div></a>';
     }
     function draw(){
       var q = S.q.trim().toLowerCase();
@@ -1186,15 +1195,29 @@ function loadAisle(l){
     qEl.addEventListener('input', function(){ S.q = qEl.value; S.all = false; draw(); });
     sEl.addEventListener('change', function(){ S.sort = sEl.value; draw(); });
     document.getElementById('aisleMore').addEventListener('click', function(){ S.all = true; draw(); });
-    // The buy button inside a card opens the store in a new tab; the rest of the card opens the product page.
-    document.getElementById('aisleGrid').addEventListener('click', function(e){
-      var b = e.target.closest('.aisle-buy'); if(!b) return;
-      e.preventDefault(); window.open(b.getAttribute('data-href'), '_blank', 'noopener');
-    });
+    // A card opens the product's page on Vegans Explore (Sean, 2026-10-08: keep people in our environment).
     draw();
     showListingTab('aisle');
     var hit = want && document.getElementById('product-' + want);
     if(hit) setTimeout(function(){ hit.scrollIntoView({ block: 'center' }); }, 150);
+  });
+}
+
+// A brand's products (Sean, 2026-10-08: "any product we create... should be listed on their page"): every product
+// line our Guides list for this brand, at the top of its Overview, each opening its page at /products/<slug>.
+function loadBrandProducts(l){
+  var url = SUPABASE_URL + '/rest/v1/ve_products?brand_listing_id=eq.' + encodeURIComponent(l.id) + '&guides=neq.%7B%7D&select=slug,product_type,name,made_from,image_url,variants,department&order=product_type';
+  fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
+    if(!Array.isArray(rows) || !rows.length) return;
+    var panel = document.querySelector('#tab-overview > div'); if(!panel) return;
+    var box = document.createElement('div'); box.className = 'brand-products';
+    box.innerHTML = '<div class="bp-head"><h3>Products</h3><span>' + rows.length + (rows.length === 1 ? ' product' : ' products') + ' in our Guides</span></div><div class="bp-grid">' + rows.map(function(p){
+      var pic = p.image_url || l.logo_url, n = Array.isArray(p.variants) ? p.variants.length : 0;
+      return '<a class="bp-card" href="/products/' + encodeURIComponent(p.slug) + '"><div class="bp-pic" style="' + (pic ? "background-image:url('" + esc(pic) + "')" : 'background:' + esc(l.color || '#1f5f22')) + '">' + (pic ? '' : esc(l.initials || l.name.charAt(0))) + '</div>' +
+        '<div class="bp-main"><div class="bp-type">' + esc(p.department ? p.department + ' \u00b7 ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(l.name + ' ' + (p.name || p.product_type)) + '</div>' +
+        '<div class="bp-sub">' + (n > 1 ? n + ' versions' : (p.made_from ? 'Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) : '')) + '</div></div></a>';
+    }).join('') + '</div>';
+    panel.insertBefore(box, panel.firstChild);
   });
 }
 
@@ -2255,7 +2278,7 @@ if(!slug || slug === 'listing'){
       }
       loadBillboardAds();
       ownerVerifiedCard(l);
-      if(isGroceryStore(l)) loadAisle(l);
+      if(isGroceryStore(l)) loadAisle(l); else loadBrandProducts(l);
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
         if(items && items.length){
