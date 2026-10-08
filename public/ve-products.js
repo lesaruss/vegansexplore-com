@@ -1,8 +1,8 @@
 /* VE Products: what the store aisles, product pages and Guides share (Sean, 2026-10-08).
  *
- * Every product a Guide lists is a row in ve_products with its own page at /products/<slug>
- * (directory/product.html). Stores that carry it are in ve_product_stores (see the Grocery stores
- * section of CLAUDE.md).
+ * Every product a Guide lists is a row in ve_products. It opens inside its brand's page, the Products
+ * tab of /directory/<brand> (public/ve-product-view.js); /products/<slug> forwards there. Stores that
+ * carry it are in ve_product_stores (see the Grocery stores section of CLAUDE.md).
  *
  *   VEProducts.title(p, brandName)     "Oatly Milk"
  *   VEProducts.buy(store, row, p, brandName)
@@ -13,9 +13,13 @@
  *   VEProducts.label(n)                a Nutrition Facts panel from ve_products.nutrition
  *   VEProducts.css()                   the panel's styles, once
  *   VEProducts.GUIDES                  guide slug -> [name, link]
+ *   VEProducts.SOURCES                 the listings.details keys that hold a Guide's products (the same keys as
+ *                                      ve_guide_product_sources). A brand with one of them is a brand page with
+ *                                      a Products tab.
  */
 (function () {
   var GUIDES = { 'vegan-dairy-guide': ['Dairy Guide', '/guides/vegan-dairy-guide'] };
+  var SOURCES = ['dairy_guide'];
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function title(p, brandName) { return ((brandName || '') + ' ' + (p.name || p.product_type || '')).trim(); }
   function buy(store, row, p, brandName) {
@@ -50,5 +54,5 @@
       '.vep-nf .nf-r.in{padding-left:14px}.vep-nf .nf-r.in2{padding-left:28px}.vep-nf .nf-r.thick{border-bottom:9px solid #000}.vep-nf .nf-r b{font-weight:900}';
     document.head.appendChild(s);
   }
-  window.VEProducts = { title: title, buy: buy, label: label, css: css, esc: esc, GUIDES: GUIDES };
+  window.VEProducts = { title: title, buy: buy, label: label, css: css, esc: esc, GUIDES: GUIDES, SOURCES: SOURCES };
 })();

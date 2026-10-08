@@ -276,9 +276,21 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .aisle-sub{font-size:12.5px;line-height:1.45;color:var(--ve-text-75);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .aisle-foot{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
 .aisle-votes{font-size:11px;font-weight:700;color:var(--ve-text-50)}
-.brand-products{margin-bottom:28px}
+/* A brand page (Sean, 2026-10-08): a brand with products in our Guides is a small site of its own. Tabs Overview
+   (about, products, where to find it, the gallery) and Products (the list, then one product: Products > Oatly Milk);
+   Campaign, Video and Pulse appear once the brand partners with us. The right column is one ad that stays in place. */
+@media(min-width:769px){.listing-page-grid.bsite{grid-template-columns:minmax(0,1fr) 380px}.listing-sidebar.bsite-rail{top:72px;max-height:none;overflow:visible}}
+.bsite-pad{padding:32px 40px 48px}
+.bsite-sec{margin-bottom:34px}
+.bsite-sec h3,.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
+.bsite-about p{font-size:15px;line-height:1.65;color:var(--ve-text-75)}
+.bsite-src{font-size:11.5px;color:var(--ve-text-50);margin-top:8px}
+.bsite-about .bsite-src{font-size:11.5px;color:var(--ve-text-50)}
+.bsite-src a{color:#1f5f22}
+.bsite-link{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:8px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;text-decoration:none;display:inline-block;margin-top:12px}
+.bsite-link:hover{background:#5EC47A;color:#000;border-color:#5EC47A}
 .bp-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
-.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50)}
+.bp-head h3{margin:0}
 .bp-head span{font-size:12px;font-weight:700;color:var(--ve-text-50)}
 .bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
 .bp-card{display:flex;gap:12px;align-items:center;border:1px solid var(--ve-border);border-radius:12px;padding:12px;text-decoration:none;color:inherit;background:#fff}
@@ -288,6 +300,21 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bp-type{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-50)}
 .bp-name{font-size:15px;font-weight:800;line-height:1.25;margin-top:2px}
 .bp-sub{font-size:12px;color:var(--ve-text-75);margin-top:2px}
+.bsite-crumb{font-size:12px;font-weight:700;color:var(--ve-text-50);margin-bottom:16px}
+.bsite-crumb a{color:#1f5f22;text-decoration:none}
+.bsite-crumb a:hover{text-decoration:underline}
+.bsite-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:12px}
+.bsite-gal.vids{grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));margin-bottom:12px}
+.bsite-gal figure{margin:0;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff}
+.bsite-gal .ph{aspect-ratio:1/1;background:#f6f7f6 center/contain no-repeat}
+.bsite-gal .vid{position:relative;aspect-ratio:16/9;background:#000 center/cover no-repeat;border:0;width:100%;padding:0;cursor:pointer;display:block}
+.bsite-gal .vid::after{content:'';position:absolute;left:50%;top:50%;width:58px;height:40px;margin:-20px 0 0 -29px;border-radius:10px;background:rgba(0,0,0,.72) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/22px no-repeat}
+.bsite-gal .vid:hover::after{background-color:#e00}
+.bsite-gal iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+.bsite-gal figcaption{padding:8px 12px;font-size:12.5px;font-weight:700;line-height:1.35}
+.bsite-gal figcaption span{display:block;font-size:11px;font-weight:600;color:var(--ve-text-50);margin-top:2px}
+.bsite-gal figcaption a{color:var(--ve-text-50)}
+@media(max-width:768px){.bsite-pad{padding:24px 16px 36px}}
 .aisle-more{display:block;margin:16px auto 0;font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:20px;border:1px solid var(--ve-border);background:#fff;cursor:pointer}
 .aisle-more:hover{border-color:#5EC47A;color:#2d7a4f}
 .aisle-empty{padding:28px 0;color:var(--ve-text-50);font-size:14px;grid-column:1/-1}
@@ -590,6 +617,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-products.js"></script>
+<script src="/public/ve-product-view.js"></script>
 <script src="/public/ve-trust.js"></script>
 <script src="/public/ve-listing-admin.js"></script>
 <script src="/public/nav.js"></script>
@@ -1105,6 +1133,9 @@ function renderSidebar(l){
       '<div class="bb-tag">Powered by LESARUSS Advertising</div>'+
     '</div>';
 
+  // A brand page keeps its right column for the ad (Sean, 2026-10-08: "keep the right hand side for advertisement...
+  // the shorter ad... stationary throughout that page").
+  if(l._brandSite) return '<div class="listing-sidebar bsite-rail">'+(l._campaign ? campaignSideCard(l._campaign) : '')+billboardHtml+'</div>';
   return '<div class="listing-sidebar">'+
     (l._campaign ? campaignSideCard(l._campaign) : '')+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
@@ -1203,21 +1234,113 @@ function loadAisle(l){
   });
 }
 
-// A brand's products (Sean, 2026-10-08: "any product we create... should be listed on their page"): every product
-// line our Guides list for this brand, at the top of its Overview, each opening its page at /products/<slug>.
-function loadBrandProducts(l){
-  var url = SUPABASE_URL + '/rest/v1/ve_products?brand_listing_id=eq.' + encodeURIComponent(l.id) + '&guides=neq.%7B%7D&select=slug,product_type,name,made_from,image_url,variants,department&order=product_type';
+// A brand page (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini
+// web experience for Oatly and then as they become partners more tabs open"). A brand with products in our Guides
+// (a listings.details key in VEProducts.SOURCES) gets: Overview (about the brand, its products, where to find them,
+// the gallery: the brand's videos, product photos, and creator content once we make it) and Products (the list, then
+// one product, ?tab=products&product=<slug>&v=<version>, drawn by /public/ve-product-view.js). /products/<slug> forwards
+// here. The Campaign tab shows only while the brand runs a campaign with us; the right column is the ad alone.
+function isProductBrand(l){
+  var d = l.details || {};
+  return !isGroceryStore(l) && !!window.VEProducts && !!window.VEProductView && (VEProducts.SOURCES || []).some(function(k){ return Array.isArray(d[k]) && d[k].length; });
+}
+var BSITE_SELECT = 'id,slug,product_type,name,made_from,note,guides,department,nutrition,nutrition_source,image_url,image_credit,fdc,gallery,certifications,brand_says,brand_url,variants,' +
+  've_product_stores(removed_at,listings(slug,name,status,logo_url,color,initials))';
+function loadBrandSite(l){
+  var url = SUPABASE_URL + '/rest/v1/ve_products?brand_listing_id=eq.' + encodeURIComponent(l.id) + '&guides=neq.%7B%7D&select=' + BSITE_SELECT + '&order=product_type';
+  var pane = document.getElementById('bsite-products'), ov = document.querySelector('#tab-overview > div');
+  VEProductView.css();
   fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
-    if(!Array.isArray(rows) || !rows.length) return;
-    var panel = document.querySelector('#tab-overview > div'); if(!panel) return;
-    var box = document.createElement('div'); box.className = 'brand-products';
-    box.innerHTML = '<div class="bp-head"><h3>Products</h3><span>' + rows.length + (rows.length === 1 ? ' product' : ' products') + ' in our Guides</span></div><div class="bp-grid">' + rows.map(function(p){
+    rows = Array.isArray(rows) ? rows : [];
+    var BY = {}; rows.forEach(function(p){ BY[p.slug] = p; });
+    var d = l.details || {};
+    function title(p){ return VEProducts.title(p, l.name); }
+    function href(slug){ return '/directory/' + encodeURIComponent(l.slug) + '?tab=products&product=' + encodeURIComponent(slug); }
+    function card(p){
       var pic = p.image_url || l.logo_url, n = Array.isArray(p.variants) ? p.variants.length : 0;
-      return '<a class="bp-card" href="/products/' + encodeURIComponent(p.slug) + '"><div class="bp-pic" style="' + (pic ? "background-image:url('" + esc(pic) + "')" : 'background:' + esc(l.color || '#1f5f22')) + '">' + (pic ? '' : esc(l.initials || l.name.charAt(0))) + '</div>' +
-        '<div class="bp-main"><div class="bp-type">' + esc(p.department ? p.department + ' \u00b7 ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(l.name + ' ' + (p.name || p.product_type)) + '</div>' +
+      return '<a class="bp-card" href="' + esc(href(p.slug)) + '" data-product="' + esc(p.slug) + '"><div class="bp-pic" style="' + (pic ? "background-image:url('" + esc(pic) + "')" : 'background:' + esc(l.color || '#1f5f22')) + '">' + (pic ? '' : esc(l.initials || l.name.charAt(0))) + '</div>' +
+        '<div class="bp-main"><div class="bp-type">' + esc(p.department ? p.department + ' · ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(title(p)) + '</div>' +
         '<div class="bp-sub">' + (n > 1 ? n + ' versions' : (p.made_from ? 'Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) : '')) + '</div></div></a>';
-    }).join('') + '</div>';
-    panel.insertBefore(box, panel.firstChild);
+    }
+    function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides'; }
+
+    // ---- Overview: the brand at a glance
+    var stores = {}, photos = [], seen = {};
+    rows.forEach(function(p){
+      VEProductView.stores(p).forEach(function(s){ stores[s.slug] = s; });
+      (Array.isArray(p.gallery) ? p.gallery : []).forEach(function(g){ if(g && g.url && !seen[g.url]){ seen[g.url] = 1; photos.push(g); } });
+    });
+    var storeList = Object.keys(stores).map(function(k){ return stores[k]; }).sort(function(a, b){ return a.name.localeCompare(b.name); });
+    var vids = (Array.isArray(d.videos) ? d.videos : []).filter(function(v){ return v && /^[\w-]{11}$/.test(v.youtube_id || ''); });
+    var creators = Array.isArray(d.creator_posts) ? d.creator_posts : [];
+    var html = '';
+    if(d.about && d.about.text) html += '<div class="bsite-sec"><h3>About ' + esc(l.name) + '</h3><div class="bsite-about"><div><p>' + esc(d.about.text) + '</p>' +
+      (d.about.source ? '<p class="bsite-src">Source: <a href="' + esc(d.about.source) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a></p>' : '') + '</div></div></div>';
+    if(rows.length) html += '<div class="bsite-sec"><div class="bp-head"><h3>Products</h3><span>' + count(rows.length) + '</span></div><div class="bp-grid">' + rows.slice(0, 6).map(card).join('') + '</div>' +
+      (rows.length > 6 ? '<button type="button" class="bsite-link" data-bsite-tab="products">See all ' + rows.length + ' products</button>' : '') + '</div>';
+    if(storeList.length) html += '<div class="bsite-sec"><h3>Where to find ' + esc(l.name) + '</h3><div class="pv-stores">' + storeList.map(function(s){
+      return '<a class="pv-store" href="/directory/' + encodeURIComponent(s.slug) + '" title="' + esc(s.name) + '\'s Vegan aisle">' + VEProductView.logo(s, 'pv-slogo') + '<b>' + esc(s.name) + '</b></a>';
+    }).join('') + '</div><p class="bsite-src">Each store opens its Vegan aisle on Vegans Explore. Stock changes by location, so check your store.</p></div>';
+    if(vids.length || photos.length || creators.length){
+      html += '<div class="bsite-sec"><h3>Gallery</h3>' + (vids.length ? '<div class="bsite-gal vids">' +
+        vids.map(function(v){
+          return '<figure><button type="button" class="vid" data-yt="' + esc(v.youtube_id) + '" aria-label="Play ' + esc(v.title || 'video') + '" style="background-image:url(\'https://i.ytimg.com/vi/' + esc(v.youtube_id) + '/hqdefault.jpg\')"></button>' +
+            '<figcaption>' + esc(v.title || '') + '<span>' + (v.channel_url ? '<a href="' + esc(v.channel_url) + '" target="_blank" rel="noopener">' + esc(v.channel || l.name) + ' on YouTube</a>' : esc(v.channel || '')) + '</span></figcaption></figure>';
+        }).join('') + '</div>' : '') + '<div class="bsite-gal">' +
+        creators.map(function(c){
+          return '<figure><div class="ph" style="background-image:url(\'' + esc(c.image_url || '') + '\');background-size:cover" role="img" aria-label="' + esc(c.caption || '') + '"></div><figcaption>' + esc(c.caption || '') +
+            '<span>' + esc(c.creator ? 'By ' + c.creator : '') + (c.ad ? ' · #ad' : '') + '</span></figcaption></figure>';
+        }).join('') +
+        photos.map(function(g){
+          return '<figure><div class="ph" style="background-image:url(\'' + esc(g.url) + '\')" role="img" aria-label="' + esc(g.caption || '') + '"></div><figcaption>' + esc(g.caption || '') +
+            '<span>' + (g.source ? '<a href="' + esc(g.source) + '" target="_blank" rel="noopener">' + esc(g.credit || 'Source') + '</a>' : esc(g.credit || '')) + '</span></figcaption></figure>';
+        }).join('') + '</div></div>';
+    }
+    if(ov && html){ var box = document.createElement('div'); box.className = 'bsite-overview'; box.innerHTML = html; ov.insertBefore(box, ov.firstChild); }
+
+    // ---- Products: the list, then one product
+    function showList(){
+      if(!pane) return;
+      pane.innerHTML = rows.length ? '<div class="bp-head"><h3>Products</h3><span>' + count(rows.length) + '</span></div><div class="bp-grid">' + rows.map(card).join('') + '</div>'
+        : '<div class="aisle-empty">No products from ' + esc(l.name) + ' in our Guides yet.</div>';
+      document.title = l.name + ' — Vegans Explore';
+    }
+    function showProduct(p, version){
+      pane.innerHTML = '<div class="bsite-crumb"><a href="/directory/' + esc(encodeURIComponent(l.slug)) + '?tab=products" data-bsite-list>Products</a> &rsaquo; ' + esc(title(p)) + '</div><div class="bsite-pv"></div>';
+      VEProductView.render(pane.querySelector('.bsite-pv'), p, l, { others: rows, href: href, version: version, onVersion: function(k){
+        var u = new URL(location.href); if(k) u.searchParams.set('v', k); else u.searchParams.delete('v');
+        history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+      } });
+      document.title = title(p) + ' — Vegans Explore';
+    }
+    function route(){
+      var q = new URLSearchParams(location.search), p = BY[q.get('product') || ''];
+      if(q.get('tab') === 'products' && p) showProduct(p, q.get('v')); else showList();
+    }
+    function go(slug){
+      var u = new URL(location.href);
+      u.searchParams.set('tab', 'products'); u.searchParams.delete('v');
+      if(slug) u.searchParams.set('product', slug); else u.searchParams.delete('product');
+      history.pushState({ bsite: 1 }, '', u.pathname + u.search + u.hash);
+      showListingTab('products'); route();
+      var nav = document.querySelector('.listing-tabs');
+      if(nav && nav.getBoundingClientRect().top < 0) window.scrollTo(0, nav.getBoundingClientRect().top + window.pageYOffset - 70);
+    }
+    document.getElementById('listing-root').addEventListener('click', function(e){
+      var el;
+      if((el = e.target.closest('button.vid[data-yt]'))){
+        el.outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(el.getAttribute('data-yt')) + '?autoplay=1&rel=0" title="' + esc(el.getAttribute('aria-label') || 'Video') + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+        return;
+      }
+      if((el = e.target.closest('[data-bsite-tab]'))){ go(''); return; }
+      if(e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      if((el = e.target.closest('a[data-product]')) && BY[el.getAttribute('data-product')]){ e.preventDefault(); go(el.getAttribute('data-product')); return; }
+      if(e.target.closest('a[data-bsite-list]')){ e.preventDefault(); go(''); }
+    });
+    window.addEventListener('popstate', function(){
+      showListingTab(new URLSearchParams(location.search).get('tab') || 'overview'); route();
+    });
+    route();
   });
 }
 
@@ -1503,6 +1626,11 @@ function showListingTab(target){
   var panel = document.getElementById('tab-'+target);
   if(panel) panel.classList.add('active');
   if(target === 'photos') wireCarousel('tab-photos');
+  // The address bar carries the tab, so a link or Back opens the same view.
+  var u = new URL(location.href);
+  if(target === 'overview') u.searchParams.delete('tab'); else u.searchParams.set('tab', target);
+  if(target !== 'products' && document.getElementById('tab-products')){ u.searchParams.delete('v'); u.searchParams.delete('product'); }
+  if(u.href !== location.href) history.replaceState(history.state, '', u.pathname + u.search + u.hash);
 }
 window.veListingTab = showListingTab;
 function wireCampaign(l){
@@ -1549,6 +1677,9 @@ window.veDemoView = function(v){ if(window._veDemoListing) setDemoView(v, window
 
 function renderListing(l){
   var isSoFlo = !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1);
+  // A brand with products in our Guides is a brand page (see .bsite in the styles). It wears our city art too.
+  l._brandSite = isProductBrand(l);
+  if(l._brandSite) isSoFlo = true;
   var community = getCommunityForListing(l);
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
@@ -1683,15 +1814,16 @@ function renderListing(l){
     (l._campaign ? campaignBanner(l._campaign) : '')+
     (infoChips.length ? '<div class="info-bar">'+infoChips.join('')+'</div>' : '')+
     // Persistent two-column layout: main tabs on left, sidebar always on right
-    '<div class="listing-page-grid">'+
+    '<div class="listing-page-grid'+(l._brandSite ? ' bsite' : '')+'">'+
       '<div class="listing-page-main">'+
         // Tab nav — Menu tab hidden until items confirmed; Video + Pulse require claimed status
         '<nav class="listing-tabs" role="tablist">'+
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
-          '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
-          '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
+          (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button>' : '')+
+          '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
+          (l._brandSite ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
           (l._campaign && l._campaign.events ? '<button class="tab-btn" data-tab="events" role="tab" aria-selected="false">Events</button>' : '')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
@@ -1702,6 +1834,7 @@ function renderListing(l){
         '</div>'+
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
+        (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' : '')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video', l)+'</div>' : '')+
@@ -1735,6 +1868,7 @@ function renderListing(l){
   document.querySelectorAll('.tab-btn').forEach(function(btn){
     btn.addEventListener('click', function(){ showListingTab(this.dataset.tab); });
   });
+  (function(){ var t = new URLSearchParams(location.search).get('tab'); if(t && t !== 'overview') showListingTab(t); })();
   wireCampaign(l);
 
   // Wire overview carousel on load; Photos tab carousel on first click
@@ -2278,7 +2412,7 @@ if(!slug || slug === 'listing'){
       }
       loadBillboardAds();
       ownerVerifiedCard(l);
-      if(isGroceryStore(l)) loadAisle(l); else loadBrandProducts(l);
+      if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
         if(items && items.length){

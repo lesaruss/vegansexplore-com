@@ -373,22 +373,27 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   someone confirms the search in a browser), then the store's website.
 - The Vegan aisle is one category at a time: department and category dropdowns, search, Sort by (most
   voted brand first), 12 cards then Show all. Each card opens the product's page.
-- Product pages (Sean, 2026-10-08: "the Dairy Guide is creating these product pages"): every product has
-  `/products/<slug>` (`directory/product.html`, rewrite in `vercel.json`): what it is made from, Nutrition
-  Facts (`ve_products.nutrition`, only from a cited source such as USDA FoodData Central), a picture
-  (`image_url` with `image_credit`), where to buy with each store's aisle, more from the brand, and the
-  brand partnership ask. Shared helpers: `/public/ve-products.js`. In a Guide it opens as `#/product/<slug>`.
-- The product page is the product's promo page (Sean, 2026-10-08): the brand's logo heads it even for one
-  product, with Back to the brand; tabs Overview (photos, what it is, the brand's own words, certifications,
-  the USDA record in full with every nutrient per 100 g/mL, about the brand, where to buy with store logos,
-  more from the brand; Nutrition Facts on the right), Gallery (every photo with its credit and source) and
-  Campaigns & contests (a brand campaign's creator posts and contests). Columns: `ve_products.fdc` (from
-  `fdc.nal.usda.gov/portal-data/external/<id>`, which works when the api.nal.usda.gov DEMO_KEY is rate
-  limited), `gallery`, `certifications`, `brand_says`, `brand_url`; brand `listings.details.about`.
-  Product photos are copied into `vegan-media/media/products/<slug>/` from the brand's own product page and
-  Open Food Facts (credit CC BY-SA); Sean, 2026-10-08: brand photos are fine to use, and we reach out to the
-  brand. Store and brand logos are copied into `vegan-media/media/logos/` (`listings.logo_url`), each checked
-  by eye. The edge function `ve-off-lookup` (admin token) looks at and copies pictures; it writes no rows.
+- Brand pages (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini
+  web experience for Oatly"): a brand with products in our Guides (a `listings.details` key in `VEProducts.SOURCES`,
+  the same keys as `ve_guide_product_sources`) is one page, its Directory listing, with tabs Overview (about the brand
+  from `details.about`, its products, where to find them, and a Gallery: the brand's YouTube videos from
+  `details.videos`, product photos, creator content from `details.creator_posts` once we make it) and Products (the
+  list, then one product: Products > Oatly Milk, `?tab=products&product=<slug>&v=<version>`). The Campaign, Video and
+  Pulse tabs appear only once the brand partners with us. The right column is the listing billboard alone, pinned
+  while the page scrolls. It wears our city art (South Florida for now). Code: `loadBrandSite` in `directory/listing.html`.
+- A product (`/public/ve-product-view.js`): the photo with its versions (`ve_products.variants`) as round thumbnails
+  under it, the chosen version's name, the brand's own description and ingredients, certifications, its Nutrition
+  Facts (each version's own, cited; `ve_products.nutrition` only from a cited source such as USDA FoodData Central),
+  the USDA record in full (`ve_products.fdc`, from `fdc.nal.usda.gov/portal-data/external/<id>`, which works when the
+  api.nal.usda.gov DEMO_KEY is rate limited), Where to find it (each store a button, logo and name, to its Vegan aisle
+  on Vegans Explore; never the store's own site: "we want to keep them in our environment"), and more from the brand.
+  `/products/<slug>` (`directory/product.html`, rewrite in `vercel.json`) is the shareable link and forwards to the
+  brand page with that product open. In a Guide it opens as `#/product/<slug>`. Shared helpers: `/public/ve-products.js`.
+- Pictures: product photos are copied into `vegan-media/media/products/<slug>/` from the brand's own product page and
+  Open Food Facts (credit CC BY-SA); Sean, 2026-10-08: brand photos are fine to use, and we reach out to the brand.
+  Store and brand logos are copied into `vegan-media/media/logos/` (`listings.logo_url`), each checked by eye. Videos
+  are the brand's own uploads, checked through YouTube oEmbed (`author_url`). The edge function `ve-off-lookup` (admin
+  token) looks at and copies pictures; it writes no rows.
 - A new listing gets `vegan_status = 'fully_vegan'` by default. Set it on purpose (null for a store, which is
   not a Vegan business), or the Directory calls it 100% Vegan.
 - Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once
