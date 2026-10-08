@@ -363,6 +363,11 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-narr-who span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-50)}
 .bd-bubble{position:relative;background:#f0faf4;border:1px solid #c8e6c9;border-radius:12px;padding:14px 16px;font-size:14.5px;line-height:1.6;color:#1a1a1a}
 .bd-bubble::before{content:'';position:absolute;top:-8px;left:26px;width:14px;height:14px;background:#f0faf4;border-left:1px solid #c8e6c9;border-top:1px solid #c8e6c9;transform:rotate(45deg)}
+.bd-vid-slot{border-radius:12px;overflow:hidden;background:#f6f7f6;aspect-ratio:1/1;margin-bottom:10px}
+.bd-vid{display:block;width:100%;height:100%;object-fit:cover;cursor:pointer;background:#f6f7f6}
+.bd-narr-name{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:10px}
+.bd-narr-name b{font-size:14px;letter-spacing:0;text-transform:none;color:#1a1a1a}
+.bd-narr-m .bd-vid-slot{max-width:320px}
 .bd-play{font-family:inherit;margin-top:12px;width:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;border-radius:8px;border:1.5px solid #1f5f22;background:#1f5f22;color:#fff;cursor:pointer}
 .bd-play[aria-pressed="true"]{background:#fff;color:#1f5f22}
 /* Slides that show a lot: words on top, the picture across */
@@ -1523,28 +1528,28 @@ function loadBrandSite(l){
     var milk = withVersions && withVersions.slug;
     var SLIDES = [
       { t: 'Welcome', h: 'We built ' + B + ' a page on Vegans Explore',
-        say: 'Hi ' + l.name + ', I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. Your products are already in it, so we built ' + l.name + ' its own page on Vegans Explore. Let me show you around.',
+        say: 'Hi! I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. ' + l.name + ', your products are already in my guide, so we built ' + l.name + ' its own page on Vegans Explore. Take a look around.',
         body: '<p>' + rows.length + (rows.length === 1 ? ' product' : ' products') + (guideNames.length ? ' from the ' + esc(guideNames.join(' and the ')) : '') + ', every version with its Nutrition Facts and USDA label record, and the ' +
           storeList.length + ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. Live today, and yours to keep.</p>' +
           '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="overview">See the page</button>' + (milk ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(milk) + '">Open ' + esc(title(withVersions)) + '</button>' : '') + '</div>',
         pic: pics([l.logo_url].concat(rows.map(function(p){ return p.image_url; })).filter(Boolean)) },
       { t: 'Where people find you', h: 'Where people find ' + B + ' today',
-        say: 'This is where people find you today: in the ' + (firstGuide ? firstGuide[0] : 'Directory') + ', in every grocery store\'s Vegan aisle, and on your own product pages, with every version, its Nutrition Facts, and its USDA label.',
+        say: 'Let me show you where people find you today. In the ' + (firstGuide ? firstGuide[0] : 'Directory') + ', in every grocery store\'s Vegan aisle, and on your own product pages, with every version, its Nutrition Facts, and its USDA label.',
         body: '<p>These are the real pages, live. Scroll inside any of them, or open it.</p>',
         pic: '<div class="bd-lives">' + (firstGuide ? live(withPreview(firstGuide[1]), 'The ' + firstGuide[0], firstGuide[1]) : '') +
           (firstStore ? live(withPreview('/directory/' + firstStore.slug + (milk && BY[milk] ? '?product=' + BY[milk].id : '')), firstStore.name + '\'s Vegan aisle', '/directory/' + firstStore.slug) : '') +
           (milk ? live(withPreview('/directory/' + l.slug + '?tab=products&product=' + milk), title(withVersions), '/products/' + milk) : '') + '</div>', wide: true },
       { t: 'Your ad', h: 'An ad we drew for ' + B,
-        say: 'We even drew this one for you. Our Guides, enjoying your products, in ads that run across Vegans Explore, on the pages where people are already looking for you.',
+        say: 'And look, we even drew one just for you. Our Guides, enjoying your products, in ads that run across Vegans Explore, on the pages where people are already looking for you.',
         body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run ads like this across Vegans Explore: on the Daily Pulse, in the Guides, beside the Directory.</p><p class="bd-small">A sample, made for ' + B + '. It does not run anywhere yet.</p>',
         pic: BD.sample_ad ? '<div class="bd-sample"><div class="bd-sample-h">Billboard <em>Sample for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>'
           : '<div class="bd-note">We draw a sample ad for every brand we partner with: our Guides, enjoying your products.</div>' },
       { t: 'The mission', h: 'A thousand chapters by 2030',
-        say: 'Vegans Explore is a community, built city by city. South Florida is first, and our goal is a thousand chapters by twenty thirty. Brand Partners help us get there.',
+        say: 'Vegans Explore is a community, built city by city. South Florida is first, and our goal is a thousand chapters by 2030. Brand Partners help us get there.',
         body: '<p>Each city has its Daily Pulse, events, a Directory and members who earn points for showing up. South Florida is first.</p><div class="bd-btns"><a class="bd-btn o" href="/communities/south-florida" target="_blank" rel="noopener">Visit South Florida</a></div>',
         pic: '<div class="bd-cities">' + hubs.map(function(h){ var b = h.page && h.page.banner; return '<a href="/communities/' + esc(h.slug) + '" target="_blank" rel="noopener" style="' + (b ? "background-image:url('" + esc(b) + "')" : '') + '"><span>' + esc(h.name) + '</span></a>'; }).join('') + '</div>' },
       { t: 'In person and online', h: 'Straight to the people who use your products',
-        say: 'We bring brands like yours straight to the people who use your products: at events, online, through activations, and in games like our Passport Challenge.',
+        say: 'We bring brands like yours straight to the people who use your products. At events, online, through activations, and in games like our Passport Challenge.',
         body: '<p>Members meet in person and keep talking online, and brands are part of both.</p>',
         pic: tiles([['Events', 'Dinners, meetups and tastings in each city'], ['Activations', 'Your product in members\' hands, with tasks worth points'], ['Games', 'The Passport Challenge: stamps, points and prizes'], ['Online', 'The Daily Pulse and the Community Board, every day']]) },
       { t: 'Campaigns', h: 'Campaigns, points and giveaways',
@@ -1556,11 +1561,11 @@ function loadBrandSite(l){
         body: '<p>It counts from the day we built your page, so the numbers are waiting for you.</p><div class="bd-btns"><button type="button" class="bd-btn" data-bdview="dashboard">Open the dashboard</button></div>',
         pic: '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' },
       { t: 'Beyond this page', h: 'Everywhere your audience lives',
-        say: 'And it goes beyond this page: our Guides, the Daily Pulse, the Community Board, our social channels, and the wider LESARUSS universe of brands, where your audience already lives.',
+        say: 'And honestly, it goes way beyond this one page. Our Guides, the Daily Pulse, the Community Board, our social channels, and the wider LESARUSS universe of brands, where your audience already lives.',
         body: '<p>Many ways to feature ' + B + ', on Vegans Explore and across the LESARUSS universe of brands.</p>',
         pic: '<div class="bd-chips">' + ['Our Guides', 'The Daily Pulse', 'The Community Board', 'Instagram', 'TikTok', 'Ad slots', 'Events', 'The LESARUSS universe'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>' },
       { t: 'Brand Partner', h: 'Brand Partner: $111 a quarter',
-        say: 'It all starts with Brand Partner: a hundred and eleven dollars a quarter for a seat at the table, and the whole platform to explore. Claim ' + l.name + '\'s page, and let\'s build something together.',
+        say: 'It all starts with Brand Partner: $111 a quarter for a seat at the table. Claim ' + l.name + '\'s page, and let\'s build something together.',
         body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products, photos, videos and creator content</li>' +
           '<li>Your live dashboard: visits, products opened, store aisles opened, campaigns</li><li>Front-row access to every campaign before it opens</li>' +
           '<li>Sponsorships a la carte through LESARUSS AI, or a call with our team</li><li>The whole platform to explore: the Directory, events and every community</li></ul>' +
@@ -1568,21 +1573,47 @@ function loadBrandSite(l){
           '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + B + ' as a Brand Partner</a><a class="bd-btn o" href="' + esc(talkHref) + '">Talk with our team</a></div>',
         pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months.</em></div>' }
     ];
-    var AUDIO = Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
-    var player = AUDIO ? new Audio() : null;
-    if(player){ player.preload = 'none'; player.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); }); }
+    // The narration: a video per slide (brand_door.video: Maya on camera for the lines every brand shares, then the
+    // lines with the brand's name over b-roll of its own page; assembled per brand), else her voice alone (brand_door.audio).
+    var VIDEO = Array.isArray(BD.video) && BD.video.length === SLIDES.length ? BD.video : null;
+    var AUDIO = !VIDEO && Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
+    var player = null;
+    if(VIDEO){
+      player = document.createElement('video'); player.className = 'bd-vid'; player.preload = 'metadata'; player.playsInline = true;
+      player.setAttribute('playsinline', ''); player.poster = BD.poster || narrArt; player.src = VIDEO[0];
+      player.addEventListener('click', function(){ if(DOOR.playing){ stop(); drawNarr(); } else play(); });
+    } else if(AUDIO){ player = new Audio(); player.preload = 'none'; }
+    if(player) player.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); });
     var grid = document.querySelector('.listing-page-grid'), rail = document.querySelector('.bsite-rail');
     var narr = null;
     if(rail && door){ narr = document.createElement('div'); narr.className = 'bd-narr'; narr.id = 'bd-narr'; rail.insertBefore(narr, rail.firstChild); }
-    function narrHtml(){
-      var sl = SLIDES[DOOR.i];
-      return '<div class="bd-narr-who"><span class="bd-narr-pic" style="background-image:url(\'' + esc(narrArt) + '\')"></span><div><b>' + esc(NARR_NAME) + '</b><span>Your Guide to Vegans Explore</span></div></div>' +
-        '<div class="bd-bubble">' + esc(DOOR.view === 'offer' ? sl.say : 'This is ' + l.name + '\'s dashboard: what people do on your page, live.') + '</div>' +
-        (AUDIO && DOOR.view === 'offer' ? '<button type="button" class="bd-play" data-bd-play aria-pressed="' + DOOR.playing + '">' + (DOOR.playing ? 'Pause ' + esc(NARR_NAME) : '&#9654; Hear ' + esc(NARR_NAME)) + '</button>' : '');
+    // Each narrator box is built once and then only its words and button change, so a playing video is never cut off.
+    function narrBox(el){
+      if(el.querySelector('.bd-bubble')) return;
+      el.innerHTML = (VIDEO ? '<div class="bd-vid-slot"></div><div class="bd-narr-name"><b>' + esc(NARR_NAME) + '</b> &middot; Your Guide to Vegans Explore</div>'
+          : '<div class="bd-narr-who"><span class="bd-narr-pic" style="background-image:url(\'' + esc(narrArt) + '\')"></span><div><b>' + esc(NARR_NAME) + '</b><span>Your Guide to Vegans Explore</span></div></div>') +
+        '<div class="bd-bubble"></div>' + (player ? '<button type="button" class="bd-play" data-bd-play></button>' : '');
     }
-    function drawNarr(){ [narr, door && door.querySelector('.bd-narr-m')].forEach(function(el){ if(el) el.innerHTML = narrHtml(); }); }
-    function play(){ if(!player) return; player.src = AUDIO[DOOR.i]; player.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); }); }
+    function drawNarr(){
+      var mob = door && door.querySelector('.bd-narr-m'), small = window.matchMedia && matchMedia('(max-width:768px)').matches;
+      [narr, mob].forEach(function(el){
+        if(!el) return; narrBox(el);
+        el.querySelector('.bd-bubble').textContent = DOOR.view === 'offer' ? SLIDES[DOOR.i].say : 'This is ' + l.name + '\'s dashboard: what people do on your page, live.';
+        var btn = el.querySelector('.bd-play');
+        if(btn){ btn.hidden = DOOR.view !== 'offer'; btn.setAttribute('aria-pressed', String(DOOR.playing)); btn.innerHTML = DOOR.playing ? 'Pause ' + esc(NARR_NAME) : '&#9654; ' + (VIDEO ? 'Watch ' : 'Hear ') + esc(NARR_NAME); }
+      });
+      // The one video lives in whichever box is showing: the right column, or the tab itself on a phone.
+      if(VIDEO){ var home = (small ? mob : narr) || narr || mob, slot = home && home.querySelector('.bd-vid-slot'); if(slot && player.parentNode !== slot) slot.appendChild(player); }
+    }
+    function play(){
+      if(!player) return;
+      var src = (VIDEO || AUDIO)[DOOR.i];
+      if(player.getAttribute('src') !== src) player.src = src;
+      player.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); });
+    }
     function stop(){ if(player){ player.pause(); } DOOR.playing = false; }
+    // A new slide shows its own first frame even before anyone presses play.
+    function cue(){ if(VIDEO && !DOOR.playing && player.getAttribute('src') !== VIDEO[DOOR.i]){ player.src = VIDEO[DOOR.i]; } }
     function syncRail(){ var on = !!document.querySelector('.tab-btn.active[data-tab="brand"]'); if(grid) grid.classList.toggle('door-on', on); if(!on && DOOR.playing){ stop(); drawNarr(); } }
     function lazyLive(){ [].forEach.call(door.querySelectorAll('iframe[data-src]'), function(f){ f.src = f.getAttribute('data-src'); f.removeAttribute('data-src'); }); }
     function drawDoor(){
@@ -1645,7 +1676,7 @@ function loadBrandSite(l){
       if(e.target.closest('[data-bd-play]')){ if(DOOR.playing){ stop(); drawNarr(); } else play(); return true; }
       if(!door || !door.contains(e.target)) return false;
       if((el = e.target.closest('[data-bdview]'))){ setDoor(el.getAttribute('data-bdview')); return true; }
-      if((el = e.target.closest('[data-bd]'))){ DOOR.i = Math.max(0, Math.min(SLIDES.length - 1, DOOR.i + (el.getAttribute('data-bd') === 'next' ? 1 : -1))); drawDoor(); if(DOOR.playing) play(); return true; }
+      if((el = e.target.closest('[data-bd]'))){ DOOR.i = Math.max(0, Math.min(SLIDES.length - 1, DOOR.i + (el.getAttribute('data-bd') === 'next' ? 1 : -1))); drawDoor(); if(DOOR.playing) play(); else cue(); return true; }
       if((el = e.target.closest('[data-bddays]'))){ DOOR.days = +el.getAttribute('data-bddays'); drawDash(); return true; }
       if((el = e.target.closest('[data-bd-goto]'))){ showListingTab(el.getAttribute('data-bd-goto')); syncRail(); window.scrollTo(0, 0); return true; }
       if((el = e.target.closest('[data-bd-product]'))){ go(el.getAttribute('data-bd-product')); syncRail(); return true; }

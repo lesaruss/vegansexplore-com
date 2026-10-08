@@ -397,9 +397,16 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Guide enjoying their product; the mission, a thousand chapters by 2030; events, activations and games; campaigns,
   points and giveaways; the live dashboard; everywhere their audience lives, the LESARUSS universe included; Brand
   Partner). The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
-  (`VEProducts.GUIDES[..][2]`), her words on each slide and her voice from `listings.details.brand_door.audio` (el-media
-  tts, `vegan-media/media/<guide>/brand-door/<slug>-<n>.mp3`; the spoken text is the slide's `say` in `loadBrandSite`,
-  so record again when it changes). `brand_door.sample_ad` is the sample ad (Sean, 2026-10-08: "show our characters
+  (`VEProducts.GUIDES[..][2]`), her words on each slide (the slide's `say` in `loadBrandSite`, which must match the
+  recording) and a video per slide (`listings.details.brand_door.video`, `/public/brand-door/<slug>/slide-<n>.mp4`;
+  `brand_door.audio` is the voice-only fallback). Sean, 2026-10-08: "use Maya and personalize it for the brand. The part
+  where they say the name of the brand would be over b-roll." Each slide is Maya on camera saying a line every brand
+  shares (lip-synced once in Higgsfield, Wan 2.7 720p from her square art and her el-media voice,
+  `vegan-media/media/maya/brand-door/m-<n>.mp3`), then a voice-over over b-roll: stills of the brand's own page,
+  products, sample ad, our cities and our Guides. Only slides 1 and 9 name the brand, so a new brand needs two el-media
+  clips (`<slug>-vo-1`, `<slug>-vo-9`), its stills, and `scripts/brand-door/assemble_door.py` (ffmpeg); no new lip-sync.
+  A lip-sync take needs a line of about 3 seconds or more (shorter ones failed), and ve-off-lookup's `img` fetch caps at
+  about 3.5 MB, so a large take is shrunk first in Higgsfield's sandbox. `brand_door.sample_ad` is the sample ad (Sean, 2026-10-08: "show our characters
   consuming their products in the ads just for their pages"); it shows only in the tour, never as a live ad. On a brand
   page's other tabs the billboard carries our own ad for its Guide (`houseAd`, `/go/ve-dairy-guide`). The Dashboard (`?door=dashboard`): views, visitors, products
   opened, store aisles opened, videos played, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
