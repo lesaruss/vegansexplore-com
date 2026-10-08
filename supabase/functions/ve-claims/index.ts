@@ -20,6 +20,8 @@
 //     the Depot has opened: subscribe now, first charge on the business's first Challenge month
 //   POST { action: 'commit_year', listing_id }  four quarters for the price of three, offered at renewal
 //   POST { action: 'results', id } / { action: 'results_list', listing_id }  quarterly results sheets
+//   POST { action: 'brand_stats', listing_id, days? }  -> { stats, plan, admin }  what visitors did on the listing
+//     (ve_listing_stats: views, products opened, stores' Vegan aisles opened, videos played) for its owner or a super admin
 // Public (no sign-in):
 //   POST { action: 'offer', listing_id? }  -> { hub, founding: { open, full, cap, taken }, extra }
 //
@@ -36,6 +38,10 @@
 // billing with the first Challenge month (bill_from); the subscription starts then, via a trial.
 // Four quarters for three is offered from the first results sheet on (or 60 days in): the
 // subscription moves to a yearly price of 3x the locked quarterly amount from the next renewal.
+// Brand Partner (Sean, 2026-10-08): a product brand (Oatly) takes tier 'brand', $111 a quarter, the same quarterly
+// subscription and the same claim path. It is a seat at the table: a featured brand page, the brand dashboard
+// (brand_stats), front-row access to campaigns, and sponsorships a la carte. No founding spots and no Passport results
+// sheet (brands are not stops on the map).
 // Results sheets: a daily cron (GET ?cron=results, x-cron-secret) writes one per completed quarter
 // (every 3 months from paid_at) from ve_results_data() and emails it to the business and Sean.
 //
@@ -98,6 +104,7 @@ const BUSINESS = ['OPERATIONAL', 'CLOSED_TEMPORARILY', 'CLOSED_PERMANENTLY'];
 const TIERS: Record<string, { cents: number; name: string }> = {
   verified: { cents: 25000, name: 'Passport Stop' },
   plus: { cents: 50000, name: 'Passport Anchor' },
+  brand: { cents: 11100, name: 'Brand Partner' },
 };
 // The city hubs, matching /public/ve-hubs.js (a listing is in a hub when its city and state fit).
 const HUBS: Record<string, { name: string; cities?: string[]; states?: string[] }> = {
@@ -343,7 +350,7 @@ async function resultsSheet(row: any, start: Date, end: Date, send: boolean) {
   return sheet;
 }
 async function runResultsCron() {
-  const { data: rows } = await db.from('ve_verified_memberships').select('*').in('status', LIVE).not('paid_at', 'is', null);
+  const { data: rows } = await db.from('ve_verified_memberships').select('*').in('status', LIVE).not('paid_at', 'is', null).neq('tier', 'brand');
   let made = 0;
   for (const r of rows || []) {
     const paid = new Date(r.paid_at);
@@ -490,6 +497,21 @@ Deno.serve(async (req) => {
     return json({ claim: data || null, verified });
   }
 
+  // A brand's dashboard: what visitors did on its listing. Its owner, or a super admin showing it to the brand.
+  if (body.action === 'brand_stats') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_request' }, 400);
+    const { data: l } = await db.from('listings').select('id, owner_member_id, claimed_by_member_id').eq('id', id).maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    const owner = l.owner_member_id === memberId || l.claimed_by_member_id === memberId;
+    if (!owner && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
+    const days = Math.min(365, Math.max(1, Math.round(Number(body.days) || 30)));
+    const { data: stats, error } = await db.rpc('ve_listing_stats', { p_listing: id, p_days: days });
+    if (error) return json({ error: 'stats_failed' }, 500);
+    const v = await liveMembership(id);
+    return json({ stats, plan: v ? { tier: v.tier, name: TIERS[v.tier]?.name, status: v.status, renews_at: v.renews_at } : null, admin: !owner });
+  }
+
   // An owner who already holds the listing buys VE Verified.
   if (body.action === 'verified_start') {
     const id = String(body.listing_id || ''), tier = String(body.tier || '');
@@ -500,7 +522,7 @@ Deno.serve(async (req) => {
     if (await liveMembership(id)) return json({ error: 'already_verified' }, 409);
     if (await reservedMembership(id)) return json({ error: 'already_reserved' }, 409);
     const test = await isTestAccount(member.email);
-    const hub = hubOf(listing), f = await foundingState(hub);
+    const hub = tier === 'brand' ? null : hubOf(listing), f = await foundingState(hub);
     if (f.open) {
       if (f.full) return json({ error: 'founding_full', hub }, 409);
       await reserve(listing, member, tier, hub!, test, {});
@@ -522,7 +544,7 @@ Deno.serve(async (req) => {
     if (tier && !TIERS[tier]) return json({ error: 'bad_tier' }, 400);
     if (tier && await liveMembership(id)) return json({ error: 'already_verified' }, 409);
     if (tier && await reservedMembership(id)) return json({ error: 'already_reserved' }, 409);
-    const hub = tier ? hubOf(listing) : null, f = tier ? await foundingState(hub) : { open: false, full: false };
+    const hub = tier && tier !== 'brand' ? hubOf(listing) : null, f = tier ? await foundingState(hub) : { open: false, full: false };
     if (tier && f.open && f.full) return json({ error: 'founding_full', hub }, 409);
     const cents = tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
     if (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);

@@ -291,6 +291,65 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 #bsite-gallery h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
 .bsite-gal + h3{margin-top:28px}
 @media(max-width:768px){.bsite-nf{display:none}.bsite-gcount{margin-left:0}}
+/* For <Brand>: the brand's door, a walkthrough one slide at a time, and its dashboard */
+.tab-btn.tab-door{color:#1f5f22}
+.bd-top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;margin-bottom:18px}
+.bd-hello{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50)}
+.bd-slide{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:center;min-height:420px;background:#0d1a10;color:#fff;border-radius:16px;padding:36px}
+.bd-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fe3a6;margin-bottom:10px}
+.bd-slide h2{font-size:clamp(24px,2.6vw,34px);font-weight:900;line-height:1.15;margin:0 0 14px}
+.bd-slide p{font-size:15px;line-height:1.65;color:rgba(255,255,255,.82);margin:0 0 12px}
+.bd-list{margin:0 0 12px;padding:0;list-style:none}
+.bd-list li{font-size:14.5px;line-height:1.55;color:rgba(255,255,255,.82);padding:8px 0 8px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.08)}
+.bd-list li::before{content:'';position:absolute;left:4px;top:15px;width:8px;height:8px;border-radius:50%;background:#5EC47A}
+.bd-list b{color:#fff}
+.bd-small{font-size:12.5px;color:var(--ve-text-50)}
+.bd-slide .bd-small{color:rgba(255,255,255,.6)}
+.bd-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.bd-btn{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:12px 16px;border-radius:8px;border:1.5px solid #5EC47A;background:#5EC47A;color:#0d2a12;text-decoration:none;cursor:pointer}
+.bd-btn.o{background:transparent;color:#8fe3a6}
+.bd-btn:hover{filter:brightness(1.08)}
+.bd-locked .bd-btn.o,.bd-dash .bd-btn.o{color:#1f5f22;border-color:#1f5f22}
+.bd-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px;font-size:12px;font-weight:800;color:var(--ve-text-50)}
+.bd-nav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:8px;border:1.5px solid var(--ve-border);background:#fff;cursor:pointer}
+.bd-nav:disabled{opacity:.4;cursor:default}
+.bd-pics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bd-pics span{aspect-ratio:1/1;border-radius:12px;background:#fff center/72% no-repeat}
+.bd-logos{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.bd-logos .pv-slogo{width:100%;height:auto;aspect-ratio:1/1;border-radius:14px;font-size:22px}
+.bd-cities{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.bd-cities a{position:relative;aspect-ratio:16/7;border-radius:10px;background:#333 center/cover no-repeat;overflow:hidden;text-decoration:none}
+.bd-cities a::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75),rgba(0,0,0,.05) 70%)}
+.bd-cities span{position:absolute;left:10px;bottom:7px;font-size:12px;font-weight:800;color:#fff}
+.bd-note{font-size:14px;line-height:1.6;color:rgba(255,255,255,.75);border:1px dashed rgba(255,255,255,.25);border-radius:12px;padding:22px}
+.bd-price{text-align:center;border:1px solid rgba(143,227,166,.35);border-radius:16px;padding:34px 20px}
+.bd-price b{display:block;font-size:64px;font-weight:900;color:#8fe3a6;line-height:1}
+.bd-price span{display:block;font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
+.bd-price em{display:block;font-style:normal;font-size:12px;color:rgba(255,255,255,.6);margin-top:14px}
+.bd-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,100%),1fr));gap:10px;margin-bottom:14px}
+.bd-tiles div{border:1px solid var(--ve-border);border-radius:12px;padding:14px 16px;background:#fff}
+.bd-tiles b{display:block;font-size:28px;font-weight:900;line-height:1.1;color:#1a1a1a}
+.bd-tiles span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);margin-top:4px}
+.bd-slide .bd-tiles div{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+.bd-slide .bd-tiles span{color:rgba(255,255,255,.6)}
+.bd-ghost b{color:#9aa39c}.bd-slide .bd-ghost b{color:rgba(255,255,255,.45)}
+.bd-locked{border:1.5px dashed #c8e6c9;border-radius:14px;padding:22px;background:#fbfdfb}
+.bd-locked p{font-size:14.5px;line-height:1.6;color:var(--ve-text-75)}
+.bd-admin{font-size:12.5px;font-weight:700;color:#8a5a00;background:#fff4e2;border-radius:8px;padding:8px 12px;margin-bottom:14px}
+.bd-dhead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.bd-dhead a{color:#1f5f22}
+.bd-card{border:1px solid var(--ve-border);border-radius:12px;padding:16px;background:#fff;margin-bottom:12px}
+.bd-card h3{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
+.bd-bars{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid var(--ve-border)}
+.bd-bars i{flex:1;min-width:2px;background:#3A9B3E;border-radius:4px 4px 0 0;position:relative}
+.bd-bars i:hover{background:#1f5f22}
+.bd-bars i:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:700;color:#fff;background:#1a1a1a;padding:4px 8px;border-radius:6px;z-index:2}
+.bd-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.bd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px}
+.bd-rank{margin:0;padding:0;list-style:none}
+.bd-rank li{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:7px 0;border-bottom:1px solid var(--ve-border)}
+.bd-rank b{font-weight:900}
+@media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}}
 .bsite-pad{padding:32px 40px 48px}
 .bsite-sec{margin-bottom:34px}
 .bsite-sec h3,.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
@@ -629,6 +688,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-products.js"></script>
 <script src="/public/ve-product-view.js"></script>
+<script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-trust.js"></script>
 <script src="/public/ve-listing-admin.js"></script>
 <script src="/public/nav.js"></script>
@@ -1256,6 +1316,21 @@ function loadAisle(l){
 //   Gallery   videos (details.videos, the brand's own YouTube uploads) and images (product photos, and creator content
 //             from details.creator_posts once we make it), sorted by product (?tab=gallery&media=videos|images&about=<slug>)
 // /products/<slug> forwards here. The Campaign tab shows only while the brand runs a campaign with us.
+// Featured (Sean, 2026-10-08: "we do Oatly first, but then everyone else has like a basic page... this featured page
+// for anyone who does the 111"): our city art and the Gallery. A brand we are pursuing is granted it
+// (details.brand_featured), and a Brand Partner (ve_verified_tier 'brand', see ve-claims) keeps it.
+function isFeaturedBrand(l){ var d = l.details || {}; return !!(d.brand_featured || verifiedTier(l) === 'brand'); }
+// The For <Brand> tab: the brand's owner, a super admin, or a visitor who came on the link we sent (?tab=brand).
+function brandDoorOpen(l){
+  // Once someone arrives on the brand's link, the tab stays for the rest of their visit.
+  var key = 've_door_' + l.slug;
+  if(new URLSearchParams(location.search).get('tab') === 'brand'){ try{ sessionStorage.setItem(key, '1'); }catch(e){} return true; }
+  try{ if(sessionStorage.getItem(key)) return true; }catch(e){}
+  try{
+    var m = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null;
+    return !!(m && (m.is_superadmin || m.id === l.owner_member_id || m.id === l.claimed_by_member_id));
+  }catch(e){ return false; }
+}
 function isProductBrand(l){
   var d = l.details || {};
   return !isGroceryStore(l) && !!window.VEProducts && !!window.VEProductView && (VEProducts.SOURCES || []).some(function(k){ return Array.isArray(d[k]) && d[k].length; });
@@ -1352,6 +1427,7 @@ function loadBrandSite(l){
         history.replaceState(history.state, '', u.pathname + u.search + u.hash);
       } });
       document.title = title(p) + ' — Vegans Explore';
+      veTrack(l, 'product', p.slug);
     }
     function route(){
       var q = new URLSearchParams(location.search), t = q.get('tab'), p = BY[q.get('product') || ''];
@@ -1368,17 +1444,140 @@ function loadBrandSite(l){
       var nav = document.querySelector('.listing-tabs');
       if(nav && nav.getBoundingClientRect().top < 0) window.scrollTo(0, nav.getBoundingClientRect().top + window.pageYOffset - 70);
     }
+    // ---- For <Brand>: the brand's own door (Sean, 2026-10-08: "a tab that's locked just for the brand to see the
+    // opportunities and performance of their page... give them a tour of the platform"). It shows to the brand's
+    // owner, a super admin, and anyone who arrives with ?tab=brand (the link we send the brand). Two views:
+    //   The offer   a walkthrough, one slide at a time: the page we built, where they show up, the cities, campaigns,
+    //               Brand Partner at $111 a quarter, and the dashboard
+    //   Dashboard   ve-claims brand_stats for the owner or a super admin; everyone else sees the outline, no numbers
+    var door = document.getElementById('bsite-door');
+    var DOOR = { view: new URLSearchParams(location.search).get('door') === 'dashboard' ? 'dashboard' : 'offer', i: 0, days: 30 };
+    function viewer(){ try{ return window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){ return null; } }
+    function canSee(){ var m = viewer(); return !!(m && (m.is_superadmin || m.id === l.owner_member_id || m.id === l.claimed_by_member_id)); }
+    var claimHref = '/claim?listing=' + encodeURIComponent(l.slug) + '&plan=brand';
+    var talkHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent(l.name + ' Brand Partner');
+    var withVersions = rows.filter(function(p){ return Array.isArray(p.variants) && p.variants.length > 1; })[0] || rows[0];
+    var hubs = Array.isArray(window.VE_HUBS) ? window.VE_HUBS : [];
+    var guides = {}; rows.forEach(function(p){ (p.guides || []).forEach(function(g){ if(VEProducts.GUIDES[g]) guides[g] = VEProducts.GUIDES[g]; }); });
+    var guideNames = Object.keys(guides).map(function(g){ return guides[g][0]; });
+    var LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
+    function pics(list){ return '<div class="bd-pics">' + list.slice(0, 6).map(function(u){ return '<span style="background-image:url(\'' + esc(u) + '\')"></span>'; }).join('') + '</div>'; }
+    var SLIDES = [
+      { t: 'The page we built', h: 'We built ' + esc(l.name) + ' a page on Vegans Explore',
+        body: '<p>' + esc(l.name) + ' is ' + (l._featured ? 'a featured brand' : 'a brand') + ' in our Directory: ' + rows.length + (rows.length === 1 ? ' product' : ' products') +
+          (guideNames.length ? ' from the ' + esc(guideNames.join(' and the ')) : '') + ', each with its versions, Nutrition Facts and USDA label record, and the ' + storeList.length +
+          ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. It is live, and it is yours to keep.</p>' +
+          '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="overview">See the page</button>' + (withVersions ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(withVersions.slug) + '">Open ' + esc(title(withVersions)) + '</button>' : '') + '</div>',
+        pic: pics([l.logo_url].concat(rows.map(function(p){ return p.image_url; })).filter(Boolean)) },
+      { t: 'Where people find you', h: 'Where people find ' + esc(l.name),
+        body: '<ul class="bd-list">' + (guideNames.length ? '<li><b>' + esc(guideNames.join(', ')) + '.</b> Our Guides are small websites that bring the Directory, votes and recipes together. ' + esc(l.name) + ' is in ' + (guideNames.length === 1 ? 'it' : 'them') + '.</li>' : '') +
+          '<li><b>Each store\'s Vegan aisle.</b> Every grocery store has a page listing the Vegan products our Guides found there, and each one links back here.</li>' +
+          '<li><b>The Directory.</b> Members vote for the brands they love and save them to their dashboard.</li>' +
+          '<li><b>Product pages.</b> Every product has its own link to share, with its versions and Nutrition Facts.</li></ul>',
+        pic: '<div class="bd-logos">' + storeList.slice(0, 12).map(function(s){ return VEProductView.logo(s, 'pv-slogo'); }).join('') + '</div>' },
+      { t: 'The cities', h: 'The cities we are building',
+        body: '<p>Vegans Explore is a community, city by city: each one has its Daily Pulse, events, a Directory and members who earn points for showing up. South Florida is first. Our goal is a thousand chapters by 2030.</p>' +
+          '<div class="bd-btns"><a class="bd-btn o" href="/communities/south-florida" target="_top">Visit South Florida</a></div>',
+        pic: '<div class="bd-cities">' + hubs.map(function(h){ var b = h.page && h.page.banner; return '<a href="/communities/' + esc(h.slug) + '" target="_top" style="' + (b ? "background-image:url('" + esc(b) + "')" : '') + '"><span>' + esc(h.name) + '</span></a>'; }).join('') + '</div>' },
+      { t: 'Campaigns', h: 'Campaigns, from the front row',
+        body: '<p>A brand runs a campaign on its page: tasks worth points, photos and videos members make for it (every one labeled #ad), a leaderboard in each city, and prizes. The Campaigns tab opens on this page while one is running.</p>' +
+          '<p>Brand Partners see every campaign first and choose what to join, a la carte through LESARUSS AI, or with our team for something custom.</p>' +
+          '<div class="bd-btns"><a class="bd-btn o" href="/campaign-engine/fieldhouse-protein" target="_blank" rel="noopener">See an example campaign</a></div>',
+        pic: '<div class="bd-note">An example campaign, labeled Illustrative, shows how one runs on a brand\'s page week by week.</div>' },
+      { t: 'Brand Partner', h: 'Brand Partner: $111 a quarter',
+        body: '<p>A seat at the table. It keeps ' + esc(l.name) + ' in everything we build from here.</p><ul class="bd-list bd-perks">' +
+          '<li>Your featured brand page, kept up with your products, photos, videos and creator content</li>' +
+          '<li>Your brand dashboard: page views, products opened, store aisles opened, videos played</li>' +
+          '<li>Front-row access to every campaign before it opens</li>' +
+          '<li>Sponsorships a la carte through LESARUSS AI, or a call with our team for custom options</li>' +
+          '<li>A look at each city as we open it</li></ul>' +
+          '<p class="bd-small">Your quarter helps us build the platform and open more cities this year.</p>' +
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + esc(l.name) + ' as a Brand Partner</a><a class="bd-btn o" href="' + esc(talkHref) + '">Talk with our team</a></div>',
+        pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months.</em></div>' },
+      { t: 'Your dashboard', h: 'Your dashboard',
+        body: '<p>Once ' + esc(l.name) + ' claims this page, this tab shows how it performs: who visits, which products they open, which stores they look for you in, and which videos they play.</p>' +
+          '<div class="bd-btns"><button type="button" class="bd-btn" data-bdview="dashboard">Open the dashboard</button></div>',
+        pic: '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' }
+    ];
+    function drawDoor(){
+      if(!door) return;
+      var i = Math.max(0, Math.min(SLIDES.length - 1, DOOR.i)), sl = SLIDES[i];
+      door.innerHTML = '<div class="bd-top"><div class="bd-hello">For ' + esc(l.name) + '</div><div class="bsite-pills" role="group" aria-label="View">' +
+        [['offer', 'The offer'], ['dashboard', 'Dashboard']].map(function(o){ return '<button type="button" class="bsite-pill" data-bdview="' + o[0] + '" aria-pressed="' + (DOOR.view === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+        (DOOR.view === 'offer'
+          ? '<section class="bd-slide"><div class="bd-words"><div class="bd-kicker">' + esc(sl.t) + '</div><h2>' + sl.h + '</h2>' + sl.body + '</div><div class="bd-pic">' + sl.pic + '</div></section>' +
+            '<div class="bd-ctrl"><button type="button" class="bd-nav" data-bd="prev"' + (i ? '' : ' disabled') + '>Back</button><span>' + (i + 1) + ' of ' + SLIDES.length + '</span>' +
+            '<button type="button" class="bd-nav" data-bd="next"' + (i < SLIDES.length - 1 ? '' : ' disabled') + '>Next</button></div>'
+          : '<div class="bd-dash"></div>');
+      if(DOOR.view === 'dashboard') drawDash();
+    }
+    function tile(label, n){ return '<div><b>' + (n == null ? '0' : Number(n).toLocaleString()) + '</b><span>' + label + '</span></div>'; }
+    function drawDash(){
+      var el = door.querySelector('.bd-dash'); if(!el) return;
+      if(!canSee()){
+        el.innerHTML = '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened', 'Videos played'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' +
+          '<div class="bd-locked"><p><b>This is ' + esc(l.name) + '\'s dashboard.</b> It opens for ' + esc(l.name) + ' once the page is claimed, and shows how it performs: visits, the products people open, the stores they look for you in, and the videos they play.</p>' +
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + esc(l.name) + ' as a Brand Partner</a>' +
+          (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>';
+        return;
+      }
+      el.innerHTML = '<div class="aisle-empty">Loading the numbers...</div>';
+      fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+        body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: DOOR.days }) }).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){
+        if(!d || !d.stats){ el.innerHTML = '<div class="aisle-empty">We could not load the numbers just now. Try again in a moment.</div>'; return; }
+        var s = d.stats, T = s.totals || {}, days = [], byDay = {};
+        (s.daily || []).forEach(function(x){ byDay[x.day] = x.views; });
+        for(var k = s.days - 1; k >= 0; k--){ var dt = new Date(Date.now() - k * 864e5).toISOString().slice(0, 10); days.push([dt, byDay[dt] || 0]); }
+        var max = Math.max.apply(null, days.map(function(x){ return x[1]; }).concat([1]));
+        function named(list, fn){ return list.length ? '<ol class="bd-rank">' + list.slice(0, 6).map(function(x){ return '<li><span>' + esc(fn(x.ref)) + '</span><b>' + Number(x.n).toLocaleString() + '</b></li>'; }).join('') + '</ol>' : '<p class="bd-small">None yet.</p>'; }
+        var VIA = { page: 'On Vegans Explore', guide: 'Inside a Guide', link: 'From a link we sent' };
+        el.innerHTML = (d.admin ? '<p class="bd-admin">You are seeing ' + esc(l.name) + '\'s dashboard as a super admin.</p>' : '') +
+          '<div class="bd-dhead"><div class="bsite-pills" role="group" aria-label="Period">' + [7, 30, 90].map(function(n){ return '<button type="button" class="bsite-pill" data-bddays="' + n + '" aria-pressed="' + (DOOR.days === n) + '">' + n + ' days</button>'; }).join('') + '</div>' +
+          '<span class="bd-small">' + (d.plan ? esc(d.plan.name) + (d.plan.renews_at ? ', renews ' + esc(new Date(d.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })) : '') : 'Not a Brand Partner yet. <a href="' + esc(claimHref) + '" target="_top">Become one</a>') + '</span></div>' +
+          '<div class="bd-tiles">' + tile('Page views', T.view) + tile('Visitors', s.visitors) + tile('Products opened', T.product) + tile('Store aisles opened', T.store) + tile('Videos played', T.video) + '</div>' +
+          '<div class="bd-card"><h3>Page views, last ' + s.days + ' days</h3><div class="bd-bars" role="img" aria-label="Page views by day">' + days.map(function(x){
+            return '<i style="height:' + Math.max(x[1] ? 6 : 2, Math.round(x[1] / max * 100)) + '%" data-tip="' + esc(new Date(x[0] + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + ': ' + x[1] + (x[1] === 1 ? ' view' : ' views') + '"></i>'; }).join('') + '</div>' +
+          '<table class="bd-sr"><caption>Page views by day</caption>' + days.map(function(x){ return '<tr><td>' + x[0] + '</td><td>' + x[1] + '</td></tr>'; }).join('') + '</table></div>' +
+          '<div class="bd-grid"><div class="bd-card"><h3>Products opened</h3>' + named(s.products || [], function(r){ return BY[r] ? title(BY[r]) : r; }) + '</div>' +
+          '<div class="bd-card"><h3>Store aisles opened</h3>' + named(s.stores || [], function(r){ return stores[r] ? stores[r].name : r; }) + '</div>' +
+          '<div class="bd-card"><h3>Where views came from</h3>' + named(Object.keys(s.via || {}).map(function(k){ return { ref: k, n: s.via[k] }; }).sort(function(a, b){ return b.n - a.n; }), function(r){ return VIA[r] || r; }) + '</div></div>' +
+          '<p class="bd-small">' + (s.since ? 'Counting since ' + esc(new Date(s.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '. ' : 'Counting starts with the next visit. ') +
+          'Each visitor counts once every 30 minutes; automated browsers are not counted.</p>';
+      });
+    }
+    function setDoor(view){
+      DOOR.view = view;
+      var u = new URL(location.href); if(view === 'dashboard') u.searchParams.set('door', 'dashboard'); else u.searchParams.delete('door');
+      history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+      drawDoor();
+    }
+    function doorClick(e){
+      var el;
+      if(!door || !door.contains(e.target)) return false;
+      if((el = e.target.closest('[data-bdview]'))){ setDoor(el.getAttribute('data-bdview')); return true; }
+      if((el = e.target.closest('[data-bd]'))){ DOOR.i += el.getAttribute('data-bd') === 'next' ? 1 : -1; drawDoor(); return true; }
+      if((el = e.target.closest('[data-bddays]'))){ DOOR.days = +el.getAttribute('data-bddays'); drawDash(); return true; }
+      if((el = e.target.closest('[data-bd-goto]'))){ showListingTab(el.getAttribute('data-bd-goto')); window.scrollTo(0, 0); return true; }
+      if((el = e.target.closest('[data-bd-product]'))){ go(el.getAttribute('data-bd-product')); return true; }
+      if(e.target.closest('[data-bd-signin]')){ if(window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in with the account that claimed ' + l.name + '.', function(){ location.reload(); }); return true; }
+      return false;
+    }
+    drawDoor();
     var root = document.getElementById('listing-root');
     root.addEventListener('click', function(e){
       var el;
+      if(doorClick(e)) return;
       if((el = e.target.closest('.tab-btn[data-tab]'))){
         // Products while a product is open goes back to the list; any other tab puts the Nutrition Facts away.
         var tab = el.getAttribute('data-tab');
         if(tab === 'products' && new URLSearchParams(location.search).get('product')){ go(''); return; }
         if(tab !== 'products') sideOff(); else route();
+        if(tab === 'gallery') veTrack(l, 'gallery');
         return;
       }
+      if((el = e.target.closest('a.pv-store[href^="/directory/"]'))) veTrack(l, 'store', el.getAttribute('href').split('?')[0].split('/').pop());
       if((el = e.target.closest('button.vid[data-yt]'))){
+        veTrack(l, 'video', el.getAttribute('data-yt'));
         el.outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(el.getAttribute('data-yt')) + '?autoplay=1&rel=0" title="' + esc(el.getAttribute('aria-label') || 'Video') + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
         return;
       }
@@ -1683,6 +1882,7 @@ function showListingTab(target){
   if(target === 'overview') u.searchParams.delete('tab'); else u.searchParams.set('tab', target);
   if(target !== 'products' && document.getElementById('tab-products')){ u.searchParams.delete('v'); u.searchParams.delete('product'); }
   if(target !== 'gallery'){ u.searchParams.delete('media'); u.searchParams.delete('about'); }
+  if(target !== 'brand') u.searchParams.delete('door');
   if(u.href !== location.href) history.replaceState(history.state, '', u.pathname + u.search + u.hash);
 }
 window.veListingTab = showListingTab;
@@ -1732,7 +1932,9 @@ function renderListing(l){
   var isSoFlo = !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1);
   // A brand with products in our Guides is a brand page (see .bsite in the styles). It wears our city art too.
   l._brandSite = isProductBrand(l);
-  if(l._brandSite) isSoFlo = true;
+  l._featured = l._brandSite && isFeaturedBrand(l);
+  l._door = l._brandSite && brandDoorOpen(l);
+  if(l._featured) isSoFlo = true;
   var community = getCommunityForListing(l);
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
@@ -1874,7 +2076,9 @@ function renderListing(l){
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
-          (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button><button class="tab-btn" data-tab="gallery" role="tab" aria-selected="false">Gallery</button>' : '')+
+          (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button>' : '')+
+          (l._featured ? '<button class="tab-btn" data-tab="gallery" role="tab" aria-selected="false">Gallery</button>' : '')+
+          (l._door ? '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">For '+esc(l.name)+'</button>' : '')+
           '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
           (l._brandSite ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
@@ -1888,7 +2092,8 @@ function renderListing(l){
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
         (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' +
-          '<div class="tab-panel" id="tab-gallery" role="tabpanel"><div class="bsite-pad" id="bsite-gallery"><div class="aisle-empty">Loading the gallery...</div></div></div>' : '')+
+          (l._featured ? '<div class="tab-panel" id="tab-gallery" role="tabpanel"><div class="bsite-pad" id="bsite-gallery"><div class="aisle-empty">Loading the gallery...</div></div></div>' : '') +
+          (l._door ? '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="bsite-door"><div class="aisle-empty">Loading...</div></div></div>' : '') : '')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video', l)+'</div>' : '')+
@@ -2120,6 +2325,22 @@ function renderInstagramContent(veBusinessId){
 var VE_BB_SLOT_ELS = {
   've-directory-listing-landscape-1': 'bb-ad-landscape-1'
 };
+
+// What visitors do on a listing (Sean, 2026-10-08: the brand dashboard shows a business how its page performs):
+// a view, a product opened, a store's Vegan aisle opened, a video played, the gallery opened. ve_listing_track() keeps
+// one count per visitor, action and item every 30 minutes; automated browsers are not counted. Read back only by the
+// owner or a super admin, through ve-claims brand_stats.
+function veTrack(l, kind, ref){
+  try{
+    if(!l || !l.id || DEMO || navigator.webdriver) return;
+    var vid = null;
+    try{ vid = localStorage.getItem('ve_vid'); if(!vid){ vid = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('ve_vid', vid); } }catch(e){}
+    var via = document.documentElement.classList.contains('ve-embedded') ? 'guide' : (new URLSearchParams(location.search).get('vl') ? 'link' : 'page');
+    fetch(SUPABASE_URL + '/rest/v1/rpc/ve_listing_track', { method: 'POST', keepalive: true,
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_listing: l.id, p_kind: kind, p_ref: ref || null, p_visitor: vid, p_via: via }) }).catch(function(){});
+  }catch(e){}
+}
 
 function veAdClick(placementId, campaignId){
   try {
@@ -2465,6 +2686,7 @@ if(!slug || slug === 'listing'){
         }
       }
       loadBillboardAds();
+      veTrack(l, 'view');
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       // Always fetch menu items — show tab for any listing that has them

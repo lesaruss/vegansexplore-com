@@ -384,6 +384,20 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   with us. The right column holds the open product's Nutrition Facts on top (Sean, 2026-10-08: "put the barcode back on
   the right-hand side and push the billboard down") and the billboard under them, pinned while the page scrolls. It
   wears our city art (South Florida for now). Code: `loadBrandSite` in `directory/listing.html`.
+- Brand Partner (Sean, 2026-10-08): "build these out for brands that we're actively pursuing... $111 a quarter just to
+  have a seat at the table." Every product brand gets a basic page (Overview, Products). A **featured** page adds our city
+  art and the Gallery: a brand we are pursuing is granted it (`listings.details.brand_featured`, Oatly first), and a Brand
+  Partner keeps it. Brand Partner is `ve-claims` tier `brand`, $111 a quarter, the same quarterly Stripe subscription and
+  claim path as Passport Stop and Anchor (no founding spots, no Passport results sheet). `/claim?listing=<slug>&plan=brand`
+  offers it, and a Food Brands or Brands listing is offered only that plan. The tier checks were widened by
+  `supabase/migrations/20261008_brand_partner_tier.sql`, run in the dashboard SQL editor (it drops constraints).
+- **For <Brand>** tab (`?tab=brand`): the brand's door. It shows to the owner, a super admin, and anyone arriving on the
+  link we send (it then stays for the visit). The offer, one slide at a time (the page we built, where people find them,
+  the cities, campaigns, Brand Partner, the dashboard), and the Dashboard (`?door=dashboard`): views, visitors, products
+  opened, store aisles opened, videos played, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
+  admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
+  (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
+  videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
 - A product (`/public/ve-product-view.js`): the photo with its versions (`ve_products.variants`) as round thumbnails
   under it, the chosen version's name, the brand's own description and ingredients, certifications, its Nutrition
   Facts (each version's own, cited; `ve_products.nutrition` only from a cited source such as USDA FoodData Central),
