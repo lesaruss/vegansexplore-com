@@ -378,6 +378,17 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Facts (`ve_products.nutrition`, only from a cited source such as USDA FoodData Central), a picture
   (`image_url` with `image_credit`), where to buy with each store's aisle, more from the brand, and the
   brand partnership ask. Shared helpers: `/public/ve-products.js`. In a Guide it opens as `#/product/<slug>`.
+- The product page is the product's promo page (Sean, 2026-10-08): the brand's logo heads it even for one
+  product, with Back to the brand; tabs Overview (photos, what it is, the brand's own words, certifications,
+  the USDA record in full with every nutrient per 100 g/mL, about the brand, where to buy with store logos,
+  more from the brand; Nutrition Facts on the right), Gallery (every photo with its credit and source) and
+  Campaigns & contests (a brand campaign's creator posts and contests). Columns: `ve_products.fdc` (from
+  `fdc.nal.usda.gov/portal-data/external/<id>`, which works when the api.nal.usda.gov DEMO_KEY is rate
+  limited), `gallery`, `certifications`, `brand_says`, `brand_url`; brand `listings.details.about`.
+  Product photos are copied into `vegan-media/media/products/<slug>/` from the brand's own product page and
+  Open Food Facts (credit CC BY-SA); Sean, 2026-10-08: brand photos are fine to use, and we reach out to the
+  brand. Store and brand logos are copied into `vegan-media/media/logos/` (`listings.logo_url`), each checked
+  by eye. The edge function `ve-off-lookup` (admin token) looks at and copies pictures; it writes no rows.
 - A new listing gets `vegan_status = 'fully_vegan'` by default. Set it on purpose (null for a store, which is
   not a Vegan business), or the Directory calls it 100% Vegan.
 - Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once

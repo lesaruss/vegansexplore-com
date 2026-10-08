@@ -269,7 +269,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .aisle-card{border:1px solid var(--ve-border);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:inherit;background:#fff;transition:border-color .15s,box-shadow .3s}
 .aisle-card:hover{border-color:#5EC47A}
 .aisle-card.hit{border-color:#3A9B3E;box-shadow:0 0 0 3px rgba(58,155,62,.25);background:#f4fbf6}
-.aisle-av{flex:0 0 52px;height:52px;border-radius:10px;color:#fff;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;background:#fff center/contain no-repeat}
+.aisle-av{flex:0 0 52px;height:52px;border-radius:10px;color:#fff;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;background:#fff center/80% no-repeat;border:1px solid var(--ve-border)}
 .aisle-main{flex:1;min-width:0}
 .aisle-type{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-50)}
 .aisle-name{font-size:15px;font-weight:800;color:var(--ve-text);line-height:1.25;margin-top:2px}
@@ -1136,7 +1136,7 @@ function isGroceryStore(l){ return (l.tags||[]).indexOf('ve-grocery-store') >= 0
 // Department, category, search and sort (Sean, 2026-10-08: "whatever categories are available, a drop down,
 // and then it just shows you those items"), most voted first, 12 at a time. Each card opens the product page.
 function loadAisle(l){
-  var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,slug,product_type,name,made_from,note,guides,department,image_url,listings!ve_products_brand_listing_id_fkey(slug,name,status,color,initials,vote_count))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
+  var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,slug,product_type,name,made_from,note,guides,department,image_url,listings!ve_products_brand_listing_id_fkey(slug,name,status,color,initials,vote_count,logo_url))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
   fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
     var panel = document.getElementById('tab-aisle'); if(!panel) return;
     rows = (Array.isArray(rows) ? rows : []).filter(function(r){ var p = r.ve_products; return p && p.guides && p.guides.length && p.listings && p.listings.status === 'approved'; });
@@ -1160,7 +1160,8 @@ function loadAisle(l){
     fillCats();
     function card(r){
       var p = r.ve_products, b = p.listings, buy = VEProducts.buy(l, r, p, b.name);
-      var av = p.image_url ? '<div class="aisle-av" style="background-image:url(\'' + esc(p.image_url) + '\')"></div>' : '<div class="aisle-av" style="background:' + esc(b.color || '#1f5f22') + '">' + esc(b.initials || b.name.charAt(0)) + '</div>';
+      var pic = p.image_url || b.logo_url;
+      var av = pic ? '<div class="aisle-av" style="background-image:url(\'' + esc(pic) + '\')"></div>' : '<div class="aisle-av" style="background:' + esc(b.color || '#1f5f22') + '">' + esc(b.initials || b.name.charAt(0)) + '</div>';
       return '<a class="aisle-card' + (p.id === want ? ' hit' : '') + '" id="product-' + esc(p.id) + '" href="/products/' + encodeURIComponent(p.slug) + '">' + av +
         '<div class="aisle-main"><div class="aisle-type">' + esc(p.product_type) + '</div><div class="aisle-name">' + esc(VEProducts.title(p, b.name)) + '</div>' +
         (p.made_from ? '<div class="aisle-sub">Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) + (p.note ? '. ' + esc(p.note) : '') + '</div>' : '') +
