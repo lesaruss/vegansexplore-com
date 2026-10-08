@@ -643,3 +643,15 @@ returns the Guide's members-only screens (`ve_guides.content_html`) only to
 someone with access; that content is kept in the database, never in this repo,
 because Vercel serves the repo. Deployed as v15 on 2026-10-07 (migration
 `20261007_ve_guides_dairy_membership.sql`).
+`20261007_ve_guides_dairy_membership.sql`).
+
+## ve-board-consent (2026-10-08)
+
+The directors' written consent for Vegans Explore Inc. (to be renamed LESARUSS Foundation, Inc.).
+Each director (Sean, Ella Magers, Claudia Russell) has a personal link
+`vegansexplore.com/board-consent?k=<token>`; no login. Only the sha256 of each token is stored in
+`foundation_board_consents` (RLS on, no policies). Actions: `view {k}` and
+`respond {k, choice, signed_name, agreed, note}`; one answer per director, approve and resign need a
+typed name and the e-signature box. `verify_jwt` is off: the token is the credential. Tokens were made
+in the database and given to Sean once; they are never committed. Migration
+`20261008_foundation_board_consents.sql`.
