@@ -80,22 +80,8 @@
     .dg-tools input:focus{outline:none;border-color:var(--g2);}
     .dg-tools select{font-family:inherit;font-size:13px;font-weight:700;padding:10px 40px 10px 12px;border-radius:8px;border:1.5px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/10px 6px;-webkit-appearance:none;appearance:none;}
     .dg-count{font-size:12.5px;font-weight:700;color:var(--ink55);}
-    .rank-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
-    .dg-bhead{display:flex;gap:12px;align-items:center;margin-bottom:8px;}
-    .dg-av{flex:0 0 42px;height:42px;border-radius:10px;color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
-    .dg-bname{font-size:15px;font-weight:800;line-height:1.25;}
     .dg-bcat{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--g);}
-    .dg-line{font-size:13px;line-height:1.55;color:var(--ink75);margin:2px 0;}
-    .dg-line b{color:var(--ink);font-weight:700;}
     .dg-note{font-size:12px;line-height:1.45;color:#8a5a00;background:var(--warm);border-radius:6px;padding:5px 8px;margin-top:6px;}
-    .dg-bfoot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;}
-    .dg-bfoot .vote-count{font-size:13px;font-weight:900;}
-    .dg-bfoot .dg-vl{font-size:11px;color:var(--ink55);font-weight:700;}
-    .vote-btn{font-family:inherit;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:7px 12px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;}
-    .vote-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A;}
-    .dg-listing{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--g);text-decoration:none;}
-    .dg-book{display:flex;gap:14px;}
-    .dg-cover{flex:0 0 64px;height:92px;border-radius:4px 8px 8px 4px;background:linear-gradient(135deg,#1f5f22,#0d3b13);color:#fff;font-size:8px;font-weight:800;line-height:1.25;padding:8px 6px;text-transform:uppercase;letter-spacing:0.02em;overflow-wrap:anywhere;box-shadow:inset 4px 0 0 rgba(255,255,255,0.18);overflow:hidden;}
     .dg-swap{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff;}
     .dg-swap h3{font-size:15px;font-weight:900;margin:0 0 8px;}
     .dg-swap dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;line-height:1.5;}
@@ -172,10 +158,17 @@
     .dg-pv-books{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:280px;}
     .dg-pv-books img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.18);display:block;background:var(--gl);}
     .dg-pv-demo{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
-    .dg-pv-demo .dg-demo-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;box-shadow:0 4px 14px rgba(0,0,0,0.05);}
-    .dg-pv-demo .dg-demo-card.top{border-color:var(--g2);box-shadow:0 6px 20px rgba(22,163,74,0.18);}
-    .dg-pv-demo .dg-demo-vote{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:7px 12px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;}
-    .dg-pv-demo .dg-demo-card.top .dg-demo-vote{background:#5EC47A;color:#000;border-color:#5EC47A;}
+    .dg-pv-demo .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr);}
+    .vrd-root a.subcat-pill{text-decoration:none;display:inline-block;}
+    /* A Directory listing inside the Guide (#/listing/<slug>): what the Guide says about it, then the listing itself. */
+    .dg-inguide{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:14px 18px;margin:0 0 16px;}
+    .dg-inguide-k{font-size:10.5px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-bottom:8px;}
+    .dg-inguide-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px 22px;}
+    .dg-inguide-i{font-size:13px;line-height:1.5;color:var(--ink75);}
+    .dg-inguide-i b{display:block;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink);}
+    .dg-inguide-i a.dg-store{color:var(--g);font-weight:700;text-decoration:underline;text-underline-offset:2px;}
+    .dg-inguide-i em{display:block;font-style:normal;font-size:12px;color:#8a5a00;margin-top:2px;}
+    .dg-lframe iframe{display:block;width:100%;height:1400px;border:1px solid var(--line);border-radius:14px;background:#fff;}
     .dg-pv-swaps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:380px;}
     .dg-pv-swaps span{display:block;font-size:13px;font-weight:800;padding:12px 14px;border-radius:10px;background:var(--gl);border:1px solid var(--gm);color:var(--g);}
     .dg-pv h3{font-size:22px;font-weight:900;margin:4px 0 10px;line-height:1.2;}
@@ -296,6 +289,7 @@
 </div>
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
+<script src="/public/ve-region-directory.js"></script>
 <script src="/guide-scripts/vegan-dairy-guide.js"></script>
 </body>
 </html>

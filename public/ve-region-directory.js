@@ -207,6 +207,8 @@
   }
 
   function cardMeta(l) {
+    // A grocery chain (tag ve-grocery-store, 2026-10-08) has no one address but is not an online business.
+    if ((l.tags || []).indexOf('ve-grocery-store') >= 0) return 'Grocery store';
     if (!l.address_city && !l.address_state) return '<span class="online-badge">Online</span>';
     return esc(l.address_city || l.address_state || '');
   }
@@ -657,6 +659,14 @@
       root.innerHTML = renderSkeleton(config);
       wireControls(root, config);
       fetchAll(root, config);
-    }
+    },
+    // The same listing card anywhere else (Sean, 2026-10-08: a Guide shows Directory listings "with
+    // the same look and feel of the current directory"). Put cards inside an element with class
+    // vrd-root and a .rank-grid; wire() adds votes and opens a listing through onOpen(slug, name)
+    // so the visitor stays where they are. A listing needs the fields fetchAll selects.
+    css: injectStyleOnce,
+    card: function (l, idx) { return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
+    wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); },
+    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags'
   };
 })();
