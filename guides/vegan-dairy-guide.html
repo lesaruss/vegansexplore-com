@@ -26,6 +26,19 @@
     .dg-searchbox input{width:100%;font-family:inherit;font-size:15px;padding:14px 18px 14px 46px;border-radius:999px;border:2px solid transparent;background:#fff;color:var(--ink);}
     .dg-searchbox input:focus{outline:none;border-color:#22C55E;}
     .dg-searchbox svg{position:absolute;left:17px;top:50%;transform:translateY(-50%);}
+    .dg-for-member{display:none !important;}
+    body.dg-member .dg-for-member{display:block !important;}
+    body.dg-member .dg-for-guest{display:none !important;}
+    .dg-joinbox{flex:0 1 620px;display:flex;align-items:center;gap:22px;background:rgba(255,255,255,0.08);border:1px solid rgba(197,242,199,0.35);border-radius:16px;padding:14px 18px;}
+    .dg-jb-price{display:flex;flex-direction:column;flex:0 0 auto;}
+    .dg-jb-price b{font-size:38px;font-weight:900;line-height:1;margin-top:4px;}
+    .dg-jb-price small{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;margin-top:2px;}
+    .dg-jb-act{display:flex;flex-direction:column;gap:8px;min-width:0;}
+    .dg-jb-act .dg-btn{align-self:flex-start;}
+    .dg-jb-in{font-size:12.5px;line-height:1.45;color:#e6f4e7;}
+    .dg-jb-in a{color:#c5f2c7;font-weight:700;}
+    .dg-joinbox .dg-status{font-size:12.5px;color:#ffd79a;}
+    .dg-joinbox .dg-status:empty{display:none;}
     .dg-menu{display:flex;gap:4px;margin-top:20px;overflow:hidden;}
     .dg-menu a{display:flex;align-items:center;gap:6px;padding:12px 16px 14px;color:#e6f4e7;text-decoration:none;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border-radius:8px 8px 0 0;white-space:nowrap;}
     .dg-menu a:hover{background:rgba(255,255,255,0.08);color:#fff;}
@@ -118,12 +131,41 @@
     .dg-offer p{font-size:14px;line-height:1.6;color:var(--ink75);margin:10px 0;}
     .dg-offer a{color:var(--g);}
     .dg-status{min-height:1.3em;font-weight:700;color:#8a5a00 !important;}
-    .dg-lock2{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px;align-items:stretch;}
-    .dg-show{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;min-height:340px;display:flex;flex-direction:column;overflow:hidden;}
-    .dg-show-slide{display:none;flex:1;padding:28px 30px 8px;}
-    .dg-show-slide.on{display:flex;animation:dgIn .35s ease;}
+    .dg-lock2{display:block;}
+    .dg-show{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
+    .dg-show-track{display:grid;flex:1;}
+    .dg-show-slide{grid-area:1/1;display:flex;align-items:center;padding:28px 30px 8px;visibility:hidden;opacity:0;transition:opacity .35s ease;}
+    .dg-show-slide.on{visibility:visible;opacity:1;}
     @keyframes dgIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
-    .dg-pv{display:flex;gap:24px;align-items:center;width:100%;}
+    .dg-pv{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:center;width:100%;}
+    .dg-pv-art{display:flex;justify-content:center;align-items:center;min-width:0;}
+    .dg-pv-art img.dg-pv-img{width:100%;max-width:400px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;display:block;background:var(--gl);}
+    .dg-pv-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;background:var(--warm);color:#8a5a00;border:1px solid var(--warmline);border-radius:99px;padding:3px 9px;margin-bottom:8px;}
+    .dg-pv-src{font-size:11.5px;color:var(--ink55);line-height:1.5;margin-top:10px;}
+    .dg-pv-src a{color:var(--g);font-weight:700;}
+    /* Nutrition Facts, drawn from the brand's label data in USDA FoodData Central */
+    .dg-nf{width:100%;max-width:300px;border:2px solid #000;padding:6px 8px;background:#fff;color:#000;font-family:Helvetica,Arial,sans-serif;font-size:12px;line-height:1.3;}
+    .dg-nf h4{font-size:30px;font-weight:900;margin:0;line-height:1;letter-spacing:-0.5px;}
+    .dg-nf .nf-serv{border-bottom:9px solid #000;padding:3px 0 4px;font-size:13px;}
+    .dg-nf .nf-serv b{float:right;}
+    .dg-nf .nf-cal{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:5px solid #000;padding:2px 0;}
+    .dg-nf .nf-cal span{font-size:14px;font-weight:900;}
+    .dg-nf .nf-cal b{font-size:30px;font-weight:900;line-height:1;}
+    .dg-nf .nf-dvh{text-align:right;font-size:11px;font-weight:700;border-bottom:1px solid #000;padding:2px 0;}
+    .dg-nf .nf-r{display:flex;justify-content:space-between;border-bottom:1px solid #000;padding:2px 0;}
+    .dg-nf .nf-r.in{padding-left:14px;}
+    .dg-nf .nf-r.in2{padding-left:28px;}
+    .dg-nf .nf-r.thick{border-bottom:9px solid #000;}
+    .dg-nf .nf-r b{font-weight:900;}
+    .dg-pv-books{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:280px;}
+    .dg-pv-books img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.18);display:block;background:var(--gl);}
+    .dg-pv-demo{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
+    .dg-pv-demo .dg-demo-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;box-shadow:0 4px 14px rgba(0,0,0,0.05);}
+    .dg-pv-demo .dg-demo-card.top{border-color:var(--g2);box-shadow:0 6px 20px rgba(22,163,74,0.18);}
+    .dg-pv-demo .dg-demo-vote{font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:7px 12px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;}
+    .dg-pv-demo .dg-demo-card.top .dg-demo-vote{background:#5EC47A;color:#000;border-color:#5EC47A;}
+    .dg-pv-swaps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:380px;}
+    .dg-pv-swaps span{display:block;font-size:13px;font-weight:800;padding:12px 14px;border-radius:10px;background:var(--gl);border:1px solid var(--gm);color:var(--g);}
     .dg-pv h3{font-size:22px;font-weight:900;margin:4px 0 10px;line-height:1.2;}
     .dg-pv p{font-size:14.5px;line-height:1.65;color:var(--ink75);margin:0 0 12px;max-width:640px;}
     .dg-pv-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
@@ -135,13 +177,6 @@
     .dg-show-dots{display:flex;gap:7px;}
     .dg-show-dots button{width:9px;height:9px;padding:0;border-radius:50%;border:none;background:rgba(0,0,0,0.2);cursor:pointer;}
     .dg-show-dots button.on{background:var(--g2);transform:scale(1.25);}
-    .dg-offer2{border-radius:16px;background:linear-gradient(160deg,#1f5f22,#14301c);color:#fff;padding:28px 26px;display:flex;flex-direction:column;gap:6px;}
-    .dg-offer2 .dg-price{color:#fff;margin-top:6px;}
-    .dg-offer2 .dg-price span{color:#c5f2c7;}
-    .dg-offer2 p{font-size:14px;line-height:1.6;color:#e6f4e7;margin:8px 0;}
-    .dg-offer2 a{color:#c5f2c7;}
-    .dg-offer2 .dg-btn{margin-top:8px;}
-    .dg-offer2 .dg-status{color:#ffd79a !important;}
     .dg-chef-empty{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed var(--gm);background:var(--gl);border-radius:16px;padding:26px 28px;}
     .dg-chef-empty h3{font-size:18px;font-weight:900;margin:0 0 6px;}
     .dg-chef-empty p{font-size:14px;line-height:1.6;color:var(--ink75);margin:0;max-width:640px;}
@@ -164,7 +199,9 @@
       .dg-lock2{grid-template-columns:minmax(0,1fr);}
       .dg-show{min-height:0;}
       .dg-show-slide{padding:22px 20px 6px;}
-      .dg-pv{flex-direction:column;align-items:flex-start;gap:16px;}
+      .dg-pv{grid-template-columns:minmax(0,1fr);gap:18px;}
+      .dg-pv-art img.dg-pv-img{max-width:320px;}
+      .dg-joinbox{flex:1 1 100%;flex-wrap:wrap;gap:12px 18px;padding:12px 14px;}
       }
     @media (max-width:560px){.dg-rail{grid-template-columns:minmax(0,1fr);}.dg-portrait{max-width:300px;width:100%;margin:0 auto;}}
   </style>
@@ -179,7 +216,17 @@
       <div class="dg-eyebrow">Vegans Explore Guides</div>
       <h1 class="dg-title">The Vegan Dairy Guide</h1>
     </div>
-    <form class="dg-searchbox" role="search" id="dgSearchForm">
+    <!-- Signed out or not yet a member: the $11 box. Members: search (Sean, 2026-10-08: everything is locked
+         before joining, so search only earns this spot once they are in). body.dg-member switches them. -->
+    <div class="dg-joinbox dg-for-guest">
+      <div class="dg-jb-price"><span class="dg-eyebrow">Founding Membership</span><b>$11</b><small>one time</small></div>
+      <div class="dg-jb-act">
+        <button type="button" class="dg-btn" data-join>Become a Founding Member</button>
+        <span class="dg-jb-in">The Dairy Guide and the full community. Already a member? <a href="#" data-signin>Sign in</a></span>
+        <span class="dg-status" role="status"></span>
+      </div>
+    </div>
+    <form class="dg-searchbox dg-for-member" role="search" id="dgSearchForm">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <input type="search" id="dgQ" placeholder="Search brands, swaps, recipes, books..." aria-label="Search the Dairy Guide" autocomplete="off">
     </form>

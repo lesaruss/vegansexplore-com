@@ -91,56 +91,106 @@
   function whyCard(w) { return '<div class="dg-card"><h3>' + esc(w.title) + '</h3><p>' + esc(w.text) + '</p>' + sources(w.sources) + '</div>'; }
 
   // A locked section shows what is inside before anyone pays (Sean, 2026-10-07: "until they
-  // could see something, it's not going to convince them"): a preview slideshow on the left,
-  // and the $11 one time as its own green tile on the right.
+  // could see something, it's not going to convince them"). Sean, 2026-10-08: each slide is words on
+  // the left and a picture on the right; the $11 sits in the header for anyone not yet a member.
   var slideTimer = null;
-  function textSlide(k, title, body) { return '<div class="dg-pv"><div><div class="dg-pv-k">' + esc(k) + '</div><h3>' + esc(title) + '</h3>' + body + '</div></div>'; }
+  var ART_BASE = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/';
+  // Maya scenes for the previews, made in Higgsfield from her current picture (2026-10-08).
+  var SCENE = {
+    aisle: 'hf_20261008_025717_4bff1ed2-3cc5-4edf-b7c7-3ed9f8b96325_min.webp',
+    buttermilk: 'hf_20261008_025718_9798574f-c084-4eab-946d-9070647c9831_min.webp',
+    nutmilk: 'hf_20261008_030007_c3e9cfe8-ffac-4c5d-99de-fdde4bc02d58_min.webp',
+    pantry: 'hf_20261008_025718_edca8864-2276-49cf-96b6-8e078e620cbb_min.webp',
+    chefs: 'hf_20261008_025717_951874f0-e533-4b8f-b777-95ef48aee782_min.webp',
+    look: 'hf_20261008_025717_6c7153ba-3515-449d-896a-3dfb9810208e_min.webp',
+    why: 'hf_20261008_025717_2cadeb61-373d-4bce-9101-941793bf8c1e_min.webp'
+  };
+  function scene(k, alt) { return '<img class="dg-pv-img" src="' + ART_BASE + SCENE[k] + '" alt="' + esc(alt) + '" loading="lazy">'; }
+  // Example products, label values exactly as the brand reported them to USDA FoodData Central
+  // (Branded Foods), shown with FDA label rounding and % Daily Values. Rows a brand did not report are left off.
+  var LABELS = [
+    { listing: 'oatly', name: 'Oatly Oatmilk', cat: 'Milk', fdc: '2677675', serving: '1 cup (240 mL)', cal: 120,
+      line: 'Fortified like dairy milk: 350 mg of calcium a cup, about a quarter of what you need in a day.',
+      rows: [['Total Fat', '5g', '6%', 0, 1], ['Saturated Fat', '0.5g', '3%', 1], ['Trans Fat', '0g', '', 1], ['Cholesterol', '0mg', '0%', 0, 1], ['Sodium', '100mg', '4%', 0, 1],
+        ['Total Carbohydrate', '16g', '6%', 0, 1], ['Dietary Fiber', '2g', '7%', 1], ['Total Sugars', '7g', '', 1], ['Includes 7g Added Sugars', '', '14%', 2], ['Protein', '3g', '', 0, 1, 1],
+        ['Vitamin D', '4.8mcg', '24%'], ['Calcium', '350mg', '27%'], ['Iron', '0.3mg', '2%'], ['Potassium', '390mg', '8%']] },
+    { listing: 'follow-your-heart', name: 'Follow Your Heart Provolone Style', cat: 'Cheese', fdc: '1854452', serving: '1 oz (30g)', cal: 90,
+      line: 'Coconut oil and potato starch make it melt like cheese. Like most plant cheeses, it has no protein.',
+      rows: [['Total Fat', '7g', '9%', 0, 1], ['Saturated Fat', '6g', '30%', 1], ['Trans Fat', '0g', '', 1], ['Cholesterol', '0mg', '0%', 0, 1], ['Sodium', '270mg', '12%', 0, 1],
+        ['Total Carbohydrate', '6g', '2%', 0, 1], ['Dietary Fiber', '0g', '0%', 1], ['Total Sugars', '0g', '', 1], ['Protein', '0g', '', 0, 1, 1], ['Calcium', '0mg', '0%'], ['Iron', '0mg', '0%']] },
+    { listing: 'kite-hill', name: 'Kite Hill Plain Cream Cheese', cat: 'Cream Cheese', fdc: '2757615', serving: '30g', cal: 70,
+      line: 'Cultured like dairy cream cheese, with no saturated fat in a serving.',
+      rows: [['Total Fat', '6g', '8%', 0, 1], ['Saturated Fat', '0g', '0%', 1], ['Sodium', '200mg', '9%', 0, 1], ['Total Carbohydrate', '2g', '1%', 0, 1], ['Dietary Fiber', '1g', '4%', 1],
+        ['Total Sugars', '1g', '', 1], ['Protein', '2g', '', 0, 1, 1]] }
+  ];
+  function nutLabel(p) {
+    return '<div class="dg-nf" role="img" aria-label="Nutrition Facts for ' + esc(p.name) + '"><h4>Nutrition Facts</h4>' +
+      '<div class="nf-serv">Serving size <b>' + esc(p.serving) + '</b></div>' +
+      '<div class="nf-cal"><span>Calories</span><b>' + p.cal + '</b></div><div class="nf-dvh">% Daily Value*</div>' +
+      p.rows.map(function (r) {
+        return '<div class="nf-r' + (r[3] === 1 ? ' in' : r[3] === 2 ? ' in2' : '') + (r[5] ? ' thick' : '') + '"><span>' + (r[4] ? '<b>' + esc(r[0]) + '</b> ' : esc(r[0]) + ' ') + esc(r[1]) + '</span><b>' + esc(r[2]) + '</b></div>';
+      }).join('') + '</div>';
+  }
+  function labelSlide(p) {
+    var l = null; (BRANDS || []).forEach(function (b) { if (b.slug === p.listing) l = b; });
+    var it = l ? (((l.details || {}).dairy_guide || []).filter(function (i) { return i.cat === p.cat || (p.cat === 'Cheese' && /Cheese Slices/.test(i.cat)); })[0] || {}) : {};
+    return pv(p.cat, p.name,
+      (it.base ? '<p><b>Made from</b> ' + esc(it.base.charAt(0).toLowerCase() + it.base.slice(1)) + '. <b>Where</b> ' + esc(it.where) + '.</p>' : '') + '<p>' + esc(p.line) + '</p>' +
+      '<div class="dg-pv-src">Label: <a href="https://fdc.nal.usda.gov/food-details/' + p.fdc + '/nutrients" target="_blank" rel="noopener">USDA FoodData Central</a>, as the brand reported it. Recipes change, so check the package.</div>',
+      nutLabel(p));
+  }
+  function voteDemo() {
+    var demo = [['Oatly', 'Milk, Coffee Creamer, Ice Cream', 'O', 128, 1], ['Silk', 'Milk, Coffee Creamer, Yogurt', 'S', 96], ['Califia Farms', 'Milk, Coffee Creamer', 'CF', 71]];
+    return '<div class="dg-pv-demo" aria-hidden="true"><span class="dg-pv-tag" style="align-self:flex-start">Example</span>' + demo.map(function (d) {
+      return '<div class="dg-demo-card' + (d[4] ? ' top' : '') + '"><div class="dg-bhead"><div class="dg-av" style="background:#1f5f22">' + d[2] + '</div><div><div class="dg-bname">' + d[0] + '</div><div class="dg-bcat">' + d[1] + '</div></div></div>' +
+        '<div class="dg-bfoot"><span class="vote-count">' + d[3] + '</span><span class="dg-vl">votes</span><span class="dg-demo-vote">' + (d[4] ? 'Voted' : 'Vote') + '</span></div></div>';
+    }).join('') + '</div>';
+  }
+  function pv(k, title, body, art) {
+    return '<div class="dg-pv"><div class="dg-pv-txt"><div class="dg-pv-k">' + esc(k) + '</div><h3>' + esc(title) + '</h3>' + body + '</div>' +
+      (art ? '<div class="dg-pv-art">' + art + '</div>' : '') + '</div>';
+  }
+  // Cookbook covers from Open Library, for the four with a cover on file.
+  var COVERS = [['Super Easy Vegan Cheese Cookbook', '12087441'], ['One-Hour Dairy-Free Cheese', '9165674'], ['Breaking Up with Dairy', '14849260'], ['Incredible Vegan Ice Cream', '10254059']];
   function previewSlides(section) {
     var b = BRANDS || [], bk = BOOKS || [];
-    var find = function (n) { for (var i = 0; i < b.length; i++) if (b[i].name === n) return b[i]; return null; };
     var ex = PUB.swap_example;
     var exampleSwap = ex ? '<div class="dg-swap dg-pv-card"><h3>' + esc(ex.replace) + '</h3><dl><dt>Shelf</dt><dd>' + esc(ex.shelf) + '</dd><dt>Pantry</dt><dd>' + esc(ex.pantry) + '</dd></dl>' + (ex.tip ? '<div class="dg-tip">' + esc(ex.tip) + '</div>' : '') + '</div>' : '';
-    var names = function (cat) { return b.filter(function (l) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === cat; }); }).map(function (l) { return l.name; }); };
     var chips = function (arr) { return '<div class="dg-pv-chips">' + arr.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('') + '</div>'; };
     var S = {
       why: [
-        textSlide('With membership', 'Three more facts, every one sourced', '<p>What the cancer research shows, how plants cover the nutrients, and the planet: each with its studies linked.</p>')
+        pv('With membership', 'Three more facts, every one sourced', '<p>What the cancer research shows, how plants cover the nutrients, and the planet: each with its studies linked.</p>', scene('why', 'Maya reading the research at a cafe'))
       ],
       brands: [
-        textSlide('Brands', '76 products from 43 brands', '<p>Sorted by what you are replacing: milk, butter, cheese, yogurt, ice cream and more. Every one is in the Vegans Explore Directory.</p>' + chips(CATS)),
-        find('Oatly') ? textSlide('Example', 'Oatly', '<p>' + esc(((find('Oatly').details || {}).dairy_guide || []).map(function (i) { return i.cat; }).join(', ')) + '. Made from oats. Where to buy it, for each one.</p>') : '',
-        textSlide('Cream cheese', names('Cream Cheese').length + ' brands to try', chips(names('Cream Cheese'))),
-        textSlide('Vote', 'The best ones rise to the top', '<p>Members vote once a day for the products they love, so the list sorts itself by what people actually buy again.</p>')
-      ],
+        pv('Brands', '76 products from 43 brands', '<p>Sorted by what you are replacing: milk, butter, cheese, yogurt, ice cream and more. Every one is in the Vegans Explore Directory, with where to buy it.</p>' + chips(CATS), scene('aisle', 'Maya in the dairy-free aisle with oat milk and plant cheese'))
+      ].concat(b.length ? LABELS.map(labelSlide) : []).concat([
+        pv('Vote', 'Vote for your favorites', '<p>Members vote once a day for the products they love, so the list sorts itself by what people actually buy again.</p>', voteDemo())
+      ]),
       swaps: [
-        textSlide('Free example', 'One swap, free to try', exampleSwap),
-        textSlide('16 swaps', 'Replace anything dairy', '<p>From the shelf, or from what is already in your pantry. Search them, or browse by milk and cream, butter, cheese, and yogurt and sour cream.</p>' + chips(['Milk', 'Butter, baking', 'Heavy cream', 'Whipped cream', 'Sour cream', 'Cream cheese', 'Parmesan', 'Cheese sauce', 'Ricotta', 'Ghee']))
+        pv('Free example', 'One swap, free to try', exampleSwap, scene('buttermilk', 'Maya making dairy-free buttermilk with soy milk and lemon')),
+        pv('16 swaps', 'Replace anything dairy', '<p>From the shelf, or from what is already in your pantry. Search them, or browse by milk and cream, butter, cheese, and yogurt and sour cream.</p>',
+          '<div class="dg-pv-swaps">' + ['Milk', 'Butter', 'Heavy cream', 'Whipped cream', 'Sour cream', 'Cream cheese', 'Parmesan', 'Cheese sauce', 'Ricotta', 'Ghee'].map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('') + '</div>')
       ],
       cookbook: [
-        textSlide('Recipes', 'Make it at home', '<p>Nut milk, ice cream, and dairy-free staples you can make from your pantry: sour cream, cream cheese, parmesan, ricotta and more.</p>' + chips(['Nut milk', 'Banana ice cream', 'Cashew sour cream', 'Cashew cream cheese', 'Potato cheese sauce', 'Tofu ricotta'])),
-        textSlide('What can I make?', 'Start from what you have', '<p>Tick what is in your kitchen and the Cookbook shows what you can make right now.</p>' + chips(PANTRY.slice(0, 8).map(function (p) { return p[0]; }))),
-        textSlide('Cookbooks', bk.length ? bk.length + ' cookbooks' : 'Cookbooks', '<p>The best dairy-free cookbooks, voted on by members.</p>' + chips(bk.slice(0, 6).map(function (l) { return ((l.details || {}).dairy_guide_book || {}).title || l.name; }))),
-        textSlide('Chefs', 'Learn from the chefs', '<p>Chefs who specialize in dairy-free cooking share their recipes here, each linked to their profile and what they offer.</p>')
+        pv('Recipes', 'Make it at home', '<p>Nut milk, ice cream, and dairy-free staples you can make from your pantry: sour cream, cream cheese, parmesan, ricotta and more.</p>' + chips(['Nut milk', 'Banana ice cream', 'Cashew sour cream', 'Cashew cream cheese', 'Potato cheese sauce', 'Tofu ricotta']), scene('nutmilk', 'Maya pouring homemade almond milk')),
+        pv('What can I make?', 'Start from what you have', '<p>Tick what is in your kitchen and the Cookbook shows what you can make right now.</p>' + chips(PANTRY.slice(0, 8).map(function (p) { return p[0]; })), scene('pantry', 'Maya at her pantry with cashews, tofu, a lemon and potatoes')),
+        pv('Cookbooks', bk.length ? bk.length + ' cookbooks' : 'Cookbooks', '<p>The best dairy-free cookbooks, voted on by members.</p>' + chips(bk.slice(0, 6).map(function (l) { return ((l.details || {}).dairy_guide_book || {}).title || l.name; })),
+          '<div class="dg-pv-books">' + COVERS.map(function (c) { return '<img src="https://covers.openlibrary.org/b/id/' + c[1] + '-M.jpg" alt="' + esc(c[0]) + ' cover" loading="lazy">'; }).join('') + '</div>'),
+        pv('Chefs', 'Learn from the chefs', '<p>Chefs who specialize in dairy-free cooking share their recipes here, each linked to their profile and what they offer.</p>', scene('chefs', 'Maya and Pascal cooking a dairy-free cheese sauce'))
       ],
       look: [
-        textSlide('See for yourself', 'How milk is made', '<p>Plain facts from USDA and dairy-industry sources about how milk is produced on US farms. No graphic images, and always behind a clear warning.</p>')
+        pv('See for yourself', 'How milk is made', '<p>Plain facts from USDA and dairy-industry sources about how milk is produced on US farms. No graphic images, and always behind a clear warning.</p>', scene('look', 'Maya at a sanctuary fence with a cow and her calf'))
       ],
-      search: [textSlide('Search', 'Search all of it', '<p>Members search every brand, swap, recipe and cookbook at once.</p>')]
+      search: [pv('Search', 'Search all of it', '<p>Members search every brand, swap, recipe and cookbook at once.</p>')]
     };
     return (S[section] || S.search).filter(Boolean);
   }
   function lockPanel(section) {
-    var state = access;
     var slides = previewSlides(section);
     return '<div class="dg-lock2">' +
-      '<div class="dg-show" data-show>' + slides.map(function (s, i) { return '<div class="dg-show-slide' + (i ? '' : ' on') + '" aria-hidden="' + (i ? 'true' : 'false') + '">' + s + '</div>'; }).join('') +
+      '<div class="dg-show" data-show><div class="dg-show-track">' + slides.map(function (s, i) { return '<div class="dg-show-slide' + (i ? '' : ' on') + '" aria-hidden="' + (i ? 'true' : 'false') + '">' + s + '</div>'; }).join('') + '</div>' +
       (slides.length > 1 ? '<div class="dg-show-nav"><button type="button" class="dg-show-b" data-show-go="-1" aria-label="Previous">&lsaquo;</button><div class="dg-show-dots">' + slides.map(function (s, i) { return '<button type="button" data-show-to="' + i + '"' + (i ? '' : ' class="on"') + ' aria-label="Slide ' + (i + 1) + '"></button>'; }).join('') + '</div><button type="button" class="dg-show-b" data-show-go="1" aria-label="Next">&rsaquo;</button></div>' : '') +
-      '</div>' +
-      '<div class="dg-offer2"><div class="dg-eyebrow" style="color:#c5f2c7">Founding Membership</div><div class="dg-price">$11<span>one time</span></div>' +
-      '<p>The Dairy Guide comes with it, and so does the full Vegans Explore community: your member dashboard, Directory votes, the Community Board and points.</p>' +
-      '<button type="button" class="dg-btn" data-join>' + (state === 'checking' ? 'Checking your membership...' : 'Become a Founding Member') + '</button>' +
-      (state === 'guest' ? '<p>Already a member? <a href="#" data-signin>Sign in</a> and the Guide opens.</p>' : '') +
-      '<p class="dg-status" role="status"></p></div></div>';
+      '</div></div>';
   }
   function startShow() {
     clearInterval(slideTimer);
@@ -445,6 +495,7 @@
     var known = { home: 1, why: 1, brands: 1, swaps: 1, cookbook: 1, look: 1, search: 1 };
     if (!known[view]) view = 'home';
     clearInterval(slideTimer);
+    document.body.classList.toggle('dg-member', access === 'member'); // header: search for members, the $11 box for everyone else
     drawMenu(view);
     wrap.classList.toggle('dg-wide', view !== 'home');
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
@@ -480,7 +531,7 @@
   }
   function setStatus(msg) { [].forEach.call(document.querySelectorAll('.dg-status'), function (e) { e.textContent = msg; }); }
 
-  main.addEventListener('click', function (e) {
+  document.addEventListener('click', function (e) {
     var a = auth();
     if (e.target.closest('[data-signin]')) {
       e.preventDefault();
