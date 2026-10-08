@@ -12,6 +12,7 @@
        Saves through the ve-board-consent edge function; no login. */
     :root { --green:#1f5f22; --green-soft:#e8f1e6; --ink:#1a1f17; --muted:#5b6455; --line:#dde2d6; --bg:#f6f7f3; --warn:#8a5a00; --warn-soft:#fbf1dc; --talk:#1f4e79; --talk-soft:#e3edf6; }
     * { box-sizing: border-box; }
+    [hidden] { display:none !important; }
     body { margin:0; font-family:'Montserrat', system-ui, sans-serif; color:var(--ink); background:var(--bg); }
     .page-frame { width:100%; min-height:100vh; display:flex; flex-direction:column; }
     main { flex:1; max-width:none; margin:0; padding:44px 40px 80px; display:flex; flex-direction:column; gap:30px; }
@@ -24,7 +25,7 @@
     .changes { list-style:none; padding:0; margin:0; display:grid; gap:12px; }
     .changes li { display:grid; grid-template-columns:auto 1fr; gap:12px; line-height:1.6; font-size:16px; }
     .dot { width:10px; height:10px; border-radius:50%; background:var(--green); margin-top:8px; }
-    .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr)); gap:14px; }
+    .cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; max-width:860px; }
     .card { display:block; background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px; color:inherit; text-decoration:none; }
     .card:hover, .card:focus-visible { border-color:var(--green); }
     .card strong { display:block; font-size:15px; margin-bottom:4px; }
@@ -34,9 +35,32 @@
     details.consent .doc { padding:0 22px 22px; display:flex; flex-direction:column; gap:10px; font-size:15px; line-height:1.65; }
     details.consent ol { margin:0; padding-left:22px; display:flex; flex-direction:column; gap:8px; }
     .choose { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:14px; }
-    .opt { font:inherit; text-align:left; background:#fff; color:var(--ink); border:2px solid var(--line); border-radius:12px; padding:18px; cursor:pointer; display:flex; flex-direction:column; gap:4px; }
+    .opt { font:inherit; text-align:left; background:#fff; color:var(--ink); border:2px solid var(--line); border-radius:12px; padding:18px; cursor:pointer; display:flex; gap:12px; align-items:flex-start; }
+    .opt:hover { border-color:#b9c2b0; }
+    .opt .box { flex:none; width:22px; height:22px; border:2px solid #9aa591; border-radius:5px; background:#fff; display:inline-flex; align-items:center; justify-content:center; margin-top:1px; }
+    .opt .box::after { content:''; width:6px; height:11px; border:solid #fff; border-width:0 3px 3px 0; transform:rotate(45deg) translate(-1px,-1px); opacity:0; }
+    .opt[aria-pressed="true"] .box::after { opacity:1; }
+    .opt[aria-pressed="true"].approve .box { background:var(--green); border-color:var(--green); }
+    .opt[aria-pressed="true"].resign .box { background:var(--warn); border-color:var(--warn); }
+    .opt[aria-pressed="true"].talk .box { background:var(--talk); border-color:var(--talk); }
+    .opt .txt { display:flex; flex-direction:column; gap:4px; }
     .opt strong { font-size:16px; }
-    .opt span { font-size:13px; color:var(--muted); line-height:1.45; }
+    .opt .txt span { font-size:13px; color:var(--muted); line-height:1.45; }
+    .pick-hint { font-size:14px; color:var(--muted); margin:-4px 0 0; }
+    .layout { display:grid; grid-template-columns:minmax(0,3fr) minmax(300px,1fr); gap:40px; align-items:start; }
+    .side { grid-column:2; grid-row:1; position:sticky; top:90px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:14px; }
+    .side h2 { font-size:17px; margin:0; }
+    .side .sub { font-size:14px; color:var(--muted); line-height:1.5; }
+    .toggle { display:grid; grid-template-columns:1fr 1fr; background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:4px; gap:4px; }
+    .toggle button { font:700 13px 'Montserrat', system-ui, sans-serif; border:0; border-radius:7px; padding:9px 6px; background:transparent; color:var(--muted); cursor:pointer; }
+    .toggle button[aria-selected="true"] { background:var(--green); color:#fff; }
+    .media { position:relative; border-radius:10px; overflow:hidden; aspect-ratio:16/10; background:var(--green) center/cover no-repeat; display:flex; align-items:flex-end; }
+    .media .cap { position:relative; width:100%; padding:12px 14px; color:#fff; font-weight:800; font-size:15px; background:linear-gradient(to top, rgba(0,0,0,.75), transparent); }
+    .side audio { width:100%; }
+    .side ul { margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px; font-size:14px; line-height:1.5; }
+    .toggle button:focus-visible { outline:3px solid var(--green); outline-offset:2px; }
+    @media (max-width:1000px) { .layout { grid-template-columns:1fr; } .side { position:static; grid-column:auto; grid-row:auto; } }
+    @media (max-width:560px) { .cards { grid-template-columns:1fr; } }
     .opt[aria-pressed="true"].approve { border-color:var(--green); background:var(--green-soft); }
     .opt[aria-pressed="true"].resign { border-color:var(--warn); background:var(--warn-soft); }
     .opt[aria-pressed="true"].talk { border-color:var(--talk); background:var(--talk-soft); }
@@ -71,8 +95,37 @@
       <p><strong>This link is personal.</strong> Please use the link Sean sent you. Questions: contact@lesaruss.com</p>
     </div>
 
-    <div id="content" hidden>
-      <div style="display:flex;flex-direction:column;gap:30px">
+    <div id="content" class="layout" hidden>
+      <aside class="side" aria-label="Where we are">
+        <h2>Where we are today</h2>
+        <p class="sub">See where we are with both Vegans Explore and the LESARUSS Foundation. Switch between them below.</p>
+        <div class="toggle" role="tablist">
+          <button type="button" role="tab" id="tabVE" aria-selected="true" data-tab="ve">Vegans Explore</button>
+          <button type="button" role="tab" id="tabLF" aria-selected="false" data-tab="lf">LESARUSS Foundation</button>
+        </div>
+        <div id="panelVE" role="tabpanel" aria-labelledby="tabVE" style="display:flex;flex-direction:column;gap:12px">
+          <div class="media" style="background-image:url('/public/events/vegan-foodie-fest-2025.jpg')"><span class="cap">Sean on Vegans Explore</span></div>
+          <audio controls preload="none" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/site-audio/lesaruss-com/vegans-explore.mp3"></audio>
+          <ul>
+            <li>$11 Founding Membership is open.</li>
+            <li>The Directory is open to everyone, with member voting.</li>
+            <li>Guides, including the new Vegan Dairy Guide.</li>
+            <li>South Florida is the first city hub, with a Daily Pulse.</li>
+            <li>Founding table in Palm Beach on November 13.</li>
+          </ul>
+        </div>
+        <div id="panelLF" role="tabpanel" aria-labelledby="tabLF" style="display:flex;flex-direction:column;gap:12px" hidden>
+          <div class="media" style="background-image:url('/public/founder/sean-hero.jpg');background-position:center 12%"><span class="cap">Sean on the LESARUSS Foundation</span></div>
+          <audio controls preload="none" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/site-audio/lesaruss-com/lesaruss-foundation.mp3"></audio>
+          <ul>
+            <li>Vegans Explore Inc. is being renamed LESARUSS Foundation, Inc.</li>
+            <li>Grants for animal rescues, Vegan community groups and K through 12 education initiatives.</li>
+            <li>Russell's Roving Reporters stays one of its programs.</li>
+            <li>Registering with Florida before it asks the public for money.</li>
+          </ul>
+        </div>
+      </aside>
+      <div style="display:flex;flex-direction:column;gap:30px;min-width:0">
         <p class="lead read">Vegans Explore Inc. is the Florida nonprofit behind Vegans Explore. Sean is reorganizing it, and as a director your approval is part of making that official. You can approve, step down from the board, or ask to talk first. Any of the three is fine.</p>
 
         <section class="read">
@@ -117,10 +170,11 @@
           <h2>Your answer</h2>
           <div id="doneBox" class="done" hidden></div>
           <div id="pickBox" style="display:flex;flex-direction:column;gap:14px">
+            <p class="pick-hint">Choose one:</p>
             <div class="choose" role="group" aria-label="Your answer">
-              <button type="button" class="opt approve" data-choice="approve" aria-pressed="false" id="optApprove"><strong>Approve and sign</strong><span>Sign the consent above with your typed name.</span></button>
-              <button type="button" class="opt resign" data-choice="resign" aria-pressed="false" id="optResign"><strong>Step down from the board</strong><span>Resign as a director, effective today. No hard feelings.</span></button>
-              <button type="button" class="opt talk" data-choice="talk" aria-pressed="false" id="optTalk"><strong>Let's talk first</strong><span>Sean will reach out before anything is filed.</span></button>
+              <button type="button" class="opt approve" data-choice="approve" aria-pressed="false" id="optApprove"><span class="box" aria-hidden="true"></span><span class="txt"><strong>Approve and sign</strong><span>Sign the consent above with your typed name.</span></span></button>
+              <button type="button" class="opt resign" data-choice="resign" aria-pressed="false" id="optResign"><span class="box" aria-hidden="true"></span><span class="txt"><strong>Step down from the board</strong><span>Resign as a director, effective today. No hard feelings.</span></span></button>
+              <button type="button" class="opt talk" data-choice="talk" aria-pressed="false" id="optTalk"><span class="box" aria-hidden="true"></span><span class="txt"><strong>Let's talk first</strong><span>Sean will reach out before anything is filed.</span></span></button>
             </div>
             <form id="answerForm" hidden novalidate>
               <label for="fullName" id="nameLabel">Your full name, as your signature
@@ -138,6 +192,7 @@
 
         <p class="foot read">Questions: contact@lesaruss.com</p>
       </div>
+
     </div>
   </main>
 
@@ -190,6 +245,15 @@
           btn.disabled = false; btn.textContent = 'Send my answer';
           err.textContent = "Your answer didn't save. Try again, or reply to Sean's message with your answer and full name."; err.hidden = false;
         });
+    });
+
+    ['tabVE', 'tabLF'].forEach(function (id) {
+      $(id).addEventListener('click', function () {
+        var ve = this.dataset.tab === 've';
+        $('tabVE').setAttribute('aria-selected', String(ve)); $('tabLF').setAttribute('aria-selected', String(!ve));
+        $('panelVE').hidden = !ve; $('panelLF').hidden = ve;
+        document.querySelectorAll('.side audio').forEach(function (a) { a.pause(); });
+      });
     });
 
     if (!/^[0-9a-f]{32}$/.test(k)) { bad(); return; }
