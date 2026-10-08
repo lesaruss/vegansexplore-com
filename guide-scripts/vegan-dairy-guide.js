@@ -467,14 +467,15 @@
     mountFrame('/directory/' + encodeURIComponent(slug) + (productId ? '?product=' + encodeURIComponent(productId) : ''), name);
   }
 
-  // A product page inside the Guide (#/product/<slug>), the page the Guide's products get (Sean, 2026-10-08).
+  // A product inside the Guide (#/product/<slug>): its brand's page opened on the Products tab with that product
+  // (Sean, 2026-10-08: one page per brand, products a click inside it).
   function viewProduct(slug) {
     if (!BRANDS) { main.innerHTML = crumb([['Brands', '#/brands'], ['Loading']]) + '<div class="dg-loading">Loading...</div>'; return; }
     var p = PRODUCT_BY_SLUG[slug], b = null;
     if (p) (BRANDS || []).forEach(function (x) { if (x.id === p.brand_listing_id) b = x; });
     var label = p ? (p.name || p.product_type) : 'Product';
     main.innerHTML = crumb(b ? [['Brands', '#/brands'], [b.name, '#/listing/' + encodeURIComponent(b.slug)], [label]] : [['Brands', '#/brands'], [label]]);
-    mountFrame('/products/' + encodeURIComponent(slug), (b ? b.name + ' ' : '') + label);
+    mountFrame(b ? '/directory/' + encodeURIComponent(b.slug) + '?tab=products&product=' + encodeURIComponent(slug) : '/products/' + encodeURIComponent(slug), (b ? b.name + ' ' : '') + label);
   }
 
   // The framed Directory page: sized to fit (one scroll), and its links to a listing or a product go through

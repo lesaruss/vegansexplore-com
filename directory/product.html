@@ -5,118 +5,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product — Vegans Explore</title>
-  <meta id="meta-description" name="description" content="A Vegan product in the Vegans Explore Directory: what it is made from, nutrition facts, and where to buy it.">
+  <meta name="description" content="A Vegan product in the Vegans Explore Directory, on its brand's page: every version of it, what it is made from, Nutrition Facts, the USDA label record and where to find it.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- A product page (Sean, 2026-10-08): every product a Guide lists gets its own page at /products/<slug>
-       (rewrite in vercel.json). The Guides create these pages; the stores that carry a product link here from
-       their Vegan aisle. Data: ve_products, ve_product_stores, the brand's Directory listing. Shared helpers
-       in /public/ve-products.js. Inside a frame (a Guide, the dashboard) the page drops its nav and footer. -->
-  <script>try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
+  <!-- /products/<slug> (rewrite in vercel.json) is a product's shareable link. A product lives on its brand's page
+       (Sean, 2026-10-08: "we can still link directly to the Oatly milk product page"), so this forwards to
+       /directory/<brand>?tab=products&product=<slug>, keeping ?v=<version>. The product view is /public/ve-product-view.js. -->
   <style>
-    *,::before,::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--g:#1f5f22;--g2:#3A9B3E;--gl:#e8f5e9;--line:rgba(0,0,0,0.09);--ink:#1a1a1a;--ink75:rgba(26,26,26,0.75);--ink50:rgba(26,26,26,0.5);--warm:#fff4e2;}
-    body{font-family:Montserrat,sans-serif;color:var(--ink);background:#fff;}
-    .ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .vp-crumb{display:none !important}
-    .vp-hero{background:#111;color:#fff;padding:36px 40px 32px;display:flex;gap:28px;align-items:center;}
-    .vp-img{width:140px;height:140px;flex:0 0 140px;border-radius:14px;background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:900;color:#fff;overflow:hidden;}
-    .vp-crumb{font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:8px;}
-    .vp-crumb a{color:rgba(255,255,255,0.85);text-decoration:none;}
-    .vp-crumb a:hover{text-decoration:underline;}
-    .vp-hero h1{font-size:clamp(26px,3.4vw,40px);font-weight:900;line-height:1.1;}
-    .vp-brand{font-size:14px;font-weight:700;margin-top:6px;color:rgba(255,255,255,0.85);}
-    .vp-brand a{color:#8fe3a6;text-decoration:none;}
-    .vp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
-    .vp-chip{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:#5EC47A;color:#0d2a12;text-decoration:none;}
-    .vp-chip.o{background:transparent;border:1px solid #5EC47A;color:#8fe3a6;}
-    .vp-credit{font-size:10px;color:rgba(255,255,255,0.5);margin-top:8px;}
-    .vp-credit a{color:inherit;}
-    .vp-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:36px;padding:32px 40px 64px;align-items:start;}
-    .vp-sec{margin-bottom:30px;}
-    .vp-sec h2{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink50);margin-bottom:12px;}
-    .vp-what{font-size:15px;line-height:1.65;color:var(--ink75);}
-    .vp-what b{color:var(--ink);}
-    .vp-note{font-size:13px;color:#8a5a00;background:var(--warm);border-radius:8px;padding:8px 12px;margin-top:10px;display:inline-block;}
-    .vp-stores{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px;}
-    .vp-store{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
-    .vp-store b{font-size:15px;font-weight:800;}
-    .vp-store-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-    .vp-btn{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;text-decoration:none;white-space:nowrap;}
-    .vp-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A;}
-    .vp-link{font-size:12px;font-weight:700;color:var(--g);}
-    .vp-more{display:flex;flex-wrap:wrap;gap:8px;}
-    .vp-more a{font-size:12px;font-weight:800;letter-spacing:.04em;padding:8px 13px;border-radius:99px;border:1.5px solid var(--line);color:var(--ink);text-decoration:none;}
-    .vp-more a:hover{border-color:var(--g2);color:var(--g);}
-    .vp-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:76px;}
-    .vp-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
-    .vp-card h3{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink50);margin-bottom:10px;}
-    .vp-card p{font-size:13px;line-height:1.55;color:var(--ink75);}
-    .vp-src{font-size:11px;line-height:1.5;color:var(--ink50);margin-top:8px;}
-    .vp-src a{color:var(--g);}
-    .vp-brandcta{background:var(--gl);border-color:#c8e6c9;}
-    .vp-empty{padding:80px 40px;text-align:center;color:var(--ink50);font-size:15px;}
-    @media (max-width:900px){.vp-grid{grid-template-columns:minmax(0,1fr);}.vp-side{position:static;}}
-    @media (max-width:640px){.vp-hero{flex-direction:column;align-items:flex-start;padding:24px 16px;}.vp-img{width:110px;height:110px;flex-basis:110px;}.vp-grid{padding:20px 16px 48px;}}
+    body{font-family:Montserrat,sans-serif;color:#1a1a1a;background:#fff;margin:0}
+    .vp-wait{padding:90px 24px;text-align:center;font-size:15px;color:rgba(26,26,26,.5)}
+    .vp-wait a{color:#1f5f22}
   </style>
 </head>
 <body>
 <script src="/public/nav.js"></script>
-<main id="vp"><div class="vp-empty">Loading...</div></main>
+<main class="vp-wait" id="vp">Opening the product...</main>
 <script src="/public/footer.js"></script>
-<script src="/public/ve-products.js"></script>
 <script>
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var esc = VEProducts.esc, root = document.getElementById('vp');
-  function rest(path) { return fetch(SB + '/rest/v1/' + path, { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } }).then(function (r) { return r.json(); }); }
+  var q = new URLSearchParams(location.search);
   var slug = location.pathname.replace(/\/$/, '').split('/').pop();
-  if (!/^[a-z0-9-]+$/.test(slug)) slug = new URLSearchParams(location.search).get('slug') || '';
-  VEProducts.css();
-
-  rest('ve_products?slug=eq.' + encodeURIComponent(slug) + '&select=id,slug,product_type,name,made_from,note,guides,department,nutrition,nutrition_source,image_url,image_credit,brand_listing_id,' +
-    'listings!ve_products_brand_listing_id_fkey(id,slug,name,color,initials,logo_url,vegan_status,website,status),ve_product_stores(buy_url,affiliate_link_code,removed_at,listings(slug,name,website,details,status))&limit=1')
+  if (!/^[a-z0-9-]+$/.test(slug) || slug === 'product') slug = q.get('slug') || '';
+  function missing() { document.getElementById('vp').innerHTML = 'We could not find that product. <a href="/directory">Browse the Directory</a>'; }
+  if (!/^[a-z0-9-]+$/.test(slug)) return missing();
+  fetch(SB + '/rest/v1/ve_products?slug=eq.' + encodeURIComponent(slug) + '&select=slug,guides,listings!ve_products_brand_listing_id_fkey(slug,status)&limit=1', { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } })
+    .then(function (r) { return r.json(); })
     .then(function (rows) {
       var p = Array.isArray(rows) && rows[0], b = p && p.listings;
-      if (!p || !b || b.status !== 'approved' || !(p.guides || []).length) { root.innerHTML = '<div class="vp-empty">We could not find that product. <a href="/directory">Browse the Directory</a></div>'; return; }
-      var title = VEProducts.title(p, b.name);
-      document.title = title + ' — Vegans Explore';
-      var stores = (p.ve_product_stores || []).filter(function (r) { return !r.removed_at && r.listings && r.listings.status === 'approved'; })
-        .sort(function (x, y) { return x.listings.name.localeCompare(y.listings.name); });
-      var guides = (p.guides || []).map(function (g) { return VEProducts.GUIDES[g]; }).filter(Boolean);
-      var vegan = { fully_vegan: '100% Vegan', vegan: '100% Vegan' }[b.vegan_status];
-      var img = p.image_url ? '<div class="vp-img" style="background-image:url(\'' + esc(p.image_url) + '\')" role="img" aria-label="' + esc(title) + '"></div>'
-        : '<div class="vp-img" style="background:' + esc(b.color || '#1f5f22') + '">' + esc(b.initials || b.name.charAt(0)) + '</div>';
-      var html = '<section class="vp-hero">' + img + '<div>' +
-        '<div class="vp-crumb"><a href="/directory">Directory</a> &rsaquo; <a href="/directory/' + encodeURIComponent(b.slug) + '">' + esc(b.name) + '</a> &rsaquo; ' + esc(p.name || p.product_type) + '</div>' +
-        '<h1>' + esc(title) + '</h1><div class="vp-brand">by <a href="/directory/' + encodeURIComponent(b.slug) + '">' + esc(b.name) + '</a></div>' +
-        '<div class="vp-chips">' + (p.department ? '<span class="vp-chip">' + esc(p.department) + '</span>' : '') + '<span class="vp-chip o">' + esc(p.product_type) + '</span>' +
-        (vegan ? '<span class="vp-chip o">' + vegan + '</span>' : '') +
-        guides.map(function (g) { return '<a class="vp-chip o" href="' + esc(g[1]) + '" target="_top">In the ' + esc(g[0]) + '</a>'; }).join('') + '</div>' +
-        (p.image_url && p.image_credit ? '<div class="vp-credit">Photo: ' + esc(p.image_credit) + '</div>' : '') + '</div></section>';
-      html += '<div class="vp-grid"><div>' +
-        '<div class="vp-sec"><h2>What it is</h2><p class="vp-what">' + (p.made_from ? '<b>Made from</b> ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) + '.' : '') + '</p>' + (p.note ? '<div class="vp-note">' + esc(p.note) + '</div>' : '') + '</div>' +
-        '<div class="vp-sec"><h2>Where to buy</h2>' + (stores.length ? '<div class="vp-stores">' + stores.map(function (r) {
-          var s = r.listings, by = VEProducts.buy(s, r, p, b.name);
-          return '<div class="vp-store"><b>' + esc(s.name) + '</b><div class="vp-store-row">' +
-            (by ? '<a class="vp-btn" href="' + esc(by.href) + '" target="_blank" rel="noopener' + (by.sponsored ? ' sponsored' : '') + '">' + esc(by.label) + '</a>' : '') +
-            '<a class="vp-link" href="/directory/' + encodeURIComponent(s.slug) + '?product=' + encodeURIComponent(p.id) + '">Vegan aisle at ' + esc(s.name) + '</a></div></div>';
-        }).join('') + '</div><p class="vp-src">Stock changes by location, so check your store.</p>' : '<p class="vp-what">We have not mapped a store for this one yet.' + (b.website ? ' Try <a class="vp-link" href="' + esc(/^https?:/.test(b.website) ? b.website : 'https://' + b.website) + '" target="_blank" rel="noopener">' + esc(b.name) + '\'s website</a>.' : '') + '</p>') + '</div>' +
-        '<div class="vp-sec" id="vpMore" hidden><h2>More from ' + esc(b.name) + '</h2><div class="vp-more"></div></div>' +
-        '</div><aside class="vp-side">' +
-        '<div class="vp-card"><h3>Nutrition Facts</h3>' + (p.nutrition ? VEProducts.label(p.nutrition) +
-          '<p class="vp-src">Shown: ' + esc(p.nutrition.product) + '. ' + esc(p.nutrition_source || '') + (p.nutrition.fdc ? ' (<a href="https://fdc.nal.usda.gov/food-details/' + encodeURIComponent(p.nutrition.fdc) + '/nutrients" target="_blank" rel="noopener">see the record</a>)' : '') + '. Recipes change, so check the package.</p>'
-          : '<p>Nutrition facts for this product are not added yet.</p>') + '</div>' +
-        '<div class="vp-card"><h3>The brand</h3><p><a class="vp-link" href="/directory/' + encodeURIComponent(b.slug) + '">' + esc(b.name) + '</a> is in the Vegans Explore Directory. Vote for it and see everything it makes.</p></div>' +
-        '<div class="vp-card vp-brandcta"><h3>Is this your product?</h3><p>Our Guides put Vegan brands in front of people looking for them. Partner with us to showcase your products here.</p><p style="margin-top:10px"><a class="vp-btn" href="/partners" target="_top">Partner with us</a></p></div>' +
-        '</aside></div>';
-      root.innerHTML = html;
-      rest('ve_products?brand_listing_id=eq.' + encodeURIComponent(p.brand_listing_id) + '&id=neq.' + encodeURIComponent(p.id) + '&guides=neq.%7B%7D&select=slug,product_type,name&order=product_type').then(function (more) {
-        if (!Array.isArray(more) || !more.length) return;
-        var box = document.getElementById('vpMore'); box.hidden = false;
-        box.querySelector('.vp-more').innerHTML = more.map(function (m) { return '<a href="/products/' + encodeURIComponent(m.slug) + '">' + esc(VEProducts.title(m, b.name)) + '</a>'; }).join('');
-      }).catch(function () {});
-    }).catch(function () { root.innerHTML = '<div class="vp-empty">We could not load this product just now. Refresh to try again.</div>'; });
+      if (!p || !b || b.status !== 'approved' || !(p.guides || []).length) return missing();
+      location.replace('/directory/' + encodeURIComponent(b.slug) + '?tab=products&product=' + encodeURIComponent(p.slug) + (q.get('v') ? '&v=' + encodeURIComponent(q.get('v')) : ''));
+    })
+    .catch(function () { document.getElementById('vp').textContent = 'We could not open this product just now. Refresh to try again.'; });
 })();
 </script>
 </body>

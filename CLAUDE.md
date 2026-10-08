@@ -373,11 +373,45 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   someone confirms the search in a browser), then the store's website.
 - The Vegan aisle is one category at a time: department and category dropdowns, search, Sort by (most
   voted brand first), 12 cards then Show all. Each card opens the product's page.
-- Product pages (Sean, 2026-10-08: "the Dairy Guide is creating these product pages"): every product has
-  `/products/<slug>` (`directory/product.html`, rewrite in `vercel.json`): what it is made from, Nutrition
-  Facts (`ve_products.nutrition`, only from a cited source such as USDA FoodData Central), a picture
-  (`image_url` with `image_credit`), where to buy with each store's aisle, more from the brand, and the
-  brand partnership ask. Shared helpers: `/public/ve-products.js`. In a Guide it opens as `#/product/<slug>`.
+- Brand pages (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini
+  web experience for Oatly"): a brand with products in our Guides (a `listings.details` key in `VEProducts.SOURCES`,
+  the same keys as `ve_guide_product_sources`) is one page, its Directory listing, with tabs Overview (about the brand
+  from `details.about`, its products, where to find them), Products (the list, then one product: Products > Oatly
+  Milk, `?tab=products&product=<slug>&v=<version>`; Products again goes back to the list) and Gallery (Videos and
+  Images, filtered by product, `?tab=gallery&media=videos|images&about=<slug>`: the brand's YouTube videos from
+  `details.videos`, tagged with `product` when one is about a product, product photos, and creator content from
+  `details.creator_posts` once we make it). The Campaign, Video and Pulse tabs appear only once the brand partners
+  with us. The right column holds the open product's Nutrition Facts on top (Sean, 2026-10-08: "put the barcode back on
+  the right-hand side and push the billboard down") and the billboard under them, pinned while the page scrolls. It
+  wears our city art (South Florida for now). Code: `loadBrandSite` in `directory/listing.html`.
+- Brand Partner (Sean, 2026-10-08): "build these out for brands that we're actively pursuing... $111 a quarter just to
+  have a seat at the table." Every product brand gets a basic page (Overview, Products). A **featured** page adds our city
+  art and the Gallery: a brand we are pursuing is granted it (`listings.details.brand_featured`, Oatly first), and a Brand
+  Partner keeps it. Brand Partner is `ve-claims` tier `brand`, $111 a quarter, the same quarterly Stripe subscription and
+  claim path as Passport Stop and Anchor (no founding spots, no Passport results sheet). `/claim?listing=<slug>&plan=brand`
+  offers it, and a Food Brands or Brands listing is offered only that plan. The tier checks were widened by
+  `supabase/migrations/20261008_brand_partner_tier.sql`, run in the dashboard SQL editor (it drops constraints).
+- **For <Brand>** tab (`?tab=brand`): the brand's door. It shows to the owner, a super admin, and anyone arriving on the
+  link we send (it then stays for the visit). The offer, one slide at a time (the page we built, where people find them,
+  the cities, campaigns, Brand Partner, the dashboard), and the Dashboard (`?door=dashboard`): views, visitors, products
+  opened, store aisles opened, videos played, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
+  admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
+  (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
+  videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
+- A product (`/public/ve-product-view.js`): the photo with its versions (`ve_products.variants`) as round thumbnails
+  under it, the chosen version's name, the brand's own description and ingredients, certifications, its Nutrition
+  Facts (each version's own, cited; `ve_products.nutrition` only from a cited source such as USDA FoodData Central),
+  the USDA record in full, also per version (`variants[].fdc`, else `ve_products.fdc` for the first; from
+  `fdc.nal.usda.gov/portal-data/external/<id>`, found with a POST to `/portal-data/external/search`, both of which work
+  when the api.nal.usda.gov DEMO_KEY is rate limited; a version with no record says so), Where to find it (each store a button, logo and name, to its Vegan aisle
+  on Vegans Explore; never the store's own site: "we want to keep them in our environment"), and more from the brand.
+  `/products/<slug>` (`directory/product.html`, rewrite in `vercel.json`) is the shareable link and forwards to the
+  brand page with that product open. In a Guide it opens as `#/product/<slug>`. Shared helpers: `/public/ve-products.js`.
+- Pictures: product photos are copied into `vegan-media/media/products/<slug>/` from the brand's own product page and
+  Open Food Facts (credit CC BY-SA); Sean, 2026-10-08: brand photos are fine to use, and we reach out to the brand.
+  Store and brand logos are copied into `vegan-media/media/logos/` (`listings.logo_url`), each checked by eye. Videos
+  are the brand's own uploads, checked through YouTube oEmbed (`author_url`). The edge function `ve-off-lookup` (admin
+  token) looks at and copies pictures; it writes no rows.
 - A new listing gets `vegan_status = 'fully_vegan'` by default. Set it on purpose (null for a store, which is
   not a Vegan business), or the Directory calls it 100% Vegan.
 - Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once
