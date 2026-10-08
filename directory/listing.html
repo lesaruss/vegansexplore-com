@@ -1134,7 +1134,7 @@ function aisleBuy(l, row, p){
   return l.website ? { href: /^https?:/.test(l.website) ? l.website : 'https://' + l.website, label: 'Visit ' + l.name } : null;
 }
 function loadAisle(l){
-  var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,product_type,name,made_from,note,guides,listings(slug,name,status,color,initials))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
+  var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,product_type,name,made_from,note,guides,listings!ve_products_brand_listing_id_fkey(slug,name,status,color,initials))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
   fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
     var panel = document.getElementById('tab-aisle'); if(!panel) return;
     rows = (Array.isArray(rows) ? rows : []).filter(function(r){ var p = r.ve_products; return p && p.guides && p.guides.length && p.listings && p.listings.status === 'approved'; });
