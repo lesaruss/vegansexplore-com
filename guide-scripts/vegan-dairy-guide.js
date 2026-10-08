@@ -32,7 +32,7 @@
   // Stores (Sean, 2026-10-08): every product in the Guide is mapped to the grocery stores that carry it
   // (ve_products / ve_product_stores, filled automatically), and each store is a Directory listing with a
   // Vegan aisle. A store named in the Guide links to that aisle with the product picked out.
-  var PRODUCTS_URL = SB + '/rest/v1/ve_products?select=id,brand_listing_id,product_type,name&guides=cs.%7B' + 'vegan-dairy-guide' + '%7D';
+  var PRODUCTS_URL = SB + '/rest/v1/ve_products?select=id,slug,brand_listing_id,product_type,name&guides=cs.%7B' + 'vegan-dairy-guide' + '%7D';
   var ALIASES_URL = SB + '/rest/v1/ve_store_aliases?select=alias,listings(slug,name,status)';
   var BOOKS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Books&tags=cs.%7Bdairy-guide-book%7D';
   var CATS = ['Milk', 'Coffee Creamer', 'Butter', 'Cheese Slices', 'Cheese Spreads', 'Shredded Cheese', 'Parmesan', 'Sour Cream', 'Feta', 'Cream Cheese', 'Yogurt', 'Ice Cream'];
@@ -68,7 +68,7 @@
 
   var access = 'checking';       // checking | guest | pending | member
   var MEM = null;                // members-only payload
-  var BRANDS = null, BOOKS = null, PRODUCTS = {}, STORES = {};
+  var BRANDS = null, BOOKS = null, PRODUCTS = {}, PRODUCT_BY_SLUG = {}, STORES = {};
   var lookOpen = false;
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -455,15 +455,32 @@
     if (from) html += '<div class="dg-inguide"><div class="dg-inguide-k">At ' + esc(name) + '</div><div class="dg-inguide-i"><b>' + esc(from[0].name + ' ' + from[1].cat) + '</b><span>Picked out in ' + esc(name) + '\'s Vegan aisle below, with everything else from our Guides that ' + esc(name) + ' carries.</span></div></div>';
     if (l && !book && ((l.details || {}).dairy_guide || []).length) {
       html += '<div class="dg-inguide"><div class="dg-inguide-k">In the Dairy Guide</div><div class="dg-inguide-row">' + l.details.dairy_guide.map(function (i) {
-        return '<div class="dg-inguide-i"><b>' + esc(i.cat) + '</b><span>Made from ' + esc(String(i.base || '').charAt(0).toLowerCase() + String(i.base || '').slice(1)) + (i.where ? '. Find it at ' + whereLinks(i.where, PRODUCTS[l.id + '|' + i.cat]) : '') + '.</span>' + (i.note ? '<em>' + esc(i.note) + '</em>' : '') + '</div>';
+        var pid = PRODUCTS[l.id + '|' + i.cat], ps = null; for (var k in PRODUCT_BY_SLUG) if (PRODUCT_BY_SLUG[k].id === pid) ps = k;
+        return '<div class="dg-inguide-i"><b>' + (ps ? '<a class="dg-store" href="#/product/' + encodeURIComponent(ps) + '">' + esc(i.cat) + '</a>' : esc(i.cat)) + '</b><span>Made from ' + esc(String(i.base || '').charAt(0).toLowerCase() + String(i.base || '').slice(1)) + (i.where ? '. Find it at ' + whereLinks(i.where, PRODUCTS[l.id + '|' + i.cat]) : '') + '.</span>' + (i.note ? '<em>' + esc(i.note) + '</em>' : '') + '</div>';
       }).join('') + '</div></div>';
     } else if (l && book) {
       var bk = (l.details || {}).dairy_guide_book || {};
       html += '<div class="dg-inguide"><div class="dg-inguide-k">In the Dairy Guide</div><div class="dg-inguide-row"><div class="dg-inguide-i"><b>' + esc(bk.title || l.name) + '</b><span>' +
         esc([bk.author, [bk.publisher, bk.year].filter(Boolean).join(', '), bk.topic].filter(Boolean).join(' · ')) + '</span>' + (bk.note ? '<em>' + esc(bk.note) + '</em>' : '') + '</div></div></div>';
     }
-    html += '<div class="dg-lframe"><iframe id="dgListingFrame" title="' + esc(name) + '" src="/directory/' + encodeURIComponent(slug) + (productId ? '?product=' + encodeURIComponent(productId) : '') + '"></iframe></div>';
     main.innerHTML = html;
+    mountFrame('/directory/' + encodeURIComponent(slug) + (productId ? '?product=' + encodeURIComponent(productId) : ''), name);
+  }
+
+  // A product page inside the Guide (#/product/<slug>), the page the Guide's products get (Sean, 2026-10-08).
+  function viewProduct(slug) {
+    if (!BRANDS) { main.innerHTML = crumb([['Brands', '#/brands'], ['Loading']]) + '<div class="dg-loading">Loading...</div>'; return; }
+    var p = PRODUCT_BY_SLUG[slug], b = null;
+    if (p) (BRANDS || []).forEach(function (x) { if (x.id === p.brand_listing_id) b = x; });
+    var label = p ? (p.name || p.product_type) : 'Product';
+    main.innerHTML = crumb(b ? [['Brands', '#/brands'], [b.name, '#/listing/' + encodeURIComponent(b.slug)], [label]] : [['Brands', '#/brands'], [label]]);
+    mountFrame('/products/' + encodeURIComponent(slug), (b ? b.name + ' ' : '') + label);
+  }
+
+  // The framed Directory page: sized to fit (one scroll), and its links to a listing or a product go through
+  // the Guide's own address bar so the breadcrumb and Back stay right. Anything else opens in the whole window.
+  function mountFrame(src, title) {
+    main.insertAdjacentHTML('beforeend', '<div class="dg-lframe"><iframe id="dgListingFrame" title="' + esc(title) + '" src="' + esc(src) + '"></iframe></div>');
     var f = document.getElementById('dgListingFrame');
     f.addEventListener('load', function () {
       var d; try { d = f.contentDocument; } catch (e) { return; }
@@ -476,12 +493,15 @@
       }
       fit();
       if (window.ResizeObserver) new ResizeObserver(fit).observe(d.body);
-      // A link inside the listing that leaves the Directory opens in the whole window.
       d.addEventListener('click', function (e) {
-        var a = e.target.closest && e.target.closest('a[href]'); if (!a || a.target) return;
+        var a = e.target.closest && e.target.closest('a[href]'); if (!a || a.target || e.defaultPrevented) return;
         var u; try { u = new URL(a.href, d.baseURI); } catch (x) { return; }
-        if (u.origin === location.origin && /^\/directory\//.test(u.pathname)) return;
-        if (u.origin === location.origin && !/^#/.test(a.getAttribute('href') || '')) { e.preventDefault(); location.href = u.href; }
+        if (u.origin !== location.origin || /^#/.test(a.getAttribute('href') || '')) return;
+        var m;
+        e.preventDefault();
+        if ((m = u.pathname.match(/^\/products\/([a-z0-9-]+)\/?$/))) location.hash = '#/product/' + m[1];
+        else if ((m = u.pathname.match(/^\/directory\/([a-z0-9-]+)\/?$/))) location.hash = '#/listing/' + m[1] + (u.searchParams.get('product') ? '/' + encodeURIComponent(u.searchParams.get('product')) : '');
+        else location.href = u.href;
       });
     });
   }
@@ -555,18 +575,19 @@
     if (view === 'search' && !sub) view = 'home';
     if (view === 'recipes') view = 'cookbook';
     if (view === 'books') { view = 'cookbook'; sub = 'books'; }
-    var known = { home: 1, why: 1, brands: 1, swaps: 1, cookbook: 1, look: 1, search: 1, listing: 1 };
+    var known = { home: 1, why: 1, brands: 1, swaps: 1, cookbook: 1, look: 1, search: 1, listing: 1, product: 1 };
     if (!known[view]) view = 'home';
     clearInterval(slideTimer);
     document.body.classList.toggle('dg-member', access === 'member'); // header: search for members, the $11 box for everyone else
     var menuKey = view;
+    if (view === 'product') menuKey = 'brands';
     if (view === 'listing') { menuKey = 'brands'; (BOOKS || []).forEach(function (b) { if (b.slug === decodeURIComponent(sub)) menuKey = 'cookbook'; }); }
     drawMenu(menuKey);
     wrap.classList.toggle('dg-wide', view !== 'home');
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     ({ home: viewHome, why: viewWhy, brands: function () { viewBrands(sub); }, swaps: function () { viewSwaps(sub); },
        cookbook: function () { viewCookbook(sub); }, look: viewLook, search: function () { viewSearch(decodeURIComponent(sub)); },
-       listing: function () { viewListing(decodeURIComponent(sub)); } })[view]();
+       listing: function () { viewListing(decodeURIComponent(sub)); }, product: function () { viewProduct(decodeURIComponent(sub)); } })[view]();
     if (view !== 'search') window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
@@ -592,7 +613,7 @@
   function loadDirectory() {
     Promise.all([rest(BRANDS_URL), rest(BOOKS_URL), rest(PRODUCTS_URL).catch(function () { return []; }), rest(ALIASES_URL).catch(function () { return []; })]).then(function (r) {
       BRANDS = Array.isArray(r[0]) ? r[0] : []; BOOKS = Array.isArray(r[1]) ? r[1] : [];
-      (Array.isArray(r[2]) ? r[2] : []).forEach(function (p) { PRODUCTS[p.brand_listing_id + '|' + p.product_type] = p.id; });
+      (Array.isArray(r[2]) ? r[2] : []).forEach(function (p) { PRODUCTS[p.brand_listing_id + '|' + p.product_type] = p.id; PRODUCT_BY_SLUG[p.slug] = p; });
       (Array.isArray(r[3]) ? r[3] : []).forEach(function (a) { if (a.listings && a.listings.status === 'approved') STORES[a.alias] = a.listings; });
       route();
     }).catch(function () { BRANDS = BRANDS || []; BOOKS = BOOKS || []; route(); });

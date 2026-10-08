@@ -16,6 +16,10 @@
       "destination": "/directory/listing"
     },
     {
+      "source": "/products/:slug",
+      "destination": "/directory/product"
+    },
+    {
       "source": "/pulse/:slug",
       "destination": "/api/pulse-article?slug=:slug"
     },
