@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Board Consent | Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Directors' written consent (Sean, 2026-10-08). Personal link: /board-consent?k=<token>.
+       Saves through the ve-board-consent edge function; no login. */
+    :root { --green:#1f5f22; --green-soft:#e8f1e6; --ink:#1a1f17; --muted:#5b6455; --line:#dde2d6; --bg:#f6f7f3; --warn:#8a5a00; --warn-soft:#fbf1dc; --talk:#1f4e79; --talk-soft:#e3edf6; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:'Montserrat', system-ui, sans-serif; color:var(--ink); background:var(--bg); }
+    .page-frame { width:100%; min-height:100vh; display:flex; flex-direction:column; }
+    main { flex:1; max-width:none; margin:0; padding:44px 40px 80px; display:flex; flex-direction:column; gap:30px; }
+    .read { max-width:860px; }
+    .eyebrow { font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--green); }
+    h1 { font-size:clamp(28px,4vw,42px); font-weight:900; line-height:1.1; margin:8px 0 0; text-wrap:balance; }
+    h2 { font-size:20px; font-weight:800; margin:0 0 12px; }
+    p { margin:0; line-height:1.65; font-size:16px; }
+    .lead { font-size:18px; }
+    .changes { list-style:none; padding:0; margin:0; display:grid; gap:12px; }
+    .changes li { display:grid; grid-template-columns:auto 1fr; gap:12px; line-height:1.6; font-size:16px; }
+    .dot { width:10px; height:10px; border-radius:50%; background:var(--green); margin-top:8px; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr)); gap:14px; }
+    .card { display:block; background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px; color:inherit; text-decoration:none; }
+    .card:hover, .card:focus-visible { border-color:var(--green); }
+    .card strong { display:block; font-size:15px; margin-bottom:4px; }
+    .card span { font-size:14px; color:var(--muted); line-height:1.5; }
+    details.consent { background:#fff; border:1px solid var(--line); border-radius:10px; }
+    details.consent summary { cursor:pointer; font-weight:800; font-size:15px; padding:16px 18px; }
+    details.consent .doc { padding:0 22px 22px; display:flex; flex-direction:column; gap:10px; font-size:15px; line-height:1.65; }
+    details.consent ol { margin:0; padding-left:22px; display:flex; flex-direction:column; gap:8px; }
+    .choose { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:14px; }
+    .opt { font:inherit; text-align:left; background:#fff; color:var(--ink); border:2px solid var(--line); border-radius:12px; padding:18px; cursor:pointer; display:flex; flex-direction:column; gap:4px; }
+    .opt strong { font-size:16px; }
+    .opt span { font-size:13px; color:var(--muted); line-height:1.45; }
+    .opt[aria-pressed="true"].approve { border-color:var(--green); background:var(--green-soft); }
+    .opt[aria-pressed="true"].resign { border-color:var(--warn); background:var(--warn-soft); }
+    .opt[aria-pressed="true"].talk { border-color:var(--talk); background:var(--talk-soft); }
+    .opt:focus-visible, .btn:focus-visible, input:focus-visible, textarea:focus-visible { outline:3px solid var(--green); outline-offset:2px; }
+    form { display:flex; flex-direction:column; gap:14px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; }
+    label { font-size:14px; font-weight:700; display:flex; flex-direction:column; gap:6px; }
+    input[type=text], textarea { font:16px 'Montserrat', system-ui, sans-serif; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:11px 12px; }
+    textarea { min-height:80px; resize:vertical; }
+    .check { flex-direction:row; align-items:flex-start; gap:10px; font-weight:600; }
+    .check input { margin-top:3px; width:18px; height:18px; flex:none; }
+    .btn { font:800 15px 'Montserrat', system-ui, sans-serif; background:var(--green); color:#fff; border:0; border-radius:8px; padding:13px 20px; cursor:pointer; align-self:flex-start; }
+    .btn[disabled] { opacity:.55; cursor:not-allowed; }
+    .err { font-size:14px; color:var(--warn); font-weight:600; }
+    .done { background:var(--green-soft); border:1px solid var(--green); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:6px; }
+    .notice { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; }
+    .foot { font-size:13px; color:var(--muted); }
+    @media (max-width:640px) { main { padding:28px 16px 56px; } }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main>
+    <header class="read">
+      <div class="eyebrow">Vegans Explore Inc. · Board of directors</div>
+      <h1 id="greet">One decision, about five minutes</h1>
+    </header>
+
+    <div id="badLink" class="notice read" hidden>
+      <p><strong>This link is personal.</strong> Please use the link Sean sent you. Questions: contact@lesaruss.com</p>
+    </div>
+
+    <div id="content" hidden>
+      <div style="display:flex;flex-direction:column;gap:30px">
+        <p class="lead read">Vegans Explore Inc. is the Florida nonprofit behind Vegans Explore. Sean is reorganizing it, and as a director your approval is part of making that official. You can approve, step down from the board, or ask to talk first. Any of the three is fine.</p>
+
+        <section class="read">
+          <h2>What is changing</h2>
+          <ul class="changes">
+            <li><span class="dot"></span><div><b>The nonprofit becomes LESARUSS Foundation, Inc.</b> Same organization, new name. It will raise money and give grants to animal rescues, Vegan community groups and K through 12 education initiatives.</div></li>
+            <li><span class="dot"></span><div><b>Vegans Explore becomes a brand of LESARUSS Inc.</b> The membership, Guides, Directory and events run as a regular business, so the people who work events can be paid.</div></li>
+            <li><span class="dot"></span><div><b>The Foundation registers with Florida</b> before it ever asks the public for money.</div></li>
+            <li><span class="dot"></span><div><b>Nothing is asked of you beyond this.</b> No money, no fundraising, no ongoing duties, unless you would like to stay involved.</div></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What Vegans Explore looks like today</h2>
+          <div class="cards">
+            <a class="card" href="/explore" target="_blank" rel="noopener"><strong>Explore</strong><span>The one-screen overview for new visitors.</span></a>
+            <a class="card" href="/directory" target="_blank" rel="noopener"><strong>The Directory</strong><span>Vegan restaurants and brands, voted on by members.</span></a>
+            <a class="card" href="/guides" target="_blank" rel="noopener"><strong>Guides</strong><span>Practical Guides, including the new Vegan Dairy Guide.</span></a>
+            <a class="card" href="/communities/south-florida" target="_blank" rel="noopener"><strong>South Florida hub</strong><span>The Daily Pulse, events and the local Directory.</span></a>
+          </div>
+        </section>
+
+        <details class="consent read">
+          <summary>Read the full consent (one page)</summary>
+          <div class="doc">
+            <p><b>Written consent of the directors of Vegans Explore Inc. in place of a meeting</b></p>
+            <p>The undersigned, being all of the directors of Vegans Explore Inc., a Florida not-for-profit corporation (Sunbiz document N24000008839), take the following actions by written consent under s. 617.0821, Florida Statutes. Each action is effective when the last director signs.</p>
+            <ol>
+              <li><b>New name.</b> The Articles of Incorporation are amended to change the corporation's name to LESARUSS Foundation, Inc. The President is authorized to sign and file the Articles of Amendment.</li>
+              <li><b>Brand sale.</b> The corporation sells the name and brand "Vegans Explore" to LESARUSS Inc. under the Brand Sale Agreement, for $111, which the directors find fair to the corporation: the brand was built mainly with Sean A. Russell's own money and unpaid work, and the corporation spent little of its own funds on it. The corporation keeps its cash and all money already received.</li>
+              <li><b>Conflict of interest.</b> Sean A. Russell disclosed that he owns LESARUSS Inc. The directors other than him approve action 2 knowing that interest.</li>
+              <li><b>Florida registration.</b> The corporation files the full charity registration with the Florida Department of Agriculture and Consumer Services under Chapter 496, Florida Statutes.</li>
+              <li><b>Board size.</b> The directors elect Sean A. Russell and Claudia Russell as directors, to the extent either is not one already, so the board has the three directors Florida requires.</li>
+              <li><b>Past acts confirmed.</b> The directors confirm the acts taken in the corporation's name by its officers since it was formed, including its annual reports and the Vegans Explore memberships sold.</li>
+              <li><b>Signing.</b> The officers may sign and file anything needed to carry out these actions.</li>
+            </ol>
+            <p style="color:var(--muted)">Directors: Sean A. Russell, Ella Magers, Claudia Russell. Signing below by typing your full name is your electronic signature.</p>
+          </div>
+        </details>
+
+        <section class="read" id="respond">
+          <h2>Your answer</h2>
+          <div id="doneBox" class="done" hidden></div>
+          <div id="pickBox" style="display:flex;flex-direction:column;gap:14px">
+            <div class="choose" role="group" aria-label="Your answer">
+              <button type="button" class="opt approve" data-choice="approve" aria-pressed="false" id="optApprove"><strong>Approve and sign</strong><span>Sign the consent above with your typed name.</span></button>
+              <button type="button" class="opt resign" data-choice="resign" aria-pressed="false" id="optResign"><strong>Step down from the board</strong><span>Resign as a director, effective today. No hard feelings.</span></button>
+              <button type="button" class="opt talk" data-choice="talk" aria-pressed="false" id="optTalk"><strong>Let's talk first</strong><span>Sean will reach out before anything is filed.</span></button>
+            </div>
+            <form id="answerForm" hidden novalidate>
+              <label for="fullName" id="nameLabel">Your full name, as your signature
+                <input type="text" id="fullName" autocomplete="name">
+              </label>
+              <label class="check" for="agree" id="agreeRow"><input type="checkbox" id="agree"><span id="agreeText">I have read the consent above and sign it electronically.</span></label>
+              <label for="noteText">A note for Sean (optional)
+                <textarea id="noteText"></textarea>
+              </label>
+              <button class="btn" type="submit" id="sendBtn">Send my answer</button>
+              <p class="err" id="errMsg" hidden></p>
+            </form>
+          </div>
+        </section>
+
+        <p class="foot read">Questions: contact@lesaruss.com</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-board-consent';
+    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    var LABEL = { approve: 'Approved and signed', resign: 'Stepped down from the board', talk: 'Asked to talk first' };
+    var k = (new URLSearchParams(location.search).get('k') || '').trim();
+    var choice = '';
+    function $(id) { return document.getElementById(id); }
+    function call(action, body) {
+      return fetch(FN + '?action=' + action, {
+        method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      }).then(function (r) { return r.json().then(function (j) { j._status = r.status; return j; }); });
+    }
+    function fmt(ts) { try { return new Date(ts).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return ''; } }
+    function showDone(r) {
+      $('pickBox').hidden = true; $('doneBox').hidden = false; $('doneBox').innerHTML = '';
+      var s = document.createElement('strong'); s.textContent = 'Thank you. Your answer is saved: ' + LABEL[r.choice] + '.';
+      var p = document.createElement('p'); p.textContent = (r.signed_name ? 'Signed as ' + r.signed_name + ', ' : '') + fmt(r.responded_at) + '. To change it, message Sean.';
+      $('doneBox').append(s, p);
+    }
+    function bad() { $('badLink').hidden = false; }
+    function pick(c) {
+      choice = c;
+      ['optApprove', 'optResign', 'optTalk'].forEach(function (id) { $(id).setAttribute('aria-pressed', String($(id).dataset.choice === c)); });
+      $('answerForm').hidden = false;
+      var needsSign = c === 'approve' || c === 'resign';
+      $('nameLabel').hidden = !needsSign; $('agreeRow').hidden = !needsSign;
+      $('agreeText').textContent = c === 'resign' ? 'I resign as a director of Vegans Explore Inc., effective today, and sign this electronically.' : 'I have read the consent above and sign it electronically.';
+      $('errMsg').hidden = true;
+    }
+    ['optApprove', 'optResign', 'optTalk'].forEach(function (id) { $(id).addEventListener('click', function () { pick(this.dataset.choice); }); });
+
+    $('answerForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var err = $('errMsg'); err.hidden = true;
+      var needsSign = choice === 'approve' || choice === 'resign';
+      var name = $('fullName').value.trim();
+      if (needsSign && name.length < 3) { err.textContent = 'Type your full name to sign.'; err.hidden = false; return; }
+      if (needsSign && !$('agree').checked) { err.textContent = 'Tick the box to confirm your electronic signature.'; err.hidden = false; return; }
+      var btn = $('sendBtn'); btn.disabled = true; btn.textContent = 'Saving...';
+      call('respond', { k: k, choice: choice, signed_name: name, agreed: $('agree').checked, note: $('noteText').value })
+        .then(function (j) {
+          if (j.ok || (j.error === 'already_responded' && j.response)) { showDone(j.response); $('respond').scrollIntoView({ block: 'start' }); return; }
+          throw new Error(j.error || 'failed');
+        })
+        .catch(function () {
+          btn.disabled = false; btn.textContent = 'Send my answer';
+          err.textContent = "Your answer didn't save. Try again, or reply to Sean's message with your answer and full name."; err.hidden = false;
+        });
+    });
+
+    if (!/^[0-9a-f]{32}$/.test(k)) { bad(); return; }
+    call('view', { k: k }).then(function (j) {
+      if (!j.director) { bad(); return; }
+      $('greet').textContent = 'Hi ' + j.full_name.split(' ')[0] + ', one decision, about five minutes';
+      $('content').hidden = false;
+      if (j.response) showDone(j.response);
+    }).catch(function () {
+      $('badLink').hidden = false;
+      $('badLink').querySelector('p').textContent = "This page couldn't load. Please refresh, or reply to Sean's message with your answer and full name.";
+    });
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
