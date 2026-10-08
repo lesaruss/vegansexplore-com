@@ -207,6 +207,8 @@
   }
 
   function cardMeta(l) {
+    // A grocery chain (tag ve-grocery-store, 2026-10-08) has no one address but is not an online business.
+    if ((l.tags || []).indexOf('ve-grocery-store') >= 0) return 'Grocery store';
     if (!l.address_city && !l.address_state) return '<span class="online-badge">Online</span>';
     return esc(l.address_city || l.address_state || '');
   }

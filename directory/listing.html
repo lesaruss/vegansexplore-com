@@ -256,6 +256,24 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 
 /* MENU TAB */
 .menu-nav{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+/* Vegan aisle: a grocery store's page lists the Guide products it carries (Sean, 2026-10-08) */
+.aisle{padding:28px 40px 40px}
+.aisle-lede{font-size:14px;line-height:1.6;color:var(--ve-text-75);margin:0 0 18px;max-width:860px}
+.aisle-cat{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:22px 0 4px}
+.aisle-item{display:flex;align-items:center;gap:16px;padding:14px 12px;border-bottom:1px solid var(--ve-border);border-radius:10px;transition:background .3s}
+.aisle-item.hit{background:#eaf7ee;box-shadow:inset 3px 0 0 #3A9B3E}
+.aisle-av{flex:0 0 44px;height:44px;border-radius:10px;color:#fff;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center}
+.aisle-main{flex:1;min-width:0}
+.aisle-name{font-size:15px;font-weight:800;color:var(--ve-text)}
+.aisle-name a{color:inherit;text-decoration:none}
+.aisle-name a:hover{text-decoration:underline}
+.aisle-sub{font-size:13px;line-height:1.5;color:var(--ve-text-75)}
+.aisle-note{font-size:12px;color:#8a5a00;margin-top:2px}
+.aisle-guides{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2d7a4f;margin-top:4px}
+.aisle-buy{flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;text-decoration:none;white-space:nowrap}
+.aisle-buy:hover{background:#5EC47A;color:#000;border-color:#5EC47A}
+.aisle-empty{padding:28px 0;color:var(--ve-text-50);font-size:14px}
+@media(max-width:640px){.aisle{padding:20px 16px 28px}.aisle-item{flex-wrap:wrap}.aisle-buy{margin-left:60px}}
 .menu-nav-label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);white-space:nowrap}
 .menu-cat-select{font-family:Montserrat,sans-serif;font-size:13px;font-weight:700;color:var(--ve-text);background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:10px 36px 10px 14px;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:border-color .15s;min-width:200px}
 .menu-cat-select:hover{border-color:#5EC47A}
@@ -1101,6 +1119,50 @@ function lockedTab(tabName, l){
   '</div>';
 }
 
+// A grocery store (tag ve-grocery-store, Sean 2026-10-08): its Vegan aisle is every Guide product mapped
+// to it (ve_product_stores, filled automatically from the Guides). Buy link, best first: an affiliate deal
+// (a /go/ tracked link), the product's own page at this store, the store's search for it (only where
+// details.store.search_checked says the search works), then the store's website.
+function isGroceryStore(l){ return (l.tags||[]).indexOf('ve-grocery-store') >= 0; }
+var AISLE_GUIDES = { 'vegan-dairy-guide': 'Dairy Guide' };
+function aisleBuy(l, row, p){
+  var st = (l.details && l.details.store) || {}, brand = (p.listings && p.listings.name) || '';
+  if(row.affiliate_link_code) return { href: '/go/' + encodeURIComponent(row.affiliate_link_code), label: 'Shop at ' + l.name };
+  if(row.buy_url) return { href: row.buy_url, label: 'Shop at ' + l.name };
+  if(st.search_url && (st.search_checked === 'results' || st.search_checked === 'loads'))
+    return { href: st.search_url.replace('{q}', encodeURIComponent((brand + ' ' + (p.name || p.product_type)).trim())), label: 'Find it at ' + l.name };
+  return l.website ? { href: /^https?:/.test(l.website) ? l.website : 'https://' + l.website, label: 'Visit ' + l.name } : null;
+}
+function loadAisle(l){
+  var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,product_type,name,made_from,note,guides,listings(slug,name,status,color,initials))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
+  fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
+    var panel = document.getElementById('tab-aisle'); if(!panel) return;
+    rows = (Array.isArray(rows) ? rows : []).filter(function(r){ var p = r.ve_products; return p && p.guides && p.guides.length && p.listings && p.listings.status === 'approved'; });
+    var cats = {}, order = [];
+    rows.forEach(function(r){ var c = r.ve_products.product_type; if(!cats[c]){ cats[c] = []; order.push(c); } cats[c].push(r); });
+    order.sort();
+    var html = '<div class="aisle"><p class="aisle-lede">' + (rows.length ? rows.length + ' Vegan ' + (rows.length === 1 ? 'product' : 'products') + ' our Guides have found at ' + esc(l.name) + '. Stock changes by location, so check your store.' : 'Our Guides have not found products here yet. They show up here as soon as a Guide lists one.') + '</p>';
+    order.forEach(function(c){
+      cats[c].sort(function(a, b){ return a.ve_products.listings.name.localeCompare(b.ve_products.listings.name); });
+      html += '<div class="aisle-cat">' + esc(c) + '</div>' + cats[c].map(function(r){
+        var p = r.ve_products, b = p.listings, buy = aisleBuy(l, r, p);
+        var guides = (p.guides || []).map(function(g){ return AISLE_GUIDES[g] || ''; }).filter(Boolean);
+        return '<div class="aisle-item" id="product-' + esc(p.id) + '"><div class="aisle-av" style="background:' + esc(b.color || '#1f5f22') + '">' + esc(b.initials || b.name.charAt(0)) + '</div>' +
+          '<div class="aisle-main"><div class="aisle-name"><a href="/directory/' + encodeURIComponent(b.slug) + '">' + esc(b.name) + '</a>' + (p.name ? ' ' + esc(p.name) : '') + '</div>' +
+          (p.made_from ? '<div class="aisle-sub">Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) + '</div>' : '') +
+          (p.note ? '<div class="aisle-note">' + esc(p.note) + '</div>' : '') +
+          (guides.length ? '<div class="aisle-guides">In the ' + esc(guides.join(', ')) + '</div>' : '') + '</div>' +
+          (buy ? '<a class="aisle-buy" href="' + esc(buy.href) + '" target="_blank" rel="noopener' + (r.affiliate_link_code ? ' sponsored' : '') + '">' + esc(buy.label) + '</a>' : '') + '</div>';
+      }).join('');
+    });
+    panel.innerHTML = html + '</div>';
+    showListingTab('aisle');
+    var want = ''; try { want = new URLSearchParams(location.search).get('product') || ''; } catch(e){}
+    var hit = want && document.getElementById('product-' + want);
+    if(hit){ hit.classList.add('hit'); setTimeout(function(){ hit.scrollIntoView({ block: 'center' }); }, 150); }
+  });
+}
+
 function fetchMenuItems(listingId){
   var url = SUPABASE_URL+'/rest/v1/ve_menu_items?listing_id=eq.'+encodeURIComponent(listingId)+'&is_available=eq.true&order=sort_order.asc';
   return fetch(url,{headers:{apikey:ANON_KEY,Authorization:'Bearer '+ANON_KEY}})
@@ -1569,6 +1631,7 @@ function renderListing(l){
         '<nav class="listing-tabs" role="tablist">'+
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
+          (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
           '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
           '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>'+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
@@ -1580,6 +1643,7 @@ function renderListing(l){
           '<div style="padding:32px 40px 40px">'+overviewContent+'</div>'+
         '</div>'+
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
+        (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video', l)+'</div>' : '')+
@@ -2156,6 +2220,7 @@ if(!slug || slug === 'listing'){
       }
       loadBillboardAds();
       ownerVerifiedCard(l);
+      if(isGroceryStore(l)) loadAisle(l);
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
         if(items && items.length){

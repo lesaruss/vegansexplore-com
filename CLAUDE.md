@@ -348,6 +348,32 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
 
+- A Guide shows Directory listings with the Directory's own card (`VERegionDirectory.card` / `wire` /
+  `css` in `/public/ve-region-directory.js`) and the Directory's pills, search and Sort by, never a look of
+  its own. Opening one stays in the Guide (`#/listing/<slug>`): the Guide's breadcrumb, what the Guide says
+  about it, and the real `/directory/<slug>` page framed and sized to fit (Sean, 2026-10-08).
+
+## Grocery stores and Vegan aisles (Sean, 2026-10-08)
+
+"As we're bringing different products into these guides, it should automatically map to a supermarket
+that carries them, and that supermarket should then show that product." Each supermarket is a Directory
+listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) whose page opens on a
+**Vegan aisle**: every Guide product mapped to it, grouped by type, `?product=<id>` picks one out.
+
+- Data (migration `20261008_ve_grocery_stores.sql`): `ve_products` (brand listing + product type),
+  `ve_product_stores` (store carries product; `removed_at` when a Guide stops naming it, never deleted),
+  `ve_store_aliases` (how a Guide writes the store: "Kroger family", "HEB"), `ve_guide_product_sources`
+  (which `listings.details` key holds a Guide's products; Dairy is `dairy_guide`).
+- It fills itself: a trigger on `listings.details` runs `ve_products_sync()`, and a new alias re-maps
+  everything. A new Guide with products is one `ve_guide_product_sources` row; a new store is a listing plus
+  its aliases. In a Guide, a store named in a product's "where" text links to its aisle inside the Guide.
+- Buy link, best first: an affiliate deal (`affiliate_link_code`, a `/go/` tracked link), the product's own
+  page at that store (`buy_url`), the store's search (`details.store.search_url`, used only when
+  `search_checked` is `results` or `loads`; most chains block automated checks and say `blocked` until
+  someone confirms the search in a browser), then the store's website.
+- Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once
+  Amazon Associates is settled.
+
 ## Your Guide (Sean, 2026-10-04)
 
 Your Guide is for registered members, inside the dashboard window: `/dashboard/guide` opens `/guide`

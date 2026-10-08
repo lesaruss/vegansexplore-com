@@ -29,6 +29,11 @@
   // The Directory's own fields, so every card is the Directory card (VERegionDirectory.card).
   var LISTING_FIELDS = (window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status') + ',initials,website,details';
   var BRANDS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Food%20Brands&tags=cs.%7Bvegan-dairy-guide%7D';
+  // Stores (Sean, 2026-10-08): every product in the Guide is mapped to the grocery stores that carry it
+  // (ve_products / ve_product_stores, filled automatically), and each store is a Directory listing with a
+  // Vegan aisle. A store named in the Guide links to that aisle with the product picked out.
+  var PRODUCTS_URL = SB + '/rest/v1/ve_products?select=id,brand_listing_id,product_type,name&guides=cs.%7B' + 'vegan-dairy-guide' + '%7D';
+  var ALIASES_URL = SB + '/rest/v1/ve_store_aliases?select=alias,listings(slug,name,status)';
   var BOOKS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Books&tags=cs.%7Bdairy-guide-book%7D';
   var CATS = ['Milk', 'Coffee Creamer', 'Butter', 'Cheese Slices', 'Cheese Spreads', 'Shredded Cheese', 'Parmesan', 'Sour Cream', 'Feta', 'Cream Cheese', 'Yogurt', 'Ice Cream'];
   var SWAP_GROUPS = ['Milk & cream', 'Butter', 'Cheese', 'Yogurt & sour cream'];
@@ -63,7 +68,7 @@
 
   var access = 'checking';       // checking | guest | pending | member
   var MEM = null;                // members-only payload
-  var BRANDS = null, BOOKS = null;
+  var BRANDS = null, BOOKS = null, PRODUCTS = {}, STORES = {};
   var lookOpen = false;
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -426,23 +431,38 @@
   // A Directory listing inside the Guide (Sean, 2026-10-08: "when we click on one of the listings, we
   // need to stay in this environment"). The listing page is framed under the Guide's breadcrumb; it hides
   // its own nav and footer in a frame, and the Guide sizes the frame to it so there is one scroll.
+  // "Walmart, Target, Kroger" -> each store we have a page for becomes a link to its Vegan aisle.
+  function whereLinks(where, productId) {
+    return String(where || '').split(/(\s*,\s*|\s+and\s+|;\s*)/).map(function (part) {
+      var st = STORES[part.trim().toLowerCase()];
+      if (!st) return esc(part);
+      return '<a class="dg-store" href="#/listing/' + encodeURIComponent(st.slug) + (productId ? '/' + encodeURIComponent(productId) : '') + '">' + esc(part.trim()) + '</a>';
+    }).join('');
+  }
+  function storeOf(slug) { for (var k in STORES) if (STORES[k].slug === slug) return STORES[k]; return null; }
   function viewListing(slug) {
+    var parts = String(slug).split('/'); slug = parts[0];
+    var productId = parts[1] || '', store = storeOf(slug);
     if (!BRANDS && !BOOKS) { main.innerHTML = crumb([['Brands', '#/brands'], ['Loading']]) + '<div class="dg-loading">Loading...</div>'; return; }
     var l = null, book = false;
     (BRANDS || []).forEach(function (b) { if (b.slug === slug) l = b; });
     if (!l) (BOOKS || []).forEach(function (b) { if (b.slug === slug) { l = b; book = true; } });
-    var name = l ? (book && ((l.details || {}).dairy_guide_book || {}).title) || l.name : 'Listing';
-    var html = crumb(book ? [['Cookbook', '#/cookbook'], ['Cookbooks', '#/cookbook/books'], [name]] : [['Brands', '#/brands'], [name]]);
+    var name = l ? (book && ((l.details || {}).dairy_guide_book || {}).title) || l.name : store ? store.name : 'Listing';
+    var from = null;
+    if (store && productId) (BRANDS || []).forEach(function (b) { ((b.details || {}).dairy_guide || []).forEach(function (i) { if (PRODUCTS[b.id + '|' + i.cat] === productId) from = [b, i]; }); });
+    var html = crumb(book ? [['Cookbook', '#/cookbook'], ['Cookbooks', '#/cookbook/books'], [name]]
+      : from ? [['Brands', '#/brands'], [from[0].name, '#/listing/' + encodeURIComponent(from[0].slug)], [name]] : [['Brands', '#/brands'], [name]]);
+    if (from) html += '<div class="dg-inguide"><div class="dg-inguide-k">At ' + esc(name) + '</div><div class="dg-inguide-i"><b>' + esc(from[0].name + ' ' + from[1].cat) + '</b><span>Picked out in ' + esc(name) + '\'s Vegan aisle below, with everything else from our Guides that ' + esc(name) + ' carries.</span></div></div>';
     if (l && !book && ((l.details || {}).dairy_guide || []).length) {
       html += '<div class="dg-inguide"><div class="dg-inguide-k">In the Dairy Guide</div><div class="dg-inguide-row">' + l.details.dairy_guide.map(function (i) {
-        return '<div class="dg-inguide-i"><b>' + esc(i.cat) + '</b><span>Made from ' + esc(String(i.base || '').charAt(0).toLowerCase() + String(i.base || '').slice(1)) + (i.where ? '. Find it at ' + esc(i.where) : '') + '.</span>' + (i.note ? '<em>' + esc(i.note) + '</em>' : '') + '</div>';
+        return '<div class="dg-inguide-i"><b>' + esc(i.cat) + '</b><span>Made from ' + esc(String(i.base || '').charAt(0).toLowerCase() + String(i.base || '').slice(1)) + (i.where ? '. Find it at ' + whereLinks(i.where, PRODUCTS[l.id + '|' + i.cat]) : '') + '.</span>' + (i.note ? '<em>' + esc(i.note) + '</em>' : '') + '</div>';
       }).join('') + '</div></div>';
     } else if (l && book) {
       var bk = (l.details || {}).dairy_guide_book || {};
       html += '<div class="dg-inguide"><div class="dg-inguide-k">In the Dairy Guide</div><div class="dg-inguide-row"><div class="dg-inguide-i"><b>' + esc(bk.title || l.name) + '</b><span>' +
         esc([bk.author, [bk.publisher, bk.year].filter(Boolean).join(', '), bk.topic].filter(Boolean).join(' · ')) + '</span>' + (bk.note ? '<em>' + esc(bk.note) + '</em>' : '') + '</div></div></div>';
     }
-    html += '<div class="dg-lframe"><iframe id="dgListingFrame" title="' + esc(name) + '" src="/directory/' + encodeURIComponent(slug) + '"></iframe></div>';
+    html += '<div class="dg-lframe"><iframe id="dgListingFrame" title="' + esc(name) + '" src="/directory/' + encodeURIComponent(slug) + (productId ? '?product=' + encodeURIComponent(productId) : '') + '"></iframe></div>';
     main.innerHTML = html;
     var f = document.getElementById('dgListingFrame');
     f.addEventListener('load', function () {
@@ -570,8 +590,10 @@
   // Brands and cookbooks are public Directory listings, so everyone loads them: members
   // browse them, and the preview slides show real names to everyone else.
   function loadDirectory() {
-    Promise.all([rest(BRANDS_URL), rest(BOOKS_URL)]).then(function (r) {
+    Promise.all([rest(BRANDS_URL), rest(BOOKS_URL), rest(PRODUCTS_URL).catch(function () { return []; }), rest(ALIASES_URL).catch(function () { return []; })]).then(function (r) {
       BRANDS = Array.isArray(r[0]) ? r[0] : []; BOOKS = Array.isArray(r[1]) ? r[1] : [];
+      (Array.isArray(r[2]) ? r[2] : []).forEach(function (p) { PRODUCTS[p.brand_listing_id + '|' + p.product_type] = p.id; });
+      (Array.isArray(r[3]) ? r[3] : []).forEach(function (a) { if (a.listings && a.listings.status === 'approved') STORES[a.alias] = a.listings; });
       route();
     }).catch(function () { BRANDS = BRANDS || []; BOOKS = BOOKS || []; route(); });
   }
