@@ -110,16 +110,16 @@
   // (Branded Foods), shown with FDA label rounding and % Daily Values. Rows a brand did not report are left off.
   var LABELS = [
     { listing: 'oatly', name: 'Oatly Oatmilk', cat: 'Milk', fdc: '2677675', serving: '1 cup (240 mL)', cal: 120,
-      line: 'Fortified like dairy milk: 350 mg of calcium a cup, about a quarter of what you need in a day.',
+      line: 'Fortified with calcium and vitamin D: 350 mg of calcium a cup, 27% of the Daily Value.',
       rows: [['Total Fat', '5g', '6%', 0, 1], ['Saturated Fat', '0.5g', '3%', 1], ['Trans Fat', '0g', '', 1], ['Cholesterol', '0mg', '0%', 0, 1], ['Sodium', '100mg', '4%', 0, 1],
         ['Total Carbohydrate', '16g', '6%', 0, 1], ['Dietary Fiber', '2g', '7%', 1], ['Total Sugars', '7g', '', 1], ['Includes 7g Added Sugars', '', '14%', 2], ['Protein', '3g', '', 0, 1, 1],
         ['Vitamin D', '4.8mcg', '24%'], ['Calcium', '350mg', '27%'], ['Iron', '0.3mg', '2%'], ['Potassium', '390mg', '8%']] },
     { listing: 'follow-your-heart', name: 'Follow Your Heart Provolone Style', cat: 'Cheese', fdc: '1854452', serving: '1 oz (30g)', cal: 90,
-      line: 'Coconut oil and potato starch make it melt like cheese. Like most plant cheeses, it has no protein.',
+      line: 'Made with coconut oil and potato starch, with 0g of protein a serving, so plan your protein from other foods.',
       rows: [['Total Fat', '7g', '9%', 0, 1], ['Saturated Fat', '6g', '30%', 1], ['Trans Fat', '0g', '', 1], ['Cholesterol', '0mg', '0%', 0, 1], ['Sodium', '270mg', '12%', 0, 1],
         ['Total Carbohydrate', '6g', '2%', 0, 1], ['Dietary Fiber', '0g', '0%', 1], ['Total Sugars', '0g', '', 1], ['Protein', '0g', '', 0, 1, 1], ['Calcium', '0mg', '0%'], ['Iron', '0mg', '0%']] },
     { listing: 'kite-hill', name: 'Kite Hill Plain Cream Cheese', cat: 'Cream Cheese', fdc: '2757615', serving: '30g', cal: 70,
-      line: 'Cultured like dairy cream cheese, with no saturated fat in a serving.',
+      line: 'Made with live cultures, and 0g of saturated fat a serving.',
       rows: [['Total Fat', '6g', '8%', 0, 1], ['Saturated Fat', '0g', '0%', 1], ['Sodium', '200mg', '9%', 0, 1], ['Total Carbohydrate', '2g', '1%', 0, 1], ['Dietary Fiber', '1g', '4%', 1],
         ['Total Sugars', '1g', '', 1], ['Protein', '2g', '', 0, 1, 1]] }
   ];
