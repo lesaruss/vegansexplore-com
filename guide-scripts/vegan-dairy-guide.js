@@ -26,7 +26,8 @@
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var LISTING_FIELDS = 'id,slug,name,initials,color,vote_count,website,vegan_status,details';
+  // The Directory's own fields, so every card is the Directory card (VERegionDirectory.card).
+  var LISTING_FIELDS = (window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status') + ',initials,website,details';
   var BRANDS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Food%20Brands&tags=cs.%7Bvegan-dairy-guide%7D';
   var BOOKS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Books&tags=cs.%7Bdairy-guide-book%7D';
   var CATS = ['Milk', 'Coffee Creamer', 'Butter', 'Cheese Slices', 'Cheese Spreads', 'Shredded Cheese', 'Parmesan', 'Sour Cream', 'Feta', 'Cream Cheese', 'Yogurt', 'Ice Cream'];
@@ -139,12 +140,15 @@
       '<div class="dg-pv-src">Label: <a href="https://fdc.nal.usda.gov/food-details/' + p.fdc + '/nutrients" target="_blank" rel="noopener">USDA FoodData Central</a>, as the brand reported it. Recipes change, so check the package.</div>',
       nutLabel(p));
   }
+  // The example vote list is drawn with the Directory card, so it looks like what members get.
   function voteDemo() {
-    var demo = [['Oatly', 'Milk, Coffee Creamer, Ice Cream', 'O', 128, 1], ['Silk', 'Milk, Coffee Creamer, Yogurt', 'S', 96], ['Califia Farms', 'Milk, Coffee Creamer', 'CF', 71]];
-    return '<div class="dg-pv-demo" aria-hidden="true"><span class="dg-pv-tag" style="align-self:flex-start">Example</span>' + demo.map(function (d) {
-      return '<div class="dg-demo-card' + (d[4] ? ' top' : '') + '"><div class="dg-bhead"><div class="dg-av" style="background:#1f5f22">' + d[2] + '</div><div><div class="dg-bname">' + d[0] + '</div><div class="dg-bcat">' + d[1] + '</div></div></div>' +
-        '<div class="dg-bfoot"><span class="vote-count">' + d[3] + '</span><span class="dg-vl">votes</span><span class="dg-demo-vote">' + (d[4] ? 'Voted' : 'Vote') + '</span></div></div>';
-    }).join('') + '</div>';
+    var demo = [['oatly', 'Oatly', 128], ['silk', 'Silk', 96], ['califia-farms', 'Califia Farms', 71]];
+    return '<div class="dg-pv-demo" aria-hidden="true"><span class="dg-pv-tag" style="align-self:flex-start">Example</span>' + dirGrid('', demo.map(function (d, i) {
+      var real = null; (BRANDS || []).forEach(function (b) { if (b.slug === d[0]) real = b; });
+      var l = {}; for (var k in (real || {})) l[k] = real[k];
+      l.name = d[1]; l.slug = ''; l.id = ''; l.vote_count = d[2]; l.category = l.category || 'Food Brands'; l.color = l.color || '#1f5f22';
+      return dirCard(l, i);
+    }).join('')) + '</div>';
   }
   // The ask comes right after the proof: the last slide of every locked section (panel, 2026-10-08).
   function offerSlide(section) {
@@ -219,21 +223,23 @@
     // No autoplay (panel, 2026-10-08): a Nutrition Facts label needs reading time.
   }
 
-  function brandCard(l, cat) {
-    var items = (l.details && l.details.dairy_guide) || [];
-    var shown = cat ? items.filter(function (i) { return i.cat === cat; }) : items;
-    var it = shown[0] || {};
-    var cats = items.map(function (i) { return i.cat; });
-    var lines = cat
-      ? '<div class="dg-line"><b>Made from</b> ' + esc(it.base) + '</div><div class="dg-line"><b>Where</b> ' + esc(it.where) + '</div>' + (it.note ? '<div class="dg-note">' + esc(it.note) + '</div>' : '')
-      : '<div class="dg-line"><b>Makes</b> ' + esc(cats.join(', ')) + '</div><div class="dg-line"><b>Made from</b> ' + esc(ingredients(items)) + '</div>';
-    return '<div class="rank-card" data-votes="' + (l.vote_count || 0) + '">' +
-      '<div class="dg-bhead"><div class="dg-av" style="background:' + esc(l.color || '#1f5f22') + '">' + esc(l.initials || l.name.charAt(0)) + '</div>' +
-      '<div><div class="dg-bname">' + esc(l.name) + '</div><div class="dg-bcat">' + esc(cat || (cats.length + (cats.length === 1 ? ' product' : ' products'))) + '</div></div></div>' + lines +
-      '<div class="dg-bfoot"><span class="vote-count">' + (l.vote_count || 0).toLocaleString() + '</span><span class="dg-vl">votes</span>' +
-      '<button type="button" class="vote-btn" data-listing-id="' + esc(l.id) + '">Vote</button>' +
-      '<a class="dg-listing" href="/directory/' + encodeURIComponent(l.slug) + '">Listing &rsaquo;</a></div></div>';
+  // Brands and cookbooks are Directory listings, so they look exactly like the Directory (Sean,
+  // 2026-10-08: "keep the same look and feel of the current directory and its listings"), and opening
+  // one keeps the visitor in the Guide (#/listing/<slug>) instead of sending them to /directory.
+  function dirCard(l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }
+  function dirGrid(id, html) { return '<div class="vrd-root"><div class="rank-grid"' + (id ? ' id="' + id + '"' : '') + '>' + html + '</div></div>'; }
+  function wireCards(el) {
+    if (window.VERegionDirectory) VERegionDirectory.wire(el, function (slug) { location.hash = '#/listing/' + encodeURIComponent(slug); });
+    else if (window.VEVotes) VEVotes.wire(el);
   }
+  // The Directory's own toolbar: pills for the sections, search on the right, then Sort by.
+  function dirTools(pills, searchPh, searchLabel) {
+    return '<div class="vrd-root"><div class="subcat-pills">' + pills.map(function (p) { return '<a class="subcat-pill' + (p[2] ? ' sc-active' : '') + '" href="' + p[1] + '">' + esc(p[0]) + '</a>'; }).join('') +
+      '<div class="vrd-search-wrap"><svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+      '<input type="text" class="vrd-search-input" id="dgFilter" placeholder="' + esc(searchPh) + '" aria-label="' + esc(searchLabel) + '"></div></div>' +
+      '<div class="sort-bar"><span class="sort-label">Sort by</span><select class="sort-select" id="dgSort" aria-label="Sort listings"><option value="votes">Most Votes</option><option value="az">A to Z</option></select><span class="geo-label" id="dgCount"></span></div></div>';
+  }
+
   // Each ingredient once across a brand's products: "Almond milk, coconut", not "Almond milk; Almond milk, coconut".
   function ingredients(items) {
     var seen = {}, out = [];
@@ -244,17 +250,6 @@
       });
     });
     return out.join(', ');
-  }
-
-  function bookCard(l) {
-    var b = (l.details && l.details.dairy_guide_book) || {};
-    return '<div class="rank-card" data-votes="' + (l.vote_count || 0) + '"><div class="dg-book"><div class="dg-cover" aria-hidden="true">' + esc(b.title || l.name) + '</div>' +
-      '<div><div class="dg-bname">' + esc(b.title || l.name) + '</div><div class="dg-line">' + esc(b.author || '') + '</div>' +
-      '<div class="dg-line">' + esc([b.publisher, b.year].filter(Boolean).join(', ')) + '</div><div class="dg-bcat" style="margin-top:4px">' + esc(b.topic || '') + '</div>' +
-      (b.note ? '<div class="dg-note">' + esc(b.note) + '</div>' : '') + '</div></div>' +
-      '<div class="dg-bfoot"><span class="vote-count">' + (l.vote_count || 0).toLocaleString() + '</span><span class="dg-vl">votes</span>' +
-      '<button type="button" class="vote-btn" data-listing-id="' + esc(l.id) + '">Vote</button>' +
-      '<a class="dg-listing" href="/directory/' + encodeURIComponent(l.slug) + '">Listing &rsaquo;</a></div></div>';
   }
 
   function swapCard(s) {
@@ -288,7 +283,8 @@
     document.getElementById('dgWhyPreview').innerHTML = PUB.why.map(whyCard).join('');
     if (access === 'member' && BRANDS && BRANDS.length) {
       main.querySelector('[data-view="home"]').insertAdjacentHTML('beforeend',
-        '<div class="dg-sec-h"><h2>Most voted brands</h2><a href="#/brands">All brands</a></div><div class="dg-grid">' + sortBy(BRANDS, 'votes').slice(0, 4).map(function (l) { return brandCard(l); }).join('') + '</div>');
+        '<div class="dg-sec-h"><h2>Most voted brands</h2><a href="#/brands">All brands</a></div>' + dirGrid('dgTop', sortBy(BRANDS, 'votes').slice(0, 4).map(dirCard).join('')));
+      wireCards(document.getElementById('dgTop'));
     }
   }
 
@@ -305,14 +301,9 @@
     if (!MEM) { main.innerHTML = head + lockPanel('brands'); startShow(); return; }
     if (!BRANDS) { main.innerHTML = head + '<div class="dg-loading">Loading brands...</div>'; return; }
     var list = cat ? BRANDS.filter(function (l) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === cat; }); }) : BRANDS;
-    var chips = '<div class="dg-chips">' + ['All'].concat(CATS).map(function (c) {
-      var on = (c === 'All' && !cat) || c === cat;
-      return '<a class="dg-chip" aria-pressed="' + on + '" href="#/brands' + (c === 'All' ? '' : '/' + slugify(c)) + '">' + esc(c) + '</a>';
-    }).join('') + '</div>';
-    main.innerHTML = head + '<p class="dg-lede">Every brand here is in the Vegans Explore Directory. Checked October 2026. Vote once a day for the ones you love.</p>' + chips +
-      '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Filter by name or ingredient (oat, cashew...)" aria-label="Filter brands">' +
-      '<select id="dgSort" aria-label="Sort"><option value="votes">Most voted</option><option value="az">A to Z</option></select><span class="dg-count" id="dgCountB"></span></div>' +
-      '<div class="dg-grid" id="dgList"></div>';
+    var pills = ['All'].concat(CATS).map(function (c) { return [c, '#/brands' + (c === 'All' ? '' : '/' + slugify(c)), (c === 'All' && !cat) || c === cat]; });
+    main.innerHTML = head + '<p class="dg-lede">Every brand here is a listing in the Vegans Explore Directory. Checked October 2026. Vote once a day for the ones you love, and open one to see where to buy it.</p>' +
+      dirTools(pills, 'Search brands (oat, cashew...)', 'Search brands') + dirGrid('dgList', '');
     var sortEl = document.getElementById('dgSort'), fEl = document.getElementById('dgFilter');
     sortEl.value = sortPref;
     function draw() {
@@ -322,10 +313,10 @@
         var hay = (l.name + ' ' + JSON.stringify((l.details && l.details.dairy_guide) || [])).toLowerCase();
         return hay.indexOf(q) >= 0;
       });
-      document.getElementById('dgCountB').textContent = rows.length + (rows.length === 1 ? ' brand' : ' brands');
+      document.getElementById('dgCount').textContent = rows.length + (rows.length === 1 ? ' brand' : ' brands');
       var listEl = document.getElementById('dgList');
-      listEl.innerHTML = rows.map(function (l) { return brandCard(l, cat); }).join('') || '<p class="dg-empty">No match. Try another word.</p>';
-      if (window.VEVotes) VEVotes.wire(listEl);
+      listEl.innerHTML = rows.map(dirCard).join('') || '<p class="vrd-empty">No match. Try another word.</p>';
+      wireCards(listEl);
     }
     sortEl.addEventListener('change', function () { sortPref = sortEl.value; draw(); });
     fEl.addEventListener('input', draw);
@@ -382,8 +373,7 @@
       }).join('') + '</div><div class="dg-grid" id="dgMake"></div>';
     } else if (cur === 'books') {
       body = '<p class="dg-lede">Cookbooks from the Vegans Explore Directory, most voted first. Vote for the ones that helped you.</p>' +
-        '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search cookbooks (cheese, ice cream...)" aria-label="Search cookbooks"><select id="dgSort" aria-label="Sort"><option value="votes">Most voted</option><option value="az">A to Z</option></select></div>' +
-        '<div class="dg-grid" id="dgList">' + (BOOKS ? '' : '<div class="dg-loading">Loading cookbooks...</div>') + '</div>' +
+        dirTools([], 'Search cookbooks (cheese, ice cream...)', 'Search cookbooks') + dirGrid('dgList', BOOKS ? '' : '<div class="dg-loading">Loading cookbooks...</div>') +
         '<div class="dg-sec-h"><h2>Resources</h2></div><div class="dg-grid">' + MEM.resources.map(function (r) {
           return '<div class="dg-card"><h3>' + esc(r.title) + '</h3><p>' + esc(r.text) + '</p>' + sources([[r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), r.url]]) + '</div>';
         }).join('') + '</div>';
@@ -422,14 +412,58 @@
       var drawB = function () {
         var q = fEl.value.trim().toLowerCase();
         var rows = sortBy(BOOKS, sortPref).filter(function (l) { return !q || (l.name + ' ' + JSON.stringify(l.details || {})).toLowerCase().indexOf(q) >= 0; });
+        document.getElementById('dgCount').textContent = rows.length + (rows.length === 1 ? ' cookbook' : ' cookbooks');
         var listEl = document.getElementById('dgList');
-        listEl.innerHTML = rows.map(bookCard).join('') || '<p class="dg-empty">No match. Try another word.</p>';
-        if (window.VEVotes) VEVotes.wire(listEl);
+        listEl.innerHTML = rows.map(dirCard).join('') || '<p class="vrd-empty">No match. Try another word.</p>';
+        wireCards(listEl);
       };
       sortEl.addEventListener('change', function () { sortPref = sortEl.value; drawB(); });
       fEl.addEventListener('input', drawB);
       drawB();
     }
+  }
+
+  // A Directory listing inside the Guide (Sean, 2026-10-08: "when we click on one of the listings, we
+  // need to stay in this environment"). The listing page is framed under the Guide's breadcrumb; it hides
+  // its own nav and footer in a frame, and the Guide sizes the frame to it so there is one scroll.
+  function viewListing(slug) {
+    if (!BRANDS && !BOOKS) { main.innerHTML = crumb([['Brands', '#/brands'], ['Loading']]) + '<div class="dg-loading">Loading...</div>'; return; }
+    var l = null, book = false;
+    (BRANDS || []).forEach(function (b) { if (b.slug === slug) l = b; });
+    if (!l) (BOOKS || []).forEach(function (b) { if (b.slug === slug) { l = b; book = true; } });
+    var name = l ? (book && ((l.details || {}).dairy_guide_book || {}).title) || l.name : 'Listing';
+    var html = crumb(book ? [['Cookbook', '#/cookbook'], ['Cookbooks', '#/cookbook/books'], [name]] : [['Brands', '#/brands'], [name]]);
+    if (l && !book && ((l.details || {}).dairy_guide || []).length) {
+      html += '<div class="dg-inguide"><div class="dg-inguide-k">In the Dairy Guide</div><div class="dg-inguide-row">' + l.details.dairy_guide.map(function (i) {
+        return '<div class="dg-inguide-i"><b>' + esc(i.cat) + '</b><span>Made from ' + esc(String(i.base || '').charAt(0).toLowerCase() + String(i.base || '').slice(1)) + (i.where ? '. Find it at ' + esc(i.where) : '') + '.</span>' + (i.note ? '<em>' + esc(i.note) + '</em>' : '') + '</div>';
+      }).join('') + '</div></div>';
+    } else if (l && book) {
+      var bk = (l.details || {}).dairy_guide_book || {};
+      html += '<div class="dg-inguide"><div class="dg-inguide-k">In the Dairy Guide</div><div class="dg-inguide-row"><div class="dg-inguide-i"><b>' + esc(bk.title || l.name) + '</b><span>' +
+        esc([bk.author, [bk.publisher, bk.year].filter(Boolean).join(', '), bk.topic].filter(Boolean).join(' · ')) + '</span>' + (bk.note ? '<em>' + esc(bk.note) + '</em>' : '') + '</div></div></div>';
+    }
+    html += '<div class="dg-lframe"><iframe id="dgListingFrame" title="' + esc(name) + '" src="/directory/' + encodeURIComponent(slug) + '"></iframe></div>';
+    main.innerHTML = html;
+    var f = document.getElementById('dgListingFrame');
+    f.addEventListener('load', function () {
+      var d; try { d = f.contentDocument; } catch (e) { return; }
+      if (!d || !d.body) return;
+      var last = 0;
+      function fit() {
+        var h = d.body.scrollHeight;
+        if (Math.abs(h - last) < 2) return;
+        last = h; f.style.height = Math.max(600, Math.min(20000, h)) + 'px'; f.setAttribute('scrolling', 'no');
+      }
+      fit();
+      if (window.ResizeObserver) new ResizeObserver(fit).observe(d.body);
+      // A link inside the listing that leaves the Directory opens in the whole window.
+      d.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href]'); if (!a || a.target) return;
+        var u; try { u = new URL(a.href, d.baseURI); } catch (x) { return; }
+        if (u.origin === location.origin && /^\/directory\//.test(u.pathname)) return;
+        if (u.origin === location.origin && !/^#/.test(a.getAttribute('href') || '')) { e.preventDefault(); location.href = u.href; }
+      });
+    });
   }
 
   function viewLook() {
@@ -453,12 +487,12 @@
     if (!MEM) return out;
     (BRANDS || []).forEach(function (l) {
       ((l.details && l.details.dairy_guide) || []).forEach(function (i) {
-        out.push({ t: 'Brands', title: l.name + ', ' + i.cat, text: 'Made from ' + i.base + '. Where: ' + i.where + (i.note ? '. ' + i.note : ''), href: '#/brands/' + slugify(i.cat) });
+        out.push({ t: 'Brands', title: l.name + ', ' + i.cat, text: 'Made from ' + i.base + '. Where: ' + i.where + (i.note ? '. ' + i.note : ''), href: '#/listing/' + encodeURIComponent(l.slug) });
       });
     });
     MEM.swaps.forEach(function (s) { out.push({ t: 'Swaps', title: s.replace, text: 'Shelf: ' + s.shelf + ' Pantry: ' + s.pantry + (s.tip ? ' ' + s.tip : ''), href: '#/swaps/' + slugify(s.group) }); });
     MEM.recipes.forEach(function (r) { out.push({ t: 'Cookbook', title: r.title, text: r.steps.join(' '), href: '#/cookbook' }); });
-    (BOOKS || []).forEach(function (l) { var b = (l.details && l.details.dairy_guide_book) || {}; out.push({ t: 'Cookbook', title: b.title || l.name, text: 'Cookbook by ' + [b.author, b.topic].filter(Boolean).join(', '), href: '#/cookbook/books' }); });
+    (BOOKS || []).forEach(function (l) { var b = (l.details && l.details.dairy_guide_book) || {}; out.push({ t: 'Cookbook', title: b.title || l.name, text: 'Cookbook by ' + [b.author, b.topic].filter(Boolean).join(', '), href: '#/listing/' + encodeURIComponent(l.slug) }); });
     MEM.look.facts.forEach(function (f) { out.push({ t: 'See for yourself', title: f[0], text: f[1], href: '#/look' }); });
     return out;
   }
@@ -501,15 +535,18 @@
     if (view === 'search' && !sub) view = 'home';
     if (view === 'recipes') view = 'cookbook';
     if (view === 'books') { view = 'cookbook'; sub = 'books'; }
-    var known = { home: 1, why: 1, brands: 1, swaps: 1, cookbook: 1, look: 1, search: 1 };
+    var known = { home: 1, why: 1, brands: 1, swaps: 1, cookbook: 1, look: 1, search: 1, listing: 1 };
     if (!known[view]) view = 'home';
     clearInterval(slideTimer);
     document.body.classList.toggle('dg-member', access === 'member'); // header: search for members, the $11 box for everyone else
-    drawMenu(view);
+    var menuKey = view;
+    if (view === 'listing') { menuKey = 'brands'; (BOOKS || []).forEach(function (b) { if (b.slug === decodeURIComponent(sub)) menuKey = 'cookbook'; }); }
+    drawMenu(menuKey);
     wrap.classList.toggle('dg-wide', view !== 'home');
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     ({ home: viewHome, why: viewWhy, brands: function () { viewBrands(sub); }, swaps: function () { viewSwaps(sub); },
-       cookbook: function () { viewCookbook(sub); }, look: viewLook, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+       cookbook: function () { viewCookbook(sub); }, look: viewLook, search: function () { viewSearch(decodeURIComponent(sub)); },
+       listing: function () { viewListing(decodeURIComponent(sub)); } })[view]();
     if (view !== 'search') window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
@@ -576,6 +613,7 @@
   }
 
   function init() {
+    if (window.VERegionDirectory) VERegionDirectory.css(); // the Directory card's own styles
     // Maya on the right, her mid shot (a square spot). Her video waits for the Vegan House pilot.
     var v = document.getElementById('dgPortrait');
     if (window.VEGuideArt) { var art = VEGuideArt('maya', 'square'); if (art) v.style.backgroundImage = "url('" + art + "')"; }
