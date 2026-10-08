@@ -371,6 +371,15 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   page at that store (`buy_url`), the store's search (`details.store.search_url`, used only when
   `search_checked` is `results` or `loads`; most chains block automated checks and say `blocked` until
   someone confirms the search in a browser), then the store's website.
+- The Vegan aisle is one category at a time: department and category dropdowns, search, Sort by (most
+  voted brand first), 12 cards then Show all. Each card opens the product's page.
+- Product pages (Sean, 2026-10-08: "the Dairy Guide is creating these product pages"): every product has
+  `/products/<slug>` (`directory/product.html`, rewrite in `vercel.json`): what it is made from, Nutrition
+  Facts (`ve_products.nutrition`, only from a cited source such as USDA FoodData Central), a picture
+  (`image_url` with `image_credit`), where to buy with each store's aisle, more from the brand, and the
+  brand partnership ask. Shared helpers: `/public/ve-products.js`. In a Guide it opens as `#/product/<slug>`.
+- A new listing gets `vegan_status = 'fully_vegan'` by default. Set it on purpose (null for a store, which is
+  not a Vegan business), or the Directory calls it 100% Vegan.
 - Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once
   Amazon Associates is settled.
 
