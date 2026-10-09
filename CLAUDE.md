@@ -458,6 +458,14 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   reads the size from the file; name, ingredients and the cited Nutrition Facts stay ours; every change is a row in
   `ve_product_edits` with the value it replaced, migration `20261009_ve_product_edits.sql`), Opportunities, Media, Ask Maya,
   Ad console (Coming). On a brand page, the For <Brand> offer still shows under Partner Dashboard to anyone on the brand's link.
+- **Liz walks the locked Partner Dashboard and /apply** (Sean, 2026-10-09: every Guide is walked through on camera; Liz
+  is the general Guide, Maya stays with the Dairy Guide brands). The shared component is `/public/ve-guide-tour.js`
+  (`VEGuideTour.mount(el, {guide, title, slides:[{t, h, body, say, clip}]})`: words left, the Guide right, Back / N of M /
+  Next, nothing plays until Start the tour). `mountPartnerLocked` in `directory/listing.html` runs it on every listing's
+  locked Partner Dashboard (5 slides, clips pt-1 to pt-5); `/apply` runs pt-4, pt-3, pt-6. Clips in
+  `vegan-media/media/liz/partner-tour/` (`pt-<n>.mp4`, `pt-poster-<n>.jpg`); Liz's voice is
+  `character_agents.elevenlabs_voice_id` for liz (Sean picked it, sample 3). A slide's `say` must match the recording.
+  Liz's face sits higher in frame than Maya's, so `assemble_r5.py`'s mouth search misses on her: check each ending by eye.
 - **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
   signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
   `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in
