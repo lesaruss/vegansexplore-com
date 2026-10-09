@@ -392,11 +392,17 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   `supabase/migrations/20261008_brand_partner_tier.sql` (applied 2026-10-09 through the Supabase connector). Schema
   changes are applied by Logan through the connector and checked in the database, never handed to Sean to paste.
 - **For <Brand>** tab (`?tab=brand`): the brand's door. It shows to the owner, a super admin, and anyone arriving on the
-  link we send (it then stays for the visit). The offer is a narrated tour, nine slides (the page we built; where people
-  find them, as live scaled previews of the real pages, `?preview=1` so they are not counted; a sample ad we drew of our
-  Guide enjoying their product; the mission, a thousand chapters by 2030; events, activations and games; campaigns,
-  points and giveaways; the live dashboard; everywhere their audience lives, the LESARUSS universe included; Brand
-  Partner). The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
+  link we send (it then stays for the visit). The offer is a narrated tour, six slides, rebuilt after a panel (Sean,
+  2026-10-09; consensus: never show planned things as live, being early is the asset, the brand's own numbers are the
+  proof, the gift comes before the price): 1. we built your page, yours to keep whatever you decide; 2. from the guide
+  to the shelf (live scaled previews of the Guide, the product and a store's Vegan aisle, `?preview=1` so they are not
+  counted); 3. your numbers so far (`ve_listing_totals()`, four counts since the first visit, open to anyone on the link
+  for a listing with `details.brand_door`; the breakdown stays behind `brand_stats`); 4. the sample ad, marked
+  unpublished, nothing runs without the brand's approval, taken down on request; 5. early, on purpose: Live now beside
+  Coming, and you see it first (campaigns and giveaways, scavenger hunts, original content, more cities); 6. Be our
+  first Brand Partner, $111 a quarter (`brand_door.first`, false for later brands), buttons Be our first Brand Partner,
+  Ask Sean a question, and Not yet, send me the numbers. The email that carries the link is the gift (no price), and the
+  follow-up brings the brand's real numbers. The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
   (`VEProducts.GUIDES[..][2]`), her words on each slide (the slide's `say` in `loadBrandSite`, which must match the
   recording) and a clip per slide (`listings.details.brand_door.clips`, `[{video, poster}]`, in
   `vegan-media/media/brand-door/<slug>/`; `brand_door.audio` is the voice-only fallback). Round 2 (Sean, 2026-10-09):

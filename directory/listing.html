@@ -383,6 +383,18 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-live figcaption{font-size:12px;font-weight:800;color:rgba(255,255,255,.85);margin-top:8px}
 .bd-live figcaption a{color:#8fe3a6;margin-left:6px}
 .bd-feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+/* Where we are: what is live today beside what is coming (nothing planned is shown as live) */
+.bd-now{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bd-now>div{border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.05)}
+.bd-now .bd-next{border-style:dashed}
+.bd-now h3{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8fe3a6;margin:0 0 8px}
+.bd-now .bd-next h3{color:#f3c86b}
+.bd-now ul{margin:0;padding:0 0 0 16px}
+.bd-now li{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.85);padding:3px 0}
+.bd-later{margin:12px 0 0}
+.bd-later a{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.7)}
+.bd-totals b{font-size:30px}
+.bd-slide .bd-totals b{color:#fff}
 .bd-feat div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px}
 .bd-feat b{display:block;font-size:16px;font-weight:900;color:#8fe3a6;margin-bottom:4px}
 .bd-feat span{font-size:13px;line-height:1.5;color:rgba(255,255,255,.78)}
@@ -401,7 +413,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-house-txt b{font-size:19px;font-weight:900;line-height:1.15}
 .bb-house-txt span{font-size:12.5px;color:rgba(255,255,255,.85)}
 .bb-house-txt em{font-style:normal;align-self:flex-start;margin-top:6px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#5EC47A;color:#0d2a12;padding:7px 11px;border-radius:6px}
-@media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}.bd-lives{grid-template-columns:minmax(0,1fr)}.bd-feat{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}.bd-lives{grid-template-columns:minmax(0,1fr)}.bd-feat,.bd-now{grid-template-columns:minmax(0,1fr)}}
 .bsite-pad{padding:32px 40px 48px}
 .bsite-sec{margin-bottom:34px}
 .bsite-sec h3,.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
@@ -1457,9 +1469,7 @@ function loadBrandSite(l){
     function viewer(){ try{ return window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){ return null; } }
     function canSee(){ var m = viewer(); return !!(m && (m.is_superadmin || m.id === l.owner_member_id || m.id === l.claimed_by_member_id)); }
     var claimHref = '/claim?listing=' + encodeURIComponent(l.slug) + '&plan=brand';
-    var talkHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent(l.name + ' Brand Partner');
     var withVersions = rows.filter(function(p){ return Array.isArray(p.variants) && p.variants.length > 1; })[0] || rows[0];
-    var hubs = Array.isArray(window.VE_HUBS) ? window.VE_HUBS : [];
     var guides = {}; rows.forEach(function(p){ (p.guides || []).forEach(function(g){ if(VEProducts.GUIDES[g]) guides[g] = VEProducts.GUIDES[g]; }); });
     var guideKeys = Object.keys(guides), firstGuide = guideKeys.length ? guides[guideKeys[0]] : null;
     var guideNames = guideKeys.map(function(g){ return guides[g][0]; });
@@ -1478,57 +1488,59 @@ function loadBrandSite(l){
       '<figcaption>' + esc(cap) + '</figcaption></figure>'; }
     function withPreview(u){ return u + (u.indexOf('?') < 0 ? '?' : '&') + 'preview=1'; }
     var milk = withVersions && withVersions.slug;
+    // The offer, six slides (Sean, 2026-10-09, after a panel of five lenses): the gift first, then where people find the
+    // brand, its own numbers, the ad, where we honestly are (Live now / Coming), and the seat. Nothing planned is shown as
+    // live, and the price comes last. brand_door.first marks the first Brand Partner ("Be our first Brand Partner").
+    var FIRST = BD.first !== false;
+    var askHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent('A question about ' + l.name + ' on Vegans Explore');
+    var laterHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent(l.name + ': send me the numbers') +
+      '&body=' + encodeURIComponent('Not yet, but please send me ' + l.name + '\'s page numbers in a couple of weeks.');
     var SLIDES = [
       { t: 'Welcome', h: 'We built ' + B + ' a page on Vegans Explore',
         say: 'Hi! I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. ' + l.name + ', you\'re already in my guide, so we built you your own page. Take a look around.',
         body: '<p>' + rows.length + (rows.length === 1 ? ' product' : ' products') + (guideNames.length ? ' from the ' + esc(guideNames.join(' and the ')) : '') + ', every version with its Nutrition Facts and USDA label record, and the ' +
-          storeList.length + ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. Live today, and yours to keep.</p>' +
-          '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="overview">See the page</button>' + (milk ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(milk) + '">Open ' + esc(title(withVersions)) + '</button>' : '') + '</div>',
+          storeList.length + ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. Live today, and yours to keep, whatever you decide.</p>' +
+          '<div class="bd-btns">' + (milk ? '<button type="button" class="bd-btn" data-bd-product="' + esc(milk) + '">See ' + esc(title(withVersions)) + '</button>' : '') + '<button type="button" class="bd-btn o" data-bd-goto="overview">See the page</button></div>',
         pic: l.logo_url ? '<div class="bd-logo" role="img" aria-label="' + B + '" style="background-image:url(\'' + esc(l.logo_url) + '\')"></div>' : pics(rows.map(function(p){ return p.image_url; }).filter(Boolean)) },
-      { t: 'Where people find you', h: 'Where people find ' + B + ' today',
-        say: 'Let me show you where people find you today: in the ' + (firstGuide ? firstGuide[0] : 'Directory') + ', in every store\'s Vegan aisle, and on your own product pages.',
-        body: '<p>These are the real pages, live. Scroll inside any of them.</p>',
-        pic: '<div class="bd-lives">' + (firstGuide ? live(withPreview(firstGuide[1]), 'The ' + firstGuide[0]) : '') +
-          (firstStore ? live(withPreview('/directory/' + firstStore.slug + (milk && BY[milk] ? '?product=' + BY[milk].id : '')), firstStore.name + '\'s Vegan aisle') : '') +
-          (milk ? live(withPreview('/directory/' + l.slug + '?tab=products&product=' + milk), title(withVersions)) : '') + '</div>', wide: true },
+      { t: 'From the guide to the shelf', h: 'From the guide, straight to the shelf',
+        say: 'Someone reads my guide, opens your product, and sees which store\'s Vegan aisle carries it. From the guide, straight to the shelf.',
+        body: '<p>Someone reads the ' + esc(firstGuide ? firstGuide[0] : 'Directory') + ', opens ' + esc(milk ? title(withVersions) : l.name) + ', and finds the store that carries it. These are the real pages, live. Scroll inside any of them.</p>',
+        pic: '<div class="bd-lives">' + (firstGuide ? live(withPreview(firstGuide[1]), '1. The ' + firstGuide[0]) : '') +
+          (milk ? live(withPreview('/directory/' + l.slug + '?tab=products&product=' + milk), '2. ' + title(withVersions)) : '') +
+          (firstStore ? live(withPreview('/directory/' + firstStore.slug + (milk && BY[milk] ? '?product=' + BY[milk].id : '')), '3. ' + firstStore.name + '\'s Vegan aisle') : '') + '</div>', wide: true },
+      { t: 'Your numbers', h: B + '\'s numbers so far',
+        say: 'Your page has been counting since the day we built it. Here\'s what people have opened so far.',
+        body: '<p class="bd-since">Counted since the day we built the page. Small and early, and real.</p><p>Claim the page to see them by day and by source, and which products and stores people open.</p>' +
+          '<div class="bd-btns"><button type="button" class="bd-btn o" data-bdview="dashboard">Open the dashboard</button></div>',
+        pic: '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' },
       { t: 'Your ad', h: 'An ad we drew for ' + B,
         say: 'And look, we even drew an ad just for you. Our Guides, enjoying your products, right where people are looking for you.',
-        body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run ads like this across Vegans Explore: on the Daily Pulse, in the Guides, beside the Directory.</p><p class="bd-small">A sample, made for ' + B + '. It does not run anywhere yet.</p>',
+        body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run ads like this across Vegans Explore: on the Daily Pulse, in the Guides, beside the Directory.</p>' +
+          '<p class="bd-small">A sample, made for ' + B + '. It is unpublished: nothing runs without ' + B + '\'s approval, and we will take it down on request.</p>',
         pic: BD.sample_ad ? '<div class="bd-sample"><div class="bd-sample-h">Billboard <em>Sample for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>'
           : '<div class="bd-note">We draw a sample ad for every brand we partner with: our Guides, enjoying your products.</div>' },
-      { t: 'The mission', h: 'A thousand chapters by 2030',
-        say: 'We\'re building this community city by city, with a goal of a thousand chapters by 2030.',
-        body: '<p>Each city has its Daily Pulse, events, a Directory and members who earn points for showing up. South Florida is first, and Brand Partners help us open the next.</p>',
-        pic: '<div class="bd-cities">' + hubs.map(function(h){ var b = h.page && h.page.banner; return '<div style="' + (b ? "background-image:url('" + esc(b) + "')" : '') + '"><span>' + esc(h.name) + '</span></div>'; }).join('') + '</div>' },
-      { t: 'In person and online', h: 'Straight to the people who use your products',
-        say: 'We bring brands like yours straight to the people who use your products: at events, online, and in games like our Passport Challenge.',
-        body: '<p>Members meet in person and keep talking online, and brands are part of both.</p>',
-        pic: tiles([['Events', 'Dinners, meetups and tastings in each city'], ['Activations', 'Your product in members\' hands, with tasks worth points'], ['Games', 'The Passport Challenge: stamps, points and prizes'], ['Online', 'The Daily Pulse and the Community Board, every day']]) },
-      { t: 'Campaigns', h: 'Campaigns, points and giveaways',
-        say: 'Members earn points for joining your campaign. Tie those points to giveaways, and our team builds it all around your budget.',
-        body: '<p>Brand Partners see every campaign first, and choose what to join, a la carte through LESARUSS AI, or with our team for something custom. Run ads alongside it.</p>',
-        pic: tiles([['Points', 'Members earn them for every task they finish'], ['Giveaways', 'Tie points to your prizes and coupons'], ['Ads', 'Run ads alongside the campaign'], ['Your budget', 'Our team builds the campaign around it']]) },
-      { t: 'Your dashboard', h: 'Your dashboard, live',
-        say: 'You\'ll get a dashboard right on this page, so you can see who\'s visiting and how your campaigns are doing, in real time.',
-        body: '<p>It counts from the day we built your page, so the numbers are waiting for you.</p><div class="bd-btns"><button type="button" class="bd-btn" data-bdview="dashboard">Open the dashboard</button></div>',
-        pic: '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' },
-      { t: 'Beyond this page', h: 'Everywhere your audience lives',
-        say: 'And it goes way beyond this page: our Guides, the Daily Pulse, the Community Board, and the whole LESARUSS universe.',
-        body: '<p>Many ways to feature ' + B + ', on Vegans Explore and across the LESARUSS universe of brands.</p>',
-        pic: '<div class="bd-chips">' + ['Our Guides', 'The Daily Pulse', 'The Community Board', 'Instagram', 'TikTok', 'Ad slots', 'Events', 'The LESARUSS universe'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>' },
-      { t: 'Brand Partner', h: 'Brand Partner: $111 a quarter',
-        say: 'It all starts with Brand Partner: $111 a quarter for a seat at the table. Claim ' + l.name + '\'s page, and let\'s build something together.',
-        body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products, photos, videos and creator content</li>' +
-          '<li>Your live dashboard: visits, products opened, store aisles opened, campaigns</li><li>Front-row access to every campaign before it opens</li>' +
-          '<li>Sponsorships a la carte through LESARUSS AI, or a call with our team</li><li>The whole platform to explore: the Directory, events and every community</li></ul>' +
-          '<p class="bd-small">Your quarter helps us build the platform and open more cities this year.</p>' +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + B + ' as a Brand Partner</a><a class="bd-btn o" href="' + esc(talkHref) + '">Talk with our team</a></div>',
-        pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months.</em></div>' }
+      { t: 'Where we are', h: 'Early, on purpose',
+        say: 'We\'re early, on purpose. South Florida is our first chapter, and we\'re growing toward a thousand chapters by 2030.',
+        body: '<p>South Florida is our first live chapter. We are opening city by city, toward a thousand chapters by 2030, and partners see everything new first.</p>',
+        pic: '<div class="bd-now"><div><h3>Live now</h3><ul><li>The Directory, with member votes</li><li>Our Guides, starting with the Vegan Dairy Guide</li><li>The Daily Pulse and the Community Board</li><li>The Passport Challenge</li><li>Dinners and meetups in South Florida</li></ul></div>' +
+          '<div class="bd-next"><h3>Coming, and you see it first</h3><ul><li>Brand campaigns and product giveaways</li><li>Scavenger hunts</li><li>Our original content</li><li>More cities, toward a thousand chapters</li></ul></div></div>' },
+      { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a quarter',
+        say: FIRST ? 'Join us as our first Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.'
+          : 'Become a Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.',
+        body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li>' +
+          '<li>A first look at every campaign and city as it opens</li></ul>' +
+          (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">' + (FIRST ? 'Be our first Brand Partner' : 'Become a Brand Partner') + '</a>' +
+          '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
+          '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
+        pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months. Cancel any time.</em></div>' }
     ];
     // The narration: a clip per slide (brand_door.clips, [{video, poster}]: Maya on camera, a different pose each slide,
     // under 10 seconds, no b-roll; Sean, 2026-10-09; files in vegan-media/media/brand-door/<brand>/), else her voice
     // alone (brand_door.audio). The poster is the clip's first frame, so a slide shows her new pose before it plays.
-    var CLIPS = Array.isArray(BD.clips) && BD.clips.length === SLIDES.length && BD.clips.every(function(c){ return c && c.video; }) ? BD.clips : null;
+    // brand_door.tour is the six-slide tour's clips (2026-10-09); brand_door.clips the nine-slide one it replaced.
+    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && x.video; }) ? c : null; }
+    var CLIPS = fits(BD.tour) || fits(BD.clips);
     var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video; }) : null;
     function posterAt(i){ return (CLIPS && CLIPS[i].poster) || narrArt; }
     var AUDIO = !VIDEO && Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
@@ -1597,16 +1609,34 @@ function loadBrandSite(l){
             '<button type="button" class="bd-nav" data-bd="next"' + (i < SLIDES.length - 1 ? '' : ' disabled') + '>Next</button></div>'
           : '<div class="bd-dash"></div>');
       drawNarr();
-      if(DOOR.view === 'dashboard') drawDash(); else lazyLive();
+      if(DOOR.view === 'dashboard') drawDash(); else { lazyLive(); fillTotals(); }
+    }
+    // The brand's numbers so far (ve_listing_totals: four counts since the first counted visit, for any brand page with a
+    // door). Fetched once; every [data-total] in the door is filled from it.
+    var TOTALS = null, totalsAsked = false;
+    function fillTotals(){
+      if(!door) return;
+      if(!TOTALS){
+        if(totalsAsked) return; totalsAsked = true;
+        fetch(SUPABASE_URL + '/rest/v1/rpc/ve_listing_totals', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_listing: l.id }) }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(t){ TOTALS = t || {}; fillTotals(); });
+        return;
+      }
+      [].forEach.call(door.querySelectorAll('[data-total]'), function(b){ var n = TOTALS[b.getAttribute('data-total')]; b.textContent = n == null ? '0' : Number(n).toLocaleString(); });
+      var s = TOTALS.since ? 'Counted since ' + new Date(TOTALS.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. Small and early, and real.' : 'Counting starts with the next visit.';
+      [].forEach.call(door.querySelectorAll('.bd-since'), function(p){ p.textContent = s; });
     }
     function tile(label, n){ return '<div><b>' + (n == null ? '0' : Number(n).toLocaleString()) + '</b><span>' + label + '</span></div>'; }
     function drawDash(){
       var el = door.querySelector('.bd-dash'); if(!el) return;
       if(!canSee()){
-        el.innerHTML = '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' +
-          '<div class="bd-locked"><p><b>This is ' + B + '\'s dashboard.</b> It opens for ' + B + ' once the page is claimed, and shows how it performs: visits, the products people open, and the stores they look for you in.</p>' +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + B + ' as a Brand Partner</a>' +
+        // The totals since the page went up are open to anyone on the link; the breakdown is the partner's.
+        el.innerHTML = '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+          '<p class="bd-small bd-since"></p>' +
+          '<div class="bd-locked"><p><b>The full dashboard opens once ' + B + ' claims the page:</b> ' + LOCK + ' views by day and by source, which products people open, and which stores they look for you in.</p>' +
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">' + (FIRST ? 'Be our first Brand Partner' : 'Become a Brand Partner') + '</a>' +
           (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>';
+        fillTotals();
         return;
       }
       el.innerHTML = '<div class="aisle-empty">Loading the numbers...</div>';
