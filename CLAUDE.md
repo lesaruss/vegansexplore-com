@@ -48,7 +48,7 @@ this list follows the rule above. A new exception goes on this list first.
   (a meta refresh or `location.replace`, or a `vercel.json` redirect that
   catches the URL before the file is served): `partner.html` (`/partner` goes to
   `/partners`), `tour.html` (`/tour` goes to the archive site),
-  `guides/ve-discuss.html`, `onboarding.html`.
+  `guides/ve-discuss.html`, `onboarding.html`, `apply.html` (`/apply` goes to `/claim?add=1`, Join the Directory).
 - **Partner pitch decks**, standalone sales documents with their own footer,
   some marked Confidential: `partners/community-partner.html` and everything
   in `partners/pitches/`. The member nav and its Passport CTA do not belong

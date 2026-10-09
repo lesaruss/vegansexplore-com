@@ -26,6 +26,8 @@
   var M = MEDIA + 'liz/partner-tour/';
   var LIZ_PARTNER = {};
   for (var n = 1; n <= 6; n++) LIZ_PARTNER['pt' + n] = { video: M + 'pt-' + n + '.mp4', poster: M + 'pt-poster-' + n + '.jpg' };
+  // Join the Directory (/claim): find, found it, lock it in, you're in.
+  for (n = 1; n <= 4; n++) LIZ_PARTNER['j' + n] = { video: M + 'j-' + n + '.mp4', poster: M + 'j-poster-' + n + '.jpg' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function css() {
@@ -166,5 +168,40 @@
     draw(); cue(); place();
     return { stop: function () { if (S.playing) stop(); } };
   }
-  window.VEGuideTour = { mount: mount, LIZ_PARTNER: LIZ_PARTNER, esc: esc };
+  // The Guide beside a form or a page with steps instead of slides (Sean, 2026-10-09, Join the Directory: "still having Liz
+  // on the right hand corner"). One card; say(key) shows that step's words and clip, and plays it once the visitor has
+  // pressed Start (unless they paused her).
+  //   var liz = VEGuideTour.narrator(el, { guide: 'Liz', lines: { find: { say, clip }, ... } }); liz.say('find');
+  function narrator(el, o) {
+    if (!el || !o || !o.lines) return { say: function () {}, stop: function () {} };
+    css();
+    var S = { key: null, started: false, playing: false, paused: false }, guide = o.guide || 'Liz';
+    el.innerHTML = '<div class="vgt-narr"><div class="vgt-vslot"></div><div class="vgt-name"><b>' + esc(guide) + '</b> &middot; ' + esc(o.title || 'Your Guide to Vegans Explore') + '</div>' +
+      '<div class="vgt-bubble"></div><button type="button" class="vgt-play"></button></div>';
+    var box = el.firstChild, vid = document.createElement('video');
+    vid.className = 'vgt-vid'; vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
+    box.querySelector('.vgt-vslot').appendChild(vid);
+    function line() { return o.lines[S.key] || {}; }
+    function draw() {
+      box.querySelector('.vgt-bubble').textContent = line().say || '';
+      var p = box.querySelector('.vgt-play'); p.classList.toggle('go', !S.started); p.setAttribute('aria-pressed', String(S.playing));
+      p.innerHTML = !S.started ? '&#9654; Hear from ' + esc(guide) : S.playing ? 'Pause ' + esc(guide) : '&#9654; Watch ' + esc(guide);
+    }
+    function play() { if (!vid.getAttribute('src')) return; vid.play().then(function () { S.playing = true; draw(); }).catch(function () { S.playing = false; draw(); }); }
+    function stop() { vid.pause(); S.playing = false; draw(); }
+    function toggle() { if (!S.started) { S.started = true; S.paused = false; play(); return draw(); } if (S.playing) { S.paused = true; stop(); } else { S.paused = false; play(); } }
+    vid.addEventListener('ended', function () { S.playing = false; draw(); });
+    vid.addEventListener('click', toggle);
+    box.querySelector('.vgt-play').addEventListener('click', toggle);
+    function say(key) {
+      if (!o.lines[key] || key === S.key) return;
+      S.key = key; var c = line().clip || {};
+      vid.pause(); S.playing = false; vid.poster = c.poster || ''; vid.src = c.video || '';
+      vid.classList.remove('vgt-shift', 'alt'); void vid.offsetWidth; vid.classList.add('vgt-shift');
+      draw(); if (S.started && !S.paused) play();
+    }
+    draw();
+    return { say: say, stop: function () { if (S.playing) stop(); } };
+  }
+  window.VEGuideTour = { mount: mount, narrator: narrator, LIZ_PARTNER: LIZ_PARTNER, esc: esc };
 })();
