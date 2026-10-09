@@ -2232,6 +2232,8 @@ function loadPartnerHome(l){
   var el = document.getElementById('pd-home'); if(!el) return;
   var m = null; try{ m = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){}
   var owner = !!(m && (m.id === l.owner_member_id || m.id === l.claimed_by_member_id));
+  // Depot > Preview journeys: what an owner who joined as a member (no plan) sees here.
+  if(new URLSearchParams(location.search).get('preview') === 'member-owner'){ el.innerHTML = partnerUpsell(l); return; }
   if(!owner){ mountPartnerLocked(el, l); return; }
   var lk = document.querySelector('.tab-btn[data-tab="brand"] .pd-lock'); if(lk) lk.remove();
   el.innerHTML = '<div class="bp-head"><h3>Your dashboard</h3><span>How many people find ' + esc(l.name) + ' on Vegans Explore. <a href="/claim?listing=' + encodeURIComponent(l.slug || '') + '">Your plan and Passport</a></span></div><div class="aisle-empty">Loading your numbers...</div>';

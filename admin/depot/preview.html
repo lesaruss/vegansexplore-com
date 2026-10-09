@@ -71,6 +71,7 @@
           <button type="button" data-j="partners" aria-pressed="false">Partners</button>
           <button type="button" data-j="cm" aria-pressed="false">Community Manager</button>
           <button type="button" data-j="guide" aria-pressed="false">Your Guide</button>
+          <button type="button" data-j="join" aria-pressed="false">Join the Directory</button>
         </div>
         <label id="city-wrap" hidden>City <select id="city">
           <option value="south-florida">South Florida</option>
@@ -173,6 +174,27 @@
           { t: '3. How your Guide helps', d: 'Restaurants, things to do in their city, finding something, anything Vegan. Each idea is a question they can send.', u: '/guide?preview=uses', k: 'pv' },
           { t: 'Talking to your Guide', d: 'What the dock\u2019s Guide icon opens once setup is done. In preview the Guide gives a sample reply.', u: '/guide?preview=talk', k: 'pv' },
           { t: 'Signed out', d: 'Your Guide is for members: sign in or join.', u: '/guide?preview=gate', k: 'pv' }
+        ]
+      };
+      // Join the Directory, /claim (Sean, 2026-10-09: "set it up on the depot back end... so I don't have to fill out the
+      // form"). Every step opens with a sample owner (Alex) and Cinnaholic in Tampa, or a sample new business (Green Leaf
+      // Kitchen, Miami), signed out; nothing is saved, sent or charged.
+      JOURNEYS.join = {
+        intro: 'A business joining the Directory. They find their business (or add it), check the details, tell us who they are (signed out, a password makes their account), and choose how to join: Partner with Front Row Start, or become a member from $11. Liz talks them through each step.',
+        steps: [
+          { t: 'The way in: the locked Partner Dashboard', d: 'Every listing\u2019s Partner Dashboard tab, with Liz\u2019s five-slide tour. Claim it or apply.', u: '/directory/cinnaholic?tab=brand', k: 'live' },
+          { t: '1. Find it', d: 'Search the Directory, or Add it.', u: '/claim', k: 'live' },
+          { t: '1. Find it: picked', d: 'Their business, chosen, with Next.', u: '/claim?preview=picked', k: 'pv' },
+          { t: '2. The details', d: 'How Vegan it is, one line, and about the business. A product brand skips this step.', u: '/claim?preview=details', k: 'pv' },
+          { t: '3. About you', d: 'Name, role, email, phone, the business\u2019s website and Instagram. Signed out, a password makes their account here.', u: '/claim?preview=you', k: 'pv' },
+          { t: '4. How to join: Partner', d: 'Front Row Start, the full experience: nothing today, $111 a quarter from January 2027. Liz plays the offer line.', u: '/claim?preview=join', k: 'pv' },
+          { t: '4. How to join: Become a member', d: 'From $11, one time. The amount picker opens under the cards.', u: '/claim?preview=join-member', k: 'pv' },
+          { t: 'Adding a business: Your business', d: 'Not in the Directory: name, kind of business, city.', u: '/claim?preview=add', k: 'pv' },
+          { t: 'Adding a business: The details', d: 'The same details step, for the new business.', u: '/claim?preview=add-details', k: 'pv' },
+          { t: 'Adding a business: How to join', d: 'The same two ways in.', u: '/claim?preview=add-join', k: 'pv' },
+          { t: 'You\u2019re in: Partner', d: 'After checkout: the front-row seat is saved, what comes next.', u: '/claim?applied=green-leaf-kitchen&claim=submitted&joined=partner', k: 'pv' },
+          { t: 'You\u2019re in: member', d: 'After the $11: the claim is locked in, and the Partner side when they are ready.', u: '/claim?listing=cinnaholic&claim=submitted', k: 'pv' },
+          { t: 'A member owner\u2019s Partner Dashboard', d: 'Once approved, a member keeps the page current; the numbers, the Guide and the campaigns are the Partner side, offered here.', u: '/directory/cinnaholic?tab=brand&preview=member-owner', k: 'pv' }
         ]
       };
       var LABEL = { live: 'Live page', pv: 'Preview', na: 'Not previewable' };

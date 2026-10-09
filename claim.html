@@ -274,6 +274,9 @@
       var COLS = 'id,slug,name,category,address_city,address_state,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status';
       var $ = function (id) { return document.getElementById(id); };
       var qs = new URLSearchParams(location.search), L = null;
+      // Depot > Preview journeys > Join the Directory opens any step here with sample details (?preview=<step>), signed
+      // out, so Sean sees every screen without filling the form. Nothing is saved, sent or charged in preview.
+      var PV = qs.get('preview') || '';
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function rest(q) { return fetch(SB + '/rest/v1/listings?' + q, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } }).then(function (r) { return r.json(); }); }
       function logo(l) {
@@ -467,7 +470,7 @@
         $('lede').hidden = name !== 'find';
         [].forEach.call(document.querySelectorAll('#claim [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== name; });
         $('new-biz').hidden = MODE !== 'add';
-        $('acct').hidden = VEAuth.isLoggedIn();
+        $('acct').hidden = VEAuth.isLoggedIn() && !PV;
         var at = list.indexOf(name);
         $('stepper').innerHTML = list.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + STEP_NAME[k] + '</li>'; }).join('');
         $('step-count').textContent = 'Step ' + (at + 1) + ' of ' + list.length;
@@ -595,6 +598,7 @@
           : d && d.error === 'daily_limit' ? 'You have added three businesses today. Please try again tomorrow.' : d && d.error === 'not_authenticated' ? 'Please sign in again.' : 'That did not go through. Please try again.';
       }
       function submit() {
+        if (PV) return bad('Preview: nothing is saved, sent or charged. This is where checkout opens.');
         var vs = document.querySelector('input[name=vs]:checked'), add = MODE === 'add';
         // Every step is checked again; a gap sends them back to that step with what is missing.
         var list = stepList();
@@ -698,8 +702,8 @@
             .then(function (r) { return r.json(); }).then(function (o) { if (o && o.founding) { OFFER = o; renderPlans(); } }).catch(function () {});
           renderPlans();
           if (qs.get('claim') === 'submitted') return nextStep('claim');
-          if (!VEAuth.isLoggedIn()) {
-            if (L.claim_status === 'verified') { $('st-claimed-signin').hidden = false; return show(['biz-card', 'st-claimed']); }
+          if (!VEAuth.isLoggedIn() || PV) {
+            if (L.claim_status === 'verified' && !PV) { $('st-claimed-signin').hidden = false; return show(['biz-card', 'st-claimed']); }
             fill(L); renderPlans(); goStep(qs.get('step') || 'find'); return;
           }
           return api({ action: 'mine', listing_id: L.id }).catch(function () { return {}; }).then(function (d) {
@@ -730,10 +734,33 @@
         }).catch(function () { findMode(); });
       }
 
+      // ---- Preview (Depot > Preview journeys): a sample owner, Alex, and for a new business a sample one.
+      function sampleYou() { $('c-name').value = 'Alex Rivera'; $('c-role').value = 'Owner'; $('c-email').value = 'alex@example.com'; }
+      function preview(pv) {
+        var note = document.createElement('p'); note.className = 'founding-note';
+        note.textContent = 'Preview with sample details. Nothing is saved, sent or charged.';
+        document.querySelector('.jl-main').insertBefore(note, $('stepper'));
+        if (/^add/.test(pv)) {
+          $('n-name').value = 'Green Leaf Kitchen'; $('n-cat').value = 'Restaurants'; $('n-city').value = 'Miami'; $('n-state').value = 'FL';
+          var r0 = document.querySelector('input[name=vs][value=fully_vegan]'); if (r0) r0.checked = true;
+          $('b-tag').value = 'Plant-based comfort food, made fresh daily.'; $('b-desc').value = 'A neighborhood spot for Vegan comfort food: bowls, burgers and desserts, all made in house.';
+          sampleYou();
+          return addMode({ add: 'newbiz', 'add-details': 'business', 'add-you': 'you', 'add-join': 'join' }[pv] || 'newbiz');
+        }
+        pick(qs.get('listing') || 'cinnaholic').then(function () {
+          if (!L) return;
+          sampleYou();
+          var to = { picked: 'find', details: 'business', you: 'you', join: 'join', 'join-member': 'join' }[pv] || 'find';
+          goStep(stepList().indexOf(to) >= 0 ? to : 'you');
+          if (pv === 'join-member') { var r = document.querySelector('input[name=plan][value=claim]'); if (r) { r.checked = true; amount = 11; var b = document.querySelector('#amounts [data-amt="11"]'); if (b) b.setAttribute('aria-pressed', 'true'); syncPlan(); } }
+        });
+      }
+
       // ---- Start.
       function start() {
         if (!window.VEAuth) return setTimeout(start, 150);
         var slug = qs.get('listing'), applied = qs.get('applied');
+        if (PV) return preview(PV);
         if (applied && qs.get('claim') === 'submitted') { var nm = ''; try { nm = sessionStorage.getItem('ve_join_name') || ''; } catch (e) {} return nextStep('applied', nm); }
         if (qs.get('add') === '1') {
           var back0 = /^(cancelled|unpaid)$/.test(qs.get('claim') || qs.get('verified') || '');

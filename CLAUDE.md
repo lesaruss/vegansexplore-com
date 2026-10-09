@@ -485,6 +485,11 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Sign in instead with the email filled in (Sean, 2026-10-09: "what's the easiest, simplest way to do that handoff").
   A cancelled checkout comes back to How to join with what they typed (`sessionStorage`). On a phone the step change scrolls
   to just under the sticky menu bar (measured, it is taller there), so Liz is never cut off.
+  Depot > Preview journeys > **Join the Directory** walks every screen (Sean, 2026-10-09: "so I don't have to fill out the
+  form"): `/claim?preview=<picked|details|you|join|join-member|add|add-details|add-join>` opens that step signed out with a
+  sample owner (Alex) and Cinnaholic or a sample new business (Green Leaf Kitchen), and the button says nothing is charged;
+  `/directory/<slug>?tab=brand&preview=member-owner` shows a member owner's Partner Dashboard. A new screen gets a preview
+  and a line in `JOURNEYS.join` (`admin/depot/preview.html`).
 - **How to join, Partner or member** (Sean, 2026-10-09: "we got to figure out what would be the difference... without it
   sounding like you don't get anything"). Two cards side by side. **Partner** ("The full experience", Front Row Start before
   January 1): the page claimed and theirs to update, the Partner Dashboard numbers, a front-row seat on every campaign, their
