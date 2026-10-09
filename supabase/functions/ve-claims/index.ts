@@ -856,10 +856,13 @@ Deno.serve(async (req) => {
     if (!l) return json({ error: 'not_found' }, 404);
     const owner = l.owner_member_id === memberId || l.claimed_by_member_id === memberId;
     if (!owner && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
+    // The numbers come with a plan (Sean, 2026-10-09: a member claims and updates the page; the analytics are the
+    // Partner side). An owner without a live plan (Partner, Front Row Start's trial included, or Passport) is told so.
+    const v = await liveMembership(id);
+    if (!v && !member.is_superadmin) return json({ error: 'partner_only' }, 403);
     const days = Math.min(365, Math.max(1, Math.round(Number(body.days) || 30)));
     const { data: stats, error } = await db.rpc('ve_listing_stats', { p_listing: id, p_days: days });
     if (error) return json({ error: 'stats_failed' }, 500);
-    const v = await liveMembership(id);
     return json({ stats, plan: v ? { tier: v.tier, name: TIERS[v.tier]?.name, status: v.status, renews_at: v.renews_at } : null, admin: !owner });
   }
 

@@ -420,6 +420,10 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pd-subnav button:hover{background:#eaf3ec}
 .pd-subnav button[aria-current="true"]{background:#1f5f22;color:#fff}
 .pd-subnav .bd-tag{font-size:8.5px;padding:2px 5px;margin-left:4px}
+/* Dropdowns: our own arrow, 16px in from the right edge (Sean, 2026-10-09, canon-sean-interface-defaults rule 15) */
+#aisleDept,#aisleCat,#aisleSort,#bp-kind,.menu-cat-select,.cmp-select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:44px !important;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;background-size:14px 9px}
 /* Liz in the right column while the locked Partner Dashboard is open, like Maya on a brand's offer */
 #pd-narr{display:none}
 @media(min-width:769px){.listing-page-grid.pd-on .listing-sidebar>:not(#pd-narr){display:none}.listing-page-grid.pd-on #pd-narr{display:block;position:sticky;top:72px}}
@@ -1865,6 +1869,7 @@ function loadBrandSite(l){
       el.innerHTML = '<div class="aisle-empty">Loading the numbers...</div>';
       fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
         body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: DOOR.days }) }).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(dd){
+        if(dd && dd.error === 'partner_only'){ el.innerHTML = partnerUpsell(l); return; }
         if(!dd || !dd.stats){ el.innerHTML = '<div class="aisle-empty">We could not load the numbers just now. Try again in a moment.</div>'; return; }
         var s = dd.stats, T = s.totals || {}, days = [], byDay = {};
         (s.daily || []).forEach(function(x){ byDay[x.day] = x.views; });
@@ -2233,11 +2238,21 @@ function loadPartnerHome(l){
   fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: 30 }) })
     .then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){
       var box = el.querySelector('.aisle-empty'); if(!box) return;
+      // A member holds the page and keeps it current; the numbers, the Guide and the campaigns are the Partner side
+      // (Sean, 2026-10-09). Said as what they can add, not what they lack.
+      if(d && d.error === 'partner_only'){ box.outerHTML = partnerUpsell(l); return; }
       if(!d || !d.stats){ box.textContent = 'We could not load the numbers just now. Try again in a moment.'; return; }
       var T = d.stats.totals || {}, n = function(x){ return Number(x || 0).toLocaleString(); };
       box.outerHTML = '<div class="bd-tiles"><div><b>' + n(T.view) + '</b><span>Page views, 30 days</span></div><div><b>' + n(d.stats.visitors) + '</b><span>Visitors</span></div></div>' +
         '<p class="bd-small">' + (d.stats.since ? 'Counting since ' + new Date(d.stats.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. ' : '') + 'Each visitor counts once every 30 minutes; automated browsers are not counted.</p>';
     });
+}
+function partnerUpsell(l){
+  var front = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+  return '<div class="bd-locked"><p><b>' + esc(l.name) + ' is yours, and you are a Founding Member.</b> Keep your details, photos and story up to date from this page.</p>' +
+    '<p>When you are ready for more, add the Partner side: your numbers here (views, visitors and what people open), a front-row seat on every campaign before it opens, and your Guide on this dashboard.' +
+    (front ? ' Front Row Start: nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : ' $111 a quarter.') + '</p>' +
+    '<div class="bd-btns"><a class="bd-btn" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand">' + (front ? 'Take my front-row seat' : 'Become a Partner') + '</a></div></div>';
 }
 // Is the signed-in visitor this brand's partner (ve-claims partner_status)? ?partner=preview shows the partner's view to
 // anyone, labelled; its buttons work only for a real partner or a super admin.

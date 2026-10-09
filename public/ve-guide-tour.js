@@ -45,11 +45,11 @@
       '.vgt-words ul{list-style:none;margin:0 0 12px;padding:0}.vgt-words li{font-size:14.5px;line-height:1.55;color:rgba(255,255,255,.82);padding:8px 0 8px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.08)}' +
       ".vgt-words li::before{content:'';position:absolute;left:4px;top:15px;width:8px;height:8px;border-radius:50%;background:#5EC47A}.vgt-words li b{color:#fff}" +
       '.vgt-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}' +
-      '.vgt-btn{display:inline-block;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;border-radius:8px;padding:12px 16px;background:#5EC47A;color:#0d2a12;border:1.5px solid #5EC47A}' +
+      '.vgt-btn{display:inline-block;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;border-radius:6px;padding:12px 16px;background:#5EC47A;color:#0d2a12;border:1.5px solid #5EC47A}' +
       '.vgt-btn.o{background:transparent;color:#8fe3a6}.vgt-btn:hover{filter:brightness(1.08)}' +
       '.vgt-tag{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:2px 6px;vertical-align:middle}' +
       '.vgt-ctrl{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:14px;font-size:12px;font-weight:800;color:#6b736d}' +
-      '.vgt-nav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:8px;border:1.5px solid rgba(0,0,0,.12);background:#fff;color:#1a1a1a;cursor:pointer}' +
+      '.vgt-nav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border-radius:6px;border:1.5px solid rgba(0,0,0,.12);background:#fff;color:#1a1a1a;cursor:pointer}' +
       '.vgt-nav:disabled{opacity:.4;cursor:default}' +
       // The Guide: a white card like the For <Brand> narrator.
       '.vgt-narr{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:16px;color:#1a1a1a;text-align:left}' +
@@ -63,7 +63,7 @@
       '.vgt-name{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b736d;margin-bottom:10px}.vgt-name b{font-size:14px;letter-spacing:0;text-transform:none;color:#1a1a1a}' +
       '.vgt-bubble{position:relative;background:#f0faf4;border:1px solid #c8e6c9;border-radius:12px;padding:14px 16px;font-size:14.5px;line-height:1.6;color:#1a1a1a}' +
       ".vgt-bubble::before{content:'';position:absolute;top:-8px;left:26px;width:14px;height:14px;background:#f0faf4;border-left:1px solid #c8e6c9;border-top:1px solid #c8e6c9;transform:rotate(45deg)}" +
-      '.vgt-play{font-family:inherit;margin-top:12px;width:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;border-radius:8px;border:1.5px solid #1f5f22;background:#1f5f22;color:#fff;cursor:pointer}' +
+      '.vgt-play{font-family:inherit;margin-top:12px;width:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;border-radius:6px;border:1.5px solid #1f5f22;background:#1f5f22;color:#fff;cursor:pointer}' +
       '.vgt-play[aria-pressed="true"]{background:#fff;color:#1f5f22}.vgt-play.go{font-size:13px;padding:14px;background:#5EC47A;border-color:#5EC47A;color:#0d1a10}' +
       '.vgt-main .vgt-narr{margin-bottom:14px}' +
       // Pictures

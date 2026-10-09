@@ -26,8 +26,8 @@
     .biz span{font-size:13px;color:var(--ve-text-75);}
     label.f{display:block;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 6px;}
     label.f small{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
-    input[type=text],input[type=email],input[type=tel],input[type=url],input[type=search],input[type=number],select,textarea{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:8px;background:#fff;color:var(--ve-text);}
-    textarea{min-height:120px;resize:vertical;}
+    input[type=text],input[type=email],input[type=tel],input[type=url],input[type=search],input[type=number],select,textarea{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background:#fff;color:var(--ve-text);}
+    textarea{min-height:96px;resize:vertical;}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
     @media (max-width:600px){.row2{grid-template-columns:1fr;}}
     .choice{display:flex;flex-direction:column;gap:8px;}
@@ -36,12 +36,12 @@
     .choice input{margin-top:4px;width:18px;height:18px;accent-color:var(--ve-green-deep);}
     .choice b{font-weight:800;}
     .amounts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
-    .amounts button{font:inherit;font-size:15px;font-weight:800;padding:10px 18px;border-radius:99px;border:1.5px solid rgba(0,0,0,0.2);background:#fff;cursor:pointer;min-height:44px;}
+    .amounts button{font:inherit;font-size:15px;font-weight:800;padding:10px 18px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.2);background:#fff;cursor:pointer;min-height:44px;}
     .amounts button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
     .money{position:relative;max-width:220px;}
     .money span{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-weight:800;}
     .money input{padding-left:26px;}
-    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
     .btn:hover{background:#174a1a;}
     .btn:disabled{opacity:0.55;cursor:default;}
     .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
@@ -76,7 +76,30 @@
     .linkbtn{font:inherit;font-size:13px;font-weight:700;color:var(--ve-green-deep);background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px 0;}
     .results a{cursor:pointer;}
     .results b{display:block;font-size:15px;font-weight:800;line-height:1.3;}
-    select{min-height:46px;}
+    /* Dropdowns: our own arrow, 16px in from the right edge (Sean, 2026-10-09, canon-sean-interface-defaults rule 15) */
+    select{min-height:46px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px;}
+    select::-ms-expand{display:none;}
+    /* Steps (Sean, 2026-10-09, canon rule 14: paginated, Back and Next) */
+    .stepper{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;padding:0;counter-reset:st;}
+    .stepper li{counter-increment:st;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);background:#fff;border:1px solid var(--ve-border);border-radius:6px;padding:7px 12px;}
+    .stepper li::before{content:counter(st);display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e7ece8;color:#4a5a4d;font-size:11px;}
+    .stepper li.on{border-color:var(--ve-green-deep);color:var(--ve-green-deep);}.stepper li.on::before{background:var(--ve-green-deep);color:#fff;}
+    .stepper li.done::before{background:var(--ve-green);color:#fff;content:'\2713';}
+    .step-nav{display:flex;align-items:center;gap:12px;margin-top:4px;}
+    .step-nav .step-count{flex:1;text-align:center;font-size:13px;font-weight:800;color:var(--ve-text-75);}
+    .step-nav [hidden]{display:none !important;}
+    /* How to join: the two ways side by side */
+    .choice.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px;}
+    .choice.plans label{flex-direction:column;gap:6px;padding:18px 18px 16px;position:relative;}
+    .choice.plans input{position:absolute;top:18px;right:18px;margin:0;}
+    .plan-name{font-size:17px;font-weight:900;line-height:1.25;padding-right:30px;}
+    .plan-price{font-size:22px;font-weight:900;color:var(--ve-green-deep);line-height:1.1;}.plan-price small{font-size:13px;font-weight:700;color:var(--ve-text-75);}
+    .plan-lead{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green);}
+    .plan-text{font-size:13.5px;color:var(--ve-text-75);}
+    .plans ul.ticks{list-style:none;margin:4px 0 0;padding:0;}
+    .plans ul.ticks li{position:relative;padding:3px 0 3px 24px;font-size:14px;line-height:1.4;}
+    .plans ul.ticks li::before{content:'\2713';position:absolute;left:2px;top:3px;font-weight:900;color:var(--ve-green);}
     .step{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.12em;color:#fff;background:var(--ve-green-deep);border-radius:99px;padding:2px 9px;margin-right:8px;vertical-align:2px;}
     .nx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;margin-top:16px;text-align:left;}
     .nx{display:block;border:1px solid var(--ve-border);border-radius:12px;padding:16px;background:#fff;color:inherit;text-decoration:none;}
@@ -96,13 +119,15 @@
   <main class="wrap">
     <p class="eyebrow">For businesses</p>
     <h1>Join the Directory</h1>
-    <p class="lede">Any Vegan business, anywhere. Find yours and claim it, or add it if it is not here yet. Join as a Partner and your page is yours to run, with your Partner Dashboard and a front-row seat on every campaign we run. Before January 1, 2027, Front Row Start puts the rest of 2026 on us.</p>
+    <p class="lede" id="lede">Any Vegan business, anywhere. Find yours and claim it, or add it if it is not here yet. Join as a Partner and your page is yours to run, with your Partner Dashboard and a front-row seat on every campaign we run. Before January 1, 2027, Front Row Start puts the rest of 2026 on us.</p>
 
     <div class="jl">
     <div class="jl-main">
+    <!-- Paginated (Sean, 2026-10-09, canon-sean-interface-defaults rule 14): one step per view, Back and Next -->
+    <ol class="stepper" id="stepper" hidden></ol>
     <!-- 1. Find the business, or add it -->
     <section class="card" id="find" hidden>
-      <h2><span class="step">1</span>Already listed? Search to see if it's there</h2>
+      <h2>Already listed? Search to see if it's there</h2>
       <input type="search" id="q" placeholder="Your business name" aria-label="Your business name">
       <div class="results" id="results"></div>
       <div class="add-row"><span>Don't see your business?</span><button type="button" class="btn btn-ghost" id="add-btn">Add it</button></div>
@@ -150,8 +175,9 @@
     </form>
     <!-- 2. Who you are, the business, and the $11 that locks it in: one form for a claim and for a new business -->
     <form id="claim" hidden novalidate>
+      <div data-step="newbiz">
       <section class="card" id="new-biz" hidden>
-        <div class="biz-row" style="margin-bottom:4px"><h2 style="margin:0"><span class="step">2</span>Your business</h2><button type="button" class="linkbtn" data-search-again>Search the Directory again</button></div>
+        <div class="biz-row" style="margin-bottom:4px"><h2 style="margin:0">Your business</h2><button type="button" class="linkbtn" data-search-again>Search the Directory again</button></div>
         <label class="f" for="n-name">Business name</label><input type="text" id="n-name" maxlength="120" autocomplete="organization">
         <div class="row2">
           <div><label class="f" for="n-cat">What kind of business</label><select id="n-cat"></select></div>
@@ -159,17 +185,8 @@
           <div><label class="f" for="n-state">State or region <small>(optional)</small></label><input type="text" id="n-state" maxlength="40" autocomplete="address-level1"></div>
         </div>
       </section>
-
-      <section class="card">
-        <h2><span class="step" id="you-step">2</span>About you</h2>
-        <div class="row2">
-          <div><label class="f" for="c-name">Your name</label><input type="text" id="c-name" autocomplete="name" required></div>
-          <div><label class="f" for="c-role">Your role <small>(owner, manager...)</small></label><input type="text" id="c-role" autocomplete="organization-title"></div>
-          <div><label class="f" for="c-email">Email</label><input type="email" id="c-email" autocomplete="email" required></div>
-          <div><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" autocomplete="tel"></div>
-        </div>
-      </section>
-
+      </div>
+      <div data-step="business">
       <section class="card" id="biz-details">
         <h2>About the business</h2>
         <label class="f" id="vs-l">How Vegan is it?</label>
@@ -182,24 +199,39 @@
         <input type="text" id="b-tag" maxlength="140">
         <label class="f" for="b-desc">Tell the community about your business</label>
         <textarea id="b-desc" maxlength="2000" required></textarea>
+      </section>
+
+      </div>
+      <div data-step="you">
+      <section class="card">
+        <h2>About you</h2>
         <div class="row2">
+          <div><label class="f" for="c-name">Your name</label><input type="text" id="c-name" autocomplete="name" required></div>
+          <div><label class="f" for="c-role">Your role <small>(owner, manager...)</small></label><input type="text" id="c-role" autocomplete="organization-title"></div>
+          <div><label class="f" for="c-email">Email</label><input type="email" id="c-email" autocomplete="email" required></div>
+          <div><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" autocomplete="tel"></div>
+        </div>
+        <h2 style="margin-top:22px">Where people find the business</h2>
+        <div class="row2" style="margin-top:-8px">
           <div><label class="f" for="b-web">Website <small>(optional)</small></label><input type="url" id="b-web" placeholder="yourbusiness.com"></div>
           <div><label class="f" for="b-ig">Instagram <small>(optional)</small></label><input type="text" id="b-ig" placeholder="@yourbusiness"></div>
           <div><label class="f" for="b-phone">Business phone <small>(optional)</small></label><input type="tel" id="b-phone"></div>
         </div>
       </section>
 
+      </div>
+      <div data-step="join">
       <!-- The way in: the Partner plan with Front Row Start (every business), Passport plans when the link asks, or just the claim -->
       <section class="card" id="plans-card">
-        <h2><span class="step" id="lock-step">3</span>Choose how to join</h2>
+        <h2>Choose how to join</h2>
         <p class="note founding-note" id="c-founding" hidden></p>
         <div class="choice plans" role="radiogroup" aria-label="Choose how to join" id="plans"></div>
         <p class="note guarantee" id="c-guarantee" hidden>If your pin, register kit and staff training aren't ready before your month starts, that month is on us. Anything else we deliver that isn't right, we make it right.</p>
       </section>
 
       <section class="card" id="amount-card">
-        <h2>Your contribution: from $11</h2>
-        <p class="note" style="margin-bottom:14px">Vegans Explore is a community built to help people find and support Vegan businesses. Claim your page with a contribution to that work, in any amount from $11. Give what fits your business. It also makes you a Founding Member.</p>
+        <h2>Your membership: from $11</h2>
+        <p class="note" style="margin-bottom:14px">A one-time contribution to the work of helping people find and support Vegan businesses, in any amount from $11. Give what fits your business.</p>
         <div class="amounts" id="amounts">
           <button type="button" data-amt="11" aria-pressed="false">$11</button>
           <button type="button" data-amt="25" aria-pressed="false">$25</button>
@@ -210,10 +242,16 @@
         <div class="money"><span>$</span><input type="number" id="amt" min="11" step="1" inputmode="decimal" placeholder="11 or more"></div>
       </section>
 
-      <button type="submit" class="btn" id="go">Lock it in</button>
-      <p class="msg" id="msg" role="status"></p>
-      <p class="note" style="margin-top:6px" id="go-note">You will finish on a secure Stripe page. We review every claim and application by hand.</p>
+      <p class="note" id="go-note">You will finish on a secure Stripe page. We review every claim and application by hand.</p>
+      </div>
     </form>
+    <div class="step-nav" id="step-nav" hidden>
+      <button type="button" class="btn btn-ghost" id="step-back">Back</button>
+      <span class="step-count" id="step-count"></span>
+      <button type="button" class="btn" id="step-next">Next</button>
+      <button type="submit" form="claim" class="btn" id="go">Take my front-row seat</button>
+    </div>
+    <p class="msg" id="msg" role="status"></p>
     </div>
     <aside class="jl-side" aria-label="Liz, your Guide"><div id="liz"></div></aside>
     </div>
@@ -236,9 +274,11 @@
         // A logo that does not load falls back to the initial.
         return l.logo_url ? '<img class="biz-logo" src="' + esc(l.logo_url) + '" alt="" onerror="this.outerHTML=this.getAttribute(\'data-init\')" data-init="' + esc(init) + '">' : init;
       }
-      function show(id) {
+      function show(id, flow) {
         ['find', 'biz-card', 'st-next', 'st-claimed', 'st-verified', 'claim', 'upgrade'].forEach(function (x) { $(x).hidden = id.indexOf(x) < 0; });
-        if (id.indexOf('claim') >= 0) watchLock();
+        // The steps and their Back / Next belong to the form only; the other views (you're in, claimed, plans) stand alone.
+        flow = !!flow;
+        $('stepper').hidden = !flow; $('step-nav').hidden = !flow; if (!flow) $('msg').textContent = '';
       }
       function api(body) {
         return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
@@ -264,26 +304,47 @@
       // first quarter is charged in January (ve-claims checks the date), for every business now, not only brands.
       var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
       function frontRow() { return FRONT_ROW; }
-      var BRAND_PRICE = function () { return frontRow() ? '$0 today, then $111 a quarter' : '$111 a quarter'; };
-      var BRAND_TEXT = function () { return frontRow() ? 'The rest of 2026 is on us. Your card is saved today and first charged in January 2027 for Q1 2027, then every quarter, with a front-row seat on our campaigns. Cancel any time before.' : 'Your seat at the table, every quarter.'; };
       var TNAME = { verified: 'Passport Stop', plus: 'Passport Anchor', brand: 'Partner' }, OFFER = { founding: { open: false } };
-      function planHtml(name, value, title, price, text, perks, checked) {
-        return '<label><input type="radio" name="' + name + '" value="' + value + '"' + (checked ? ' checked' : '') + '><span><b>' + title + '</b>' + (price ? '<span class="price">' + price + '</span>' : '') +
-          (text ? '<br>' + text : '') + (perks ? '<ul class="perks">' + perks.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') + '</span></label>';
-      }
       function founding() { return OFFER.founding && OFFER.founding.open; }
       var PASSPORT = /^(verified|plus)$/.test(qs.get('plan') || '');
+      // How to join (Sean, 2026-10-09: "we got to figure out what would be the difference... without it sounding like you
+      // don't get anything"). Partner is the full experience; a member claims the page and keeps it current, and can add
+      // the Partner side any time. Anything not live yet carries a Coming tag.
+      var COMING = ' <span class="tag" style="margin:0 0 0 4px;vertical-align:1px">Coming</span>';
+      function planCard(name, value, o, checked) {
+        return '<label><input type="radio" name="' + name + '" value="' + value + '"' + (checked ? ' checked' : '') + '>' +
+          (o.lead ? '<span class="plan-lead">' + o.lead + '</span>' : '') + '<span class="plan-name">' + o.title + '</span>' +
+          '<span class="plan-price">' + o.price + (o.sub ? ' <small>' + o.sub + '</small>' : '') + '</span>' +
+          (o.text ? '<span class="plan-text">' + o.text + '</span>' : '') +
+          '<ul class="ticks">' + o.ticks.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></label>';
+      }
+      function partnerCard(name) {
+        var guide = isBrand() ? 'Maya, your Guide, on your page' : 'Liz, your Guide, on your Partner Dashboard' + COMING;
+        return planCard(name, 'brand', { lead: 'The full experience', title: (frontRow() ? 'Front Row Start: ' : '') + pName(),
+          price: frontRow() ? '$0 today' : '$111', sub: frontRow() ? 'then $111 a quarter from January 2027' : 'a quarter',
+          text: frontRow() ? 'Nothing is charged today. Your card is saved and first charged in January 2027, then every quarter. Cancel any time before.' : 'Billed every quarter. Cancel any time.',
+          ticks: ['Your page, claimed and yours to update: details, photos and story', 'Your Partner Dashboard: views, visitors and what people open',
+            'A front-row seat on every campaign before it opens: game days, the Plant-Based Showcase, community nights', guide,
+            'Ads on our pages when the ad console opens' + COMING, 'Founding Member of Vegans Explore'] }, true);
+      }
+      function memberCard() {
+        return planCard('plan', 'claim', { lead: 'Start with the basics', title: 'Become a member', price: 'From $11', sub: 'one time',
+          text: 'A one-time contribution, in any amount from $11, to the work of helping people find Vegan businesses.',
+          ticks: ['Your page, claimed and yours to update: details, photos and story', 'Founding Member of Vegans Explore',
+            'Add the Partner side whenever you are ready: your dashboard, your Guide and our campaigns'] }, false);
+      }
+      function passportCards(name, f) {
+        var price = function (c) { return '$' + c; }, sub = f ? 'a quarter, founding: reserve free' : 'a quarter';
+        return planCard(name, 'verified', { lead: 'On the map', title: 'Passport Stop', price: price(250), sub: sub, ticks: PERKS.verified.map(esc) }, false) +
+          planCard(name, 'plus', { lead: 'On the map', title: 'Passport Anchor', price: price(500), sub: sub, ticks: PERKS.plus.map(esc) }, false);
+      }
       function renderPlans() {
         var f = founding(), full = f && OFFER.founding.full;
         var keep = document.querySelector('input[name=plan]:checked'), keepU = document.querySelector('input[name=uplan]:checked');
         keep = keep && keep.value; keepU = keepU && keepU.value;
-        var price = function (c) { return '$' + c + ' a quarter' + (f ? ', founding: reserve free' : ''); };
-        var partnerTitle = (frontRow() ? 'Front Row Start: ' : '') + pName();
-        var passport = !isBrand() && MODE !== 'add' && PASSPORT && !full ? planHtml('plan', 'verified', 'Passport Stop', price(250), '', PERKS.verified) + planHtml('plan', 'plus', 'Passport Anchor', price(500), '', PERKS.plus) : '';
-        $('plans').innerHTML = planHtml('plan', 'brand', partnerTitle, BRAND_PRICE(), BRAND_TEXT(), isBrand() ? PERKS.brand : PERKS.partner, true) + passport +
-          planHtml('plan', 'claim', 'Just claim it for now', 'From $11', 'A one-time contribution in any amount from $11. It makes you a Founding Member, and you can join as a ' + pName() + ' any time.', null, false);
-        $('up-plans').innerHTML = planHtml('uplan', 'brand', partnerTitle, BRAND_PRICE(), BRAND_TEXT(), isBrand() ? PERKS.brand : PERKS.partner, true) +
-          (isBrand() || full ? '' : planHtml('uplan', 'verified', 'Passport Stop', price(250), '', PERKS.verified) + planHtml('uplan', 'plus', 'Passport Anchor', price(500), '', PERKS.plus));
+        var passport = !isBrand() && MODE !== 'add' && PASSPORT && !full;
+        $('plans').innerHTML = partnerCard('plan') + (passport ? passportCards('plan', f) : '') + memberCard();
+        $('up-plans').innerHTML = partnerCard('uplan') + (isBrand() || full ? '' : passportCards('uplan', f));
         var note = !f || isBrand() ? '' : full ? 'Founding Passport spots in ' + OFFER.hub_name + ' are full for now. Email hello@vegansexplore.com and we will let you know when a spot opens.'
           : 'Founding Passport spots in ' + OFFER.hub_name + ': the Passport Challenge launches there in 2027. Reserve now and pay nothing until your first Challenge month starts; your founding price stays locked as long as you stay.';
         ['c-founding', 'up-founding'].forEach(function (id) { $(id).textContent = note; $(id).hidden = !note || (id === 'c-founding' && !passport); });
@@ -295,7 +356,7 @@
       function checkoutNote(p, f) {
         return p === 'claim' ? 'You will finish on a secure Stripe page. We review every claim and application by hand.'
           : f ? 'No card needed today. Your claim is confirmed with your first payment, when your first Challenge month starts. We review every claim.'
-          : p === 'brand' && frontRow() ? 'No charge today. Your card is saved on a secure Stripe page and first charged in January 2027, then every quarter (cancel any time: email hello@vegansexplore.com). We review every claim and application by hand.'
+          : p === 'brand' && frontRow() ? 'Your card is saved on a secure Stripe page; nothing is charged until January 2027. To cancel, email hello@vegansexplore.com. We review every claim and application by hand.'
           : 'Billed every quarter on a secure Stripe page (to cancel, email hello@vegansexplore.com). We review every claim and application by hand.';
       }
       function syncPlan() {
@@ -303,7 +364,7 @@
         var p = plan(), f = founding() && /^(verified|plus)$/.test(p);
         $('amount-card').hidden = p !== 'claim';
         $('c-guarantee').hidden = !/^(verified|plus)$/.test(p);
-        $('go').textContent = p === 'claim' ? 'Lock it in' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
+        $('go').textContent = p === 'claim' ? 'Become a member' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
         $('go-note').textContent = checkoutNote(p, f);
         var u = uplan(), uf = founding() && /^(verified|plus)$/.test(u);
         $('up-go').textContent = uf ? 'Reserve my founding spot' : u === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
@@ -376,18 +437,75 @@
         lockin: { say: 'Eleven dollars locks it in, and makes you a Founding Member of Vegans Explore.', clip: C.j3 },
         done: { say: 'You\'re in! Now let\'s look at what\'s next: your dashboard, ads on our pages, and our campaigns.', clip: C.j4 }
       } }) : { say: function () {} };
-      // Liz moves on to the offer once the visitor reaches it, and follows the choice they make there.
-      var lockSeen = false, io = null;
+      // On How to join, Liz follows the choice: the Front Row Start offer, or the $11.
       function lizFor(p) { return p === 'claim' ? 'lockin' : p === 'brand' && frontRow() ? 'offer' : null; }
-      window.__lizPlan = function (p) { var k = lockSeen && lizFor(p); if (k) liz.say(k); };
-      function watchLock() {
-        if (lockSeen || !window.IntersectionObserver || io) return;
-        io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !$('claim').hidden) { lockSeen = true; var k = lizFor(plan()); if (k) liz.say(k); io.disconnect(); } }); }, { threshold: 0.5 });
-        io.observe($('plans-card'));
+      window.__lizPlan = function (p) { if (STEP === 'join') liz.say(lizFor(p) || 'lockin'); };
+
+      // ---- The steps (Sean, 2026-10-09: "paginated instead of a slide down... they click next, and then keep clicking next,
+      // and then the final thing is choose how to join"; canon-sean-interface-defaults rule 14). One step per view, Back and
+      // Next, Next checks the step first, and the address bar carries the step (?step=) so the browser's Back works.
+      var STEP = 'find';
+      var STEP_NAME = { find: 'Find it', newbiz: 'Your business', business: 'The details', you: 'About you', join: 'How to join' };
+      function stepList() { return MODE === 'add' ? ['find', 'newbiz', 'business', 'you', 'join'] : !isBrand() ? ['find', 'business', 'you', 'join'] : ['find', 'you', 'join']; }
+      function stepUrl(name, push) {
+        var u = new URL(location.href);
+        if (name === 'find') u.searchParams.delete('step'); else u.searchParams.set('step', name);
+        history[push ? 'pushState' : 'replaceState']({ step: name }, '', u.pathname + u.search);
       }
+      function goStep(name, push) {
+        var list = stepList();
+        if (list.indexOf(name) < 0 || (name !== 'find' && MODE === 'find')) name = 'find';
+        STEP = name;
+        show(name === 'find' ? (L ? ['biz-card'] : ['find']) : (L && name === 'business' ? ['biz-card', 'claim'] : ['claim']), true);
+        $('lede').hidden = name !== 'find';
+        [].forEach.call(document.querySelectorAll('#claim [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== name; });
+        $('new-biz').hidden = MODE !== 'add';
+        var at = list.indexOf(name);
+        $('stepper').innerHTML = list.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + STEP_NAME[k] + '</li>'; }).join('');
+        $('step-count').textContent = 'Step ' + (at + 1) + ' of ' + list.length;
+        $('step-back').hidden = at === 0;
+        $('step-next').hidden = name === 'join' || (name === 'find' && !L);
+        $('go').hidden = name !== 'join';
+        $('msg').className = 'msg'; $('msg').textContent = '';
+        if (push !== undefined) stepUrl(name, push);
+        liz.say(name === 'find' ? (L ? 'claim' : 'find') : name === 'join' ? (lizFor(plan()) || 'lockin') : MODE === 'add' ? 'add' : 'claim');
+        if (name === 'join') syncPlan();
+        var top = document.querySelector('.jl'); if (top) { var y = top.getBoundingClientRect().top + scrollY - 84; if (scrollY > y) scrollTo(0, Math.max(0, y)); }
+        setTimeout(function () { var f = document.querySelector(name === 'find' ? '#q' : '#claim [data-step="' + name + '"] input:not([type=radio]), #claim [data-step="' + name + '"] select'); if (f && !f.value && f.offsetParent) f.focus({ preventScroll: true }); }, 0);
+      }
+      // Checks one step; says what is missing and returns false.
+      function checkStep(name) {
+        var add = MODE === 'add', vs = document.querySelector('input[name=vs]:checked');
+        if (name === 'find') return !!L || add;
+        if (name === 'newbiz') {
+          if (!$('n-name').value.trim()) return bad('Please add the business name.', $('n-name'));
+          if (!$('n-cat').value) return bad('Please choose what kind of business it is.', $('n-cat'));
+          if (!$('n-city').value.trim()) return bad('Please add the city.', $('n-city'));
+        }
+        if (name === 'business') {
+          // A product brand skips these (Sean, 2026-10-09): its page is built from our Guides, so we only need who they are.
+          if ((add || !isBrand()) && !vs) return bad('Please choose how Vegan the business is.');
+          if ((add || !isBrand()) && !$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
+        }
+        if (name === 'you') {
+          if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
+        }
+        if (name === 'join' && plan() === 'claim' && (!amount || amount < 11)) return bad('Please choose a contribution of $11 or more.', $('amt'));
+        return true;
+      }
+      $('step-next').onclick = function () {
+        if (!checkStep(STEP)) return;
+        var list = stepList(); goStep(list[list.indexOf(STEP) + 1], true);
+      };
+      $('step-back').onclick = function () { var list = stepList(), at = list.indexOf(STEP); if (at > 0) goStep(list[at - 1], true); };
+      window.addEventListener('popstate', function () {
+        if ($('claim').hidden && $('find').hidden && $('biz-card').hidden) return;
+        goStep(new URLSearchParams(location.search).get('step') || 'find');
+      });
       function setUrl(params) {
         var u = new URL(location.href);
-        ['listing', 'add', 'claim', 'applied', 'verified'].forEach(function (k) { u.searchParams.delete(k); });
+        ['listing', 'add', 'claim', 'applied', 'verified', 'step'].forEach(function (k) { u.searchParams.delete(k); });
         Object.keys(params || {}).forEach(function (k) { u.searchParams.set(k, params[k]); });
         history.replaceState(history.state, '', u.pathname + u.search);
       }
@@ -411,8 +529,7 @@
         e.preventDefault(); pick(a.getAttribute('data-pick'));
       });
       function findMode() {
-        MODE = 'find'; L = null; setUrl({}); show(['find']); liz.say('find');
-        setTimeout(function () { $('q').focus(); }, 0);
+        MODE = 'find'; L = null; setUrl({}); goStep('find');
       }
       document.addEventListener('click', function (e) { if (e.target.closest('[data-search-again]')) { e.preventDefault(); findMode(); } });
 
@@ -424,13 +541,11 @@
       function me() { try { return window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; } catch (e) { return null; } }
       function addMode() {
         MODE = 'add'; L = null; setUrl({ add: '1' });
-        $('new-biz').hidden = false; $('you-step').textContent = '3'; $('lock-step').textContent = '4';
         if (!$('n-name').value && $('q').value.trim()) $('n-name').value = $('q').value.trim();
         var m = me(); if (m) { if (!$('c-name').value) $('c-name').value = m.name || ''; if (!$('c-email').value) $('c-email').value = m.email || ''; }
-        renderPlans(); show(['claim']); liz.say('add');
-        setTimeout(function () { $('n-name').focus(); }, 0);
+        renderPlans(); goStep(arguments[0] || 'newbiz', !arguments[0]);
       }
-      $('add-btn').onclick = addMode;
+      $('add-btn').onclick = function () { addMode(); };
 
       // ---- The form.
       var amount = null;
@@ -470,17 +585,10 @@
       }
       function submit() {
         var vs = document.querySelector('input[name=vs]:checked'), add = MODE === 'add';
-        if (add && !$('n-name').value.trim()) return bad('Please add the business name.', $('n-name'));
-        if (add && !$('n-cat').value) return bad('Please choose what kind of business it is.', $('n-cat'));
-        if (add && !$('n-city').value.trim()) return bad('Please add the city.', $('n-city'));
-        if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
-        // A product brand skips these (Sean, 2026-10-09): its page is built from our Guides, so we only need who they are.
-        var askBiz = add || !isBrand();
-        if (askBiz && !vs) return bad('Please choose how Vegan the business is.');
-        if (askBiz && !$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
+        // Every step is checked again; a gap sends them back to that step with what is missing.
+        var list = stepList();
+        for (var n = 0; n < list.length; n++) { if (!checkStep(list[n])) { if (STEP !== list[n]) { goStep(list[n], true); checkStep(list[n]); } return; } }
         var p = plan();
-        if (p === 'claim' && (!amount || amount < 11)) return bad('Please choose a contribution of $11 or more.', $('amt'));
         // Signing in comes last, so nobody is asked for an account before they have found their business.
         if (!VEAuth.isLoggedIn()) {
           return VEAuth.showAuthModal('Sign in or create your free account to lock it in. It ties the business to you.', function () { afterSignIn(); });
@@ -556,7 +664,7 @@
         return rest('select=' + COLS + '&status=eq.approved&slug=eq.' + encodeURIComponent(slug) + '&limit=1').then(function (rows) {
           L = rows && rows[0];
           if (!L) { findMode(); return; }
-          MODE = 'claim'; $('new-biz').hidden = true; $('you-step').textContent = '2'; $('lock-step').textContent = '3';
+          MODE = 'claim';
           if (qs.get('listing') !== L.slug) setUrl({ listing: L.slug });
           $('biz').innerHTML = logo(L) + '<div><b>' + esc(L.name) + '</b><span>' + esc([L.address_city, L.category].filter(Boolean).join(' · ')) + '</span></div>';
           $('st-verified-view').href = '/directory/' + encodeURIComponent(L.slug);
@@ -567,7 +675,7 @@
           if (qs.get('claim') === 'submitted') return nextStep('claim');
           if (!VEAuth.isLoggedIn()) {
             if (L.claim_status === 'verified') { $('st-claimed-signin').hidden = false; return show(['biz-card', 'st-claimed']); }
-            fill(L); show(['biz-card', 'claim']); liz.say('claim'); return;
+            fill(L); renderPlans(); goStep(qs.get('step') || 'find'); return;
           }
           return api({ action: 'mine', listing_id: L.id }).catch(function () { return {}; }).then(function (d) {
             var c = d && d.claim;
@@ -589,9 +697,9 @@
             }
             // Claimed with the $11 and now joining as a Partner: the form again, with the Partner plan picked.
             if (c && (c.status === 'submitted' || c.status === 'approved') && qs.get('plan') !== 'brand') return nextStep('claim');
-            fill(L); show(['biz-card', 'claim']); liz.say('claim');
+            fill(L); renderPlans(); goStep(qs.get('step') || 'find');
             var back = qs.get('claim') || qs.get('verified');
-            if (back === 'cancelled' || back === 'unpaid') { loadDraft(); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
+            if (back === 'cancelled' || back === 'unpaid') { loadDraft(); goStep('join'); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
             var asked = qs.get('plan'); if (/^(verified|plus|brand)$/.test(asked || '')) { var pr = document.querySelector('input[name=plan][value="' + asked + '"]'); if (pr) { pr.checked = true; syncPlan(); } }
           });
         }).catch(function () { findMode(); });
@@ -603,8 +711,9 @@
         var slug = qs.get('listing'), applied = qs.get('applied');
         if (applied && qs.get('claim') === 'submitted') { var nm = ''; try { nm = sessionStorage.getItem('ve_join_name') || ''; } catch (e) {} return nextStep('applied', nm); }
         if (qs.get('add') === '1') {
-          addMode();
-          if (/^(cancelled|unpaid)$/.test(qs.get('claim') || '')) { loadDraft(); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
+          var back0 = /^(cancelled|unpaid)$/.test(qs.get('claim') || qs.get('verified') || '');
+          addMode(back0 ? 'join' : qs.get('step') || 'newbiz');
+          if (back0) { loadDraft(); syncPlan(); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
           return;
         }
         if (!slug) return findMode();
