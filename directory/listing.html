@@ -420,6 +420,9 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pd-subnav button:hover{background:#eaf3ec}
 .pd-subnav button[aria-current="true"]{background:#1f5f22;color:#fff}
 .pd-subnav .bd-tag{font-size:8.5px;padding:2px 5px;margin-left:4px}
+/* Liz in the right column while the locked Partner Dashboard is open, like Maya on a brand's offer */
+#pd-narr{display:none}
+@media(min-width:769px){.listing-page-grid.pd-on .listing-sidebar>:not(#pd-narr){display:none}.listing-page-grid.pd-on #pd-narr{display:block;position:sticky;top:72px}}
 .pd-locked{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
 .pd-locked-main{background:linear-gradient(100deg,rgba(9,20,12,.94),rgba(9,20,12,.78)),url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/south-florida-night.jpg') center/cover #0d1a10;color:#fff;border-radius:16px;padding:32px}
 .pd-locked-main h2{font-size:clamp(22px,2.4vw,30px);font-weight:900;line-height:1.2;margin:8px 0 10px}
@@ -2150,44 +2153,73 @@ function partnerLocked(l){
     '<div class="pd-locked-side"><h3>Run a Vegan business that is not listed?</h3><p>Any Vegan business, anywhere, can apply to be part of the Directory. It brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>' +
     '<a class="bd-btn o" href="/apply">Apply to be listed</a></div></div>';
 }
-// Liz walks a visitor through the locked Partner Dashboard (Sean, 2026-10-09: every Guide is walked through on camera).
+// Liz walks a visitor through the locked Partner Dashboard, laid out like the For <Brand> tour (Sean, 2026-10-09: "set up
+// just like how Oatly set up... Liz will be on the right hand side... the left hand side will be illustrating what she's
+// talking about"): the words and a picture in the tab, Liz in the right column while the tab is open (on top on a phone).
 // Each slide's say matches her recording (VEGuideTour.LIZ_PARTNER pt-1 .. pt-5). Without the component, the plain card.
+var PD_TOUR = null;
+function pdRail(){
+  var g = document.querySelector('.listing-page-grid'), tb = document.getElementById('tab-brand');
+  var on = !!(g && document.getElementById('pd-narr') && tb && tb.classList.contains('active'));
+  if(g) g.classList.toggle('pd-on', on);
+  if(!on && PD_TOUR) PD_TOUR.stop();
+}
 function mountPartnerLocked(el, l){
   if(!el) return;
-  if(!window.VEGuideTour){ el.innerHTML = partnerLocked(l); return; }
+  var side = document.querySelector('.listing-page-grid .listing-sidebar');
+  if(!window.VEGuideTour || !side){ el.innerHTML = partnerLocked(l); return; }
   var brand = !!l._brandSite, claimed = l.claim_status === 'verified', C = VEGuideTour.LIZ_PARTNER;
   var claimHref = '/claim?listing=' + encodeURIComponent(l.slug || '') + (brand ? '&plan=brand' + (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '&offer=front-row' : '') : '');
   var signedIn = !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn());
-  var COMING = ' <span class="vgt-tag">Coming</span>';
-  var actions = (claimed ? '' : '<a class="vgt-btn" href="' + esc(claimHref) + '">Claim ' + esc(l.name) + '</a>') +
-    (signedIn ? '' : '<button type="button" class="vgt-btn o" data-pd-signin>' + (claimed ? 'Sign in' : 'Already claimed? Sign in') + '</button>');
+  var COMING = '<span class="vgt-tag">Coming</span>', N = esc(l.name);
+  var host = document.getElementById('pd-narr');
+  if(!host){ host = document.createElement('div'); host.id = 'pd-narr'; side.insertBefore(host, side.firstChild); }
+  var claimBtn = claimed ? '' : '<a class="vgt-btn o" href="' + esc(claimHref) + '">Claim ' + N + '</a>';
+  var signBtn = signedIn ? '' : '<button type="button" class="vgt-btn o" data-pd-signin>' + (claimed ? 'Sign in' : 'Already claimed? Sign in') + '</button>';
+  var CITY = function(slug, name){ return '<div style="background-image:url(\'/communities/' + slug + '/banner.jpg\')"><span>' + name + '</span></div>'; };
   el.innerHTML = '<div class="pd-tour"></div>';
-  VEGuideTour.mount(el.firstChild, { guide: 'Liz', title: 'Your Guide to Vegans Explore', slides: [
-    { t: 'Partner Dashboard', h: claimed ? esc(l.name) + '\'s dashboard is open to its team' : 'Is ' + esc(l.name) + ' your ' + (brand ? 'brand' : 'business') + '?', clip: C.pt1,
+  PD_TOUR = VEGuideTour.mount(el.firstChild, { guide: 'Liz', title: 'Your Guide to Vegans Explore', narr: host, wide: '(min-width:769px)', slides: [
+    { t: 'Partner Dashboard', h: claimed ? N + '\'s dashboard is open to its team' : 'Is ' + N + ' your ' + (brand ? 'brand' : 'business') + '?', clip: C.pt1,
       say: 'Hi, I\'m Liz, your Guide to Vegans Explore. If this is your business, this dashboard can be yours.',
       body: '<p>' + (claimed ? 'This page has been claimed. If you are on the team, sign in with the account that claimed it.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
-        '<div class="vgt-btns"><button type="button" class="vgt-btn" data-vgt-start>&#9654; Start the tour</button>' + actions.replace('class="vgt-btn"', 'class="vgt-btn o"') + '</div>' },
+        '<div class="vgt-btns"><button type="button" class="vgt-btn" data-vgt-start>&#9654; Start the tour</button>' + claimBtn + signBtn + '</div>',
+      pic: '<div class="vgt-snap vgt-page" aria-hidden="true"><div class="vgt-snap-h"><span>Your page on Vegans Explore</span><span>' + (claimed ? 'Claimed' : 'Not claimed yet') + '</span></div>' +
+        '<div class="vgt-page-id"><i>' + esc(String(l.name || '?').trim().charAt(0)) + (l.logo_url ? '<em style="background-image:url(\'' + esc(l.logo_url) + '\')"></em>' : '') + '</i>' +
+        '<div><b>' + N + '</b><span>' + esc([l.category, [l.city, l.state].filter(Boolean).join(', ')].filter(Boolean).join(' \u00b7 ')) + '</span></div></div>' +
+        '<div class="vgt-snap-tabs"><span>Overview</span><span class="on">&#128274; Partner Dashboard</span></div>' +
+        '<div class="vgt-snap-tiles"><div><b>&middot;</b><span>Page views</span></div><div><b>&middot;</b><span>Visitors</span></div></div></div>' },
     { t: 'Your page, your way', h: 'You run your page', clip: C.pt2,
       say: 'Claim it and you run your page: your photos, your story, and your numbers, all in one place.',
       body: '<ul><li><b>Your page, your way.</b> ' + (brand ? 'Your products, photos and descriptions.' : 'Your details, photos and story.') + '</li>' +
-        '<li><b>Insights.</b> How many people find you and what they open.</li><li><b>Liz, your Guide.</b> Ask anything; the team answers what she cannot.</li></ul>' },
+        '<li><b>Insights.</b> How many people find you and what they open.</li><li><b>Liz, your Guide.</b> Ask anything; the team answers what she cannot.</li></ul>',
+      pic: '<div class="vgt-snap" aria-hidden="true"><div class="vgt-snap-h"><span>' + N + '</span><span>Partner Dashboard</span></div>' +
+        '<div class="vgt-snap-tabs"><span class="on">Insights</span><span>Your page</span><span>Opportunities</span><span>Media</span></div>' +
+        '<div class="vgt-snap-tiles"><div><b>&middot;</b><span>Page views</span></div><div><b>&middot;</b><span>Visitors</span></div><div><b>&middot;</b><span>' + (brand ? 'Products opened' : 'Photos opened') + '</span></div><div><b>&middot;</b><span>From a link</span></div></div>' +
+        '<div class="vgt-snap-bars">' + [18, 30, 24, 42, 36, 55, 48, 62, 58, 74, 66, 82].map(function(h){ return '<i style="height:' + h + '%"></i>'; }).join('') + '</div></div>' },
     { t: 'What\'s coming', h: 'A first look at what\'s coming', clip: C.pt3,
       say: 'You also get a first look at what\'s coming: game days, the Plant-Based Showcase, and community nights.',
-      body: '<ul><li><b>Game days.</b> Brands sampling with fans, and the community tailgating together.' + COMING + '</li>' +
-        '<li><b>The Plant-Based Showcase.</b> At events that are not Vegan yet: college games and festivals.' + COMING + '</li>' +
-        '<li><b>Community nights.</b> In each city, starting in South Florida in November.' + COMING + '</li></ul>' },
+      body: '<p>Partners hear first and pick where they fit: sampling, coupons for our members, content before and after.</p>',
+      pic: '<div class="vgt-camps"><div>' + COMING + '<b>Game day: the Plant-Based Showcase</b><span>Miami Dolphins game day, Hard Rock Stadium</span><em>Sunday, November 29, 2026</em></div>' +
+        '<div>' + COMING + '<b>The Showcase on the road</b><span>College games and festivals, where people are not Vegan yet</span></div>' +
+        '<div>' + COMING + '<b>Community nights</b><span>In each city, starting in South Florida</span><em>From November</em></div></div>' },
     { t: 'Not listed yet?', h: 'Any Vegan business, anywhere', clip: C.pt4,
       say: 'Not listed yet? Any Vegan business, anywhere, can apply to be part of the Directory.',
       body: '<p>Run a Vegan business that is not in the Directory? Apply and it brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>' +
-        '<div class="vgt-btns"><a class="vgt-btn o" href="/apply">Apply to be listed</a></div>' },
+        '<div class="vgt-btns"><a class="vgt-btn o" href="/apply">Apply to be listed</a></div>',
+      pic: '<div class="vgt-cities">' + CITY('south-florida', 'South Florida') + CITY('new-york', 'New York') + CITY('los-angeles', 'Los Angeles') + '<div class="any"><span>And anywhere else</span></div></div>' },
     { t: 'Your next step', h: 'Claim it or apply', clip: C.pt5,
       say: 'Claim this page or apply to be listed, and I\'ll walk you through the rest.',
-      body: '<p>' + (claimed ? 'On the team? Sign in with the account that claimed this page.' : 'Claim ' + esc(l.name) + ' to open its dashboard.') + ' Running a different Vegan business? Apply to be listed.</p>' +
-        '<div class="vgt-btns">' + actions + '<a class="vgt-btn o" href="/apply">Apply to be listed</a></div>' }
+      body: '<p>' + (claimed ? 'On the team? Sign in with the account that claimed this page.' : 'Claim ' + N + ' to open its dashboard.') + ' Running a different Vegan business? Apply to be listed.</p>',
+      pic: '<div class="vgt-choices">' +
+        (claimed ? (signedIn ? '' : '<a href="#" data-pd-signin><small>On the team</small><b>Sign in</b><span>With the account that claimed ' + N + '.</span></a>')
+          : '<a href="' + esc(claimHref) + '"><small>This is mine</small><b>Claim ' + N + '</b><span>Your page, your numbers and your dashboard.</span></a>') +
+        '<a href="/apply"><small>A different business</small><b>Apply to be listed</b><span>Any Vegan business, anywhere.</span></a></div>' }
   ]});
+  pdRail();
 }
 document.addEventListener('click', function(e){
   if(!e.target.closest || !e.target.closest('[data-pd-signin]')) return;
+  e.preventDefault();
   if(window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in with the account that claimed this page.', function(){ location.reload(); });
 });
 // A listing that is not a product brand: Partner Dashboard is locked, or, for its owner, its numbers (ve-claims brand_stats).
@@ -2510,6 +2542,7 @@ function showListingTab(target){
   var panel = document.getElementById('tab-'+target);
   if(panel) panel.classList.add('active');
   if(target === 'photos') wireCarousel('tab-photos');
+  pdRail();
   // The address bar carries the tab, so a link or Back opens the same view.
   var u = new URL(location.href);
   if(target === 'overview') u.searchParams.delete('tab'); else u.searchParams.set('tab', target);

@@ -128,20 +128,26 @@
     // Liz walks an applicant through (Sean, 2026-10-09: every Guide is walked through on camera). Each say matches her recording.
     (function () {
       var el = document.getElementById('liz-tour'); if (!el || !window.VEGuideTour) return;
-      var C = VEGuideTour.LIZ_PARTNER, COMING = ' <span class="vgt-tag">Coming</span>';
+      var C = VEGuideTour.LIZ_PARTNER, COMING = '<span class="vgt-tag">Coming</span>';
+      var CITY = function (slug, name) { return '<div style="background-image:url(\'/communities/' + slug + '/banner.jpg\')"><span>' + name + '</span></div>'; };
       VEGuideTour.mount(el, { guide: 'Liz', title: 'Your Guide to Vegans Explore', slides: [
         { t: 'Apply to be listed', h: 'Any Vegan business, anywhere', clip: C.pt4,
           say: 'Not listed yet? Any Vegan business, anywhere, can apply to be part of the Directory.',
-          body: '<p>Restaurants, brands, makers, markets, services: if it is Vegan, it belongs here. Your page brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>' },
+          body: '<p>Restaurants, brands, makers, markets, services: if it is Vegan, it belongs here. Your page brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>',
+          pic: '<div class="vgt-cities">' + CITY('south-florida', 'South Florida') + CITY('new-york', 'New York') + CITY('los-angeles', 'Los Angeles') + '<div class="any"><span>And anywhere else</span></div></div>' },
         { t: 'What you get', h: 'A first look at what\'s coming', clip: C.pt3,
           say: 'You also get a first look at what\'s coming: game days, the Plant-Based Showcase, and community nights.',
-          body: '<ul><li><b>Game days.</b> Brands sampling with fans, and the community tailgating together.' + COMING + '</li>' +
-            '<li><b>The Plant-Based Showcase.</b> At events that are not Vegan yet: college games and festivals.' + COMING + '</li>' +
-            '<li><b>Community nights.</b> In each city, starting in South Florida in November.' + COMING + '</li></ul>' },
+          body: '<p>Listed businesses hear first and pick where they fit: sampling, coupons for our members, content before and after.</p>',
+          pic: '<div class="vgt-camps"><div>' + COMING + '<b>Game day: the Plant-Based Showcase</b><span>Miami Dolphins game day, Hard Rock Stadium</span><em>Sunday, November 29, 2026</em></div>' +
+            '<div>' + COMING + '<b>The Showcase on the road</b><span>College games and festivals, where people are not Vegan yet</span></div>' +
+            '<div>' + COMING + '<b>Community nights</b><span>In each city, starting in South Florida</span><em>From November</em></div></div>' },
         { t: 'Your application', h: 'Tell us about your business', clip: C.pt6,
           say: 'Tell us about your business below. We review every application, and I\'ll be right here when you\'re in.',
-          body: '<p>We review every application by hand. Once yours is approved, your page goes live in the Directory and its Partner Dashboard is yours.</p>' +
-            '<div class="vgt-btns"><a class="vgt-btn" href="#apply" data-to-form>Start my application</a></div>' }
+          body: '<p>It takes a few minutes. We review every application by hand.</p>' +
+            '<div class="vgt-btns"><a class="vgt-btn" href="#apply" data-to-form>Start my application</a></div>',
+          pic: '<ol class="vgt-steps"><li><div><b>Tell us about your business</b><span>The form below: what you do, where, and how Vegan it is.</span></div></li>' +
+            '<li><div><b>We review it by hand</b><span>And write to you at the email you give us.</span></div></li>' +
+            '<li><div><b>Your page goes live</b><span>In the Directory, and its Partner Dashboard is yours.</span></div></li></ol>' }
       ]});
       el.addEventListener('click', function (e) {
         if (!e.target.closest('[data-to-form]')) return; e.preventDefault();

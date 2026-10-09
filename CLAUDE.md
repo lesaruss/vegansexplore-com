@@ -460,8 +460,10 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Ad console (Coming). On a brand page, the For <Brand> offer still shows under Partner Dashboard to anyone on the brand's link.
 - **Liz walks the locked Partner Dashboard and /apply** (Sean, 2026-10-09: every Guide is walked through on camera; Liz
   is the general Guide, Maya stays with the Dairy Guide brands). The shared component is `/public/ve-guide-tour.js`
-  (`VEGuideTour.mount(el, {guide, title, slides:[{t, h, body, say, clip}]})`: words left, the Guide right, Back / N of M /
-  Next, nothing plays until Start the tour). `mountPartnerLocked` in `directory/listing.html` runs it on every listing's
+  (`VEGuideTour.mount(el, {guide, title, narr, slides:[{t, h, body, pic, say, clip}]})`), laid out like the For <Brand> tour
+  (Sean, 2026-10-09: "set up just like how Oatly set up"): the words and a picture of what she is talking about in a dark
+  panel, the Guide in the page's right column (`narr`; on a listing she takes the sidebar's place while the tab is open,
+  `pdRail`), on top of the slide on a phone. Back / N of M / Next; nothing plays until Start the tour. `mountPartnerLocked` in `directory/listing.html` runs it on every listing's
   locked Partner Dashboard (5 slides, clips pt-1 to pt-5); `/apply` runs pt-4, pt-3, pt-6. Clips in
   `vegan-media/media/liz/partner-tour/` (`pt-<n>.mp4`, `pt-poster-<n>.jpg`); Liz's voice is
   `character_agents.elevenlabs_voice_id` for liz (Sean picked it, sample 3). A slide's `say` must match the recording.
