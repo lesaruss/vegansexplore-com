@@ -26,8 +26,8 @@
   var M = MEDIA + 'liz/partner-tour/';
   var LIZ_PARTNER = {};
   for (var n = 1; n <= 6; n++) LIZ_PARTNER['pt' + n] = { video: M + 'pt-' + n + '.mp4', poster: M + 'pt-poster-' + n + '.jpg' };
-  // Join the Directory (/claim): find, found it, lock it in, you're in.
-  for (n = 1; n <= 4; n++) LIZ_PARTNER['j' + n] = { video: M + 'j-' + n + '.mp4', poster: M + 'j-poster-' + n + '.jpg' };
+  // Join the Directory (/claim): find, found it, the $11, you're in, and Front Row Start (j5).
+  for (n = 1; n <= 5; n++) LIZ_PARTNER['j' + n] = { video: M + 'j-' + n + '.mp4', poster: M + 'j-poster-' + n + '.jpg' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function css() {

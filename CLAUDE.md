@@ -448,8 +448,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
 - **Partner Dashboard on every listing** (Sean, 2026-10-09: "instead of getting started, it should be a dashboard...
   partner dashboard. And then underneath it is a sub menu"). One tab, `data-tab="brand"`, after Products on a brand page and
   last elsewhere. Locked for visitors (`partnerLocked`): claim this page (a brand's claim carries Front Row Start before
-  January 1), or, for a business that is not listed, **Apply to be listed** (`/apply`, `ve-claims` `listing_apply`: any Vegan
-  business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
+  January 1), or, for a business that is not listed, **Apply to be listed** (Join the Directory, below: `ve-claims` `listing_apply`, any
+  Vegan business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
   Application to be listed; approving lists it and makes the applicant its owner). A non-brand owner sees their numbers
   (`loadPartnerHome`). A brand's partner gets the sub-menu (`.pd-subnav`, `PD_SUBS`): Getting started, **Insights** (the
   numbers from `brand_stats` once the claim is approved, and Campaigns: clicks and each report within 7 days of an event,
@@ -468,6 +468,22 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   `vegan-media/media/liz/partner-tour/` (`pt-<n>.mp4`, `pt-poster-<n>.jpg`); Liz's voice is
   `character_agents.elevenlabs_voice_id` for liz (Sean picked it, sample 3). A slide's `say` must match the recording.
   Liz's face sits higher in frame than Maya's, so `assemble_r5.py`'s mouth search misses on her: check each ending by eye.
+- **Join the Directory** (`/claim`, Sean, 2026-10-09: "it should be one form... already have a business listed? Search to see if
+  it's there... if they don't see their business... that's when they add their information"). One page, Liz on the right
+  (`VEGuideTour.narrator`, clips `j-1` to `j-5` with `pt-6`): 1. search the Directory and pick the business, or **Add it** (`?add=1`;
+  `/apply` forwards here); 2. about you and the business; 3. **Choose how to join**; then "You're in" with what comes next. Sign-in
+  comes last, at the button. A cancelled checkout comes back with what they typed (`sessionStorage`).
+- **The Partner plan for every business** (Sean, 2026-10-09: "I would rather give everybody the Oatly style offer... the way in...
+  they can get access and take control knowing that it's going to activate come January... invested in the platform because of
+  the platform, not because of 11 bucks"). `ve-claims` tier `brand` is the $111 quarterly Partner plan for any listing: **Brand
+  Partner** for a product brand, **Partner** (Vegans Explore Partner on Stripe and in email) for everyone else (`tierName`). Front
+  Row Start applies to all: no charge today, first quarter in January 2027. It is the default on Join the Directory, for a claim
+  and for a new business (`listing_apply` with `tier: 'brand'` runs the same subscription checkout); "Just claim it for now"
+  (a contribution from $11, Founding Member) is the second choice, and Passport Stop and Anchor show only when the link asks
+  (`?plan=verified|plus`). A brand returns to its page (Maya's Getting Started); any other Partner and every new business to
+  `/claim?...&claim=submitted&joined=partner`. The $11 is the member offer; members join through the Guides.
+  Not built yet: the partner's home (Getting started, Opportunities, Media, Ask, Ad console) for businesses that are not brands;
+  today they get their numbers on the Partner Dashboard once approved.
 - **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
   signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
   `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in

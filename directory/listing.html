@@ -2212,7 +2212,7 @@ function mountPartnerLocked(el, l){
       body: '<p>' + (claimed ? 'On the team? Sign in with the account that claimed this page.' : 'Claim ' + N + ' to open its dashboard.') + ' Running a different Vegan business? Apply to be listed.</p>',
       pic: '<div class="vgt-choices">' +
         (claimed ? (signedIn ? '' : '<a href="#" data-pd-signin><small>On the team</small><b>Sign in</b><span>With the account that claimed ' + N + '.</span></a>')
-          : '<a href="' + esc(claimHref) + '"><small>This is mine</small><b>Claim ' + N + '</b><span>Your page, your numbers and your dashboard.</span></a>') +
+          : '<a href="' + esc(claimHref) + '"><small>This is mine</small><b>Claim ' + N + '</b><span>Your page, your numbers and your dashboard.' + (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? ' Front Row Start: nothing today, the rest of 2026 on us.' : '') + '</span></a>') +
         '<a href="/claim?add=1"><small>A different business</small><b>Apply to be listed</b><span>Any Vegan business, anywhere.</span></a></div>' }
   ]});
   pdRail();
