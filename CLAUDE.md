@@ -389,7 +389,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Partner keeps it. Brand Partner is `ve-claims` tier `brand`, $111 a quarter, the same quarterly Stripe subscription and
   claim path as Passport Stop and Anchor (no founding spots, no Passport results sheet). `/claim?listing=<slug>&plan=brand`
   offers it, and a Food Brands or Brands listing is offered only that plan. The tier checks were widened by
-  `supabase/migrations/20261008_brand_partner_tier.sql`, run in the dashboard SQL editor (it drops constraints).
+  `supabase/migrations/20261008_brand_partner_tier.sql` (applied 2026-10-09 through the Supabase connector). Schema
+  changes are applied by Logan through the connector and checked in the database, never handed to Sean to paste.
 - **For <Brand>** tab (`?tab=brand`): the brand's door. It shows to the owner, a super admin, and anyone arriving on the
   link we send (it then stays for the visit). The offer is a narrated tour, nine slides (the page we built; where people
   find them, as live scaled previews of the real pages, `?preview=1` so they are not counted; a sample ad we drew of our
