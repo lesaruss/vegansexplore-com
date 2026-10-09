@@ -480,7 +480,11 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   (`VEGuideTour.narrator`, clips `j-1` to `j-5` with `pt-6`), paginated: Find it (search and pick, or **Add it**, `?add=1`;
   `/apply` forwards here), Your business (new businesses only: name, kind, city), The details (how Vegan, one line, about),
   About you (and the website, Instagram and phone), **How to join**; then "You're in" with what comes next. Sign-in comes last,
-  at the button. A cancelled checkout comes back to How to join with what they typed (`sessionStorage`).
+  at the button, with no sign-in window: signed out, About you asks for a password and the button makes the account from the
+  name and email already typed (`VEAuth.signup`), then goes on to checkout; an email that already has an account gets
+  Sign in instead with the email filled in (Sean, 2026-10-09: "what's the easiest, simplest way to do that handoff").
+  A cancelled checkout comes back to How to join with what they typed (`sessionStorage`). On a phone the step change scrolls
+  to just under the sticky menu bar (measured, it is taller there), so Liz is never cut off.
 - **How to join, Partner or member** (Sean, 2026-10-09: "we got to figure out what would be the difference... without it
   sounding like you don't get anything"). Two cards side by side. **Partner** ("The full experience", Front Row Start before
   January 1): the page claimed and theirs to update, the Partner Dashboard numbers, a front-row seat on every campaign, their

@@ -69,7 +69,7 @@
     .jl{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start;}
     .jl-side{position:sticky;top:84px;}
     @media (max-width:900px){.jl{grid-template-columns:minmax(0,1fr);}.jl-side{position:static;order:-1;}
-      .jl-side .vgt-narr{display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 12px;align-items:start;}.jl-side .vgt-vslot{grid-row:span 3;margin:0;}.jl-side .vgt-name{margin:0;}
+      .jl-side .vgt-narr{display:grid;grid-template-columns:148px minmax(0,1fr);gap:6px 14px;align-items:center;padding:14px;}.jl-side .vgt-vslot{grid-row:span 3;margin:0;}.jl-side .vgt-name{margin:0;}
       .jl-side .vgt-bubble{padding:10px 12px;font-size:13.5px;}.jl-side .vgt-bubble::before{display:none;}.jl-side .vgt-play{margin-top:4px;}}
     .add-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ve-border);font-size:14px;font-weight:700;}
     .biz-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;}
@@ -210,6 +210,13 @@
           <div><label class="f" for="c-role">Your role <small>(owner, manager...)</small></label><input type="text" id="c-role" autocomplete="organization-title"></div>
           <div><label class="f" for="c-email">Email</label><input type="email" id="c-email" autocomplete="email" required></div>
           <div><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" autocomplete="tel"></div>
+        </div>
+        <!-- Signed out: the account is made from this step (Sean, 2026-10-09: "couldn't it take the information from what
+             they've completed... what's the easiest, simplest way to do that?"). One more field, no sign-in window. -->
+        <div id="acct" hidden>
+          <label class="f" for="c-pw">Create a password <small>(8 or more characters)</small></label>
+          <input type="password" id="c-pw" autocomplete="new-password" minlength="8">
+          <p class="note" style="margin-top:6px">With your name and email above, this makes your free Vegans Explore account, so the business is tied to you. Already have an account? <button type="button" class="linkbtn" id="acct-signin">Sign in instead</button></p>
         </div>
         <h2 style="margin-top:22px">Where people find the business</h2>
         <div class="row2" style="margin-top:-8px">
@@ -460,6 +467,7 @@
         $('lede').hidden = name !== 'find';
         [].forEach.call(document.querySelectorAll('#claim [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== name; });
         $('new-biz').hidden = MODE !== 'add';
+        $('acct').hidden = VEAuth.isLoggedIn();
         var at = list.indexOf(name);
         $('stepper').innerHTML = list.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + STEP_NAME[k] + '</li>'; }).join('');
         $('step-count').textContent = 'Step ' + (at + 1) + ' of ' + list.length;
@@ -470,7 +478,9 @@
         if (push !== undefined) stepUrl(name, push);
         liz.say(name === 'find' ? (L ? 'claim' : 'find') : name === 'join' ? (lizFor(plan()) || 'lockin') : MODE === 'add' ? 'add' : 'claim');
         if (name === 'join') syncPlan();
-        var top = document.querySelector('.jl'); if (top) { var y = top.getBoundingClientRect().top + scrollY - 84; if (scrollY > y) scrollTo(0, Math.max(0, y)); }
+        // Bring the top of the steps (Liz first, on a phone) just under the sticky menu bar, whose height differs by screen.
+        var top = document.querySelector('.jl'), bar = document.querySelector('.ve-nav');
+        if (top) { var y = top.getBoundingClientRect().top + scrollY - ((bar ? bar.getBoundingClientRect().bottom : 64) + 12); if (Math.abs(scrollY - y) > 4 && scrollY > y - 4) scrollTo(0, Math.max(0, y)); }
         setTimeout(function () { var f = document.querySelector(name === 'find' ? '#q' : '#claim [data-step="' + name + '"] input:not([type=radio]), #claim [data-step="' + name + '"] select'); if (f && !f.value && f.offsetParent) f.focus({ preventScroll: true }); }, 0);
       }
       // Checks one step; says what is missing and returns false.
@@ -490,6 +500,7 @@
         if (name === 'you') {
           if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
           if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
+          if (!VEAuth.isLoggedIn() && $('c-pw').value.length < 8) return bad('Please create a password of 8 or more characters, or sign in instead.', $('c-pw'));
         }
         if (name === 'join' && plan() === 'claim' && (!amount || amount < 11)) return bad('Please choose a contribution of $11 or more.', $('amt'));
         return true;
@@ -589,9 +600,17 @@
         var list = stepList();
         for (var n = 0; n < list.length; n++) { if (!checkStep(list[n])) { if (STEP !== list[n]) { goStep(list[n], true); checkStep(list[n]); } return; } }
         var p = plan();
-        // Signing in comes last, so nobody is asked for an account before they have found their business.
+        // Signed out: make the account from what they already typed (name, email, the password on About you), then go on.
+        // An email that already has an account is offered Sign in instead, with the email filled in.
         if (!VEAuth.isLoggedIn()) {
-          return VEAuth.showAuthModal('Sign in or create your free account to lock it in. It ties the business to you.', function () { afterSignIn(); });
+          $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Creating your account...';
+          VEAuth.signup($('c-email').value.trim(), $('c-pw').value, $('c-name').value.trim(), null, null, '').then(function (d) {
+            $('go').disabled = false;
+            if (d && d.token) { $('acct').hidden = true; $('msg').textContent = ''; return afterSignIn(); }
+            if (d && /already exists/i.test(d.error || '')) { $('msg').className = 'msg bad'; $('msg').innerHTML = 'That email already has a Vegans Explore account. <button type="button" class="linkbtn" data-acct-signin>Sign in to continue</button>'; return; }
+            bad((d && d.error) || 'We could not create your account. Please try again.');
+          }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
+          return;
         }
         $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
         if (add && p !== 'claim' && p !== 'brand') p = 'brand';
@@ -621,6 +640,12 @@
         });
       }
       $('claim').addEventListener('submit', function (e) { e.preventDefault(); submit(); });
+      function signInInstead() {
+        VEAuth.showAuthModal('Sign in to continue. Everything you filled in is kept.', function () { $('acct').hidden = true; $('msg').textContent = ''; if (STEP === 'join') afterSignIn(); }, 'login');
+        var em = document.getElementById('ve-am-email'); if (em && !em.value) em.value = $('c-email').value.trim();
+      }
+      $('acct-signin').onclick = signInInstead;
+      document.addEventListener('click', function (e) { if (e.target.closest('[data-acct-signin]')) signInInstead(); });
       $('upgrade').addEventListener('submit', function (e) {
         e.preventDefault();
         var t = document.querySelector('input[name=uplan]:checked');
