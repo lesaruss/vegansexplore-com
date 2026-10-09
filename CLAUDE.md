@@ -392,20 +392,32 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   `supabase/migrations/20261008_brand_partner_tier.sql` (applied 2026-10-09 through the Supabase connector). Schema
   changes are applied by Logan through the connector and checked in the database, never handed to Sean to paste.
 - **For <Brand>** tab (`?tab=brand`): the brand's door. It shows to the owner, a super admin, and anyone arriving on the
-  link we send (it then stays for the visit). The offer is a narrated tour, six slides, rebuilt after a panel (Sean,
-  2026-10-09; consensus: never show planned things as live, being early is the asset, the brand's own numbers are the
-  proof, the gift comes before the price): 1. we built your page, yours to keep whatever you decide; 2. from the guide
-  to the shelf (live scaled previews of the Guide, the product and a store's Vegan aisle, `?preview=1` so they are not
-  counted); 3. your numbers so far (`ve_listing_totals()`, four counts since the first visit, open to anyone on the link
-  for a listing with `details.brand_door`; the breakdown stays behind `brand_stats`); 4. the sample ad, marked
-  unpublished, nothing runs without the brand's approval, taken down on request; 5. early, on purpose: Live now beside
-  Coming, and you see it first (campaigns and giveaways, scavenger hunts, original content, more cities); 6. Be our
-  first Brand Partner, $111 a quarter (`brand_door.first`, false for later brands), buttons Be our first Brand Partner,
-  Ask Sean a question, and Not yet, send me the numbers. Nothing plays until the
+  link we send (it then stays for the visit). The offer is a narrated tour, seven slides since round 5 (Sean, 2026-10-09,
+  run past a panel each round; consensus: never show planned things as live, being early is the asset, the brand's own
+  numbers are the proof, the gift comes before the price, no dollar budgets on the tour): 1. we built your page, yours to
+  keep whatever you decide; 2. from the guide to the shelf (live scaled previews of the Guide, the product and a store's
+  Vegan aisle, `?preview=1` so they are not counted); 3. your numbers, counting from day one (the page is brand new,
+  `brand_door.made`; `ve_listing_totals()` for anyone on the link, the breakdown behind `brand_stats`; they grow by joining
+  campaigns: Guides, events, social and creators, podcasts, ads and videos, our animated programming, all Coming);
+  4. the sample ad, unpublished, nothing runs without the brand's approval; 5. campaigns, every card marked Coming
+  (`CAMPAIGNS` in `loadBrandSite`, checked in canon: the Plant-Based Showcase on Miami Dolphins game day at Hard Rock
+  Stadium, Sunday, November 29, 2026; community nights from November; the World Vegan Expo, city and date not set; our
+  Q1 2027 campaigns; a dated card drops off once it passes) and what a partner picks in each (products, a featured Guide
+  spot, ad slots on chosen pages, their own ads or ours, a spend to their budget, an assigned campaign manager);
+  6. where the membership goes (events, volunteer Community Managers, the apps) and how they see it (live dashboard, a
+  report within 7 days of every event they join), Live now beside Brand Partners only; 7. **Front Row Start** (the early
+  offer, named by the panel): join before January 1, 2027 and the rest of 2026 is on us, no charge today, the first $111 in
+  January for Q1 2027 with a front-row seat on its campaigns. The button goes to `/claim?...&plan=brand&offer=front-row`;
+  `ve-claims` turns that into a Stripe trial ending January 1, 2027 (brand tier only, only before the deadline). After
+  January 1 slide 7 is the plain offer (Be our first Brand Partner, $111 a quarter, `brand_door.first`) and plays
+  `brand_door.tour_plain_last`. Buttons: the offer, Ask Sean a question, Not yet, send me the numbers. Nothing plays until the
   visitor presses Start the tour (Sean, 2026-10-09); after that every Next or Back plays the slide. Slide 3 is a snapshot of
   the real dashboard (totals live, the rest in outline, locked) that opens it. Maya says "Vegan" right only when the text
   is spelled "Veegan" (el-media, her voice); every clip gets a 0.25 s lead-in and a fade-in so it never starts with a pop.
-  The clips are `brand_door.tour` (`vegan-media/media/brand-door/<slug>/t-slide-<n>.mp4`). The email that carries the link is the gift (no price), and the
+  The clips are `brand_door.tour` (round 5: `r5-slide-<n>.mp4` for 1, 3, 5, 6, 7; `t-slide-2` and `-4` kept; round 4's six in
+  `tour_r4`). Round 5 clips are cut with `scripts/brand-door/assemble_r5.py`, which ends each clip where her mouth is
+  closed; check the last second and the lip sync by eye (face close-ups against the voice level) before uploading. A start
+  picture with a toothy grin gives a frozen grin, so start from a closed-lip smile. The email that carries the link is the gift (no price), and the
   follow-up brings the brand's real numbers. The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
   (`VEProducts.GUIDES[..][2]`), her words on each slide (the slide's `say` in `loadBrandSite`, which must match the
   recording) and a clip per slide (`listings.details.brand_door.clips`, `[{video, poster}]`, in
@@ -423,7 +435,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   sandbox, upload, then ve-off-lookup `save` (it now takes `brand-door/` video and `communities/` art). A lip-sync line
   needs about 3 seconds or more (shorter ones failed). `brand_door.sample_ad` is the sample ad (Sean, 2026-10-08: "show our characters
   consuming their products in the ads just for their pages"); it shows only in the tour, never as a live ad. On a brand
-  page's other tabs the billboard carries our own ad for its Guide (`houseAd`, `/go/ve-dairy-guide`). The Dashboard (`?door=dashboard`): views, visitors, products
+  page's other tabs the billboard carries our own ad for its Guide (`houseAd`, `/go/ve-dairy-guide`): the Guide's
+  ad picture (`VEProducts.GUIDES[..][5]`, Maya in a store's dairy-free aisle, no words in the picture), words on top. The Dashboard (`?door=dashboard`): views, visitors, products
   opened and store aisles opened, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
   admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
   (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,

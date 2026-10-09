@@ -413,6 +413,19 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-later a{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.7)}
 .bd-totals b{font-size:30px}
 .bd-slide .bd-totals b{color:#fff}
+.bd-tag{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:3px 7px;vertical-align:middle}
+.bd-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 14px}
+.bd-chips>span:not(.bd-tag){font-size:12.5px;font-weight:700;color:#fff;border:1px dashed rgba(243,200,107,.55);border-radius:99px;padding:5px 11px}
+.bd-camps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bd-camps>div{border:1px dashed rgba(243,200,107,.5);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.05);display:flex;flex-direction:column;gap:3px}
+.bd-camps .bd-tag{align-self:flex-start;margin-bottom:6px}
+.bd-camps b{font-size:15.5px;font-weight:900;color:#fff;line-height:1.25}
+.bd-camps span:not(.bd-tag){font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.78)}
+.bd-camps em{font-style:normal;font-size:12px;font-weight:800;color:#f3c86b;margin-top:4px}
+.bd-list.bd-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px}
+.bd-list.bd-two li{font-size:13.5px;padding:6px 0 6px 20px}.bd-list.bd-two li::before{top:12px}
+.bd-now .bd-only{border-style:solid;border-color:rgba(143,227,166,.4)}.bd-now .bd-only h3{color:#8fe3a6}
+.bd-price small{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#f3c86b;margin-bottom:10px}
 .bd-feat div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px}
 .bd-feat b{display:block;font-size:16px;font-weight:900;color:#8fe3a6;margin-bottom:4px}
 .bd-feat span{font-size:13px;line-height:1.5;color:rgba(255,255,255,.78)}
@@ -426,12 +439,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-house{display:block;text-decoration:none;color:#fff;border-radius:8px;overflow:hidden;position:relative;aspect-ratio:6/5;background:#0d1a10 url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/south-florida-night.jpg') center/cover no-repeat}
 .bb-house-pic{position:absolute;inset:0;background:center/cover no-repeat}
 .bb-house::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 55%,transparent 75%)}
+.bb-house-ad::after{background:linear-gradient(to top,rgba(6,20,10,.92) 0%,rgba(6,20,10,.6) 34%,transparent 58%)}
+.bb-house-ad .bb-house-txt b{font-size:21px}
 .bb-house-txt{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;display:flex;flex-direction:column;gap:3px}
 .bb-house-txt small{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fe3a6}
 .bb-house-txt b{font-size:19px;font-weight:900;line-height:1.15}
 .bb-house-txt span{font-size:12.5px;color:rgba(255,255,255,.85)}
 .bb-house-txt em{font-style:normal;align-self:flex-start;margin-top:6px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#5EC47A;color:#0d2a12;padding:7px 11px;border-radius:6px}
 @media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}.bd-lives{grid-template-columns:minmax(0,1fr)}.bd-feat,.bd-now{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:480px){.bd-camps,.bd-list.bd-two{grid-template-columns:minmax(0,1fr)}}
 .bsite-pad{padding:32px 40px 48px}
 .bsite-sec{margin-bottom:34px}
 .bsite-sec h3,.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
@@ -1513,6 +1529,45 @@ function loadBrandSite(l){
     var askHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent('A question about ' + l.name + ' on Vegans Explore');
     var laterHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent(l.name + ': send me the numbers') +
       '&body=' + encodeURIComponent('Not yet, but please send me ' + l.name + '\'s page numbers in a couple of weeks.');
+    // The page's first day (brand_door.made), said the way Maya says it.
+    var MADE_D = BD.made ? new Date(BD.made + 'T12:00:00') : null;
+    var MADE = MADE_D ? MADE_D.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : 'recently';
+    var MADE_SAID = MADE_D ? MADE_D.toLocaleDateString('en-US', { month: 'long' }) + ' ' + ordinal(MADE_D.getDate()) : 'recently';
+    function ordinal(n){ var w = ['', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth', 'twentieth']; return w[n] || (n + 'th'); }
+    // The campaigns we show a brand (confirmed in canon, 2026-10-09; all Coming). A dated one drops off once it has passed.
+    var CAMPAIGNS = [
+      ['The Plant-Based Showcase', 'Miami Dolphins game day, Hard Rock Stadium', 'Sunday, November 29, 2026', '2026-11-30'],
+      ['Community nights', 'In each city, starting in South Florida', 'From November 2026', ''],
+      ['The World Vegan Expo', 'Our next flagship', 'City and date to be set', ''],
+      ['Our Q1 2027 campaigns', 'Brand Partners get the front row', 'January to March 2027', '2027-04-01']
+    ].filter(function(c){ return !c[3] || Date.now() < Date.parse(c[3] + 'T05:00:00Z'); });
+    // Front Row Start (Sean, 2026-10-09; named after a panel): join before January 1, 2027 and the rest of 2026 is on us.
+    // The claim page and ve-claims carry it (offer=front-row): no charge today, the first quarter is charged in January.
+    // After the deadline the last slide goes back to the plain offer and its own clip (brand_door.tour_plain_last).
+    var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+    var partnerLabel = FRONT_ROW ? 'Take the Front Row Start' : FIRST ? 'Be our first Brand Partner' : 'Become a Brand Partner';
+    var partnerHref = claimHref + (FRONT_ROW ? '&offer=front-row' : '');
+    var OFFER_SLIDE = FRONT_ROW
+      ? { t: 'Brand Partner', h: 'Front Row Start: the rest of 2026 is on us',
+          say: 'Join before January first, and the rest of this year is on us. Your first quarter starts in January, with a front-row seat on our campaigns.',
+          body: '<p>Join before January 1, 2027. No charge today: your first $111 is charged in January and covers Q1 2027, with a front-row seat on our Q1 2027 campaigns. Then $111 a quarter.</p>' +
+            '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li><li>A front-row seat on every campaign and city as it opens</li></ul>' +
+            (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
+            '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
+            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
+            '<p class="bd-small">No charge until January 2027. Renews every three months. Cancel any time.</p>' +
+            '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
+          pic: '<div class="bd-price"><small>Front Row Start</small><b>$0</b><span>today</span><em>Then $111 a quarter from January 2027.<br>Renews every three months. Cancel any time.</em></div>' }
+      : { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a quarter',
+          say: FIRST ? 'Join us as our first Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.'
+            : 'Become a Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.',
+          body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li>' +
+            '<li>A front-row seat on every campaign and city as it opens</li></ul>' +
+            (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
+            '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
+            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
+            '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
+          pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months. Cancel any time.</em></div>' };
     var SLIDES = [
       { t: 'Welcome', h: 'We built ' + B + ' a page on Vegans Explore',
         say: 'Hi! I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. ' + l.name + ', you\'re already in my guide, so we built you your own page. Take a look around.',
@@ -1526,9 +1581,12 @@ function loadBrandSite(l){
         pic: '<div class="bd-lives">' + (firstGuide ? live(withPreview(firstGuide[1]), '1. The ' + firstGuide[0]) : '') +
           (milk ? live(withPreview('/directory/' + l.slug + '?tab=products&product=' + milk), '2. ' + title(withVersions)) : '') +
           (firstStore ? live(withPreview('/directory/' + firstStore.slug + (milk && BY[milk] ? '?product=' + BY[milk].id : '')), '3. ' + firstStore.name + '\'s Vegan aisle') : '') + '</div>', wide: true },
-      { t: 'Your numbers', h: B + '\'s numbers so far',
-        say: 'Your page has been counting since the day we built it. Here\'s what people have opened so far.',
-        body: '<p class="bd-since">Counted since the day we built the page. Small and early, and real.</p><p>Claim the page to see them by day and by source, and which products and stores people open.</p>' +
+      // Round 5 (Sean, 2026-10-09): say the page is brand new, and how the numbers grow (by joining campaigns).
+      { t: 'Your numbers', h: B + '\'s numbers, counting from day one',
+        say: 'Your page went live ' + MADE_SAID + ', so these numbers are brand new. They grow every time you join one of our campaigns.',
+        body: '<p>' + B + '\'s page went live ' + esc(MADE) + ', so these are day-one numbers: small, and real.</p>' +
+          '<p>They grow when ' + B + ' joins our campaigns:</p>' +
+          '<div class="bd-chips">' + ['Featured in our Guides', 'At our events', 'On social, with creators', 'Podcasts', 'Ads and videos', 'Our animated programming'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '<span class="bd-tag">Coming</span></div>' +
           '<div class="bd-btns"><button type="button" class="bd-btn o" data-bdview="dashboard">Open the dashboard</button></div>',
         // A snapshot of the dashboard itself (Sean, 2026-10-09: "we actually have the dashboard, so shouldn't we show the
         // dashboard at that point?"): the real totals on top, and the partner-only parts shown in outline, locked.
@@ -1543,28 +1601,31 @@ function loadBrandSite(l){
           '<p class="bd-small">A sample, made for ' + B + '. It is unpublished: nothing runs without ' + B + '\'s approval, and we will take it down on request.</p>',
         pic: BD.sample_ad ? '<div class="bd-sample"><div class="bd-sample-h">Billboard <em>Sample for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>'
           : '<div class="bd-note">We draw a sample ad for every brand we partner with: our Guides, enjoying your products.</div>' },
-      { t: 'Where we are', h: 'Early, on purpose',
-        say: 'We\'re early, on purpose. South Florida is our first chapter, and we\'re growing toward a thousand chapters by 2030.',
-        body: '<p>South Florida is our first live chapter. We are opening city by city, toward a thousand chapters by 2030, and partners see everything new first.</p>',
-        pic: '<div class="bd-now"><div><h3>Live now</h3><ul><li>The Directory, with member votes</li><li>Our Guides, starting with the Vegan Dairy Guide</li><li>The Daily Pulse and the Community Board</li><li>The Passport Challenge</li><li>Dinners and meetups in South Florida</li></ul></div>' +
-          '<div class="bd-next"><h3>Coming, and you see it first</h3><ul><li>Brand campaigns and product giveaways</li><li>Scavenger hunts</li><li>Our original content</li><li>More cities, toward a thousand chapters</li></ul></div></div>' },
-      { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a quarter',
-        say: FIRST ? 'Join us as our first Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.'
-          : 'Become a Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.',
-        body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li>' +
-          '<li>A first look at every campaign and city as it opens</li></ul>' +
-          (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">' + (FIRST ? 'Be our first Brand Partner' : 'Become a Brand Partner') + '</a>' +
-          '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
-          '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
-        pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months. Cancel any time.</em></div>' }
+      // Round 5 (Sean, 2026-10-09; panel): a glimpse of the campaigns, all Coming, and how a partner picks where it fits.
+      // No dollar figures here: budgets are a conversation with Sean.
+      { t: 'Campaigns', h: 'Coming up, and where ' + B + ' fits',
+        say: 'Here\'s what\'s coming: game day at Hard Rock Stadium, community nights in our cities, and the World Vegan Expo. Pick the ones that fit you.',
+        body: '<p>Look over the campaigns and pick the ones that fit ' + B + '. In each one, you choose:</p>' +
+          '<ul class="bd-list bd-two"><li>Your products in the campaign</li><li>A featured spot in a Guide</li><li>Ad slots on the pages you pick</li><li>Your own ads, if they fit our look, or ours</li><li>A spend that fits your budget</li><li>A campaign manager, assigned to you</li></ul>',
+        pic: '<div class="bd-camps">' + CAMPAIGNS.map(function(c){ return '<div><span class="bd-tag">Coming</span><b>' + c[0] + '</b><span>' + c[1] + '</span><em>' + c[2] + '</em></div>'; }).join('') + '</div>' },
+      // Why the membership matters, told as what the brand gets to see (talk versus walk).
+      { t: 'Why it matters', h: 'Where your membership goes, and how you see it',
+        say: 'Your membership keeps us at events, backs our volunteer Community Managers, and builds our apps. Join an event, and you get a report within a week.',
+        body: '<p>Your membership:</p><ul class="bd-list"><li>Keeps us at events, in person</li><li>Backs our volunteer Community Managers, city by city</li><li>Builds our apps</li></ul>' +
+          '<p><b>Walk, not talk.</b> Your dashboard is live, and after every campaign event you join, you get a report within 7 days.</p>',
+        pic: '<div class="bd-now"><div><h3>Working for ' + B + ' today</h3><ul><li>Your page, kept up with your products</li>' + (firstGuide ? '<li>Your products in the Vegan ' + esc(firstGuide[0]) + '</li>' : '') +
+          '<li>The ' + storeList.length + ' store aisles that carry you</li><li>The Directory, the Daily Pulse and the Community Board</li><li>Dinners and meetups in South Florida</li></ul></div>' +
+          '<div class="bd-next bd-only"><h3>Brand Partners only</h3><ul><li>A front-row seat on every campaign, before it opens</li><li>Your full dashboard</li><li>A report within 7 days of every event you join</li></ul></div></div>' },
+      OFFER_SLIDE
     ];
     // The narration: a clip per slide (brand_door.clips, [{video, poster}]: Maya on camera, a different pose each slide,
     // under 10 seconds, no b-roll; Sean, 2026-10-09; files in vegan-media/media/brand-door/<brand>/), else her voice
     // alone (brand_door.audio). The poster is the clip's first frame, so a slide shows her new pose before it plays.
     // brand_door.tour is the six-slide tour's clips (2026-10-09); brand_door.clips the nine-slide one it replaced.
     function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && x.video; }) ? c : null; }
-    var CLIPS = fits(BD.tour) || fits(BD.clips);
+    var TOUR = Array.isArray(BD.tour) ? BD.tour.slice() : null;
+    if(TOUR && !FRONT_ROW && BD.tour_plain_last) TOUR[TOUR.length - 1] = BD.tour_plain_last;
+    var CLIPS = fits(TOUR) || fits(BD.clips);
     var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video; }) : null;
     function posterAt(i){ return (CLIPS && CLIPS[i].poster) || narrArt; }
     var AUDIO = !VIDEO && Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
@@ -1661,7 +1722,7 @@ function loadBrandSite(l){
         el.innerHTML = '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
           '<p class="bd-small bd-since"></p>' +
           '<div class="bd-locked"><p><b>The full dashboard opens once ' + B + ' claims the page:</b> ' + LOCK + ' views by day and by source, which products people open, and which stores they look for you in.</p>' +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">' + (FIRST ? 'Be our first Brand Partner' : 'Become a Brand Partner') + '</a>' +
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
           (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>';
         fillTotals();
         return;
@@ -2489,9 +2550,11 @@ function houseAd(l){
   var d = l.details || {}, g = null;
   (VEProducts.SOURCES || []).forEach(function(k){ if(!g && Array.isArray(d[k]) && d[k].length){ Object.keys(VEProducts.GUIDES).forEach(function(s){ if(!g && VEProducts.GUIDES[s][3]) g = VEProducts.GUIDES[s]; }); } });
   if(!g) return loadBillboardAds();
-  var art = window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.png';
+  // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
+  // A Guide without one falls back to its Guide's square portrait.
+  var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.png');
   el.classList.add('bb-filled');
-  el.innerHTML = '<a class="bb-house" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
+  el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
     '<span class="bb-house-txt"><small>From Vegans Explore</small><b>The Vegan ' + esc(g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
 }
 

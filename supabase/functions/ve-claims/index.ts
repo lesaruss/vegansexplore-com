@@ -106,6 +106,15 @@ const TIERS: Record<string, { cents: number; name: string }> = {
   plus: { cents: 50000, name: 'Passport Anchor' },
   brand: { cents: 11100, name: 'Brand Partner' },
 };
+// Front Row Start (Sean, 2026-10-09; named after a panel): a brand that joins Brand Partner before January 1, 2027 gets
+// the rest of 2026 on us. The card is saved today and the first quarter is charged on January 1, 2027 (noon Eastern;
+// Stripe needs a trial to end at least 48 hours out, so a last-minute signup is charged a day or two later), then every
+// quarter. Only the brand tier, only when the page asks for it (offer: 'front-row'), only before the deadline.
+const FRONT_ROW_END = Date.parse('2027-01-01T05:00:00Z');
+function frontRowTrialEnd(tier: string, offer: unknown): number {
+  if (tier !== 'brand' || offer !== 'front-row' || Date.now() >= FRONT_ROW_END) return 0;
+  return Math.floor(Math.max(Date.parse('2027-01-01T17:00:00Z'), Date.now() + 49 * 3600e3) / 1000);
+}
 // The city hubs, matching /public/ve-hubs.js (a listing is in a hub when its city and state fit).
 const HUBS: Record<string, { name: string; cities?: string[]; states?: string[] }> = {
   'south-florida': { name: 'South Florida', cities: ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade'] },
@@ -219,7 +228,7 @@ async function syncFromStripe(row: any): Promise<any> {
   return data || row;
 }
 // Create the Stripe subscription checkout for a ve_verified_memberships row.
-async function verifiedCheckout(row: any, listing: any, member: any, back: string, claimId?: string): Promise<{ url?: string; error?: string }> {
+async function verifiedCheckout(row: any, listing: any, member: any, back: string, claimId?: string, trialEnd = 0): Promise<{ url?: string; error?: string }> {
   const t = TIERS[row.tier];
   const params = new URLSearchParams({
     mode: 'subscription',
@@ -239,12 +248,15 @@ async function verifiedCheckout(row: any, listing: any, member: any, back: strin
   if (claimId) meta.claim_id = claimId;
   if (row.test) meta.test = 'true';
   if (row.founding) meta.founding = 'true';
+  if (trialEnd) meta.offer = 'front-row';
   for (const [k, v] of Object.entries(meta)) { params.set(`metadata[${k}]`, v); params.set(`subscription_data[metadata][${k}]`, v); }
   // Founding: the card is saved now and the first quarter is charged on the first Challenge month.
   if (row.founding && row.bill_from) {
     const at = Math.floor(new Date(row.bill_from + 'T12:00:00Z').getTime() / 1000);
     if (at > Math.floor(Date.now() / 1000) + 3 * 86400) params.set('subscription_data[trial_end]', String(at));
   }
+  // Front Row Start: nothing today, the first quarter on January 1, 2027.
+  if (trialEnd) params.set('subscription_data[trial_end]', String(trialEnd));
   const { ok, body: s } = await stripe(row.test, 'checkout/sessions', params);
   if (!ok) { console.error('stripe error', s); return { error: s.error?.message ?? 'stripe_error' }; }
   await db.from('ve_verified_memberships').update({ stripe_session_id: s.id, updated_at: new Date().toISOString() }).eq('id', row.id);
@@ -388,19 +400,24 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
   }
   const t = TIERS[row.tier], renew = p.end ? new Date(p.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '';
   const price = ((row.founding && row.amount_cents ? row.amount_cents : t.cents) / 100).toFixed(0);
-  const trial = sub.status === 'trialing';
+  const trial = sub.status === 'trialing', brand = row.tier === 'brand';
   await mail(`${row.test ? '[TEST] ' : ''}${t.name}: ${listing?.name || 'a listing'}, $${price}/quarter${row.founding ? ' (founding)' : ''}`,
     `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) ${trial ? 'set up billing for' : 'bought'} <b>${t.name}</b> at $${price} a quarter${row.founding ? ', founding price' : ''}${renew ? `, ${trial ? 'first charge' : 'renewing'} ${esc(renew)}` : ''}.</p>` +
     `<p>${esc(row.contact_name || '')}<br>${esc(row.contact_email || '')}</p>` +
     (row.claim_id ? '<p>This came with a listing claim, which is waiting for your review.</p>' : '') +
-    `<p>Next: schedule the visit and photo shoot. Track it in the Depot: <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`, row.contact_email || undefined);
+    (brand ? `<p>${trial ? 'Front Row Start: nothing charged today. ' : ''}Next: approve the claim in the Depot so their dashboard opens, and welcome them. <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`
+      : `<p>Next: schedule the visit and photo shoot. Track it in the Depot: <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`), row.contact_email || undefined);
   if (row.contact_email && RESEND_KEY) {
     try {
       await fetch('https://api.resend.com/emails', {
         method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [row.contact_email], reply_to: 'hello@vegansexplore.com',
           subject: `Welcome to ${t.name}`,
-          html: `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
+          html: brand ? `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
+            `<p>We review every claim; once yours is approved, your brand dashboard opens on your page (sign in with this email). You get a front-row seat on our campaigns: we will send each one before it opens, so you can choose where you fit.</p>` +
+            `<p>${trial ? 'Front Row Start: the rest of 2026 is on us. Your first quarter is charged on ' + esc(renew) + ', then every three months' : 'Your membership renews every quarter' + (renew ? ' (next on ' + esc(renew) + ')' : '')}. To cancel, reply to this email.</p>` +
+            `<p>The Vegans Explore team</p>`
+          : `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
             `<p>Next, someone from Vegans Explore will reach out to schedule an in-person visit and your photo shoot. The Verified badge goes on your listing once we have visited: Verified means we visited, and it can't be bought.</p>` +
             `<p>${trial ? 'Your first quarter is charged on ' + esc(renew) + ', when your first Passport Challenge month starts' : 'Your membership renews every quarter' + (renew ? ' (next on ' + esc(renew) + ')' : '')}. Every quarter you get a results sheet showing who came through your door. Questions? Reply to this email.</p>` +
             `<p>Our promise: if your pin, register kit and staff training aren't ready before your month starts, that month is on us. Anything else we deliver that isn't right, we make it right.</p>` +
@@ -530,7 +547,7 @@ Deno.serve(async (req) => {
     }
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = await verifiedRow(id, member, tier, test, {});
-    const r = await verifiedCheckout(row, listing, member, back);
+    const r = await verifiedCheckout(row, listing, member, back, undefined, frontRowTrialEnd(tier, body.offer));
     return r.url ? json({ url: r.url, test_mode: test }) : json({ error: r.error }, 400);
   }
 
@@ -575,7 +592,7 @@ Deno.serve(async (req) => {
     if (tier) {
       // Claim and a Passport tier in one quarterly subscription checkout; the claim is confirmed when it is paid.
       const vrow = await verifiedRow(id, member, tier, test, { name: contact_name, email: contact_email }, claim.id);
-      const r = await verifiedCheckout(vrow, listing, member, back, claim.id);
+      const r = await verifiedCheckout(vrow, listing, member, back, claim.id, frontRowTrialEnd(tier, body.offer));
       if (!r.url) return json({ error: r.error }, 400);
       await db.from('ve_listing_claims').update({ stripe_session_id: null }).eq('id', claim.id);
       return json({ url: r.url, test_mode: test });

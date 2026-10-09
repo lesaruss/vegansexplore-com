@@ -13,13 +13,15 @@
  *   VEProducts.label(n)                a Nutrition Facts panel from ve_products.nutrition
  *   VEProducts.css()                   the panel's styles, once
  *   VEProducts.GUIDES                  guide slug -> [name, link, its Guide (narrates its brands' For <Brand> tour),
- *                                      house ad link (a /go/ tracked link), house ad line]
+ *                                      house ad link (a /go/ tracked link), house ad line, house ad picture (6:5,
+ *                                      its Guide drawn in our style, no words in the picture)]
  *   VEProducts.SOURCES                 the listings.details keys that hold a Guide's products (the same keys as
  *                                      ve_guide_product_sources). A brand with one of them is a brand page with
  *                                      a Products tab.
  */
 (function () {
-  var GUIDES = { 'vegan-dairy-guide': ['Dairy Guide', '/guides/vegan-dairy-guide', 'maya', '/go/ve-dairy-guide', 'Brands, swaps and recipes, with Maya'] };
+  var GUIDES = { 'vegan-dairy-guide': ['Dairy Guide', '/guides/vegan-dairy-guide', 'maya', '/go/ve-dairy-guide', 'Brands, swaps and recipes, with Maya',
+    'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/dairy-guide-billboard.jpg'] };
   var SOURCES = ['dairy_guide'];
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function title(p, brandName) { return ((brandName || '') + ' ' + (p.name || p.product_type || '')).trim(); }
