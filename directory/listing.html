@@ -374,6 +374,24 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-narr-m .bd-vid-slot{max-width:320px}
 .bd-play{font-family:inherit;margin-top:12px;width:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;border-radius:8px;border:1.5px solid #1f5f22;background:#1f5f22;color:#fff;cursor:pointer}
 .bd-play[aria-pressed="true"]{background:#fff;color:#1f5f22}
+.bd-play.go{font-size:13px;padding:14px;background:#5EC47A;border-color:#5EC47A;color:#0d1a10}
+/* Slide 3: a snapshot of the brand's dashboard (real totals; the partner-only parts in outline, locked) */
+.bd-snap{display:block;background:#fff;border-radius:14px;padding:16px;color:#1a1a1a;cursor:pointer;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.bd-snap-h{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:10px}
+.bd-snap-h em{font-style:normal;color:#1f5f22}
+.bd-slide .bd-snap .bd-tiles div{background:#f6f8f6;border-color:var(--ve-border)}
+.bd-slide .bd-snap .bd-tiles b{color:#1a1a1a}
+.bd-slide .bd-snap .bd-tiles span{color:var(--ve-text-50)}
+.bd-snap .bd-tiles{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:10px}
+.bd-snap .bd-tiles div{background:#f6f8f6;border-color:var(--ve-border);padding:10px 12px}
+.bd-snap .bd-tiles b{font-size:22px;color:#1a1a1a}
+.bd-snap .bd-tiles span{color:var(--ve-text-50);font-size:9.5px}
+.bd-snap-lock{position:relative;border:1px solid var(--ve-border);border-radius:10px;padding:10px;overflow:hidden}
+.bd-snap-bars{display:flex;align-items:flex-end;gap:4px;height:56px;filter:blur(2px);opacity:.55}
+.bd-snap-bars i{flex:1;background:#1f5f22;border-radius:3px 3px 0 0}
+.bd-snap-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;filter:blur(1.5px);opacity:.55}
+.bd-snap-cards span{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--ve-border);border-radius:6px;padding:8px 6px;color:var(--ve-text-50)}
+.bd-snap-tag{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;background:#0d1a10;color:#fff;font-size:11px;font-weight:700;padding:8px 12px;border-radius:99px;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
 /* Slides that show a lot: words on top, the picture across */
 .bd-slide.wide{grid-template-columns:minmax(0,1fr);align-items:start}
 .bd-lives{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
@@ -383,11 +401,109 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-live figcaption{font-size:12px;font-weight:800;color:rgba(255,255,255,.85);margin-top:8px}
 .bd-live figcaption a{color:#8fe3a6;margin-left:6px}
 .bd-feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+/* Where we are: what is live today beside what is coming (nothing planned is shown as live) */
+.bd-now{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bd-now>div{border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.05)}
+.bd-now .bd-next{border-style:dashed}
+.bd-now h3{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8fe3a6;margin:0 0 8px}
+.bd-now .bd-next h3{color:#f3c86b}
+.bd-now ul{margin:0;padding:0 0 0 16px}
+.bd-now li{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.85);padding:3px 0}
+.bd-later{margin:12px 0 0}
+.bd-later a{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.7)}
+.bd-totals b{font-size:30px}
+.bd-slide .bd-totals b{color:#fff}
+.pd-lock{margin-right:6px;vertical-align:-1px}
+.pd-subnav{display:flex;gap:4px;overflow-x:auto;padding:10px 24px;border-bottom:1px solid var(--ve-border);background:#f7faf7;scrollbar-width:thin}
+.pd-subnav[hidden]{display:none}
+.pd-subnav button{flex:0 0 auto;font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#4a5a4d;background:none;border:1px solid transparent;border-radius:99px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+.pd-subnav button:hover{background:#eaf3ec}
+.pd-subnav button[aria-current="true"]{background:#1f5f22;color:#fff}
+.pd-subnav .bd-tag{font-size:8.5px;padding:2px 5px;margin-left:4px}
+.pd-locked{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
+.pd-locked-main{background:linear-gradient(100deg,rgba(9,20,12,.94),rgba(9,20,12,.78)),url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/south-florida-night.jpg') center/cover #0d1a10;color:#fff;border-radius:16px;padding:32px}
+.pd-locked-main h2{font-size:clamp(22px,2.4vw,30px);font-weight:900;line-height:1.2;margin:8px 0 10px}
+.pd-locked-main p{font-size:15px;line-height:1.6;color:rgba(255,255,255,.82);margin:0 0 12px}
+.pd-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fe3a6;display:flex;align-items:center;gap:6px}
+.pd-gets{list-style:none;margin:0 0 6px;padding:0}.pd-gets li{font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.82);padding:8px 0 8px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.08)}
+.pd-gets li::before{content:'';position:absolute;left:4px;top:15px;width:8px;height:8px;border-radius:50%;background:#5EC47A}.pd-gets b{color:#fff}
+.pd-locked-side{border:1px solid var(--ve-border);border-radius:16px;padding:24px;background:#fafcfa}
+.pd-locked-side h3{font-size:18px;font-weight:900;margin:0 0 8px}.pd-locked-side p{font-size:14px;line-height:1.6;color:#444;margin:0 0 16px}
+@media(max-width:900px){.pd-locked{grid-template-columns:minmax(0,1fr)}.pd-locked-main{padding:24px 20px}}
+.bp-dash{margin:0 0 24px}
+.bp-camp-empty{border:1px dashed #c9dccd;border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.6;color:#444;background:#fafcfa}
+.bp-prod{border:1px solid var(--ve-border);border-radius:14px;padding:16px;margin:0 0 14px;background:#fff}
+.bp-prod-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px}.bp-prod-h b{font-size:16px;font-weight:900}
+.bp-prod-main{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start}
+.bp-ph{display:flex;flex-direction:column;gap:8px}
+.bp-ph-pic{aspect-ratio:1;border-radius:10px;border:1px solid var(--ve-border);background:#f3f6f3 center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:12px;color:#888}
+.bp-ph-btn{position:relative;overflow:hidden;text-align:center;cursor:pointer}
+.bp-ph-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.bp-ph-msg{font-size:12.5px;line-height:1.45;color:#1f5f22;margin:0;min-height:1em}.bp-ph-msg.bad{color:#9b2c1d;font-weight:700}
+.bp-desc{display:flex;flex-direction:column;gap:8px}.bp-desc label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#4a5a4d}
+.bp-desc textarea{font:inherit;font-size:14px;line-height:1.55;min-height:120px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:10px;resize:vertical}
+.bp-desc .bd-btn{align-self:flex-start}
+.bp-vars{margin-top:14px;border-top:1px solid var(--ve-border);padding-top:10px}.bp-vars summary{cursor:pointer;font-weight:800;font-size:13px;color:#1f5f22}
+.bp-var{padding:14px 0;border-bottom:1px solid var(--ve-border)}.bp-var:last-child{border-bottom:0}.bp-var-name{font-weight:800;font-size:14px;margin:0 0 10px}
+@media(max-width:640px){.bp-prod-main{grid-template-columns:minmax(0,1fr)}.bp-ph-pic{max-width:240px}.pd-subnav{padding:10px 16px}}
+.bd-steps{list-style:none;margin:0 0 14px;padding:0}
+.bd-steps li{position:relative;padding:9px 0 9px 30px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.82);border-bottom:1px solid rgba(255,255,255,.08)}
+.bd-steps li::before{content:'';position:absolute;left:2px;top:11px;width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+.bd-steps li.ok::before{content:'\2713';border-color:#5EC47A;background:#5EC47A;color:#0d2a12;font-size:11px;font-weight:900;text-align:center;line-height:16px}
+.bd-steps li.wait::before{border-color:#f3c86b}
+.bd-steps b{color:#fff}
+.bd-go{cursor:pointer;transition:border-color .15s}.bd-go:hover,.bd-go:focus-visible{border-color:#8fe3a6 !important}
+.bd-quote{margin:0;font-size:19px;line-height:1.55;font-weight:600;color:#fff;border-left:3px solid #5EC47A;padding:4px 0 4px 18px}
+.bd-quote cite{display:block;margin-top:12px;font-size:12px;font-style:normal;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8fe3a6}
+.bd-next-steps{margin:0 0 6px;padding-left:20px}.bd-next-steps li{font-size:14.5px;line-height:1.55;color:rgba(255,255,255,.82);padding:5px 0}.bd-next-steps b{color:#fff}
+.bd-camps.one{grid-template-columns:minmax(0,1fr)}
+.bp-preview{background:#fff7e0;border:1px solid #f3c86b;border-radius:8px;padding:10px 14px;font-size:13px;color:#5a4300;margin:0 0 18px}
+.bp-opps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;margin:0 0 16px}
+.bp-opp{border:1px solid var(--ve-border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:5px;background:#fff}
+.bp-opp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.bp-kind{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22}
+.bp-opp>b{font-size:16px;font-weight:900;line-height:1.3}
+.bp-when{font-size:12.5px;font-weight:700;color:#7d4a00}
+.bp-opp p{font-size:13.5px;line-height:1.55;color:var(--ve-text-75,#444);margin:2px 0 10px;flex:1}
+.bp-opp .bd-btn{align-self:flex-start}
+.bp-upload{border:1px solid var(--ve-border);border-radius:12px;padding:16px;margin:0 0 22px;background:#fafcfa}
+.bp-drop{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;border:2px dashed #b9d8bf;border-radius:10px;padding:22px;cursor:pointer;text-align:center;background:#fff}
+.bp-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.bp-drop:focus-within{outline:3px solid #5EC47A;outline-offset:2px}.bp-drop b{font-size:15px}.bp-drop span{font-size:12.5px;color:var(--ve-text-50)}
+.bp-upload-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+.bp-upload-row select,.bp-upload-row input{font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--ve-border);border-radius:8px;background:#fff}
+.bp-upload-row input{flex:1;min-width:180px}
+.bp-sub{font-size:15px;font-weight:900;margin:0 0 12px}
+.bp-media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:12px}
+.bp-media-item{border:1px solid var(--ve-border);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;min-width:0}
+.bp-media-item b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bp-media-pic{aspect-ratio:4/3;border-radius:8px;background:#eef3ef center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:800;text-transform:uppercase;color:#1f5f22;margin-bottom:4px}
+.bp-ask{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;align-items:start}
+.bp-ask-pic{aspect-ratio:1;border-radius:14px;background:#fff center/cover no-repeat;border:1px solid var(--ve-border)}
+.bp-chat{border:1px solid var(--ve-border);border-radius:12px;padding:14px;min-height:180px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;background:#fafcfa}
+.bp-msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:14.5px;line-height:1.5}
+.bp-msg.guide{background:#eaf6ec;color:#123d18;align-self:flex-start;border-bottom-left-radius:4px}
+.bp-msg.you{background:#1f5f22;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.bp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.bp-ask-form{display:flex;gap:10px}.bp-ask-form input{flex:1;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--ve-border);border-radius:10px}
+.bsite-pad .bd-feat.bp-ads{margin:0 0 18px}.bsite-pad .bp-ads>div{background:#fafcfa;border:1px solid var(--ve-border)}.bsite-pad .bp-ads b{color:#1f5f22}.bsite-pad .bp-ads span{color:#444}
+.bp-ads-sample{max-width:420px}
+@media(max-width:768px){.bp-ask{grid-template-columns:minmax(0,1fr)}.bp-ask-pic{max-width:160px}}
+.bd-tag{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:3px 7px;vertical-align:middle}
+.bd-grow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 14px}
+.bd-grow>span:not(.bd-tag){font-size:12.5px;font-weight:700;color:#fff;border:1px dashed rgba(243,200,107,.55);border-radius:99px;padding:5px 11px}
+.bd-camps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bd-camps>div{border:1px dashed rgba(243,200,107,.5);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.05);display:flex;flex-direction:column;gap:3px}
+.bd-camps .bd-tag{align-self:flex-start;margin-bottom:6px}
+.bd-camps b{font-size:15.5px;font-weight:900;color:#fff;line-height:1.25}
+.bd-camps span:not(.bd-tag){font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.78)}
+.bd-camps em{font-style:normal;font-size:12px;font-weight:800;color:#f3c86b;margin-top:4px}
+.bd-list.bd-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px}
+.bd-list.bd-two li{font-size:13.5px;padding:6px 0 6px 20px}.bd-list.bd-two li::before{top:12px}
+.bd-now .bd-only{border-style:solid;border-color:rgba(143,227,166,.4)}.bd-now .bd-only h3{color:#8fe3a6}
+.bd-price small{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#f3c86b;margin-bottom:10px}
 .bd-feat div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px}
 .bd-feat b{display:block;font-size:16px;font-weight:900;color:#8fe3a6;margin-bottom:4px}
 .bd-feat span{font-size:13px;line-height:1.5;color:rgba(255,255,255,.78)}
-.bd-chips{display:flex;flex-wrap:wrap;gap:8px}
-.bd-chips span{font-size:13px;font-weight:800;padding:10px 14px;border-radius:99px;border:1px solid rgba(143,227,166,.45);color:#fff;background:rgba(255,255,255,.05)}
 .bd-sample{max-width:340px;margin:0 auto;background:#fff;border-radius:12px;padding:12px}
 .bd-sample-h{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:8px}
 .bd-sample-h em{font-style:normal;color:#b45309}
@@ -396,12 +512,18 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-house{display:block;text-decoration:none;color:#fff;border-radius:8px;overflow:hidden;position:relative;aspect-ratio:6/5;background:#0d1a10 url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/south-florida-night.jpg') center/cover no-repeat}
 .bb-house-pic{position:absolute;inset:0;background:center/cover no-repeat}
 .bb-house::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 55%,transparent 75%)}
+/* The Guide's ad picture on top, the words in a band under it, so nothing covers the Guide. */
+.bb-house.bb-house-ad{aspect-ratio:auto;display:flex;flex-direction:column;background:#0d1a10}
+.bb-house-ad .bb-house-pic{position:relative;inset:auto;aspect-ratio:9/4;background-position:70% 28%}
+.bb-house-ad::after{display:none}
+.bb-house-ad .bb-house-txt{position:static;padding:10px 14px 12px;gap:2px}.bb-house-ad .bb-house-txt em{margin-top:5px}
 .bb-house-txt{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;display:flex;flex-direction:column;gap:3px}
 .bb-house-txt small{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fe3a6}
 .bb-house-txt b{font-size:19px;font-weight:900;line-height:1.15}
 .bb-house-txt span{font-size:12.5px;color:rgba(255,255,255,.85)}
 .bb-house-txt em{font-style:normal;align-self:flex-start;margin-top:6px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#5EC47A;color:#0d2a12;padding:7px 11px;border-radius:6px}
-@media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}.bd-lives{grid-template-columns:minmax(0,1fr)}.bd-feat{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.bd-slide{grid-template-columns:minmax(0,1fr);padding:24px 20px;min-height:0}.bd-lives{grid-template-columns:minmax(0,1fr)}.bd-feat,.bd-now{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:480px){.bd-camps,.bd-list.bd-two{grid-template-columns:minmax(0,1fr)}}
 .bsite-pad{padding:32px 40px 48px}
 .bsite-sec{margin-bottom:34px}
 .bsite-sec h3,.bp-head h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);margin:0 0 12px}
@@ -1382,8 +1504,8 @@ function loadBrandSite(l){
   var pane = document.getElementById('bsite-products'), side = document.getElementById('bsite-nf');
   var ov = document.querySelector('#tab-overview > div');
   VEProductView.css();
-  fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
-    rows = Array.isArray(rows) ? rows : [];
+  Promise.all([fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }), partnerStatus(l)]).then(function(res){
+    var rows = Array.isArray(res[0]) ? res[0] : [], PS = res[1] || { partner: false };
     var BY = {}; rows.forEach(function(p){ BY[p.slug] = p; });
     var d = l.details || {};
     function title(p){ return VEProducts.title(p, l.name); }
@@ -1457,9 +1579,7 @@ function loadBrandSite(l){
     function viewer(){ try{ return window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){ return null; } }
     function canSee(){ var m = viewer(); return !!(m && (m.is_superadmin || m.id === l.owner_member_id || m.id === l.claimed_by_member_id)); }
     var claimHref = '/claim?listing=' + encodeURIComponent(l.slug) + '&plan=brand';
-    var talkHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent(l.name + ' Brand Partner');
     var withVersions = rows.filter(function(p){ return Array.isArray(p.variants) && p.variants.length > 1; })[0] || rows[0];
-    var hubs = Array.isArray(window.VE_HUBS) ? window.VE_HUBS : [];
     var guides = {}; rows.forEach(function(p){ (p.guides || []).forEach(function(g){ if(VEProducts.GUIDES[g]) guides[g] = VEProducts.GUIDES[g]; }); });
     var guideKeys = Object.keys(guides), firstGuide = guideKeys.length ? guides[guideKeys[0]] : null;
     var guideNames = guideKeys.map(function(g){ return guides[g][0]; });
@@ -1478,57 +1598,161 @@ function loadBrandSite(l){
       '<figcaption>' + esc(cap) + '</figcaption></figure>'; }
     function withPreview(u){ return u + (u.indexOf('?') < 0 ? '?' : '&') + 'preview=1'; }
     var milk = withVersions && withVersions.slug;
+    // The offer, six slides (Sean, 2026-10-09, after a panel of five lenses): the gift first, then where people find the
+    // brand, its own numbers, the ad, where we honestly are (Live now / Coming), and the seat. Nothing planned is shown as
+    // live, and the price comes last. brand_door.first marks the first Brand Partner ("Be our first Brand Partner").
+    var FIRST = BD.first !== false;
+    var askHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent('A question about ' + l.name + ' on Vegans Explore');
+    var laterHref = 'mailto:contact@vegansexplore.com?subject=' + encodeURIComponent(l.name + ': send me the numbers') +
+      '&body=' + encodeURIComponent('Not yet, but please send me ' + l.name + '\'s page numbers in a couple of weeks.');
+    // The page's first day (brand_door.made), said the way Maya says it.
+    var MADE_D = BD.made ? new Date(BD.made + 'T12:00:00') : null;
+    var MADE = MADE_D ? MADE_D.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : 'recently';
+    var MADE_SAID = MADE_D ? MADE_D.toLocaleDateString('en-US', { month: 'long' }) + ' ' + ordinal(MADE_D.getDate()) : 'recently';
+    function ordinal(n){ var w = ['', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth', 'twentieth']; return w[n] || (n + 'th'); }
+    // The campaigns we show a brand (confirmed in canon, 2026-10-09; all Coming). A dated one drops off once it has passed.
+    var CAMPAIGNS = [
+      ['The Plant-Based Showcase', 'Miami Dolphins game day, Hard Rock Stadium', 'Sunday, November 29, 2026', '2026-11-30'],
+      ['Community nights', 'In each city, starting in South Florida', 'From November 2026', ''],
+      ['The World Vegan Expo', 'Our next flagship', 'City and date to be set', ''],
+      ['Our Q1 2027 campaigns', 'Brand Partners get the front row', 'January to March 2027', '2027-04-01']
+    ].filter(function(c){ return !c[3] || Date.now() < Date.parse(c[3] + 'T05:00:00Z'); });
+    // Front Row Start (Sean, 2026-10-09; named after a panel): join before January 1, 2027 and the rest of 2026 is on us.
+    // The claim page and ve-claims carry it (offer=front-row): no charge today, the first quarter is charged in January.
+    // After the deadline the last slide goes back to the plain offer and its own clip (brand_door.tour_plain_last).
+    var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+    var partnerLabel = FRONT_ROW ? 'Take the Front Row Start' : FIRST ? 'Be our first Brand Partner' : 'Become a Brand Partner';
+    var partnerHref = claimHref + (FRONT_ROW ? '&offer=front-row' : '');
+    var OFFER_SLIDE = FRONT_ROW
+      ? { t: 'Brand Partner', h: 'Front Row Start: the rest of 2026 is on us',
+          say: 'Join before January first, and the rest of this year is on us. Your first quarter starts in January, with a front-row seat on our campaigns.',
+          body: '<p>Join before January 1, 2027 and pay nothing today. Your first $111, in January, covers Q1 2027 and its campaigns.</p>' +
+            '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li><li>A front-row seat on every campaign and city as it opens</li></ul>' +
+            (FIRST ? '<p class="bd-small">' + B + ' would be our first Brand Partner.</p>' : '') +
+            '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
+            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
+            '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
+          pic: '<div class="bd-price"><small>Front Row Start</small><b>$0</b><span>today</span><em>Then $111 a quarter from January 2027.<br>Renews every three months. Cancel any time.</em></div>' }
+      : { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a quarter',
+          say: FIRST ? 'Join us as our first Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.'
+            : 'Become a Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.',
+          body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li>' +
+            '<li>A front-row seat on every campaign and city as it opens</li></ul>' +
+            (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
+            '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
+            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
+            '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
+          pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months. Cancel any time.</em></div>' };
     var SLIDES = [
       { t: 'Welcome', h: 'We built ' + B + ' a page on Vegans Explore',
         say: 'Hi! I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. ' + l.name + ', you\'re already in my guide, so we built you your own page. Take a look around.',
         body: '<p>' + rows.length + (rows.length === 1 ? ' product' : ' products') + (guideNames.length ? ' from the ' + esc(guideNames.join(' and the ')) : '') + ', every version with its Nutrition Facts and USDA label record, and the ' +
-          storeList.length + ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. Live today, and yours to keep.</p>' +
-          '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="overview">See the page</button>' + (milk ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(milk) + '">Open ' + esc(title(withVersions)) + '</button>' : '') + '</div>',
+          storeList.length + ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. Live today, and yours to keep, whatever you decide.</p>' +
+          '<div class="bd-btns">' + (BD.tour || BD.clips || BD.audio ? '<button type="button" class="bd-btn" data-bd-start>&#9654; Start the tour</button>' : '') + (milk ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(milk) + '">See ' + esc(title(withVersions)) + '</button>' : '') + '<button type="button" class="bd-btn o" data-bd-goto="overview">See the page</button></div>',
         pic: l.logo_url ? '<div class="bd-logo" role="img" aria-label="' + B + '" style="background-image:url(\'' + esc(l.logo_url) + '\')"></div>' : pics(rows.map(function(p){ return p.image_url; }).filter(Boolean)) },
-      { t: 'Where people find you', h: 'Where people find ' + B + ' today',
-        say: 'Let me show you where people find you today: in the ' + (firstGuide ? firstGuide[0] : 'Directory') + ', in every store\'s Vegan aisle, and on your own product pages.',
-        body: '<p>These are the real pages, live. Scroll inside any of them.</p>',
-        pic: '<div class="bd-lives">' + (firstGuide ? live(withPreview(firstGuide[1]), 'The ' + firstGuide[0]) : '') +
-          (firstStore ? live(withPreview('/directory/' + firstStore.slug + (milk && BY[milk] ? '?product=' + BY[milk].id : '')), firstStore.name + '\'s Vegan aisle') : '') +
-          (milk ? live(withPreview('/directory/' + l.slug + '?tab=products&product=' + milk), title(withVersions)) : '') + '</div>', wide: true },
+      { t: 'From the guide to the shelf', h: 'From the guide, straight to the shelf',
+        say: 'Someone reads my guide, opens your product, and sees which store\'s Vegan aisle carries it. From the guide, straight to the shelf.',
+        body: '<p>Someone reads the ' + esc(firstGuide ? firstGuide[0] : 'Directory') + ', opens ' + esc(milk ? title(withVersions) : l.name) + ', and finds the store that carries it. These are the real pages, live. Scroll inside any of them.</p>',
+        pic: '<div class="bd-lives">' + (firstGuide ? live(withPreview(firstGuide[1]), '1. The ' + firstGuide[0]) : '') +
+          (milk ? live(withPreview('/directory/' + l.slug + '?tab=products&product=' + milk), '2. ' + title(withVersions)) : '') +
+          (firstStore ? live(withPreview('/directory/' + firstStore.slug + (milk && BY[milk] ? '?product=' + BY[milk].id : '')), '3. ' + firstStore.name + '\'s Vegan aisle') : '') + '</div>', wide: true },
+      // Round 5 (Sean, 2026-10-09): say the page is brand new, and how the numbers grow (by joining campaigns).
+      { t: 'Your numbers', h: B + '\'s numbers, counting from day one',
+        say: 'Your page went live ' + MADE_SAID + ', so these numbers are brand new. They grow every time you join one of our campaigns.',
+        body: '<p>' + B + '\'s page went live ' + esc(MADE) + ', so these are day-one numbers: small, and real.</p>' +
+          '<p>They grow when ' + B + ' joins our campaigns:</p>' +
+          '<div class="bd-grow">' + ['Featured in our Guides', 'At our events', 'On social, with creators', 'Podcasts', 'Ads and videos', 'Our animated programming'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '<span class="bd-tag">Coming</span></div>' +
+          '<div class="bd-btns"><button type="button" class="bd-btn o" data-bdview="dashboard">Open the dashboard</button></div>',
+        // A snapshot of the dashboard itself (Sean, 2026-10-09: "we actually have the dashboard, so shouldn't we show the
+        // dashboard at that point?"): the real totals on top, and the partner-only parts shown in outline, locked.
+        pic: '<div class="bd-snap" data-bdview="dashboard" role="button" tabindex="0" aria-label="Open the dashboard"><div class="bd-snap-h">Dashboard <em>' + B + '</em></div>' +
+          '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+          '<div class="bd-snap-lock"><div class="bd-snap-bars">' + [18, 30, 22, 45, 38, 60, 52, 70, 48, 64, 80, 58, 74, 90].map(function(h){ return '<i style="height:' + h + '%"></i>'; }).join('') + '</div>' +
+          '<div class="bd-snap-cards"><span>Products opened</span><span>Store aisles opened</span><span>Where views came from</span></div>' +
+          '<div class="bd-snap-tag">' + LOCK + ' Full dashboard opens when you claim</div></div></div>' },
       { t: 'Your ad', h: 'An ad we drew for ' + B,
         say: 'And look, we even drew an ad just for you. Our Guides, enjoying your products, right where people are looking for you.',
-        body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run ads like this across Vegans Explore: on the Daily Pulse, in the Guides, beside the Directory.</p><p class="bd-small">A sample, made for ' + B + '. It does not run anywhere yet.</p>',
+        body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run small ads across what we do: the Daily Pulse, the Guides, beside the Directory. Our team can make them for you, depending on the ad and what you are looking for.</p>' +
+          '<p class="bd-small">A sample, made for ' + B + '. It is unpublished: nothing runs without ' + B + '\'s approval, and we will take it down on request.</p>',
         pic: BD.sample_ad ? '<div class="bd-sample"><div class="bd-sample-h">Billboard <em>Sample for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>'
           : '<div class="bd-note">We draw a sample ad for every brand we partner with: our Guides, enjoying your products.</div>' },
-      { t: 'The mission', h: 'A thousand chapters by 2030',
-        say: 'We\'re building this community city by city, with a goal of a thousand chapters by 2030.',
-        body: '<p>Each city has its Daily Pulse, events, a Directory and members who earn points for showing up. South Florida is first, and Brand Partners help us open the next.</p>',
-        pic: '<div class="bd-cities">' + hubs.map(function(h){ var b = h.page && h.page.banner; return '<div style="' + (b ? "background-image:url('" + esc(b) + "')" : '') + '"><span>' + esc(h.name) + '</span></div>'; }).join('') + '</div>' },
-      { t: 'In person and online', h: 'Straight to the people who use your products',
-        say: 'We bring brands like yours straight to the people who use your products: at events, online, and in games like our Passport Challenge.',
-        body: '<p>Members meet in person and keep talking online, and brands are part of both.</p>',
-        pic: tiles([['Events', 'Dinners, meetups and tastings in each city'], ['Activations', 'Your product in members\' hands, with tasks worth points'], ['Games', 'The Passport Challenge: stamps, points and prizes'], ['Online', 'The Daily Pulse and the Community Board, every day']]) },
-      { t: 'Campaigns', h: 'Campaigns, points and giveaways',
-        say: 'Members earn points for joining your campaign. Tie those points to giveaways, and our team builds it all around your budget.',
-        body: '<p>Brand Partners see every campaign first, and choose what to join, a la carte through LESARUSS AI, or with our team for something custom. Run ads alongside it.</p>',
-        pic: tiles([['Points', 'Members earn them for every task they finish'], ['Giveaways', 'Tie points to your prizes and coupons'], ['Ads', 'Run ads alongside the campaign'], ['Your budget', 'Our team builds the campaign around it']]) },
-      { t: 'Your dashboard', h: 'Your dashboard, live',
-        say: 'You\'ll get a dashboard right on this page, so you can see who\'s visiting and how your campaigns are doing, in real time.',
-        body: '<p>It counts from the day we built your page, so the numbers are waiting for you.</p><div class="bd-btns"><button type="button" class="bd-btn" data-bdview="dashboard">Open the dashboard</button></div>',
-        pic: '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' },
-      { t: 'Beyond this page', h: 'Everywhere your audience lives',
-        say: 'And it goes way beyond this page: our Guides, the Daily Pulse, the Community Board, and the whole LESARUSS universe.',
-        body: '<p>Many ways to feature ' + B + ', on Vegans Explore and across the LESARUSS universe of brands.</p>',
-        pic: '<div class="bd-chips">' + ['Our Guides', 'The Daily Pulse', 'The Community Board', 'Instagram', 'TikTok', 'Ad slots', 'Events', 'The LESARUSS universe'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>' },
-      { t: 'Brand Partner', h: 'Brand Partner: $111 a quarter',
-        say: 'It all starts with Brand Partner: $111 a quarter for a seat at the table. Claim ' + l.name + '\'s page, and let\'s build something together.',
-        body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products, photos, videos and creator content</li>' +
-          '<li>Your live dashboard: visits, products opened, store aisles opened, campaigns</li><li>Front-row access to every campaign before it opens</li>' +
-          '<li>Sponsorships a la carte through LESARUSS AI, or a call with our team</li><li>The whole platform to explore: the Directory, events and every community</li></ul>' +
-          '<p class="bd-small">Your quarter helps us build the platform and open more cities this year.</p>' +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + B + ' as a Brand Partner</a><a class="bd-btn o" href="' + esc(talkHref) + '">Talk with our team</a></div>',
-        pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months.</em></div>' }
+      // Round 5 (Sean, 2026-10-09; panel): a glimpse of the campaigns, all Coming, and how a partner picks where it fits.
+      // No dollar figures here: budgets are a conversation with Sean.
+      { t: 'Campaigns', h: 'Coming up, and where ' + B + ' fits',
+        say: 'Here\'s what\'s coming: game day at Hard Rock Stadium, community nights in our cities, and the World Vegan Expo. Pick the ones that fit you.',
+        body: '<p>Look over the campaigns and pick the ones that fit ' + B + '. In each one, you choose:</p>' +
+          '<ul class="bd-list bd-two"><li>Your products in the campaign</li><li>A featured spot in a Guide</li><li>Ad slots on the pages you pick</li><li>Your own ads, if they fit our look, or ours</li><li>A spend that fits your budget</li><li>A campaign manager, assigned to you</li></ul>',
+        pic: '<div class="bd-camps">' + CAMPAIGNS.map(function(c){ return '<div><span class="bd-tag">Coming</span><b>' + c[0] + '</b><span>' + c[1] + '</span><em>' + c[2] + '</em></div>'; }).join('') + '</div>' },
+      // Why the membership matters, told as what the brand gets to see (talk versus walk).
+      { t: 'Why it matters', h: 'Where your membership goes, and how you see it',
+        say: 'Your membership keeps us at events, backs our volunteer Community Managers, and builds our apps. Join an event, and you get a report within a week.',
+        body: '<p>Your membership:</p><ul class="bd-list"><li>Keeps us at events, in person</li><li>Backs our volunteer Community Managers, city by city</li><li>Builds our apps</li></ul>' +
+          '<p><b>Walk, not talk.</b> Your dashboard is live, and after every campaign event you join, you get a report within 7 days.</p>',
+        pic: '<div class="bd-now"><div><h3>Working for ' + B + ' today</h3><ul><li>Your page, kept up with your products</li>' + (firstGuide ? '<li>Your products in the Vegan ' + esc(firstGuide[0]) + '</li>' : '') +
+          '<li>The ' + storeList.length + ' store aisles that carry you</li><li>The Directory, the Daily Pulse and the Community Board</li><li>Dinners and meetups in South Florida</li></ul></div>' +
+          '<div class="bd-next bd-only"><h3>Brand Partners only</h3><ul><li>A front-row seat on every campaign, before it opens</li><li>Your full dashboard</li><li>A report within 7 days of every event you join</li></ul></div></div>' },
+      OFFER_SLIDE
     ];
+    // ---- Getting Started (Sean, 2026-10-09): once a brand has joined, For <Brand> becomes Getting Started. Maya walks
+    // them through, the same way as the tour: "it's an onboarding... how do they use this platform... what are the
+    // different types of opportunities". Her clips are brand_door.start_tour. Game days and the Showcase are Sean's
+    // words from the same note; everything not yet live is marked Coming.
+    var COMING = '<span class="bd-tag">Coming</span>';
+    var START_SLIDES = [
+      { t: 'Welcome', h: 'Welcome to the front row, ' + B,
+        say: 'Welcome to the front row, ' + l.name + '! Your seat is saved, nothing is charged until January, and I\'ll walk you through everything.',
+        body: '<p>This page is your home with us now. Here is where things stand:</p>' +
+          '<ul class="bd-steps"><li class="ok"><b>Your seat is saved.</b> Front Row Start: your first quarter begins in January 2027.</li>' +
+          '<li class="' + (PS.confirmed ? 'ok' : 'wait') + '"><b>' + (PS.confirmed ? 'We confirmed it is you.' : 'We are confirming it is you.') + '</b> ' + (PS.confirmed ? 'Your full dashboard is open.' : 'Your full dashboard opens as soon as we do. We will email you.') + '</li>' +
+          '<li><b>Next:</b> a quick tour of how this works and the opportunities ahead.</li></ul>' +
+          '<div class="bd-btns">' + (BD.start_tour ? '<button type="button" class="bd-btn" data-bd-start>&#9654; Start the tour</button>' : '') + '</div>',
+        pic: l.logo_url ? '<div class="bd-logo" role="img" aria-label="' + B + '" style="background-image:url(\'' + esc(l.logo_url) + '\')"></div>' : '' },
+      { t: 'How this works', h: 'This page is your home with us',
+        say: 'This page is your home now. Opportunities, your media, your numbers, and me, all in one place.',
+        body: '<p>Everything you do with Vegans Explore happens right here, on ' + B + '\'s page.</p>',
+        pic: '<div class="bd-feat">' + [['Opportunities', 'The campaigns ahead. Tell us which ones you want in on.', 'opps'], ['Media', 'Send us your logo, product photos and videos.', 'media'],
+          ['Ask ' + NARR_NAME, 'Ask me anything. If I do not know, the team answers.', 'ask'], ['Insights', 'Your page\'s numbers, live, and your campaign reports.', 'insights'], ['Your products', 'Swap in your own photos and descriptions.', 'myproducts'],
+          ['Ad console ' + COMING, 'Pick spots across our pages and place your ads.', 'ads']].map(function(x){
+            return '<div' + (x[2] ? ' data-bd-goto="' + x[2] + '" role="button" tabindex="0" class="bd-go"' : '') + '><b>' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' },
+      { t: 'Game days', h: 'Game days, together',
+        say: 'Game days: we bring five or six brands to sample with fans, the community tailgates together, and we film it all for the next one.',
+        body: '<ul class="bd-list"><li>We invite five or six brands to sample with fans on their way to the game, with coupons to take home.</li>' +
+          '<li>We shoot content in the weeks leading up to it.</li><li>The community comes out to watch the game together and tailgates, cooking their favorite Vegan food.</li>' +
+          '<li>We capture it all and package it up for the next one.</li></ul>',
+        pic: '<div class="bd-camps one"><div>' + COMING + '<b>The Plant-Based Showcase</b><span>Miami Dolphins game day, Hard Rock Stadium</span><em>Sunday, November 29, 2026</em></div>' +
+          '<div>' + COMING + '<b>Game days in more cities</b><span>The same makeup, city by city</span><em>Dates to be set</em></div></div>' },
+      { t: 'The Plant-Based Showcase', h: 'We go where people aren\'t Vegan yet',
+        say: 'The Plant-Based Showcase goes where people aren\'t Vegan yet, like college games and festivals, to show how fun this life can be.',
+        body: '<p>The Plant-Based Showcase sets up at events that are not Vegan events: college games, festivals, and we are looking at tours like Warped Tour. Anywhere people might be curious.</p>' +
+          '<p>We show them this lifestyle is attainable, fun and vibrant, with more to do, not less.</p>',
+        pic: '<div class="bd-camps one"><div>' + COMING + '<b>College game days</b><span>The Showcase at the game</span></div><div>' + COMING + '<b>Festivals</b><span>Events that are not Vegan, with a Vegan corner worth visiting</span></div>' +
+          '<div>' + COMING + '<b>Tours</b><span>Being explored, Warped Tour among them</span></div></div>' },
+      { t: 'Why we do it', h: 'Why we do it',
+        say: 'If more people see how vibrant Vegan life is, and how many cool people are in it, more will try it. That\'s what we stand for.',
+        body: '<blockquote class="bd-quote">If more people see that there is a vibrant lifestyle you can have being Vegan, and a bunch of cool people in the community, they would be more apt to try it. That is what we represent for the Vegan movement.<cite>Sean A. Russell, founder</cite></blockquote>',
+        pic: '<div class="bd-camps one"><div><b>Live now</b><span>The Directory, our Guides, the Daily Pulse and the Community Board, dinners and meetups in South Florida</span></div>' +
+          '<div>' + COMING + '<b>Community nights</b><span>In each city, starting in South Florida in November</span></div><div>' + COMING + '<b>The World Vegan Expo</b><span>Our next flagship. City and date to be set</span></div></div>' },
+      { t: 'Your next steps', h: 'Where to start',
+        say: 'Start with Opportunities and tell us where you want in. Upload your media, and ask me anything. I\'m right here.',
+        body: '<ol class="bd-next-steps"><li><b>Opportunities.</b> Tell us which campaigns you want in on.</li><li><b>Your products.</b> Swap in your own photos and descriptions.</li><li><b>Media.</b> Upload your logo, graphics and videos.</li>' +
+          '<li><b>Ask ' + esc(NARR_NAME) + '.</b> Anything at all. If I do not have the answer, the team gets it to you.</li><li><b>Ad console.</b> ' + COMING + ' When it opens, you pick spots and place your ads.</li></ol>' +
+          '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="opps">See the opportunities</button><button type="button" class="bd-btn o" data-bd-goto="media">Upload media</button><button type="button" class="bd-btn o" data-bd-goto="ask">Ask ' + esc(NARR_NAME) + '</button></div>',
+        pic: '' }
+    ];
+    // The page is the partner's when they hold its Brand Partner membership (Front Row Start included) or own it.
+    // ?partner=preview shows it to anyone (labelled), so the team can see what a brand sees before one joins.
+    var PARTNER = !!PS.partner;
+    if(PARTNER) SLIDES = START_SLIDES;
+    // Neither the brand's partner nor on its link: Partner Dashboard is the locked page (claim it, or apply to be listed).
+    if(!l._door && !PARTNER){ if(door) door.innerHTML = partnerLocked(l); door = null; }
     // The narration: a clip per slide (brand_door.clips, [{video, poster}]: Maya on camera, a different pose each slide,
     // under 10 seconds, no b-roll; Sean, 2026-10-09; files in vegan-media/media/brand-door/<brand>/), else her voice
     // alone (brand_door.audio). The poster is the clip's first frame, so a slide shows her new pose before it plays.
-    var CLIPS = Array.isArray(BD.clips) && BD.clips.length === SLIDES.length && BD.clips.every(function(c){ return c && c.video; }) ? BD.clips : null;
+    // brand_door.tour is the six-slide tour's clips (2026-10-09); brand_door.clips the nine-slide one it replaced.
+    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && x.video; }) ? c : null; }
+    var TOUR = PARTNER ? (Array.isArray(BD.start_tour) ? BD.start_tour.slice() : null) : Array.isArray(BD.tour) ? BD.tour.slice() : null;
+    if(TOUR && !PARTNER && !FRONT_ROW && BD.tour_plain_last) TOUR[TOUR.length - 1] = BD.tour_plain_last;
+    var CLIPS = fits(TOUR) || fits(BD.clips);
     var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video; }) : null;
     function posterAt(i){ return (CLIPS && CLIPS[i].poster) || narrArt; }
     var AUDIO = !VIDEO && Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
@@ -1536,7 +1760,7 @@ function loadBrandSite(l){
     if(VIDEO){
       player = document.createElement('video'); player.className = 'bd-vid'; player.preload = 'metadata'; player.playsInline = true;
       player.setAttribute('playsinline', ''); player.poster = posterAt(0); player.src = VIDEO[0];
-      player.addEventListener('click', function(){ if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } });
+      player.addEventListener('click', function(){ if(!DOOR.started){ startTour(); return; } if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } });
     } else if(AUDIO){ player = new Audio(); player.preload = 'none'; }
     if(player) player.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); });
     var grid = document.querySelector('.listing-page-grid'), rail = document.querySelector('.bsite-rail');
@@ -1555,7 +1779,8 @@ function loadBrandSite(l){
         if(!el) return; narrBox(el);
         el.querySelector('.bd-bubble').textContent = DOOR.view === 'offer' ? SLIDES[DOOR.i].say : 'This is ' + l.name + '\'s dashboard: what people do on your page, live.';
         var btn = el.querySelector('.bd-play');
-        if(btn){ btn.hidden = DOOR.view !== 'offer'; btn.setAttribute('aria-pressed', String(DOOR.playing)); btn.innerHTML = DOOR.playing ? 'Pause ' + esc(NARR_NAME) : '&#9654; ' + (VIDEO ? 'Watch ' : 'Hear ') + esc(NARR_NAME); }
+        if(btn){ btn.hidden = DOOR.view !== 'offer'; btn.setAttribute('aria-pressed', String(DOOR.playing)); btn.classList.toggle('go', !DOOR.started);
+          btn.innerHTML = !DOOR.started ? '&#9654; Start the tour' : DOOR.playing ? 'Pause ' + esc(NARR_NAME) : '&#9654; ' + (VIDEO ? 'Watch ' : 'Hear ') + esc(NARR_NAME); }
       });
       // The one video lives in whichever box is showing: the right column, or the tab itself on a phone.
       if(VIDEO){ var home = (small ? mob : narr) || narr || mob, slot = home && home.querySelector('.bd-vid-slot'); if(slot && player.parentNode !== slot) slot.appendChild(player); }
@@ -1573,13 +1798,14 @@ function loadBrandSite(l){
       if(player.getAttribute('src') !== VIDEO[DOOR.i]){ player.poster = posterAt(DOOR.i); player.src = VIDEO[DOOR.i]; }
       player.classList.remove('bd-shift', 'alt'); void player.offsetWidth; player.classList.add('bd-shift'); if(DOOR.i % 2) player.classList.add('alt');
     }
-    // She just starts talking (Sean, 2026-10-09: "there's no play button on maya and it just starts playing"): opening
-    // the tab and every Next or Back plays the slide, unless the visitor paused her. A browser that blocks sound
-    // before the first tap leaves her on her pose with the button under her.
-    function autoplay(){ if(player && DOOR.view === 'offer' && !DOOR.paused) play(); }
+    // Start the tour (Sean, 2026-10-09: "the button says start the tour... when they start the tour, she starts to
+    // talk... then when they start going to the next one, it can play automatically"). Nothing plays until the visitor
+    // presses Start the tour; from then every Next or Back plays the slide, unless they paused her.
+    function autoplay(){ if(player && DOOR.started && DOOR.view === 'offer' && !DOOR.paused) play(); }
+    function startTour(){ DOOR.started = true; DOOR.paused = false; play(); drawNarr(); if(door) [].forEach.call(door.querySelectorAll('[data-bd-start]'), function(b){ b.remove(); }); }
     var doorWasOn = false;
     function syncRail(){
-      var on = !!document.querySelector('.tab-btn.active[data-tab="brand"]'); if(grid) grid.classList.toggle('door-on', on);
+      var tb = document.getElementById('tab-brand'), on = !!door && !!tb && tb.classList.contains('active'); if(grid) grid.classList.toggle('door-on', on);
       if(!on && DOOR.playing){ stop(); drawNarr(); }
       if(on && !doorWasOn) autoplay();
       doorWasOn = on;
@@ -1588,8 +1814,8 @@ function loadBrandSite(l){
     function drawDoor(){
       if(!door) return;
       var i = Math.max(0, Math.min(SLIDES.length - 1, DOOR.i)), sl = SLIDES[i];
-      door.innerHTML = '<div class="bd-top"><div class="bd-hello">For ' + B + '</div><div class="bsite-pills" role="group" aria-label="View">' +
-        [['offer', 'The offer'], ['dashboard', 'Dashboard']].map(function(o){ return '<button type="button" class="bsite-pill" data-bdview="' + o[0] + '" aria-pressed="' + (DOOR.view === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+      door.innerHTML = '<div class="bd-top"><div class="bd-hello">' + (PARTNER ? 'Welcome, ' : 'For ') + B + '</div>' + (PARTNER ? '' : '<div class="bsite-pills" role="group" aria-label="View">' +
+        [['offer', 'The offer'], ['dashboard', 'Dashboard']].map(function(o){ return '<button type="button" class="bsite-pill" data-bdview="' + o[0] + '" aria-pressed="' + (DOOR.view === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>') + '</div>' +
         '<div class="bd-narr bd-narr-m"></div>' +
         (DOOR.view === 'offer'
           ? '<section class="bd-slide' + (sl.wide ? ' wide' : '') + '"><div class="bd-words"><div class="bd-kicker">' + (i + 1) + ' &middot; ' + esc(sl.t) + '</div><h2>' + sl.h + '</h2>' + sl.body + '</div><div class="bd-pic">' + sl.pic + '</div></section>' +
@@ -1597,16 +1823,39 @@ function loadBrandSite(l){
             '<button type="button" class="bd-nav" data-bd="next"' + (i < SLIDES.length - 1 ? '' : ' disabled') + '>Next</button></div>'
           : '<div class="bd-dash"></div>');
       drawNarr();
-      if(DOOR.view === 'dashboard') drawDash(); else lazyLive();
+      if(DOOR.started) [].forEach.call(door.querySelectorAll('[data-bd-start]'), function(b){ b.remove(); });
+      if(DOOR.view === 'dashboard') drawDash(door.querySelector('.bd-dash')); else { lazyLive(); fillTotals(); }
+    }
+    // The brand's numbers so far (ve_listing_totals: four counts since the first counted visit, for any brand page with a
+    // door). Fetched once; every [data-total] in the door is filled from it.
+    var TOTALS = null, totalsAsked = false;
+    function fillTotals(){
+      var scope = DASH_BOX && document.body.contains(DASH_BOX) ? DASH_BOX : door;
+      if(!scope) return;
+      if(!TOTALS){
+        if(totalsAsked) return; totalsAsked = true;
+        fetch(SUPABASE_URL + '/rest/v1/rpc/ve_listing_totals', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_listing: l.id }) }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(t){ TOTALS = t || {}; fillTotals(); });
+        return;
+      }
+      [].forEach.call(scope.querySelectorAll('[data-total]'), function(b){ var n = TOTALS[b.getAttribute('data-total')]; b.textContent = n == null ? '0' : Number(n).toLocaleString(); });
+      var s = TOTALS.since ? 'Counted since ' + new Date(TOTALS.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. Small and early, and real.' : 'Counting starts with the next visit.';
+      [].forEach.call(scope.querySelectorAll('.bd-since'), function(p){ p.textContent = s; });
     }
     function tile(label, n){ return '<div><b>' + (n == null ? '0' : Number(n).toLocaleString()) + '</b><span>' + label + '</span></div>'; }
-    function drawDash(){
-      var el = door.querySelector('.bd-dash'); if(!el) return;
+    var DASH_BOX = null; // the box the dashboard is drawn in: the offer's Dashboard view, or the partner's Insights
+    function drawDash(box){
+      if(box) DASH_BOX = box;
+      var el = (DASH_BOX && document.body.contains(DASH_BOX) ? DASH_BOX : null) || (door && door.querySelector('.bd-dash')); if(!el) return;
       if(!canSee()){
-        el.innerHTML = '<div class="bd-tiles bd-ghost">' + ['Page views', 'Visitors', 'Products opened', 'Store aisles opened'].map(function(x){ return '<div><b>' + LOCK + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' +
-          '<div class="bd-locked"><p><b>This is ' + B + '\'s dashboard.</b> It opens for ' + B + ' once the page is claimed, and shows how it performs: visits, the products people open, and the stores they look for you in.</p>' +
-          '<div class="bd-btns"><a class="bd-btn" href="' + esc(claimHref) + '" target="_top">Claim ' + B + ' as a Brand Partner</a>' +
-          (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>';
+        // The totals since the page went up are open to anyone on the link; the breakdown is the partner's.
+        el.innerHTML = '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+          '<p class="bd-small bd-since"></p>' +
+          (PARTNER ? '<div class="bd-locked"><p><b>Your full dashboard opens as soon as we confirm it is you.</b> ' + LOCK + ' Views by day and by source, which products people open, and which stores they look for you in. We will email you.</p></div>'
+          : '<div class="bd-locked"><p><b>The full dashboard opens once ' + B + ' claims the page:</b> ' + LOCK + ' views by day and by source, which products people open, and which stores they look for you in.</p>' +
+          '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
+          (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>');
+        fillTotals();
         return;
       }
       el.innerHTML = '<div class="aisle-empty">Loading the numbers...</div>';
@@ -1642,6 +1891,7 @@ function loadBrandSite(l){
     }
     function doorClick(e){
       var el;
+      if(e.target.closest('[data-bd-start]') || (e.target.closest('[data-bd-play]') && !DOOR.started)){ startTour(); return true; }
       if(e.target.closest('[data-bd-play]')){ if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } return true; }
       if(!door || !door.contains(e.target)) return false;
       if((el = e.target.closest('[data-bdview]'))){ setDoor(el.getAttribute('data-bdview')); return true; }
@@ -1674,7 +1924,264 @@ function loadBrandSite(l){
     window.addEventListener('popstate', function(){
       showListingTab(new URLSearchParams(location.search).get('tab') || 'overview'); route(); syncRail();
     });
+    // ---- The partner's tabs (Sean, 2026-10-09): Opportunities, Media, Ask Maya, and the Ad console (Coming). Shown only
+    // to the partner (or ?partner=preview); the server checks every action again (ve-claims partner_*, media_*).
+    function claimsCall(body){
+      if(!(window.VEAuth && VEAuth.isLoggedIn())) return Promise.resolve({ error: 'sign_in' });
+      return fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+        .then(function(r){ return r.json().then(function(d){ d._status = r.status; return d; }); }).catch(function(){ return { error: 'network' }; });
+    }
+    var PREVIEW_NOTE = PS.preview ? '<p class="bp-preview">Preview: this is what ' + B + ' sees after joining. Buttons work for ' + B + '\'s team once they are signed in.</p>' : '';
+    // Opportunities: the campaigns ahead, each one Coming until it is real. "I'm interested" is a lead on /dashboard/leads.
+    var OPPS = [
+      ['plant-based-showcase-2026-11-29', 'Game day', 'The Plant-Based Showcase', 'Miami Dolphins game day, Hard Rock Stadium. Sunday, November 29, 2026.', 'Sample with fans on their way in, hand out coupons, be in the content we shoot before and after, and join the community tailgate.'],
+      ['game-days', 'Game day', 'Game days in more cities', 'The same makeup, city by city. Dates to be set.', 'Five or six brands per game, sampling, coupons and content.'],
+      ['showcase-events', 'Showcase', 'The Showcase at college games and festivals', 'Events that are not Vegan events. Dates to be set.', 'Meet people who are curious about Vegan food, with samples and coupons.'],
+      ['community-nights', 'Community', 'Community nights', 'In each city, starting in South Florida in November 2026.', 'Sampling, goodie bags and a table at our monthly gatherings.'],
+      ['world-vegan-expo', 'Flagship', 'The World Vegan Expo', 'Our next flagship. City and date to be set.', 'Partners hear first, before it is announced.'],
+      ['guide-feature', 'Guides', 'A featured spot in a Guide', 'Starting with the Vegan ' + (firstGuide ? firstGuide[0] : 'Dairy Guide') + '.', 'Your products featured where people are choosing what to buy.'],
+      ['q1-2027-campaigns', 'Q1 2027', 'Our Q1 2027 campaigns', 'January to March 2027. Details to be set.', 'Brand Partners get the front row: a first look and first pick.']
+    ];
+    var interests = {}; (PS.interests || []).forEach(function(k){ interests[k] = 1; });
+    function drawOpps(){
+      var el = document.getElementById('bp-opps'); if(!el) return;
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Opportunities</h3><span>Everything here is Coming. Tell us where you want in, and we will reach out with the details.</span></div>' +
+        '<div class="bp-opps">' + OPPS.map(function(o){ var on = !!interests[o[0]];
+          return '<div class="bp-opp"><div class="bp-opp-top"><span class="bp-kind">' + esc(o[1]) + '</span>' + COMING + '</div><b>' + esc(o[2]) + '</b><span class="bp-when">' + esc(o[3]) + '</span><p>' + esc(o[4]) + '</p>' +
+            '<button type="button" class="bd-btn' + (on ? '' : ' o') + '" data-bp-interest="' + o[0] + '" aria-pressed="' + on + '">' + (on ? '&#10003; You\'re interested' : 'I\'m interested') + '</button></div>'; }).join('') + '</div>' +
+        '<p class="bd-small">Questions about any of these? <button type="button" class="bsite-link" data-bd-goto="ask">Ask ' + esc(NARR_NAME) + '</button></p>';
+    }
+    // Media: they send us graphics and video straight from their page (private storage, ve-claims media_*).
+    var MEDIA = null;
+    function mediaSize(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+    function drawMedia(){
+      var el = document.getElementById('bp-media'); if(!el) return;
+      var list = MEDIA === null ? '<div class="aisle-empty">Loading your media...</div>' : !MEDIA.length ? '<div class="aisle-empty">Nothing yet. Your uploads show here.</div>'
+        : '<div class="bp-media-grid">' + MEDIA.map(function(m){ var img = /^image\//.test(m.content_type || '') && m.url;
+            return '<div class="bp-media-item"><div class="bp-media-pic"' + (img ? ' style="background-image:url(\'' + esc(m.url) + '\')"' : '') + '>' + (img ? '' : '<span>' + esc((m.content_type || '').split('/')[1] || 'file') + '</span>') + '</div>' +
+              '<b title="' + esc(m.file_name) + '">' + esc(m.file_name) + '</b><span>' + esc(String(m.kind).replace('_', ' ')) + ' &middot; ' + mediaSize(m.bytes || 0) + '</span>' +
+              (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener">Open</a>' : '') + ' <button type="button" class="bsite-link" data-bp-remove="' + m.id + '">Remove</button></div>'; }).join('') + '</div>';
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Media</h3><span>Send us your logo, product photos, graphics and videos. Anything we need for your page, campaigns and ads.</span></div>' +
+        '<form class="bp-upload" id="bp-upload"><label class="bp-drop"><input type="file" id="bp-file" multiple accept="image/*,video/mp4,video/quicktime,video/webm,application/pdf,application/zip"><b>Choose files</b><span>Images, video (MP4, MOV, WebM), PDF or ZIP, up to 500 MB each</span></label>' +
+        '<div class="bp-upload-row"><select id="bp-kind" aria-label="What is it"><option value="logo">Logo</option><option value="product_photo">Product photos</option><option value="graphic">Graphics</option><option value="video">Video</option><option value="other" selected>Other</option></select>' +
+        '<input type="text" id="bp-note" maxlength="500" placeholder="A note for our team (optional)"><button type="submit" class="bd-btn">Upload</button></div><p class="bd-small" id="bp-up-msg" aria-live="polite"></p></form>' +
+        '<h3 class="bp-sub">What you have sent us</h3>' + list;
+    }
+    function loadMedia(){ if(PS.preview && !PS.real){ MEDIA = []; drawMedia(); return; } claimsCall({ action: 'media_list', listing_id: l.id }).then(function(d){ MEDIA = (d && d.media) || []; drawMedia(); }); }
+    function uploadFiles(files){
+      var msg = document.getElementById('bp-up-msg'), kind = document.getElementById('bp-kind').value, note = document.getElementById('bp-note').value;
+      if(!files.length){ msg.textContent = 'Choose a file first.'; return; }
+      if(PS.preview && !PS.real){ msg.textContent = 'This is a preview. Uploads work for ' + l.name + '\'s team once they are signed in.'; return; }
+      var i = 0;
+      (function next(){
+        if(i >= files.length){ msg.textContent = files.length === 1 ? 'Sent. Our team has it.' : 'All ' + files.length + ' sent. Our team has them.'; loadMedia(); return; }
+        var f = files[i++];
+        msg.textContent = 'Uploading ' + f.name + '...';
+        claimsCall({ action: 'media_upload_url', listing_id: l.id, file_name: f.name, content_type: f.type, bytes: f.size, kind: kind, note: note }).then(function(d){
+          if(!d || !d.signed_url){ msg.textContent = f.name + ': ' + (d && d.error === 'file_type' ? 'that kind of file is not accepted.' : d && d.error === 'file_size' ? 'too large (500 MB at most).' : 'could not start the upload.'); return; }
+          var x = new XMLHttpRequest(); x.open('PUT', d.signed_url); x.setRequestHeader('Content-Type', f.type); x.setRequestHeader('x-upsert', 'true');
+          x.upload.onprogress = function(e){ if(e.lengthComputable) msg.textContent = 'Uploading ' + f.name + ': ' + Math.round(e.loaded / e.total * 100) + '%'; };
+          x.onload = function(){ if(x.status >= 300){ msg.textContent = f.name + ' did not upload. Try again.'; return; } claimsCall({ action: 'media_done', id: d.id }).then(next); };
+          x.onerror = function(){ msg.textContent = f.name + ' did not upload. Check your connection and try again.'; };
+          x.send(f);
+        });
+      })();
+    }
+    // Ask Maya: free saved answers first (ve-auth guide_ask); with none, she says she'll get them an answer and the
+    // question goes to the account manager (ve-claims partner_ask), who replies by email.
+    var CHAT = [{ who: 'guide', text: 'Hi! Ask me anything about Vegans Explore, the campaigns, or your page. If I don\'t have the answer, I\'ll get it to you.' }];
+    function drawAsk(){
+      var el = document.getElementById('bp-ask'); if(!el) return;
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-ask"><div class="bp-ask-pic" style="background-image:url(\'' + esc(narrArt) + '\')"></div><div class="bp-ask-main"><div class="bp-head"><h3>Ask ' + esc(NARR_NAME) + '</h3><span>Your Guide to Vegans Explore</span></div>' +
+        '<div class="bp-chat" id="bp-chat">' + CHAT.map(function(m){ return '<div class="bp-msg ' + m.who + '">' + m.text + '</div>'; }).join('') + '</div>' +
+        '<div class="bp-chips">' + ['How does a game day work?', 'When does the ad console open?', 'How do I send you product samples?'].map(function(q){ return '<button type="button" class="bsite-pill" data-bp-q="' + esc(q) + '">' + esc(q) + '</button>'; }).join('') + '</div>' +
+        '<form class="bp-ask-form" id="bp-ask-form"><input type="text" id="bp-q" maxlength="500" placeholder="Ask ' + esc(NARR_NAME) + ' a question" aria-label="Your question"><button type="submit" class="bd-btn">Ask</button></form></div></div>';
+      var c = document.getElementById('bp-chat'); if(c) c.scrollTop = c.scrollHeight;
+    }
+    function say(who, text){ CHAT.push({ who: who, text: text }); drawAsk(); }
+    function ask(q){
+      q = String(q || '').trim(); if(!q) return;
+      say('you', esc(q));
+      if(PS.preview && !PS.real){ say('guide', 'This is a preview. For ' + B + '\'s team, I answer here, and anything I don\'t know goes to the team, who reply by email.'); return; }
+      fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=guide_ask', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ action: 'guide_ask', agent_slug: NARR, message: q, token: VEAuth.getToken() }) }).then(function(r){ return r.json(); }).catch(function(){ return {}; }).then(function(d){
+        if(d && d.answer){ say('guide', esc(d.answer.answer) + (d.answer.link_url ? ' <a href="' + esc(d.answer.link_url) + '">' + esc(d.answer.link_label || 'More') + '</a>' : '')); return; }
+        claimsCall({ action: 'partner_ask', listing_id: l.id, message: q }).then(function(r){
+          if(r && r.ok) say('guide', 'I don\'t have that one yet, so I\'ve sent it to the team. You\'ll get an answer by email soon.');
+          else if(r && r._status === 429) say('guide', 'You\'ve sent the team ten questions today. This one can wait until tomorrow, or reply to any of our emails.');
+          else say('guide', 'I couldn\'t send that just now. Try again in a minute.');
+        });
+      });
+    }
+    function drawAds(){
+      var el = document.getElementById('bp-ads'); if(!el) return;
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Ad console ' + COMING + '</h3><span>Not open yet. Brand Partners get it first.</span></div>' +
+        '<div class="bd-feat bp-ads">' + [['Pick your spots', 'The Daily Pulse, our Guides, beside the Directory, on the pages you choose.'], ['See the traffic', 'Each spot shows how many people see it.'],
+          ['Place your ad', 'Bring your own if it fits our look, or our team makes it with you.'], ['Set your budget', 'Spend what fits, spot by spot.']].map(function(x){ return '<div><b>' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+        (BD.sample_ad ? '<div class="bd-sample bp-ads-sample"><div class="bd-sample-h">Billboard <em>The sample we drew for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>' : '');
+    }
+    // Insights (Sean, 2026-10-09: "they can see their numbers... how many people have clicked their campaigns... the
+    // reports for any campaigns that we've had"): the page's numbers (brand_stats once confirmed) and campaign reports.
+    function drawInsights(){
+      var el = document.getElementById('bp-insights'); if(!el) return;
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Insights</h3><span>How many people find ' + B + ' on Vegans Explore, and what they open.</span></div><div class="bd-dash bp-dash"></div>' +
+        '<h3 class="bp-sub">Campaigns</h3><div class="bp-camp-empty"><b>No campaigns yet.</b> When ' + B + ' joins one, its clicks show here, and its report lands here within 7 days of each event.' +
+        ' <button type="button" class="bsite-link" data-bd-goto="opps">See the opportunities</button></div>';
+      drawDash(el.querySelector('.bd-dash'));
+    }
+    // Your products (Sean, 2026-10-09: "update their own products... change the photos... but not mess up the format...
+    // switch out the assets... if it's low quality it can give them a warning"). Photos and descriptions only; the name,
+    // ingredients and the cited Nutrition Facts stay ours. Under 1000 px on the shorter side is refused (here and on
+    // the server, ve-claims product_update).
+    var PHOTO_MIN = 1000;
+    function drawMyProducts(msgFor){
+      var el = document.getElementById('bp-myproducts'); if(!el) return;
+      function photoBox(p, v){
+        var key = p.id + (v ? ':' + v.key : ''), pic = v ? v.image : p.image_url;
+        return '<div class="bp-ph"><div class="bp-ph-pic"' + (pic ? ' style="background-image:url(\'' + esc(pic) + '\')"' : '') + '>' + (pic ? '' : 'No photo yet') + '</div>' +
+          '<label class="bd-btn o bp-ph-btn">Replace photo<input type="file" accept="image/jpeg,image/png,image/webp" data-bp-photo="' + esc(key) + '"></label>' +
+          '<p class="bp-ph-msg" data-bp-msg="' + esc(key) + '" aria-live="polite">' + (msgFor && msgFor[key] ? msgFor[key] : '') + '</p></div>';
+      }
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Your products</h3><span>Swap in your own photos and descriptions. Photos need to be at least ' + PHOTO_MIN + ' pixels on the shorter side. Names, ingredients and Nutrition Facts (cited from USDA FoodData Central) stay as they are; to change one, ask ' + esc(NARR_NAME) + '.</span></div>' +
+        (rows.length ? rows.map(function(p){
+          var vs = Array.isArray(p.variants) ? p.variants.filter(function(v){ return v && v.key; }) : [];
+          return '<div class="bp-prod"><div class="bp-prod-h"><b>' + esc(title(p)) + '</b><a class="bsite-link" href="' + esc(href(p.slug)) + '" data-product="' + esc(p.slug) + '">See it</a></div>' +
+            '<div class="bp-prod-main">' + photoBox(p) + '<div class="bp-desc"><label for="bp-d-' + p.id + '">In your words</label><textarea id="bp-d-' + p.id + '" maxlength="1000" data-bp-desc="' + p.id + '">' + esc(p.brand_says || '') + '</textarea>' +
+            '<button type="button" class="bd-btn" data-bp-save="' + p.id + '">Save description</button></div></div>' +
+            (vs.length ? '<details class="bp-vars"><summary>' + vs.length + ' versions</summary>' + vs.map(function(v){
+              return '<div class="bp-var"><div class="bp-var-name">' + esc(v.name || v.key) + '</div><div class="bp-prod-main">' + photoBox(p, v) +
+                '<div class="bp-desc"><label for="bp-d-' + p.id + '-' + esc(v.key) + '">In your words</label><textarea id="bp-d-' + p.id + '-' + esc(v.key) + '" maxlength="1000" data-bp-desc="' + p.id + ':' + esc(v.key) + '">' + esc(v.description || '') + '</textarea>' +
+                '<button type="button" class="bd-btn o" data-bp-save="' + p.id + ':' + esc(v.key) + '">Save description</button></div></div></div>'; }).join('') + '</details>' : '') + '</div>';
+        }).join('') : '<div class="aisle-empty">No products from ' + B + ' in our Guides yet.</div>');
+    }
+    function prodFrom(key){ var k = String(key).split(':'), p = rows.filter(function(r){ return r.id === k[0]; })[0]; return { p: p, vkey: k[1] || null }; }
+    function setMsg(key, html, bad){ var m = document.querySelector('[data-bp-msg="' + key + '"]'); if(m){ m.innerHTML = html; m.classList.toggle('bad', !!bad); } }
+    function imageDims(file){ return new Promise(function(res){ var u = URL.createObjectURL(file), im = new Image(); im.onload = function(){ res({ w: im.naturalWidth, h: im.naturalHeight }); URL.revokeObjectURL(u); }; im.onerror = function(){ res(null); URL.revokeObjectURL(u); }; im.src = u; }); }
+    function lowQuality(d){ return 'This photo is ' + d.w + ' &times; ' + d.h + ' pixels, too small to look sharp on your page. Please upload a higher quality photo, at least ' + PHOTO_MIN + ' pixels on the shorter side.'; }
+    function replacePhoto(key, file){
+      var t = prodFrom(key); if(!t.p || !file) return;
+      if(PS.preview && !PS.real){ setMsg(key, 'This is a preview. ' + B + '\'s team can replace photos once signed in.'); return; }
+      if(!/^image\/(jpeg|png|webp)$/.test(file.type)){ setMsg(key, 'Please use a JPG, PNG or WebP photo.', true); return; }
+      imageDims(file).then(function(d){
+        if(!d){ setMsg(key, 'That file could not be read as a photo.', true); return; }
+        if(Math.min(d.w, d.h) < PHOTO_MIN){ setMsg(key, lowQuality(d), true); return; }
+        setMsg(key, 'Uploading...');
+        claimsCall({ action: 'product_photo_url', listing_id: l.id, product_id: t.p.id, content_type: file.type, bytes: file.size }).then(function(u){
+          if(!u || !u.signed_url){ setMsg(key, u && u.error === 'file_size' ? 'That photo is over 15 MB. Please use a smaller file.' : 'Could not start the upload. Try again.', true); return; }
+          var x = new XMLHttpRequest(); x.open('PUT', u.signed_url); x.setRequestHeader('Content-Type', file.type); x.setRequestHeader('x-upsert', 'true');
+          x.onload = function(){
+            if(x.status >= 300){ setMsg(key, 'The upload did not go through. Try again.', true); return; }
+            claimsCall({ action: 'product_update', listing_id: l.id, product_id: t.p.id, variant_key: t.vkey, image_path: u.path }).then(function(r){
+              if(r && r.error === 'low_quality') return setMsg(key, lowQuality({ w: r.width || '?', h: r.height || '?' }), true);
+              if(!r || !r.ok) return setMsg(key, 'Could not save the photo. Try again.', true);
+              if(r.image_url){ if(t.vkey){ t.p.variants.forEach(function(v){ if(v.key === t.vkey) v.image = r.image_url; }); } else t.p.image_url = r.image_url; }
+              var msg = {}; msg[key] = 'Saved. It is live on your page.'; drawMyProducts(msg);
+            });
+          };
+          x.onerror = function(){ setMsg(key, 'The upload did not go through. Check your connection and try again.', true); };
+          x.send(file);
+        });
+      });
+    }
+    function saveDesc(key){
+      var t = prodFrom(key), ta = document.querySelector('[data-bp-desc="' + key + '"]'); if(!t.p || !ta) return;
+      if(PS.preview && !PS.real){ setMsg(key, 'This is a preview. ' + B + '\'s team can edit descriptions once signed in.'); return; }
+      claimsCall({ action: 'product_update', listing_id: l.id, product_id: t.p.id, variant_key: t.vkey, description: ta.value }).then(function(r){
+        if(!r || !r.ok) return setMsg(key, 'Could not save. Try again.', true);
+        if(t.vkey) t.p.variants.forEach(function(v){ if(v.key === t.vkey) v.description = ta.value; }); else t.p.brand_says = ta.value;
+        setMsg(key, r.changed ? 'Saved. It is live on your page.' : 'No changes to save.');
+      });
+    }
+    function showPartnerTabs(){
+      // Partner Dashboard (Sean, 2026-10-09: "instead of getting started, it should be a dashboard... partner dashboard. And
+      // then underneath it is a sub menu"). Getting started stays first; the rest are its sub views.
+      var bt = document.querySelector('.tab-btn[data-tab="brand"]'); if(bt){ var lk = bt.querySelector('.pd-lock'); if(lk) lk.remove(); }
+      PD_SUBS = [['brand', 'Getting started'], ['insights', 'Insights'], ['myproducts', 'Your products'], ['opps', 'Opportunities'], ['media', 'Media'], ['ask', 'Ask ' + NARR_NAME], ['ads', 'Ad console']];
+      var sn = document.querySelector('.pd-subnav');
+      if(sn) sn.innerHTML = PD_SUBS.map(function(x){ return '<button type="button" data-pd="' + x[0] + '">' + esc(x[1]) + (x[0] === 'ads' ? ' <span class="bd-tag">Coming</span>' : '') + '</button>'; }).join('');
+      drawInsights(); drawMyProducts(); drawOpps(); drawMedia(); drawAsk(); drawAds(); loadMedia();
+      var t = new URLSearchParams(location.search).get('tab'); if(t && t !== 'overview') showListingTab(t);
+      root.addEventListener('click', function(e){
+        var el;
+        if((el = e.target.closest('[data-pd]'))){ showListingTab(el.getAttribute('data-pd')); syncRail(); return; }
+        if((el = e.target.closest('[data-bd-goto]')) && !door.contains(el)){ showListingTab(el.getAttribute('data-bd-goto')); syncRail(); window.scrollTo(0, 0); return; }
+        if((el = e.target.closest('[data-bddays]')) && !door.contains(el)){ DOOR.days = +el.getAttribute('data-bddays'); drawDash(); return; }
+        if((el = e.target.closest('[data-bp-save]'))){ saveDesc(el.getAttribute('data-bp-save')); return; }
+        if((el = e.target.closest('[data-bp-interest]'))){
+          var k = el.getAttribute('data-bp-interest'), on = !interests[k], o = OPPS.filter(function(x){ return x[0] === k; })[0];
+          if(PS.preview && !PS.real){ el.textContent = 'Works for ' + l.name + '\'s team'; return; }
+          el.disabled = true;
+          claimsCall({ action: 'partner_interest', listing_id: l.id, campaign: k, label: o ? o[2] : k, on: on }).then(function(d){ if(d && d.ok){ if(on) interests[k] = 1; else delete interests[k]; } drawOpps(); });
+          return;
+        }
+        if((el = e.target.closest('[data-bp-remove]'))){ if(!confirm('Remove this file?')) return; claimsCall({ action: 'media_remove', id: el.getAttribute('data-bp-remove') }).then(loadMedia); return; }
+        if((el = e.target.closest('[data-bp-q]'))){ ask(el.getAttribute('data-bp-q')); return; }
+      });
+      root.addEventListener('change', function(e){
+        if(e.target.hasAttribute && e.target.hasAttribute('data-bp-photo')){ replacePhoto(e.target.getAttribute('data-bp-photo'), e.target.files[0]); e.target.value = ''; return; }
+        if(e.target.id !== 'bp-file') return;
+        var n = e.target.files.length, lab = e.target.parentNode.querySelector('b');
+        if(lab) lab.textContent = !n ? 'Choose files' : n === 1 ? e.target.files[0].name : n + ' files chosen';
+      });
+      root.addEventListener('submit', function(e){
+        if(e.target.id === 'bp-upload'){ e.preventDefault(); uploadFiles([].slice.call(document.getElementById('bp-file').files)); }
+        if(e.target.id === 'bp-ask-form'){ e.preventDefault(); var q = document.getElementById('bp-q'); ask(q.value); }
+      });
+    }
+    if(PARTNER && door) showPartnerTabs();
     route();
+    syncRail();
+  });
+}
+// Partner Dashboard, locked (Sean, 2026-10-09: "on every listing we have a locked dashboard that then lets people know that
+// they can claim their listings or they can create a listing... any vegan business can apply to be part of the directory,
+// wherever they are... that then brings them into our whole ecosystem").
+function partnerLocked(l){
+  var brand = !!l._brandSite, claimed = l.claim_status === 'verified';
+  var claimHref = '/claim?listing=' + encodeURIComponent(l.slug || '') + (brand ? '&plan=brand' + (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '&offer=front-row' : '') : '');
+  var signedIn = !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn());
+  return '<div class="pd-locked"><div class="pd-locked-main"><div class="pd-kicker"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg> Partner Dashboard</div>' +
+    '<h2>' + (claimed ? esc(l.name) + '\'s dashboard is open to its team' : 'Is ' + esc(l.name) + ' your ' + (brand ? 'brand' : 'business') + '?') + '</h2>' +
+    '<p>' + (claimed ? 'This page has been claimed. If you are on the team, sign in with the account that claimed it.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
+    '<ul class="pd-gets"><li><b>Your page, your way.</b> ' + (brand ? 'Your products, photos and descriptions.' : 'Your details, photos and story.') + '</li><li><b>Insights.</b> How many people find you and what they open.</li>' +
+    '<li><b>Opportunities.</b> Game days, the Plant-Based Showcase, community nights. <span class="bd-tag">Coming</span></li><li><b>Maya, your Guide.</b> Ask anything; the team answers what she cannot.</li></ul>' +
+    '<div class="bd-btns">' + (claimed ? '' : '<a class="bd-btn" href="' + esc(claimHref) + '">Claim ' + esc(l.name) + '</a>') + (signedIn ? '' : '<button type="button" class="bd-btn o" data-pd-signin>' + (claimed ? 'Sign in' : 'Already claimed? Sign in') + '</button>') + '</div></div>' +
+    '<div class="pd-locked-side"><h3>Run a Vegan business that is not listed?</h3><p>Any Vegan business, anywhere, can apply to be part of the Directory. It brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>' +
+    '<a class="bd-btn o" href="/apply">Apply to be listed</a></div></div>';
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest || !e.target.closest('[data-pd-signin]')) return;
+  if(window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in with the account that claimed this page.', function(){ location.reload(); });
+});
+// A listing that is not a product brand: Partner Dashboard is locked, or, for its owner, its numbers (ve-claims brand_stats).
+function loadPartnerHome(l){
+  var el = document.getElementById('pd-home'); if(!el) return;
+  var m = null; try{ m = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){}
+  var owner = !!(m && (m.id === l.owner_member_id || m.id === l.claimed_by_member_id));
+  if(!owner){ el.innerHTML = partnerLocked(l); return; }
+  var lk = document.querySelector('.tab-btn[data-tab="brand"] .pd-lock'); if(lk) lk.remove();
+  el.innerHTML = '<div class="bp-head"><h3>Your dashboard</h3><span>How many people find ' + esc(l.name) + ' on Vegans Explore. <a href="/claim?listing=' + encodeURIComponent(l.slug || '') + '">Your plan and Passport</a></span></div><div class="aisle-empty">Loading your numbers...</div>';
+  fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: 30 }) })
+    .then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){
+      var box = el.querySelector('.aisle-empty'); if(!box) return;
+      if(!d || !d.stats){ box.textContent = 'We could not load the numbers just now. Try again in a moment.'; return; }
+      var T = d.stats.totals || {}, n = function(x){ return Number(x || 0).toLocaleString(); };
+      box.outerHTML = '<div class="bd-tiles"><div><b>' + n(T.view) + '</b><span>Page views, 30 days</span></div><div><b>' + n(d.stats.visitors) + '</b><span>Visitors</span></div></div>' +
+        '<p class="bd-small">' + (d.stats.since ? 'Counting since ' + new Date(d.stats.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. ' : '') + 'Each visitor counts once every 30 minutes; automated browsers are not counted.</p>';
+    });
+}
+// Is the signed-in visitor this brand's partner (ve-claims partner_status)? ?partner=preview shows the partner's view to
+// anyone, labelled; its buttons work only for a real partner or a super admin.
+function partnerStatus(l){
+  var q = new URLSearchParams(location.search).get('partner');
+  var signed = !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn());
+  var real = signed ? fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+    body: JSON.stringify({ action: 'partner_status', listing_id: l.id }) }).then(function(r){ return r.json(); }).catch(function(){ return {}; }) : Promise.resolve({});
+  return real.then(function(d){
+    d = d || {};
+    if(q === 'preview') return { partner: true, preview: true, real: !!d.partner, confirmed: !!d.confirmed, interests: d.interests || [] };
+    // A super admin sees the offer as a brand would; ?partner=preview shows them the partner's home.
+    return { partner: !!d.partner && !d.admin, real: !!d.partner, confirmed: !!d.confirmed, interests: d.interests || [], plan: d.plan || null };
   });
 }
 
@@ -1951,12 +2458,18 @@ function refreshCampaign(l){
   if(C.pulse) renderPulse(C.pulse, l.name);
   document.querySelectorAll('[data-view]').forEach(function(x){ x.setAttribute('aria-pressed', x.getAttribute('data-view') === CST.view ? 'true' : 'false'); });
 }
+var PD_SUBS = null; // the partner's sub views, set by showPartnerTabs: [[tab, label], ...]
 function showListingTab(target){
   var btn = document.querySelector('.tab-btn[data-tab="'+target+'"]');
-  if(!btn || btn.style.display === 'none') return;
+  var sub = PD_SUBS && PD_SUBS.some(function(x){ return x[0] === target; });
+  if(!btn || (btn.style.display === 'none' && !sub)) return;
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
   document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
   btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+  // A sub view keeps Partner Dashboard lit and shows the sub-menu.
+  var sn = document.querySelector('.pd-subnav');
+  if(sn){ sn.hidden = !sub; [].forEach.call(sn.querySelectorAll('[data-pd]'), function(b){ b.setAttribute('aria-current', String(b.getAttribute('data-pd') === target)); }); }
+  if(sub){ var pb = document.querySelector('.tab-btn[data-tab="brand"]'); if(pb){ pb.classList.add('active'); pb.setAttribute('aria-selected','true'); } }
   var panel = document.getElementById('tab-'+target);
   if(panel) panel.classList.add('active');
   if(target === 'photos') wireCarousel('tab-photos');
@@ -2021,6 +2534,8 @@ function renderListing(l){
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
 
+  // Partner Dashboard's tab: after Products on a brand page, last everywhere else.
+  var PD_BTN = '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">' + '<svg class="pd-lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>' + 'Partner Dashboard</button>';
   // Breadcrumb
   var breadcrumb = community
     ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a> / '+esc(l.name)+'</div>'
@@ -2159,13 +2674,18 @@ function renderListing(l){
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
           (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button>' : '')+
-          (l._door ? '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">For '+esc(l.name)+'</button>' : '')+
+          // Partner Dashboard (Sean, 2026-10-09) on every listing: locked for visitors (claim it, or apply to be listed),
+          // the business's home once it is theirs. A brand partner's sub views sit under it (the sub-menu, .pd-subnav).
+          (l._brandSite ? PD_BTN : '') +
+          (l._brandSite ? ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<button class="tab-btn" data-tab="' + t + '" data-sub="1" role="tab" aria-selected="false" style="display:none">' + t + '</button>'; }).join('') : '')+
           '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
           (l._brandSite ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
           (l._campaign && l._campaign.events ? '<button class="tab-btn" data-tab="events" role="tab" aria-selected="false">Events</button>' : '')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
+          (l._brandSite ? '' : PD_BTN)+
         '</nav>'+
+        (l._brandSite ? '<nav class="pd-subnav" aria-label="Partner Dashboard" hidden></nav>' : '')+
         // Tab panels
         '<div class="tab-panel active" id="tab-overview" role="tabpanel">'+
           '<div style="padding:32px 40px 40px">'+overviewContent+'</div>'+
@@ -2173,7 +2693,9 @@ function renderListing(l){
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
         (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' +
-          (l._door ? '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="bsite-door"><div class="aisle-empty">Loading...</div></div></div>' : '') : '')+
+          '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="bsite-door"><div class="aisle-empty">Loading...</div></div></div>' +
+          ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<div class="tab-panel" id="tab-' + t + '" role="tabpanel"><div class="bsite-pad" id="bp-' + t + '"></div></div>'; }).join('')
+          : '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="pd-home"><div class="aisle-empty">Loading...</div></div></div>')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video', l)+'</div>' : '')+
@@ -2431,9 +2953,11 @@ function houseAd(l){
   var d = l.details || {}, g = null;
   (VEProducts.SOURCES || []).forEach(function(k){ if(!g && Array.isArray(d[k]) && d[k].length){ Object.keys(VEProducts.GUIDES).forEach(function(s){ if(!g && VEProducts.GUIDES[s][3]) g = VEProducts.GUIDES[s]; }); } });
   if(!g) return loadBillboardAds();
-  var art = window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.png';
+  // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
+  // A Guide without one falls back to its Guide's square portrait.
+  var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.png');
   el.classList.add('bb-filled');
-  el.innerHTML = '<a class="bb-house" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
+  el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
     '<span class="bb-house-txt"><small>From Vegans Explore</small><b>The Vegan ' + esc(g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
 }
 
@@ -2784,6 +3308,7 @@ if(!slug || slug === 'listing'){
       veTrack(l, 'view');
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
+      if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
       fetchMenuItems(l.id).then(function(items){
         if(items && items.length){

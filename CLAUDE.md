@@ -347,6 +347,10 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
+- Every Guide is walked through by its Guide on camera (Sean, 2026-10-09, after the For Oatly tour: "This is how all
+  of our guides need to be from now on... the guides walking you through and being animated like that"). One slide or
+  section at a time, the Guide talking on each (a lip-synced clip under 10 seconds, the way the For <Brand> tour does it:
+  el-media voice, Wan 2.7, `scripts/brand-door/assemble_r5.py`), Start the tour first, then every Next plays.
 
 - A Guide shows Directory listings with the Directory's own card (`VERegionDirectory.card` / `wire` /
   `css` in `/public/ve-region-directory.js`) and the Directory's pills, search and Sort by, never a look of
@@ -392,11 +396,33 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   `supabase/migrations/20261008_brand_partner_tier.sql` (applied 2026-10-09 through the Supabase connector). Schema
   changes are applied by Logan through the connector and checked in the database, never handed to Sean to paste.
 - **For <Brand>** tab (`?tab=brand`): the brand's door. It shows to the owner, a super admin, and anyone arriving on the
-  link we send (it then stays for the visit). The offer is a narrated tour, nine slides (the page we built; where people
-  find them, as live scaled previews of the real pages, `?preview=1` so they are not counted; a sample ad we drew of our
-  Guide enjoying their product; the mission, a thousand chapters by 2030; events, activations and games; campaigns,
-  points and giveaways; the live dashboard; everywhere their audience lives, the LESARUSS universe included; Brand
-  Partner). The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
+  link we send (it then stays for the visit). The offer is a narrated tour, seven slides since round 5 (Sean, 2026-10-09,
+  run past a panel each round; consensus: never show planned things as live, being early is the asset, the brand's own
+  numbers are the proof, the gift comes before the price, no dollar budgets on the tour): 1. we built your page, yours to
+  keep whatever you decide; 2. from the guide to the shelf (live scaled previews of the Guide, the product and a store's
+  Vegan aisle, `?preview=1` so they are not counted); 3. your numbers, counting from day one (the page is brand new,
+  `brand_door.made`; `ve_listing_totals()` for anyone on the link, the breakdown behind `brand_stats`; they grow by joining
+  campaigns: Guides, events, social and creators, podcasts, ads and videos, our animated programming, all Coming);
+  4. the sample ad, unpublished, nothing runs without the brand's approval; 5. campaigns, every card marked Coming
+  (`CAMPAIGNS` in `loadBrandSite`, checked in canon: the Plant-Based Showcase on Miami Dolphins game day at Hard Rock
+  Stadium, Sunday, November 29, 2026; community nights from November; the World Vegan Expo, city and date not set; our
+  Q1 2027 campaigns; a dated card drops off once it passes) and what a partner picks in each (products, a featured Guide
+  spot, ad slots on chosen pages, their own ads or ours, a spend to their budget, an assigned campaign manager);
+  6. where the membership goes (events, volunteer Community Managers, the apps) and how they see it (live dashboard, a
+  report within 7 days of every event they join), Live now beside Brand Partners only; 7. **Front Row Start** (the early
+  offer, named by the panel): join before January 1, 2027 and the rest of 2026 is on us, no charge today, the first $111 in
+  January for Q1 2027 with a front-row seat on its campaigns. The button goes to `/claim?...&plan=brand&offer=front-row`;
+  `ve-claims` turns that into a Stripe trial ending January 1, 2027 (brand tier only, only before the deadline). After
+  January 1 slide 7 is the plain offer (Be our first Brand Partner, $111 a quarter, `brand_door.first`) and plays
+  `brand_door.tour_plain_last`. Buttons: the offer, Ask Sean a question, Not yet, send me the numbers. Nothing plays until the
+  visitor presses Start the tour (Sean, 2026-10-09); after that every Next or Back plays the slide. Slide 3 is a snapshot of
+  the real dashboard (totals live, the rest in outline, locked) that opens it. Maya says "Vegan" right only when the text
+  is spelled "Veegan" (el-media, her voice); every clip gets a 0.25 s lead-in and a fade-in so it never starts with a pop.
+  The clips are `brand_door.tour` (round 5: `r5-slide-<n>.mp4` for 1, 3, 5, 6, 7; `t-slide-2` and `-4` kept; round 4's six in
+  `tour_r4`). Round 5 clips are cut with `scripts/brand-door/assemble_r5.py`, which ends each clip where her mouth is
+  closed; check the last second and the lip sync by eye (face close-ups against the voice level) before uploading. A start
+  picture with a toothy grin gives a frozen grin, so start from a closed-lip smile. The email that carries the link is the gift (no price), and the
+  follow-up brings the brand's real numbers. The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
   (`VEProducts.GUIDES[..][2]`), her words on each slide (the slide's `say` in `loadBrandSite`, which must match the
   recording) and a clip per slide (`listings.details.brand_door.clips`, `[{video, poster}]`, in
   `vegan-media/media/brand-door/<slug>/`; `brand_door.audio` is the voice-only fallback). Round 2 (Sean, 2026-10-09):
@@ -413,11 +439,42 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   sandbox, upload, then ve-off-lookup `save` (it now takes `brand-door/` video and `communities/` art). A lip-sync line
   needs about 3 seconds or more (shorter ones failed). `brand_door.sample_ad` is the sample ad (Sean, 2026-10-08: "show our characters
   consuming their products in the ads just for their pages"); it shows only in the tour, never as a live ad. On a brand
-  page's other tabs the billboard carries our own ad for its Guide (`houseAd`, `/go/ve-dairy-guide`). The Dashboard (`?door=dashboard`): views, visitors, products
+  page's other tabs the billboard carries our own ad for its Guide (`houseAd`, `/go/ve-dairy-guide`): the Guide's
+  ad picture (`VEProducts.GUIDES[..][5]`, Maya in a store's dairy-free aisle, no words in the picture), words on top. The Dashboard (`?door=dashboard`): views, visitors, products
   opened and store aisles opened, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
   admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
   (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
   videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
+- **Partner Dashboard on every listing** (Sean, 2026-10-09: "instead of getting started, it should be a dashboard...
+  partner dashboard. And then underneath it is a sub menu"). One tab, `data-tab="brand"`, after Products on a brand page and
+  last elsewhere. Locked for visitors (`partnerLocked`): claim this page (a brand's claim carries Front Row Start before
+  January 1), or, for a business that is not listed, **Apply to be listed** (`/apply`, `ve-claims` `listing_apply`: any Vegan
+  business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
+  Application to be listed; approving lists it and makes the applicant its owner). A non-brand owner sees their numbers
+  (`loadPartnerHome`). A brand's partner gets the sub-menu (`.pd-subnav`, `PD_SUBS`): Getting started, **Insights** (the
+  numbers from `brand_stats` once the claim is approved, and Campaigns: clicks and each report within 7 days of an event,
+  empty until the first campaign), **Your products** (swap a product's or a version's photo and its description in their own
+  words; photos under 1000 px on the shorter side are refused in the page and again in `ve-claims` `product_update`, which
+  reads the size from the file; name, ingredients and the cited Nutrition Facts stay ours; every change is a row in
+  `ve_product_edits` with the value it replaced, migration `20261009_ve_product_edits.sql`), Opportunities, Media, Ask Maya,
+  Ad console (Coming). On a brand page, the For <Brand> offer still shows under Partner Dashboard to anyone on the brand's link.
+- **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
+  signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
+  `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in
+  `brand_door.start_tour` (welcome to the front row and where things stand; this page is your home; game days, the Dolphins
+  model: five or six brands sampling with fans, coupons, content before, the community watch party and tailgate, packaged
+  for the next one; the Plant-Based Showcase at events that are not Vegan, college games, festivals, tours like Warped Tour
+  being explored; why we do it, Sean's words; next steps), with a Dashboard pill (full once Sean approves the claim). New
+  tabs: **Opportunities** (`OPPS` in `loadBrandSite`, every card Coming; I'm interested writes `ve_initiative_interest`,
+  `sponsor_tier`, tags `brand-partner` and the slug, emails the account manager; shows on `/dashboard/leads`), **Media**
+  (uploads to the private `brand-partner-media` bucket through one-object signed URLs, rows in `ve_brand_media`, migration
+  `20261009_ve_brand_media.sql`; the account manager is emailed each file), **Ask Maya** (free saved answers from
+  `ve-auth` `guide_ask`; with none, `ve-claims` `partner_ask` emails the question to the account manager,
+  `listings.details.brand_door.account_manager_email`, else Sean, Reply-To the brand, logged as `sent_to_person`), and
+  **Ad console** (Coming). `?partner=preview` shows the partner's home to anyone, labelled; its buttons work only for a real
+  partner or a super admin. A super admin sees the offer by default. Checkout for a brand returns to
+  `/directory/<slug>?tab=brand&welcome=1`; approving a brand's claim emails them that the dashboard is open; the claim form
+  skips the restaurant questions for a brand.
 - A product (`/public/ve-product-view.js`): the photo with its versions (`ve_products.variants`) as round thumbnails
   under it, the chosen version's name, the brand's own description and ingredients, certifications, its Nutrition
   Facts (each version's own, cited; `ve_products.nutrition` only from a cited source such as USDA FoodData Central),

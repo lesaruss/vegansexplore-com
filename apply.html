@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply to Be Listed — Vegans Explore</title>
+  <meta name="description" content="Any Vegan business, anywhere, can apply to be part of the Vegans Explore Directory.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Apply to be listed (Sean, 2026-10-09: "any vegan business can apply to be part of the directory, wherever they are...
+       and then that brings them into our whole ecosystem"). Full width: the form and what they get side by side. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    main{max-width:none;margin:0;padding:44px 40px 80px;}
+    @media (max-width:700px){main{padding:28px 16px 56px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(26px,4vw,40px);font-weight:900;text-transform:uppercase;line-height:1.08;margin-bottom:12px;}
+    .sub{max-width:860px;font-size:16px;color:var(--ve-text-75);margin-bottom:28px;}
+    .grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start;}
+    @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr);}}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:22px 24px 24px;margin-bottom:16px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 6px;}
+    label.f{display:block;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 6px;}
+    label.f small{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    input,select,textarea{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
+    textarea{min-height:130px;resize:vertical;}
+    .row2{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:0 16px;}
+    .choice{display:grid;gap:8px;}
+    .choice label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--ve-border);border-radius:10px;padding:12px 14px;cursor:pointer;font-size:14px;}
+    .choice input{width:auto;margin-top:4px;}
+    .choice label:has(input:checked){border-color:var(--ve-green);background:#f1faf2;}
+    .btn{display:inline-block;font:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;background:var(--ve-green);color:#fff;border:0;border-radius:10px;padding:14px 22px;cursor:pointer;text-decoration:none;}
+    .btn.o{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green);}
+    .btn[disabled]{opacity:.6;cursor:default;}
+    .msg{font-size:14px;margin-top:12px;}.msg.bad{color:#9b2c1d;font-weight:700;}
+    .note{font-size:13px;color:var(--ve-text-75);margin-top:10px;}
+    .side{background:linear-gradient(100deg,rgba(9,20,12,.95),rgba(9,20,12,.82)),url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/south-florida-night.jpg') center/cover #0d1a10;color:#fff;border-radius:16px;padding:26px;position:sticky;top:84px;}
+    .side h2{color:#8fe3a6;}
+    .side ul{list-style:none;margin:10px 0 14px;}
+    .side li{font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.84);padding:9px 0 9px 22px;position:relative;border-bottom:1px solid rgba(255,255,255,.08);}
+    .side li::before{content:'';position:absolute;left:4px;top:16px;width:8px;height:8px;border-radius:50%;background:#5EC47A;}
+    .side li b{color:#fff;}
+    .side p{font-size:13.5px;color:rgba(255,255,255,.72);}
+    .tag{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:2px 6px;vertical-align:middle;}
+    .gate{text-align:center;padding:36px 20px;}
+    .done h2{font-size:20px;letter-spacing:0;text-transform:none;color:var(--ve-text);margin-bottom:8px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <main>
+    <div class="eyebrow">Vegans Explore Directory</div>
+    <h1>Apply to be listed</h1>
+    <p class="sub">Any Vegan business, anywhere, can apply to be part of the Directory. Tell us about yours. We review every application by hand, and once it is approved, your page is yours to run from your Partner Dashboard.</p>
+
+    <div class="grid">
+      <div>
+        <div class="card gate" id="gate" hidden>
+          <h2>Sign in to apply</h2>
+          <p class="note" style="margin:6px 0 16px">Your account is how you run your page once it is approved. Joining is free.</p>
+          <button type="button" class="btn" id="signin">Sign in or create an account</button>
+        </div>
+
+        <form id="apply" hidden novalidate>
+          <section class="card">
+            <h2>Your business</h2>
+            <label class="f" for="b-name">Business name</label><input type="text" id="b-name" maxlength="120" autocomplete="organization">
+            <div class="row2">
+              <div><label class="f" for="b-cat">What kind of business</label><select id="b-cat"></select></div>
+              <div><label class="f" for="b-city">City</label><input type="text" id="b-city" maxlength="80" autocomplete="address-level2"></div>
+              <div><label class="f" for="b-state">State or region <small>(optional)</small></label><input type="text" id="b-state" maxlength="40" autocomplete="address-level1"></div>
+              <div><label class="f" for="b-web">Website <small>(optional)</small></label><input type="url" id="b-web" placeholder="yourbusiness.com"></div>
+              <div><label class="f" for="b-ig">Instagram <small>(optional)</small></label><input type="text" id="b-ig" maxlength="60" placeholder="@yourbusiness"></div>
+            </div>
+            <label class="f" id="vs-l">How Vegan is it?</label>
+            <div class="choice" role="radiogroup" aria-labelledby="vs-l">
+              <label><input type="radio" name="vs" value="fully_vegan"><span><b>Fully Vegan.</b> Everything we serve or sell is Vegan.</span></label>
+              <label><input type="radio" name="vs" value="vegan_friendly"><span><b>Vegan-friendly.</b> A real Vegan menu or range alongside other food.</span></label>
+              <label><input type="radio" name="vs" value="vegan_options"><span><b>Vegan options.</b> A few Vegan dishes or products.</span></label>
+            </div>
+            <label class="f" for="b-desc">Tell the community about your business</label>
+            <textarea id="b-desc" maxlength="2000"></textarea>
+          </section>
+          <section class="card">
+            <h2>About you</h2>
+            <div class="row2">
+              <div><label class="f" for="c-name">Your name</label><input type="text" id="c-name" maxlength="120" autocomplete="name"></div>
+              <div><label class="f" for="c-role">Your role <small>(owner, founder...)</small></label><input type="text" id="c-role" maxlength="120"></div>
+              <div><label class="f" for="c-email">Email</label><input type="email" id="c-email" maxlength="200" autocomplete="email"></div>
+              <div><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" maxlength="40" autocomplete="tel"></div>
+            </div>
+            <div style="margin-top:20px"><button type="submit" class="btn" id="go">Send my application</button></div>
+            <p class="msg" id="msg" aria-live="polite"></p>
+          </section>
+        </form>
+
+        <div class="card done" id="done" hidden>
+          <h2>Thank you. Your application is in.</h2>
+          <p class="note">We review every application by hand and will write to you at the email you gave us. Once it is approved, your page goes live in the Directory and its Partner Dashboard is yours.</p>
+          <p style="margin-top:16px"><a class="btn o" href="/directory">Explore the Directory</a></p>
+        </div>
+      </div>
+
+      <aside class="side">
+        <h2>What you get</h2>
+        <ul>
+          <li><b>Your page in the Directory,</b> where our members look for Vegan places, brands and makers.</li>
+          <li><b>Your Partner Dashboard:</b> your details, photos and story, and your numbers.</li>
+          <li><b>Opportunities:</b> game days, the Plant-Based Showcase, community nights. <span class="tag">Coming</span></li>
+          <li><b>Maya, your Guide,</b> for any question. The team answers what she cannot.</li>
+        </ul>
+        <p>Already listed? Find your business in the <a href="/directory" style="color:#8fe3a6">Directory</a> and claim it from its Partner Dashboard tab.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims';
+      var $ = function (id) { return document.getElementById(id); };
+      // The Directory's own categories, most used first.
+      var CATS = ['Restaurants', 'Bakeries & Cafes', 'Food Brands', 'Brands', 'Markets', 'Meal Prep', 'Clothing and Fashion', 'Beauty and Personal Care',
+        'Health and Wellness', 'Fitness and Athletics', 'Coaches and Consultants', 'Events', 'Nonprofits', 'Podcasts', 'Books', 'Content Creation & Media',
+        'E-Commerce & Marketplaces', 'Marketing & Growth', 'Web & Development', 'Business Operations'];
+      $('b-cat').innerHTML = '<option value="">Choose one</option>' + CATS.map(function (c) { return '<option>' + c.replace(/&/g, '&amp;') + '</option>'; }).join('');
+      function signedIn() { return !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn()); }
+      function show() {
+        var ok = signedIn();
+        $('gate').hidden = ok; $('apply').hidden = !ok;
+        if (ok) { try { var m = VEAuth.getMember(); if (m && !$('c-email').value) { $('c-email').value = m.email || ''; $('c-name').value = m.name || ''; } } catch (e) {} }
+      }
+      $('signin').onclick = function () { VEAuth.showAuthModal('Sign in or create an account to apply.', function () { show(); }); };
+      show();
+      function bad(t, el) { $('msg').className = 'msg bad'; $('msg').textContent = t; if (el) el.focus(); }
+      $('apply').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var vs = document.querySelector('input[name=vs]:checked');
+        if (!$('b-name').value.trim()) return bad('Please add the business name.', $('b-name'));
+        if (!$('b-cat').value) return bad('Please choose what kind of business it is.', $('b-cat'));
+        if (!$('b-city').value.trim()) return bad('Please add the city.', $('b-city'));
+        if (!vs) return bad('Please choose how Vegan the business is.');
+        if (!$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
+        if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
+        $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Sending...';
+        fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'listing_apply', business: {
+          name: $('b-name').value, category: $('b-cat').value, city: $('b-city').value, state: $('b-state').value, website: $('b-web').value, instagram: $('b-ig').value,
+          vegan_status: vs.value, description: $('b-desc').value, contact_name: $('c-name').value, contact_role: $('c-role').value, contact_email: $('c-email').value, contact_phone: $('c-phone').value
+        } }) }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.ok) { $('apply').hidden = true; $('done').hidden = false; window.scrollTo(0, 0); return; }
+          $('go').disabled = false;
+          bad(d && d.error === 'daily_limit' ? 'You have sent three applications today. Please try again tomorrow.' : d && d.error === 'not_authenticated' ? 'Please sign in again.' : 'That did not go through. Please try again.');
+        }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
+      });
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

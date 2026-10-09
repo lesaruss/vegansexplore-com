@@ -142,7 +142,7 @@
         </div>
       </section>
 
-      <section class="card">
+      <section class="card" id="biz-details">
         <h2>About the business</h2>
         <label class="f" id="vs-l">How Vegan is it?</label>
         <div class="choice" role="radiogroup" aria-labelledby="vs-l">
@@ -216,6 +216,12 @@
       PERKS.brand = ['Your featured brand page, kept up with your products, photos, videos and creator content', 'Your brand dashboard on your page: views, products opened, store aisles opened, videos played',
         'Front-row access to every campaign before it opens', 'Sponsorships a la carte through LESARUSS AI, or a call with our team for custom options', 'A look at each city as we open it'];
       function isBrand() { return !!L && /^(Food Brands|Brands)$/.test(L.category || ''); }
+      // Front Row Start (Sean, 2026-10-09): the For <Brand> tour links here with offer=front-row. Before January 1, 2027 the
+      // rest of 2026 is on us: the card is saved today and the first quarter is charged in January (ve-claims checks the date).
+      var FRONT_ROW = new URLSearchParams(location.search).get('offer') === 'front-row' && Date.now() < Date.parse('2027-01-01T05:00:00Z');
+      function frontRow() { return FRONT_ROW && isBrand(); }
+      var BRAND_PRICE = function () { return frontRow() ? '$0 today, then $111 a quarter' : '$111 a quarter'; };
+      var BRAND_TEXT = function () { return frontRow() ? '<b>Front Row Start:</b> the rest of 2026 is on us. Your first $111 is charged in January 2027 and covers Q1 2027, with a front-row seat on our Q1 2027 campaigns.' : 'Claim your brand page and take your seat at the table.'; };
       var TNAME = { verified: 'Passport Stop', plus: 'Passport Anchor', brand: 'Brand Partner' }, OFFER = { founding: { open: false } };
       function planHtml(name, value, title, price, text, perks, checked) {
         return '<label><input type="radio" name="' + name + '" value="' + value + '"' + (checked ? ' checked' : '') + '><span><b>' + title + '</b>' + (price ? '<span class="price">' + price + '</span>' : '') +
@@ -227,11 +233,11 @@
         var keep = document.querySelector('input[name=plan]:checked'), keepU = document.querySelector('input[name=uplan]:checked');
         keep = keep && keep.value; keepU = keepU && keepU.value;
         var price = function (c) { return '$' + c + ' a quarter' + (f ? ', founding: reserve free' : ''); };
-        var tiers = isBrand() ? planHtml('plan', 'brand', 'Brand Partner', '$111 a quarter', '', PERKS.brand)
+        var tiers = isBrand() ? planHtml('plan', 'brand', 'Brand Partner', BRAND_PRICE(), '', PERKS.brand)
           : full ? '' : planHtml('plan', 'verified', 'Passport Stop', price(250), '', PERKS.verified) + planHtml('plan', 'plus', 'Passport Anchor', price(500), '', PERKS.plus);
-        $('plans').innerHTML = isBrand() ? planHtml('plan', 'brand', 'Brand Partner', '$111 a quarter', 'Claim your brand page and take your seat at the table.', PERKS.brand, true)
+        $('plans').innerHTML = isBrand() ? planHtml('plan', 'brand', 'Brand Partner', BRAND_PRICE(), BRAND_TEXT(), PERKS.brand, true)
           : planHtml('plan', 'claim', 'Claim your listing', 'From $11', 'A contribution to the cause, in any amount from $11. It makes you a Founding Member.', null, true) + tiers;
-        $('up-plans').innerHTML = isBrand() ? planHtml('uplan', 'brand', 'Brand Partner', '$111 a quarter', '', PERKS.brand, true)
+        $('up-plans').innerHTML = isBrand() ? planHtml('uplan', 'brand', 'Brand Partner', BRAND_PRICE(), frontRow() ? BRAND_TEXT() : '', PERKS.brand, true)
           : full ? '' : planHtml('uplan', 'verified', 'Passport Stop', price(250), '', PERKS.verified, true) + planHtml('uplan', 'plus', 'Passport Anchor', price(500), '', PERKS.plus);
         var note = !f ? '' : full ? 'Founding spots in ' + OFFER.hub_name + ' are full for now. Email hello@vegansexplore.com and we will let you know when a spot opens.'
           : 'Founding spots in ' + OFFER.hub_name + ': the Passport Challenge launches there in 2027. Reserve now and pay nothing until your first Challenge month starts; your founding price stays locked as long as you stay.';
@@ -239,17 +245,19 @@
         [['plan', keep], ['uplan', keepU]].forEach(function (k) { var r = k[1] && document.querySelector('input[name=' + k[0] + '][value="' + k[1] + '"]'); if (r) r.checked = true; });
         $('up-go').hidden = !!full;
         $('up-go').textContent = f ? 'Reserve my founding spot' : 'Continue to secure checkout';
-        $('up-note').textContent = f ? 'No card needed today. We email you before your first Challenge month to set up billing.' : 'Billed every quarter on a secure Stripe page. To cancel, email hello@vegansexplore.com.';
+        $('up-note').textContent = f ? 'No card needed today. We email you before your first Challenge month to set up billing.' : frontRow() ? 'No charge today. Your card is saved on a secure Stripe page and first charged in January 2027, then every quarter. Cancel any time: email hello@vegansexplore.com.' : 'Billed every quarter on a secure Stripe page. To cancel, email hello@vegansexplore.com.';
         syncPlan();
       }
       function plan() { var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'claim'; }
       function syncPlan() {
+        if ($('biz-details')) $('biz-details').hidden = isBrand();
         var p = plan(), f = founding();
         $('amount-card').hidden = p !== 'claim';
         $('c-guarantee').hidden = p === 'claim';
         $('go').textContent = p === 'claim' ? 'Continue to contribution' : f ? 'Reserve my founding spot' : 'Continue to secure checkout';
         $('go-note').textContent = p === 'claim' ? 'You will finish on a secure Stripe page. We review every claim before it is confirmed.'
           : f ? 'No card needed today. Your claim is confirmed with your first payment, when your first Challenge month starts. We review every claim.'
+          : p === 'brand' && frontRow() ? 'No charge today. Your card is saved on a secure Stripe page and first charged in January 2027, then every quarter (cancel any time: email hello@vegansexplore.com). We review every claim before it is confirmed.'
           : 'Billed every quarter on a secure Stripe page (to cancel, email hello@vegansexplore.com). We review every claim before it is confirmed.';
       }
       renderPlans();
@@ -345,15 +353,16 @@
         var vs = document.querySelector('input[name=vs]:checked');
         if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
-        if (!vs) return bad('Please choose how Vegan the business is.');
-        if (!$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
+        // A product brand skips these (Sean, 2026-10-09): its page is built from our Guides, so we only need who they are.
+        if (!isBrand() && !vs) return bad('Please choose how Vegan the business is.');
+        if (!isBrand() && !$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
         var p = plan();
         if (p === 'claim' && (!amount || amount < 11)) return bad('Please choose a contribution of $11 or more.', $('amt'));
         $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
         fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({
-          action: 'start', listing_id: L.id, amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, tier: p === 'claim' ? undefined : p, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
+          action: 'start', listing_id: L.id, amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, tier: p === 'claim' ? undefined : p, offer: p === 'brand' && frontRow() ? 'front-row' : undefined, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
           contact_name: $('c-name').value, contact_role: $('c-role').value, contact_email: $('c-email').value, contact_phone: $('c-phone').value,
-          proposed: { vegan_status: vs.value, tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }
+          proposed: { vegan_status: vs ? vs.value : '', tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }
         }) }).then(function (r) { return r.json(); }).then(function (d) {
           if (d && d.url) { location.href = d.url; return; }
           if (d && d.reserved) { location.href = '/claim?listing=' + encodeURIComponent(L.slug) + '&verified=reserved'; return; }
@@ -366,7 +375,7 @@
         var t = document.querySelector('input[name=uplan]:checked');
         if (!t) { $('up-msg').className = 'msg bad'; $('up-msg').textContent = 'Please choose a plan.'; return; }
         $('up-go').disabled = true; $('up-msg').className = 'msg'; $('up-msg').textContent = founding() ? 'Reserving your founding spot...' : 'Taking you to the secure checkout...';
-        api({ action: 'verified_start', listing_id: L.id, tier: t.value, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug) }).then(function (d) {
+        api({ action: 'verified_start', listing_id: L.id, tier: t.value, offer: t.value === 'brand' && frontRow() ? 'front-row' : undefined, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug) }).then(function (d) {
           if (d && d.url) { location.href = d.url; return; }
           if (d && d.reserved) { location.href = '/claim?listing=' + encodeURIComponent(L.slug) + '&verified=reserved'; return; }
           $('up-go').disabled = false; $('up-msg').className = 'msg bad';
