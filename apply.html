@@ -59,6 +59,8 @@
     <h1>Apply to be listed</h1>
     <p class="sub">Any Vegan business, anywhere, can apply to be part of the Directory. Tell us about yours. We review every application by hand, and once it is approved, your page is yours to run from your Partner Dashboard.</p>
 
+    <div id="liz-tour" style="margin:0 0 28px"></div>
+
     <div class="grid">
       <div>
         <div class="card gate" id="gate" hidden>
@@ -113,7 +115,7 @@
           <li><b>Your page in the Directory,</b> where our members look for Vegan places, brands and makers.</li>
           <li><b>Your Partner Dashboard:</b> your details, photos and story, and your numbers.</li>
           <li><b>Opportunities:</b> game days, the Plant-Based Showcase, community nights. <span class="tag">Coming</span></li>
-          <li><b>Maya, your Guide,</b> for any question. The team answers what she cannot.</li>
+          <li><b>Liz, your Guide,</b> for any question. The team answers what she cannot.</li>
         </ul>
         <p>Already listed? Find your business in the <a href="/directory" style="color:#8fe3a6">Directory</a> and claim it from its Partner Dashboard tab.</p>
       </aside>
@@ -121,6 +123,33 @@
   </main>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-guide-tour.js"></script>
+  <script>
+    // Liz walks an applicant through (Sean, 2026-10-09: every Guide is walked through on camera). Each say matches her recording.
+    (function () {
+      var el = document.getElementById('liz-tour'); if (!el || !window.VEGuideTour) return;
+      var C = VEGuideTour.LIZ_PARTNER, COMING = ' <span class="vgt-tag">Coming</span>';
+      VEGuideTour.mount(el, { guide: 'Liz', title: 'Your Guide to Vegans Explore', slides: [
+        { t: 'Apply to be listed', h: 'Any Vegan business, anywhere', clip: C.pt4,
+          say: 'Not listed yet? Any Vegan business, anywhere, can apply to be part of the Directory.',
+          body: '<p>Restaurants, brands, makers, markets, services: if it is Vegan, it belongs here. Your page brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>' },
+        { t: 'What you get', h: 'A first look at what\'s coming', clip: C.pt3,
+          say: 'You also get a first look at what\'s coming: game days, the Plant-Based Showcase, and community nights.',
+          body: '<ul><li><b>Game days.</b> Brands sampling with fans, and the community tailgating together.' + COMING + '</li>' +
+            '<li><b>The Plant-Based Showcase.</b> At events that are not Vegan yet: college games and festivals.' + COMING + '</li>' +
+            '<li><b>Community nights.</b> In each city, starting in South Florida in November.' + COMING + '</li></ul>' },
+        { t: 'Your application', h: 'Tell us about your business', clip: C.pt6,
+          say: 'Tell us about your business below. We review every application, and I\'ll be right here when you\'re in.',
+          body: '<p>We review every application by hand. Once yours is approved, your page goes live in the Directory and its Partner Dashboard is yours.</p>' +
+            '<div class="vgt-btns"><a class="vgt-btn" href="#apply" data-to-form>Start my application</a></div>' }
+      ]});
+      el.addEventListener('click', function (e) {
+        if (!e.target.closest('[data-to-form]')) return; e.preventDefault();
+        var t = document.getElementById('apply'); if (t.hidden) t = document.getElementById('gate');
+        if (t && !t.hidden) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    })();
+  </script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims';

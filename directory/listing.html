@@ -850,6 +850,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-products.js"></script>
+<script src="/public/ve-guide-tour.js"></script>
 <script src="/public/ve-product-view.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-trust.js"></script>
@@ -1744,7 +1745,7 @@ function loadBrandSite(l){
     var PARTNER = !!PS.partner;
     if(PARTNER) SLIDES = START_SLIDES;
     // Neither the brand's partner nor on its link: Partner Dashboard is the locked page (claim it, or apply to be listed).
-    if(!l._door && !PARTNER){ if(door) door.innerHTML = partnerLocked(l); door = null; }
+    if(!l._door && !PARTNER){ if(door) mountPartnerLocked(door, l); door = null; }
     // The narration: a clip per slide (brand_door.clips, [{video, poster}]: Maya on camera, a different pose each slide,
     // under 10 seconds, no b-roll; Sean, 2026-10-09; files in vegan-media/media/brand-door/<brand>/), else her voice
     // alone (brand_door.audio). The poster is the clip's first frame, so a slide shows her new pose before it plays.
@@ -2144,10 +2145,46 @@ function partnerLocked(l){
     '<h2>' + (claimed ? esc(l.name) + '\'s dashboard is open to its team' : 'Is ' + esc(l.name) + ' your ' + (brand ? 'brand' : 'business') + '?') + '</h2>' +
     '<p>' + (claimed ? 'This page has been claimed. If you are on the team, sign in with the account that claimed it.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
     '<ul class="pd-gets"><li><b>Your page, your way.</b> ' + (brand ? 'Your products, photos and descriptions.' : 'Your details, photos and story.') + '</li><li><b>Insights.</b> How many people find you and what they open.</li>' +
-    '<li><b>Opportunities.</b> Game days, the Plant-Based Showcase, community nights. <span class="bd-tag">Coming</span></li><li><b>Maya, your Guide.</b> Ask anything; the team answers what she cannot.</li></ul>' +
+    '<li><b>Opportunities.</b> Game days, the Plant-Based Showcase, community nights. <span class="bd-tag">Coming</span></li><li><b>Liz, your Guide.</b> Ask anything; the team answers what she cannot.</li></ul>' +
     '<div class="bd-btns">' + (claimed ? '' : '<a class="bd-btn" href="' + esc(claimHref) + '">Claim ' + esc(l.name) + '</a>') + (signedIn ? '' : '<button type="button" class="bd-btn o" data-pd-signin>' + (claimed ? 'Sign in' : 'Already claimed? Sign in') + '</button>') + '</div></div>' +
     '<div class="pd-locked-side"><h3>Run a Vegan business that is not listed?</h3><p>Any Vegan business, anywhere, can apply to be part of the Directory. It brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>' +
     '<a class="bd-btn o" href="/apply">Apply to be listed</a></div></div>';
+}
+// Liz walks a visitor through the locked Partner Dashboard (Sean, 2026-10-09: every Guide is walked through on camera).
+// Each slide's say matches her recording (VEGuideTour.LIZ_PARTNER pt-1 .. pt-5). Without the component, the plain card.
+function mountPartnerLocked(el, l){
+  if(!el) return;
+  if(!window.VEGuideTour){ el.innerHTML = partnerLocked(l); return; }
+  var brand = !!l._brandSite, claimed = l.claim_status === 'verified', C = VEGuideTour.LIZ_PARTNER;
+  var claimHref = '/claim?listing=' + encodeURIComponent(l.slug || '') + (brand ? '&plan=brand' + (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '&offer=front-row' : '') : '');
+  var signedIn = !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn());
+  var COMING = ' <span class="vgt-tag">Coming</span>';
+  var actions = (claimed ? '' : '<a class="vgt-btn" href="' + esc(claimHref) + '">Claim ' + esc(l.name) + '</a>') +
+    (signedIn ? '' : '<button type="button" class="vgt-btn o" data-pd-signin>' + (claimed ? 'Sign in' : 'Already claimed? Sign in') + '</button>');
+  el.innerHTML = '<div class="pd-tour"></div>';
+  VEGuideTour.mount(el.firstChild, { guide: 'Liz', title: 'Your Guide to Vegans Explore', slides: [
+    { t: 'Partner Dashboard', h: claimed ? esc(l.name) + '\'s dashboard is open to its team' : 'Is ' + esc(l.name) + ' your ' + (brand ? 'brand' : 'business') + '?', clip: C.pt1,
+      say: 'Hi, I\'m Liz, your Guide to Vegans Explore. If this is your business, this dashboard can be yours.',
+      body: '<p>' + (claimed ? 'This page has been claimed. If you are on the team, sign in with the account that claimed it.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
+        '<div class="vgt-btns"><button type="button" class="vgt-btn" data-vgt-start>&#9654; Start the tour</button>' + actions.replace('class="vgt-btn"', 'class="vgt-btn o"') + '</div>' },
+    { t: 'Your page, your way', h: 'You run your page', clip: C.pt2,
+      say: 'Claim it and you run your page: your photos, your story, and your numbers, all in one place.',
+      body: '<ul><li><b>Your page, your way.</b> ' + (brand ? 'Your products, photos and descriptions.' : 'Your details, photos and story.') + '</li>' +
+        '<li><b>Insights.</b> How many people find you and what they open.</li><li><b>Liz, your Guide.</b> Ask anything; the team answers what she cannot.</li></ul>' },
+    { t: 'What\'s coming', h: 'A first look at what\'s coming', clip: C.pt3,
+      say: 'You also get a first look at what\'s coming: game days, the Plant-Based Showcase, and community nights.',
+      body: '<ul><li><b>Game days.</b> Brands sampling with fans, and the community tailgating together.' + COMING + '</li>' +
+        '<li><b>The Plant-Based Showcase.</b> At events that are not Vegan yet: college games and festivals.' + COMING + '</li>' +
+        '<li><b>Community nights.</b> In each city, starting in South Florida in November.' + COMING + '</li></ul>' },
+    { t: 'Not listed yet?', h: 'Any Vegan business, anywhere', clip: C.pt4,
+      say: 'Not listed yet? Any Vegan business, anywhere, can apply to be part of the Directory.',
+      body: '<p>Run a Vegan business that is not in the Directory? Apply and it brings you into everything we do: the Guides, the Daily Pulse, our events and our members.</p>' +
+        '<div class="vgt-btns"><a class="vgt-btn o" href="/apply">Apply to be listed</a></div>' },
+    { t: 'Your next step', h: 'Claim it or apply', clip: C.pt5,
+      say: 'Claim this page or apply to be listed, and I\'ll walk you through the rest.',
+      body: '<p>' + (claimed ? 'On the team? Sign in with the account that claimed this page.' : 'Claim ' + esc(l.name) + ' to open its dashboard.') + ' Running a different Vegan business? Apply to be listed.</p>' +
+        '<div class="vgt-btns">' + actions + '<a class="vgt-btn o" href="/apply">Apply to be listed</a></div>' }
+  ]});
 }
 document.addEventListener('click', function(e){
   if(!e.target.closest || !e.target.closest('[data-pd-signin]')) return;
@@ -2158,7 +2195,7 @@ function loadPartnerHome(l){
   var el = document.getElementById('pd-home'); if(!el) return;
   var m = null; try{ m = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){}
   var owner = !!(m && (m.id === l.owner_member_id || m.id === l.claimed_by_member_id));
-  if(!owner){ el.innerHTML = partnerLocked(l); return; }
+  if(!owner){ mountPartnerLocked(el, l); return; }
   var lk = document.querySelector('.tab-btn[data-tab="brand"] .pd-lock'); if(lk) lk.remove();
   el.innerHTML = '<div class="bp-head"><h3>Your dashboard</h3><span>How many people find ' + esc(l.name) + ' on Vegans Explore. <a href="/claim?listing=' + encodeURIComponent(l.slug || '') + '">Your plan and Passport</a></span></div><div class="aisle-empty">Loading your numbers...</div>';
   fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: 30 }) })
