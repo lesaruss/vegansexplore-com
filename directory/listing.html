@@ -414,8 +414,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-totals b{font-size:30px}
 .bd-slide .bd-totals b{color:#fff}
 .bd-tag{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:3px 7px;vertical-align:middle}
-.bd-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 14px}
-.bd-chips>span:not(.bd-tag){font-size:12.5px;font-weight:700;color:#fff;border:1px dashed rgba(243,200,107,.55);border-radius:99px;padding:5px 11px}
+.bd-grow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 14px}
+.bd-grow>span:not(.bd-tag){font-size:12.5px;font-weight:700;color:#fff;border:1px dashed rgba(243,200,107,.55);border-radius:99px;padding:5px 11px}
 .bd-camps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .bd-camps>div{border:1px dashed rgba(243,200,107,.5);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.05);display:flex;flex-direction:column;gap:3px}
 .bd-camps .bd-tag{align-self:flex-start;margin-bottom:6px}
@@ -429,8 +429,6 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-feat div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px}
 .bd-feat b{display:block;font-size:16px;font-weight:900;color:#8fe3a6;margin-bottom:4px}
 .bd-feat span{font-size:13px;line-height:1.5;color:rgba(255,255,255,.78)}
-.bd-chips{display:flex;flex-wrap:wrap;gap:8px}
-.bd-chips span{font-size:13px;font-weight:800;padding:10px 14px;border-radius:99px;border:1px solid rgba(143,227,166,.45);color:#fff;background:rgba(255,255,255,.05)}
 .bd-sample{max-width:340px;margin:0 auto;background:#fff;border-radius:12px;padding:12px}
 .bd-sample-h{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:8px}
 .bd-sample-h em{font-style:normal;color:#b45309}
@@ -439,8 +437,11 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-house{display:block;text-decoration:none;color:#fff;border-radius:8px;overflow:hidden;position:relative;aspect-ratio:6/5;background:#0d1a10 url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/south-florida-night.jpg') center/cover no-repeat}
 .bb-house-pic{position:absolute;inset:0;background:center/cover no-repeat}
 .bb-house::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 55%,transparent 75%)}
-.bb-house-ad::after{background:linear-gradient(to top,rgba(6,20,10,.92) 0%,rgba(6,20,10,.6) 34%,transparent 58%)}
-.bb-house-ad .bb-house-txt b{font-size:21px}
+/* The Guide's ad picture on top, the words in a band under it, so nothing covers the Guide. */
+.bb-house.bb-house-ad{aspect-ratio:auto;display:flex;flex-direction:column;background:#0d1a10}
+.bb-house-ad .bb-house-pic{position:relative;inset:auto;aspect-ratio:9/4;background-position:70% 28%}
+.bb-house-ad::after{display:none}
+.bb-house-ad .bb-house-txt{position:static;padding:10px 14px 12px;gap:2px}.bb-house-ad .bb-house-txt em{margin-top:5px}
 .bb-house-txt{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;display:flex;flex-direction:column;gap:3px}
 .bb-house-txt small{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fe3a6}
 .bb-house-txt b{font-size:19px;font-weight:900;line-height:1.15}
@@ -1550,12 +1551,11 @@ function loadBrandSite(l){
     var OFFER_SLIDE = FRONT_ROW
       ? { t: 'Brand Partner', h: 'Front Row Start: the rest of 2026 is on us',
           say: 'Join before January first, and the rest of this year is on us. Your first quarter starts in January, with a front-row seat on our campaigns.',
-          body: '<p>Join before January 1, 2027. No charge today: your first $111 is charged in January and covers Q1 2027, with a front-row seat on our Q1 2027 campaigns. Then $111 a quarter.</p>' +
+          body: '<p>Join before January 1, 2027 and pay nothing today. Your first $111, in January, covers Q1 2027 and its campaigns.</p>' +
             '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li><li>A front-row seat on every campaign and city as it opens</li></ul>' +
-            (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
+            (FIRST ? '<p class="bd-small">' + B + ' would be our first Brand Partner.</p>' : '') +
             '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
             '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
-            '<p class="bd-small">No charge until January 2027. Renews every three months. Cancel any time.</p>' +
             '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
           pic: '<div class="bd-price"><small>Front Row Start</small><b>$0</b><span>today</span><em>Then $111 a quarter from January 2027.<br>Renews every three months. Cancel any time.</em></div>' }
       : { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a quarter',
@@ -1586,7 +1586,7 @@ function loadBrandSite(l){
         say: 'Your page went live ' + MADE_SAID + ', so these numbers are brand new. They grow every time you join one of our campaigns.',
         body: '<p>' + B + '\'s page went live ' + esc(MADE) + ', so these are day-one numbers: small, and real.</p>' +
           '<p>They grow when ' + B + ' joins our campaigns:</p>' +
-          '<div class="bd-chips">' + ['Featured in our Guides', 'At our events', 'On social, with creators', 'Podcasts', 'Ads and videos', 'Our animated programming'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '<span class="bd-tag">Coming</span></div>' +
+          '<div class="bd-grow">' + ['Featured in our Guides', 'At our events', 'On social, with creators', 'Podcasts', 'Ads and videos', 'Our animated programming'].map(function(x){ return '<span>' + x + '</span>'; }).join('') + '<span class="bd-tag">Coming</span></div>' +
           '<div class="bd-btns"><button type="button" class="bd-btn o" data-bdview="dashboard">Open the dashboard</button></div>',
         // A snapshot of the dashboard itself (Sean, 2026-10-09: "we actually have the dashboard, so shouldn't we show the
         // dashboard at that point?"): the real totals on top, and the partner-only parts shown in outline, locked.
