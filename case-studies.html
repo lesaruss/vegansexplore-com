@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Studies | Vegans Explore</title>
+<meta name="description" content="Case studies from Vegans Explore, by Sean A. Russell.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:#f5f5f5;color:#1a1a1a;font-family:'Montserrat',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+  a{color:inherit}
+  :focus-visible{outline:3px solid #3A9B3E;outline-offset:3px}
+  .cs-top{display:flex;align-items:center;gap:16px;padding:18px 28px;border-bottom:1px solid rgba(0,0,0,0.09)}
+  .cs-top a{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;text-decoration:none}
+  .cs-main{flex:1;padding:48px 28px 80px}
+  @media(max-width:640px){.cs-top{padding:16px}.cs-main{padding:36px 16px 64px}}
+  .cs-eyebrow{font-size:11px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:#2d7d31}
+  .cs-h1{font-size:clamp(36px,6vw,72px);font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1;margin:10px 0 16px}
+  .cs-lede{font-size:16px;line-height:1.75;color:rgba(26,26,26,0.75);max-width:62ch;margin-bottom:32px}
+  .cs-empty{font-size:15px;line-height:1.7;color:rgba(26,26,26,0.75)}
+  .cs-empty a{font-weight:800;color:#2d7d31}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main class="cs-main">
+  <p class="cs-eyebrow">Vegans Explore</p>
+  <h1 class="cs-h1">Case Studies</h1>
+  <p class="cs-lede">Stories from Vegans Explore, written once and kept on lesaruss.com. Each card opens the full story.</p>
+
+  <!-- Playbook case-study-publishing: cards are read live from the case_studies
+       rows for this brand through lesaruss.com/api/case-studies. Nothing here
+       is copied; publishing or correcting a story on lesaruss.com updates it. -->
+  <section data-lr-cs-section hidden aria-label="Vegans Explore case studies">
+    <div data-lr-case-studies data-brand="vegans-explore" data-accent="#3A9B3E"></div>
+  </section>
+  <p class="cs-empty" id="cs-empty">The first Vegans Explore story is on the way. Until then, <a href="https://lesaruss.com/case-studies">read the case studies on lesaruss.com</a>.</p>
+</main>
+<script src="/public/footer.js"></script>
+<script src="https://lesaruss.com/embed/case-studies.js" defer></script>
+<script>
+  (function(){
+    var section=document.querySelector('[data-lr-cs-section]');
+    var empty=document.getElementById('cs-empty');
+    new MutationObserver(function(){ if(!section.hidden) empty.hidden=true; })
+      .observe(section,{attributes:true,attributeFilter:['hidden']});
+  })();
+</script>
+</body>
+</html>
