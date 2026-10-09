@@ -96,6 +96,7 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const FN_URL = `${SUPABASE_URL}/functions/v1/ve-claims`;
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const MIN_CENTS = 1100, MAX_CENTS = 1000000; // $11 minimum (Sean), $10,000 sanity ceiling
+const BRAND_CATS = /^(Food Brands|Brands)$/; // product brands: no restaurant questions
 const STATUSES = ['fully_vegan', 'vegan_friendly', 'vegan_options'];
 // Every sub-section the city hubs know (CAT_MAP in /public/ve-region-directory.js), by section.
 const CATEGORIES = [
@@ -118,7 +119,14 @@ const TIERS: Record<string, { cents: number; name: string }> = {
   plus: { cents: 50000, name: 'Passport Anchor' },
   brand: { cents: 11100, name: 'Brand Partner' },
 };
-// Front Row Start (Sean, 2026-10-09; named after a panel): a brand that joins Brand Partner before January 1, 2027 gets
+// The Partner plan for every business (Sean, 2026-10-09: "I would rather give everybody the Oatly style offer... the way
+// in"): tier 'brand' is the $111 quarterly Partner plan for any listing. A product brand sees it as Brand Partner,
+// everyone else as Vegans Explore Partner; Front Row Start applies to both.
+function tierName(tier: string, category?: string | null): string {
+  if (tier !== 'brand') return TIERS[tier]?.name || 'Passport';
+  return BRAND_CATS.test(category || '') ? 'Brand Partner' : 'Vegans Explore Partner';
+}
+// Front Row Start (Sean, 2026-10-09; named after a panel): a business that joins the Partner plan before January 1, 2027 gets
 // the rest of 2026 on us. The card is saved today and the first quarter is charged on January 1, 2027 (noon Eastern;
 // Stripe needs a trial to end at least 48 hours out, so a last-minute signup is charged a day or two later), then every
 // quarter. Only the brand tier, only when the page asks for it (offer: 'front-row'), only before the deadline.
@@ -297,7 +305,7 @@ async function syncFromStripe(row: any): Promise<any> {
 }
 // Create the Stripe subscription checkout for a ve_verified_memberships row.
 async function verifiedCheckout(row: any, listing: any, member: any, back: string, claimId?: string, trialEnd = 0): Promise<{ url?: string; error?: string }> {
-  const t = TIERS[row.tier];
+  const t = { ...TIERS[row.tier], name: tierName(row.tier, listing.category) };
   const params = new URLSearchParams({
     mode: 'subscription',
     'line_items[0][price_data][currency]': 'usd',
@@ -448,7 +456,7 @@ async function runResultsCron() {
 async function activateVerified(sessionId: string): Promise<{ row: any; listing: any } | null> {
   const { data: row } = await db.from('ve_verified_memberships').select('*').eq('stripe_session_id', sessionId).maybeSingle();
   if (!row) return null;
-  const { data: listing } = await db.from('listings').select('id, name, slug, address_city').eq('id', row.listing_id).maybeSingle();
+  const { data: listing } = await db.from('listings').select('id, name, slug, address_city, category').eq('id', row.listing_id).maybeSingle();
   if (row.status !== 'awaiting_payment' && row.status !== 'reserved') return { row, listing };
   const { ok, body: s } = await stripe(row.test, `checkout/sessions/${encodeURIComponent(sessionId)}?expand[]=subscription`);
   if (!ok || s.status !== 'complete' || s.metadata?.verified_id !== row.id || !s.subscription) return null;
@@ -466,7 +474,7 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
     await db.from('ve_listing_claims').update({ status: 'submitted', paid_cents: s.amount_total ?? row.amount_cents, paid_at: now, updated_at: now }).eq('id', row.claim_id).eq('status', 'awaiting_contribution');
     await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', row.listing_id).neq('claim_status', 'verified');
   }
-  const t = TIERS[row.tier], renew = p.end ? new Date(p.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '';
+  const t = { ...TIERS[row.tier], name: tierName(row.tier, listing?.category) }, renew = p.end ? new Date(p.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '';
   const price = ((row.founding && row.amount_cents ? row.amount_cents : t.cents) / 100).toFixed(0);
   const trial = sub.status === 'trialing', brand = row.tier === 'brand';
   await mail(`${row.test ? '[TEST] ' : ''}${t.name}: ${listing?.name || 'a listing'}, $${price}/quarter${row.founding ? ' (founding)' : ''}`,
@@ -482,7 +490,7 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
         body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [row.contact_email], reply_to: 'hello@vegansexplore.com',
           subject: `Welcome to ${t.name}`,
           html: brand ? `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
-            `<p>We review every claim; once yours is approved, your brand dashboard opens on your page (sign in with this email). You get a front-row seat on our campaigns: we will send each one before it opens, so you can choose where you fit.</p>` +
+            `<p>We review every claim; once yours is approved, your Partner Dashboard opens on your page (sign in with this email). You get a front-row seat on our campaigns: we will send each one before it opens, so you can choose where you fit.</p>` +
             `<p>${trial ? 'Front Row Start: the rest of 2026 is on us. Your first quarter is charged on ' + esc(renew) + ', then every three months' : 'Your membership renews every quarter' + (renew ? ' (next on ' + esc(renew) + ')' : '')}. To cancel, reply to this email.</p>` +
             `<p>The Vegans Explore team</p>`
           : `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
@@ -496,13 +504,45 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
   return { row: upd, listing };
 }
 
+// The one-time contribution (from $11) that locks in a claim or an application to be listed: a Stripe payment checkout that
+// comes back through ?confirm=, which marks the claim submitted and makes the member a Founding Member.
+async function contributionCheckout(claimId: string, listing: { id: string; name: string }, member: { id: string; email: string }, cents: number, back: string, test: boolean, what: string): Promise<{ url?: string; error?: string }> {
+  const params = new URLSearchParams({
+    mode: 'payment',
+    'line_items[0][price_data][currency]': 'usd',
+    'line_items[0][price_data][product_data][name]': (test ? '[TEST] ' : '') + `Vegans Explore - ${what} (${listing.name})`.slice(0, 120),
+    'line_items[0][price_data][unit_amount]': String(cents),
+    'line_items[0][quantity]': '1',
+    success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
+    cancel_url: withParam(back, 'claim', 'cancelled'),
+    customer_email: member.email,
+    billing_address_collection: 'auto',
+    'payment_intent_data[receipt_email]': member.email,
+    'metadata[type]': 'entry_contribution',
+    'metadata[member_id]': member.id,
+    'metadata[amount_cents]': String(cents),
+    'metadata[claim_id]': claimId,
+    'metadata[listing_id]': listing.id,
+  });
+  if (test) params.set('metadata[test]', 'true');
+  const sres = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString(),
+  });
+  const s = await sres.json();
+  if (!sres.ok) { console.error('stripe error', s); return { error: s.error?.message ?? 'stripe_error' }; }
+  await db.from('ve_listing_claims').update({ stripe_session_id: s.id }).eq('id', claimId);
+  return { url: s.url };
+}
+
 // ---- Stripe return: confirm the contribution and send the visitor back.
 async function confirm(sessionId: string): Promise<Response> {
   const fallback = 'https://vegansexplore.com/claim';
   const { data: claim } = await db.from('ve_listing_claims').select('*').eq('stripe_session_id', sessionId).maybeSingle();
   if (!claim) return Response.redirect(fallback, 302);
   const { data: listing } = await db.from('listings').select('id, name, slug, address_city').eq('id', claim.listing_id).maybeSingle();
-  const back = withParam(`https://vegansexplore.com/claim?listing=${encodeURIComponent(listing?.slug || '')}`, 'claim', 'submitted');
+  const app = !!(claim.proposed && claim.proposed.application);
+  const back = app ? withParam(`https://vegansexplore.com/claim?applied=${encodeURIComponent(listing?.slug || '')}`, 'claim', 'submitted')
+    : withParam(`https://vegansexplore.com/claim?listing=${encodeURIComponent(listing?.slug || '')}`, 'claim', 'submitted');
   if (claim.status !== 'awaiting_contribution') return Response.redirect(back, 302); // already confirmed
   const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, { headers: { Authorization: `Bearer ${await stripeKey(claim.test)}` } });
   const s = await res.json();
@@ -514,8 +554,9 @@ async function confirm(sessionId: string): Promise<Response> {
   await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', claim.listing_id).neq('claim_status', 'verified');
   const p = claim.proposed || {};
   const dollars = ((s.amount_total ?? claim.contribution_cents) / 100).toFixed(2);
-  await mail(`${claim.test ? '[TEST] ' : ''}Listing claim: ${listing?.name || 'a listing'}, $${dollars}`,
-    `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) was claimed with a <b>$${dollars}</b> contribution.</p>` +
+  await mail(`${claim.test ? '[TEST] ' : ''}${app ? 'New business wants to be listed' : 'Listing claim'}: ${listing?.name || 'a listing'}, $${dollars}`,
+    `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) ${app ? 'applied to be listed' : 'was claimed'} with a <b>$${dollars}</b> contribution.</p>` +
+    (app && p.description ? `<p>${esc(String(p.description))}</p>` : '') + (app ? '<p>Approving it in the Depot lists it and makes them the owner.</p>' : '') +
     `<p>${esc(claim.contact_name || '')}${claim.contact_role ? ', ' + esc(claim.contact_role) : ''}<br>${esc(claim.contact_email || '')}${claim.contact_phone ? '<br>' + esc(claim.contact_phone) : ''}</p>` +
     (p.vegan_status ? `<p>Says they are: ${esc(String(p.vegan_status).replace('_', ' '))}</p>` : '') +
     `<p>Review it in the Depot: <a href="https://vegansexplore.com/admin/depot/claims">vegansexplore.com/admin/depot/claims</a></p>`, claim.contact_email || undefined);
@@ -533,8 +574,15 @@ Deno.serve(async (req) => {
     try {
       const r = await activateVerified(url.searchParams.get('verified_confirm')!);
       if (!r) return Response.redirect('https://vegansexplore.com/claim?verified=unpaid', 302);
-      // A Brand Partner goes straight home: its page, Getting Started, where Maya welcomes it to the front row.
-      if (r.row?.tier === 'brand') return Response.redirect(`https://vegansexplore.com/directory/${encodeURIComponent(r.listing?.slug || '')}?tab=brand&welcome=1`, 302);
+      // A Brand Partner goes straight home: its page, Getting Started, where Maya welcomes it to the front row. Any other
+      // Partner, and a business that joined while applying to be listed, lands on Join the Directory's "you're in".
+      if (r.row?.tier === 'brand') {
+        const slug = encodeURIComponent(r.listing?.slug || '');
+        const { data: c } = r.row.claim_id ? await db.from('ve_listing_claims').select('proposed').eq('id', r.row.claim_id).maybeSingle() : { data: null };
+        if (c?.proposed?.application) return Response.redirect(`https://vegansexplore.com/claim?applied=${slug}&claim=submitted&joined=partner`, 302);
+        if (BRAND_CATS.test(r.listing?.category || '')) return Response.redirect(`https://vegansexplore.com/directory/${slug}?tab=brand&welcome=1`, 302);
+        return Response.redirect(`https://vegansexplore.com/claim?listing=${slug}&claim=submitted&joined=partner`, 302);
+      }
       return Response.redirect(`https://vegansexplore.com/claim?listing=${encodeURIComponent(r.listing?.slug || '')}&verified=active`, 302);
     } catch (e) { console.error('verified confirm failed', e); return Response.redirect('https://vegansexplore.com/claim?verified=unpaid', 302); }
   }
@@ -737,33 +785,67 @@ Deno.serve(async (req) => {
   // directory... and that then brings them into our whole ecosystem"). The listing is made unlisted (quarantined) with a
   // claim waiting in Depot > Claims; approving it lists the business and makes the applicant its owner.
   if (body.action === 'listing_apply') {
+    // Join the Directory (Sean, 2026-10-09: "once they sign up, it's the $11 just to lock in"): the application is locked in
+    // with the same contribution as a claim, from $11. Until it is paid the listing stays unlisted and nobody is emailed.
     const b = body.business || {};
     const name = plain(b.name, 120), category = plain(b.category, 60), city = plain(b.city, 80), state = plain(b.state, 40);
     const description = plain(b.description, 2000), contact_name = plain(b.contact_name, 120), contact_email = plain(b.contact_email, 200).toLowerCase();
     const vegan_status = STATUSES.includes(String(b.vegan_status)) ? String(b.vegan_status) : '';
+    // The way in for a new business is the Partner plan with Front Row Start (tier 'brand'), or the one-time contribution.
+    // The page before Join the Directory sent neither; it still files a free application until every page is updated.
+    const partner = body.tier === 'brand';
+    const free = !partner && body.amount_cents == null;
+    const cents = free ? 0 : partner ? TIERS.brand.cents : Math.round(Number(body.amount_cents));
     if (!name || !category || !city || !description || !vegan_status) return json({ error: 'missing_details' }, 400);
     if (!contact_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) return json({ error: 'missing_contact' }, 400);
-    const since = new Date(Date.now() - 864e5).toISOString();
-    const { count } = await db.from('ve_listing_claims').select('id', { count: 'exact', head: true }).eq('member_id', memberId).gte('created_at', since).contains('proposed', { application: true });
-    if ((count ?? 0) >= 3) return json({ error: 'daily_limit' }, 429);
-    const base = name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'business';
-    let slug = base;
-    for (let k = 2; k < 50; k++) { const { data: taken } = await db.from('listings').select('id').eq('slug', slug).maybeSingle(); if (!taken) break; slug = `${base}-${k}`; }
-    const initials = name.split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase() || 'VE';
-    const { data: listing, error } = await db.from('listings').insert({
-      name, slug, category, specialty: category, description, location: [city, state].filter(Boolean).join(', '), initials,
-      address_city: city, address_state: state || null, website: webUrl(b.website) || '', instagram: plain(b.instagram, 60).replace(/^@/, '') || null,
-      vegan_status, status: 'quarantined', tags: ['ve-application'], claim_status: 'pending', claim_submitted_at: new Date().toISOString(),
-      ve_contact_name: contact_name, ve_contact_email: contact_email,
-    }).select('id, slug').single();
-    if (error || !listing) return json({ error: 'save_failed', message: error?.message }, 500);
-    await db.from('ve_listing_claims').insert({ listing_id: listing.id, member_id: memberId, status: 'submitted', contact_name, contact_email,
-      contact_role: plain(b.contact_role, 120), contact_phone: plain(b.contact_phone, 40), contribution_cents: 0,
-      proposed: { application: true, vegan_status, description, website: webUrl(b.website), instagram: plain(b.instagram, 60).replace(/^@/, '') } });
-    await mailTo([SEAN_EMAIL], `New business wants to be listed: ${name}`,
-      `<p><b>${esc(name)}</b> (${esc(category)}, ${esc([city, state].filter(Boolean).join(', '))}) applied to be listed on Vegans Explore.</p><p>${esc(description)}</p>` +
-      `<p>${esc(contact_name)} &middot; ${esc(contact_email)}</p><p>Review it in <a href="https://vegansexplore.com/admin/depot/claims">Depot &gt; Claims</a>. Approving lists it and makes them the owner.</p>`, contact_email);
-    return json({ ok: true, slug: listing.slug });
+    if (!free && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
+    const proposed = { application: true, vegan_status, description, tagline: plain(b.tagline, 140), website: webUrl(b.website), instagram: plain(b.instagram, 60).replace(/^@/, ''), phone: plain(b.phone, 40), category, city, state };
+    const fields = { name, category, specialty: category, description, tagline: proposed.tagline || null, location: [city, state].filter(Boolean).join(', '), address_city: city, address_state: state || null,
+      website: proposed.website || '', instagram: proposed.instagram || null, phone: proposed.phone || null, vegan_status, ve_contact_name: contact_name, ve_contact_email: contact_email };
+    const claimRow = { member_id: memberId, status: free ? 'submitted' : 'awaiting_contribution', contact_name, contact_email, contact_role: plain(b.contact_role, 120), contact_phone: plain(b.contact_phone, 40),
+      contribution_cents: cents, tier: partner ? 'brand' : null, proposed, test: false, updated_at: new Date().toISOString() };
+    const test = await isTestAccount(member.email); claimRow.test = test;
+    // Coming back from a cancelled checkout: reuse their unpaid application for the same business instead of making another.
+    const { data: unpaid } = await db.from('ve_listing_claims').select('id, listing_id').eq('member_id', memberId).eq('status', 'awaiting_contribution').contains('proposed', { application: true });
+    const ids = (unpaid || []).map((c) => c.listing_id);
+    const { data: same } = ids.length ? await db.from('listings').select('id, name').in('id', ids).eq('status', 'quarantined') : { data: [] };
+    const hit = (same || []).find((l) => String(l.name).trim().toLowerCase() === name.toLowerCase());
+    const open = hit ? (unpaid || []).find((c) => c.listing_id === hit.id) : null;
+    let listing: { id: string; slug: string; name: string } | null = null, claimId = '';
+    if (open && !free) {
+      const { data: l } = await db.from('listings').update(fields).eq('id', open.listing_id).select('id, slug, name').single();
+      await db.from('ve_listing_claims').update(claimRow).eq('id', open.id);
+      listing = l; claimId = open.id;
+    } else {
+      const since = new Date(Date.now() - 864e5).toISOString();
+      const { count } = await db.from('ve_listing_claims').select('id', { count: 'exact', head: true }).eq('member_id', memberId).gte('created_at', since).contains('proposed', { application: true });
+      if ((count ?? 0) >= 3) return json({ error: 'daily_limit' }, 429);
+      const base = name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'business';
+      let slug = base;
+      for (let k = 2; k < 50; k++) { const { data: taken } = await db.from('listings').select('id').eq('slug', slug).maybeSingle(); if (!taken) break; slug = `${base}-${k}`; }
+      const initials = name.split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase() || 'VE';
+      const { data: l, error } = await db.from('listings').insert({ ...fields, slug, initials, status: 'quarantined', tags: ['ve-application'],
+        claim_status: free ? 'pending' : 'unclaimed', claim_submitted_at: free ? new Date().toISOString() : null }).select('id, slug, name').single();
+      if (error || !l) return json({ error: 'save_failed', message: error?.message }, 500);
+      const { data: c, error: ce } = await db.from('ve_listing_claims').insert({ ...claimRow, listing_id: l.id }).select('id').single();
+      if (ce || !c) return json({ error: 'save_failed', message: ce?.message }, 500);
+      listing = l; claimId = c.id;
+    }
+    if (!listing) return json({ error: 'save_failed' }, 500);
+    if (free) {
+      await mailTo([SEAN_EMAIL], `New business wants to be listed: ${name}`,
+        `<p><b>${esc(name)}</b> (${esc(category)}, ${esc([city, state].filter(Boolean).join(', '))}) applied to be listed on Vegans Explore.</p><p>${esc(description)}</p>` +
+        `<p>${esc(contact_name)} &middot; ${esc(contact_email)}</p><p>Review it in <a href="https://vegansexplore.com/admin/depot/claims">Depot &gt; Claims</a>. Approving lists it and makes them the owner.</p>`, contact_email);
+      return json({ ok: true, slug: listing.slug });
+    }
+    const back = backTo(body.return_url, 'https://vegansexplore.com/claim?add=1');
+    if (partner) {
+      const vrow = await verifiedRow(listing.id, member, 'brand', test, { name: contact_name, email: contact_email }, claimId);
+      const pr = await verifiedCheckout(vrow, { ...listing, category }, member, back, claimId, frontRowTrialEnd('brand', body.offer));
+      return pr.url ? json({ url: pr.url, slug: listing.slug, test_mode: test }) : json({ error: pr.error }, 400);
+    }
+    const r = await contributionCheckout(claimId, listing, member, cents, back, test, 'contribution with application to be listed');
+    return r.url ? json({ url: r.url, slug: listing.slug, test_mode: test }) : json({ error: r.error }, 400);
   }
 
   // A brand's dashboard: what visitors did on its listing. Its owner, or a super admin showing it to the brand.
@@ -774,10 +856,13 @@ Deno.serve(async (req) => {
     if (!l) return json({ error: 'not_found' }, 404);
     const owner = l.owner_member_id === memberId || l.claimed_by_member_id === memberId;
     if (!owner && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
+    // The numbers come with a plan (Sean, 2026-10-09: a member claims and updates the page; the analytics are the
+    // Partner side). An owner without a live plan (Partner, Front Row Start's trial included, or Passport) is told so.
+    const v = await liveMembership(id);
+    if (!v && !member.is_superadmin) return json({ error: 'partner_only' }, 403);
     const days = Math.min(365, Math.max(1, Math.round(Number(body.days) || 30)));
     const { data: stats, error } = await db.rpc('ve_listing_stats', { p_listing: id, p_days: days });
     if (error) return json({ error: 'stats_failed' }, 500);
-    const v = await liveMembership(id);
     return json({ stats, plan: v ? { tier: v.tier, name: TIERS[v.tier]?.name, status: v.status, renews_at: v.renews_at } : null, admin: !owner });
   }
 
@@ -785,7 +870,7 @@ Deno.serve(async (req) => {
   if (body.action === 'verified_start') {
     const id = String(body.listing_id || ''), tier = String(body.tier || '');
     if (!/^[0-9a-f-]{36}$/.test(id) || !TIERS[tier]) return json({ error: 'bad_request' }, 400);
-    const { data: listing } = await db.from('listings').select('id, name, slug, owner_member_id, claimed_by_member_id, claim_status, address_city, address_state').eq('id', id).eq('status', 'approved').maybeSingle();
+    const { data: listing } = await db.from('listings').select('id, name, slug, category, owner_member_id, claimed_by_member_id, claim_status, address_city, address_state').eq('id', id).eq('status', 'approved').maybeSingle();
     if (!listing) return json({ error: 'not_found' }, 404);
     if (listing.owner_member_id !== memberId && listing.claimed_by_member_id !== memberId) return json({ error: 'not_owner' }, 403);
     if (await liveMembership(id)) return json({ error: 'already_verified' }, 409);
@@ -806,7 +891,7 @@ Deno.serve(async (req) => {
   if (body.action === 'start') {
     const id = String(body.listing_id || '');
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
-    const { data: listing } = await db.from('listings').select('id, name, slug, claim_status, address_city, address_state').eq('id', id).eq('status', 'approved').maybeSingle();
+    const { data: listing } = await db.from('listings').select('id, name, slug, category, claim_status, address_city, address_state').eq('id', id).eq('status', 'approved').maybeSingle();
     if (!listing) return json({ error: 'not_found' }, 404);
     if (listing.claim_status === 'verified') return json({ error: 'already_claimed' }, 409);
     const tier = body.tier ? String(body.tier) : '';
@@ -826,7 +911,8 @@ Deno.serve(async (req) => {
       vegan_status: STATUSES.includes(String(p.vegan_status)) ? String(p.vegan_status) : '',
     };
     // A product brand (Brand Partner) is not asked how Vegan it is or to describe itself: its page is built from our Guides.
-    if (tier !== 'brand' && (!proposed.vegan_status || !proposed.description)) return json({ error: 'missing_details' }, 400);
+    // Join the Directory (Sean, 2026-10-09): a brand can also claim with the $11 lock-in, without the restaurant questions.
+    if (!BRAND_CATS.test(listing.category || '') && (!proposed.vegan_status || !proposed.description)) return json({ error: 'missing_details' }, 400);
     const test = await isTestAccount(member.email);
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = { listing_id: id, member_id: memberId, status: 'awaiting_contribution', contact_name, contact_role: plain(body.contact_role, 120),
@@ -850,31 +936,8 @@ Deno.serve(async (req) => {
       await db.from('ve_listing_claims').update({ stripe_session_id: null }).eq('id', claim.id);
       return json({ url: r.url, test_mode: test });
     }
-    const params = new URLSearchParams({
-      mode: 'payment',
-      'line_items[0][price_data][currency]': 'usd',
-      'line_items[0][price_data][product_data][name]': (test ? '[TEST] ' : '') + `Vegans Explore - contribution with listing claim (${listing.name})`.slice(0, 120),
-      'line_items[0][price_data][unit_amount]': String(cents),
-      'line_items[0][quantity]': '1',
-      success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
-      cancel_url: withParam(back, 'claim', 'cancelled'),
-      customer_email: member.email,
-      billing_address_collection: 'auto',
-      'payment_intent_data[receipt_email]': member.email,
-      'metadata[type]': 'entry_contribution',
-      'metadata[member_id]': member.id,
-      'metadata[amount_cents]': String(cents),
-      'metadata[claim_id]': claim.id,
-      'metadata[listing_id]': id,
-    });
-    if (test) params.set('metadata[test]', 'true');
-    const sres = await fetch('https://api.stripe.com/v1/checkout/sessions', {
-      method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString(),
-    });
-    const s = await sres.json();
-    if (!sres.ok) { console.error('stripe error', s); return json({ error: s.error?.message ?? 'stripe_error' }, 400); }
-    await db.from('ve_listing_claims').update({ stripe_session_id: s.id }).eq('id', claim.id);
-    return json({ url: s.url, test_mode: test });
+    const r = await contributionCheckout(claim.id, listing, member, cents, back, test, 'contribution with listing claim');
+    return r.url ? json({ url: r.url, test_mode: test }) : json({ error: r.error }, 400);
   }
 
   // A founding spot whose billing the Depot opened: subscribe now, first charge on the first Challenge month.
@@ -1135,7 +1198,12 @@ Deno.serve(async (req) => {
       const { error } = await db.from('listings').update(patch).eq('id', claim.listing_id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       // A Brand Partner hears that its dashboard is open (Sean, 2026-10-09: "what happens to the Oatly rep once they sign up?").
-      if (claim.tier === 'brand' && claim.contact_email) {
+      if (claim.tier === 'brand' && claim.contact_email && !BRAND_CATS.test((await db.from('listings').select('category').eq('id', claim.listing_id).maybeSingle()).data?.category || '')) {
+        const { data: pl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
+        await mailTo([claim.contact_email], `${pl?.name || 'Your business'}: your page is confirmed`,
+          `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(pl?.name || 'your')}'s Partner Dashboard is open on your page: <a href="https://vegansexplore.com/directory/${encodeURIComponent(pl?.slug || '')}?tab=brand">vegansexplore.com/directory/${esc(pl?.slug || '')}</a> (sign in with this email).</p>` +
+          `<p>You have a front-row seat on our campaigns: we send each one to you before it opens, so you can choose where you fit. Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
+      } else if (claim.tier === 'brand' && claim.contact_email) {
         const { data: bl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
         await mailTo([claim.contact_email], `${bl?.name || 'Your brand'}: your page is confirmed`,
           `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(bl?.name || 'your')}'s full dashboard is open: views, visitors, the products people open and the store aisles they look for you in.</p>` +

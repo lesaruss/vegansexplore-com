@@ -48,7 +48,7 @@ this list follows the rule above. A new exception goes on this list first.
   (a meta refresh or `location.replace`, or a `vercel.json` redirect that
   catches the URL before the file is served): `partner.html` (`/partner` goes to
   `/partners`), `tour.html` (`/tour` goes to the archive site),
-  `guides/ve-discuss.html`, `onboarding.html`.
+  `guides/ve-discuss.html`, `onboarding.html`, `apply.html` (`/apply` goes to `/claim?add=1`, Join the Directory).
 - **Partner pitch decks**, standalone sales documents with their own footer,
   some marked Confidential: `partners/community-partner.html` and everything
   in `partners/pitches/`. The member nav and its Passport CTA do not belong
@@ -184,6 +184,13 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   data. Example: `/bounties` -> `/dashboard/bounties` (`openBounties` in center-console).
 - Example: Depot > Bounties (`/admin/depot/bounties`): Campaigns > campaign > job, with `#new`,
   `#campaign/<id>/edit`, `#review` and `#strikes` as their own views.
+- Forms with more than one section are paginated (Sean, 2026-10-09, "I've said this multiple times"; canon rule 14, error
+  registry `UI-FORM-LONG-SCROLL-NOT-PAGINATED`): one step per view, the step names on top, Back / Step N of M / Next at the
+  bottom, Next checks the step, the last step holds the choice and the submit, `?step=` in the address bar. Example: `/claim`.
+- Dropdowns never show the browser's arrow (Sean, 2026-10-09, "always too close to the edge"; canon rule 15, error registry
+  `UI-SELECT-ARROW-TOO-CLOSE-TO-EDGE`): `appearance:none`, an SVG chevron at `background-position:right 16px center`,
+  `padding-right` 44px or more. Copy the `select` rule in `claim.html`.
+- Buttons, tabs and inputs use a 6px corner radius, not pills (canon rule 13, Sean 2026-10-09).
 
 ## Guided view for mocks and walkthroughs (LOCKED 2026-10-04)
 
@@ -448,8 +455,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
 - **Partner Dashboard on every listing** (Sean, 2026-10-09: "instead of getting started, it should be a dashboard...
   partner dashboard. And then underneath it is a sub menu"). One tab, `data-tab="brand"`, after Products on a brand page and
   last elsewhere. Locked for visitors (`partnerLocked`): claim this page (a brand's claim carries Front Row Start before
-  January 1), or, for a business that is not listed, **Apply to be listed** (`/apply`, `ve-claims` `listing_apply`: any Vegan
-  business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
+  January 1), or, for a business that is not listed, **Apply to be listed** (Join the Directory, below: `ve-claims` `listing_apply`, any
+  Vegan business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
   Application to be listed; approving lists it and makes the applicant its owner). A non-brand owner sees their numbers
   (`loadPartnerHome`). A brand's partner gets the sub-menu (`.pd-subnav`, `PD_SUBS`): Getting started, **Insights** (the
   numbers from `brand_stats` once the claim is approved, and Campaigns: clicks and each report within 7 days of an event,
@@ -460,12 +467,48 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Ad console (Coming). On a brand page, the For <Brand> offer still shows under Partner Dashboard to anyone on the brand's link.
 - **Liz walks the locked Partner Dashboard and /apply** (Sean, 2026-10-09: every Guide is walked through on camera; Liz
   is the general Guide, Maya stays with the Dairy Guide brands). The shared component is `/public/ve-guide-tour.js`
-  (`VEGuideTour.mount(el, {guide, title, slides:[{t, h, body, say, clip}]})`: words left, the Guide right, Back / N of M /
-  Next, nothing plays until Start the tour). `mountPartnerLocked` in `directory/listing.html` runs it on every listing's
+  (`VEGuideTour.mount(el, {guide, title, narr, slides:[{t, h, body, pic, say, clip}]})`), laid out like the For <Brand> tour
+  (Sean, 2026-10-09: "set up just like how Oatly set up"): the words and a picture of what she is talking about in a dark
+  panel, the Guide in the page's right column (`narr`; on a listing she takes the sidebar's place while the tab is open,
+  `pdRail`), on top of the slide on a phone. Back / N of M / Next; nothing plays until Start the tour. `mountPartnerLocked` in `directory/listing.html` runs it on every listing's
   locked Partner Dashboard (5 slides, clips pt-1 to pt-5); `/apply` runs pt-4, pt-3, pt-6. Clips in
   `vegan-media/media/liz/partner-tour/` (`pt-<n>.mp4`, `pt-poster-<n>.jpg`); Liz's voice is
   `character_agents.elevenlabs_voice_id` for liz (Sean picked it, sample 3). A slide's `say` must match the recording.
   Liz's face sits higher in frame than Maya's, so `assemble_r5.py`'s mouth search misses on her: check each ending by eye.
+- **Join the Directory** (`/claim`, Sean, 2026-10-09: "it should be one form... already have a business listed? Search to see if
+  it's there... if they don't see their business... that's when they add their information"). One page, Liz on the right
+  (`VEGuideTour.narrator`, clips `j-1` to `j-5` with `pt-6`), paginated: Find it (search and pick, or **Add it**, `?add=1`;
+  `/apply` forwards here), Your business (new businesses only: name, kind, city), The details (how Vegan, one line, about),
+  About you (and the website, Instagram and phone), **How to join**; then "You're in" with what comes next. Sign-in comes last,
+  at the button, with no sign-in window: signed out, About you asks for a password and the button makes the account from the
+  name and email already typed (`VEAuth.signup`), then goes on to checkout; an email that already has an account gets
+  Sign in instead with the email filled in (Sean, 2026-10-09: "what's the easiest, simplest way to do that handoff").
+  A cancelled checkout comes back to How to join with what they typed (`sessionStorage`). On a phone the step change scrolls
+  to just under the sticky menu bar (measured, it is taller there), so Liz is never cut off.
+  Depot > Preview journeys > **Join the Directory** walks every screen (Sean, 2026-10-09: "so I don't have to fill out the
+  form"): `/claim?preview=<picked|details|you|join|join-member|add|add-details|add-join>` opens that step signed out with a
+  sample owner (Alex) and Cinnaholic or a sample new business (Green Leaf Kitchen), and the button says nothing is charged;
+  `/directory/<slug>?tab=brand&preview=member-owner` shows a member owner's Partner Dashboard. A new screen gets a preview
+  and a line in `JOURNEYS.join` (`admin/depot/preview.html`).
+- **How to join, Partner or member** (Sean, 2026-10-09: "we got to figure out what would be the difference... without it
+  sounding like you don't get anything"). Two cards side by side. **Partner** ("The full experience", Front Row Start before
+  January 1): the page claimed and theirs to update, the Partner Dashboard numbers, a front-row seat on every campaign, their
+  Guide on the dashboard (Coming for businesses that are not brands), ads (Coming), Founding Member. **Become a member** ("Start
+  with the basics", from $11 one time): the page claimed and theirs to update, Founding Member, and add the Partner side any
+  time. The numbers are Partner-only in the code too: `ve-claims` `brand_stats` answers `partner_only` to an owner without a live
+  plan (Partner, its Front Row Start trial, or Passport), and the page shows `partnerUpsell` (what they can add, never what
+  they lack).
+- **The Partner plan for every business** (Sean, 2026-10-09: "I would rather give everybody the Oatly style offer... the way in...
+  they can get access and take control knowing that it's going to activate come January... invested in the platform because of
+  the platform, not because of 11 bucks"). `ve-claims` tier `brand` is the $111 quarterly Partner plan for any listing: **Brand
+  Partner** for a product brand, **Partner** (Vegans Explore Partner on Stripe and in email) for everyone else (`tierName`). Front
+  Row Start applies to all: no charge today, first quarter in January 2027. It is the default on Join the Directory, for a claim
+  and for a new business (`listing_apply` with `tier: 'brand'` runs the same subscription checkout); "Just claim it for now"
+  (a contribution from $11, Founding Member) is the second choice, and Passport Stop and Anchor show only when the link asks
+  (`?plan=verified|plus`). A brand returns to its page (Maya's Getting Started); any other Partner and every new business to
+  `/claim?...&claim=submitted&joined=partner`. The $11 is the member offer; members join through the Guides.
+  Not built yet: the partner's home (Getting started, Opportunities, Media, Ask, Ad console) for businesses that are not brands;
+  today they get their numbers on the Partner Dashboard once approved.
 - **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
   signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
   `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in
