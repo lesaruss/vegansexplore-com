@@ -374,6 +374,24 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-narr-m .bd-vid-slot{max-width:320px}
 .bd-play{font-family:inherit;margin-top:12px;width:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;border-radius:8px;border:1.5px solid #1f5f22;background:#1f5f22;color:#fff;cursor:pointer}
 .bd-play[aria-pressed="true"]{background:#fff;color:#1f5f22}
+.bd-play.go{font-size:13px;padding:14px;background:#5EC47A;border-color:#5EC47A;color:#0d1a10}
+/* Slide 3: a snapshot of the brand's dashboard (real totals; the partner-only parts in outline, locked) */
+.bd-snap{display:block;background:#fff;border-radius:14px;padding:16px;color:#1a1a1a;cursor:pointer;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.bd-snap-h{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:10px}
+.bd-snap-h em{font-style:normal;color:#1f5f22}
+.bd-slide .bd-snap .bd-tiles div{background:#f6f8f6;border-color:var(--ve-border)}
+.bd-slide .bd-snap .bd-tiles b{color:#1a1a1a}
+.bd-slide .bd-snap .bd-tiles span{color:var(--ve-text-50)}
+.bd-snap .bd-tiles{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:10px}
+.bd-snap .bd-tiles div{background:#f6f8f6;border-color:var(--ve-border);padding:10px 12px}
+.bd-snap .bd-tiles b{font-size:22px;color:#1a1a1a}
+.bd-snap .bd-tiles span{color:var(--ve-text-50);font-size:9.5px}
+.bd-snap-lock{position:relative;border:1px solid var(--ve-border);border-radius:10px;padding:10px;overflow:hidden}
+.bd-snap-bars{display:flex;align-items:flex-end;gap:4px;height:56px;filter:blur(2px);opacity:.55}
+.bd-snap-bars i{flex:1;background:#1f5f22;border-radius:3px 3px 0 0}
+.bd-snap-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;filter:blur(1.5px);opacity:.55}
+.bd-snap-cards span{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--ve-border);border-radius:6px;padding:8px 6px;color:var(--ve-text-50)}
+.bd-snap-tag{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;background:#0d1a10;color:#fff;font-size:11px;font-weight:700;padding:8px 12px;border-radius:99px;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
 /* Slides that show a lot: words on top, the picture across */
 .bd-slide.wide{grid-template-columns:minmax(0,1fr);align-items:start}
 .bd-lives{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
@@ -1500,7 +1518,7 @@ function loadBrandSite(l){
         say: 'Hi! I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. ' + l.name + ', you\'re already in my guide, so we built you your own page. Take a look around.',
         body: '<p>' + rows.length + (rows.length === 1 ? ' product' : ' products') + (guideNames.length ? ' from the ' + esc(guideNames.join(' and the ')) : '') + ', every version with its Nutrition Facts and USDA label record, and the ' +
           storeList.length + ' grocery stores that carry ' + (rows.length === 1 ? 'it' : 'them') + '. Live today, and yours to keep, whatever you decide.</p>' +
-          '<div class="bd-btns">' + (milk ? '<button type="button" class="bd-btn" data-bd-product="' + esc(milk) + '">See ' + esc(title(withVersions)) + '</button>' : '') + '<button type="button" class="bd-btn o" data-bd-goto="overview">See the page</button></div>',
+          '<div class="bd-btns">' + (BD.tour || BD.clips || BD.audio ? '<button type="button" class="bd-btn" data-bd-start>&#9654; Start the tour</button>' : '') + (milk ? '<button type="button" class="bd-btn o" data-bd-product="' + esc(milk) + '">See ' + esc(title(withVersions)) + '</button>' : '') + '<button type="button" class="bd-btn o" data-bd-goto="overview">See the page</button></div>',
         pic: l.logo_url ? '<div class="bd-logo" role="img" aria-label="' + B + '" style="background-image:url(\'' + esc(l.logo_url) + '\')"></div>' : pics(rows.map(function(p){ return p.image_url; }).filter(Boolean)) },
       { t: 'From the guide to the shelf', h: 'From the guide, straight to the shelf',
         say: 'Someone reads my guide, opens your product, and sees which store\'s Vegan aisle carries it. From the guide, straight to the shelf.',
@@ -1512,10 +1530,16 @@ function loadBrandSite(l){
         say: 'Your page has been counting since the day we built it. Here\'s what people have opened so far.',
         body: '<p class="bd-since">Counted since the day we built the page. Small and early, and real.</p><p>Claim the page to see them by day and by source, and which products and stores people open.</p>' +
           '<div class="bd-btns"><button type="button" class="bd-btn o" data-bdview="dashboard">Open the dashboard</button></div>',
-        pic: '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' },
+        // A snapshot of the dashboard itself (Sean, 2026-10-09: "we actually have the dashboard, so shouldn't we show the
+        // dashboard at that point?"): the real totals on top, and the partner-only parts shown in outline, locked.
+        pic: '<div class="bd-snap" data-bdview="dashboard" role="button" tabindex="0" aria-label="Open the dashboard"><div class="bd-snap-h">Dashboard <em>' + B + '</em></div>' +
+          '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+          '<div class="bd-snap-lock"><div class="bd-snap-bars">' + [18, 30, 22, 45, 38, 60, 52, 70, 48, 64, 80, 58, 74, 90].map(function(h){ return '<i style="height:' + h + '%"></i>'; }).join('') + '</div>' +
+          '<div class="bd-snap-cards"><span>Products opened</span><span>Store aisles opened</span><span>Where views came from</span></div>' +
+          '<div class="bd-snap-tag">' + LOCK + ' Full dashboard opens when you claim</div></div></div>' },
       { t: 'Your ad', h: 'An ad we drew for ' + B,
         say: 'And look, we even drew an ad just for you. Our Guides, enjoying your products, right where people are looking for you.',
-        body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run ads like this across Vegans Explore: on the Daily Pulse, in the Guides, beside the Directory.</p>' +
+        body: '<p>Our Guides are drawn in our own illustration style. As a partner, ' + B + ' can run small ads across what we do: the Daily Pulse, the Guides, beside the Directory. Our team can make them for you, depending on the ad and what you are looking for.</p>' +
           '<p class="bd-small">A sample, made for ' + B + '. It is unpublished: nothing runs without ' + B + '\'s approval, and we will take it down on request.</p>',
         pic: BD.sample_ad ? '<div class="bd-sample"><div class="bd-sample-h">Billboard <em>Sample for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>'
           : '<div class="bd-note">We draw a sample ad for every brand we partner with: our Guides, enjoying your products.</div>' },
@@ -1548,7 +1572,7 @@ function loadBrandSite(l){
     if(VIDEO){
       player = document.createElement('video'); player.className = 'bd-vid'; player.preload = 'metadata'; player.playsInline = true;
       player.setAttribute('playsinline', ''); player.poster = posterAt(0); player.src = VIDEO[0];
-      player.addEventListener('click', function(){ if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } });
+      player.addEventListener('click', function(){ if(!DOOR.started){ startTour(); return; } if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } });
     } else if(AUDIO){ player = new Audio(); player.preload = 'none'; }
     if(player) player.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); });
     var grid = document.querySelector('.listing-page-grid'), rail = document.querySelector('.bsite-rail');
@@ -1567,7 +1591,8 @@ function loadBrandSite(l){
         if(!el) return; narrBox(el);
         el.querySelector('.bd-bubble').textContent = DOOR.view === 'offer' ? SLIDES[DOOR.i].say : 'This is ' + l.name + '\'s dashboard: what people do on your page, live.';
         var btn = el.querySelector('.bd-play');
-        if(btn){ btn.hidden = DOOR.view !== 'offer'; btn.setAttribute('aria-pressed', String(DOOR.playing)); btn.innerHTML = DOOR.playing ? 'Pause ' + esc(NARR_NAME) : '&#9654; ' + (VIDEO ? 'Watch ' : 'Hear ') + esc(NARR_NAME); }
+        if(btn){ btn.hidden = DOOR.view !== 'offer'; btn.setAttribute('aria-pressed', String(DOOR.playing)); btn.classList.toggle('go', !DOOR.started);
+          btn.innerHTML = !DOOR.started ? '&#9654; Start the tour' : DOOR.playing ? 'Pause ' + esc(NARR_NAME) : '&#9654; ' + (VIDEO ? 'Watch ' : 'Hear ') + esc(NARR_NAME); }
       });
       // The one video lives in whichever box is showing: the right column, or the tab itself on a phone.
       if(VIDEO){ var home = (small ? mob : narr) || narr || mob, slot = home && home.querySelector('.bd-vid-slot'); if(slot && player.parentNode !== slot) slot.appendChild(player); }
@@ -1585,10 +1610,11 @@ function loadBrandSite(l){
       if(player.getAttribute('src') !== VIDEO[DOOR.i]){ player.poster = posterAt(DOOR.i); player.src = VIDEO[DOOR.i]; }
       player.classList.remove('bd-shift', 'alt'); void player.offsetWidth; player.classList.add('bd-shift'); if(DOOR.i % 2) player.classList.add('alt');
     }
-    // She just starts talking (Sean, 2026-10-09: "there's no play button on maya and it just starts playing"): opening
-    // the tab and every Next or Back plays the slide, unless the visitor paused her. A browser that blocks sound
-    // before the first tap leaves her on her pose with the button under her.
-    function autoplay(){ if(player && DOOR.view === 'offer' && !DOOR.paused) play(); }
+    // Start the tour (Sean, 2026-10-09: "the button says start the tour... when they start the tour, she starts to
+    // talk... then when they start going to the next one, it can play automatically"). Nothing plays until the visitor
+    // presses Start the tour; from then every Next or Back plays the slide, unless they paused her.
+    function autoplay(){ if(player && DOOR.started && DOOR.view === 'offer' && !DOOR.paused) play(); }
+    function startTour(){ DOOR.started = true; DOOR.paused = false; play(); drawNarr(); if(door) [].forEach.call(door.querySelectorAll('[data-bd-start]'), function(b){ b.remove(); }); }
     var doorWasOn = false;
     function syncRail(){
       var on = !!document.querySelector('.tab-btn.active[data-tab="brand"]'); if(grid) grid.classList.toggle('door-on', on);
@@ -1609,6 +1635,7 @@ function loadBrandSite(l){
             '<button type="button" class="bd-nav" data-bd="next"' + (i < SLIDES.length - 1 ? '' : ' disabled') + '>Next</button></div>'
           : '<div class="bd-dash"></div>');
       drawNarr();
+      if(DOOR.started) [].forEach.call(door.querySelectorAll('[data-bd-start]'), function(b){ b.remove(); });
       if(DOOR.view === 'dashboard') drawDash(); else { lazyLive(); fillTotals(); }
     }
     // The brand's numbers so far (ve_listing_totals: four counts since the first counted visit, for any brand page with a
@@ -1672,6 +1699,7 @@ function loadBrandSite(l){
     }
     function doorClick(e){
       var el;
+      if(e.target.closest('[data-bd-start]') || (e.target.closest('[data-bd-play]') && !DOOR.started)){ startTour(); return true; }
       if(e.target.closest('[data-bd-play]')){ if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } return true; }
       if(!door || !door.contains(e.target)) return false;
       if((el = e.target.closest('[data-bdview]'))){ setDoor(el.getAttribute('data-bdview')); return true; }

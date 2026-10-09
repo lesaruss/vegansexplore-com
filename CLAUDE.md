@@ -401,7 +401,11 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   unpublished, nothing runs without the brand's approval, taken down on request; 5. early, on purpose: Live now beside
   Coming, and you see it first (campaigns and giveaways, scavenger hunts, original content, more cities); 6. Be our
   first Brand Partner, $111 a quarter (`brand_door.first`, false for later brands), buttons Be our first Brand Partner,
-  Ask Sean a question, and Not yet, send me the numbers. The email that carries the link is the gift (no price), and the
+  Ask Sean a question, and Not yet, send me the numbers. Nothing plays until the
+  visitor presses Start the tour (Sean, 2026-10-09); after that every Next or Back plays the slide. Slide 3 is a snapshot of
+  the real dashboard (totals live, the rest in outline, locked) that opens it. Maya says "Vegan" right only when the text
+  is spelled "Veegan" (el-media, her voice); every clip gets a 0.25 s lead-in and a fade-in so it never starts with a pop.
+  The clips are `brand_door.tour` (`vegan-media/media/brand-door/<slug>/t-slide-<n>.mp4`). The email that carries the link is the gift (no price), and the
   follow-up brings the brand's real numbers. The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
   (`VEProducts.GUIDES[..][2]`), her words on each slide (the slide's `say` in `loadBrandSite`, which must match the
   recording) and a clip per slide (`listings.details.brand_door.clips`, `[{video, poster}]`, in
