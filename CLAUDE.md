@@ -352,6 +352,19 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   section at a time, the Guide talking on each (a lip-synced clip under 10 seconds, the way the For <Brand> tour does it:
   el-media voice, Wan 2.7, `scripts/brand-door/assemble_r5.py`), Start the tour first, then every Next plays.
 
+- The layout (Sean, 2026-10-09, after the Oatly page: "Maya stayed present throughout the whole guide on the right
+  hand side and the content was on the left"): the tabs are the tour. Overview (what the Guide is and what each tab
+  holds, the Guide's welcome), then one tab per section, then Get access for visitors (the $11 Founding Membership,
+  already a member: sign in and it opens). The Guide sits in the same spot on the right of every tab, with her words
+  in a bubble, one play button and Back / N of M / Next; the content is on the left on a clean white page. Everything
+  above the fold: the nav, the Guide and the footer share one screen on desktop, a section with parts gets toggles
+  (Pulse: The research / Podcasts and interviews; the research is one fact at a time), and a long list scrolls inside
+  its own box. A locked tab shows the real section blurred with a membership note on top while the Guide explains it;
+  one example stays free (the Buttermilk swap). Each Guide's research and media tab is the **Pulse** for its topic
+  ("it's literally the pulse but just on dairy free food"): sourced facts plus our published episodes and interviews
+  (`ve_pulse_content` slugs in `PULSE_PICKS`), played inside the Guide. Why it matters (Sean): each Guide is content
+  for the site that fills the Directory with brands and is the top of the funnel for new members; the next one is
+  nutritional supplements.
 - A Guide shows Directory listings with the Directory's own card (`VERegionDirectory.card` / `wire` /
   `css` in `/public/ve-region-directory.js`) and the Directory's pills, search and Sort by, never a look of
   its own. Opening one stays in the Guide (`#/listing/<slug>`): the Guide's breadcrumb, what the Guide says
