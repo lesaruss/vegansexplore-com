@@ -347,6 +347,10 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
+- Every Guide is walked through by its Guide on camera (Sean, 2026-10-09, after the For Oatly tour: "This is how all
+  of our guides need to be from now on... the guides walking you through and being animated like that"). One slide or
+  section at a time, the Guide talking on each (a lip-synced clip under 10 seconds, the way the For <Brand> tour does it:
+  el-media voice, Wan 2.7, `scripts/brand-door/assemble_r5.py`), Start the tour first, then every Next plays.
 
 - A Guide shows Directory listings with the Directory's own card (`VERegionDirectory.card` / `wire` /
   `css` in `/public/ve-region-directory.js`) and the Directory's pills, search and Sort by, never a look of
