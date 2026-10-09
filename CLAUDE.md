@@ -445,6 +445,23 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
   (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
   videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
+- **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
+  signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
+  `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in
+  `brand_door.start_tour` (welcome to the front row and where things stand; this page is your home; game days, the Dolphins
+  model: five or six brands sampling with fans, coupons, content before, the community watch party and tailgate, packaged
+  for the next one; the Plant-Based Showcase at events that are not Vegan, college games, festivals, tours like Warped Tour
+  being explored; why we do it, Sean's words; next steps), with a Dashboard pill (full once Sean approves the claim). New
+  tabs: **Opportunities** (`OPPS` in `loadBrandSite`, every card Coming; I'm interested writes `ve_initiative_interest`,
+  `sponsor_tier`, tags `brand-partner` and the slug, emails the account manager; shows on `/dashboard/leads`), **Media**
+  (uploads to the private `brand-partner-media` bucket through one-object signed URLs, rows in `ve_brand_media`, migration
+  `20261009_ve_brand_media.sql`; the account manager is emailed each file), **Ask Maya** (free saved answers from
+  `ve-auth` `guide_ask`; with none, `ve-claims` `partner_ask` emails the question to the account manager,
+  `listings.details.brand_door.account_manager_email`, else Sean, Reply-To the brand, logged as `sent_to_person`), and
+  **Ad console** (Coming). `?partner=preview` shows the partner's home to anyone, labelled; its buttons work only for a real
+  partner or a super admin. A super admin sees the offer by default. Checkout for a brand returns to
+  `/directory/<slug>?tab=brand&welcome=1`; approving a brand's claim emails them that the dashboard is open; the claim form
+  skips the restaurant questions for a brand.
 - A product (`/public/ve-product-view.js`): the photo with its versions (`ve_products.variants`) as round thumbnails
   under it, the chosen version's name, the brand's own description and ingredients, certifications, its Nutrition
   Facts (each version's own, cited; `ve_products.nutrition` only from a cited source such as USDA FoodData Central),

@@ -413,6 +413,48 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bd-later a{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.7)}
 .bd-totals b{font-size:30px}
 .bd-slide .bd-totals b{color:#fff}
+.bd-steps{list-style:none;margin:0 0 14px;padding:0}
+.bd-steps li{position:relative;padding:9px 0 9px 30px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.82);border-bottom:1px solid rgba(255,255,255,.08)}
+.bd-steps li::before{content:'';position:absolute;left:2px;top:11px;width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+.bd-steps li.ok::before{content:'\2713';border-color:#5EC47A;background:#5EC47A;color:#0d2a12;font-size:11px;font-weight:900;text-align:center;line-height:16px}
+.bd-steps li.wait::before{border-color:#f3c86b}
+.bd-steps b{color:#fff}
+.bd-go{cursor:pointer;transition:border-color .15s}.bd-go:hover,.bd-go:focus-visible{border-color:#8fe3a6 !important}
+.bd-quote{margin:0;font-size:19px;line-height:1.55;font-weight:600;color:#fff;border-left:3px solid #5EC47A;padding:4px 0 4px 18px}
+.bd-quote cite{display:block;margin-top:12px;font-size:12px;font-style:normal;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8fe3a6}
+.bd-next-steps{margin:0 0 6px;padding-left:20px}.bd-next-steps li{font-size:14.5px;line-height:1.55;color:rgba(255,255,255,.82);padding:5px 0}.bd-next-steps b{color:#fff}
+.bd-camps.one{grid-template-columns:minmax(0,1fr)}
+.bp-preview{background:#fff7e0;border:1px solid #f3c86b;border-radius:8px;padding:10px 14px;font-size:13px;color:#5a4300;margin:0 0 18px}
+.bp-opps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;margin:0 0 16px}
+.bp-opp{border:1px solid var(--ve-border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:5px;background:#fff}
+.bp-opp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.bp-kind{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22}
+.bp-opp>b{font-size:16px;font-weight:900;line-height:1.3}
+.bp-when{font-size:12.5px;font-weight:700;color:#7d4a00}
+.bp-opp p{font-size:13.5px;line-height:1.55;color:var(--ve-text-75,#444);margin:2px 0 10px;flex:1}
+.bp-opp .bd-btn{align-self:flex-start}
+.bp-upload{border:1px solid var(--ve-border);border-radius:12px;padding:16px;margin:0 0 22px;background:#fafcfa}
+.bp-drop{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;border:2px dashed #b9d8bf;border-radius:10px;padding:22px;cursor:pointer;text-align:center;background:#fff}
+.bp-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.bp-drop:focus-within{outline:3px solid #5EC47A;outline-offset:2px}.bp-drop b{font-size:15px}.bp-drop span{font-size:12.5px;color:var(--ve-text-50)}
+.bp-upload-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+.bp-upload-row select,.bp-upload-row input{font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--ve-border);border-radius:8px;background:#fff}
+.bp-upload-row input{flex:1;min-width:180px}
+.bp-sub{font-size:15px;font-weight:900;margin:0 0 12px}
+.bp-media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:12px}
+.bp-media-item{border:1px solid var(--ve-border);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;min-width:0}
+.bp-media-item b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bp-media-pic{aspect-ratio:4/3;border-radius:8px;background:#eef3ef center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:800;text-transform:uppercase;color:#1f5f22;margin-bottom:4px}
+.bp-ask{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;align-items:start}
+.bp-ask-pic{aspect-ratio:1;border-radius:14px;background:#fff center/cover no-repeat;border:1px solid var(--ve-border)}
+.bp-chat{border:1px solid var(--ve-border);border-radius:12px;padding:14px;min-height:180px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;background:#fafcfa}
+.bp-msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:14.5px;line-height:1.5}
+.bp-msg.guide{background:#eaf6ec;color:#123d18;align-self:flex-start;border-bottom-left-radius:4px}
+.bp-msg.you{background:#1f5f22;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.bp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.bp-ask-form{display:flex;gap:10px}.bp-ask-form input{flex:1;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--ve-border);border-radius:10px}
+.bsite-pad .bd-feat.bp-ads{margin:0 0 18px}.bsite-pad .bp-ads>div{background:#fafcfa;border:1px solid var(--ve-border)}.bsite-pad .bp-ads b{color:#1f5f22}.bsite-pad .bp-ads span{color:#444}
+.bp-ads-sample{max-width:420px}
+@media(max-width:768px){.bp-ask{grid-template-columns:minmax(0,1fr)}.bp-ask-pic{max-width:160px}}
 .bd-tag{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:3px 7px;vertical-align:middle}
 .bd-grow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 14px}
 .bd-grow>span:not(.bd-tag){font-size:12.5px;font-weight:700;color:#fff;border:1px dashed rgba(243,200,107,.55);border-radius:99px;padding:5px 11px}
@@ -1429,8 +1471,8 @@ function loadBrandSite(l){
   var pane = document.getElementById('bsite-products'), side = document.getElementById('bsite-nf');
   var ov = document.querySelector('#tab-overview > div');
   VEProductView.css();
-  fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
-    rows = Array.isArray(rows) ? rows : [];
+  Promise.all([fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }), partnerStatus(l)]).then(function(res){
+    var rows = Array.isArray(res[0]) ? res[0] : [], PS = res[1] || { partner: false };
     var BY = {}; rows.forEach(function(p){ BY[p.slug] = p; });
     var d = l.details || {};
     function title(p){ return VEProducts.title(p, l.name); }
@@ -1618,13 +1660,63 @@ function loadBrandSite(l){
           '<div class="bd-next bd-only"><h3>Brand Partners only</h3><ul><li>A front-row seat on every campaign, before it opens</li><li>Your full dashboard</li><li>A report within 7 days of every event you join</li></ul></div></div>' },
       OFFER_SLIDE
     ];
+    // ---- Getting Started (Sean, 2026-10-09): once a brand has joined, For <Brand> becomes Getting Started. Maya walks
+    // them through, the same way as the tour: "it's an onboarding... how do they use this platform... what are the
+    // different types of opportunities". Her clips are brand_door.start_tour. Game days and the Showcase are Sean's
+    // words from the same note; everything not yet live is marked Coming.
+    var COMING = '<span class="bd-tag">Coming</span>';
+    var START_SLIDES = [
+      { t: 'Welcome', h: 'Welcome to the front row, ' + B,
+        say: 'Welcome to the front row, ' + l.name + '! Your seat is saved, nothing is charged until January, and I\'ll walk you through everything.',
+        body: '<p>This page is your home with us now. Here is where things stand:</p>' +
+          '<ul class="bd-steps"><li class="ok"><b>Your seat is saved.</b> Front Row Start: your first quarter begins in January 2027.</li>' +
+          '<li class="' + (PS.confirmed ? 'ok' : 'wait') + '"><b>' + (PS.confirmed ? 'We confirmed it is you.' : 'We are confirming it is you.') + '</b> ' + (PS.confirmed ? 'Your full dashboard is open.' : 'Your full dashboard opens as soon as we do. We will email you.') + '</li>' +
+          '<li><b>Next:</b> a quick tour of how this works and the opportunities ahead.</li></ul>' +
+          '<div class="bd-btns">' + (BD.start_tour ? '<button type="button" class="bd-btn" data-bd-start>&#9654; Start the tour</button>' : '') + '</div>',
+        pic: l.logo_url ? '<div class="bd-logo" role="img" aria-label="' + B + '" style="background-image:url(\'' + esc(l.logo_url) + '\')"></div>' : '' },
+      { t: 'How this works', h: 'This page is your home with us',
+        say: 'This page is your home now. Opportunities, your media, your numbers, and me, all in one place.',
+        body: '<p>Everything you do with Vegans Explore happens right here, on ' + B + '\'s page.</p>',
+        pic: '<div class="bd-feat">' + [['Opportunities', 'The campaigns ahead. Tell us which ones you want in on.', 'opps'], ['Media', 'Send us your logo, product photos and videos.', 'media'],
+          ['Ask ' + NARR_NAME, 'Ask me anything. If I do not know, the team answers.', 'ask'], ['Dashboard', 'Your page\'s numbers, live.', ''],
+          ['Ad console ' + COMING, 'Pick spots across our pages and place your ads.', 'ads']].map(function(x){
+            return '<div' + (x[2] ? ' data-bd-goto="' + x[2] + '" role="button" tabindex="0" class="bd-go"' : '') + '><b>' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' },
+      { t: 'Game days', h: 'Game days, together',
+        say: 'Game days: we bring five or six brands to sample with fans, the community tailgates together, and we film it all for the next one.',
+        body: '<ul class="bd-list"><li>We invite five or six brands to sample with fans on their way to the game, with coupons to take home.</li>' +
+          '<li>We shoot content in the weeks leading up to it.</li><li>The community comes out to watch the game together and tailgates, cooking their favorite Vegan food.</li>' +
+          '<li>We capture it all and package it up for the next one.</li></ul>',
+        pic: '<div class="bd-camps one"><div>' + COMING + '<b>The Plant-Based Showcase</b><span>Miami Dolphins game day, Hard Rock Stadium</span><em>Sunday, November 29, 2026</em></div>' +
+          '<div>' + COMING + '<b>Game days in more cities</b><span>The same makeup, city by city</span><em>Dates to be set</em></div></div>' },
+      { t: 'The Plant-Based Showcase', h: 'We go where people aren\'t Vegan yet',
+        say: 'The Plant-Based Showcase goes where people aren\'t Vegan yet, like college games and festivals, to show how fun this life can be.',
+        body: '<p>The Plant-Based Showcase sets up at events that are not Vegan events: college games, festivals, and we are looking at tours like Warped Tour. Anywhere people might be curious.</p>' +
+          '<p>We show them this lifestyle is attainable, fun and vibrant, with more to do, not less.</p>',
+        pic: '<div class="bd-camps one"><div>' + COMING + '<b>College game days</b><span>The Showcase at the game</span></div><div>' + COMING + '<b>Festivals</b><span>Events that are not Vegan, with a Vegan corner worth visiting</span></div>' +
+          '<div>' + COMING + '<b>Tours</b><span>Being explored, Warped Tour among them</span></div></div>' },
+      { t: 'Why we do it', h: 'Why we do it',
+        say: 'If more people see how vibrant Vegan life is, and how many cool people are in it, more will try it. That\'s what we stand for.',
+        body: '<blockquote class="bd-quote">If more people see that there is a vibrant lifestyle you can have being Vegan, and a bunch of cool people in the community, they would be more apt to try it. That is what we represent for the Vegan movement.<cite>Sean A. Russell, founder</cite></blockquote>',
+        pic: '<div class="bd-camps one"><div><b>Live now</b><span>The Directory, our Guides, the Daily Pulse and the Community Board, dinners and meetups in South Florida</span></div>' +
+          '<div>' + COMING + '<b>Community nights</b><span>In each city, starting in South Florida in November</span></div><div>' + COMING + '<b>The World Vegan Expo</b><span>Our next flagship. City and date to be set</span></div></div>' },
+      { t: 'Your next steps', h: 'Where to start',
+        say: 'Start with Opportunities and tell us where you want in. Upload your media, and ask me anything. I\'m right here.',
+        body: '<ol class="bd-next-steps"><li><b>Opportunities.</b> Tell us which campaigns you want in on.</li><li><b>Media.</b> Upload your logo, product photos and videos.</li>' +
+          '<li><b>Ask ' + esc(NARR_NAME) + '.</b> Anything at all. If I do not have the answer, the team gets it to you.</li><li><b>Ad console.</b> ' + COMING + ' When it opens, you pick spots and place your ads.</li></ol>' +
+          '<div class="bd-btns"><button type="button" class="bd-btn" data-bd-goto="opps">See the opportunities</button><button type="button" class="bd-btn o" data-bd-goto="media">Upload media</button><button type="button" class="bd-btn o" data-bd-goto="ask">Ask ' + esc(NARR_NAME) + '</button></div>',
+        pic: '' }
+    ];
+    // The page is the partner's when they hold its Brand Partner membership (Front Row Start included) or own it.
+    // ?partner=preview shows it to anyone (labelled), so the team can see what a brand sees before one joins.
+    var PARTNER = !!PS.partner;
+    if(PARTNER) SLIDES = START_SLIDES;
     // The narration: a clip per slide (brand_door.clips, [{video, poster}]: Maya on camera, a different pose each slide,
     // under 10 seconds, no b-roll; Sean, 2026-10-09; files in vegan-media/media/brand-door/<brand>/), else her voice
     // alone (brand_door.audio). The poster is the clip's first frame, so a slide shows her new pose before it plays.
     // brand_door.tour is the six-slide tour's clips (2026-10-09); brand_door.clips the nine-slide one it replaced.
     function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && x.video; }) ? c : null; }
-    var TOUR = Array.isArray(BD.tour) ? BD.tour.slice() : null;
-    if(TOUR && !FRONT_ROW && BD.tour_plain_last) TOUR[TOUR.length - 1] = BD.tour_plain_last;
+    var TOUR = PARTNER ? (Array.isArray(BD.start_tour) ? BD.start_tour.slice() : null) : Array.isArray(BD.tour) ? BD.tour.slice() : null;
+    if(TOUR && !PARTNER && !FRONT_ROW && BD.tour_plain_last) TOUR[TOUR.length - 1] = BD.tour_plain_last;
     var CLIPS = fits(TOUR) || fits(BD.clips);
     var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video; }) : null;
     function posterAt(i){ return (CLIPS && CLIPS[i].poster) || narrArt; }
@@ -1687,8 +1779,8 @@ function loadBrandSite(l){
     function drawDoor(){
       if(!door) return;
       var i = Math.max(0, Math.min(SLIDES.length - 1, DOOR.i)), sl = SLIDES[i];
-      door.innerHTML = '<div class="bd-top"><div class="bd-hello">For ' + B + '</div><div class="bsite-pills" role="group" aria-label="View">' +
-        [['offer', 'The offer'], ['dashboard', 'Dashboard']].map(function(o){ return '<button type="button" class="bsite-pill" data-bdview="' + o[0] + '" aria-pressed="' + (DOOR.view === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+      door.innerHTML = '<div class="bd-top"><div class="bd-hello">' + (PARTNER ? 'Welcome, ' : 'For ') + B + '</div><div class="bsite-pills" role="group" aria-label="View">' +
+        [['offer', PARTNER ? 'Getting started' : 'The offer'], ['dashboard', 'Dashboard']].map(function(o){ return '<button type="button" class="bsite-pill" data-bdview="' + o[0] + '" aria-pressed="' + (DOOR.view === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
         '<div class="bd-narr bd-narr-m"></div>' +
         (DOOR.view === 'offer'
           ? '<section class="bd-slide' + (sl.wide ? ' wide' : '') + '"><div class="bd-words"><div class="bd-kicker">' + (i + 1) + ' &middot; ' + esc(sl.t) + '</div><h2>' + sl.h + '</h2>' + sl.body + '</div><div class="bd-pic">' + sl.pic + '</div></section>' +
@@ -1721,9 +1813,10 @@ function loadBrandSite(l){
         // The totals since the page went up are open to anyone on the link; the breakdown is the partner's.
         el.innerHTML = '<div class="bd-tiles bd-totals">' + [['views', 'Page views'], ['visitors', 'Visitors'], ['products', 'Products opened'], ['stores', 'Store aisles opened']].map(function(x){ return '<div><b data-total="' + x[0] + '">&middot;</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
           '<p class="bd-small bd-since"></p>' +
-          '<div class="bd-locked"><p><b>The full dashboard opens once ' + B + ' claims the page:</b> ' + LOCK + ' views by day and by source, which products people open, and which stores they look for you in.</p>' +
+          (PARTNER ? '<div class="bd-locked"><p><b>Your full dashboard opens as soon as we confirm it is you.</b> ' + LOCK + ' Views by day and by source, which products people open, and which stores they look for you in. We will email you.</p></div>'
+          : '<div class="bd-locked"><p><b>The full dashboard opens once ' + B + ' claims the page:</b> ' + LOCK + ' views by day and by source, which products people open, and which stores they look for you in.</p>' +
           '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
-          (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>';
+          (viewer() ? '' : '<button type="button" class="bd-btn o" data-bd-signin>Already claimed? Sign in</button>') + '</div></div>');
         fillTotals();
         return;
       }
@@ -1793,7 +1886,148 @@ function loadBrandSite(l){
     window.addEventListener('popstate', function(){
       showListingTab(new URLSearchParams(location.search).get('tab') || 'overview'); route(); syncRail();
     });
+    // ---- The partner's tabs (Sean, 2026-10-09): Opportunities, Media, Ask Maya, and the Ad console (Coming). Shown only
+    // to the partner (or ?partner=preview); the server checks every action again (ve-claims partner_*, media_*).
+    function claimsCall(body){
+      if(!(window.VEAuth && VEAuth.isLoggedIn())) return Promise.resolve({ error: 'sign_in' });
+      return fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+        .then(function(r){ return r.json().then(function(d){ d._status = r.status; return d; }); }).catch(function(){ return { error: 'network' }; });
+    }
+    var PREVIEW_NOTE = PS.preview ? '<p class="bp-preview">Preview: this is what ' + B + ' sees after joining. Buttons work for ' + B + '\'s team once they are signed in.</p>' : '';
+    // Opportunities: the campaigns ahead, each one Coming until it is real. "I'm interested" is a lead on /dashboard/leads.
+    var OPPS = [
+      ['plant-based-showcase-2026-11-29', 'Game day', 'The Plant-Based Showcase', 'Miami Dolphins game day, Hard Rock Stadium. Sunday, November 29, 2026.', 'Sample with fans on their way in, hand out coupons, be in the content we shoot before and after, and join the community tailgate.'],
+      ['game-days', 'Game day', 'Game days in more cities', 'The same makeup, city by city. Dates to be set.', 'Five or six brands per game, sampling, coupons and content.'],
+      ['showcase-events', 'Showcase', 'The Showcase at college games and festivals', 'Events that are not Vegan events. Dates to be set.', 'Meet people who are curious about Vegan food, with samples and coupons.'],
+      ['community-nights', 'Community', 'Community nights', 'In each city, starting in South Florida in November 2026.', 'Sampling, goodie bags and a table at our monthly gatherings.'],
+      ['world-vegan-expo', 'Flagship', 'The World Vegan Expo', 'Our next flagship. City and date to be set.', 'Partners hear first, before it is announced.'],
+      ['guide-feature', 'Guides', 'A featured spot in a Guide', 'Starting with the Vegan ' + (firstGuide ? firstGuide[0] : 'Dairy Guide') + '.', 'Your products featured where people are choosing what to buy.'],
+      ['q1-2027-campaigns', 'Q1 2027', 'Our Q1 2027 campaigns', 'January to March 2027. Details to be set.', 'Brand Partners get the front row: a first look and first pick.']
+    ];
+    var interests = {}; (PS.interests || []).forEach(function(k){ interests[k] = 1; });
+    function drawOpps(){
+      var el = document.getElementById('bp-opps'); if(!el) return;
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Opportunities</h3><span>Everything here is Coming. Tell us where you want in, and we will reach out with the details.</span></div>' +
+        '<div class="bp-opps">' + OPPS.map(function(o){ var on = !!interests[o[0]];
+          return '<div class="bp-opp"><div class="bp-opp-top"><span class="bp-kind">' + esc(o[1]) + '</span>' + COMING + '</div><b>' + esc(o[2]) + '</b><span class="bp-when">' + esc(o[3]) + '</span><p>' + esc(o[4]) + '</p>' +
+            '<button type="button" class="bd-btn' + (on ? '' : ' o') + '" data-bp-interest="' + o[0] + '" aria-pressed="' + on + '">' + (on ? '&#10003; You\'re interested' : 'I\'m interested') + '</button></div>'; }).join('') + '</div>' +
+        '<p class="bd-small">Questions about any of these? <button type="button" class="bsite-link" data-bd-goto="ask">Ask ' + esc(NARR_NAME) + '</button></p>';
+    }
+    // Media: they send us graphics and video straight from their page (private storage, ve-claims media_*).
+    var MEDIA = null;
+    function mediaSize(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+    function drawMedia(){
+      var el = document.getElementById('bp-media'); if(!el) return;
+      var list = MEDIA === null ? '<div class="aisle-empty">Loading your media...</div>' : !MEDIA.length ? '<div class="aisle-empty">Nothing yet. Your uploads show here.</div>'
+        : '<div class="bp-media-grid">' + MEDIA.map(function(m){ var img = /^image\//.test(m.content_type || '') && m.url;
+            return '<div class="bp-media-item"><div class="bp-media-pic"' + (img ? ' style="background-image:url(\'' + esc(m.url) + '\')"' : '') + '>' + (img ? '' : '<span>' + esc((m.content_type || '').split('/')[1] || 'file') + '</span>') + '</div>' +
+              '<b title="' + esc(m.file_name) + '">' + esc(m.file_name) + '</b><span>' + esc(String(m.kind).replace('_', ' ')) + ' &middot; ' + mediaSize(m.bytes || 0) + '</span>' +
+              (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener">Open</a>' : '') + ' <button type="button" class="bsite-link" data-bp-remove="' + m.id + '">Remove</button></div>'; }).join('') + '</div>';
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Media</h3><span>Send us your logo, product photos, graphics and videos. Anything we need for your page, campaigns and ads.</span></div>' +
+        '<form class="bp-upload" id="bp-upload"><label class="bp-drop"><input type="file" id="bp-file" multiple accept="image/*,video/mp4,video/quicktime,video/webm,application/pdf,application/zip"><b>Choose files</b><span>Images, video (MP4, MOV, WebM), PDF or ZIP, up to 500 MB each</span></label>' +
+        '<div class="bp-upload-row"><select id="bp-kind" aria-label="What is it"><option value="logo">Logo</option><option value="product_photo">Product photos</option><option value="graphic">Graphics</option><option value="video">Video</option><option value="other" selected>Other</option></select>' +
+        '<input type="text" id="bp-note" maxlength="500" placeholder="A note for our team (optional)"><button type="submit" class="bd-btn">Upload</button></div><p class="bd-small" id="bp-up-msg" aria-live="polite"></p></form>' +
+        '<h3 class="bp-sub">What you have sent us</h3>' + list;
+    }
+    function loadMedia(){ if(PS.preview && !PS.real){ MEDIA = []; drawMedia(); return; } claimsCall({ action: 'media_list', listing_id: l.id }).then(function(d){ MEDIA = (d && d.media) || []; drawMedia(); }); }
+    function uploadFiles(files){
+      var msg = document.getElementById('bp-up-msg'), kind = document.getElementById('bp-kind').value, note = document.getElementById('bp-note').value;
+      if(!files.length){ msg.textContent = 'Choose a file first.'; return; }
+      if(PS.preview && !PS.real){ msg.textContent = 'This is a preview. Uploads work for ' + l.name + '\'s team once they are signed in.'; return; }
+      var i = 0;
+      (function next(){
+        if(i >= files.length){ msg.textContent = files.length === 1 ? 'Sent. Our team has it.' : 'All ' + files.length + ' sent. Our team has them.'; loadMedia(); return; }
+        var f = files[i++];
+        msg.textContent = 'Uploading ' + f.name + '...';
+        claimsCall({ action: 'media_upload_url', listing_id: l.id, file_name: f.name, content_type: f.type, bytes: f.size, kind: kind, note: note }).then(function(d){
+          if(!d || !d.signed_url){ msg.textContent = f.name + ': ' + (d && d.error === 'file_type' ? 'that kind of file is not accepted.' : d && d.error === 'file_size' ? 'too large (500 MB at most).' : 'could not start the upload.'); return; }
+          var x = new XMLHttpRequest(); x.open('PUT', d.signed_url); x.setRequestHeader('Content-Type', f.type); x.setRequestHeader('x-upsert', 'true');
+          x.upload.onprogress = function(e){ if(e.lengthComputable) msg.textContent = 'Uploading ' + f.name + ': ' + Math.round(e.loaded / e.total * 100) + '%'; };
+          x.onload = function(){ if(x.status >= 300){ msg.textContent = f.name + ' did not upload. Try again.'; return; } claimsCall({ action: 'media_done', id: d.id }).then(next); };
+          x.onerror = function(){ msg.textContent = f.name + ' did not upload. Check your connection and try again.'; };
+          x.send(f);
+        });
+      })();
+    }
+    // Ask Maya: free saved answers first (ve-auth guide_ask); with none, she says she'll get them an answer and the
+    // question goes to the account manager (ve-claims partner_ask), who replies by email.
+    var CHAT = [{ who: 'guide', text: 'Hi! Ask me anything about Vegans Explore, the campaigns, or your page. If I don\'t have the answer, I\'ll get it to you.' }];
+    function drawAsk(){
+      var el = document.getElementById('bp-ask'); if(!el) return;
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-ask"><div class="bp-ask-pic" style="background-image:url(\'' + esc(narrArt) + '\')"></div><div class="bp-ask-main"><div class="bp-head"><h3>Ask ' + esc(NARR_NAME) + '</h3><span>Your Guide to Vegans Explore</span></div>' +
+        '<div class="bp-chat" id="bp-chat">' + CHAT.map(function(m){ return '<div class="bp-msg ' + m.who + '">' + m.text + '</div>'; }).join('') + '</div>' +
+        '<div class="bp-chips">' + ['How does a game day work?', 'When does the ad console open?', 'How do I send you product samples?'].map(function(q){ return '<button type="button" class="bsite-pill" data-bp-q="' + esc(q) + '">' + esc(q) + '</button>'; }).join('') + '</div>' +
+        '<form class="bp-ask-form" id="bp-ask-form"><input type="text" id="bp-q" maxlength="500" placeholder="Ask ' + esc(NARR_NAME) + ' a question" aria-label="Your question"><button type="submit" class="bd-btn">Ask</button></form></div></div>';
+      var c = document.getElementById('bp-chat'); if(c) c.scrollTop = c.scrollHeight;
+    }
+    function say(who, text){ CHAT.push({ who: who, text: text }); drawAsk(); }
+    function ask(q){
+      q = String(q || '').trim(); if(!q) return;
+      say('you', esc(q));
+      if(PS.preview && !PS.real){ say('guide', 'This is a preview. For ' + B + '\'s team, I answer here, and anything I don\'t know goes to the team, who reply by email.'); return; }
+      fetch(SUPABASE_URL + '/functions/v1/ve-auth?action=guide_ask', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
+        body: JSON.stringify({ action: 'guide_ask', agent_slug: NARR, message: q, token: VEAuth.getToken() }) }).then(function(r){ return r.json(); }).catch(function(){ return {}; }).then(function(d){
+        if(d && d.answer){ say('guide', esc(d.answer.answer) + (d.answer.link_url ? ' <a href="' + esc(d.answer.link_url) + '">' + esc(d.answer.link_label || 'More') + '</a>' : '')); return; }
+        claimsCall({ action: 'partner_ask', listing_id: l.id, message: q }).then(function(r){
+          if(r && r.ok) say('guide', 'I don\'t have that one yet, so I\'ve sent it to the team. You\'ll get an answer by email soon.');
+          else if(r && r._status === 429) say('guide', 'You\'ve sent the team ten questions today. This one can wait until tomorrow, or reply to any of our emails.');
+          else say('guide', 'I couldn\'t send that just now. Try again in a minute.');
+        });
+      });
+    }
+    function drawAds(){
+      var el = document.getElementById('bp-ads'); if(!el) return;
+      el.innerHTML = PREVIEW_NOTE + '<div class="bp-head"><h3>Ad console ' + COMING + '</h3><span>Not open yet. Brand Partners get it first.</span></div>' +
+        '<div class="bd-feat bp-ads">' + [['Pick your spots', 'The Daily Pulse, our Guides, beside the Directory, on the pages you choose.'], ['See the traffic', 'Each spot shows how many people see it.'],
+          ['Place your ad', 'Bring your own if it fits our look, or our team makes it with you.'], ['Set your budget', 'Spend what fits, spot by spot.']].map(function(x){ return '<div><b>' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+        (BD.sample_ad ? '<div class="bd-sample bp-ads-sample"><div class="bd-sample-h">Billboard <em>The sample we drew for ' + B + '</em></div><img src="' + esc(BD.sample_ad) + '" alt="' + esc(NARR_NAME + ' enjoying ' + l.name + ', a sample ad') + '"></div>' : '');
+    }
+    function showPartnerTabs(){
+      var bt = document.querySelector('.tab-btn[data-tab="brand"]'); if(bt) bt.textContent = 'Getting Started';
+      ['opps', 'media', 'ask', 'ads'].forEach(function(t){ var b = document.querySelector('.tab-btn[data-tab="' + t + '"]'); if(b) b.style.display = ''; });
+      drawOpps(); drawMedia(); drawAsk(); drawAds(); loadMedia();
+      var t = new URLSearchParams(location.search).get('tab'); if(t && t !== 'overview') showListingTab(t);
+      root.addEventListener('click', function(e){
+        var el;
+        if((el = e.target.closest('[data-bd-goto]')) && !door.contains(el)){ showListingTab(el.getAttribute('data-bd-goto')); syncRail(); window.scrollTo(0, 0); return; }
+        if((el = e.target.closest('[data-bp-interest]'))){
+          var k = el.getAttribute('data-bp-interest'), on = !interests[k], o = OPPS.filter(function(x){ return x[0] === k; })[0];
+          if(PS.preview && !PS.real){ el.textContent = 'Works for ' + l.name + '\'s team'; return; }
+          el.disabled = true;
+          claimsCall({ action: 'partner_interest', listing_id: l.id, campaign: k, label: o ? o[2] : k, on: on }).then(function(d){ if(d && d.ok){ if(on) interests[k] = 1; else delete interests[k]; } drawOpps(); });
+          return;
+        }
+        if((el = e.target.closest('[data-bp-remove]'))){ if(!confirm('Remove this file?')) return; claimsCall({ action: 'media_remove', id: el.getAttribute('data-bp-remove') }).then(loadMedia); return; }
+        if((el = e.target.closest('[data-bp-q]'))){ ask(el.getAttribute('data-bp-q')); return; }
+      });
+      root.addEventListener('change', function(e){
+        if(e.target.id !== 'bp-file') return;
+        var n = e.target.files.length, lab = e.target.parentNode.querySelector('b');
+        if(lab) lab.textContent = !n ? 'Choose files' : n === 1 ? e.target.files[0].name : n + ' files chosen';
+      });
+      root.addEventListener('submit', function(e){
+        if(e.target.id === 'bp-upload'){ e.preventDefault(); uploadFiles([].slice.call(document.getElementById('bp-file').files)); }
+        if(e.target.id === 'bp-ask-form'){ e.preventDefault(); var q = document.getElementById('bp-q'); ask(q.value); }
+      });
+    }
+    if(PARTNER && door) showPartnerTabs();
     route();
+    syncRail();
+  });
+}
+// Is the signed-in visitor this brand's partner (ve-claims partner_status)? ?partner=preview shows the partner's view to
+// anyone, labelled; its buttons work only for a real partner or a super admin.
+function partnerStatus(l){
+  if(!l._door) return Promise.resolve({ partner: false });
+  var q = new URLSearchParams(location.search).get('partner');
+  var signed = !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn());
+  var real = signed ? fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+    body: JSON.stringify({ action: 'partner_status', listing_id: l.id }) }).then(function(r){ return r.json(); }).catch(function(){ return {}; }) : Promise.resolve({});
+  return real.then(function(d){
+    d = d || {};
+    if(q === 'preview') return { partner: true, preview: true, real: !!d.partner, confirmed: !!d.confirmed, interests: d.interests || [] };
+    // A super admin sees the offer as a brand would; ?partner=preview shows them the partner's home.
+    return { partner: !!d.partner && !d.admin, real: !!d.partner, confirmed: !!d.confirmed, interests: d.interests || [], plan: d.plan || null };
   });
 }
 
@@ -2278,7 +2512,12 @@ function renderListing(l){
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
           (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button>' : '')+
-          (l._door ? '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">For '+esc(l.name)+'</button>' : '')+
+          (l._door ? '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">For '+esc(l.name)+'</button>' +
+            // The partner's tabs (Sean, 2026-10-09), shown once loadBrandSite knows the visitor is the brand's partner.
+            '<button class="tab-btn" data-tab="opps" role="tab" aria-selected="false" style="display:none">Opportunities</button>' +
+            '<button class="tab-btn" data-tab="media" role="tab" aria-selected="false" style="display:none">Media</button>' +
+            '<button class="tab-btn" data-tab="ask" role="tab" aria-selected="false" style="display:none">Ask Maya</button>' +
+            '<button class="tab-btn" data-tab="ads" role="tab" aria-selected="false" style="display:none">Ad console</button>' : '')+
           '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
           (l._brandSite ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
@@ -2292,7 +2531,8 @@ function renderListing(l){
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
         (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' +
-          (l._door ? '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="bsite-door"><div class="aisle-empty">Loading...</div></div></div>' : '') : '')+
+          (l._door ? '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="bsite-door"><div class="aisle-empty">Loading...</div></div></div>' +
+            ['opps', 'media', 'ask', 'ads'].map(function(t){ return '<div class="tab-panel" id="tab-' + t + '" role="tabpanel"><div class="bsite-pad" id="bp-' + t + '"></div></div>'; }).join('') : '') : '')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video', l)+'</div>' : '')+

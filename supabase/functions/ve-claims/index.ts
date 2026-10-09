@@ -21,6 +21,14 @@
 //   POST { action: 'commit_year', listing_id }  four quarters for the price of three, offered at renewal
 //   POST { action: 'results', id } / { action: 'results_list', listing_id }  quarterly results sheets
 //   POST { action: 'brand_stats', listing_id, days? }  -> { stats, plan, admin }  what visitors did on the listing
+// Brand Partner home (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). A partner is the
+// member who holds the listing's live brand membership (trialing counts: Front Row Start), its owner, or a super admin.
+//   POST { action: 'partner_status', listing_id }                 -> { partner, confirmed, plan, interests, admin }
+//   POST { action: 'partner_interest', listing_id, campaign, label, on }  a campaign they want in on (ve_initiative_interest)
+//   POST { action: 'media_upload_url', listing_id, file_name, content_type, bytes, kind, note } -> { id, signed_url }
+//   POST { action: 'media_done', id }  /  { action: 'media_list', listing_id }  /  { action: 'media_remove', id }
+//   POST { action: 'partner_ask', listing_id, message }  a question Maya has no saved answer for, sent to the account
+//     manager (listings.details.brand_door.account_manager_email, else Sean), Reply-To the partner
 //     (ve_listing_stats: views, products opened, stores' Vegan aisles opened, videos played) for its owner or a super admin
 // Public (no sign-in):
 //   POST { action: 'offer', listing_id? }  -> { hub, founding: { open, full, cap, taken }, extra }
@@ -194,6 +202,35 @@ async function mail(subject: string, html: string, replyTo?: string) {
     });
   } catch (e) { console.error('claim email failed', e); }
 }
+
+// ---- Brand Partner home helpers.
+// The partner's relation to a listing: the holder of its live brand membership, its owner, or a super admin.
+async function partnerOf(listingId: string, member: any) {
+  if (!/^[0-9a-f-]{36}$/.test(listingId)) return null;
+  const { data: listing } = await db.from('listings').select('id, name, slug, owner_member_id, claimed_by_member_id, claim_status, details').eq('id', listingId).maybeSingle();
+  if (!listing) return null;
+  const v = await liveMembership(listingId);
+  const holds = !!v && v.tier === 'brand' && v.member_id === member.id;
+  const owner = listing.owner_member_id === member.id || listing.claimed_by_member_id === member.id;
+  if (!holds && !owner && !member.is_superadmin) return null;
+  return { listing, membership: v && v.tier === 'brand' ? v : null, holds, owner, admin: !!member.is_superadmin && !holds && !owner };
+}
+// Who answers for this brand: its account manager, else Sean.
+function accountManager(listing: any): string {
+  const e = String(listing?.details?.brand_door?.account_manager_email || '');
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e) ? e : SEAN_EMAIL;
+}
+async function mailTo(to: string[], subject: string, html: string, replyTo?: string) {
+  if (!RESEND_KEY) return false;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [...new Set(to)], subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }),
+    });
+    return r.ok;
+  } catch (e) { console.error('partner email failed', e); return false; }
+}
+const MEDIA_KINDS = ['logo', 'product_photo', 'graphic', 'video', 'other'];
 
 // ---- VE Verified helpers.
 async function stripe(test: boolean, path: string, form?: URLSearchParams, method = form ? 'POST' : 'GET') {
@@ -465,6 +502,8 @@ Deno.serve(async (req) => {
     try {
       const r = await activateVerified(url.searchParams.get('verified_confirm')!);
       if (!r) return Response.redirect('https://vegansexplore.com/claim?verified=unpaid', 302);
+      // A Brand Partner goes straight home: its page, Getting Started, where Maya welcomes it to the front row.
+      if (r.row?.tier === 'brand') return Response.redirect(`https://vegansexplore.com/directory/${encodeURIComponent(r.listing?.slug || '')}?tab=brand&welcome=1`, 302);
       return Response.redirect(`https://vegansexplore.com/claim?listing=${encodeURIComponent(r.listing?.slug || '')}&verified=active`, 302);
     } catch (e) { console.error('verified confirm failed', e); return Response.redirect('https://vegansexplore.com/claim?verified=unpaid', 302); }
   }
@@ -512,6 +551,100 @@ Deno.serve(async (req) => {
       return json({ claim: data || null, verified, owner: !!l && l.owner_member_id === memberId });
     }
     return json({ claim: data || null, verified });
+  }
+
+  // ---- Brand Partner home (Sean, 2026-10-09).
+  if (body.action === 'partner_status') {
+    const pt = await partnerOf(String(body.listing_id || ''), member);
+    if (!pt) return json({ partner: false });
+    const v = pt.membership ? (pt.membership.status !== 'reserved' ? await syncFromStripe(pt.membership) : pt.membership) : null;
+    const { data: ints } = await db.from('ve_initiative_interest').select('initiative_slug').eq('member_id', memberId).contains('tags', ['brand-partner', pt.listing.slug]);
+    return json({ partner: true, admin: pt.admin, confirmed: pt.listing.claim_status === 'verified' && (pt.owner || pt.admin),
+      plan: v ? { status: v.status, renews_at: v.renews_at, cancel_at_period_end: v.cancel_at_period_end } : null,
+      interests: (ints || []).map((x: any) => x.initiative_slug) });
+  }
+  if (body.action === 'partner_interest') {
+    const pt = await partnerOf(String(body.listing_id || ''), member);
+    if (!pt) return json({ error: 'not_partner' }, 403);
+    const campaign = String(body.campaign || '').toLowerCase();
+    if (!/^[a-z0-9-]{3,80}$/.test(campaign)) return json({ error: 'bad_campaign' }, 400);
+    const label = plain(body.label, 120) || campaign;
+    const { data: had } = await db.from('ve_initiative_interest').select('id').eq('member_id', memberId).eq('initiative_slug', campaign).contains('tags', ['brand-partner', pt.listing.slug]).maybeSingle();
+    if (body.on === false) {
+      if (had) await db.from('ve_initiative_interest').delete().eq('id', had.id);
+      return json({ ok: true, on: false });
+    }
+    if (!had) {
+      await db.from('ve_initiative_interest').insert({ initiative_slug: campaign, member_id: memberId, action_type: 'sponsor_tier', tier_label: 'Brand Partner interest',
+        note: pt.listing.name + ': interested in ' + label, status: 'new', email: member.email, name: member.name, tags: ['brand-partner', pt.listing.slug], source: 'form' });
+      await mailTo([accountManager(pt.listing), SEAN_EMAIL], `${pt.listing.name} wants in: ${label}`,
+        `<p><b>${esc(pt.listing.name)}</b> marked interest in <b>${esc(label)}</b> from their Opportunities tab.</p><p>${esc(member.name || '')} &middot; ${esc(member.email || '')}</p>` +
+        `<p>Reply to this email to reach them. It is on <a href="https://vegansexplore.com/dashboard/leads">/dashboard/leads</a> under ${esc(campaign)}.</p>`, member.email || undefined);
+    }
+    return json({ ok: true, on: true });
+  }
+  if (body.action === 'media_upload_url') {
+    const pt = await partnerOf(String(body.listing_id || ''), member);
+    if (!pt) return json({ error: 'not_partner' }, 403);
+    const name = String(body.file_name || '').replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(-90) || 'file';
+    const type = String(body.content_type || '');
+    if (!/^(image\/(png|jpe?g|webp|gif|svg\+xml)|video\/(mp4|quicktime|webm)|application\/(pdf|zip))$/.test(type)) return json({ error: 'file_type' }, 400);
+    const bytes = Number(body.bytes) || 0;
+    if (bytes <= 0 || bytes > 524288000) return json({ error: 'file_size' }, 400);
+    const kind = MEDIA_KINDS.includes(String(body.kind)) ? String(body.kind) : (type.startsWith('video/') ? 'video' : 'other');
+    const path = `${pt.listing.slug}/${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}-${name}`;
+    const { data: row, error } = await db.from('ve_brand_media').insert({ listing_id: pt.listing.id, member_id: memberId, path, file_name: String(body.file_name || name).slice(0, 200),
+      content_type: type, bytes, kind, note: plain(body.note, 500) || null }).select('id').single();
+    if (error || !row) return json({ error: 'save_failed', message: error?.message }, 500);
+    const { data: up, error: upErr } = await db.storage.from('brand-partner-media').createSignedUploadUrl(path);
+    if (upErr || !up) return json({ error: 'upload_url_failed', message: upErr?.message }, 500);
+    return json({ id: row.id, signed_url: up.signedUrl });
+  }
+  if (body.action === 'media_done' || body.action === 'media_remove') {
+    const id = String(body.id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { data: m } = await db.from('ve_brand_media').select('*').eq('id', id).maybeSingle();
+    if (!m) return json({ error: 'not_found' }, 404);
+    const pt = await partnerOf(m.listing_id, member);
+    if (!pt) return json({ error: 'not_partner' }, 403);
+    if (body.action === 'media_remove') {
+      await db.storage.from('brand-partner-media').remove([m.path]);
+      await db.from('ve_brand_media').update({ status: 'removed', updated_at: new Date().toISOString() }).eq('id', id);
+      return json({ ok: true });
+    }
+    const folder = m.path.split('/').slice(0, -1).join('/'), file = m.path.split('/').pop();
+    const { data: found } = await db.storage.from('brand-partner-media').list(folder, { search: file });
+    if (!(found || []).some((f: any) => f.name === file)) return json({ error: 'not_uploaded' }, 409);
+    await db.from('ve_brand_media').update({ status: 'received', updated_at: new Date().toISOString() }).eq('id', id).eq('status', 'uploading');
+    await mailTo([accountManager(pt.listing)], `${pt.listing.name} sent media: ${m.file_name}`,
+      `<p><b>${esc(pt.listing.name)}</b> uploaded <b>${esc(m.file_name)}</b> (${esc(m.kind)}, ${Math.round((m.bytes || 0) / 1024)} KB)${m.note ? ': ' + esc(m.note) : ''}.</p>` +
+      `<p>It is on their page under Media: <a href="https://vegansexplore.com/directory/${encodeURIComponent(pt.listing.slug)}?tab=media">vegansexplore.com/directory/${esc(pt.listing.slug)}?tab=media</a></p>`, member.email || undefined);
+    return json({ ok: true });
+  }
+  if (body.action === 'media_list') {
+    const pt = await partnerOf(String(body.listing_id || ''), member);
+    if (!pt) return json({ error: 'not_partner' }, 403);
+    const { data: rows } = await db.from('ve_brand_media').select('id, path, file_name, content_type, bytes, kind, note, status, created_at').eq('listing_id', pt.listing.id).in('status', ['received', 'in_use']).order('created_at', { ascending: false }).limit(200);
+    const list = rows || [];
+    const { data: signed } = list.length ? await db.storage.from('brand-partner-media').createSignedUrls(list.map((r: any) => r.path), 3600) : { data: [] };
+    return json({ media: list.map((r: any, i: number) => ({ ...r, path: undefined, url: signed?.[i]?.signedUrl || null })) });
+  }
+  if (body.action === 'partner_ask') {
+    const pt = await partnerOf(String(body.listing_id || ''), member);
+    if (!pt) return json({ error: 'not_partner' }, 403);
+    const message = plain(body.message, 1000);
+    if (!message) return json({ error: 'message_required' }, 400);
+    const since = new Date(Date.now() - 864e5).toISOString();
+    const { count } = await db.from('guide_kb_questions').select('id', { count: 'exact', head: true }).eq('member_id', memberId).eq('outcome', 'sent_to_person').gte('created_at', since);
+    if ((count ?? 0) >= 10) return json({ error: 'daily_limit' }, 429);
+    const ok = await mailTo([accountManager(pt.listing)], `${pt.listing.name} asked Maya: ${message.slice(0, 60)}`,
+      `<p style="color:#666">A Brand Partner asked Maya on their page and there was no saved answer, so it came to you.</p>` +
+      `<blockquote style="margin:12px 0;padding:12px 16px;background:#f3faf5;border-left:4px solid #16a34a;font-size:16px">${esc(message)}</blockquote>` +
+      `<p><b>${esc(pt.listing.name)}</b> &middot; ${esc(member.name || '')} &middot; ${esc(member.email || '')}</p>` +
+      `<p style="color:#666">Reply to this email and it goes straight to them. If other brands will ask the same thing, send the answer to Logan and it becomes a saved answer.</p>`, member.email || undefined);
+    if (!ok) return json({ error: 'send_failed' }, 502);
+    await db.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: memberId, guide_slug: 'maya', question: message, outcome: 'sent_to_person' });
+    return json({ ok: true });
   }
 
   // A brand's dashboard: what visitors did on its listing. Its owner, or a super admin showing it to the brand.
@@ -573,7 +706,8 @@ Deno.serve(async (req) => {
       phone: plain(p.phone, 40), instagram: plain(p.instagram, 60).replace(/^@/, ''),
       vegan_status: STATUSES.includes(String(p.vegan_status)) ? String(p.vegan_status) : '',
     };
-    if (!proposed.vegan_status || !proposed.description) return json({ error: 'missing_details' }, 400);
+    // A product brand (Brand Partner) is not asked how Vegan it is or to describe itself: its page is built from our Guides.
+    if (tier !== 'brand' && (!proposed.vegan_status || !proposed.description)) return json({ error: 'missing_details' }, 400);
     const test = await isTestAccount(member.email);
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = { listing_id: id, member_id: memberId, status: 'awaiting_contribution', contact_name, contact_role: plain(body.contact_role, 120),
@@ -879,6 +1013,14 @@ Deno.serve(async (req) => {
       for (const k of ['tagline', 'description', 'website', 'phone', 'instagram', 'vegan_status']) if (p[k]) patch[k] = p[k];
       const { error } = await db.from('listings').update(patch).eq('id', claim.listing_id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      // A Brand Partner hears that its dashboard is open (Sean, 2026-10-09: "what happens to the Oatly rep once they sign up?").
+      if (claim.tier === 'brand' && claim.contact_email) {
+        const { data: bl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
+        await mailTo([claim.contact_email], `${bl?.name || 'Your brand'}: your page is confirmed`,
+          `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(bl?.name || 'your')}'s full dashboard is open: views, visitors, the products people open and the store aisles they look for you in.</p>` +
+          `<p>Your page is your home with us. Maya walks you through Getting Started, then Opportunities, Media and Ask Maya: <a href="https://vegansexplore.com/directory/${encodeURIComponent(bl?.slug || '')}?tab=brand">vegansexplore.com/directory/${esc(bl?.slug || '')}</a> (sign in with this email).</p>` +
+          `<p>Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
+      }
       // Anyone else waiting on the same listing is turned down, with the reason.
       await db.from('ve_listing_claims').update({ status: 'rejected', review_note: 'Another claim for this listing was approved.', reviewed_by: memberId, reviewed_at: now, updated_at: now })
         .eq('listing_id', claim.listing_id).neq('id', id).in('status', ['awaiting_contribution', 'submitted']);

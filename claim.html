@@ -142,7 +142,7 @@
         </div>
       </section>
 
-      <section class="card">
+      <section class="card" id="biz-details">
         <h2>About the business</h2>
         <label class="f" id="vs-l">How Vegan is it?</label>
         <div class="choice" role="radiogroup" aria-labelledby="vs-l">
@@ -250,6 +250,7 @@
       }
       function plan() { var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'claim'; }
       function syncPlan() {
+        if ($('biz-details')) $('biz-details').hidden = isBrand();
         var p = plan(), f = founding();
         $('amount-card').hidden = p !== 'claim';
         $('c-guarantee').hidden = p === 'claim';
@@ -352,15 +353,16 @@
         var vs = document.querySelector('input[name=vs]:checked');
         if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
-        if (!vs) return bad('Please choose how Vegan the business is.');
-        if (!$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
+        // A product brand skips these (Sean, 2026-10-09): its page is built from our Guides, so we only need who they are.
+        if (!isBrand() && !vs) return bad('Please choose how Vegan the business is.');
+        if (!isBrand() && !$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
         var p = plan();
         if (p === 'claim' && (!amount || amount < 11)) return bad('Please choose a contribution of $11 or more.', $('amt'));
         $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
         fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({
           action: 'start', listing_id: L.id, amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, tier: p === 'claim' ? undefined : p, offer: p === 'brand' && frontRow() ? 'front-row' : undefined, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
           contact_name: $('c-name').value, contact_role: $('c-role').value, contact_email: $('c-email').value, contact_phone: $('c-phone').value,
-          proposed: { vegan_status: vs.value, tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }
+          proposed: { vegan_status: vs ? vs.value : '', tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }
         }) }).then(function (r) { return r.json(); }).then(function (d) {
           if (d && d.url) { location.href = d.url; return; }
           if (d && d.reserved) { location.href = '/claim?listing=' + encodeURIComponent(L.slug) + '&verified=reserved'; return; }
