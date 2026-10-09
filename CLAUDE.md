@@ -377,16 +377,15 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   web experience for Oatly"): a brand with products in our Guides (a `listings.details` key in `VEProducts.SOURCES`,
   the same keys as `ve_guide_product_sources`) is one page, its Directory listing, with tabs Overview (about the brand
   from `details.about`, its products, where to find them), Products (the list, then one product: Products > Oatly
-  Milk, `?tab=products&product=<slug>&v=<version>`; Products again goes back to the list) and Gallery (Videos and
-  Images, filtered by product, `?tab=gallery&media=videos|images&about=<slug>`: the brand's YouTube videos from
-  `details.videos`, tagged with `product` when one is about a product, product photos, and creator content from
-  `details.creator_posts` once we make it). The Campaign, Video and Pulse tabs appear only once the brand partners
-  with us. The right column holds the open product's Nutrition Facts on top (Sean, 2026-10-08: "put the barcode back on
+  Milk, `?tab=products&product=<slug>&v=<version>`; Products again goes back to the list), and For <Brand> for the
+  brand alone (below). No Gallery tab (Sean, 2026-10-09: "all we have for products is a main page, products, and
+  then... a for Oatly page that only Oatly sees"; `details.videos` stays in the data). The Campaign, Video and Pulse
+  tabs appear only once the brand partners with us. The right column holds the open product's Nutrition Facts on top (Sean, 2026-10-08: "put the barcode back on
   the right-hand side and push the billboard down") and the billboard under them, pinned while the page scrolls. It
   wears our city art (South Florida for now). Code: `loadBrandSite` in `directory/listing.html`.
 - Brand Partner (Sean, 2026-10-08): "build these out for brands that we're actively pursuing... $111 a quarter just to
   have a seat at the table." Every product brand gets a basic page (Overview, Products). A **featured** page adds our city
-  art and the Gallery: a brand we are pursuing is granted it (`listings.details.brand_featured`, Oatly first), and a Brand
+  art: a brand we are pursuing is granted it (`listings.details.brand_featured`, Oatly first), and a Brand
   Partner keeps it. Brand Partner is `ve-claims` tier `brand`, $111 a quarter, the same quarterly Stripe subscription and
   claim path as Passport Stop and Anchor (no founding spots, no Passport results sheet). `/claim?listing=<slug>&plan=brand`
   offers it, and a Food Brands or Brands listing is offered only that plan. The tier checks were widened by
@@ -398,18 +397,23 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   points and giveaways; the live dashboard; everywhere their audience lives, the LESARUSS universe included; Brand
   Partner). The brand's Guide narrates in the right column (the billboard steps aside): Maya for the Dairy Guide
   (`VEProducts.GUIDES[..][2]`), her words on each slide (the slide's `say` in `loadBrandSite`, which must match the
-  recording) and a video per slide (`listings.details.brand_door.video`, `/public/brand-door/<slug>/slide-<n>.mp4`;
-  `brand_door.audio` is the voice-only fallback). Sean, 2026-10-08: "use Maya and personalize it for the brand. The part
-  where they say the name of the brand would be over b-roll." Each slide is Maya on camera saying a line every brand
-  shares (lip-synced once in Higgsfield, Wan 2.7 720p from her square art and her el-media voice,
-  `vegan-media/media/maya/brand-door/m-<n>.mp3`), then a voice-over over b-roll: stills of the brand's own page,
-  products, sample ad, our cities and our Guides. Only slides 1 and 9 name the brand, so a new brand needs two el-media
-  clips (`<slug>-vo-1`, `<slug>-vo-9`), its stills, and `scripts/brand-door/assemble_door.py` (ffmpeg); no new lip-sync.
-  A lip-sync take needs a line of about 3 seconds or more (shorter ones failed), and ve-off-lookup's `img` fetch caps at
-  about 3.5 MB, so a large take is shrunk first in Higgsfield's sandbox. `brand_door.sample_ad` is the sample ad (Sean, 2026-10-08: "show our characters
+  recording) and a clip per slide (`listings.details.brand_door.clips`, `[{video, poster}]`, in
+  `vegan-media/media/brand-door/<slug>/`; `brand_door.audio` is the voice-only fallback). Round 2 (Sean, 2026-10-09):
+  no b-roll for now ("strip the B-roll for now so we can be strategic with it... less than 10 second clip of her talking,
+  I'm okay with that"), so each slide is Maya alone on camera, under 10 seconds, each from a different pose (her start
+  pictures are made in Higgsfield from her square art, mid shot, hands drawn right), and the poster is the clip's first
+  frame, with a small shift as the slide changes so she reads as moving. She just starts talking: opening the tab and
+  every Next or Back plays the slide unless the visitor paused her (a browser that blocks sound waits for a tap). Nothing
+  in the tour links away (Sean: "let's keep it just here"). The dark panels wear our city at night, faintly
+  (`vegan-media/media/communities/south-florida-night.jpg`). Lines 2 to 8 are shared by every brand
+  (`vegan-media/media/maya/brand-door/s-<n>.mp3`); slides 1 and 9 name the brand (`<slug>-s-1`, `<slug>-s-9`), so a new
+  brand needs those two recorded and lip-synced. Making a clip: el-media tts, Wan 2.7 (720p, 1:1, `start_image` and
+  `audio_references`) in Higgsfield, trim at the end of speech with `scripts/brand-door/assemble_door.py` in Higgsfield's
+  sandbox, upload, then ve-off-lookup `save` (it now takes `brand-door/` video and `communities/` art). A lip-sync line
+  needs about 3 seconds or more (shorter ones failed). `brand_door.sample_ad` is the sample ad (Sean, 2026-10-08: "show our characters
   consuming their products in the ads just for their pages"); it shows only in the tour, never as a live ad. On a brand
   page's other tabs the billboard carries our own ad for its Guide (`houseAd`, `/go/ve-dairy-guide`). The Dashboard (`?door=dashboard`): views, visitors, products
-  opened, store aisles opened, videos played, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
+  opened and store aisles opened, by day and by source, from `ve-claims` `brand_stats` for the owner or a super
   admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
   (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
   videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
