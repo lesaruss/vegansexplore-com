@@ -445,6 +445,19 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   admin; everyone else sees the outline and Claim. Counts come from `ve_listing_events` through `ve_listing_track()`
   (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
   videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
+- **Partner Dashboard on every listing** (Sean, 2026-10-09: "instead of getting started, it should be a dashboard...
+  partner dashboard. And then underneath it is a sub menu"). One tab, `data-tab="brand"`, after Products on a brand page and
+  last elsewhere. Locked for visitors (`partnerLocked`): claim this page (a brand's claim carries Front Row Start before
+  January 1), or, for a business that is not listed, **Apply to be listed** (`/apply`, `ve-claims` `listing_apply`: any Vegan
+  business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
+  Application to be listed; approving lists it and makes the applicant its owner). A non-brand owner sees their numbers
+  (`loadPartnerHome`). A brand's partner gets the sub-menu (`.pd-subnav`, `PD_SUBS`): Getting started, **Insights** (the
+  numbers from `brand_stats` once the claim is approved, and Campaigns: clicks and each report within 7 days of an event,
+  empty until the first campaign), **Your products** (swap a product's or a version's photo and its description in their own
+  words; photos under 1000 px on the shorter side are refused in the page and again in `ve-claims` `product_update`, which
+  reads the size from the file; name, ingredients and the cited Nutrition Facts stay ours; every change is a row in
+  `ve_product_edits` with the value it replaced, migration `20261009_ve_product_edits.sql`), Opportunities, Media, Ask Maya,
+  Ad console (Coming). On a brand page, the For <Brand> offer still shows under Partner Dashboard to anyone on the brand's link.
 - **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
   signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
   `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in

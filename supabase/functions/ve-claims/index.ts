@@ -27,6 +27,10 @@
 //   POST { action: 'partner_interest', listing_id, campaign, label, on }  a campaign they want in on (ve_initiative_interest)
 //   POST { action: 'media_upload_url', listing_id, file_name, content_type, bytes, kind, note } -> { id, signed_url }
 //   POST { action: 'media_done', id }  /  { action: 'media_list', listing_id }  /  { action: 'media_remove', id }
+//   POST { action: 'product_photo_url', listing_id, product_id, file_name, content_type, bytes } -> { path, signed_url }
+//   POST { action: 'product_update', listing_id, product_id, variant_key?, image_path?, description? }  a partner swaps a
+//     product's (or a version's) photo or its description; photos under 1000 px on the short side are refused
+//   POST { action: 'listing_apply', business }  any Vegan business applies to be listed (Depot > Claims reviews it)
 //   POST { action: 'partner_ask', listing_id, message }  a question Maya has no saved answer for, sent to the account
 //     manager (listings.details.brand_door.account_manager_email, else Sean), Reply-To the partner
 //     (ve_listing_stats: views, products opened, stores' Vegan aisles opened, videos played) for its owner or a super admin
@@ -231,6 +235,33 @@ async function mailTo(to: string[], subject: string, html: string, replyTo?: str
   } catch (e) { console.error('partner email failed', e); return false; }
 }
 const MEDIA_KINDS = ['logo', 'product_photo', 'graphic', 'video', 'other'];
+// Product photos must be sharp (Sean, 2026-10-09: "if it's low quality it can give them a warning and let them know that
+// they have to upload a higher quality"): at least this many pixels on the shorter side.
+const PRODUCT_PHOTO_MIN = 1000;
+// Width and height from the file header: PNG, JPEG or WebP. null when it cannot tell.
+function imageSize(b: Uint8Array): { w: number; h: number } | null {
+  const u16 = (i: number) => (b[i] << 8) | b[i + 1], u32 = (i: number) => ((b[i] << 24) | (b[i + 1] << 16) | (b[i + 2] << 8) | b[i + 3]) >>> 0;
+  const le16 = (i: number) => b[i] | (b[i + 1] << 8), le24 = (i: number) => b[i] | (b[i + 1] << 8) | (b[i + 2] << 16);
+  if (b.length > 24 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return { w: u32(16), h: u32(20) };
+  if (b.length > 4 && b[0] === 0xff && b[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xff) { i++; continue; }
+      const m = b[i + 1];
+      if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { w: u16(i + 7), h: u16(i + 5) };
+      if (m === 0xd8 || m === 0x01 || (m >= 0xd0 && m <= 0xd7)) { i += 2; continue; }
+      i += 2 + u16(i + 2);
+    }
+    return null;
+  }
+  if (b.length > 30 && String.fromCharCode(...b.slice(0, 4)) === 'RIFF' && String.fromCharCode(...b.slice(8, 12)) === 'WEBP') {
+    const f = String.fromCharCode(...b.slice(12, 16));
+    if (f === 'VP8 ') return { w: le16(26) & 0x3fff, h: le16(28) & 0x3fff };
+    if (f === 'VP8L') { const x = b[21] | (b[22] << 8) | (b[23] << 16) | (b[24] << 24); return { w: (x & 0x3fff) + 1, h: ((x >> 14) & 0x3fff) + 1 }; }
+    if (f === 'VP8X') return { w: le24(24) + 1, h: le24(27) + 1 };
+  }
+  return null;
+}
 
 // ---- VE Verified helpers.
 async function stripe(test: boolean, path: string, form?: URLSearchParams, method = form ? 'POST' : 'GET') {
@@ -647,6 +678,94 @@ Deno.serve(async (req) => {
     return json({ ok: true });
   }
 
+  // A partner's products: swap the photo (or a version's) and the description in the brand's own words. The format stays
+  // ours: name, ingredients and the cited Nutrition Facts are not editable here.
+  if (body.action === 'product_photo_url' || body.action === 'product_update') {
+    const pt = await partnerOf(String(body.listing_id || ''), member);
+    if (!pt) return json({ error: 'not_partner' }, 403);
+    const pid = String(body.product_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(pid)) return json({ error: 'bad_product' }, 400);
+    const { data: prod } = await db.from('ve_products').select('id, slug, name, image_url, brand_says, variants, brand_listing_id').eq('id', pid).maybeSingle();
+    if (!prod || prod.brand_listing_id !== pt.listing.id) return json({ error: 'not_your_product' }, 403);
+    if (body.action === 'product_photo_url') {
+      const type = String(body.content_type || '');
+      const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' } as Record<string, string>)[type];
+      if (!ext) return json({ error: 'file_type' }, 400);
+      const bytes = Number(body.bytes) || 0;
+      if (bytes <= 0 || bytes > 15728640) return json({ error: 'file_size' }, 400);
+      const path = `media/products/${prod.slug}/partner-${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+      const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_url_failed', message: error?.message }, 500);
+      return json({ path, signed_url: up.signedUrl });
+    }
+    const vkey = body.variant_key ? String(body.variant_key) : null;
+    const variants = Array.isArray(prod.variants) ? prod.variants.slice() : [];
+    const vi = vkey ? variants.findIndex((v: any) => v && v.key === vkey) : -1;
+    if (vkey && vi < 0) return json({ error: 'bad_version' }, 400);
+    const edits: any[] = [], patch: Record<string, unknown> = {};
+    if (body.image_path) {
+      const path = String(body.image_path);
+      if (!path.startsWith(`media/products/${prod.slug}/partner-`) || path.includes('..')) return json({ error: 'bad_path' }, 400);
+      const { data: file, error } = await db.storage.from('vegan-media').download(path);
+      if (error || !file) return json({ error: 'not_uploaded' }, 409);
+      const size = imageSize(new Uint8Array(await file.arrayBuffer()));
+      if (!size || Math.min(size.w, size.h) < PRODUCT_PHOTO_MIN) {
+        await db.storage.from('vegan-media').remove([path]);
+        return json({ error: 'low_quality', width: size?.w ?? null, height: size?.h ?? null, min: PRODUCT_PHOTO_MIN }, 422);
+      }
+      const url = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/${path}`;
+      if (vkey) { edits.push({ field: 'image', old_value: variants[vi].image || null, new_value: url, meta: size }); variants[vi] = { ...variants[vi], image: url }; }
+      else { edits.push({ field: 'image', old_value: prod.image_url, new_value: url, meta: size }); patch.image_url = url; }
+    }
+    if (typeof body.description === 'string') {
+      const text = plain(body.description, 1000);
+      if (vkey) { if (text !== (variants[vi].description || '')) { edits.push({ field: 'description', old_value: variants[vi].description || null, new_value: text }); variants[vi] = { ...variants[vi], description: text }; } }
+      else if (text !== (prod.brand_says || '')) { edits.push({ field: 'description', old_value: prod.brand_says, new_value: text }); patch.brand_says = text || null; }
+    }
+    if (!edits.length) return json({ ok: true, changed: 0 });
+    if (vkey) patch.variants = variants;
+    patch.updated_at = new Date().toISOString();
+    const { error: upErr } = await db.from('ve_products').update(patch).eq('id', prod.id);
+    if (upErr) return json({ error: 'save_failed', message: upErr.message }, 500);
+    await db.from('ve_product_edits').insert(edits.map((e) => ({ product_id: prod.id, listing_id: pt.listing.id, member_id: memberId, variant_key: vkey, field: e.field, old_value: e.old_value, new_value: e.new_value, meta: e.meta || {} })));
+    await mailTo([accountManager(pt.listing)], `${pt.listing.name} updated ${prod.name}`,
+      `<p><b>${esc(pt.listing.name)}</b> changed ${edits.map((e) => e.field === 'image' ? 'the photo' : 'the description').join(' and ')} of <b>${esc(prod.name)}</b>${vkey ? ' (' + esc(String(variants[vi].name || vkey)) + ')' : ''}.</p>` +
+      `<p><a href="https://vegansexplore.com/directory/${encodeURIComponent(pt.listing.slug)}?tab=products&product=${encodeURIComponent(prod.slug)}">See it on the page</a>. The old version is kept in ve_product_edits if it needs undoing.</p>`, member.email || undefined);
+    return json({ ok: true, changed: edits.length, image_url: patch.image_url || (vkey && patch.variants ? variants[vi].image : undefined) });
+  }
+  // Any Vegan business, anywhere, applies to be listed (Sean, 2026-10-09: "any vegan business can apply to be part of the
+  // directory... and that then brings them into our whole ecosystem"). The listing is made unlisted (quarantined) with a
+  // claim waiting in Depot > Claims; approving it lists the business and makes the applicant its owner.
+  if (body.action === 'listing_apply') {
+    const b = body.business || {};
+    const name = plain(b.name, 120), category = plain(b.category, 60), city = plain(b.city, 80), state = plain(b.state, 40);
+    const description = plain(b.description, 2000), contact_name = plain(b.contact_name, 120), contact_email = plain(b.contact_email, 200).toLowerCase();
+    const vegan_status = STATUSES.includes(String(b.vegan_status)) ? String(b.vegan_status) : '';
+    if (!name || !category || !city || !description || !vegan_status) return json({ error: 'missing_details' }, 400);
+    if (!contact_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) return json({ error: 'missing_contact' }, 400);
+    const since = new Date(Date.now() - 864e5).toISOString();
+    const { count } = await db.from('ve_listing_claims').select('id', { count: 'exact', head: true }).eq('member_id', memberId).gte('created_at', since).contains('proposed', { application: true });
+    if ((count ?? 0) >= 3) return json({ error: 'daily_limit' }, 429);
+    const base = name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'business';
+    let slug = base;
+    for (let k = 2; k < 50; k++) { const { data: taken } = await db.from('listings').select('id').eq('slug', slug).maybeSingle(); if (!taken) break; slug = `${base}-${k}`; }
+    const initials = name.split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase() || 'VE';
+    const { data: listing, error } = await db.from('listings').insert({
+      name, slug, category, specialty: category, description, location: [city, state].filter(Boolean).join(', '), initials,
+      address_city: city, address_state: state || null, website: webUrl(b.website) || '', instagram: plain(b.instagram, 60).replace(/^@/, '') || null,
+      vegan_status, status: 'quarantined', tags: ['ve-application'], claim_status: 'pending', claim_submitted_at: new Date().toISOString(),
+      ve_contact_name: contact_name, ve_contact_email: contact_email,
+    }).select('id, slug').single();
+    if (error || !listing) return json({ error: 'save_failed', message: error?.message }, 500);
+    await db.from('ve_listing_claims').insert({ listing_id: listing.id, member_id: memberId, status: 'submitted', contact_name, contact_email,
+      contact_role: plain(b.contact_role, 120), contact_phone: plain(b.contact_phone, 40), contribution_cents: 0,
+      proposed: { application: true, vegan_status, description, website: webUrl(b.website), instagram: plain(b.instagram, 60).replace(/^@/, '') } });
+    await mailTo([SEAN_EMAIL], `New business wants to be listed: ${name}`,
+      `<p><b>${esc(name)}</b> (${esc(category)}, ${esc([city, state].filter(Boolean).join(', '))}) applied to be listed on Vegans Explore.</p><p>${esc(description)}</p>` +
+      `<p>${esc(contact_name)} &middot; ${esc(contact_email)}</p><p>Review it in <a href="https://vegansexplore.com/admin/depot/claims">Depot &gt; Claims</a>. Approving lists it and makes them the owner.</p>`, contact_email);
+    return json({ ok: true, slug: listing.slug });
+  }
+
   // A brand's dashboard: what visitors did on its listing. Its owner, or a super admin showing it to the brand.
   if (body.action === 'brand_stats') {
     const id = String(body.listing_id || '');
@@ -1011,6 +1130,8 @@ Deno.serve(async (req) => {
         ve_contact_name: claim.contact_name, ve_contact_email: claim.contact_email, ve_contact_phone: claim.contact_phone || null,
       };
       for (const k of ['tagline', 'description', 'website', 'phone', 'instagram', 'vegan_status']) if (p[k]) patch[k] = p[k];
+      // An application to be listed goes live when approved.
+      if (p.application) { patch.status = 'approved'; patch.tags = ['ve-application-approved']; }
       const { error } = await db.from('listings').update(patch).eq('id', claim.listing_id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       // A Brand Partner hears that its dashboard is open (Sean, 2026-10-09: "what happens to the Oatly rep once they sign up?").
