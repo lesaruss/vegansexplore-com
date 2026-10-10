@@ -8,8 +8,13 @@
 // Membership), and a poster's contact line is only returned to active members, because
 // rescues share phone numbers and addresses here.
 //
-// POST { action: 'list', community, q?, kind?, category?, status?: 'open'|'resolved'|'all', before? }
+// POST { action: 'list', community, lane?, q?, kind?, category?, status?: 'open'|'resolved'|'all', before? }
 //   -> { posts, viewer }                         public; token optional
+//
+// Sections (Sean, 2026-10-10): every city's Board has Requests & Offers, Jobs, Classifieds, Fosters
+// and Rescues beside the Daily Pulse. A lane is a set of kinds (LANES); in the new lanes the
+// category is the post's type (Hiring or Looking for work, For sale or Free...). Each lane opens
+// on a pinned "How it works" post (pinned, category 'guide'), shown as from Vegans Explore.
 // POST { action: 'get', id }                    -> { post, replies, viewer }   public
 // POST { action: 'create', community, kind, category, title, body, area?, contact? }  member
 // POST { action: 'reply', post_id, body }       member
@@ -60,7 +65,16 @@ const SEAN_EMAIL = 'contact@lesaruss.com';
 const COMMUNITIES = ['south-florida', 'central-florida', 'atlanta', 'dmv', 'new-york', 'philadelphia', 'los-angeles', 'london'];
 // Hub slug -> ve_partner_cities slug, where the two differ.
 const MANAGER_CITY: Record<string, string> = { 'central-florida': 'orlando-north-central-florida' };
-const KINDS = ['request', 'offer'];
+const LANES: Record<string, { kinds: string[]; categories: string[] }> = {
+  // Rescue and fostering have their own lanes now; the two old categories are still accepted here.
+  board: { kinds: ['request', 'offer'], categories: ['transport', 'food', 'services', 'volunteers', 'other', 'rescue', 'fostering'] },
+  jobs: { kinds: ['job'], categories: ['hiring', 'seeking'] },
+  classifieds: { kinds: ['classified'], categories: ['for_sale', 'free', 'wanted', 'trade'] },
+  fosters: { kinds: ['foster'], categories: ['foster_needed', 'foster_offered'] },
+  rescues: { kinds: ['rescue'], categories: ['rescue_urgent', 'rescue_needed', 'rescue_update'] },
+};
+const KINDS = Object.values(LANES).flatMap((l) => l.kinds);
+const LANE_OF: Record<string, string> = Object.fromEntries(Object.entries(LANES).flatMap(([lane, l]) => l.kinds.map((k) => [k, lane])));
 const NATIONAL = 'national';
 const TOPIC_SCOPES = [...COMMUNITIES, NATIONAL];
 // ve_partner_cities / ve_staff_invites slug -> hub slug (the reverse of MANAGER_CITY).
@@ -69,7 +83,6 @@ const SCOPE_NAME: Record<string, string> = {
   'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York',
   philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', national: 'National',
 };
-const CATEGORIES = ['rescue', 'transport', 'fostering', 'food', 'services', 'volunteers', 'other'];
 const REASONS = ['not_who_they_say', 'unsafe', 'scam', 'spam', 'harassment', 'other'];
 const REASON_LABEL: Record<string, string> = {
   not_who_they_say: 'Not who they say they are', unsafe: 'Unsafe for animals or people', scam: 'Scam or money request',
@@ -155,6 +168,8 @@ async function posterCards(ids: string[]) {
 // A topic is posted by the Daily Pulse, not by the person who approved it; their name shows on
 // the first reply instead.
 const PULSE_POSTER = { name: 'Daily Pulse', initials: 'DP', color: '#cfe8d0', avatar: null, pulse: true };
+// A pinned "How it works" post speaks for Vegans Explore, not for the account that holds it.
+const TEAM_POSTER = { name: 'Vegans Explore', initials: 'VE', color: '#cfe8d0', avatar: null, team: true };
 
 function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
   const topic = p.kind === 'topic';
@@ -162,7 +177,8 @@ function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
     id: p.id, community: p.community_slug, kind: p.kind, category: p.category, title: p.title, body: p.body, area: p.area,
     status: p.status, resolved_at: p.resolved_at, reply_count: p.reply_count, created_at: topic ? (p.published_at || p.created_at) : p.created_at,
     contact: viewer?.active ? p.contact : null, has_contact: !!p.contact,
-    mine: !topic && !!viewer && viewer.id === p.member_id, poster: topic ? PULSE_POSTER : (cards[p.member_id] || null),
+    pinned: !!p.pinned, mine: !topic && !p.pinned && !!viewer && viewer.id === p.member_id,
+    poster: topic ? PULSE_POSTER : p.pinned ? TEAM_POSTER : (cards[p.member_id] || null),
     ...(topic ? { question: p.question, source_name: p.source_name, source_url: p.source_url, published_at: p.published_at, briefing: p.briefing || null } : {}),
   };
 }
@@ -291,16 +307,19 @@ Deno.serve(async (req) => {
         if (error) return json({ error: 'list_failed', message: error.message }, 500);
         return json({ posts: (data || []).map((p) => shapePost(p, {}, viewer)), more: (data || []).length === PAGE, viewer: viewerOut });
       }
+      const lane = LANES[body.lane] || LANES.board;
       let q = db.from('ve_board_posts')
-        .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at')
-        .eq('community_slug', community).in('kind', KINDS).order('created_at', { ascending: false }).limit(PAGE);
+        .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, pinned')
+        .eq('community_slug', community).in('kind', lane.kinds)
+        .order('pinned', { ascending: false }).order('created_at', { ascending: false }).limit(PAGE);
       const status = clean(body.status, 10) || 'open';
       if (status === 'open' || status === 'resolved') q = q.eq('status', status);
       else q = q.in('status', ['open', 'resolved']);
-      if (KINDS.includes(body.kind)) q = q.eq('kind', body.kind);
-      if (CATEGORIES.includes(body.category)) q = q.eq('category', body.category);
+      if (lane.kinds.includes(body.kind)) q = q.eq('kind', body.kind);
+      if (lane.categories.includes(body.category)) q = q.eq('category', body.category);
       const before = clean(body.before, 40);
-      if (before && !isNaN(Date.parse(before))) q = q.lt('created_at', before);
+      // The pinned post leads the first page only.
+      if (before && !isNaN(Date.parse(before))) q = q.lt('created_at', before).eq('pinned', false);
       const text = clean(body.q, 120);
       if (text) q = q.textSearch('search', text, { type: 'websearch', config: 'english' });
       const { data, error } = await q;
@@ -329,8 +348,8 @@ Deno.serve(async (req) => {
       const gate = needMember(viewer); if (gate) return gate;
       const community = clean(body.community, 40);
       if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
-      if (!KINDS.includes(body.kind)) return json({ error: 'bad_kind', message: 'Choose request or offer.' }, 400);
-      if (!CATEGORIES.includes(body.category)) return json({ error: 'bad_category', message: 'Choose a category.' }, 400);
+      if (!KINDS.includes(body.kind)) return json({ error: 'bad_kind', message: 'Choose what kind of post this is.' }, 400);
+      if (!LANES[LANE_OF[body.kind]].categories.includes(body.category)) return json({ error: 'bad_category', message: 'Choose a type for your post.' }, 400);
       const title = clean(body.title, 140), text = clean(body.body, 4000);
       if (title.length < 3) return json({ error: 'bad_title', message: 'Give your post a short title.' }, 400);
       if (!text) return json({ error: 'bad_body', message: 'Tell people what you need or what you can offer.' }, 400);
@@ -361,8 +380,8 @@ Deno.serve(async (req) => {
     case 'resolve': {
       if (!viewer) return json({ error: 'not_authenticated' }, 401);
       if (!isId(body.post_id)) return json({ error: 'bad_id' }, 400);
-      const { data: p } = await db.from('ve_board_posts').select('id, member_id, status, kind').eq('id', body.post_id).maybeSingle();
-      if (!p || p.status === 'hidden' || p.status === 'draft' || p.kind === 'topic') return json({ error: 'not_found' }, 404);
+      const { data: p } = await db.from('ve_board_posts').select('id, member_id, status, kind, pinned').eq('id', body.post_id).maybeSingle();
+      if (!p || p.status === 'hidden' || p.status === 'draft' || p.kind === 'topic' || p.pinned) return json({ error: 'not_found' }, 404);
       if (p.member_id !== viewer.id && !viewer.moderator) return json({ error: 'forbidden', message: 'Only the person who posted can mark it resolved.' }, 403);
       const reopen = body.reopen === true;
       const { error } = await db.from('ve_board_posts').update({
@@ -383,12 +402,12 @@ Deno.serve(async (req) => {
         const { data: parent } = await db.from('ve_board_posts').select('id, community_slug, title').eq('id', reply.post_id).maybeSingle();
         post = parent;
       } else if (isId(body.post_id)) {
-        const { data } = await db.from('ve_board_posts').select('id, community_slug, member_id, kind, title, body, report_count').eq('id', body.post_id).maybeSingle();
+        const { data } = await db.from('ve_board_posts').select('id, community_slug, member_id, kind, title, body, report_count, pinned').eq('id', body.post_id).maybeSingle();
         post = data;
       }
       if (!post) return json({ error: 'not_found' }, 404);
       // A topic is the Daily Pulse's post: a report on it is about the topic, not the person who approved it.
-      const reported = reply ? reply.member_id : (post.kind === 'topic' ? null : post.member_id);
+      const reported = reply ? reply.member_id : (post.kind === 'topic' || post.pinned ? null : post.member_id);
       if (reported && reported === viewer!.id) return json({ error: 'own_post', message: 'You cannot report your own post.' }, 400);
       if (await countSince('ve_board_reports', 'reporter_member_id', viewer!.id) >= LIMITS.report) return json({ error: 'rate_limited', message: 'You have sent a lot of reports today. The team is on it.' }, 429);
       const { error } = await db.from('ve_board_reports').insert({

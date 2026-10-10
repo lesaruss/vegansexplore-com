@@ -322,12 +322,31 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
   (`topic_post_id`) counts as done (migration `20261005_ve_news_leads_sponsor_only.sql`). HQ's Depot calls
   the same function, so its write-up needs a sponsor too.
 
+## Community Board sections (Sean, 2026-10-10)
+
+"In each city, let's set the sections... a jobs board... a classified... a Fosters Board, and then a
+Rescues Board... so as people start going into these cities, they actually see stuff." Every city's
+`/board` has six toggles: Daily Pulse, Requests & Offers, Jobs, Classifieds, Fosters, Rescues
+(`?lane=pulse|jobs|classifieds|fosters|rescues`, Requests & Offers is the default). A row of tabs on
+desktop, three by two on a phone.
+
+- Each section is a `ve_board_posts.kind` (`job`, `classified`, `foster`, `rescue`; Requests & Offers is
+  `request`/`offer`). In the new four the category is the post's type: Hiring / Looking for work; For
+  sale / Free / Wanted / Trade; Needs a foster / Can foster; Urgent / Needs a rescue / Update. The
+  lists live in `LANES` in both `ve-board` and `board.html`; change both together. Rescue and fostering
+  left Requests & Offers for their own boards (the old categories are still accepted).
+- Every section in every city opens on a pinned "How it works" post (`pinned`, category `guide`),
+  shown as from Vegans Explore, held by the `pulse_auto` account. A new city needs its five (migration
+  `20261010_ve_board_sections.sql` is idempotent: re-run its insert with the city added).
+- "Done" reads per section: Mark resolved, filled, gone, placed, rescued.
+- The local Daily Pulse runs for every city (`pulse_auto.communities`, same migration).
+
 ## Daily Pulse on autopilot (Sean, 2026-10-05)
 
 "Have it set up the day before. And then if I look at it, I look at it. If I don't, it goes out."
 At 6 PM Eastern (cron `ve-pulse-auto-queue`, 22:00 UTC) `ve_pulse_auto_queue()` queues tomorrow's draft
-for each community in the `pulse_auto` row of `lesaruss_dispatch_settings` (now `national` and
-`south-florida`; a city joins by adding its slug). The Background writer (dispatcher source
+for each community in the `pulse_auto` row of `lesaruss_dispatch_settings` (`national` and all eight
+cities since 2026-10-10; a city joins by adding its slug). The Background writer (dispatcher source
 `pulse_topic_write`, Station 2) builds the briefing and its first reply (`ve_board_posts.first_reply`,
 also `briefing.first_reply` so the desk shows it). Every 15 minutes `ve_pulse_auto_publish()` (cron
 `ve-pulse-auto-publish`) publishes what is due at 7:00 AM local (`auto_publish_at`) the way `ve-board`
