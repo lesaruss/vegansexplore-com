@@ -898,14 +898,18 @@ Deno.serve(async (req) => {
     if (!canShop(who, o)) return json({ error: 'not_yours' }, 403);
     if (o.shopper_status === 'reported') return json({ error: 'sent', message: 'This report was sent already.' }, 400);
     const r: any = o.shopper_report || {};
-    const put = async (next: any, status?: string) => {
-      const { error } = await db.from('ve_audit_orders').update({ shopper_report: next, ...(status ? { shopper_status: status } : {}) }).eq('id', o.id);
-      return error ? json({ error: 'save_failed', message: error.message }, 500) : null;
+    // Every change merges in one locked step (ve_audit_shopper_patch), so two saves at once never overwrite each other.
+    let after: any = null;
+    const put = async (patch: any, advance?: string, photoAdd?: any, photoRemove?: string) => {
+      const { data, error } = await db.rpc('ve_audit_shopper_patch', { p_order: o.id, p_patch: patch, p_advance: advance || null, p_photo_add: photoAdd || null, p_photo_remove: photoRemove || null });
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      if (!data) return json({ error: 'sent', message: 'This report was sent already.' }, 400);
+      after = data; return null;
     };
     if (action === 'shopper_schedule') {
       const d = clean(body.date, 10);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return json({ error: 'date', message: 'Pick a day.' }, 400);
-      const bad = await put({ ...r, scheduled_for: d, scheduled_by: who.member?.id || null }, (o.shopper_status || 'to_arrange') === 'to_arrange' ? 'scheduled' : undefined);
+      const bad = await put({ scheduled_for: d, scheduled_by: who.member?.id || null }, 'scheduled');
       return bad || json({ ok: true, scheduled_for: d });
     }
     if (action === 'shopper_save') {
@@ -919,9 +923,10 @@ Deno.serve(async (req) => {
         else if (k === 'spent') { const n = Math.round(+String(v ?? '').replace(/[$,]/g, '') * 100) / 100; data[k] = Number.isFinite(n) && v !== '' && v != null && n >= 0 && n < 10000 ? n : null; }
         else data[k] = clean(v, k === 'notes' || k === 'went_well' || k === 'to_fix' || k === 'answer' || k === 'ordered' ? 2000 : 200) || null;
       }
-      const next = { ...r, [sec]: data, updated_at: new Date().toISOString(), shopper_id: r.shopper_id || who.member?.id || null, shopper_name: r.shopper_name || who.member?.name || null };
-      const bad = await put(next, ['to_arrange', 'scheduled'].includes(o.shopper_status || 'to_arrange') && sec === 'visit' && data.date ? 'visited' : undefined);
-      return bad || json({ ok: true, missing: shopperMissing(next) });
+      const patch: any = { [sec]: data, updated_at: new Date().toISOString() };
+      if (!r.shopper_id && who.member) { patch.shopper_id = who.member.id; patch.shopper_name = who.member.name || null; }
+      const bad = await put(patch, sec === 'visit' && data.date ? 'visited' : undefined);
+      return bad || json({ ok: true, missing: shopperMissing(after) });
     }
     if (action === 'shopper_photo') {
       if (((r.photos || []) as any[]).length >= 12) return json({ error: 'full', message: 'Twelve photos is the most. Take one off to add another.' }, 400);
@@ -934,23 +939,22 @@ Deno.serve(async (req) => {
       const path = clean(body.path, 200);
       if (!path.startsWith(o.id + '/') || !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/.test(path)) return json({ error: 'path' }, 400);
       const kind = PHOTO_KINDS.includes(body.kind) ? body.kind : 'other';
-      const photos = ((r.photos || []) as any[]).filter((p) => p.path !== path).concat([{ path, kind, caption: clean(body.caption, 200) || null, at: new Date().toISOString() }]).slice(0, 12);
-      const bad = await put({ ...r, photos });
-      return bad || json({ ok: true, photos: await signedPhotos({ photos }) });
+      const bad = await put({}, undefined, { path, kind, caption: clean(body.caption, 200) || null, at: new Date().toISOString() });
+      return bad || json({ ok: true, photos: await signedPhotos(after) });
     }
     if (action === 'shopper_photo_remove') {
       const path = clean(body.path, 200);
-      const photos = ((r.photos || []) as any[]).filter((p) => p.path !== path);
-      if (photos.length === (r.photos || []).length) return json({ error: 'not_found' }, 404);
+      if (!((r.photos || []) as any[]).some((p) => p.path === path)) return json({ error: 'not_found' }, 404);
+      const bad = await put({}, undefined, undefined, path);
+      if (bad) return bad;
       await db.storage.from(SHOP_BUCKET).remove([path]);
-      const bad = await put({ ...r, photos });
-      return bad || json({ ok: true, photos: await signedPhotos({ photos }) });
+      return json({ ok: true, photos: await signedPhotos(after) });
     }
     // shopper_send
     const miss = shopperMissing(r);
     if (miss.length) return json({ error: 'missing', missing: miss, message: 'Before sending, add ' + miss.join(', ') + '.' }, 400);
     const now = new Date().toISOString();
-    const bad = await put({ ...r, sent_at: now, sent_by: who.member?.id || null }, 'reported');
+    const bad = await put({ sent_at: now, sent_by: who.member?.id || null }, 'reported');
     if (bad) return bad;
     const place = await shopperPlace(o), link = `${GUIDE_URL}#/audit/shopper/${o.id}`;
     const { data: owner } = await db.from('members').select('email, name').eq('id', o.member_id).maybeSingle();
