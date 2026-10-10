@@ -485,8 +485,9 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   (`photo_start`, `photo_done`, five a day, 15 MB cap), wait in **Depot > Cookbook > Made it photos** (`#photos`, `photo_queue`,
   `photo_review`), and show with the member's first name once approved (`recipe_photos`, migration `20261010_dairy_guide_v2.sql`).
   The truth (named See for yourself until 2026-10-10; Sean: "that's just the harsh reality that people don't want to see")
-  is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts). Maya's recorded line
-  on it still says See for yourself until Sean approves a new one.
+  is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts). Maya's line on it was
+  re-recorded the same day with Sean's approval ("The truth is how milk is really made...", `dg-look.mp4?v=3`, take 1 of 2,
+  cut at 6.6 s on a closed-lip smile).
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
   at the top right (`.dg-acts`). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
