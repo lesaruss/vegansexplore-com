@@ -81,7 +81,8 @@
   var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/maya/dairy-guide/';
   var CLIPS = {
     overview: { video: '/public/guides/maya-dairy-welcome.mp4?v=2', webm: '/public/guides/maya-dairy-welcome.webm?v=2', captions: '/public/guides/maya-dairy-welcome.vtt?v=2',
-      poster: '/public/guides/maya-dairy-welcome-poster.jpg?v=1' } // the clip opens on black; the poster is her first clear frame
+      // Her picture before the tour starts (Sean, 2026-10-10: "arms folded... you can see her teeth"), posed like the other tabs.
+      poster: CLIP_BASE + 'dg-poster-overview.jpg?v=1' }
   };
   // Recorded 2026-10-10 (Sean approved the lines): one pose per tab, from her round 5 Oatly start pictures.
   ['pulse', 'brands', 'swaps', 'cookbook', 'look', 'join'].forEach(function (k) {
@@ -90,6 +91,8 @@
   });
   // Get access on credits (Sean approved the line 2026-10-10), same pose as dg-join; the two long pauses in the voice
   // were shortened to fit one take (dg-join-c2.mp3).
+  // Cookbook re-recorded 2026-10-10 from its own pose (open cookbook, thumbs up); it had shared Swaps' pose.
+  CLIPS.cookbook = { video: CLIP_BASE + 'dg-cookbook.mp4?v=3', poster: CLIP_BASE + 'dg-poster-cookbook.jpg?v=3' };
   CLIPS.look = { video: CLIP_BASE + 'dg-look.mp4?v=3', poster: CLIP_BASE + 'dg-poster-look.jpg?v=3' }; // The truth, re-recorded 2026-10-10
   CLIPS.join_credit = { video: CLIP_BASE + 'dg-join-c.mp4?v=1', poster: CLIP_BASE + 'dg-poster-join-c.jpg?v=1' };
 
@@ -833,7 +836,7 @@
       '<div id="dgML"><div class="dg-loading">Loading your list...</div></div>';
     if (sec[1] === 'shared') { document.getElementById('dgML').innerHTML = '<div class="dg-tools"><a class="dg-btn" href="#/cookbook/new/1">Share a recipe</a></div><div id="dgMine"><div class="dg-loading">Loading your recipes...</div></div>'; drawMine('dgMine'); return; }
     var draw = function () {
-      var el = document.getElementById('dgML'); if (!el || curTab !== 'mylist') return;
+      var el = document.getElementById('dgML'); if (!el) return; // curTab is set after the view draws, so it is not checked here
       var keys = SV_ORDER.filter(function (x) { return x.kind === sec[2]; }).map(function (x) { return x.key; });
       var find = function (list, f) { return keys.map(function (k) { return (list || []).filter(function (x) { return f(x) === k; })[0]; }).filter(Boolean); };
       var html = '', items;
