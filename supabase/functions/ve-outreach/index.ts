@@ -67,7 +67,7 @@ const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/
 
 // ---- Email finder: only what a business publishes on its own website ----
 const SKIP_HOST = /(^|\.)(vegansexplore\.com|facebook\.com|instagram\.com|linktr\.ee|yelp\.com|google\.com|tiktok\.com)$/i;
-const BAD_EMAIL = /\.(png|jpe?g|gif|webp|svg|css|js)$|@(example|domain|email|sentry|wixpress|sentry-next|godaddy|squarespace|shopify)\.|^(no-?reply|donotreply|privacy|legal|abuse|webmaster|careers|jobs|hr)@/i;
+const BAD_EMAIL = /\.(png|jpe?g|gif|webp|svg|css|js)$|@(example|domain|email|mysite|yoursite|yourdomain|website|test|sentry|wixpress|sentry-next|godaddy|squarespace|shopify)\.|^(no-?reply|donotreply|privacy|legal|abuse|webmaster|careers|jobs|hr)@/i;
 const GOOD_LOCAL = ['owner', 'hello', 'info', 'contact', 'catering', 'events', 'hi', 'team', 'orders', 'eat', 'office'];
 
 function cfDecode(hex: string): string {
