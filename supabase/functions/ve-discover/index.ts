@@ -196,7 +196,12 @@ async function readInstagram(handles: string[]) {
 async function decideGoogle(row: any, l: any, ig: any) {
   const where = row.city_guess || l.address_city || l.location || (l.address_state === 'FL' ? 'Florida' : '') || '';
   const name = l.name && !/^@/.test(l.name) ? l.name : (ig?.name || l.name);
-  const p = placeSummary(await findPlace(name, where, l.website || ig?.link || '', l.address_state || (/south florida|miami|broward|palm beach/i.test(where) ? 'FL' : '')));
+  let p = placeSummary(await findPlace(name, where, l.website || ig?.link || '', l.address_state || (/south florida|miami|broward|palm beach/i.test(where) ? 'FL' : '')));
+  // Right state, wrong part of it ("Third Culture" from South Florida matched one in Titusville): when we know which of our
+  // cities it is in, Google's match has to be there too.
+  let elsewhere = '';
+  const wantComm = /south florida/i.test(where) ? 'south-florida' : (l.address_city || row.city_guess) ? await communityOf(l.address_city || row.city_guess, l.address_state || 'FL') : null;
+  if (p && wantComm && (await communityOf(p.city, p.state)) !== wantComm) { elsewhere = `${p.city}, ${p.state}`; p = null; }
   const handle = handleOf(l.ig_handle || l.instagram || '');
   const dup = await duplicateOf(l, p, handle);
   // Vegan only on strong signs: Google's Vegan restaurant category, or the business's own name or Instagram bio. Google's
@@ -206,6 +211,7 @@ async function decideGoogle(row: any, l: any, ig: any) {
   const isFood = (p?.types || []).some((t: string) => FOOD_TYPE_RE.test(t)) || FOOD_WORD_RE.test(`${ig?.category || ''} ${ig?.bio || ''} ${l.category || ''}`);
   let verdict: string, reason: string;
   if (dup) { verdict = 'listed'; reason = 'Already in the Directory'; }
+  else if (!p && elsewhere) { verdict = 'check'; reason = `Google's only match is in ${elsewhere}, not ${where}`; }
   else if (!p) { verdict = ig ? 'check' : 'gone'; reason = ig ? 'On Instagram, but we could not find it on Google' : `Google has no match for "${name}"${where ? ' in ' + where : ''}`; }
   else if (p.status === 'CLOSED_PERMANENTLY') { verdict = 'closed'; reason = 'Google shows it as permanently closed'; }
   else if (p.status === 'CLOSED_TEMPORARILY') { verdict = 'closed'; reason = 'Google shows it as temporarily closed'; }
