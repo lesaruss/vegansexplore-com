@@ -293,7 +293,9 @@ votes, saves) moves to the listing that stays; a second queued outreach for the 
 merged on 2026-10-10 (`20261010_listing_duplicates_merged.sql`): three public pairs (BunnieCakes, The Rabbit Hole and
 Soulicious Vegan Kitchen, whose "Community Partner" copies became an extra category) and 165 hidden import copies of a
 listed business. Branches in different cities are not duplicates. Hidden import copies can share a slug with the public
-listing, so look a listing up by slug and `status = 'approved'`.
+listing, so look a listing up by slug and `status = 'approved'`. An old link to a merged copy forwards to the listing that
+stays: `directory/listing.html` asks `ve_listing_merged_to(slug)` (migration `20261010_listing_merged_redirect.sql`)
+when a slug has no approved listing, keeping the address's tab and hash.
 
 ## City hubs: one page for every city (Sean, 2026-10-05)
 

@@ -3416,7 +3416,14 @@ if(!slug || slug === 'listing'){
       if(l.ve_business_id) renderInstagramContent(l.ve_business_id);
       });
     } else {
-      showNotFound();
+      // A merged duplicate's old link forwards to the listing that stays (Sean, 2026-10-10), keeping the tab
+      // and the rest of the address; anything else is not found.
+      fetch(SUPABASE_URL + '/rest/v1/rpc/ve_listing_merged_to', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: slug }) })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (to) {
+          if (typeof to === 'string' && to && to !== slug) location.replace('/directory/' + encodeURIComponent(to) + location.search + location.hash);
+          else showNotFound();
+        }, function () { showNotFound(); });
     }
   }).catch(function(){ showNotFound(); });
 }
