@@ -13,6 +13,16 @@
 // POST { action: 'queue' }                        super admin -> { pending, retesting, live, rejected }
 // POST { action: 'review', recipe_id, op: approve|reject|restore|retire, note? }  super admin
 //
+// Round 2 (Sean, 2026-10-10, migration 20261010_dairy_guide_v2.sql). With a guide, a "member" is someone who owns that
+// Guide (ve_owns_guide; credits pricing), not just any active member; a super admin always is.
+// POST { action: 'gvotes', guide }                anyone -> { counts: {swap:{key:n}, episode:{key:n}}, mine: {swap:[keys], ...} }
+// POST { action: 'gvote', guide, kind, key, on }  Guide member -> { ok, count }    kind swap | episode
+// POST { action: 'photos', recipe_id, guide }     Guide member -> { photos: [{url, name}], mine: [{url, status}] }
+// POST { action: 'photo_start', recipe_id, guide, type }  Guide member -> { photo_id, upload_url }   PUT the file there
+// POST { action: 'photo_done', photo_id }         the uploader -> { ok }   waits for Sean in Depot > Cookbook
+// POST { action: 'photo_queue' }                  super admin -> { photos: [...] }
+// POST { action: 'photo_review', photo_id, op: approve|reject }  super admin
+//
 // Authorization: Bearer <ve_token> (the VE app token, checked the way ve-votes and ve-board check it).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -24,7 +34,8 @@ const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
-const LIMITS = { submit: 5, report: 20 };
+const LIMITS = { submit: 5, report: 20, photo: 5 };
+const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const cors = {
@@ -100,7 +111,7 @@ async function countSince(table: string, col: string, id: string, extra?: (q: an
   return count || 0;
 }
 
-const FIELDS = 'id, slug, title, summary, time_text, servings, ingredients, instructions, tip, status, author_kind, author_member_id, author_guide, guide_tags, vote_count, report_count, live_at, submitted_at, review_note, created_at';
+const FIELDS = 'id, slug, title, summary, time_text, servings, ingredients, instructions, tip, status, author_kind, author_member_id, author_guide, guide_tags, vote_count, report_count, live_at, submitted_at, review_note, created_at, photo_url, photo_illustrative';
 async function shape(rows: any[]) {
   const ids = [...new Set(rows.map((r) => r.author_member_id).filter(Boolean))];
   const names: Record<string, string> = {};
@@ -113,6 +124,7 @@ async function shape(rows: any[]) {
     // Member recipes keep each ingredient as one line; older rows may carry amount and unit.
     ingredients: (Array.isArray(r.ingredients) ? r.ingredients : []).map((i: any) => typeof i === 'string' ? i : [i.amount, i.unit, i.name].filter(Boolean).join(' ')).filter(Boolean),
     steps: r.instructions || [], tip: r.tip, status: r.status, guides: r.guide_tags || [],
+    photo: r.photo_url || null, photo_illustrative: !!r.photo_illustrative,
     votes: r.vote_count || 0, reports: r.report_count || 0, live_at: r.live_at, submitted_at: r.submitted_at, review_note: r.review_note,
     author: r.author_kind === 'guide' ? { kind: 'guide', name: GUIDE_NAMES[r.author_guide] || 'Your Guide', guide: r.author_guide }
       : r.author_kind === 'member' ? { kind: 'member', name: names[r.author_member_id] || 'A member' }
@@ -126,9 +138,16 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const viewer = await loadViewer(req);
-  const needMember = () => !viewer ? json({ error: 'not_authenticated', message: 'Sign in to use the Cookbook.' }, 401)
-    : !viewer.active ? json({ error: 'payment_required', message: 'The Cookbook comes with the $11 Founding Membership, one time.' }, 402) : null;
   const guide = GUIDES[body.guide] ? String(body.guide) : null;
+  // Inside a Guide, the Cookbook is the Guide's: its owners (and super admins) are its members.
+  let owns = false;
+  if (viewer && guide) {
+    if (viewer.admin) owns = true;
+    else { const { data } = await db.rpc('ve_owns_guide', { p_member: viewer.id, p_guide: guide }); owns = !!data; }
+  }
+  const isMember = () => !!viewer && (guide ? owns : viewer.active);
+  const needMember = () => !viewer ? json({ error: 'not_authenticated', message: 'Sign in to use the Cookbook.' }, 401)
+    : !isMember() ? json({ error: 'payment_required', message: guide ? 'The Cookbook comes with ' + GUIDES[guide] + ': $11 or 1 Guide credit.' : 'The Cookbook comes with the $11 Founding Membership, one time.' }, 402) : null;
 
   switch (body.action) {
     case 'list': {
@@ -137,13 +156,101 @@ Deno.serve(async (req) => {
       const { data, error } = await q;
       if (error) return json({ error: 'list_failed', message: error.message }, 500);
       // Everyone else sees what is in the Cookbook, never the recipes themselves.
-      if (!viewer?.active) return json({ member: false, recipes: (data || []).map((r) => ({ title: r.title, author: { kind: r.author_kind } })) });
+      if (!isMember()) return json({ member: false, recipes: (data || []).map((r) => ({ title: r.title, author: { kind: r.author_kind } })) });
       const ids = (data || []).map((r) => r.id);
       const [{ data: v }, { data: rp }] = ids.length ? await Promise.all([
         db.from('recipe_votes').select('recipe_id').eq('member_id', viewer.id).in('recipe_id', ids),
         db.from('recipe_reports').select('recipe_id').eq('member_id', viewer.id).eq('status', 'open').in('recipe_id', ids),
       ]) : [{ data: [] }, { data: [] }];
       return json({ member: true, recipes: await shape(data || []), voted: (v || []).map((x) => x.recipe_id), reported: (rp || []).map((x) => x.recipe_id) });
+    }
+
+    // Votes on a Guide's swaps and episodes (recipes, brands and cookbooks have their own). Counts are for everyone.
+    case 'gvotes': {
+      if (!guide) return json({ error: 'guide_required' }, 400);
+      const { data, error } = await db.from('ve_guide_votes').select('kind, item_key, member_id').eq('guide_slug', guide).limit(20000);
+      if (error) return json({ error: 'votes_failed', message: error.message }, 500);
+      const counts: Record<string, Record<string, number>> = { swap: {}, episode: {} }, mine: Record<string, string[]> = { swap: [], episode: [] };
+      for (const v of data || []) {
+        counts[v.kind][v.item_key] = (counts[v.kind][v.item_key] || 0) + 1;
+        if (viewer && v.member_id === viewer.id) mine[v.kind].push(v.item_key);
+      }
+      return json({ counts, mine, member: isMember() });
+    }
+    case 'gvote': {
+      if (!guide) return json({ error: 'guide_required' }, 400);
+      const gate = needMember(); if (gate) return gate;
+      const kind = String(body.kind || ''), key = String(body.key || '').slice(0, 120);
+      if (!['swap', 'episode'].includes(kind) || !/^[a-z0-9-]{2,120}$/.test(key)) return json({ error: 'bad_request' }, 400);
+      const row = { guide_slug: guide, kind, item_key: key, member_id: viewer!.id };
+      if (body.on === false) await db.from('ve_guide_votes').delete().match(row);
+      else { const { error } = await db.from('ve_guide_votes').insert(row); if (error && error.code !== '23505') return json({ error: 'vote_failed', message: error.message }, 500); }
+      const { count } = await db.from('ve_guide_votes').select('member_id', { count: 'exact', head: true }).eq('guide_slug', guide).eq('kind', kind).eq('item_key', key);
+      return json({ ok: true, voted: body.on !== false, count: count || 0 });
+    }
+
+    // "Made it?" Members' photos of a recipe: photos only, no written reviews (Sean, 2026-10-10). Each one waits for Sean.
+    case 'photos': {
+      const gate = needMember(); if (gate) return gate;
+      if (!isId(body.recipe_id)) return json({ error: 'bad_id' }, 400);
+      const { data } = await db.from('recipe_photos').select('id, path, status, member_id, created_at').eq('recipe_id', body.recipe_id)
+        .or(`status.eq.live,member_id.eq.${viewer!.id}`).order('created_at', { ascending: false }).limit(60);
+      const ids = [...new Set((data || []).map((x) => x.member_id))];
+      const names: Record<string, string> = {};
+      if (ids.length) { const { data: m } = await db.from('members').select('id, name').in('id', ids); for (const x of m || []) names[x.id] = shortName(x.name); }
+      return json({
+        photos: (data || []).filter((x) => x.status === 'live').map((x) => ({ url: MEDIA + x.path, name: names[x.member_id] || 'A member' })),
+        mine: (data || []).filter((x) => x.member_id === viewer!.id && (x.status === 'pending' || x.status === 'rejected')).map((x) => ({ url: MEDIA + x.path, status: x.status })),
+      });
+    }
+    case 'photo_start': {
+      const gate = needMember(); if (gate) return gate;
+      if (!isId(body.recipe_id)) return json({ error: 'bad_id' }, 400);
+      const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' } as Record<string, string>)[String(body.type || '')];
+      if (!ext) return json({ error: 'type', message: 'Send a JPG, PNG or WebP photo.' }, 400);
+      const { data: r } = await db.from('recipes').select('id, status').eq('id', body.recipe_id).maybeSingle();
+      if (!r || !['live', 'retesting'].includes(r.status)) return json({ error: 'not_found' }, 404);
+      if (await countSince('recipe_photos', 'member_id', viewer!.id) >= LIMITS.photo) return json({ error: 'rate_limited', message: 'That is a lot of photos for one day. Send the rest tomorrow.' }, 429);
+      const path = `media/guides/dairy/made/${r.id}/${crypto.randomUUID()}.${ext}`;
+      const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_failed', message: error?.message }, 500);
+      const { data: row, error: e2 } = await db.from('recipe_photos').insert({ recipe_id: r.id, member_id: viewer!.id, path }).select('id').single();
+      if (e2) return json({ error: 'upload_failed', message: e2.message }, 500);
+      return json({ photo_id: row.id, upload_url: up.signedUrl });
+    }
+    case 'photo_done': {
+      if (!viewer) return json({ error: 'not_authenticated' }, 401);
+      if (!isId(body.photo_id)) return json({ error: 'bad_id' }, 400);
+      const { data: ph } = await db.from('recipe_photos').select('id, path, status, recipe_id, member_id').eq('id', body.photo_id).maybeSingle();
+      if (!ph || ph.member_id !== viewer.id) return json({ error: 'not_found' }, 404);
+      if (ph.status !== 'uploading') return json({ ok: true, status: ph.status });
+      const head = await fetch(MEDIA + ph.path, { method: 'HEAD' });
+      if (!head.ok) return json({ error: 'not_uploaded', message: 'The photo did not arrive. Try again.' }, 400);
+      if (Number(head.headers.get('content-length') || 0) > 15 * 1024 * 1024) return json({ error: 'too_big', message: 'That photo is over 15 MB. Send a smaller one.' }, 400);
+      await db.from('recipe_photos').update({ status: 'pending' }).eq('id', ph.id);
+      const { data: r } = await db.from('recipes').select('title').eq('id', ph.recipe_id).single();
+      await sendEmail([SEAN_EMAIL], `[Cookbook] New photo waiting: ${r?.title || 'a recipe'}`,
+        p(`${esc(viewer.name || 'A member')} shared a photo of <b>${esc(r?.title || 'a recipe')}</b> they made.`) +
+        p(`<img src="${MEDIA + ph.path}" alt="" style="max-width:320px;border-radius:8px">`) +
+        p(`<a href="${SITE}/admin/depot/cookbook#photos">Approve it in Depot &gt; Cookbook</a>.`));
+      return json({ ok: true, status: 'pending' });
+    }
+    case 'photo_queue': {
+      if (!viewer?.admin) return json({ error: 'forbidden' }, 403);
+      const { data } = await db.from('recipe_photos').select('id, path, status, recipe_id, member_id, created_at').in('status', ['pending', 'live', 'rejected']).order('created_at', { ascending: false }).limit(300);
+      const rids = [...new Set((data || []).map((x) => x.recipe_id))], mids = [...new Set((data || []).map((x) => x.member_id))];
+      const titles: Record<string, string> = {}, who: Record<string, string> = {};
+      if (rids.length) { const { data: rr } = await db.from('recipes').select('id, title, slug').in('id', rids); for (const x of rr || []) titles[x.id] = x.title; }
+      if (mids.length) { const { data: mm } = await db.from('members').select('id, name, email').in('id', mids); for (const x of mm || []) who[x.id] = `${x.name || ''} (${x.email || ''})`; }
+      return json({ photos: (data || []).map((x) => ({ id: x.id, url: MEDIA + x.path, status: x.status, recipe: titles[x.recipe_id] || '', member: who[x.member_id] || '', created_at: x.created_at })) });
+    }
+    case 'photo_review': {
+      if (!viewer?.admin) return json({ error: 'forbidden' }, 403);
+      if (!isId(body.photo_id) || !['approve', 'reject'].includes(body.op)) return json({ error: 'bad_request' }, 400);
+      const { error } = await db.from('recipe_photos').update({ status: body.op === 'approve' ? 'live' : 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: viewer.id })
+        .eq('id', body.photo_id).in('status', ['pending', 'live', 'rejected']);
+      if (error) return json({ error: 'review_failed', message: error.message }, 500);
+      return json({ ok: true, status: body.op === 'approve' ? 'live' : 'rejected' });
     }
 
     case 'submit': {

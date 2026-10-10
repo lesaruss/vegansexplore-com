@@ -444,7 +444,23 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   with Put it back or Take it down. My recipes (`#/cookbook/mine`) shows each with Waiting for approval, Live, Being
   retested, Needs a change (Send again) or Not live. Migration `20261010_ve_cookbook.sql`; the 45 "Make Your Own by Javant"
   recipes in the same table stay `private` until he says yes (Phase 2: christened chefs; Phase 3: ambassador links and
-  co-created Guides). Not built yet: chef profiles, comments on recipes, recipe photos.
+  co-created Guides). Not built yet: chef profiles, comments on recipes.
+- **Dairy Guide v2** (Sean, 2026-10-10: "ready because we can literally push this out to get people to log in"). Members of a
+  Guide are the people who own it (`ve_owns_guide(member, guide)`: a `ve_guide_purchases` row; admins always), and the Cookbook
+  inside it is for them (`ve-cookbook` with `guide`). Everything is votable by them: recipes (their own votes), swaps and episodes
+  (`ve_guide_votes`, kind `swap`|`episode`, `ve-cookbook` `gvotes`/`gvote`), brands and cookbooks (the Directory's votes); each list
+  sorts by votes. A picture sits left of every item, a square with rounded corners (`thumb()`): recipes from `recipes.photo_url`,
+  swaps from `SWAP_IMG` (their own picture, else the matching homemade recipe's), cookbooks from their Directory listing's
+  `logo_url` (the cover, copied into `vegan-media/media/logos/books/`, so the Directory and the Guide show the same square).
+  Photorealistic pictures made in Higgsfield are marked `recipes.photo_illustrative` and captioned "Illustrative photo" until real
+  ones replace them; a missing one shows a leaf tile. No Guide badge on Maya's recipes (she is the only Guide in it). A recipe
+  shows its words on the left and its picture on the right, a **shopping list** (tick what you have, kept in the browser; dairy
+  items go to the Guide's brands, the rest to an Amazon search until affiliate links are set up; water, salt, sugar and oil have no
+  link), and **Made it?**: members upload photos only, no written reviews (Sean: "they might be negative"). Photos are shrunk in the
+  browser (1600 px JPEG, which drops location data), go to `vegan-media/media/guides/dairy/made/` through a signed upload
+  (`photo_start`, `photo_done`, five a day, 15 MB cap), wait in **Depot > Cookbook > Made it photos** (`#photos`, `photo_queue`,
+  `photo_review`), and show with the member's first name once approved (`recipe_photos`, migration `20261010_dairy_guide_v2.sql`).
+  See for yourself is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts).
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
