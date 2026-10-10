@@ -54,9 +54,18 @@
     .row small{display:block;color:var(--ve-text-75);}
     .row.head{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#fff;}
     .row .act{text-align:right;}
-    .rv{grid-template-columns:minmax(0,1.6fr) minmax(0,2.4fr) 120px;}
-    .rv select{width:100%;}
-    @media (max-width:760px){.row{grid-template-columns:1fr 1fr;}.row.head{display:none;}.rv{grid-template-columns:1fr;}}
+    .rvlist{max-height:none;}
+    .rvc{padding:14px 4px;border-bottom:1px solid var(--ve-border);font-size:13.5px;}
+    .rvh{display:flex;justify-content:space-between;gap:10px;align-items:center;}
+    .open{margin:6px 0 8px;color:var(--ve-text-75);font-style:italic;font-size:13px;}
+    .pick .lbl{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+    .chip,.hit{font:inherit;font-size:12.5px;text-align:left;padding:7px 11px;border:1px solid rgba(31,95,34,.35);border-radius:6px;background:#fff;cursor:pointer;}
+    .chip:hover,.hit:hover{background:var(--ve-green-light);}
+    .chip.skip{border-color:rgba(0,0,0,.2);color:#555;}
+    .find{font:inherit;font-size:13.5px;padding:9px 12px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;max-width:640px;}
+    .hits{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:6px;}
+    @media (max-width:760px){.row{grid-template-columns:1fr 1fr;}.row.head{display:none;}}
     .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);}
     .msg.err{color:#a61b1b;}
     .note{background:#FFF8EC;border:1px solid #F5D9A8;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;}
@@ -138,17 +147,11 @@
         }).join('') + (rows.length ? '' : '<p class="sub" style="padding:12px 4px">Nothing matches.</p>');
       }
 
-      // ---- Dropped files: read, match each to an episode by its name, then review ----
-      function norm(s) { return String(s || '').toLowerCase().replace(/\.(srt|txt)$/i, '').replace(/\b(e|ep|s\d+e)\d+\b/g, ' ').replace(/(pre-vegans|soflo vegans|vegans who lift|vegans explore)\s+podcast/g, ' ').replace(/turboscribe/g, ' ').replace(/[^a-z0-9]+/g, ' ').trim(); }
-      function words(s) { var w = {}; norm(s).split(' ').forEach(function (x) { if (x.length > 2) w[x] = 1; }); return w; }
-      function score(a, b) { var A = words(a), B = words(b), n = 0, ka = Object.keys(A), kb = Object.keys(B); ka.forEach(function (k) { if (B[k]) n++; }); return ka.length && kb.length ? (2 * n) / (ka.length + kb.length) : 0; }
-      function bestFor(name) {
-        var idm = name.match(/[A-Za-z0-9_-]{11}/g) || [];
-        var byId = EPS.filter(function (e) { return e.youtube_id && idm.indexOf(e.youtube_id) >= 0; })[0];
-        if (byId) return { ep: byId, s: 1 };
-        var best = null, s = 0; EPS.forEach(function (e) { var x = score(name, e.title); if (x > s) { s = x; best = e; } });
-        return { ep: s >= 0.35 ? best : null, s: s };
-      }
+      // ---- Dropped files: read, ask the server which episode each one is (show initials and number in the name, then the
+      // guest and words heard in the opening), then review with a search to pick any episode by hand ----
+      function plain(srt) { return String(srt).replace(/\r/g, '').split(/\n\s*\n/).map(function (b) { var l = b.trim().split('\n'), i = l.findIndex(function (x) { return x.indexOf('-->') >= 0; }); return i < 0 ? '' : l.slice(i + 1).join(' '); }).join(' ').replace(/\s+/g, ' ').trim(); }
+      function byId(id) { return EPS.filter(function (e) { return e.id === id; })[0]; }
+      function label(e) { return e.podcast_show.replace(' Podcast', '') + ': ' + e.title.replace(/\s*\|\s*(SoFlo Vegans|Vegans Who Lift|Pre-Vegans|Vegans Explore) Podcast\s*$/i, ''); }
       function readFiles(list) {
         var files = Array.prototype.slice.call(list || []); if (!files.length) return;
         $('d-msg').className = 'msg'; $('d-msg').textContent = 'Reading ' + files.length + (files.length === 1 ? ' file...' : ' files...');
@@ -164,22 +167,50 @@
         })).then(function () {
           out = out.filter(function (x) { return /-->/.test(x.text); });
           if (!out.length) { $('d-msg').className = 'msg err'; $('d-msg').textContent = 'No SRT transcripts in those files. Export them from TurboScribe as SRT.'; return; }
-          PENDING = out.map(function (x) { var b = bestFor(x.name); return { name: x.name, text: x.text, ep: b.ep ? b.ep.id : '', s: b.s }; })
-            .sort(function (a, b) { return a.s - b.s; });
-          location.hash = 'review';
+          $('d-msg').textContent = 'Listening to the openings to find each episode...';
+          out.forEach(function (x) { x.plain = plain(x.text); });
+          var chunks = []; for (var i = 0; i < out.length; i += 10) chunks.push(out.slice(i, i + 10));
+          return Promise.all(chunks.map(function (c) { return api({ action: 'match', files: c.map(function (x) { return { name: x.name, head: x.plain.slice(0, 30000) }; }) }); })).then(function (rs) {
+            var res = []; rs.forEach(function (r) { res = res.concat((r && r.files) || []); });
+            PENDING = out.map(function (x, i) {
+              var c = ((res[i] || {}).candidates || []).filter(function (k) { return byId(k.id); }), top = c[0] || { id: '', score: 0 };
+              return { name: x.name, text: x.text, open: x.plain.split(' ').slice(0, 45).join(' '), cands: c, ep: top.score >= 0.35 ? top.id : '', s: top.score };
+            }).sort(function (a, b) { return a.s - b.s; });
+            location.hash = 'review';
+          });
         }).catch(function () { $('d-msg').className = 'msg err'; $('d-msg').textContent = 'Those files could not be read.'; });
       }
+      function tagFor(p) { return !p.ep ? '<span class="tag bad">Skip</span>' : p.picked ? '<span class="tag on">You picked</span>' : p.s >= 0.6 ? '<span class="tag on">Good match</span>' : '<span class="tag wait">Check this</span>'; }
       function viewReview() {
         if (!PENDING.length) { location.hash = ''; return; }
         crumbs([['Content index', '#'], ['Check and save']]);
-        var opts = EPS.slice().sort(function (a, b) { return (a.podcast_show + a.title).localeCompare(b.podcast_show + b.title); });
-        V().innerHTML = '<p class="sub">Each file is matched to an episode by its name. The ones to check are at the top. Change any that are wrong, or set it to Skip.</p>' +
-          '<section class="card"><div class="list"><div class="row rv head"><div>File</div><div>Episode</div><div>Match</div></div>' + PENDING.map(function (p, i) {
-            var tag = !p.ep ? '<span class="tag bad">No match</span>' : p.s >= 0.6 ? '<span class="tag on">Good match</span>' : '<span class="tag wait">Check this</span>';
-            return '<div class="row rv"><div><strong>' + esc(p.name) + '</strong></div><div><select data-i="' + i + '" aria-label="Episode for ' + esc(p.name) + '"><option value="">Skip this file</option>' +
-              opts.map(function (e) { return '<option value="' + e.id + '"' + (e.id === p.ep ? ' selected' : '') + '>' + esc(e.podcast_show.replace(' Podcast', '') + ': ' + e.title) + (has(e) ? ' (has one)' : '') + '</option>'; }).join('') + '</select></div><div>' + tag + '</div></div>';
+        var good = PENDING.filter(function (p) { return p.ep && p.s >= 0.6; }).length;
+        V().innerHTML = '<p class="sub">Each file is matched by the show and number in its name, then by who is introduced in its opening. ' + good + ' of ' + PENDING.length +
+          ' are good matches; the ones to check are at the top. Tap a suggestion, or search for any episode.</p>' +
+          '<section class="card"><div class="list rvlist">' + PENDING.map(function (p, i) {
+            var e = byId(p.ep);
+            return '<div class="rvc" data-i="' + i + '"><div class="rvh"><strong>' + esc(p.name) + '</strong><span data-tag>' + tagFor(p) + '</span></div>' +
+              '<p class="open">&ldquo;' + esc(p.open) + '&hellip;&rdquo;</p>' +
+              '<div class="pick"><span class="lbl">Episode</span> <span data-cur>' + (e ? esc(label(e)) + (has(e) ? ' <small>(already has one, this replaces it)</small>' : '') : 'Skip this file') + '</span></div>' +
+              (p.cands.length ? '<div class="chips">' + p.cands.slice(0, 3).map(function (k) { var x = byId(k.id); return '<button type="button" class="chip" data-id="' + k.id + '">' + esc(label(x)) + '</button>'; }).join('') + '<button type="button" class="chip skip" data-id="">Skip</button></div>' : '') +
+              '<input type="search" class="find" placeholder="Search episodes: a guest, a topic, SFV 12" aria-label="Search episodes for ' + esc(p.name) + '"><div class="hits"></div></div>';
           }).join('') + '</div><div class="toolbar" style="margin-top:14px"><button type="button" class="btn" id="save">Save transcripts</button><a class="btn btn-ghost" href="#">Cancel</a><span class="msg" id="r-msg" role="status"></span></div></section>';
-        Array.prototype.forEach.call(V().querySelectorAll('select[data-i]'), function (s) { s.addEventListener('change', function () { PENDING[+s.dataset.i].ep = s.value; }); });
+        function setEp(box, id) {
+          var p = PENDING[+box.dataset.i], e = byId(id); p.ep = id; p.picked = true;
+          box.querySelector('[data-cur]').innerHTML = e ? esc(label(e)) + (has(e) ? ' <small>(already has one, this replaces it)</small>' : '') : 'Skip this file';
+          box.querySelector('[data-tag]').innerHTML = tagFor(p); box.querySelector('.hits').innerHTML = ''; box.querySelector('.find').value = '';
+        }
+        Array.prototype.forEach.call(V().querySelectorAll('.rvc'), function (box) {
+          Array.prototype.forEach.call(box.querySelectorAll('.chip'), function (c) { c.addEventListener('click', function () { setEp(box, c.dataset.id); }); });
+          var f = box.querySelector('.find'), hits = box.querySelector('.hits');
+          f.addEventListener('input', function () {
+            var q = f.value.toLowerCase().trim(); if (!q) { hits.innerHTML = ''; return; }
+            var terms = q.replace(/\bsfv\b/, 'soflo').replace(/\bvwl\b/, 'who lift').replace(/\bvep\b/, 'vegans explore').replace(/\bpv\b/, 'pre-vegans').split(/\s+/);
+            var m = EPS.filter(function (e) { var t = (e.podcast_show + ' ' + e.title).toLowerCase(); return terms.every(function (w) { return /^\d+$/.test(w) ? new RegExp('\\b(e|ep|ep |s\\d+e)0*' + w + '\\b').test(t) : t.indexOf(w) >= 0; }); }).slice(0, 8);
+            hits.innerHTML = m.length ? m.map(function (e) { return '<button type="button" class="hit" data-id="' + e.id + '">' + esc(label(e)) + '</button>'; }).join('') : '<p class="sub" style="margin:6px 2px">Nothing matches.</p>';
+            Array.prototype.forEach.call(hits.querySelectorAll('.hit'), function (h) { h.addEventListener('click', function () { setEp(box, h.dataset.id); }); });
+          });
+        });
         $('save').addEventListener('click', save);
       }
       function save() {
