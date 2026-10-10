@@ -313,6 +313,24 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   (weekdays 9 to 5 Eastern). While building it, `ve_listing_claims_tier_check` turned out to refuse tier `brand` (the Partner
   plan), so every Partner claim would have failed to save; widened the same day, before any claim was made.
 
+## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
+
+Ten years of our episodes and interviews searchable by topic with timestamps, so a Guide can play the exact moment: "dairy"
+returns every moment across every show, who said it, a quote, and a play button that starts at that second. Three steps:
+1. timestamped transcripts, 2. moments tagged by topic (the Background writer, like the Daily Pulse), 3. search and clips.
+
+- The episodes are `ve_pulse_content` rows with `podcast_show`: 278 on 2026-10-10 (Vegans Explore Podcast 169, SoFlo Vegans
+  59, Vegans Who Lift 31, Pre-Vegans 19); 223 have a `youtube_id`. 30 SoFlo episodes have an untimed `transcript`.
+- Step 1 (built 2026-10-10): `ve_content_transcripts` (one per episode: `segments` `[{s, e, t}]` in seconds, `text`, `source`
+  youtube | youtube_auto | turboscribe | manual; migration `20261010_ve_content_index.sql`) and the edge function
+  `ve-content-index` (admin token): `youtube` / `youtube_batch` read an episode's YouTube captions, `srt` saves an SRT file
+  (TurboScribe's timestamped export), `status` counts by show (`ve_content_index_status()`), `probe` shows what YouTube
+  returns to the server.
+- YouTube refuses our server: the watch page answers with Google's "unusual traffic" page (429) and the player API with
+  "Precondition check failed" (probed 2026-10-10). So server-side caption reading does not work; the transcripts come from
+  TurboScribe (Sean's account, $20 a month, takes YouTube links) as SRT files, or from YouTube's own API once the channel
+  owner authorizes it (needs the YouTube Data API on the Google Cloud project and a sign-in per channel; nothing is set up).
+
 ## Tracked links (Sean, 2026-10-04)
 
 Every link we send for a campaign (a one-on-one message, an email, a post, a flyer) is a tracked
