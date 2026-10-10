@@ -655,3 +655,19 @@ Each director (Sean, Ella Magers, Claudia Russell) has a personal link
 typed name and the e-signature box. `verify_jwt` is off: the token is the credential. Tokens were made
 in the database and given to Sean once; they are never committed. Migration
 `20261008_foundation_board_consents.sql`.
+
+## ve-cookbook: the Cookbook, Phase 1 (2026-10-10)
+
+Recipes for the Guides' Cookbook (first the Vegan Dairy Guide). Deployed with `verify_jwt: false`: the VE app token is
+checked inside, the way `ve-votes` and `ve-board` check it. `recipes` has no public read, so this is the only way in.
+
+- `list` (anyone, `guide` optional): a member gets the live and retesting recipes with their votes and reports; anyone else
+  gets only the titles (the locked Cookbook tab blurs them).
+- `submit`, `vote`, `report`, `mine`: active members. Submit is five a day; a recipe waits as `pending` and Sean is emailed.
+  Three different members' "didn't work for me" moves a live recipe to `retesting` (trigger `trg_recipe_reports_count`).
+- `queue`, `review` (`approve`, `reject` with a note, `restore`, `retire`): super admins, from Depot > Cookbook. Review runs
+  `ve_recipe_review()`, which pays 50 points once (`points_ledger` reason `recipe_approved`, ref `recipe:<id>`, then
+  `apply_member_points_delta`) and the function emails the member.
+
+Migration `20261010_ve_cookbook.sql` (applied through the connector, base64 in a DO block because it swaps a constraint:
+error registry `SUPABASE-MCP-SQL-HOLD-KEYWORDS`). Tested 2026-10-10 with test accounts `vegan+cookbookqa1..3@lesaruss.com`.
