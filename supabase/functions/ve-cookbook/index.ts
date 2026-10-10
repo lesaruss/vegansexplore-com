@@ -22,6 +22,8 @@
 // POST { action: 'photo_done', photo_id }         the uploader -> { ok }   waits for Sean in Depot > Cookbook
 // POST { action: 'photo_queue' }                  super admin -> { photos: [...] }
 // POST { action: 'photo_review', photo_id, op: approve|reject }  super admin
+// POST { action: 'saves', guide }                Guide member -> { saves: [{kind, key, at}] }   My list (ve_guide_saves)
+// POST { action: 'save', guide, kind, key, on }   Guide member -> { ok, saved }   kind swap | recipe | listing | episode
 //
 // Authorization: Bearer <ve_token> (the VE app token, checked the way ve-votes and ve-board check it).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -37,6 +39,7 @@ const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };
 const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const DAY_MS = 24 * 60 * 60 * 1000;
+const SAVE_KINDS = ['swap', 'recipe', 'listing', 'episode'], SAVE_CAP = 500;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -187,6 +190,29 @@ Deno.serve(async (req) => {
       else { const { error } = await db.from('ve_guide_votes').insert(row); if (error && error.code !== '23505') return json({ error: 'vote_failed', message: error.message }, 500); }
       const { count } = await db.from('ve_guide_votes').select('member_id', { count: 'exact', head: true }).eq('guide_slug', guide).eq('kind', kind).eq('item_key', key);
       return json({ ok: true, voted: body.on !== false, count: count || 0 });
+    }
+
+    // My list (Sean, 2026-10-10): a Guide owner saves swaps, recipes, Directory listings (brands, cookbooks) and episodes.
+    case 'saves': {
+      if (!guide) return json({ error: 'guide_required' }, 400);
+      const gate = needMember(); if (gate) return gate;
+      const { data, error } = await db.from('ve_guide_saves').select('kind, item_key, created_at').eq('guide_slug', guide).eq('member_id', viewer!.id)
+        .order('created_at', { ascending: false }).limit(SAVE_CAP);
+      if (error) return json({ error: 'saves_failed', message: error.message }, 500);
+      return json({ saves: (data || []).map((x) => ({ kind: x.kind, key: x.item_key, at: x.created_at })) });
+    }
+    case 'save': {
+      if (!guide) return json({ error: 'guide_required' }, 400);
+      const gate = needMember(); if (gate) return gate;
+      const kind = String(body.kind || ''), key = String(body.key || '').slice(0, 160);
+      if (!SAVE_KINDS.includes(kind) || !/^[a-z0-9_-]{2,160}$/.test(key)) return json({ error: 'bad_request' }, 400);
+      const row = { guide_slug: guide, kind, item_key: key, member_id: viewer!.id };
+      if (body.on === false) { await db.from('ve_guide_saves').delete().match(row); return json({ ok: true, saved: false }); }
+      const { count } = await db.from('ve_guide_saves').select('item_key', { count: 'exact', head: true }).eq('guide_slug', guide).eq('member_id', viewer!.id);
+      if ((count || 0) >= SAVE_CAP) return json({ error: 'full', message: 'Your list is full. Take something off to save this.' }, 400);
+      const { error } = await db.from('ve_guide_saves').insert(row);
+      if (error && error.code !== '23505') return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true, saved: true });
     }
 
     // "Made it?" Members' photos of a recipe: photos only, no written reviews (Sean, 2026-10-10). Each one waits for Sean.
