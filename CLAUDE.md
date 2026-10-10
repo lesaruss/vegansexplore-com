@@ -465,7 +465,8 @@ open to everyone: they are the enrollment tool.
 - The Dairy Guide page (`ST` in `guide-scripts/vegan-dairy-guide.js`) reads `access_rule`: signed out, Join for $11 (your
   first credit comes with it); not a Founding Member yet, Become a Founding Member; a credit, **Unlock with 1 credit**; none,
   **Get it now for $11**, Use 2,500 points for a credit (when they have them) and Passport. Maya's Get access line on credits
-  is `sayCredit`; its clip (`CLIPS.join_credit`, `dg-join-c.mp4`) waits for Sean's OK on the line. The Restaurant Survival
+  is `sayCredit`, played from `CLIPS.join_credit` (`dg-join-c.mp4`, Sean approved the line 2026-10-10; the voice's two long
+  pauses were shortened so it fits one take, `dg-join-c2.mp3`). The Restaurant Survival
   Guide's button (`vegan-restaurant-survival-guide-gate.js`) does the same. The catalog (`/guides`), `/passport`,
   `/welcome`, `/explore`, the homepage and the dashboard's Guide cards say $11 or 1 credit.
 - Guide chat spends points (`spend_points_for_chat`, reason `guide_chat_spend`); the monthly allowance rules are off.

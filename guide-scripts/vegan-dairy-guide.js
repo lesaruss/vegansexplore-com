@@ -69,7 +69,7 @@
     { k: 'cookbook', label: 'Cookbook', lock: 1, say: 'The Cookbook keeps growing: recipes you can make at home, and the dairy-free cookbooks people love most.' },
     { k: 'look', label: 'See for yourself', lock: 1, say: 'See for yourself is how milk is made, in plain facts. No graphic images. Open it when you\'re ready, or skip it.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Guide comes with the eleven dollar Founding Membership, one time. Already a member? Sign in and it opens. Come join us!',
-      // Once the Guide is priced in credits (canon-ve-guide-pricing v3), played from CLIPS.join_credit.
+      // On credits (canon-ve-guide-pricing v3), played from CLIPS.join_credit (Sean approved the line, 2026-10-10).
       sayCredit: 'Every Guide is eleven dollars, or one Guide credit. Join for eleven dollars and your first credit comes with it, so this Guide can be yours. Come join us!' }
   ];
   // Maya on camera. Overview is her welcome; every other tab gets a clip under 10 seconds (el-media voice, Wan 2.7,
@@ -84,8 +84,9 @@
     // ?v= changes when a clip is re-recorded, so no one is served the old one from cache (Brands, 2026-10-10: no counts).
     CLIPS[k] = { video: CLIP_BASE + 'dg-' + k + '.mp4?v=2', poster: CLIP_BASE + 'dg-poster-' + k + '.jpg?v=2' };
   });
-  // Get access once the Guide is priced in credits: CLIPS.join_credit, recorded once Sean approves sayCredit (same pose as
-  // dg-join). Until then the tab shows Maya's picture and her words: { video: CLIP_BASE + 'dg-join-c.mp4', poster: ... }.
+  // Get access on credits (Sean approved the line 2026-10-10), same pose as dg-join; the two long pauses in the voice
+  // were shortened to fit one take (dg-join-c2.mp3).
+  CLIPS.join_credit = { video: CLIP_BASE + 'dg-join-c.mp4?v=1', poster: CLIP_BASE + 'dg-poster-join-c.jpg?v=1' };
 
   var PANTRY = [
     ['Cashews', /cashew/i], ['Soy milk', /soy milk/i], ['Plant milk', /plant milk/i], ['Coconut milk or cream', /coconut (milk|cream)/i],
