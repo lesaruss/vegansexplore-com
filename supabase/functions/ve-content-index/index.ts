@@ -119,6 +119,21 @@ Deno.serve(async (req) => {
   if (!sec?.value || given !== sec.value) return json({ error: 'unauthorized' }, 401);
   const body = await req.json().catch(() => ({}));
   try {
+    // What YouTube returns to this server, for diagnosing blocks.
+    if (body.action === 'probe') {
+      const id = String(body.youtube_id || '');
+      const r = await fetch(`https://www.youtube.com/watch?v=${id}&hl=en&bpctr=9999999999`, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9', Cookie: 'CONSENT=YES+1; SOCS=CAI' } });
+      const html = await r.text();
+      const m = html.match(/ytInitialPlayerResponse\s*=\s*(\{.+?\});(?:var|<\/script>)/s);
+      let ps = null, nTracks = null;
+      if (m) { try { const p = JSON.parse(m[1]); ps = p?.playabilityStatus; nTracks = (p?.captions?.playerCaptionsTracklistRenderer?.captionTracks || []).length; } catch (e) { ps = 'parse: ' + String(e); } }
+      const pr = await fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', { method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': 'com.google.android.youtube/19.09.37 (Linux; U; Android 14) gzip' },
+        body: JSON.stringify({ videoId: id, context: { client: { clientName: 'ANDROID', clientVersion: '19.09.37', androidSdkVersion: 34, hl: 'en' } } }) });
+      const pt = await pr.text();
+      return json({ watch: { status: r.status, final_url: r.url, bytes: html.length, has_player: !!m, playability: ps, tracks: nTracks,
+        consent: /consent\.youtube|before you continue/i.test(html), bot: /confirm you.re not a bot|unusual traffic/i.test(html), title: (html.match(/<title>([^<]*)/) || [])[1] || null },
+        player: { status: pr.status, bytes: pt.length, head: pt.slice(0, 200) } });
+    }
     if (body.action === 'youtube') return json({ ok: true, ...(await youtube(String(body.content_id || ''))) });
     if (body.action === 'youtube_batch') {
       const limit = Math.max(1, Math.min(25, Number(body.limit) || 10));
