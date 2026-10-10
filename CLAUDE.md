@@ -555,7 +555,7 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   back up to her.
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
-  at the top right (`.dg-acts`). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
+  stacked at the top right (`.dg-acts`, one above the other so the words keep their room on a phone; Sean, 2026-10-10). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
   stay the Directory's own card, with Save added under + Vote. Picture style and placement follow the Directory card.
 - **My list** (Sean, 2026-10-10: "a tab or a drop down that says my list"): a Guide owner taps Save on any swap, recipe, brand,
   cookbook or episode, and it shows in the My list tab (members only, after The truth), one kind per view
