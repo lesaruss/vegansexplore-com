@@ -613,7 +613,7 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
 
 "We could give them a simple audit for free and then in the actual guide, we go a bit deeper... just like BCPSMarcomm...
 scans their page for a set of defined criteria. Look at Google Local, SEO, Web and social." It is the heart of the Restaurant
-Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy Guide playbook) and a hook for business outreach.
+Guide (`guides/vegan-restaurant-survival-guide.html`, see The Restaurant Guide below) and a hook for business outreach.
 
 - Criteria (`ve_audit_criteria`, migration `20261010_ve_restaurant_audit.sql`): 40 weighted checks in four areas (Google Local,
   SEO, Web, Social), each with a label, why, how to fix, the Guide chapter it links to (`chapter`, the step ids in the Guide)
@@ -626,8 +626,17 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy
   and how many more the full audit flags (`more_fix`). Never a score, the why or the how.
 - **The full audit is its own add-on** (Sean, 2026-10-10: "the full audit will have more items and cost more. I'm not settled
   on that cost. I don't want to just go with $111 or offer it as part of the LESARUSS.AI membership. It should be an add on.
-  It could also include a secret shopper experience"). Not part of the $11 Guide, the Partner plan or LESARUSS.AI. Its price
-  is open, so until it is sold only a super admin or ops can run one (`not_available_yet` for anyone else).
+  It could also include a secret shopper experience"). Not part of the $11 Guide, the Partner plan or LESARUSS.AI. **Priced
+  the same day** (Sean: "Go with $49 and $149"): **$49** the full audit, with a re-check 90 days later; **$149** the same plus a
+  **Secret Shopper** visit (our cities only: the city's Community Manager, else Sean, is emailed the visit to arrange; meal
+  covered up to $40; the owner never knows the day). Either one counts toward managed services if they sign up within 30 days.
+  It costs us about 3 to 7 cents a run in data (Google Places at list price, PageSpeed free, Instagram about a quarter cent).
+  Bought in the Guide's Your audit tab by anyone signed in, Guide or not: `ve-restaurant-audit` `checkout` (Stripe; test
+  accounts on the test key) -> GET `?confirm=` (also called by ve-stripe-webhook: metadata type `ve_audit_purchase`,
+  `confirm_fn` `ve-restaurant-audit`) marks the `ve_audit_orders` row paid, starts the full audit (`ve_audits.order_id`),
+  emails the owner and the team, and returns to the Guide on the audit (`?audit=paid#/audit/r/<id>`). The 90-day re-check runs
+  in `sweep` (three a night) and emails the owner. Migration `20261010_ve_audit_orders.sql`. Proven end to end on 2026-10-10
+  with the test card (an order for Sobe Vegan by the QA account, `test` true). The team's free `full` stays for prospects.
 - `ve-restaurant-audit` (verify_jwt off, VE token checked inside): `find` (Directory search), `criteria`, `free` (anyone;
   5 a day per visitor; a business checked in the last 7 days reuses that run, any tier), `full` (a super admin or ops), `get`
   (the full detail only for the audit's member, a super admin or ops; anyone else gets the free list), `sweep`, `flags`,
@@ -664,9 +673,27 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy
   the price because we leverage AI to build and maintain their presence... when they see the results, they will opt in
   quickly, especially with it tied to our network and promotions. This will allow us to pay for multiple Community Managers in
   each city with their fee coming directly from our clients." The audit is the front door to that service.
-- Next: the Guide's Your audit tab (live site left, items right, as BCPS does), "Have us do it" on every Fix (a quote request
-  to the city's Community Manager until Sean sets prices), the monthly re-check, and the free check in the outreach emails
-  (an upgrade to the offer, not a change to the plan).
+- Next: "Have us do it" on every Fix (a quote request to the city's Community Manager until Sean sets service prices), the
+  Secret Shopper report form for the Community Manager (today it is arranged by email, `shopper_status` to_arrange), and the free
+  check in the outreach emails (an upgrade to the offer, not a change to the plan).
+
+## The Restaurant Guide (rebuilt 2026-10-10 on the Dairy Guide playbook)
+
+`guides/vegan-restaurant-survival-guide.html` and `guide-scripts/vegan-restaurant-survival-guide.js` (the old 10-step page and
+its gate script are gone). Liz is the Guide, on the right of every tab, one lip-synced clip per tab for visitors (`CLIPS`,
+`rg-<tab>.mp4`) and members (`CLIPS_M`, `rg-m-<tab>.mp4`) in `vegan-media/media/liz/restaurant-guide/`, lines approved by Sean;
+the first page shows her arms folded with an open smile (`rg-poster-first.jpg`). Liz's mouth sits higher in frame than Maya's,
+so her clips were cut by hand (the audit, member overview and member quiz clips end on a closed-teeth smile: she never closed
+her lips after the last word). Tabs: Overview, **Your audit** (the free check, open to everyone; the result, then the $49 and
+$149 offer; members see their audits and orders), **The fixes** (one per view, `#/fixes/<id>`; a member's in the order their
+latest audit puts them, using each check's `chapter`; Outdated or hard-to-find information is the free example), **Pulse**
+(our interviews with business owners, `PULSE_PICKS`, and sourced research facts), **Get featured** (listed, claimed, votes, the
+Partner plan; find your page; top-voted Vegan restaurants), **Promotions** (each Live or Coming; never a planned thing shown as
+live), **Test yourself** (ten questions, one per view, 80% earns the Entrepreneur Track badge, kept in the browser), My list
+(fixes, interviews, promotions through `ve-cookbook` saves; `ve_guide_saves` and `ve_guide_votes` take `fix` and `promo`),
+Get access. Slug `vegan-restaurant-survival-guide` (owners from before keep it); the members-only fixes, quiz and two facts are
+that row's `content_html`. Banner: Liz in the cream tee holding a chalkboard reading OPEN
+(`vegan-media/media/guides/banners/vegan-restaurant-survival-guide.jpg`).
 
 ## Finding new places: the backlog check (Sean, 2026-10-10)
 
