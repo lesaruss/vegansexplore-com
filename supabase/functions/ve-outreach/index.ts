@@ -14,6 +14,8 @@
 //   contact     { contact_id, email?, contact_name? }  fix a row before approving
 //   city        { city, enabled }     the city's switch (nothing sends while it is off)
 //   find_emails { city, limit? }      reads listings' own websites for a published email (never guessed)
+// Ops (Bearer <LESARUSS_ADMIN_TOKEN>, Logan and crons): overview, batch, waiting, preview, plan and find_emails only.
+// Approving, changing a row and the city switch need a signed-in superadmin (Sean's call).
 //
 // Nothing here sends mail. The sender (not built yet) sends what ve_outreach_due() returns: approved batches in cities
 // that are switched on. verify_jwt is false on deploy; tokens are verified here the way ve-links does it.
@@ -126,10 +128,15 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
   try {
-    const me = await adminId(req);
-    if (!me) return json({ error: 'admins_only' }, 403);
     const body = await req.json().catch(() => ({}));
     const action = String(body.action || '');
+    const me = await adminId(req);
+    if (!me) {
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails'];
+      const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+      const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+      if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
+    }
 
     if (action === 'overview') {
       const [{ data: cities }, { data: batches }, { data: templates }, { data: contacts }] = await Promise.all([
