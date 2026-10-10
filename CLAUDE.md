@@ -692,9 +692,24 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, see The Restaurant Guide b
   the price because we leverage AI to build and maintain their presence... when they see the results, they will opt in
   quickly, especially with it tied to our network and promotions. This will allow us to pay for multiple Community Managers in
   each city with their fee coming directly from our clients." The audit is the front door to that service.
-- Next: "Have us do it" on every Fix (a quote request to the city's Community Manager until Sean sets service prices), the
-  Secret Shopper report form for the Community Manager (today it is arranged by email, `shopper_status` to_arrange), and the free
-  check in the outreach emails (an upgrade to the offer, not a change to the plan).
+- **The Secret Shopper report** (Sean, 2026-10-10: "Build the Secret Shopper report form next"; migration
+  `20261010_ve_audit_shopper.sql`). `/dashboard/secret-shopper` (`secret-shopper.html` in the dashboard window, `openShopper` in
+  center-console; a tile for super admins and Community Managers) lists the $149 visits in the Community Manager's city
+  (`ve_audit_orders.community_slug`, set at payment; super admins see every city), most to-do first, each tagged To arrange,
+  Visit set, Report started or Report sent. A visit (`#visit/<order>`) shows where to go (Google's address, hours, Maps) and how to
+  do it (a normal guest, never say it is a visit, one Vegan question, photos, keep the receipt, meal covered up to $40), and Set
+  the day. The report is eight steps, one per view (`#visit/<order>/report/<n>`), Back / Step N of M / Save and next, Next
+  checks the step: The visit, Welcome and wait, Menu and Vegan labels, The food, Cleanliness, The staff, Photos (shrunk in the
+  browser, private bucket `audit-shopper`, signed links only, up to 12, at least two besides the receipt), Summary and send.
+  Send checks it is complete, emails the owner the link and Sean the meal to reimburse. The owner reads it in the Restaurant
+  Guide (`#/audit/shopper/<order>`, linked from Your audits): the seven scores, what went well, what to fix first, each part and
+  the photos. Actions `shopper_list`, `shopper_get`, `shopper_schedule`, `shopper_save`, `shopper_photo`, `shopper_photo_done`,
+  `shopper_photo_remove`, `shopper_send` in `ve-restaurant-audit`; every change goes through `ve_audit_shopper_patch()`, which
+  merges in one locked step (the first live test sent eight saves together and only two survived a read-then-write; after the
+  fix all nine and both photos did). A sent report never changes. Proven end to end on 2026-10-10 with a $149 test order on the
+  test card (Sobe Vegan, QA account, `test` true, entries marked [TEST]).
+- Next: "Have us do it" on every Fix (a quote request to the city's Community Manager until Sean sets service prices), and the
+  free check in the outreach emails (an upgrade to the offer, not a change to the plan).
 
 ## The Restaurant Guide (rebuilt 2026-10-10 on the Dairy Guide playbook)
 
