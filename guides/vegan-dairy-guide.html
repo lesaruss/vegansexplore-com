@@ -322,7 +322,10 @@
     .dg-pod-w .dg-pod{flex:1 1 auto;}
     .dg-pod-acts{position:absolute;top:8px;right:8px;}
     /* One tile (Sean, 2026-10-10): vote and save sit together at the top right of every swap, recipe and episode */
-    .dg-acts{flex:0 0 auto;display:flex;gap:6px;align-items:flex-start;align-self:flex-start;}
+    /* Stacked, vote on top of Save (Sean, 2026-10-10: side by side squeezed the words on a phone) */
+    .dg-acts{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;align-items:stretch;align-self:flex-start;}
+    .dg-acts .dg-vote,.dg-acts .dg-save{justify-content:center;align-self:stretch;}
+    .dg-pod-acts{flex-direction:row;}
     .dg-save{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink55);cursor:pointer;}
     .dg-save:hover{border-color:var(--g2);color:var(--g);}
     .dg-save.on{border-color:var(--gm);background:var(--gl);color:var(--g);}
