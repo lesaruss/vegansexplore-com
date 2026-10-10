@@ -396,7 +396,9 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   ("it's literally the pulse but just on dairy free food"): sourced facts plus our published episodes and interviews
   (`ve_pulse_content` slugs in `PULSE_PICKS`), played inside the Guide. Why it matters (Sean): each Guide is content
   for the site that fills the Directory with brands and is the top of the funnel for new members; the next one is
-  nutritional supplements. The Dairy Guide's tab clips (2026-10-10, lines approved by Sean) are
+  nutritional supplements. No counts in a Guide's words or in what the Guide says (Sean, 2026-10-10: "if I add a resource
+  tomorrow, we are now 77... let's just not say numbers at all. They can see from a glance how many items are there"):
+  never "76 products" or "16 swaps"; a live count of a filtered list is fine. The Dairy Guide's tab clips (2026-10-10, lines approved by Sean) are
   `vegan-media/media/maya/dairy-guide/dg-<tab>.mp4` and `dg-poster-<tab>.jpg` (`CLIPS` in the script; a tab's `say` must
   match its recording): el-media tts in Maya's voice, Wan 2.7 from her round 5 Oatly start pictures (one pose per tab), cut
   with `assemble_r5.py` in Higgsfield's sandbox. Its mouth reading misfired on most takes, so every ending was checked by eye
