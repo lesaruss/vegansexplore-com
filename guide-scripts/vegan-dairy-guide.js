@@ -645,7 +645,7 @@
       ((l.details && l.details.dairy_guide) || []).forEach(function (i) { out.push({ t: 'Brands', title: l.name + ', ' + i.cat, text: 'Made from ' + i.base + '. Where: ' + i.where + (i.note ? '. ' + i.note : ''), href: '#/listing/' + encodeURIComponent(l.slug) }); });
     });
     MEM.swaps.forEach(function (s) { out.push({ t: 'Swaps', title: s.replace, text: 'Shelf: ' + s.shelf + ' Pantry: ' + s.pantry + (s.tip ? ' ' + s.tip : ''), href: '#/swaps/' + slugify(s.group) }); });
-    (COOK || []).forEach(function (r) { out.push({ t: 'Cookbook', title: r.title, text: r.author.name + '. ' + r.ingredients.join(', ') + ' ' + r.steps.join(' '), href: '#/cookbook/r/' + encodeURIComponent(r.slug) }); });
+    (COOK || []).forEach(function (r) { out.push({ t: 'Cookbook', title: r.title, text: 'By ' + r.author.name + ': ' + r.ingredients.join(', ') + ' ' + r.steps.join(' '), href: '#/cookbook/r/' + encodeURIComponent(r.slug) }); });
     (BOOKS || []).forEach(function (l) { var b = (l.details && l.details.dairy_guide_book) || {}; out.push({ t: 'Cookbook', title: b.title || l.name, text: 'Cookbook by ' + [b.author, b.topic].filter(Boolean).join(', '), href: '#/listing/' + encodeURIComponent(l.slug) }); });
     MEM.look.facts.forEach(function (f) { out.push({ t: 'See for yourself', title: f[0], text: f[1], href: '#/look' }); });
     return out;
