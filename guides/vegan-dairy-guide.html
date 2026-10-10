@@ -317,7 +317,20 @@
     .dg-gp-wait span{opacity:.55;}
     .dg-pod-w{position:relative;display:flex;flex-direction:column;}
     .dg-pod-w .dg-pod{flex:1 1 auto;}
-    .dg-pod-w .dg-vote-s{position:absolute;top:8px;right:8px;}
+    .dg-pod-acts{position:absolute;top:8px;right:8px;}
+    /* One tile (Sean, 2026-10-10): vote and save sit together at the top right of every swap, recipe and episode */
+    .dg-acts{flex:0 0 auto;display:flex;gap:6px;align-items:flex-start;align-self:flex-start;}
+    .dg-save{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink55);cursor:pointer;}
+    .dg-save:hover{border-color:var(--g2);color:var(--g);}
+    .dg-save.on{border-color:var(--gm);background:var(--gl);color:var(--g);}
+    .dg-srow[data-href]{cursor:pointer;transition:border-color .15s;}
+    .dg-srow[data-href]:hover{border-color:var(--g2);}
+    .dg-srow-b h3 a{color:inherit;text-decoration:none;}
+    .dg-srow-b .dg-rcp-meta{margin-bottom:6px;}
+    .dg-srow-p{font-size:13px;line-height:1.5;color:var(--ink75);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    #dgMain .vrd-root .rank-right{height:auto;min-height:60px;}
+    #dgMain .vrd-root .rank-right .dg-save{padding:5px 9px;font-size:10px;}
+    @media (max-width:480px){.dg-save span{display:none;}.dg-save{padding:7px 8px;}}
     .dg-look{border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:#fff;}
     .dg-look-stat{display:flex;gap:16px;align-items:center;background:var(--gl);border-radius:12px;padding:16px 18px;margin-bottom:16px;color:var(--g);}
     .dg-look-stat b{display:block;font-size:40px;font-weight:900;line-height:1;color:var(--ink);}
