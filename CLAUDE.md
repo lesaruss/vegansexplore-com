@@ -340,7 +340,10 @@ returns every moment across every show, who said it, a quote, and a play button 
   in the opening (a guest's name counts far more than common words), line-for-line overlap with an untimed transcript we already
   hold, and "episode 12" said early (Good match, Check this, Skip). The review view (`#review`) lists the ones to check first,
   each with its opening lines, the top three suggestions and a search box (a guest, a topic, "SFV 12"), and Save sends each through
-  `ve-content-index` `srt` (source `turboscribe`). The function takes a signed-in super admin for `status`, `episodes` and
+  `ve-content-index` `srt` (source `turboscribe`, and the file's name in `ve_content_transcripts.file_name`). Nothing is dropped
+  silently (Sean, 2026-10-10: 50 files dropped, 34 saved): a file whose transcript is already saved says so (`match`
+  `saved_as`, from the transcript's opening, `head`) and stays out, two files set to one episode block Save, and files left on
+  Skip stay on the screen after Save with a note. Drop the whole folder again any time; only the missing ones need a look. The function takes a signed-in super admin for `status`, `episodes` and
   `srt`, and the admin token for everything.
 
 ## Tracked links (Sean, 2026-10-04)

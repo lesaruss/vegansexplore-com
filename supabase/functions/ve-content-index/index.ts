@@ -88,9 +88,9 @@ function fromSrt(srt: string): Seg[] {
   }).filter(Boolean) as Seg[];
 }
 
-async function save(contentId: string, source: string, language: string | null, segs: Seg[], length: number | null) {
+async function save(contentId: string, source: string, language: string | null, segs: Seg[], length: number | null, fileName: string | null = null) {
   const text = segs.map((x) => x.t).join(' ');
-  await db.from('ve_content_transcripts').upsert({ content_id: contentId, source, language, segments: segs, text, words: text.split(/\s+/).length,
+  await db.from('ve_content_transcripts').upsert({ content_id: contentId, source, language, segments: segs, text, words: text.split(/\s+/).length, file_name: fileName,
     duration_seconds: length || Math.ceil(segs.length ? segs[segs.length - 1].e : 0) || null, status: 'ready', note: null, fetched_at: new Date().toISOString() });
   if (length) await db.from('ve_pulse_content').update({ duration_seconds: length }).eq('id', contentId).is('duration_seconds', null);
 }
@@ -163,7 +163,11 @@ function codeOf(s: string, strict = false) {
   const ep = se ? null : (x.match(/\b(?:ep(?:isode)?|e)\s*0*(\d{1,4})\b/i) || (!strict && x.match(/(?:^|\s)0*(\d{1,4})(?=\s|$)/)) || [])[1];
   return { show, season: se ? +se[1] : null, num: se ? +se[2] : ep ? +ep : null };
 }
+// The opening of a transcript, the same however it arrived (a dropped file's text or a saved row's), for "already saved".
+const opening = (t: string) => clean(String(t || '')).toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 300);
 async function match(files: { name?: string; head?: string }[]) {
+  const { data: saved } = await db.from('ve_content_transcripts').select('content_id,head,file_name');
+  const S = (saved || []).map((r) => ({ id: r.content_id, o: opening(r.head || ''), f: r.file_name }));
   const { data: eps } = await db.from('ve_pulse_content').select('id,title,podcast_show,episode_number,summary,transcript').not('podcast_show', 'is', null).limit(1000);
   const E = (eps || []).map((e) => ({ ...e, code: (() => { const c = codeOf(String(e.title).replace(/^.*?\|/, ''), true); return { season: c.season, num: c.num ?? e.episode_number ?? null }; })(), tw: [...new Set(toks(String(e.title).replace(/\|.*$/, '')))], sw: [...new Set(toks(e.summary || ''))].slice(0, 40),
     sh: e.transcript ? shingles(e.transcript) : null }));
@@ -188,7 +192,8 @@ async function match(files: { name?: string; head?: string }[]) {
       const score = Math.min(1, same > 0.08 ? 0.9 + same : code + 0.6 * t + 0.25 * sm + 0.35 * nm + num) * (showOk ? 1 : 0.5);
       return { id: e.id, score: Math.round(score * 100) / 100 };
     }).sort((a, b) => b.score - a.score).slice(0, 5);
-    return { name: f.name || '', candidates: scored };
+    const o = opening(head); const hit = o.length >= 120 ? S.find((r) => r.o && r.o.slice(0, 200) === o.slice(0, 200)) : null;
+    return { name: f.name || '', candidates: scored, saved_as: hit ? hit.id : null };
   });
 }
 
@@ -234,7 +239,7 @@ async function handle(req: Request): Promise<Response> {
       if (!ep) return json({ error: 'no_episode' }, 400);
       const segs = fromSrt(String(body.srt || ''));
       if (!segs.length) return json({ error: 'empty_srt' }, 400);
-      await save(String(body.content_id), String(body.source || 'turboscribe'), 'en', segs, null);
+      await save(String(body.content_id), String(body.source || 'turboscribe'), 'en', segs, null, body.file_name ? String(body.file_name).slice(0, 300) : null);
       return json({ ok: true, segments: segs.length });
     }
     if (body.action === 'match') return json({ ok: true, files: await match(Array.isArray(body.files) ? body.files : []) });
