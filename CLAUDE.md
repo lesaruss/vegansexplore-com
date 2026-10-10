@@ -538,8 +538,8 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   Guide; `clip()` plays `CLIPS_M[tab]` (`dg-m-<tab>.mp4`) to members and `CLIPS[tab]` to visitors, and switches the moment a
   visitor unlocks. Cookbook names everything in it (recipes, What can I make?, cookbooks, chefs coming, share your own). Every
   tab has its own pose (Sean: "each one you click on should look different"); the first page's picture is arms folded with an
-  open smile (`dg-poster-overview.jpg`). Lines approved by Sean 2026-10-10. My list's member clip is not recorded yet (her
-  picture and words show until it is).
+  open smile (`dg-poster-overview.jpg`). Lines approved by Sean 2026-10-10; My list has its member clip too. Clips are made
+  as one take each (Sean, 2026-10-10, on credit spend), re-done only if the ending or the lip sync fails.
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
   at the top right (`.dg-acts`). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks

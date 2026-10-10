@@ -75,7 +75,7 @@
       sayMember: 'Make a recipe, or tick what\'s in your pantry under What can I make. Browse the cookbooks, share your own for points, and chefs are coming.' },
     // Named The truth on 2026-10-10 (Sean); he approved the new line the same day (dg-look.mp4 ?v=3).
     { k: 'look', label: 'The truth', lock: 1, say: 'The truth is how milk is really made, in plain facts. No graphic images. Open it when you\'re ready, or skip it.' },
-    // My list is for the Guide's members only, after the tour's last tab. No clip: her picture and these words.
+    // My list is for the Guide's members only, after the tour's last tab (dg-m-mylist.mp4, recorded 2026-10-10).
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you save lands here: swaps, recipes, brands, cookbooks and episodes, plus the recipes you shared.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Guide comes with the eleven dollar Founding Membership, one time. Already a member? Sign in and it opens. Come join us!',
       // On credits (canon-ve-guide-pricing v3), played from CLIPS.join_credit (Sean approved the line, 2026-10-10).
@@ -102,7 +102,7 @@
   CLIPS.look = { video: CLIP_BASE + 'dg-look.mp4?v=3', poster: CLIP_BASE + 'dg-poster-look.jpg?v=3' }; // The truth, re-recorded 2026-10-10
   // Members hear what they have (Sean approved the lines 2026-10-10), each tab in its own pose: dg-m-<tab>.mp4.
   var CLIPS_M = {};
-  ['overview', 'pulse', 'brands', 'swaps', 'cookbook'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'dg-m-' + k + '.mp4?v=1', poster: CLIP_BASE + 'dg-m-poster-' + k + '.jpg?v=1' }; });
+  ['overview', 'pulse', 'brands', 'swaps', 'cookbook', 'mylist'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'dg-m-' + k + '.mp4?v=1', poster: CLIP_BASE + 'dg-m-poster-' + k + '.jpg?v=1' }; });
   CLIPS.join_credit = { video: CLIP_BASE + 'dg-join-c.mp4?v=1', poster: CLIP_BASE + 'dg-poster-join-c.jpg?v=1' };
 
   var PANTRY = [
