@@ -23,6 +23,8 @@
     }).then(function(r) { return r.json(); });
   }
 
+  // Pricing (Sean, 2026-10-10, canon-ve-guide-pricing v3): a Guide is $11 or 1 Guide credit. With a credit: unlock it.
+  // Without one: get it now for $11 (ve-guide-unlock checkout, back here with ?guide=bought). Not a member yet: join.
   function doUnlock(token) {
     setBtn('Unlocking...', null, true);
     if (introBtn) introBtn.disabled = true;
@@ -30,8 +32,8 @@
       if (introBtn) introBtn.disabled = false;
       if (d.unlocked) {
         if (typeof goToIntake === 'function') goToIntake();
-      } else if (d.error === 'insufficient_points') {
-        setBtn('Need ' + (d.cost - d.balance) + ' More Points', function(){ window.location.href = '/account'; }, true);
+      } else if (d.error === 'no_credit') {
+        setBtn('Get It Now for $11', function(){ doBuy(token); }, false);
       } else {
         setBtn('Something Went Wrong - Retry', function(){ doUnlock(token); }, true);
       }
@@ -41,26 +43,27 @@
     });
   }
 
+  function doBuy(token) {
+    setBtn('Opening Checkout...', null, true);
+    fetch(UNLOCK_URL + '?action=checkout', {
+      method: 'POST',
+      headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: GUIDE_SLUG, token: token, return_url: location.origin + location.pathname })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      if (d && d.url) { (window.top || window).location.href = d.url; return; }
+      if (d && d.already) { location.reload(); return; }
+      setBtn('Get It Now for $11', function(){ doBuy(token); }, false);
+    }).catch(function() { setBtn('Get It Now for $11', function(){ doBuy(token); }, false); });
+  }
+
   function initGate() {
     if (!introBtn) return;
 
-    // Super Admin "View As" preview (2026-07-12): when Sean is simulating a view via
-    // the nav.js drawer panel, render the gate purely from the simulated Points balance
-    // instead of calling the real ve-guide-unlock backend. This keeps a simulated view
-    // from ever reading or spending Sean's REAL Points balance.
+    // Super Admin "View As" preview (2026-07-12): render the gate from the simulated view instead of calling the real
+    // ve-guide-unlock backend, so a simulated view never reads or spends Sean's real credits.
     var viewAs = (window.VEAuth && VEAuth.getViewAs && VEAuth.getViewAs()) || null;
     if (viewAs) {
-      var COST = 1000; // matches the Points price shown on the Guide Catalog card
-      if (viewAs.mode === 'public') {
-        setBtn('Join to Get Started', function(){ alert('Preview only - this is what a logged-out visitor sees. No real action was taken.'); }, false);
-        return;
-      }
-      var bal = viewAs.points || 0;
-      if (bal >= COST) {
-        setBtn('Unlock for ' + COST.toLocaleString() + ' Points', function(){ alert('Preview only - viewing as a simulated member. This will not spend real Points.'); }, false);
-      } else {
-        setBtn('Need ' + (COST - bal).toLocaleString() + ' More Points', function(){ alert('Preview only - viewing as a simulated member with ' + bal.toLocaleString() + ' Points.'); }, true);
-      }
+      setBtn(viewAs.mode === 'public' ? 'Join to Get Started' : 'Unlock with 1 Credit', function(){ alert('Preview only - no real action was taken.'); }, false);
       return;
     }
 
@@ -76,6 +79,12 @@
       introBtn.disabled = false;
       if (d.unlocked) {
         setBtn('Start Guide', function(){ if (typeof goToIntake === 'function') goToIntake(); }, false);
+      } else if (d.access_rule === 'credit' && d.credits >= 1) {
+        setBtn('Unlock with 1 Credit', function(){ doUnlock(token); }, false);
+      } else if (d.access_rule === 'credit' && d.membership_status === 'active') {
+        setBtn('Get It Now for $11', function(){ doBuy(token); }, false);
+      } else if (d.access_rule === 'credit') {
+        setBtn('Join to Get Started', goJoin, false);
       } else if (d.balance >= d.cost) {
         setBtn('Unlock for ' + d.cost.toLocaleString() + ' Points', function(){ doUnlock(token); }, false);
       } else {
