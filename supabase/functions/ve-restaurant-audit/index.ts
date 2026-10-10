@@ -8,8 +8,10 @@
 // work on right away"): of the in_free items, the ones to fix, each with what we found, and how many more the full audit
 // flags. No score, no why or how. Full audit: every item with why, how, the Guide chapter and the service, and the score.
 // The full audit is a paid add-on of its own (Sean, 2026-10-10: "it should be an add on... not $111 or part of the
-// LESARUSS.AI membership... it could also include a secret shopper experience"); its price is not set, so until it is
-// sold only a super admin or ops can run one.
+// LESARUSS.AI membership... it could also include a secret shopper experience"). Priced the same day ("Go with $49 and
+// $149"): $49 for the full audit with a re-check at 90 days, $149 with a Secret Shopper visit (our cities only), either one
+// counting toward managed services within 30 days. Bought through `checkout` (Stripe), confirmed by GET ?confirm= (the
+// Stripe webhook calls it too: metadata type ve_audit_purchase, confirm_fn ve-restaurant-audit); orders in ve_audit_orders.
 //
 // Monthly check-ups (migration 20261010_ve_audit_checkups.sql): `sweep` (cron) audits the next local businesses due, and
 // every audit carries a closure flag (closed: Google shows it closed; quiet: two or more signs it may have closed).
@@ -18,9 +20,14 @@
 // POST { action: 'criteria' }                      anyone -> { criteria: [{key, area, label, in_free}] }
 // POST { action: 'free', listing_slug? | name, city, website?, instagram?, email? }  anyone -> { id, status, cached? }
 //      one per business a week is reused; 5 a day per visitor
-// POST { action: 'full', listing_slug? | name, city, website?, instagram? }  a super admin or ops -> { id, status }
+// POST { action: 'full', listing_slug? | name, city, website?, instagram? }  a super admin or ops -> { id, status }  (no charge)
+// POST { action: 'offer', listing_slug? | name, city }  anyone -> { full: 4900, shopper: 14900 | null, city }
+// POST { action: 'checkout', tier: full|shopper, listing_slug? | name, city, website?, instagram? }  member -> { url }
+// GET  ?confirm=<Stripe session>                   marks the order paid, starts the audit, emails the owner and the team
+// POST { action: 'mine' }                          member -> { orders: [...], audits: [...] }
 // POST { action: 'get', id }                       -> the audit; the full detail only for its member, a super admin or ops
-// POST { action: 'sweep', limit? }                 cron or ops -> { started: [slugs] }   the monthly check-up, a few at a time
+// POST { action: 'sweep', limit? }                 cron or ops -> { started: [slugs] }   the monthly check-up, a few at a time,
+//      and the 90-day re-checks of paid audits
 // POST { action: 'flags', city? }                  super admin -> { flags: [...] }       open closure flags, Google-closed first
 // POST { action: 'flag_review', audit_id, decision: still_open|closed, note? }  super admin  (closing goes through
 //      ve-outreach listing_closed; this records the decision so the flag comes down)
@@ -601,8 +608,101 @@ async function inputsFrom(body: any): Promise<{ inputs?: any; listing_id?: strin
   return { listing_id: null, inputs: { name, city: clean(body.city, 80), website: normUrl(clean(body.website, 300)), instagram: igHandle(clean(body.instagram, 120)) } };
 }
 
+
+// ---- The full audit for sale (Sean, 2026-10-10: "Go with $49 and $149"; migration 20261010_ve_audit_orders.sql) ----
+// full $49: the full audit and a re-check 90 days later. shopper $149: the same plus a Secret Shopper visit arranged by the
+// city's Community Manager (meal covered up to $40). Either one counts toward managed services within 30 days.
+const PRICES: Record<string, number> = { full: 4900, shopper: 14900 };
+const TIER_NAME: Record<string, string> = { full: 'Full restaurant audit', shopper: 'Full restaurant audit with Secret Shopper' };
+const SITE = 'https://vegansexplore.com';
+const GUIDE_URL = `${SITE}/guides/vegan-restaurant-survival-guide`;
+const FN_URL = `${SUPABASE_URL}/functions/v1/ve-restaurant-audit`;
+const SEAN_EMAIL = 'contact@lesaruss.com';
+const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+async function mail(to: string[], subject: string, html: string, replyTo?: string) {
+  const key = Deno.env.get('RESEND_API_KEY');
+  if (!key || !to.length) return false;
+  const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }) }).catch(() => null);
+  return !!r?.ok;
+}
+const para = (t: string) => `<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#222;margin:0 0 14px">${t}</p>`;
+async function isTestAccount(email: string | null) {
+  if (!email) return false;
+  const { data } = await db.from('ve_test_checkout_allowlist').select('email').eq('email', email.toLowerCase()).maybeSingle();
+  return !!data;
+}
+async function stripeKey(test: boolean) {
+  if (!test) return Deno.env.get('STRIPE_SECRET_KEY') ?? '';
+  const k = await secret('STRIPE_SECRET_KEY_ACCT_LESARUSS_TEST');
+  if (!String(k || '').startsWith('sk_test_')) throw new Error('test key missing');
+  return k!;
+}
+// Which of our cities a business is in (ve_outreach_cities), and who looks after it there: the Community Manager, else Sean.
+async function cityOf(listingId: string | null, inputs: any) {
+  let city = String(inputs?.city || ''), state = '';
+  if (listingId) {
+    const { data: l } = await db.from('listings').select('address_city, address_state').eq('id', listingId).maybeSingle();
+    if (l) { city = l.address_city || city; state = l.address_state || ''; }
+  }
+  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug, name, cities, states').neq('community_slug', 'brands');
+  const c = (cities || []).find((x: any) => (x.cities || []).includes(city) && (!state || !x.states || x.states.includes(state)));
+  if (!c) return null;
+  const { data: cms } = await db.from('members').select('email, name').eq('ve_role', 'community_manager').eq('home_community', c.community_slug).limit(3);
+  const cm = (cms || []).filter((m: any) => m.email);
+  return { slug: c.community_slug, name: c.name, to: cm.length ? cm.map((m: any) => m.email) : [SEAN_EMAIL], cm: cm.length > 0 };
+}
+// After payment: the order is paid, the full audit starts, the buyer is told, and the team gets the order (and, for the
+// Secret Shopper, the visit to arrange). Safe to call twice: only a pending order moves.
+async function orderPaid(orderId: string, session: string) {
+  const now = Date.now();
+  const { data: o } = await db.from('ve_audit_orders').update({ status: 'paid', paid_at: new Date(now).toISOString(), stripe_session: session,
+    recheck_at: new Date(now + 90 * DAY_MS).toISOString(), credit_until: new Date(now + 30 * DAY_MS).toISOString() })
+    .eq('id', orderId).eq('status', 'pending').select('*').maybeSingle();
+  if (!o) return (await db.from('ve_audit_orders').select('*').eq('id', orderId).maybeSingle()).data;
+  const { data: m } = await db.from('members').select('email, name').eq('id', o.member_id).maybeSingle();
+  const { data: a } = await db.from('ve_audits').insert({ tier: 'full', source: 'request', listing_id: o.listing_id, inputs: o.inputs, member_id: o.member_id,
+    email: m?.email || null, order_id: o.id }).select('id').single();
+  const where = await cityOf(o.listing_id, o.inputs);
+  await db.from('ve_audit_orders').update({ audit_id: a?.id || null, ...(o.tier === 'shopper' ? { shopper_status: 'to_arrange', shopper_assigned_to: (where?.to || [SEAN_EMAIL]).join(', ') } : {}) }).eq('id', o.id);
+  if (a?.id) (EdgeRuntime as any).waitUntil(runAudit(a.id));
+  const biz = o.inputs?.name || 'your restaurant', link = `${GUIDE_URL}#/audit/r/${a?.id || ''}`, first = String(m?.name || '').split(' ')[0] || 'there';
+  if (m?.email) await mail([m.email], `Your full audit of ${biz} is running`,
+    para(`Hi ${esc(first)},`) +
+    para(`Thank you. Your full audit of <strong>${esc(biz)}</strong> is running now and takes about a minute. Open it in the Restaurant Guide: <a href="${link}">${link}</a>`) +
+    para('Every check comes with why it matters and how to fix it. We run it again in 90 days so you can see what changed.') +
+    (o.tier === 'shopper' ? para(`Your Secret Shopper visit: ${where?.cm ? 'your city\'s Community Manager' : 'our team'} will arrange it in the next few weeks and you will get the report with photos. You will not know the day.`) : '') +
+    para('If you sign up for our managed services within 30 days, what you paid today counts toward it. Just reply to this email.'), SEAN_EMAIL);
+  await mail(where?.to || [SEAN_EMAIL], `${o.test ? '[TEST] ' : ''}Audit order: ${TIER_NAME[o.tier]} for ${biz}`,
+    para(`<strong>${esc(m?.name || 'A member')}</strong> (${esc(m?.email || '')}) bought the ${esc(TIER_NAME[o.tier])} ($${(o.amount_cents / 100).toFixed(0)}) for <strong>${esc(biz)}</strong>${o.inputs?.city ? ', ' + esc(o.inputs.city) : ''}.`) +
+    para(`The audit: <a href="${link}">${link}</a>`) +
+    (o.tier === 'shopper' ? para(`<strong>Secret Shopper visit to arrange.</strong> Within the next few weeks: order, eat and report on the welcome, the wait, the menu, Vegan labeling, cleanliness and how well the staff know the menu, with photos. The meal is covered up to $40. Do not tell the restaurant the day.`) : '') +
+    para('The price counts toward managed services if they sign up within 30 days.'), m?.email || undefined);
+  return { ...o, audit_id: a?.id || null };
+}
+async function confirmCheckout(sessionId: string): Promise<Response> {
+  const go = (u: string) => new Response(null, { status: 302, headers: { Location: u } });
+  for (const test of [false, true]) {
+    let res: Response;
+    try { res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, { headers: { Authorization: `Bearer ${await stripeKey(test)}` } }); }
+    catch { continue; }
+    if (!res.ok) continue;
+    const s = await res.json();
+    if (s.metadata?.type !== 've_audit_purchase' || !isId(s.metadata?.order_id)) return go(GUIDE_URL);
+    if (s.payment_status !== 'paid') return go(`${GUIDE_URL}?audit=unpaid#/audit`);
+    const o = await orderPaid(s.metadata.order_id, s.id);
+    return go(`${GUIDE_URL}?audit=paid#/audit/r/${o?.audit_id || ''}`);
+  }
+  return go(GUIDE_URL);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+  const url = new URL(req.url);
+  if (req.method === 'GET' && url.searchParams.get('confirm')) {
+    try { return await confirmCheckout(url.searchParams.get('confirm')!); }
+    catch (e) { console.error('confirm failed', e); return new Response(null, { status: 302, headers: { Location: GUIDE_URL } }); }
+  }
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
@@ -646,8 +746,8 @@ Deno.serve(async (req) => {
   if (action === 'full') {
     if (!who.ops) {
       if (!who.member) return json({ error: 'sign_in' }, 401);
-      // The full audit is its own add-on; until Sean sets its price it is run for a business by the team only.
-      if (!who.member.admin) return json({ error: 'not_available_yet', message: 'The full audit is coming soon as an add-on.' }, 403);
+      // Anyone else buys it (checkout); this free path is the team's, for a business they are talking to.
+      if (!who.member.admin) return json({ error: 'buy_it', message: 'The full audit is $49, or $149 with a Secret Shopper visit.' }, 403);
       const { count } = await db.from('ve_audits').select('id', { count: 'exact', head: true }).eq('member_id', who.member.id).eq('tier', 'full').gte('created_at', new Date(Date.now() - DAY_MS).toISOString());
       if ((count || 0) >= LIMITS.fullPerMember) return json({ error: 'limit', message: 'That is all the audits for today. Try again tomorrow.' }, 429);
     }
@@ -672,6 +772,59 @@ Deno.serve(async (req) => {
     return json(await present(a, full));
   }
 
+
+  // ---- Buying the full audit ----
+  // What a business can buy: the full audit anywhere, the Secret Shopper only in one of our cities.
+  if (action === 'offer') {
+    const r = await inputsFrom(body);
+    if (r.error) return json({ full: PRICES.full, shopper: null });
+    const where = await cityOf(r.listing_id || null, r.inputs);
+    return json({ full: PRICES.full, shopper: where ? PRICES.shopper : null, city: where?.name || null });
+  }
+  if (action === 'checkout') {
+    if (!who.member) return json({ error: 'sign_in', message: 'Sign in to buy the full audit.' }, 401);
+    const tier = String(body.tier || '');
+    if (!PRICES[tier]) return json({ error: 'tier' }, 400);
+    const r = await inputsFrom(body);
+    if (r.error) return json({ error: r.error }, 400);
+    if (tier === 'shopper' && !(await cityOf(r.listing_id || null, r.inputs))) return json({ error: 'shopper_not_here', message: 'The Secret Shopper is in our cities only for now. The full audit works anywhere.' }, 400);
+    const test = await isTestAccount(who.member.email);
+    const { data: o, error } = await db.from('ve_audit_orders').insert({ member_id: who.member.id, listing_id: r.listing_id, inputs: r.inputs, tier, amount_cents: PRICES[tier], test })
+      .select('id').single();
+    if (error) return json({ error: 'save_failed' }, 500);
+    const params = new URLSearchParams({
+      mode: 'payment',
+      'line_items[0][price_data][currency]': 'usd',
+      'line_items[0][price_data][product_data][name]': ((test ? '[TEST] ' : '') + TIER_NAME[tier] + ' - ' + r.inputs.name).slice(0, 120),
+      'line_items[0][price_data][unit_amount]': String(PRICES[tier]),
+      'line_items[0][quantity]': '1',
+      success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${GUIDE_URL}?audit=cancelled#/audit`,
+      'metadata[type]': 've_audit_purchase', 'metadata[confirm_fn]': 've-restaurant-audit',
+      'metadata[order_id]': o.id, 'metadata[member_id]': who.member.id, 'metadata[tier]': tier,
+    });
+    if (who.member.email) { params.set('customer_email', who.member.email); params.set('payment_intent_data[receipt_email]', who.member.email); }
+    if (test) params.set('metadata[test]', 'true');
+    const sres = await fetch('https://api.stripe.com/v1/checkout/sessions', { method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() });
+    const sj = await sres.json();
+    if (!sres.ok) { console.error('stripe', sj); await db.from('ve_audit_orders').update({ status: 'cancelled' }).eq('id', o.id); return json({ error: 'stripe', message: 'Checkout did not open. Try again in a minute.' }, 400); }
+    await db.from('ve_audit_orders').update({ stripe_session: sj.id }).eq('id', o.id);
+    return json({ url: sj.url, test_mode: test });
+  }
+  // The signed-in member's audits: what they bought (with the re-check and the Secret Shopper) and their free checks.
+  if (action === 'mine') {
+    if (!who.member) return json({ orders: [], audits: [] });
+    const [{ data: orders }, { data: audits }] = await Promise.all([
+      db.from('ve_audit_orders').select('id, tier, status, inputs, audit_id, paid_at, recheck_at, recheck_audit_id, credit_until, shopper_status, created_at')
+        .eq('member_id', who.member.id).eq('status', 'paid').order('paid_at', { ascending: false }).limit(20),
+      db.from('ve_audits').select('id, tier, status, inputs, created_at').eq('member_id', who.member.id).order('created_at', { ascending: false }).limit(20),
+    ]);
+    return json({
+      orders: (orders || []).map((o: any) => ({ ...o, business: o.inputs?.name || null, inputs: undefined })),
+      audits: (audits || []).map((a: any) => ({ id: a.id, tier: a.tier, status: a.status, business: a.inputs?.name || null, created_at: a.created_at })),
+    });
+  }
+
   // ---- Monthly check-ups ----
   if (action === 'sweep') {
     if (!who.ops) return json({ error: 'ops_only' }, 403);
@@ -682,6 +835,22 @@ Deno.serve(async (req) => {
       if (r.error) continue;
       const { data: a } = await db.from('ve_audits').insert({ tier: 'full', source: 'checkup', listing_id: r.listing_id, inputs: { ...r.inputs, community: d.community_slug } }).select('id').single();
       if (a) { ids.push(a.id); started.push(d.slug); }
+    }
+    // The 90-day re-check of a paid audit, a few at a time, with an email to the owner.
+    const { data: rechecks } = await db.from('ve_audit_orders').select('id, member_id, listing_id, inputs').eq('status', 'paid').is('recheck_audit_id', null)
+      .lte('recheck_at', new Date().toISOString()).limit(3);
+    for (const o of (rechecks || []) as any[]) {
+      const { data: m } = await db.from('members').select('email, name').eq('id', o.member_id).maybeSingle();
+      const { data: a } = await db.from('ve_audits').insert({ tier: 'full', source: 'recheck', listing_id: o.listing_id, inputs: o.inputs, member_id: o.member_id,
+        email: m?.email || null, order_id: o.id }).select('id').single();
+      if (!a) continue;
+      await db.from('ve_audit_orders').update({ recheck_audit_id: a.id }).eq('id', o.id);
+      ids.push(a.id); started.push('recheck:' + (o.inputs?.name || o.id));
+      const link = `${GUIDE_URL}#/audit/r/${a.id}`;
+      if (m?.email) await mail([m.email], `Your 90-day re-check of ${o.inputs?.name || 'your restaurant'}`,
+        para(`Hi ${esc(String(m.name || '').split(' ')[0] || 'there')},`) +
+        para(`It has been 90 days since your full audit, so we ran it again. See what changed: <a href="${link}">${link}</a>`) +
+        para('Questions, or want us to take care of the rest? Just reply.'), SEAN_EMAIL);
     }
     const all = Promise.all(ids.map((id) => runAudit(id)));
     if (body.wait) await all; else (EdgeRuntime as any).waitUntil(all);

@@ -16,14 +16,14 @@
 // Round 2 (Sean, 2026-10-10, migration 20261010_dairy_guide_v2.sql). With a guide, a "member" is someone who owns that
 // Guide (ve_owns_guide; credits pricing), not just any active member; a super admin always is.
 // POST { action: 'gvotes', guide }                anyone -> { counts: {swap:{key:n}, episode:{key:n}}, mine: {swap:[keys], ...} }
-// POST { action: 'gvote', guide, kind, key, on }  Guide member -> { ok, count }    kind swap | episode
+// POST { action: 'gvote', guide, kind, key, on }  Guide member -> { ok, count }    kind swap | episode | fix | promo
 // POST { action: 'photos', recipe_id, guide }     Guide member -> { photos: [{url, name}], mine: [{url, status}] }
 // POST { action: 'photo_start', recipe_id, guide, type }  Guide member -> { photo_id, upload_url }   PUT the file there
 // POST { action: 'photo_done', photo_id }         the uploader -> { ok }   waits for Sean in Depot > Cookbook
 // POST { action: 'photo_queue' }                  super admin -> { photos: [...] }
 // POST { action: 'photo_review', photo_id, op: approve|reject }  super admin
 // POST { action: 'saves', guide }                Guide member -> { saves: [{kind, key, at}] }   My list (ve_guide_saves)
-// POST { action: 'save', guide, kind, key, on }   Guide member -> { ok, saved }   kind swap | recipe | listing | episode
+// POST { action: 'save', guide, kind, key, on }   Guide member -> { ok, saved }   kind swap | recipe | listing | episode | fix | promo
 //
 // Authorization: Bearer <ve_token> (the VE app token, checked the way ve-votes and ve-board check it).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -34,12 +34,14 @@ const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
-const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide' };
+const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-survival-guide': 'The Vegan Restaurant Survival Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };
 const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const DAY_MS = 24 * 60 * 60 * 1000;
-const SAVE_KINDS = ['swap', 'recipe', 'listing', 'episode'], SAVE_CAP = 500;
+// The Restaurant Guide adds its fixes and promotions (migration 20261010_ve_audit_orders.sql).
+const SAVE_KINDS = ['swap', 'recipe', 'listing', 'episode', 'fix', 'promo'], SAVE_CAP = 500;
+const VOTE_KINDS = ['swap', 'episode', 'fix', 'promo'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -173,7 +175,7 @@ Deno.serve(async (req) => {
       if (!guide) return json({ error: 'guide_required' }, 400);
       const { data, error } = await db.from('ve_guide_votes').select('kind, item_key, member_id').eq('guide_slug', guide).limit(20000);
       if (error) return json({ error: 'votes_failed', message: error.message }, 500);
-      const counts: Record<string, Record<string, number>> = { swap: {}, episode: {} }, mine: Record<string, string[]> = { swap: [], episode: [] };
+      const counts: Record<string, Record<string, number>> = { swap: {}, episode: {}, fix: {}, promo: {} }, mine: Record<string, string[]> = { swap: [], episode: [], fix: [], promo: [] };
       for (const v of data || []) {
         counts[v.kind][v.item_key] = (counts[v.kind][v.item_key] || 0) + 1;
         if (viewer && v.member_id === viewer.id) mine[v.kind].push(v.item_key);
@@ -184,7 +186,7 @@ Deno.serve(async (req) => {
       if (!guide) return json({ error: 'guide_required' }, 400);
       const gate = needMember(); if (gate) return gate;
       const kind = String(body.kind || ''), key = String(body.key || '').slice(0, 120);
-      if (!['swap', 'episode'].includes(kind) || !/^[a-z0-9-]{2,120}$/.test(key)) return json({ error: 'bad_request' }, 400);
+      if (!VOTE_KINDS.includes(kind) || !/^[a-z0-9-]{2,120}$/.test(key)) return json({ error: 'bad_request' }, 400);
       const row = { guide_slug: guide, kind, item_key: key, member_id: viewer!.id };
       if (body.on === false) await db.from('ve_guide_votes').delete().match(row);
       else { const { error } = await db.from('ve_guide_votes').insert(row); if (error && error.code !== '23505') return json({ error: 'vote_failed', message: error.message }, 500); }
