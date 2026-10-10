@@ -90,11 +90,21 @@ async function ipHash(req: Request): Promise<string> {
 }
 
 // ---- Fetching ----
-async function get(url: string, ms = 12000, accept = 'text/html,application/xhtml+xml'): Promise<{ ok: boolean; status: number; url: string; text: string; type: string }> {
+// Many restaurant sites (Cloudflare, Sucuri, Wordfence) turn away anything that does not look like a browser; a guest sees
+// the site fine. So a refusal is retried once as a normal browser, and only a site that refuses that too counts as blocked.
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
+type Got = { ok: boolean; status: number; url: string; text: string; type: string };
+async function get(url: string, ms = 12000, accept = 'text/html,application/xhtml+xml'): Promise<Got> {
+  const first = await get1(url, ms, accept, UA);
+  if (first.ok || ![0, 401, 403, 406, 429, 503].includes(first.status)) return first;
+  const second = await get1(url, ms, accept, BROWSER_UA);
+  return second.ok || second.status ? second : first;
+}
+async function get1(url: string, ms: number, accept: string, ua: string): Promise<Got> {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), ms);
   try {
-    const r = await fetch(url, { signal: ctl.signal, redirect: 'follow', headers: { 'User-Agent': UA, Accept: accept } });
+    const r = await fetch(url, { signal: ctl.signal, redirect: 'follow', headers: { 'User-Agent': ua, Accept: accept, 'Accept-Language': 'en-US,en;q=0.9' } });
     const type = r.headers.get('content-type') || '';
     let text = '';
     if (/text|html|xml|json/i.test(type) || !type) text = (await r.text()).slice(0, 1_500_000);
@@ -121,6 +131,20 @@ const pathHandle = (v: string, host: RegExp) => {
   const s = String(v || '').trim();
   const m = s.match(host);
   return (m ? m[1] : s.replace(/^@/, '')).replace(/[/?#].*$/, '').toLowerCase();
+};
+// Website builders ship their own social links in templates (facebook.com/wix, instagram.com/squarespace); a site that never
+// replaced them does not have those accounts. facebook.com/pages/<name>/<id> and profile.php links carry no handle.
+const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username']);
+function fbHandle(u: string) {
+  const parts = String(u || '').replace(/^https?:\/\/(?:[a-z]+\.)?facebook\.com\//i, '').split(/[/?#]/).filter(Boolean);
+  if (!parts.length) return '';
+  if (parts[0] === 'pages') return (parts[1] || '').toLowerCase();
+  if (/^(profile\.php|people|groups|events|share|sharer)/i.test(parts[0])) return '';
+  return parts[0].toLowerCase();
+}
+const realSocial = (u: string, kind: 'ig' | 'fb' | 'tt') => {
+  const h = kind === 'ig' ? igHandle(u) : kind === 'fb' ? fbHandle(u) : pathHandle(u, /tiktok\.com\/@([^/?#]+)/i);
+  return h && !TEMPLATE_HANDLES.has(h.replace(/[._-]/g, '')) ? h : '';
 };
 
 // ---- Google Places (New) ----
@@ -193,6 +217,7 @@ async function instagram(handle: string) {
     if (!r.ok) return { error: `apify ${r.status}` };
     const rows = (await r.json()) as any[];
     const p = rows.find((x) => String(x.username || '').toLowerCase() === handle) || null;
+    if (p?.error && p.error !== 'not_found') return { error: `instagram ${p.error}` };
     if (!p || p.error) return { profile: null };
     const posts = (p.latestPosts || []).map((x: any) => Date.parse(x.timestamp)).filter((n: number) => n > 0).sort((a: number, b: number) => b - a);
     return {
@@ -231,7 +256,7 @@ async function website(url: string) {
   const withAlt = imgs.filter((t) => /\balt=["'][^"']{2,}["']/i.test(t)).length;
   const hrefs = [...html.matchAll(/<a\b[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map((m) => ({ href: decode(m[1]).trim(), text: textOf(m[2]).slice(0, 80) }));
   const abs = (h: string) => { try { return new URL(h, base).toString(); } catch { return ''; } };
-  const social = (re: RegExp) => hrefs.map((a) => a.href).find((h) => re.test(h)) || '';
+  const social = (re: RegExp, kind: 'ig' | 'fb' | 'tt') => hrefs.map((a) => a.href).find((h) => re.test(h) && realSocial(h, kind)) || '';
   const text = textOf(html);
   const years = [...text.matchAll(/(?:©|&copy;|copyright)\s*(?:\d{4}\s*[-–]\s*)?(\d{4})/gi)].map((m) => +m[1]).filter((y) => y > 1995 && y < 2100);
 
@@ -270,8 +295,8 @@ async function website(url: string) {
     opened: true, status: home.status, url: home.url, https: base.protocol === 'https:',
     title, description: meta('description'), robotsMeta: meta('robots'), viewport: /<meta[^>]+name=["']viewport["']/i.test(html),
     h1s, ldTypes, imgCount: imgs.length, imgAlt: withAlt,
-    digits: html.replace(/\D/g, ''), text: text.slice(0, 200_000),
-    instagram: social(/instagram\.com\//i), facebook: social(/facebook\.com\/(?!sharer|share|dialog|plugins|tr\b)/i), tiktok: social(/tiktok\.com\/@/i),
+    digits: html.replace(/\D/g, ''), text: text.slice(0, 200_000), ld: decode(ld).slice(0, 50_000),
+    instagram: social(/instagram\.com\//i, 'ig'), facebook: social(/facebook\.com\/(?!sharer|share|dialog|plugins|tr\b)/i, 'fb'), tiktok: social(/tiktok\.com\/@/i, 'tt'),
     order: hrefs.filter((a) => ORDER_RE.test(a.href) || ORDER_TEXT_RE.test(a.text)).map((a) => abs(a.href)).slice(0, 5),
     hours: DAY_RE.test(text), years, menu, linksChecked: linkResults.length, broken,
     blockedAll, sitemap: (sitemap.ok && /<(urlset|sitemapindex)/i.test(sitemap.text)) || /^sitemap:/im.test(robots.text || ''),
@@ -308,7 +333,9 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
     const num = street.match(/^\d+/)?.[0] || '';
     const word = street.replace(/^\d+\s*/, '').split(/\s+/).find((x) => x.length > 2 && !/^(n|s|e|w|ne|nw|se|sw|north|south|east|west)$/i.test(x)) || '';
     const phoneOk = !phone || site.digits.includes(phone);
-    const addrOk = !num || (site.text.includes(num) && (!word || site.text.toLowerCase().includes(word.toLowerCase())));
+    // Google reads the restaurant markup too, so an address there counts for the match (w_contact asks for it on screen).
+    const hay = `${site.text} ${site.ld}`.toLowerCase().replace(/\bsouthwest\b/g, 'sw').replace(/\bnorthwest\b/g, 'nw').replace(/\bsoutheast\b/g, 'se').replace(/\bnortheast\b/g, 'ne').replace(/\bstreet\b/g, 'st').replace(/\bavenue\b/g, 'ave');
+    const addrOk = !num || (hay.includes(num) && (!word || hay.includes(word.toLowerCase())));
     if (phoneOk && addrOk) return ['good', 'Your website shows the same phone and street address as Google.'];
     const miss = [!phoneOk ? `the phone Google has (${p.nationalPhoneNumber})` : '', !addrOk ? `the address Google has (${street})` : ''].filter(Boolean).join(' or ');
     return ['fix', `Your home page does not show ${miss}.`];
@@ -334,14 +361,17 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
 
   // Website
   if (!inp.website && !w?.url) add('w_found', 'fix', 'We could not find a website for you, on Google or in our Directory.');
+  else if (!site && [401, 403, 406, 429, 503].includes(w?.status) && ps?.performance != null) add('w_found', 'review', `Your website (${inp.website || w?.url}) opens in a browser, but it turned our check away (${w.status}). Make sure its security settings do not block Google too.`);
   else if (!site) add('w_found', 'fix', `Your website (${inp.website || w?.url}) did not open for us${w?.status ? ` (it answered ${w.status})` : ''}.`);
   else add('w_found', 'good', `Your website opened: ${site.url}`);
   const ws = (key: string, fn: () => [State, string]) => (site ? add(key, ...fn()) : add(key, 'skip', 'Needs a working website first.'));
+  // Google's own test loads the site like a browser, so its results stand even when the site turned our check away.
+  const pss = (key: string, fn: () => [State, string]) => (site || ps?.performance != null ? add(key, ...fn()) : add(key, 'skip', 'Needs a working website first.'));
   ws('w_https', () => site.https ? ['good', 'Your site uses https.'] : ['fix', 'Your site opens without https.']);
   ws('w_mobile', () => site.viewport ? ['good', 'Your site is set up for phones.'] : ['fix', 'Your home page is missing the setting that makes it fit a phone screen.']);
-  ws('w_speed', () => ps?.performance == null ? ['review', 'Google\'s speed test could not finish on your site.']
+  pss('w_speed', () => ps?.performance == null ? ['review', 'Google\'s speed test could not finish on your site.']
     : ps.performance >= 0.5 ? ['good', `Google rates your phone speed ${pct(ps.performance)} out of 100.`] : ['fix', `Google rates your phone speed ${pct(ps.performance)} out of 100${ps.lcp ? `; the main content takes ${ps.lcp} to appear` : ''}.`]);
-  ws('w_a11y', () => ps?.accessibility == null ? ['review', 'Google\'s accessibility check could not finish on your site.']
+  pss('w_a11y', () => ps?.accessibility == null ? ['review', 'Google\'s accessibility check could not finish on your site.']
     : ps.accessibility >= 0.9 ? ['good', `Google rates your accessibility ${pct(ps.accessibility)} out of 100.`] : ['fix', `Google rates your accessibility ${pct(ps.accessibility)} out of 100.`]);
   ws('w_contact', () => {
     const phone = String(p?.nationalPhoneNumber || inp.phone || '').replace(/\D/g, '').slice(-10);
@@ -392,7 +422,7 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
     if (m.kind === 'thin') return ['review', 'Your menu page has little text on it; it may be pictures or an embedded file.'];
     return ['fix', 'We did not find a menu on your website.'];
   });
-  ws('s_psi_seo', () => ps?.seo == null ? ['review', 'Google\'s SEO check could not finish on your site.']
+  pss('s_psi_seo', () => ps?.seo == null ? ['review', 'Google\'s SEO check could not finish on your site.']
     : ps.seo >= 0.9 ? ['good', `Google's SEO check gives you ${pct(ps.seo)} out of 100.`] : ['fix', `Google's SEO check gives you ${pct(ps.seo)} out of 100.`]);
 
   // Social
@@ -400,11 +430,12 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
   if (ig?.error && handle) add('x_ig_found', 'review', `We could not open @${handle} just now, so this was not checked.`);
   else if (prof) add('x_ig_found', 'good', `Found @${prof.username}${prof.followers != null ? `, ${prof.followers.toLocaleString('en-US')} followers` : ''}.`);
   else if (ig?.profile?.private) add('x_ig_found', 'fix', `@${handle} is a private account, so new guests cannot see your food.`);
-  else if (handle) add('x_ig_found', 'fix', `We could not find the Instagram @${handle}.`);
+  else if (handle) add('x_ig_found', 'fix', `We could not find the Instagram @${handle}; it may have been renamed or deleted.`);
   else add('x_ig_found', 'fix', 'We did not find an Instagram for you on your website or in our Directory.');
   const xs = (key: string, fn: () => [State, string]) => (prof ? add(key, ...fn()) : add(key, 'skip', 'Needs a public Instagram first.'));
   if (!site) add('x_ig_linked', 'skip', 'Needs a working website first.');
   else if (!handle) add('x_ig_linked', 'fix', 'Your website does not link to an Instagram.');
+  else if (!prof && !ig?.error && !ig?.profile?.private && site.instagram && igHandle(site.instagram) === handle) add('x_ig_linked', 'fix', `Your website links to @${handle}, which does not exist on Instagram.`);
   else add('x_ig_linked', site.instagram && igHandle(site.instagram) === handle ? 'good' : 'fix',
     site.instagram && igHandle(site.instagram) === handle ? 'Your website links to your Instagram.' : site.instagram ? `Your website links to a different Instagram (@${igHandle(site.instagram)}).` : 'Your website does not link to your Instagram.');
   xs('x_ig_recent', () => !prof.latest ? ['fix', 'Your account has no posts we could see.']
@@ -422,7 +453,7 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
   add('x_fb', fb ? 'good' : 'fix', fb ? 'We found your Facebook page.' : 'We did not find a Facebook page linked from your website or your Directory listing.');
   const tt = inp.tiktok || site?.tiktok || '';
   add('x_tiktok', tt ? 'good' : 'fix', tt ? 'We found your TikTok.' : 'We did not find a TikTok linked from your website or your Directory listing.');
-  const hs = [handle, tt && pathHandle(tt, /tiktok\.com\/@([^/?#]+)/i), fb && pathHandle(fb, /facebook\.com\/([^/?#]+)/i)].filter(Boolean) as string[];
+  const hs = [handle, tt && realSocial(tt, 'tt'), fb && realSocial(fb, 'fb')].filter(Boolean) as string[];
   const norm = (h: string) => h.replace(/[._-]/g, '');
   add('x_handles', hs.length < 2 ? 'skip' : new Set(hs.map(norm)).size === 1 ? 'good' : 'review',
     hs.length < 2 ? 'Needs two or more accounts to compare.' : new Set(hs.map(norm)).size === 1 ? 'Your handles match.' : `Your handles differ: ${hs.map((h) => '@' + h).join(', ')}.`);
@@ -468,7 +499,7 @@ async function runAudit(id: string) {
         if (!h && siteUrl) {
           // The handle may only be on their site: read the home page first (cheap) so Instagram can run.
           const home = await get(siteUrl, 10000);
-          h = igHandle(home.text.match(/instagram\.com\/[A-Za-z0-9._]+/i)?.[0] || '');
+          h = [...home.text.matchAll(/instagram\.com\/[A-Za-z0-9._]+/gi)].map((m) => realSocial(m[0], 'ig')).find(Boolean) || '';
         }
         return h ? { handle: h, ...(await instagram(h)) } : { handle: '', error: 'no handle' };
       })(),
