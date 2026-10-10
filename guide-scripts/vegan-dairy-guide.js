@@ -95,7 +95,23 @@
     ['Dates', /dates/i], ['Chickpeas (aquafaba)', /aquafaba|chickpea/i]
   ];
   // Cookbook covers from Open Library, for the four with a cover on file.
-  var COVERS = [['Super Easy Vegan Cheese Cookbook', '12087441'], ['One-Hour Dairy-Free Cheese', '9165674'], ['Breaking Up with Dairy', '14849260'], ['Incredible Vegan Ice Cream', '10254059']];
+  // Cookbook covers, held in our storage as each cookbook listing's square picture (Sean, 2026-10-10: "it needs to still feed
+  // into our directory"): the cover centered on a square, from Open Library.
+  var COVER_BASE = SB + '/storage/v1/object/public/vegan-media/media/logos/books/';
+  var COVERS = [['Super Easy Vegan Cheese Cookbook', 'super-easy-vegan-cheese-cookbook-by-janice-buckingham'], ['One-Hour Dairy-Free Cheese', 'one-hour-dairy-free-cheese-by-claudia-lucero'],
+    ['Breaking Up with Dairy', 'breaking-up-with-dairy-by-bailey-ruskus'], ['Incredible Vegan Ice Cream', 'incredible-vegan-ice-cream-by-deena-jalal']];
+  // Pictures beside every item (Sean, 2026-10-10: "everything should have an image to the left of it... photorealistic images
+  // ... and then eventually replace it out once we get real photos"). Generated photos, labelled illustrative where they
+  // open. A swap uses its own picture, else its homemade recipe's, else a plain tile until one is made.
+  var IMG_BASE = SB + '/storage/v1/object/public/vegan-media/media/guides/dairy/';
+  var SWAP_IMG = { 'sour-cream': 's-sour-cream', milk: 'r-maya-nut-milk', buttermilk: 'r-maya-homemade-buttermilk', 'heavy-cream-cooking': 'r-maya-homemade-heavy-cream',
+    'whipped-cream': 'r-maya-homemade-whipped-cream', 'cream-cheese': 'r-maya-homemade-cream-cheese', parmesan: 'r-maya-homemade-parmesan', 'cheese-sauce': 'r-maya-homemade-cheese-sauce',
+    ricotta: 'r-maya-homemade-ricotta', 'evaporated-milk': 'r-maya-homemade-evaporated-milk', 'sweetened-condensed-milk': 'r-maya-homemade-sweetened-condensed-milk', ghee: 'r-maya-homemade-ghee' };
+  function swapImg(s) { var f = SWAP_IMG[slugify(s.replace)]; return f ? IMG_BASE + f + '.jpg' : ''; }
+  var LEAF_SVG = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19c0-8 6-14 15-14 0 9-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>';
+  function thumb(url, alt) {
+    return '<span class="dg-th' + (url ? '' : ' dg-th-none') + '" role="img" aria-label="' + esc(alt) + '"' + (url ? ' style="background-image:url(\'' + esc(url) + '\')"' : '') + '>' + (url ? '' : LEAF_SVG) + '</span>';
+  }
 
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   var ICON = {
@@ -232,13 +248,29 @@
   }
   var sortPref = 'votes';
 
-  function swapCard(s) {
-    return '<div class="dg-swap"><h3>' + esc(s.replace) + '</h3><dl><dt>Shelf</dt><dd>' + esc(s.shelf) + '</dd><dt>Pantry</dt><dd>' + esc(s.pantry) + '</dd></dl>' +
-      (s.tip ? '<div class="dg-tip">' + esc(s.tip) + '</div>' : '') + '</div>';
+  function swapCard(s, free) {
+    var key = slugify(s.replace);
+    return '<div class="dg-srow">' + thumb(swapImg(s), s.replace) + '<div class="dg-srow-b"><h3>' + esc(s.replace) + '</h3><dl><dt>Shelf</dt><dd>' + esc(s.shelf) + '</dd><dt>Pantry</dt><dd>' + esc(s.pantry) + '</dd></dl>' +
+      (s.tip ? '<div class="dg-tip">' + esc(s.tip) + '</div>' : '') + '</div>' + (free ? '' : gvoteBtn('swap', key)) + '</div>';
+  }
+  // Votes on swaps and episodes (Sean, 2026-10-10: "everything to be votable once they're a guide member... so you see which
+  // ones are the most popular"). Recipes keep their own votes; brands and cookbooks use the Directory's.
+  var GV = { counts: { swap: {}, episode: {} }, mine: { swap: {}, episode: {} } }, gvLoaded = false;
+  function loadGVotes(then) {
+    cookApi({ action: 'gvotes' }).then(function (d) {
+      if (d && d.counts) { GV.counts = d.counts; GV.mine = { swap: {}, episode: {} }; ['swap', 'episode'].forEach(function (k) { (d.mine[k] || []).forEach(function (x) { GV.mine[k][x] = 1; }); }); gvLoaded = true; }
+      if (then) then();
+    }).catch(function () { if (then) then(); });
+  }
+  function gvCount(kind, key) { return (GV.counts[kind] || {})[key] || 0; }
+  function gvoteBtn(kind, key) {
+    var on = !!GV.mine[kind][key];
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="' + kind + ':' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(kind, key) + '</b></button>';
   }
   function podCard(p) {
-    return '<a class="dg-pod" href="#/pulse/watch/' + encodeURIComponent(p.slug) + '"><div class="dg-pod-img" style="background-image:url(\'' + esc(p.thumbnail_url || '') + '\')"></div>' +
-      '<div class="dg-pod-b"><div class="dg-pod-show">' + esc(p.podcast_show || 'Vegans Explore') + '</div><div class="dg-pod-t">' + esc(p.title) + '</div><div class="dg-pod-s">' + esc(p.summary || '') + '</div></div></a>';
+    return '<div class="dg-pod-w"><a class="dg-pod" href="#/pulse/watch/' + encodeURIComponent(p.slug) + '"><div class="dg-pod-img" style="background-image:url(\'' + esc(p.thumbnail_url || '') + '\')"></div>' +
+      '<div class="dg-pod-b"><div class="dg-pod-show">' + esc(p.podcast_show || 'Vegans Explore') + '</div><div class="dg-pod-t">' + esc(p.title) + '</div><div class="dg-pod-s">' + esc(p.summary || '') + '</div></div></a>' +
+      (member() ? gvoteBtn('episode', p.slug) : '') + '</div>';
   }
 
   // ---------- views ----------
@@ -279,7 +311,9 @@
         : '<h3>' + esc(f.title) + '</h3><p>' + esc(f.text) + '</p>' + sources(f.sources) +
           (n < facts.length - 1 ? '<a class="dg-fact-next" href="#/pulse/fact/' + (n + 1) + '">Next fact &rsaquo;</a>' : '')) + '</div></div>';
     } else {
-      var grid = PODS ? (PODS.map(podCard).join('') || '<p class="dg-empty">No episodes yet.</p>') : '<div class="dg-loading">Loading...</div>';
+      var pods = PODS ? PODS.map(function (x, i) { return [x, i]; }).sort(function (a, b) { return gvCount('episode', b[0].slug) - gvCount('episode', a[0].slug) || a[1] - b[1]; }).map(function (x) { return x[0]; }) : null;
+      var grid = pods ? (pods.map(podCard).join('') || '<p class="dg-empty">No episodes yet.</p>') : '<div class="dg-loading">Loading...</div>';
+      if (member() && !gvLoaded) loadGVotes(function () { if (curTab === 'pulse' && /listen/.test(location.hash)) viewPulse('listen'); });
       html += member() ? '<div class="dg-pods">' + grid + '</div>' : gated('<div class="dg-pods">' + grid + '</div>', 'Every episode on dairy', 'Watch our podcasts and interviews on dairy right here in the Guide.');
     }
     main.innerHTML = html;
@@ -330,7 +364,7 @@
     var group = groupSlug ? groupBySlug(groupSlug) : null, ex = PUB.swap_example;
     if (!member()) {
       main.innerHTML = head('Swaps', 'Swap it out', 'How to replace each dairy item: grab one from the shelf, or make it from what is already in your pantry.') +
-        '<div class="dg-swappv"><div><span class="dg-free">Free to try</span>' + swapCard(ex) + '</div>' +
+        '<div class="dg-swappv"><div><span class="dg-free">Free to try</span>' + swapCard(ex, true) + '</div>' +
         '<div class="dg-more"><h4>More swaps ' + (priced() ? 'in the full Guide' : 'with membership') + '</h4>' + SWAP_NAMES.map(function (g) {
           return '<div class="dg-more-g"><b>' + esc(g[0]) + '</b>' + g[1].map(function (x) { return '<span>' + LOCK_SVG + esc(x) + '</span>'; }).join('') + '</div>';
         }).join('') + ctaBtns(true) + '</div></div>';
@@ -338,18 +372,25 @@
     }
     var t = toggles([['All', '#/swaps']].concat(SWAP_GROUPS.map(function (g) { return [g, '#/swaps/' + slugify(g)]; })), group || 'All');
     main.innerHTML = head('Swaps', group ? esc(group) : 'Swap it out', 'Grab one from the shelf, or make it from what is already in your pantry.', t) +
-      '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search swaps (buttermilk, cream cheese...)" aria-label="Search swaps"><span class="dg-count" id="dgCountS"></span></div>' +
-      '<div class="dg-grid" id="dgList"></div><div style="margin-top:14px">' + sources(MEM.swap_sources) + '</div>';
+      '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search swaps (buttermilk, cream cheese...)" aria-label="Search swaps">' +
+      '<select class="dg-sort" id="dgSwapSort" aria-label="Sort swaps"><option value="votes">Most votes</option><option value="az">A to Z</option></select><span class="dg-count" id="dgCountS"></span></div>' +
+      '<div class="dg-srows" id="dgList"></div><div style="margin-top:14px">' + sources(MEM.swap_sources) + '</div>';
     var fEl = document.getElementById('dgFilter');
     function draw() {
       var q = fEl.value.trim().toLowerCase();
       var rows = MEM.swaps.filter(function (s) { return (!group || s.group === group) && (!q || JSON.stringify(s).toLowerCase().indexOf(q) >= 0); });
+      if (swapSort === 'az') rows.sort(function (a, b) { return a.replace.localeCompare(b.replace); });
+      else rows = rows.map(function (s, i) { return [s, i]; }).sort(function (a, b) { return gvCount('swap', slugify(b[0].replace)) - gvCount('swap', slugify(a[0].replace)) || a[1] - b[1]; }).map(function (x) { return x[0]; });
       document.getElementById('dgCountS').textContent = rows.length + (rows.length === 1 ? ' swap' : ' swaps');
-      document.getElementById('dgList').innerHTML = rows.map(swapCard).join('') || '<p class="dg-empty">No match. Try another word.</p>';
+      document.getElementById('dgList').innerHTML = rows.map(function (s) { return swapCard(s); }).join('') || '<p class="dg-empty">No match. Try another word.</p>';
     }
     fEl.addEventListener('input', draw);
+    var sEl = document.getElementById('dgSwapSort'); sEl.value = swapSort;
+    sEl.addEventListener('change', function () { swapSort = sEl.value; draw(); });
     draw();
+    if (!gvLoaded) loadGVotes(function () { if (curTab === 'swaps') draw(); });
   }
+  var swapSort = 'votes';
 
   // The Cookbook (Sean, 2026-10-07; Phase 1 built 2026-10-10). Recipes come from ve-cookbook: Maya's (Guide badge) and
   // the ones members share (Waiting for approval until Sean approves them in Depot > Cookbook; 50 points when they go in).
@@ -361,6 +402,7 @@
   function cookApi(body) {
     var a = auth(), tok = a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null, h = { 'Content-Type': 'application/json' };
     if (tok) h.Authorization = 'Bearer ' + tok;
+    if (!body.guide) body.guide = 'vegan-dairy-guide'; // the Cookbook here is the Guide's: its owners are its members
     return fetch(COOK_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
   }
   function loadCookbook(then) {
@@ -375,17 +417,17 @@
   function recipeBySlug(slug) { var f = null; (COOK || []).forEach(function (r) { if (r.slug === slug) f = r; }); return f; }
   var STATUS_TAG = { pending: ['Waiting for approval', 'wait'], live: ['Live', 'live'], retesting: ['Being retested', 'retest'], rejected: ['Needs a change', 'change'], retired: ['Not live', 'off'] };
   function tag(st) { var t = STATUS_TAG[st]; return t ? '<span class="dg-tag dg-tag-' + t[1] + '">' + esc(t[0]) + '</span>' : ''; }
+  // Maya's own recipes carry no name (Sean, 2026-10-10: "she's the only guide in this book... it's implied"); a member's or a
+  // chef's does.
   function byline(r) {
-    if (r.author.kind === 'guide') {
-      var art = window.VEGuideArt ? VEGuideArt(r.author.guide || 'maya', 'square') : '';
-      return '<span class="dg-by">' + (art ? '<i style="background-image:url(\'' + esc(art) + '\')"></i>' : '') + '<b>' + esc(r.author.name) + '</b><span class="dg-badge">Guide</span></span>';
-    }
+    if (r.author.kind === 'guide') return '';
     return '<span class="dg-by"><b>' + esc(r.author.name) + '</b><span class="dg-badge dg-badge-m">' + (r.author.kind === 'chef' ? 'Chef' : 'Member') + '</span></span>';
   }
   function recipeTile(r) {
-    return '<a class="dg-rcp" href="#/cookbook/r/' + encodeURIComponent(r.slug) + '"><div class="dg-rcp-top">' + byline(r) + (r.status === 'retesting' ? tag('retesting') : '') + '</div>' +
-      '<h3>' + esc(r.title) + '</h3><div class="dg-rcp-meta">' + [r.time, r.steps.length > 1 ? r.steps.length + ' steps' : 'One step'].filter(Boolean).map(esc).join(' &middot; ') +
-      '<span class="dg-votes' + (VOTED[r.id] ? ' on' : '') + '">' + HEART + (r.votes || 0) + '</span></div></a>';
+    return '<a class="dg-rrow" href="#/cookbook/r/' + encodeURIComponent(r.slug) + '">' + thumb(r.photo, r.title) + '<div class="dg-rrow-b">' +
+      (byline(r) || r.status === 'retesting' ? '<div class="dg-rcp-top">' + byline(r) + (r.status === 'retesting' ? tag('retesting') : '') + '</div>' : '') +
+      '<h3>' + esc(r.title) + '</h3><div class="dg-rcp-meta">' + [r.time, r.ingredients.length ? r.ingredients.length + ' ingredients' : '', r.steps.length > 1 ? r.steps.length + ' steps' : 'One step'].filter(Boolean).map(esc).join(' &middot; ') +
+      '</div><span class="dg-votes' + (VOTED[r.id] ? ' on' : '') + '">' + HEART + (r.votes || 0) + '</span></div></a>';
   }
   var HEART = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
 
@@ -400,7 +442,7 @@
       main.innerHTML = head('Cookbook', 'The Cookbook', 'An ongoing list of recipes you can make at home, and the dairy-free cookbooks people love most. Members share their own, too. The list keeps growing.') +
         '<div class="dg-cookpv"><div>' + gated('<div class="dg-grid">' + names.map(function (r) { return skel(r, 3); }).join('') + '</div>', 'Recipes and cookbooks', 'Dairy-free recipes from Maya and members, and the cookbooks members rank highest.') + '</div>' +
         '<div><div class="dg-k" style="margin-bottom:10px">Cookbooks, voted on by members</div><div class="dg-books">' + COVERS.map(function (c) {
-          return '<img src="https://covers.openlibrary.org/b/id/' + c[1] + '-M.jpg" alt="' + esc(c[0]) + ' cover" loading="lazy">'; }).join('') + '</div></div></div>';
+          return '<img src="' + COVER_BASE + c[1] + '.jpg" alt="' + esc(c[0]) + ' cover" loading="lazy">'; }).join('') + '</div></div></div>';
       if (COOK_TITLES == null) loadCookbook(function () { if (curTab === 'cookbook' && !member()) viewCookbook(sub); });
       return;
     }
@@ -415,7 +457,7 @@
     var body = '';
     if (cur === '') {
       body = '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search recipes (cashew, ice cream...)" aria-label="Search recipes" value="' + esc(cookFilter) + '">' + share + '</div>' +
-        '<div class="dg-grid" id="dgList">' + (COOK ? '' : '<div class="dg-loading">Loading recipes...</div>') + '</div>';
+        '<div class="dg-rrows" id="dgList">' + (COOK ? '' : '<div class="dg-loading">Loading recipes...</div>') + '</div>';
     } else if (cur === 'make') body = '<div class="dg-chips" id="dgPantry">' + PANTRY.map(function (p, i) { return '<button type="button" class="dg-chip" data-p="' + i + '" aria-pressed="' + !!pantryPick[i] + '">' + esc(p[0]) + '</button>'; }).join('') + '</div><div class="dg-grid" id="dgMake"></div>';
     else if (cur === 'books') body = dirTools([], 'Search cookbooks (cheese, ice cream...)', 'Search cookbooks') + dirGrid('dgList', BOOKS ? '' : '<div class="dg-loading">Loading cookbooks...</div>') +
       '<div class="dg-k" style="margin:22px 0 10px">Resources</div><div class="dg-grid">' + MEM.resources.map(function (r) {
@@ -480,28 +522,106 @@
     }
   }
 
-  // One recipe on its own: who made it, what goes in, the steps, a vote and "didn't work for me".
-  var reportOpen = false;
+  // One recipe on its own: the words on the left and its picture on the right (Sean, 2026-10-10), a shopping list (each
+  // dairy item to the Guide's brands, anything else to Amazon until affiliate links are set up), the steps, a vote,
+  // "didn't work for me", and Made it?: members' own photos (photos only; each one waits for Sean in Depot > Cookbook).
+  var reportOpen = false, photoState = {};
+  var SHOP_SKIP = /^((filtered |cold |warm |hot )?water|salt|salt and pepper|sugar|oil)$/;
+  var SHOP_GUIDE = [[/\b(soy|plant|oat|almond) milk\b/, 'milk', 'Brands to buy'], [/\bplant yogurt\b/, 'yogurt', 'Brands to buy']];
+  var SHOP_NAME = { 'a starter: probiotic powder or a few spoons of live plant yogurt': 'vegan yogurt starter culture', 'or: aquafaba, the liquid from a can of chickpeas': 'canned chickpeas' };
+  function shopName(ing) {
+    var t = ing.toLowerCase().trim();
+    if (SHOP_NAME[t]) return SHOP_NAME[t];
+    return t.replace(/^(or: )/, '').replace(/^[\d\s\/.]+(to [\d\s\/.]+)?\s*/, '').replace(/^(cups?|tbsp|tsp|oz|can|cans)\s+/, '').replace(/^(a few|a pinch of|a can of)\s+/, '')
+      .replace(/,.*$/, '').replace(/\b(soaked|boiled|frozen ripe|frozen|raw|fresh)\s+/g, '').trim();
+  }
+  function shopLink(ing) {
+    var n = shopName(ing);
+    if (!n || SHOP_SKIP.test(n)) return '';
+    for (var i = 0; i < SHOP_GUIDE.length; i++) if (SHOP_GUIDE[i][0].test(ing.toLowerCase())) return '<a class="dg-shop" href="#/brands/' + SHOP_GUIDE[i][1] + '">' + SHOP_GUIDE[i][2] + '</a>';
+    return '<a class="dg-shop" href="https://www.amazon.com/s?k=' + encodeURIComponent(n) + '" target="_blank" rel="noopener">Find it on Amazon</a>';
+  }
+  function haveKey(r) { return 'dg_have_' + r.id; }
+  function haveList(r) { try { return JSON.parse(localStorage.getItem(haveKey(r)) || '{}'); } catch (e) { return {}; } }
   function viewRecipe(slug) {
     var crumbs = crumb([['Cookbook', '#/cookbook'], ['Recipes', '#/cookbook']]);
     if (!COOK) { main.innerHTML = crumbs + '<div class="dg-loading">Loading...</div>'; loadCookbook(function () { if (location.hash.indexOf('#/cookbook/r/') === 0) viewRecipe(slug); }); return; }
     var r = recipeBySlug(slug);
     if (!r) { main.innerHTML = crumbs + '<p class="dg-empty">That recipe is not in the Cookbook.</p>'; return; }
-    var voted = !!VOTED[r.id], reported = !!REPORTED[r.id];
+    var voted = !!VOTED[r.id], reported = !!REPORTED[r.id], have = haveList(r);
     main.innerHTML = crumb([['Cookbook', '#/cookbook'], ['Recipes', '#/cookbook'], [r.title]]) +
-      '<div class="dg-recipe-v"><div class="dg-recipe-h"><div>' + byline(r) + '<h2 class="dg-h1">' + esc(r.title) + '</h2>' +
+      '<div class="dg-recipe-v"><div class="dg-recipe-top"><div class="dg-recipe-l">' + byline(r) + '<h2 class="dg-h1">' + esc(r.title) + '</h2>' +
       (r.summary ? '<p class="dg-lede" style="margin-bottom:6px">' + esc(r.summary) + '</p>' : '') +
-      '<div class="dg-rcp-meta">' + [r.time, r.servings ? 'Serves ' + r.servings : ''].filter(Boolean).map(esc).join(' &middot; ') + '</div></div>' +
+      '<div class="dg-rcp-meta">' + [r.time, r.servings ? 'Serves ' + r.servings : ''].filter(Boolean).map(esc).join(' &middot; ') + '</div>' +
       '<div class="dg-recipe-acts">' + (r.status === 'retesting' ? tag('retesting') : '') +
-      '<button type="button" class="dg-vote' + (voted ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + voted + '">' + HEART + '<span>' + (voted ? 'You love this' : 'Vote') + '</span><b>' + (r.votes || 0) + '</b></button></div></div>' +
-      (r.status === 'retesting' ? '<p class="dg-note" style="margin:0 0 14px">A few members said this one did not work for them, so we are making it again. It stays here while we do.</p>' : '') +
-      '<div class="dg-recipe-b">' + (r.ingredients.length ? '<div><div class="dg-k">What you need</div><ul class="dg-ing">' + r.ingredients.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>' : '') +
-      '<div><div class="dg-k">' + (r.steps.length > 1 ? 'Steps' : 'How to make it') + '</div><ol class="dg-steps">' + r.steps.map(function (st) { return '<li>' + esc(st) + '</li>'; }).join('') + '</ol>' +
-      (r.tip ? '<div class="dg-note">Tip: ' + esc(r.tip) + '</div>' : '') + '</div></div>' +
+      '<button type="button" class="dg-vote' + (voted ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + voted + '">' + HEART + '<span>' + (voted ? 'You love this' : 'Vote') + '</span><b>' + (r.votes || 0) + '</b></button></div>' +
+      (r.status === 'retesting' ? '<p class="dg-note" style="margin:10px 0 0">A few members said this one did not work for them, so we are making it again. It stays here while we do.</p>' : '') +
+      (r.ingredients.length ? '<div class="dg-k" style="margin-top:16px">Shopping list</div><ul class="dg-shoplist">' + r.ingredients.map(function (i, n) {
+        return '<li><label><input type="checkbox" data-have="' + esc(r.id) + ':' + n + '"' + (have[n] ? ' checked' : '') + '><span>' + esc(i) + '</span></label>' + shopLink(i) + '</li>'; }).join('') + '</ul>' : '') +
+      '</div><figure class="dg-recipe-pic">' + thumb(r.photo, r.title) + (r.photo && r.photo_illustrative ? '<figcaption>Illustrative photo. Made it? Add yours below.</figcaption>' : '') + '</figure></div>' +
+      '<div class="dg-k">' + (r.steps.length > 1 ? 'Steps' : 'How to make it') + '</div><ol class="dg-steps">' + r.steps.map(function (st) { return '<li>' + esc(st) + '</li>'; }).join('') + '</ol>' +
+      (r.tip ? '<div class="dg-note">Tip: ' + esc(r.tip) + '</div>' : '') +
+      '<div class="dg-made"><div class="dg-made-h"><div><div class="dg-k">Made it?</div><p>Share a photo of yours. We add it here once we have had a look.</p></div>' +
+      '<label class="dg-btn dg-ghost dg-upload">Add your photo<input type="file" accept="image/*" data-photo="' + esc(r.id) + '" hidden></label></div>' +
+      '<span class="dg-status" role="status" id="dgPhotoStatus"></span><div class="dg-gallery" id="dgGallery"><div class="dg-loading">Loading photos...</div></div></div>' +
       '<div class="dg-report" id="dgReport">' + (reported ? '<p>Thank you for telling us it did not work for you. We read every note.</p>'
         : reportOpen ? '<label for="dgRepNote"><b>What went wrong?</b> (optional)</label><textarea id="dgRepNote" rows="2" maxlength="600" placeholder="Too thin, split when heated, the timing was off..."></textarea><div class="dg-btns"><button type="button" class="dg-btn dg-ghost" data-report="' + esc(r.id) + '">Send it</button><button type="button" class="dg-link" data-report-cancel>Never mind</button></div><span class="dg-status" role="status"></span>'
         : '<button type="button" class="dg-link" data-report-open>Didn\'t work for me</button>') + '</div></div>';
+    drawGallery(r.id);
   }
+  function drawGallery(rid) {
+    var draw = function (d) {
+      var el = document.getElementById('dgGallery'); if (!el) return;
+      var tiles = (d.mine || []).map(function (p) { return '<figure class="dg-gp dg-gp-wait"><span style="background-image:url(\'' + esc(p.url) + '\')"></span><figcaption>' + (p.status === 'rejected' ? 'Not added' : 'Waiting for approval') + '</figcaption></figure>'; })
+        .concat((d.photos || []).map(function (p) { return '<figure class="dg-gp"><span style="background-image:url(\'' + esc(p.url) + '\')"></span><figcaption>' + esc(p.name) + '</figcaption></figure>'; }));
+      el.innerHTML = tiles.join('') || '<p class="dg-empty">No photos yet. Be the first to share yours.</p>';
+    };
+    if (photoState[rid]) draw(photoState[rid]);
+    cookApi({ action: 'photos', recipe_id: rid }).then(function (d) { if (d && !d.error) { photoState[rid] = d; draw(d); } else draw({}); }).catch(function () { draw({}); });
+  }
+  // A photo is re-drawn at 1600 px at most before it leaves the phone: smaller to send, and it drops the location data
+  // a camera writes into the file.
+  function shrink(file) {
+    return new Promise(function (ok, no) {
+      var img = new Image(), u = URL.createObjectURL(file);
+      img.onload = function () {
+        var k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+        c.toBlob(function (b) { b ? ok(b) : no(); }, 'image/jpeg', 0.86);
+      };
+      img.onerror = function () { URL.revokeObjectURL(u); no(); };
+      img.src = u;
+    });
+  }
+  function uploadPhoto(rid, file) {
+    var st = document.getElementById('dgPhotoStatus'), say = function (m) { if (st) st.textContent = m; };
+    if (!/^image\//.test(file.type)) return say('That is not a photo. Pick a JPG, PNG or WebP.');
+    say('Sending your photo...');
+    shrink(file).then(function (blob) {
+      return cookApi({ action: 'photo_start', recipe_id: rid, type: 'image/jpeg' }).then(function (d) {
+        if (!d.upload_url) throw (d.message || 'We could not take that photo just now.');
+        return fetch(d.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg', 'x-upsert': 'true' }, body: blob }).then(function (res) {
+          if (!res.ok) throw 'The photo did not send. Try again.';
+          return cookApi({ action: 'photo_done', photo_id: d.photo_id });
+        });
+      });
+    }).then(function (d) {
+      if (!d || !d.ok) throw (d && d.message) || 'The photo did not send. Try again.';
+      say('Thank you! Your photo shows here once we have had a look.'); delete photoState[rid]; drawGallery(rid);
+    }).catch(function (m) { say(typeof m === 'string' ? m : 'We could not read that photo. Try another.'); });
+  }
+  document.addEventListener('change', function (e) {
+    var el = e.target.closest && e.target.closest('[data-photo]');
+    if (el && el.files && el.files[0]) { uploadPhoto(el.getAttribute('data-photo'), el.files[0]); el.value = ''; return; }
+    var hv = e.target.closest && e.target.closest('[data-have]');
+    if (hv) {
+      var parts = hv.getAttribute('data-have').split(':'), key = 'dg_have_' + parts[0], cur = {};
+      try { cur = JSON.parse(localStorage.getItem(key) || '{}'); } catch (x) {}
+      if (hv.checked) cur[parts[1]] = 1; else delete cur[parts[1]];
+      try { localStorage.setItem(key, JSON.stringify(cur)); } catch (x) {}
+    }
+  });
 
   // Share a recipe: three steps, one view each (paginated forms, canon rule 14). The draft stays while they move between steps.
   var DRAFT = { title: '', summary: '', time_text: '', servings: '', ingredients: '', steps: '', tip: '' };
@@ -579,6 +699,19 @@
       }).catch(function () { el.disabled = false; });
       return;
     }
+    if ((el = e.target.closest('[data-gvote]'))) {
+      var kk = el.getAttribute('data-gvote').split(':'), kind = kk[0], key = kk[1], gon = !GV.mine[kind][key];
+      if (!member()) { location.hash = '#/join'; return; }
+      el.disabled = true;
+      cookApi({ action: 'gvote', kind: kind, key: key, on: gon }).then(function (d) {
+        el.disabled = false;
+        if (!d.ok) { el.title = d.message || ''; return; }
+        if (gon) GV.mine[kind][key] = 1; else delete GV.mine[kind][key];
+        GV.counts[kind][key] = d.count;
+        el.classList.toggle('on', gon); el.setAttribute('aria-pressed', String(gon)); el.querySelector('b').textContent = d.count;
+      }).catch(function () { el.disabled = false; });
+      return;
+    }
     if ((el = e.target.closest('[data-vote]'))) {
       var rid = el.getAttribute('data-vote'), on = !VOTED[rid];
       el.disabled = true;
@@ -592,17 +725,33 @@
     }
   });
 
-  function viewLook() {
+  // See for yourself (Sean, 2026-10-10: "a little bit more visual"): one fact at a time, like the research, each led by
+  // its number in large type. Still no graphic images, and still behind the warning.
+  var LOOK_STATS = [['305', 'days of milking after each calf'], ['12', 'hours or less: when most farms take the calf'], ['4', 'days old: the usual age bull calves are sold'],
+    ['35', 'months in the milking herd, for an animal that can live about 20 years'], ['94%', 'of farms remove horn buds; most without pain relief'],
+    ['1 in 3', 'cows had a docked tail in 2014'], ['65%', 'of US milk cows live on farms of more than 1,000']];
+  var LOOK_ICONS = ['<path d="M7 3v3M17 3v3M4 9h16M5 6h14v14H5z"/>', '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>', '<path d="M4 20V10l8-6 8 6v10"/><path d="M10 20v-6h4v6"/>',
+    '<path d="M6 3h12M6 21h12M8 3c0 5 8 6 8 9s-8 4-8 9M16 3c0 5-8 6-8 9"/>', '<path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z"/>', '<path d="M4 12h16M12 4v16"/>', '<path d="M3 20h18M5 20V9l4-3v14M13 20V5l6 4v11"/>'];
+  function viewLook(sub) {
     var h = head('See for yourself', 'How milk is made', 'Plain facts from USDA and dairy-industry sources about how milk is produced on US farms. No graphic images, and always behind a clear warning.');
-    if (!member()) { main.innerHTML = h + gated('<div class="dg-grid">' + skel('', 3) + skel('', 3) + skel('', 3) + skel('', 3) + '</div>', 'When you\'re ready, the plain facts', 'Seven sourced points on how US dairy farms work, and where to go further.'); return; }
+    if (!member()) { main.innerHTML = h + gated('<div class="dg-grid">' + skel('', 3) + skel('', 3) + skel('', 3) + skel('', 3) + '</div>', 'When you\'re ready, the plain facts', 'Sourced facts on how US dairy farms work, and where to go further.'); return; }
     var L = MEM.look;
     if (!lookOpen) {
       main.innerHTML = h + '<div class="dg-door"><p>' + esc(L.door) + '</p><div class="dg-btns"><button type="button" class="dg-btn" id="dgLookGo">Read on</button><a class="dg-btn dg-ghost" href="#/brands">Skip to the brands</a></div></div>';
-      document.getElementById('dgLookGo').addEventListener('click', function () { lookOpen = true; viewLook(); });
+      document.getElementById('dgLookGo').addEventListener('click', function () { lookOpen = true; viewLook(sub); });
       return;
     }
-    main.innerHTML = head('See for yourself', 'How milk is made') + '<ol class="dg-facts">' + L.facts.map(function (f) { return '<li><strong>' + esc(f[0]) + '</strong> ' + esc(f[1]) + '</li>'; }).join('') + '</ol>' + sources(L.sources) +
-      '<p class="dg-lede" style="margin-top:16px"><strong>Go further:</strong> ' + esc(L.further) + '</p>';
+    var n = Math.max(0, Math.min(L.facts.length - 1, parseInt(String(sub || '').split('/')[0], 10) || 0)), f = L.facts[n], st = LOOK_STATS[n] || ['', ''];
+    main.innerHTML = head('See for yourself', 'How milk is made', '') +
+      '<div class="dg-facts2"><div class="dg-fact-list" role="list">' + L.facts.map(function (x, i) {
+        return '<a role="listitem" href="#/look/' + i + '" aria-current="' + (i === n) + '"><span>' + (i + 1) + '</span>' + esc(x[0]) + '</a>'; }).join('') + '</div>' +
+      '<div class="dg-look"><div class="dg-look-stat"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (LOOK_ICONS[n] || '') + '</svg>' +
+      '<div><b>' + esc(st[0]) + '</b><span>' + esc(st[1]) + '</span></div></div>' +
+      '<h3>' + esc(f[0]) + '</h3><p>' + esc(f[1]) + '</p>' +
+      '<div class="dg-look-nav">' + (n > 0 ? '<a class="dg-btn dg-ghost" href="#/look/' + (n - 1) + '">&lsaquo; Back</a>' : '<span></span>') +
+      (n < L.facts.length - 1 ? '<a class="dg-btn" href="#/look/' + (n + 1) + '">Next fact &rsaquo;</a>' : '<a class="dg-btn" href="#/brands">On to the brands &rsaquo;</a>') + '</div>' +
+      (n === L.facts.length - 1 ? '<p class="dg-lede" style="margin:14px 0 0"><strong>Go further:</strong> ' + esc(L.further) + '</p>' : '') +
+      '<div style="margin-top:12px">' + sources(L.sources) + '</div></div></div>';
   }
 
   // The last stop of the tour (Sean, 2026-10-09: "how to get access, why you should get access, that it automatically
@@ -829,7 +978,7 @@
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     ({ overview: viewOverview, pulse: function () { viewPulse(sub); }, brands: function () { viewBrands(sub); }, swaps: function () { viewSwaps(sub); },
-       cookbook: function () { viewCookbook(sub); }, look: viewLook, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); },
+       cookbook: function () { viewCookbook(sub); }, look: function () { viewLook(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); },
        listing: function () { viewListing(decodeURIComponent(sub)); }, product: function () { viewProduct(decodeURIComponent(sub)); } })[view]();
     var moved = key !== curTab;
     curTab = key;
