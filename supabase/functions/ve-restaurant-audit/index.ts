@@ -634,7 +634,8 @@ Deno.serve(async (req) => {
     // The full detail is the Guide: its member, a super admin or ops. A Guide owner may also open any free check in full.
     let full = who.ops || !!who.member?.admin;
     if (!full && who.member) full = a.tier === 'full' ? a.member_id === who.member.id : await ownsGuide(who.member.id);
-    if (a.tier === 'full' && !full) return json({ error: 'not_yours' }, 403);
+    // Anyone else sees the free view. The scan reads only public pages, so a free check can reuse a member's full audit
+    // of the same business this week (nothing is scanned or paid for twice), and the visitor still sees only the free part.
     return json(await present(a, full));
   }
 
