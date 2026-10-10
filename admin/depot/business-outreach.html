@@ -104,6 +104,8 @@
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-outreach';
+      var AUD = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-restaurant-audit';
+      function aud(body) { return fetch(AUD, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       var $ = function (id) { return document.getElementById(id); };
       var V = function () { return $('view'); };
       var data = null;
@@ -138,6 +140,7 @@
             }).join('') + '</div>'
           : '<p class="empty">No sends planned yet. Plan a city below.</p>') + '</section>' +
           '<section class="card batches" id="np-home"><h2>New partners</h2><p class="empty">Loading...</p></section>' +
+          '<section class="card batches" id="ck-home"><h2>Check-ups</h2><p class="empty">Loading...</p></section>' +
           '<section><h2>Cities</h2><div class="grid">' + data.cities.map(function (c) {
             var n = c.counts || {}, emailed = (n.in_sequence || 0) + (n.finished || 0);
             var inb = data.batches.filter(function (b) { return b.community_slug === c.community_slug && b.status !== 'sent'; }).reduce(function (a, b) { return a + b.size; }, 0);
@@ -149,7 +152,7 @@
               '<button type="button" class="btn ' + (c.enabled ? 'btn-warn' : 'btn-ghost') + ' btn-sm" data-switch="' + c.community_slug + '" data-on="' + (c.enabled ? '0' : '1') + '">' + (c.enabled ? 'Pause sending' : 'Turn on sending') + '</button></div>' +
               '<div class="msg" data-found="' + c.community_slug + '" role="status"></div></div>';
           }).join('') + '</div></section>' +
-          '<p class="hint" style="margin-top:16px"><a href="#interested">Interested businesses</a> &middot; <a href="#emails">See the three emails</a></p>';
+          '<p class="hint" style="margin-top:16px"><a href="#interested">Interested businesses</a> &middot; <a href="#checkups">Check-ups</a> &middot; <a href="#emails">See the three emails</a></p>';
         Array.prototype.forEach.call(V().querySelectorAll('[data-find]'), function (b) { b.addEventListener('click', function () { findEmails(b.dataset.find, b); }); });
         api({ action: 'partners' }).then(function (d) {
           var box = $('np-home'); if (!box) return;
@@ -157,6 +160,14 @@
           box.innerHTML = '<h2>New partners</h2>' + (rows.length ? partnerList(rows.slice(0, 6), d.items) + (rows.length > 6 ? '<p class="hint"><a href="#partners">See all ' + rows.length + '</a></p>' : '')
             : '<p class="empty">Nobody yet. When a business claims its page it shows here: first waiting for your approval in <a href="/admin/depot/claims">Claims</a>, then its welcome checklist.</p>') +
             '<p class="hint"><a href="#partners">All partners</a></p>';
+        });
+        aud({ action: 'flags' }).then(function (d) {
+          var box = $('ck-home'); if (!box) return;
+          var rows = d.flags || [], closed = rows.filter(function (r) { return r.level === 'closed'; }).length;
+          box.innerHTML = '<h2>Check-ups</h2>' + (rows.length
+            ? '<p class="sub" style="margin:0 0 10px">' + rows.length + ' ' + (rows.length === 1 ? 'business may' : 'businesses may') + ' have closed' + (closed ? ', ' + closed + ' of them by Google\'s own word (not emailed until you look)' : '') + '.</p>' + flagList(rows.slice(0, 4)) +
+              (rows.length > 4 ? '<p class="hint"><a href="#checkups">See all ' + rows.length + '</a></p>' : '')
+            : '<p class="empty">Nothing flagged. Every local business in every city is checked once a month, at night: its Google profile, website and Instagram. Anything that looks closed shows here.</p>');
         });
         Array.prototype.forEach.call(V().querySelectorAll('[data-switch]'), function (b) {
           b.addEventListener('click', function () {
@@ -452,6 +463,85 @@
         });
       }
 
+      // ---- Check-ups (Sean, 2026-10-10): every local business in every city is audited once a month; anything that
+      // looks closed waits here for a decision. Data: ve-restaurant-audit flags / flag_review; closing is ve-outreach
+      // listing_closed, the same button as in a business's preview.
+      var FLAG = { closed: ['Google says closed', 'wait'], quiet: ['Looks quiet', 'off'] };
+      function flagList(rows) {
+        return '<div class="list"><div class="item head"><div></div><div>Business</div><div>Why</div><div>Checked</div><div></div></div>' + rows.map(function (r) {
+          var l = r.listing || {}, f = FLAG[r.level] || [r.level, 'off'];
+          return '<div class="item"><div>' + logo(l) + '</div><div><strong>' + esc(l.name) + '</strong><small>' + esc([l.category, l.address_city, r.city_name].filter(Boolean).join(' · ')) + '</small></div>' +
+            '<div><span class="tag ' + f[1] + '">' + f[0] + '</span><small>' + esc((r.signals || []).join('; ')) + '</small></div>' +
+            '<div>' + esc(pdate(r.audited_at)) + '</div>' +
+            '<div class="act"><a class="btn btn-ghost btn-sm" href="#checkup/' + r.audit_id + '">Open</a></div></div>';
+        }).join('') + '</div>';
+      }
+      var flagCache = [];
+      function viewCheckups(city) {
+        crumbs([['Business outreach', '#'], ['Check-ups']]);
+        V().innerHTML = '<p class="empty">Loading...</p>';
+        aud({ action: 'flags' }).then(function (d) {
+          flagCache = d.flags || [];
+          var cities = []; flagCache.forEach(function (r) { if (r.city && cities.indexOf(r.city) < 0) cities.push(r.city); });
+          var rows = flagCache.filter(function (r) { return !city || r.city === city; });
+          V().innerHTML = '<p class="sub">Once a month, at night, every local business in every city gets checked: its Google profile, its website and its Instagram. A business shows here when Google itself says it is closed, or when two or more things look quiet (a website that does not open, no Instagram post in six months, an old footer, no hours or no recent review on Google). Google-closed ones are not emailed until you decide. Open one, look, and mark it.</p>' +
+            (cities.length > 1 ? '<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="' + !city + '" data-c="">All cities</button>' + cities.map(function (c) {
+              var n = flagCache.filter(function (r) { return r.city === c; })[0];
+              return '<button type="button" role="tab" aria-selected="' + (city === c) + '" data-c="' + esc(c) + '">' + esc(n.city_name || c) + '</button>'; }).join('') + '</div>' : '') +
+            '<section class="card batches">' + (rows.length ? flagList(rows) : '<p class="empty">Nothing flagged.</p>') + '</section>';
+          Array.prototype.forEach.call(V().querySelectorAll('[data-c]'), function (b) { b.addEventListener('click', function () { location.hash = b.dataset.c ? '#checkups/' + b.dataset.c : '#checkups'; }); });
+        });
+      }
+      var STATE = { fix: ['Fix', 'wait'], review: ['Check', 'guide'], good: ['Good', 'on'], skip: ['Not checked', 'off'] };
+      function viewCheckup(id) {
+        crumbs([['Business outreach', '#'], ['Check-ups', '#checkups'], ['...']]);
+        V().innerHTML = '<p class="empty">Loading...</p>';
+        Promise.all([aud({ action: 'get', id: id }), flagCache.length ? Promise.resolve({ flags: flagCache }) : aud({ action: 'flags' })]).then(function (x) {
+          var a = x[0], r = (x[1].flags || []).filter(function (f) { return f.audit_id === id; })[0];
+          if (!a || a.error) { V().innerHTML = '<p class="msg err">' + esc((a && a.error) || 'Not found') + '</p>'; return; }
+          var l = (r && r.listing) || { name: a.business }, f = r ? (FLAG[r.level] || [r.level, 'off']) : null, g = (a.facts || {}).google || {};
+          crumbs([['Business outreach', '#'], ['Check-ups', '#checkups'], [l.name || 'Business']]);
+          var items = (a.items || []).filter(function (i) { return i.state === 'fix' || i.state === 'review'; });
+          V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + (f ? ' <span class="tag ' + f[1] + '">' + f[0] + '</span>' : ' <span class="tag on">Decided</span>') + '</h2>' +
+            '<p class="hint" style="margin:0 0 12px">Checked ' + esc(pdate(a.created_at)) + (r && r.city_name ? ' · ' + esc(r.city_name) : '') +
+            (g.address ? '<br>Google: ' + esc(g.address) + (g.status && g.status !== 'OPERATIONAL' ? ' · <strong>' + esc(g.status.replace(/_/g, ' ').toLowerCase()) + '</strong>' : '') : '') + '</p>' +
+            (r ? '<ul class="notes">' + r.signals.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') +
+            '<div class="row-btns" style="margin:4px 0 12px">' +
+              (g.maps ? '<a class="btn btn-ghost btn-sm" href="' + esc(g.maps) + '" target="_blank" rel="noopener">Google Maps</a>' : '') +
+              (r && r.website ? '<a class="btn btn-ghost btn-sm" href="' + esc(r.website) + '" target="_blank" rel="noopener">Website</a>' : '') +
+              (r && r.instagram ? '<a class="btn btn-ghost btn-sm" href="https://www.instagram.com/' + encodeURIComponent(r.instagram) + '/" target="_blank" rel="noopener">Instagram</a>' : '') +
+              (l.slug ? '<a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(l.slug) + '" target="_blank" rel="noopener">Their page</a>' : '') + '</div>' +
+            (r ? '<h2>Your call</h2><textarea class="note-in" id="ck-note" placeholder="Called them: closed since August. (optional)"></textarea>' +
+              '<div class="row-btns" style="margin-top:8px"><button type="button" class="btn btn-warn btn-sm" id="ck-closed">No longer in business</button><button type="button" class="btn btn-sm" id="ck-open">Still open</button></div>' +
+              '<p class="hint">No longer in business moves it to Closed in the Directory and off the email list, with your note on the listing. Still open clears this flag; a quiet flag stays down for 90 days, a Google-closed one comes back next month if Google still says so.</p>' : '') +
+            '<p class="msg" id="ck-msg" role="status"></p></section>' +
+            '<section class="card"><h2>What the check found</h2>' + (items.length ? '<div class="list">' + items.map(function (i) { var s = STATE[i.state];
+              return '<div style="padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13px"><span class="tag ' + s[1] + '">' + s[0] + '</span> <strong>' + esc(i.label) + '</strong><small style="display:block;color:var(--ve-text-75)">' + esc(i.found) + '</small></div>'; }).join('') + '</div>'
+              : '<p class="empty">Nothing to fix.</p>') + '</section></div>';
+          function decide(decision) {
+            var note = ($('ck-note').value || '').trim(), msg = $('ck-msg');
+            if (decision === 'closed' && !confirm('Mark ' + l.name + ' as no longer in business? It moves to Closed in the Directory and comes off the email list.')) return;
+            Array.prototype.forEach.call(V().querySelectorAll('#ck-closed,#ck-open'), function (b) { b.disabled = true; });
+            var first = decision === 'closed'
+              ? api({ action: 'listing_closed', listing_id: r.listing_id, note: note ? 'Check-up: ' + note : 'Check-up: ' + r.signals.join('; ') + '.' })
+              : (note ? api({ action: 'listing_note', listing_id: r.listing_id, note: 'Check-up, still open: ' + note }) : Promise.resolve({ ok: true }));
+            first.then(function (d) {
+              if (!d.ok) throw new Error(d.error || 'That did not work.');
+              return aud({ action: 'flag_review', audit_id: id, decision: decision, note: note });
+            }).then(function (d) {
+              if (!d.ok) throw new Error(d.error || 'That did not work.');
+              flagCache = flagCache.filter(function (x) { return x.audit_id !== id; });
+              msg.className = 'msg'; msg.textContent = decision === 'closed' ? 'Done: moved to Closed and off the email list.' : 'Done: marked still open.';
+              setTimeout(function () { location.hash = '#checkups'; }, 900);
+            }).catch(function (e) {
+              msg.className = 'msg err'; msg.textContent = e.message;
+              Array.prototype.forEach.call(V().querySelectorAll('#ck-closed,#ck-open'), function (b) { b.disabled = false; });
+            });
+          }
+          if (r) { $('ck-closed').addEventListener('click', function () { decide('closed'); }); $('ck-open').addEventListener('click', function () { decide('still_open'); }); }
+        });
+      }
+
       function viewEmails() {
         crumbs([['Business outreach', '#'], ['The three emails']]);
         V().innerHTML = '<p class="sub">What every business gets, from Sean. In each email the business\'s name, city and page link are filled in; a business featured in a Guide also gets a line with a link to where it is in that Guide. Open any business in a send day to read its exact copy.</p>' +
@@ -469,6 +559,8 @@
         if (h[0] === 'interested') return viewInterested();
         if (h[0] === 'partners') return viewPartners();
         if (h[0] === 'partner' && h[1]) return viewPartner(h[1]);
+        if (h[0] === 'checkups') return viewCheckups(h[1] || '');
+        if (h[0] === 'checkup' && h[1]) return viewCheckup(h[1]);
         viewHome();
       }
       window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });
