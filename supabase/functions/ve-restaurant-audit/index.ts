@@ -151,7 +151,7 @@ const realSocial = (u: string, kind: 'ig' | 'fb' | 'tt') => {
 const PLACE_FIELDS = ['id', 'displayName', 'formattedAddress', 'addressComponents', 'nationalPhoneNumber', 'websiteUri', 'businessStatus',
   'primaryType', 'primaryTypeDisplayName', 'types', 'rating', 'userRatingCount', 'regularOpeningHours.weekdayDescriptions', 'photos.name',
   'reviews.publishTime', 'editorialSummary', 'googleMapsUri'];
-async function google(placeId: string, name: string, city: string) {
+async function google(placeId: string, name: string, city: string, street = '') {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key) return { error: 'no key' };
   try {
@@ -165,7 +165,7 @@ async function google(placeId: string, name: string, city: string) {
     const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': PLACE_FIELDS.map((f) => 'places.' + f).join(',') },
-      body: JSON.stringify({ textQuery: `${name} ${city}`.trim(), maxResultCount: 3 }),
+      body: JSON.stringify({ textQuery: `${name} ${street} ${city}`.replace(/\s+/g, ' ').trim(), maxResultCount: 3 }),
     });
     if (!r.ok) return { error: `places ${r.status}` };
     const places = ((await r.json()).places || []) as any[];
@@ -324,6 +324,9 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
   // Google Local
   if (g?.error) add('g_found', 'review', 'We could not reach Google just now, so this was not checked.');
   else if (!p) add('g_found', 'fix', `We searched Google for "${inp.name}${city ? ' ' + city : ''}" and did not find your profile.`);
+  else if (inp.street && /^\d+/.test(inp.street) && !String(p.formattedAddress || '').startsWith(inp.street.match(/^\d+/)![0] + ' '))
+    // A chain or a move: Google's closest match is not the address we have. Say so instead of quietly checking another branch.
+    add('g_found', 'review', `Google's closest match is ${p.displayName?.text || inp.name} at ${p.formattedAddress}, but our Directory has you at ${inp.street}${inp.city ? ', ' + inp.city : ''}. Check which is right; the Google results below are for that match.`);
   else add('g_found', 'good', `Found: ${p.displayName?.text || inp.name}, ${p.formattedAddress || ''}`.replace(/, $/, ''));
   const gp = (key: string, fn: () => [State, string]) => (p ? add(key, ...fn()) : add(key, 'skip', 'Needs your Google profile first.'));
   gp('g_open', () => p.businessStatus === 'OPERATIONAL' || !p.businessStatus ? ['good', 'Google shows you as open.']
@@ -492,7 +495,7 @@ async function runAudit(id: string) {
   const { data: a } = await db.from('ve_audits').select('*').eq('id', id).single();
   const inp = a.inputs || {};
   try {
-    const g = await google(inp.place_id || '', inp.name || '', inp.city || '');
+    const g = await google(inp.place_id || '', inp.name || '', inp.city || '', inp.street || '');
     const siteUrl = normUrl(inp.website || g.place?.websiteUri || '');
     const [w, ps, igr] = await Promise.all([
       website(siteUrl),
@@ -555,12 +558,12 @@ async function present(a: any, full: boolean) {
 async function inputsFrom(body: any): Promise<{ inputs?: any; listing_id?: string | null; error?: string }> {
   const slug = clean(body.listing_slug, 120);
   if (slug) {
-    const { data: l } = await db.from('listings').select('id, name, slug, website, instagram, ig_handle, facebook, tiktok, phone, address_city, location, google_place_id')
+    const { data: l } = await db.from('listings').select('id, name, slug, website, instagram, ig_handle, facebook, tiktok, phone, address_street, address_city, location, google_place_id')
       .eq('slug', slug).eq('status', 'approved').maybeSingle();
     if (!l) return { error: 'listing_not_found' };
     return {
       listing_id: l.id,
-      inputs: { name: l.name, slug: l.slug, city: l.address_city || String(l.location || '').split(',')[0].trim(), website: normUrl(l.website || ''),
+      inputs: { name: l.name, slug: l.slug, street: l.address_street || '', city: l.address_city || String(l.location || '').split(',')[0].trim(), website: normUrl(l.website || ''),
         instagram: igHandle(l.ig_handle || l.instagram || ''), facebook: l.facebook || '', tiktok: l.tiktok || '', phone: l.phone || '', place_id: l.google_place_id || '' },
     };
   }
