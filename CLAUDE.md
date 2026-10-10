@@ -453,6 +453,12 @@ tab) are open to everyone: they are the enrollment tool.
   is `sayPoints`, played from `CLIPS.join_points` (`dg-join-p.mp4`, recorded 2026-10-10 in the old join clip's pose);
   the welcome video no longer says the Guide comes with membership.
 - What the Guides say about prices lives in `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
+- Points live in two places: `members.lesars_balance` (what a Guide unlock, a reward or a campaign spends) and
+  `member_points.available_points` (the wallet, moved by `apply_member_points_delta`). Every function that moves points
+  moves both by the same amount (migration `20261010_points_both_balances.sql`, after profile-complete points could not
+  buy a Guide). A new points function does the same: `update members set lesars_balance = ...` next to its
+  `apply_member_points_delta` call. Guide chat's monthly allowance (`guide_chat_allotment`) and its 4-point charge
+  (`guide_chat_spend`) are not in `points_ledger_reason_check`, so both are refused and chat has been free so far.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
