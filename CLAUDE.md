@@ -506,6 +506,10 @@ the ad rail) and combines them into something new. The reference is the Vegan Da
 (`guides/vegan-dairy-guide.html`, `guide-scripts/vegan-dairy-guide.js`): a menu, search for members,
 brands as approved Directory listings with votes, a Cookbook, and Maya as the Guide.
 
+**Building a new Guide: follow `docs/guides/BUILD-A-GUIDE.md`** (canon `canon-ve-guide-build-playbook`; Sean, 2026-10-10:
+"This is the prototype"). It lists every step that made the Dairy Guide, in order: decide, content, the page, pictures, the
+two scripts, recording, test, launch. Copy the Dairy Guide's files; never start a Guide from a blank page.
+
 - Signed out: the header holds the $11 Founding Membership box (members get search there). Each locked tab shows the
   real section blurred with a membership note on top (since 2026-10-09; the slideshow previews are gone), see The layout.
 - The Cookbook is the recipe and chef tool (Phase 1 live 2026-10-10): recipes are rows in `recipes` (status `live` or
