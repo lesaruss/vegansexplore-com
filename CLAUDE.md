@@ -369,13 +369,20 @@ the ad rail) and combines them into something new. The reference is the Vegan Da
 (`guides/vegan-dairy-guide.html`, `guide-scripts/vegan-dairy-guide.js`): a menu, search for members,
 brands as approved Directory listings with votes, a Cookbook, and Maya as the Guide.
 
-- Signed out: the header holds the $11 Founding Membership box (members get search there). Each
-  locked section previews itself as a slideshow, words left and a picture right, real examples (a
-  product's Nutrition Facts from USDA FoodData Central, a real swap, real cookbook covers), no autoplay,
-  and a closing Founding Membership slide with a free next step.
-- The Cookbook is the recipe and chef tool: every cookbook listed and ranked, chefs with profiles,
-  official recipes from us and invited chefs, member votes and comments, and "didn't work for me"
-  reports that pull a recipe for retesting.
+- Signed out: the header holds the $11 Founding Membership box (members get search there). Each locked tab shows the
+  real section blurred with a membership note on top (since 2026-10-09; the slideshow previews are gone), see The layout.
+- The Cookbook is the recipe and chef tool (Phase 1 live 2026-10-10): recipes are rows in `recipes` (status `live` or
+  `retesting` are shown, only through the `ve-cookbook` function: members get them, everyone else only the titles; no public
+  read), Maya's with a Guide badge (her two recipes and the pantry swaps, copied from the members-only `ve_guides` row),
+  members' with their first name and last initial. A member votes (one per recipe, can take it back), says "didn't work for
+  me" (a note; three different members pull it to Being retested, trigger `trg_recipe_reports_count`, Sean emailed), and
+  shares a recipe (`#/cookbook/new/<step>`, three steps: About it, What you need, How to make it; five a day), which waits
+  in **Depot > Cookbook** (`/admin/depot/cookbook`). Approving pays 50 points once (`ve_recipe_review`, `points_ledger`
+  reason `recipe_approved`, ref `recipe:<id>`) and emails them; Send it back needs a note and emails it; a retest is settled
+  with Put it back or Take it down. My recipes (`#/cookbook/mine`) shows each with Waiting for approval, Live, Being
+  retested, Needs a change (Send again) or Not live. Migration `20261010_ve_cookbook.sql`; the 45 "Make Your Own by Javant"
+  recipes in the same table stay `private` until he says yes (Phase 2: christened chefs; Phase 3: ambassador links and
+  co-created Guides). Not built yet: chef profiles, comments on recipes, recipe photos.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
