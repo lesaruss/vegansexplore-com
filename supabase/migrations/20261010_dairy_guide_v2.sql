@@ -65,3 +65,7 @@ create table if not exists public.recipe_photos (
 );
 create index if not exists recipe_photos_recipe on public.recipe_photos (recipe_id, status);
 alter table public.recipe_photos enable row level security;
+
+-- The yogurt recipe's picture, made once Higgsfield credits were topped up (Sean, 2026-10-10: "finish the pictures").
+update public.recipes set photo_url = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/dairy/r-maya-homemade-yogurt.jpg',
+  photo_illustrative = true where slug = 'maya-homemade-yogurt';
