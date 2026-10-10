@@ -184,7 +184,7 @@
           var rows = d.rows || [], s = STATUS[b.status] || [b.status, 'off'];
           var city = data.cities.filter(function (x) { return x.community_slug === b.community_slug; })[0] || {};
           V().innerHTML = '<section class="card"><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center">' +
-            '<div><h2 style="margin:0">' + esc(day(b.send_on)) + ': ' + rows.length + ' businesses in ' + esc(cityName(b.community_slug)) + '</h2><span class="tag ' + s[1] + '">' + s[0] + '</span></div>' +
+            '<div><h2 style="margin:0">' + esc(day(b.send_on)) + ': ' + rows.length + (rows.length === 1 ? ' business in ' : ' businesses in ') + esc(cityName(b.community_slug)) + '</h2><span class="tag ' + s[1] + '">' + s[0] + '</span></div>' +
             (b.status === 'proposed' ? '<div class="row-btns"><button class="btn" id="b-ok">Approve this send</button><button class="btn btn-ghost" id="b-cancel">Cancel this day</button></div>' : '') + '</div>' +
             (b.status === 'proposed' && !city.enabled ? '<p class="hint">' + esc(cityName(b.community_slug)) + ' is off, so nothing goes out even once approved until the city is switched on.</p>' : '') +
             '<p class="msg" id="b-msg" role="status"></p></section>' +
