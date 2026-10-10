@@ -60,7 +60,7 @@
   var TABS = [
     { k: 'overview', label: 'Overview', say: 'Hi, I\'m Maya! Press Start the tour and I\'ll walk you through the Dairy Guide, one tab at a time.', playing: 'Hi, I\'m Maya, and welcome to the Vegan Dairy Guide! Press Next when you\'re ready for the next tab.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'This is the Dairy-Free Pulse: what the research says, every fact sourced, plus our podcasts and interviews on dairy.' },
-    { k: 'brands', label: 'Brands', lock: 1, say: 'Stop guessing in the dairy aisle. Seventy-six products from forty-three brands, sorted by what you\'re replacing, and voted on by members.' },
+    { k: 'brands', label: 'Brands', lock: 1, say: 'Stop guessing in the dairy aisle. Here are the brands to buy, sorted by what you\'re replacing, and voted on by members.' },
     { k: 'swaps', label: 'Swaps', lock: 1, say: 'Swaps show you how to replace dairy when you cook, from the shelf or your pantry. Buttermilk is free to try, so start there.' },
     { k: 'cookbook', label: 'Cookbook', lock: 1, say: 'The Cookbook keeps growing: recipes you can make at home, and the dairy-free cookbooks people love most.' },
     { k: 'look', label: 'See for yourself', lock: 1, say: 'See for yourself is how milk is made, in plain facts. No graphic images. Open it when you\'re ready, or skip it.' },
@@ -117,7 +117,6 @@
   function tabs() { return TABS.filter(function (t) { return !(t.guest && member()); }); }
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
   function href(k) { return '#/' + (k === 'overview' ? '' : k); }
-  function productCount() { var n = 0; (BRANDS || []).forEach(function (b) { n += ((b.details || {}).dairy_guide || []).length; }); return n; }
 
   // ---------- tabs ----------
   function drawMenu(cur) {
@@ -190,11 +189,10 @@
 
   // ---------- views ----------
   function viewOverview() {
-    var n = productCount(), nb = (BRANDS || []).length;
     var tiles = [
       ['pulse', 'Pulse', 'What the research says, with sources, and our podcasts and interviews on dairy.'],
-      ['brands', 'Brands', (n ? n + ' products from ' + nb + ' brands' : 'The brands to buy') + ', sorted by what you are replacing.'],
-      ['swaps', 'Swaps', (MEM ? MEM.swaps.length : 16) + ' ways to replace dairy when you cook. One is free.'],
+      ['brands', 'Brands', 'The brands to buy, sorted by what you are replacing, with the stores that carry them.'],
+      ['swaps', 'Swaps', 'How to replace dairy when you cook, from the shelf or your pantry. One is free.'],
       ['cookbook', 'Cookbook', 'Recipes to make at home and the cookbooks members love. It keeps growing.'],
       ['look', 'See for yourself', 'How milk is made, in plain facts. Optional.']
     ];
@@ -223,7 +221,7 @@
       html += '<div class="dg-facts2"><div class="dg-fact-list" role="list">' + facts.map(function (x, i) {
         return '<a role="listitem" href="#/pulse/fact/' + i + '" aria-current="' + (i === n) + '"><span>' + (i + 1) + '</span>' + esc(x.title) + (x.locked ? ' ' + LOCK_SVG : '') + '</a>';
       }).join('') + '</div><div class="dg-fact">' + (f.locked
-        ? gated(skel(f.title, 5), 'Three more facts, every one sourced', 'Cancer research, nutrients and the planet, each with its studies linked, plus our podcasts and interviews.')
+        ? gated(skel(f.title, 5), 'More facts, every one sourced', 'Cancer research, nutrients and the planet, each with its studies linked, plus our podcasts and interviews.')
         : '<h3>' + esc(f.title) + '</h3><p>' + esc(f.text) + '</p>' + sources(f.sources) +
           (n < facts.length - 1 ? '<a class="dg-fact-next" href="#/pulse/fact/' + (n + 1) + '">Next fact &rsaquo;</a>' : '')) + '</div></div>';
     } else {
@@ -247,13 +245,13 @@
   }
 
   function viewBrands(catSlug) {
-    var cat = catSlug ? catBySlug(catSlug) : null, n = productCount(), nb = (BRANDS || []).length;
+    var cat = catSlug ? catBySlug(catSlug) : null;
     var h = (cat ? crumb([['Brands', '#/brands'], [cat]]) : '') + head('Brands', cat ? esc(cat) : 'The brands to buy',
-      (n ? n + ' products from ' + nb + ' brands, ' : '') + 'every one a listing in the Vegans Explore Directory. Vote for the ones you love, and open one to see where to buy it.');
+      'Every brand is a listing in the Vegans Explore Directory. Vote for the ones you love, and open one to see where to buy it.');
     if (!BRANDS) { main.innerHTML = h + '<div class="dg-loading">Loading brands...</div>'; return; }
     if (!member()) {
       main.innerHTML = h + '<div class="dg-chips">' + CATS.map(function (c) { return '<span class="dg-chip" style="cursor:default">' + esc(c) + '</span>'; }).join('') + '</div>' +
-        gated(dirGrid('', sortBy(BRANDS, 'votes').slice(0, 6).map(dirCard).join('')), (n || 76) + ' products from ' + (nb || 43) + ' brands', 'Sorted by what you are replacing, with where to buy each one. Members vote, so the best rise to the top.');
+        gated(dirGrid('', sortBy(BRANDS, 'votes').slice(0, 6).map(dirCard).join('')), 'Every brand, sorted by what you are replacing', 'With where to buy each one. Members vote, so the best rise to the top.');
       return;
     }
     var list = cat ? BRANDS.filter(function (l) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === cat; }); }) : BRANDS;
@@ -309,11 +307,10 @@
   }
   var pantryPick = {};
   function viewCookbook(sub) {
-    var nb = (BOOKS || []).length;
     if (!member()) {
       main.innerHTML = head('Cookbook', 'The Cookbook', 'An ongoing list of recipes you can make at home, and the dairy-free cookbooks people love most. The list keeps growing.') +
-        '<div class="dg-cookpv"><div>' + gated('<div class="dg-grid">' + RECIPE_NAMES.slice(0, 4).map(function (r) { return skel(r, 3); }).join('') + '</div>', 'Recipes and cookbooks', 'Dairy-free staples you can make from your pantry, and ' + (nb || 12) + ' cookbooks ranked by members.') + '</div>' +
-        '<div><div class="dg-k" style="margin-bottom:10px">' + (nb || 12) + ' cookbooks, voted on by members</div><div class="dg-books">' + COVERS.map(function (c) {
+        '<div class="dg-cookpv"><div>' + gated('<div class="dg-grid">' + RECIPE_NAMES.slice(0, 4).map(function (r) { return skel(r, 3); }).join('') + '</div>', 'Recipes and cookbooks', 'Dairy-free staples you can make from your pantry, and the cookbooks members rank highest.') + '</div>' +
+        '<div><div class="dg-k" style="margin-bottom:10px">Cookbooks, voted on by members</div><div class="dg-books">' + COVERS.map(function (c) {
           return '<img src="https://covers.openlibrary.org/b/id/' + c[1] + '-M.jpg" alt="' + esc(c[0]) + ' cover" loading="lazy">'; }).join('') + '</div></div></div>';
       return;
     }
@@ -380,12 +377,12 @@
   // comes if you're already a Vegans Explore member... a one-time founding membership of $11").
   function viewJoin() {
     if (member()) { main.innerHTML = head('Your membership', 'The whole Guide is yours', 'It came with your Founding Membership. Thank you for being here.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return; }
-    var n = productCount(), pending = access === 'pending';
+    var pending = access === 'pending';
     main.innerHTML = head('Get access', 'The Dairy Guide comes with membership', 'One $11 Founding Membership, one time, opens this Guide and the whole Vegans Explore community.') +
       '<div class="dg-access"><ul>' +
       '<li><b>The Dairy-Free Pulse:</b> every research fact with its source, and our podcasts and interviews on dairy.</li>' +
-      '<li><b>' + (n || 76) + ' products from ' + ((BRANDS || []).length || 43) + ' brands</b>, sorted by what you are replacing, with the stores that carry them.</li>' +
-      '<li><b>' + (MEM ? MEM.swaps.length : 16) + ' swaps</b> from the shelf or your pantry, and the Cookbook: recipes, cookbooks and chefs.</li>' +
+      '<li><b>The brands to buy</b>, sorted by what you are replacing, with the stores that carry them.</li>' +
+      '<li><b>Swaps</b> from the shelf or your pantry, and the Cookbook: recipes, cookbooks and chefs.</li>' +
       '<li><b>The community:</b> your member dashboard, Directory votes, the Community Board and points.</li></ul></div>';
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend',
       '<div class="dg-pricebox"><div class="dg-big">$11<small>one time</small></div><p>' + (pending ? 'Your account is not a Founding Member yet. Become one and the Guide opens right away.' :
