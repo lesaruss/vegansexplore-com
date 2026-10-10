@@ -232,7 +232,7 @@ links a campaign to a listing, but the table has no public read, so it needs to 
 at once." Then: "see who is on the queue, approve who the emails are going to be going out to... on Monday, we're sending
 it to these 60... see what the draft is... and we commit to it for like maybe 15 days before we make any drastic changes."
 The goal is businesses on board for Q1 2027 through Front Row Start. Migrations `20261010_ve_outreach.sql`,
-`20261010_ve_outreach_batches.sql`, `20261010_ve_outreach_sender.sql` and `20261010_ve_outreach_listing_cleanup.sql`; edge function `ve-outreach`; console **Depot > Business outreach**
+`20261010_ve_outreach_batches.sql`, `20261010_ve_outreach_sender.sql`, `20261010_ve_outreach_listing_cleanup.sql` and `20261010_ve_partner_onboarding.sql`; edge function `ve-outreach`; console **Depot > Business outreach**
 (`/admin/depot/business-outreach`).
 
 - **The console** (one thing per view): Upcoming sends (each send day is a batch: Waiting for approval, Approved, Sent) and
@@ -284,7 +284,21 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   Find emails skip closed businesses (migration `20261010_ve_outreach_listing_cleanup.sql`). Send days list brands first,
   then A to Z, so the order never shifts. On 2026-10-10 five businesses the Directory already marked closed came off the list
   before anything was sent, and Darbster's blurry logo was set aside for the letter (Sean).
-- Not built yet: the welcome and personal onboarding after a business signs up.
+- **New partners: onboarding** (Sean, 2026-10-10: "go ahead and build the onboarding"; migration
+  `20261010_ve_partner_onboarding.sql`). Every business that claims its page (`ve_listing_claims` paid or submitted, never a
+  test) gets a `ve_partner_onboarding` row through trigger `trg_ve_partner_onboarding`: Waiting for your approval, then, when
+  Sean approves the claim in Depot > Claims, Welcoming. Approval starts two things. **Automatic**: three emails from Sean after
+  ve-claims' own "your page is confirmed" (`ve_onboarding_templates`, rendered by `ve_onboarding_render`): Day 2 make the page
+  yours (reply with a logo, photos and changes; we update it, since owners who are not brands cannot edit their page yet),
+  Day 7 the first week's numbers (views and visitors from `ve_listing_events`), Day 21 what's coming in Q1 and what they want
+  to be part of, plus, on Front Row Start, the date of their first charge. **Personal**: the city's Community Manager, or Sean
+  when the city has none, is emailed the task (welcome them within 2 days, with their contact details and the checklist), and
+  the checklist lives in **Depot > Business outreach > New partners** (`#partners`, `#partner/<listing>`): welcome them
+  personally, confirm the page details, get a clear logo and photos on, ask which Q1 campaigns they want in on. A partner is
+  Welcomed when it is all ticked; a welcome more than 2 days late shows Late. The same page shows their three emails (sent,
+  opened, next) and the listing notes. `ve-outreach` `tick` sends the task emails (any hour) and the onboarding emails
+  (weekdays 9 to 5 Eastern). While building it, `ve_listing_claims_tier_check` turned out to refuse tier `brand` (the Partner
+  plan), so every Partner claim would have failed to save; widened the same day, before any claim was made.
 
 ## Tracked links (Sean, 2026-10-04)
 

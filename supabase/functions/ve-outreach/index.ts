@@ -19,7 +19,10 @@
 //
 //   test        { contact_id, step?, to? }  sends that business's real email to you (or to), marked as a test
 //   interested                        the interest queue: who clicked, replied or claimed, and who it is routed to
-//   listing_note   { contact_id, note }   a note on the business's Directory listing (details.admin_notes)
+//   partners                          New partners: every business that claimed its page, waiting for approval or onboarding
+//   partner     { listing_id }        one partner: the checklist, the onboarding emails (sent and next), notes
+//   partner_check { listing_id, item, done }  ticks a checklist item (welcome, details, media, campaigns)
+//   listing_note   { contact_id | listing_id, note }   a note on the business's Directory listing (details.admin_notes)
 //   listing_closed { contact_id, note? }  no longer in business: the listing is marked permanently closed (shown only
 //                                         under the Directory's Closed filter, never in All) and the business leaves
 //                                         the email list
@@ -31,6 +34,8 @@
 //          city's daily cap and the sending domain's warm-up allowance. Every email goes through email-send (from Sean,
 //          replies to contact@lesaruss.com, one-click unsubscribe, the postal address, an email_sends row), and the page
 //          link is the business's own tracked /go/ link (ve_links, campaign business-outreach).
+//          Then partner onboarding (ve_partner_onboarding): the task email to whoever welcomes a newly approved partner,
+//          and the three onboarding emails from Sean (Day 2, 7 and 21 after approval, ve_onboarding_templates).
 // verify_jwt is false on deploy; tokens are verified here the way ve-links does it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -259,6 +264,62 @@ async function tick() {
   return { synced, sent: out.filter((o) => (o as { result: string }).result === 'sent').length, results: out };
 }
 
+// ---- Partner onboarding ----
+const CHECK: [string, string][] = [
+  ['welcome', 'Welcome them personally, a call or an email, within 2 days'],
+  ['details', 'Confirm their page details: hours, address, description'],
+  ['media', 'Get a clear logo and photos onto their page'],
+  ['campaigns', 'Ask which Q1 campaigns they want in on'],
+];
+const CHECK_KEYS = CHECK.map((c) => c[0]);
+async function onboardingTick() {
+  const out: unknown[] = [];
+  // The person who welcomes them hears about it once, as soon as the claim is approved (any hour).
+  const { data: fresh } = await db.from('ve_partner_onboarding').select('*').eq('status', 'onboarding').is('notified_at', null).limit(10);
+  for (const o of fresh || []) {
+    const { data: l } = await db.from('listings').select('name,slug,category,address_city,phone').eq('id', o.listing_id).single();
+    let to = 'contact@lesaruss.com', who = 'Sean';
+    if (o.assigned_member_id) {
+      const { data: m } = await db.from('members').select('name,email').eq('id', o.assigned_member_id).single();
+      if (m?.email) { to = m.email; who = String(m.name || '').split(/\s+/)[0] || 'there'; }
+    }
+    const due = new Date(new Date(o.approved_at).getTime() + 2 * 864e5).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
+    const depot = o.route_to === 'sean' ? `<p><a href="${SITE}/admin/depot/business-outreach#partner/${o.listing_id}">Open their checklist in the Depot</a></p>` : '';
+    const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a"><p>Hi ${escHtml(who)},</p>` +
+      `<p><b>${escHtml(l?.name || 'A business')}</b>${l?.address_city ? ' in ' + escHtml(l.address_city) : ''} just joined as a partner. Please welcome them personally by <b>${escHtml(due)}</b>.</p>` +
+      `<p>${escHtml(o.contact_name || '')}<br>${escHtml(o.contact_email || '')}${l?.phone ? '<br>' + escHtml(l.phone) : ''}<br><a href="${SITE}/directory/${encodeURIComponent(l?.slug || '')}">Their page</a></p>` +
+      `<p>The checklist:</p><ol>${CHECK.map((c) => '<li>' + escHtml(c[1]) + '</li>').join('')}</ol>` +
+      `<p>They also get three emails from Sean over the next three weeks: making the page theirs, their first week's numbers, and what's coming in Q1.</p>${depot}<p>Vegans Explore</p></div>`;
+    const res = await emailSend({ brand: 'vegans-explore', transactional: true, campaign_ref: `ve-onboard-task-${o.listing_id}`,
+      subject: `New partner: ${l?.name || 'a business'}. Welcome them by ${due}`, html, recipients: [{ email: to }] });
+    const r = res?.results?.[0]?.result;
+    if (r === 'sent' || r === 'already_sent') await db.from('ve_partner_onboarding').update({ notified_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('listing_id', o.listing_id);
+    out.push({ task: l?.name, to, result: r || res?.error });
+  }
+  if (!sendingHours()) return out;
+  const { data: tpl } = await db.from('ve_onboarding_templates').select('step,day_after').order('step');
+  const { data: due } = await db.from('ve_partner_onboarding').select('*').in('status', ['onboarding', 'done']).lt('step', 3).lte('next_send_at', new Date().toISOString()).limit(PER_TICK);
+  for (const o of due || []) {
+    const step = o.step + 1;
+    const { data: r } = await db.rpc('ve_onboarding_render', { p_listing: o.listing_id, p_step: step });
+    const m = r?.[0];
+    if (!m) { await db.from('ve_partner_onboarding').update({ step: 3, next_send_at: null }).eq('listing_id', o.listing_id); continue; }
+    const { data: l } = await db.from('listings').select('name').eq('id', o.listing_id).single();
+    const res = await emailSend({ brand: BRAND, campaign_ref: `ve-onboard-${o.listing_id}-${step}`, list_ref: 've-onboarding',
+      subject: m.subject, html: toHtml(m.body, l?.name || 'your business').replace('is listed in the Vegans Explore Directory', 'is a Vegans Explore partner'),
+      text: toText(m.body, l?.name || 'your business').replace('is listed in the Vegans Explore Directory', 'is a Vegans Explore partner'),
+      recipients: [{ email: m.to_email, name: o.contact_name || undefined }] });
+    const result = res?.results?.[0]?.result;
+    if (result === 'sent' || result === 'already_sent' || result === 'suppressed' || result === 'invalid') {
+      const now = tpl?.find((t) => t.step === step)?.day_after ?? 0, next = tpl?.find((t) => t.step === step + 1)?.day_after;
+      await db.from('ve_partner_onboarding').update({ step, next_send_at: next == null || result === 'suppressed' || result === 'invalid' ? null : nextSendAt(next - now),
+        ...(result === 'suppressed' || result === 'invalid' ? { step: 3 } : {}), updated_at: new Date().toISOString() }).eq('listing_id', o.listing_id);
+    }
+    out.push({ onboarding: l?.name, step, result: result || res?.error });
+  }
+  return out;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
@@ -270,13 +331,14 @@ Deno.serve(async (req) => {
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       const [cs, at] = await Promise.all([secretValue('CRON_SECRET'), secretValue('LESARUSS_ADMIN_TOKEN')]);
       if (!((cron && cs && cron === cs) || (given && at && given === at))) return json({ error: 'unauthorized' }, 401);
-      const r = await tick();
+      const r = await tick() as Record<string, unknown>;
+      r.onboarding = await onboardingTick();
       await db.from('email_heartbeats').upsert({ name: 've-outreach', last_ok_at: new Date().toISOString(), detail: r, updated_at: new Date().toISOString() });
       return json({ ok: true, ...r });
     }
     const me = await adminId(req);
     if (!me) {
-      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test'];
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner'];
       const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
@@ -403,9 +465,52 @@ Deno.serve(async (req) => {
       return json({ ok: true, rows: (rows || []).map((r) => ({ ...r, listing: L.get(r.listing_id) || null, assigned_name: r.assigned_member_id ? M.get(r.assigned_member_id) || null : null })) });
     }
 
+    if (action === 'partners') {
+      const { data: rows } = await db.from('ve_partner_onboarding').select('*').neq('status', 'closed').order('updated_at', { ascending: false }).limit(300);
+      const ids = (rows || []).map((r) => r.listing_id);
+      const { data: ls } = ids.length ? await db.from('listings').select('id,name,slug,category,address_city,logo_url').in('id', ids) : { data: [] };
+      const mids = [...new Set((rows || []).map((r) => r.assigned_member_id).filter(Boolean))];
+      const { data: ms } = mids.length ? await db.from('members').select('id,name').in('id', mids) : { data: [] };
+      const L = new Map((ls || []).map((l) => [l.id, l])), M = new Map((ms || []).map((m) => [m.id, m.name]));
+      return json({ ok: true, items: CHECK, rows: (rows || []).map((r) => ({ ...r, listing: L.get(r.listing_id) || null, assigned_name: r.assigned_member_id ? M.get(r.assigned_member_id) || null : null })) });
+    }
+
+    if (action === 'partner') {
+      if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
+      const { data: o } = await db.from('ve_partner_onboarding').select('*').eq('listing_id', body.listing_id).maybeSingle();
+      if (!o) return json({ error: 'not_found' }, 404);
+      const { data: l } = await db.from('listings').select('id,name,slug,category,address_city,phone,logo_url,business_status,admin_notes:details->admin_notes').eq('id', o.listing_id).single();
+      const { data: tpl } = await db.from('ve_onboarding_templates').select('step,day_after').order('step');
+      const emails = await Promise.all([1, 2, 3].map((s) => db.rpc('ve_onboarding_render', { p_listing: o.listing_id, p_step: s })));
+      const { data: sends } = await db.from('email_sends').select('campaign_ref,status,sent_at,opened_at,clicked_at').like('campaign_ref', `ve-onboard-${o.listing_id}-%`);
+      let assigned = null;
+      if (o.assigned_member_id) assigned = (await db.from('members').select('name').eq('id', o.assigned_member_id).single()).data?.name || null;
+      return json({ ok: true, row: { ...o, assigned_name: assigned }, listing: l, items: CHECK,
+        emails: emails.map((e, i) => ({ step: i + 1, day: tpl?.[i]?.day_after ?? null, ...(e.data?.[0] || {}),
+          sent: (sends || []).find((x) => x.campaign_ref === `ve-onboard-${o.listing_id}-${i + 1}`) || null })) });
+    }
+
+    if (action === 'partner_check') {
+      if (!me || !isId(body.listing_id) || !CHECK_KEYS.includes(String(body.item))) return json({ error: 'admins_only' }, 403);
+      const { data: o } = await db.from('ve_partner_onboarding').select('checklist,status').eq('listing_id', body.listing_id).maybeSingle();
+      if (!o) return json({ error: 'not_found' }, 404);
+      const { data: who } = await db.from('members').select('name').eq('id', me).single();
+      const list = { ...(o.checklist || {}) } as Record<string, unknown>;
+      if (body.done) list[String(body.item)] = { done_at: new Date().toISOString(), by: String(who?.name || 'Admin').split(/\s+/)[0] };
+      else delete list[String(body.item)];
+      const all = CHECK_KEYS.every((k) => list[k]);
+      const status = o.status === 'waiting' ? 'waiting' : all ? 'done' : 'onboarding';
+      await db.from('ve_partner_onboarding').update({ checklist: list, status, updated_at: new Date().toISOString() }).eq('listing_id', body.listing_id);
+      return json({ ok: true, checklist: list, status });
+    }
+
     if (action === 'listing_note' || action === 'listing_closed' || action === 'listing_logo_letter') {
-      if (!me || !isId(body.contact_id)) return json({ error: 'admins_only' }, 403);
-      const { data: c } = await db.from('ve_outreach_contacts').select('id,listing_id,status,batch_id').eq('id', body.contact_id).maybeSingle();
+      if (!me || !(isId(body.contact_id) || isId(body.listing_id))) return json({ error: 'admins_only' }, 403);
+      // From a business's preview (contact_id) or from a new partner's page (listing_id, notes only... or closing).
+      const { data: c0 } = isId(body.contact_id)
+        ? await db.from('ve_outreach_contacts').select('id,listing_id,status,batch_id').eq('id', body.contact_id).maybeSingle()
+        : await db.from('ve_outreach_contacts').select('id,listing_id,status,batch_id').eq('listing_id', body.listing_id).maybeSingle();
+      const c = c0 || (isId(body.listing_id) ? { id: null, listing_id: body.listing_id, status: 'none', batch_id: null } : null);
       if (!c) return json({ error: 'contact' }, 400);
       const { data: l } = await db.from('listings').select('id,name,logo_url,business_status,details').eq('id', c.listing_id).single();
       const { data: who } = await db.from('members').select('name').eq('id', me).single();
@@ -432,7 +537,7 @@ Deno.serve(async (req) => {
       patch.details = details;
       const { error } = await db.from('listings').update(patch).eq('id', l.id);
       if (error) return json({ error: error.message }, 400);
-      if (action === 'listing_closed' && ['not_sent', 'in_sequence', 'finished', 'interested'].includes(c.status)) {
+      if (action === 'listing_closed' && c.id && ['not_sent', 'in_sequence', 'finished', 'interested'].includes(c.status)) {
         await db.from('ve_outreach_contacts').update({ status: 'held', stop_reason: 'no longer in business', batch_id: c.status === 'not_sent' ? null : c.batch_id, next_send_at: null }).eq('id', c.id);
         await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'status', detail: { status: 'held', why: 'closed', by: me } });
       }

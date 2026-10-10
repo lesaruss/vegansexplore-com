@@ -137,6 +137,7 @@
               return '<div class="item"><div><strong>' + esc(day(b.send_on)) + '</strong></div><div>' + esc(cityName(b.community_slug)) + '</div><div>' + b.size + '</div><div><span class="tag ' + s[1] + '">' + s[0] + '</span></div><div class="act"><a class="btn btn-sm" href="#batch/' + b.id + '">Review</a></div></div>';
             }).join('') + '</div>'
           : '<p class="empty">No sends planned yet. Plan a city below.</p>') + '</section>' +
+          '<section class="card batches" id="np-home"><h2>New partners</h2><p class="empty">Loading...</p></section>' +
           '<section><h2>Cities</h2><div class="grid">' + data.cities.map(function (c) {
             var n = c.counts || {}, emailed = (n.in_sequence || 0) + (n.finished || 0);
             var inb = data.batches.filter(function (b) { return b.community_slug === c.community_slug && b.status !== 'sent'; }).reduce(function (a, b) { return a + b.size; }, 0);
@@ -150,6 +151,13 @@
           }).join('') + '</div></section>' +
           '<p class="hint" style="margin-top:16px"><a href="#interested">Interested businesses</a> &middot; <a href="#emails">See the three emails</a></p>';
         Array.prototype.forEach.call(V().querySelectorAll('[data-find]'), function (b) { b.addEventListener('click', function () { findEmails(b.dataset.find, b); }); });
+        api({ action: 'partners' }).then(function (d) {
+          var box = $('np-home'); if (!box) return;
+          var rows = (d.rows || []).filter(function (r) { return r.status !== 'done'; });
+          box.innerHTML = '<h2>New partners</h2>' + (rows.length ? partnerList(rows.slice(0, 6), d.items) + (rows.length > 6 ? '<p class="hint"><a href="#partners">See all ' + rows.length + '</a></p>' : '')
+            : '<p class="empty">Nobody yet. When a business claims its page it shows here: first waiting for your approval in <a href="/admin/depot/claims">Claims</a>, then its welcome checklist.</p>') +
+            '<p class="hint"><a href="#partners">All partners</a></p>';
+        });
         Array.prototype.forEach.call(V().querySelectorAll('[data-switch]'), function (b) {
           b.addEventListener('click', function () {
             var on = b.dataset.on === '1', name = cityName(b.dataset.switch);
@@ -326,6 +334,94 @@
         });
       }
 
+      var PST = { waiting: ['Waiting for your approval', 'wait'], onboarding: ['Welcoming', 'guide'], done: ['Welcomed', 'on'], closed: ['Closed', 'off'] };
+      function pdate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''; }
+      // The next thing to do for a partner, and whether it is late.
+      function nextStep(r, items) {
+        if (r.status === 'waiting') return ['Approve their claim', false];
+        var left = (items || []).filter(function (i) { return !(r.checklist || {})[i[0]]; });
+        if (!left.length) return ['All done', false];
+        var late = !(r.checklist || {}).welcome && r.approved_at && (Date.now() - new Date(r.approved_at)) > 2 * 864e5;
+        return [left[0][1].split(',')[0], late];
+      }
+      function partnerList(rows, items) {
+        return '<div class="list"><div class="item head"><div></div><div>Business</div><div>Status</div><div>Next step</div><div></div></div>' + rows.map(function (r) {
+          var l = r.listing || {}, s = PST[r.status] || [r.status, 'off'], n = nextStep(r, items);
+          return '<div class="item"><div>' + logo(l) + '</div><div><strong>' + esc(l.name) + '</strong><small>' + esc([l.category, l.address_city].filter(Boolean).join(' · ')) + '</small>' +
+            '<small>Joined ' + esc(pdate(r.submitted_at)) + ' · ' + esc(r.route_to === 'community_manager' ? (r.assigned_name || 'Community Manager') : 'You') + '</small></div>' +
+            '<div><span class="tag ' + s[1] + '">' + s[0] + '</span></div>' +
+            '<div>' + (n[1] ? '<span class="tag wait">Late</span> ' : '') + esc(n[0]) + '</div>' +
+            '<div class="act"><a class="btn btn-ghost btn-sm" href="#partner/' + r.listing_id + '">Open</a></div></div>';
+        }).join('') + '</div>';
+      }
+      function viewPartners() {
+        crumbs([['Business outreach', '#'], ['New partners']]);
+        V().innerHTML = '<p class="empty">Loading...</p>';
+        api({ action: 'partners' }).then(function (d) {
+          var rows = (d.rows || []).slice().sort(function (a, b) { var o = { waiting: 0, onboarding: 1, done: 2 }; return (o[a.status] - o[b.status]) || String(b.submitted_at).localeCompare(String(a.submitted_at)); });
+          V().innerHTML = '<p class="sub">Every business that claimed its page. Approve the claim in <a href="/admin/depot/claims">Claims</a>; then they get three emails from you over three weeks, and whoever welcomes them works the checklist. A partner is Welcomed when the checklist is done.</p>' +
+            '<section class="card batches">' + (rows.length ? partnerList(rows, d.items) : '<p class="empty">Nobody yet.</p>') + '</section>';
+        });
+      }
+      function viewPartner(id) {
+        V().innerHTML = '<p class="empty">Loading...</p>';
+        api({ action: 'partner', listing_id: id }).then(function (d) {
+          if (!d.ok) { V().innerHTML = '<p class="msg err">' + esc(d.error || 'Not found') + '</p>'; return; }
+          var r = d.row, l = d.listing || {}, s = PST[r.status] || [r.status, 'off'];
+          crumbs([['Business outreach', '#'], ['New partners', '#partners'], [l.name]]);
+          V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + ' <span class="tag ' + s[1] + '">' + s[0] + '</span></h2>' +
+            '<p class="hint" style="margin:0 0 12px">' + esc(r.contact_name || '') + ' · ' + esc(r.contact_email || '') + (l.phone ? ' · ' + esc(l.phone) : '') +
+            '<br>Joined ' + esc(pdate(r.submitted_at)) + (r.approved_at ? ', approved ' + esc(pdate(r.approved_at)) : '') + ' · Welcomed by ' + esc(r.route_to === 'community_manager' ? (r.assigned_name || 'the Community Manager') : 'you') +
+            ' · <a href="/directory/' + encodeURIComponent(l.slug || '') + '" target="_blank" rel="noopener">Their page</a></p>' +
+            (r.status === 'waiting' ? '<p class="note">Their claim is waiting for your approval in <a href="/admin/depot/claims">Claims</a>. Approving starts the emails and this checklist.</p>' : '') +
+            '<h2>Welcome checklist</h2><div id="chk"></div><p class="msg" id="p-msg" role="status"></p>' +
+            '<div id="lp" style="border-top:1px solid var(--ve-border);margin-top:18px;padding-top:16px"></div></section>' +
+            '<section class="card"><h2>Their three emails from you</h2><div class="tabs" role="tablist">' + d.emails.map(function (m, i) {
+              return '<button type="button" role="tab" aria-selected="' + (i === 0) + '" data-i="' + i + '">Day ' + m.day + (m.sent ? ' · sent' : '') + '</button>'; }).join('') + '</div><div id="mail"></div></section></div>';
+          function drawChk(list) {
+            $('chk').innerHTML = d.items.map(function (it) { var done = (list || {})[it[0]];
+              return '<label style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:14px;cursor:pointer">' +
+                '<input type="checkbox" data-k="' + it[0] + '"' + (done ? ' checked' : '') + (r.status === 'waiting' ? ' disabled' : '') + ' style="width:20px;height:20px;margin-top:2px">' +
+                '<span>' + esc(it[1]) + (done ? '<small class="hint" style="display:block">' + esc(done.by || '') + ', ' + esc(pdate(done.done_at)) + '</small>' : '') + '</span></label>'; }).join('');
+            Array.prototype.forEach.call($('chk').querySelectorAll('input'), function (b) {
+              b.addEventListener('change', function () {
+                api({ action: 'partner_check', listing_id: id, item: b.dataset.k, done: b.checked }).then(function (x) {
+                  if (!x.ok) { b.checked = !b.checked; $('p-msg').className = 'msg err'; $('p-msg').textContent = x.error || 'That did not work.'; return; }
+                  r.checklist = x.checklist; r.status = x.status; drawChk(x.checklist);
+                  $('p-msg').className = 'msg'; $('p-msg').textContent = x.status === 'done' ? 'All done: ' + l.name + ' is welcomed.' : 'Saved.';
+                });
+              });
+            });
+          }
+          drawChk(r.checklist);
+          function show(i) {
+            var m = d.emails[i] || {};
+            $('mail').innerHTML = (m.subject ? '<div class="mail"><div class="mail-h"><b>To</b> ' + esc(m.to_email) + '<br><b>From</b> Sean A. Russell · replies to contact@lesaruss.com<br><b>Subject</b> ' + esc(m.subject) + '</div><div class="mail-b">' + linkify(m.body || '') + '</div></div>' : '<p class="empty">No email address on their claim.</p>') +
+              '<p class="hint">' + (m.sent ? 'Sent ' + esc(pdate(m.sent.sent_at)) + (m.sent.opened_at ? ', opened' : '') + (m.sent.clicked_at ? ', clicked' : '') + '.'
+                : r.status === 'waiting' ? 'Goes out ' + m.day + ' days after you approve their claim.' : (r.step + 1 === m.step && r.next_send_at ? 'Goes out ' + esc(new Date(r.next_send_at).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', timeZone: 'America/New_York' })) + ' Eastern.' : 'Goes out ' + m.day + ' days after approval.')) +
+              ' The numbers in Day 7 are filled in when it is sent.</p>';
+            Array.prototype.forEach.call(V().querySelectorAll('.tabs button'), function (t) { t.setAttribute('aria-selected', t.dataset.i == i); });
+          }
+          Array.prototype.forEach.call(V().querySelectorAll('.tabs button'), function (t) { t.addEventListener('click', function () { show(+t.dataset.i); }); });
+          show(Math.min(r.step, 2));
+          // Notes on their listing, the same as in an outreach preview.
+          function drawNotes(notes) {
+            $('lp').innerHTML = '<h2>The Directory listing</h2>' + ((notes || []).length ? '<ul class="notes">' + notes.slice().reverse().map(function (n) {
+              return '<li>' + esc(n.text) + '<small>' + esc(n.by || '') + ', ' + esc(pdate(n.at)) + '</small></li>'; }).join('') + '</ul>' : '<p class="hint" style="margin:0 0 10px">No notes yet.</p>') +
+              '<textarea class="note-in" id="l-note" placeholder="Called them Tuesday: sending photos Friday."></textarea>' +
+              '<div class="row-btns" style="margin-top:8px"><button type="button" class="btn btn-ghost btn-sm" id="l-save">Save note</button></div><p class="msg" id="l-msg" role="status"></p>';
+            $('l-save').addEventListener('click', function () {
+              var note = $('l-note').value.trim(); if (!note) return;
+              api({ action: 'listing_note', listing_id: id, note: note }).then(function (x) {
+                if (!x.ok) { $('l-msg').className = 'msg err'; $('l-msg').textContent = x.error || 'That did not work.'; return; }
+                drawNotes(x.notes); $('l-msg').className = 'msg'; $('l-msg').textContent = 'Saved on the listing.';
+              });
+            });
+          }
+          drawNotes(l.admin_notes || []);
+        });
+      }
+
       function viewEmails() {
         crumbs([['Business outreach', '#'], ['The three emails']]);
         V().innerHTML = '<p class="sub">What every business gets, from Sean. In each email the business\'s name, city and page link are filled in; a business featured in a Guide also gets a line with a link to where it is in that Guide. Open any business in a send day to read its exact copy.</p>' +
@@ -341,6 +437,8 @@
         if (h[0] === 'batch' && h[1]) return viewBatch(h[1]);
         if (h[0] === 'emails') return viewEmails();
         if (h[0] === 'interested') return viewInterested();
+        if (h[0] === 'partners') return viewPartners();
+        if (h[0] === 'partner' && h[1]) return viewPartner(h[1]);
         viewHome();
       }
       window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });
