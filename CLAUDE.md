@@ -232,7 +232,7 @@ links a campaign to a listing, but the table has no public read, so it needs to 
 at once." Then: "see who is on the queue, approve who the emails are going to be going out to... on Monday, we're sending
 it to these 60... see what the draft is... and we commit to it for like maybe 15 days before we make any drastic changes."
 The goal is businesses on board for Q1 2027 through Front Row Start. Migrations `20261010_ve_outreach.sql`,
-`20261010_ve_outreach_batches.sql` and `20261010_ve_outreach_sender.sql`; edge function `ve-outreach`; console **Depot > Business outreach**
+`20261010_ve_outreach_batches.sql`, `20261010_ve_outreach_sender.sql` and `20261010_ve_outreach_listing_cleanup.sql`; edge function `ve-outreach`; console **Depot > Business outreach**
 (`/admin/depot/business-outreach`).
 
 - **The console** (one thing per view): Upcoming sends (each send day is a batch: Waiting for approval, Approved, Sent) and
@@ -274,6 +274,16 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
 - Ops: `ve-outreach` also takes `LESARUSS_ADMIN_TOKEN` for overview, preview, plan and find_emails; approving, changing a
   row and the city switch need a signed-in super admin.
 - The June 2026 `listing_outreach` queue (the old $11 claim offer, never sent) was retired on 2026-10-10 (`skipped`, note).
+- **Cleaning up the Directory from here** (Sean, 2026-10-10: "remove people from the distribution list... move them to the
+  closed and move them off the main list... leave a note"). Each business's preview has **The Directory listing**: team notes
+  (`listings.details.admin_notes`, `[{at, by, kind: note|closed|logo, text}]`), **No longer in business** (`listing_closed`:
+  `business_status = 'CLOSED_PERMANENTLY'`, which the Directory shows only under Type > Closed, never in All, plus
+  `details.closed_at`/`closed_by`/`status_before_closed`) and **Use the letter, not this logo** (`listing_logo_letter`: the
+  logo is set aside in `details.logo_unverified`, the same way as the Logos rule). However a listing gets closed (here or
+  the listing page's admin editor), trigger `trg_ve_outreach_listing_closed` takes it off the email list, and planning and
+  Find emails skip closed businesses (migration `20261010_ve_outreach_listing_cleanup.sql`). Send days list brands first,
+  then A to Z, so the order never shifts. On 2026-10-10 five businesses the Directory already marked closed came off the list
+  before anything was sent, and Darbster's blurry logo was set aside for the letter (Sean).
 - Not built yet: the welcome and personal onboarding after a business signs up.
 
 ## Tracked links (Sean, 2026-10-04)

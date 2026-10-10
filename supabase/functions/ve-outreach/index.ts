@@ -19,6 +19,11 @@
 //
 //   test        { contact_id, step?, to? }  sends that business's real email to you (or to), marked as a test
 //   interested                        the interest queue: who clicked, replied or claimed, and who it is routed to
+//   listing_note   { contact_id, note }   a note on the business's Directory listing (details.admin_notes)
+//   listing_closed { contact_id, note? }  no longer in business: the listing is marked permanently closed (shown only
+//                                         under the Directory's Closed filter, never in All) and the business leaves
+//                                         the email list
+//   listing_logo_letter { contact_id }    the logo is set aside (details.logo_unverified) and the letter shows instead
 //
 // Cron (x-cron-secret, ve-outreach-send every 10 minutes), or the admin token:
 //   tick   reads what businesses did (ve_outreach_sync), then sends what ve_outreach_due() returns: approved send days
@@ -300,14 +305,18 @@ Deno.serve(async (req) => {
       let q = db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,email_source,contact_name,segment,status,step,batch_id,notes');
       if (action === 'batch') { if (!isId(body.batch_id)) return json({ error: 'batch_id' }, 400); q = q.eq('batch_id', body.batch_id); }
       else q = q.eq('community_slug', clean(body.city, 60)).eq('status', 'not_sent').is('batch_id', null);
-      const { data: rows } = await q.order('segment').order('created_at').limit(500);
-      const ids = (rows || []).map((r) => r.listing_id);
+      const { data: raw } = await q.limit(500);
+      const ids = (raw || []).map((r) => r.listing_id);
       const { data: ls } = ids.length ? await db.from('listings')
-        .select('id,name,slug,category,address_city,logo_url,tagline,brief_summary,vote_count,vegan_status,website,instagram')
+        .select('id,name,slug,category,address_city,logo_url,tagline,brief_summary,vote_count,vegan_status,website,instagram,business_status,admin_notes:details->admin_notes')
         .in('id', ids) : { data: [] };
       const byId = new Map((ls || []).map((l) => [l.id, l]));
+      // Brands first, then A to Z by name, so the order on screen never shifts.
+      const rows = (raw || []).slice().sort((a, b) => (a.segment === b.segment ? 0 : a.segment === 'brand' ? -1 : 1) ||
+        String(byId.get(a.listing_id)?.name || '').localeCompare(String(byId.get(b.listing_id)?.name || '')));
       const guides = await Promise.all(ids.map((id) => db.rpc('ve_outreach_guides', { p_listing: id })));
-      return json({ ok: true, rows: (rows || []).map((r, i) => ({ ...r, listing: byId.get(r.listing_id) || null, guides: (guides[i].data || []).map((g: { title: string }) => g.title) })) });
+      const G = new Map(ids.map((id, i) => [id, (guides[i].data || []).map((g: { title: string }) => g.title)]));
+      return json({ ok: true, rows: rows.map((r) => ({ ...r, listing: byId.get(r.listing_id) || null, guides: G.get(r.listing_id) || [] })) });
     }
 
     if (action === 'preview') {
@@ -394,6 +403,42 @@ Deno.serve(async (req) => {
       return json({ ok: true, rows: (rows || []).map((r) => ({ ...r, listing: L.get(r.listing_id) || null, assigned_name: r.assigned_member_id ? M.get(r.assigned_member_id) || null : null })) });
     }
 
+    if (action === 'listing_note' || action === 'listing_closed' || action === 'listing_logo_letter') {
+      if (!me || !isId(body.contact_id)) return json({ error: 'admins_only' }, 403);
+      const { data: c } = await db.from('ve_outreach_contacts').select('id,listing_id,status,batch_id').eq('id', body.contact_id).maybeSingle();
+      if (!c) return json({ error: 'contact' }, 400);
+      const { data: l } = await db.from('listings').select('id,name,logo_url,business_status,details').eq('id', c.listing_id).single();
+      const { data: who } = await db.from('members').select('name').eq('id', me).single();
+      const by = String(who?.name || 'Admin').split(/\s+/)[0];
+      const note = clean(body.note, 1000);
+      const details = { ...(l.details || {}) } as Record<string, unknown>;
+      const notes = Array.isArray(details.admin_notes) ? [...details.admin_notes as unknown[]] : [];
+      const at = new Date().toISOString();
+      const patch: Record<string, unknown> = { updated_at: at };
+      if (action === 'listing_note') {
+        if (!note) return json({ error: 'note' }, 400);
+        notes.push({ at, by, kind: 'note', text: note });
+      } else if (action === 'listing_closed') {
+        notes.push({ at, by, kind: 'closed', text: 'No longer in business. Moved to Closed and off the email list.' + (note ? ' ' + note : '') });
+        patch.business_status = 'CLOSED_PERMANENTLY';
+        details.closed_at = at; details.closed_by = by; details.status_before_closed = l.business_status || null;
+      } else {
+        if (!l.logo_url) return json({ error: 'no_logo' }, 400);
+        notes.push({ at, by, kind: 'logo', text: 'Logo not approved. Showing the letter until a clear, official logo replaces it.' + (note ? ' ' + note : '') });
+        details.logo_unverified = l.logo_url; details.logo_unverified_at = at.slice(0, 10); details.logo_unverified_why = `${by}: not approved`;
+        patch.logo_url = null;
+      }
+      details.admin_notes = notes;
+      patch.details = details;
+      const { error } = await db.from('listings').update(patch).eq('id', l.id);
+      if (error) return json({ error: error.message }, 400);
+      if (action === 'listing_closed' && ['not_sent', 'in_sequence', 'finished', 'interested'].includes(c.status)) {
+        await db.from('ve_outreach_contacts').update({ status: 'held', stop_reason: 'no longer in business', batch_id: c.status === 'not_sent' ? null : c.batch_id, next_send_at: null }).eq('id', c.id);
+        await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'status', detail: { status: 'held', why: 'closed', by: me } });
+      }
+      return json({ ok: true, notes });
+    }
+
     if (action === 'city') {
       const city = clean(body.city, 60);
       const { error } = await db.from('ve_outreach_cities').update({ enabled: !!body.enabled, enabled_at: body.enabled ? new Date().toISOString() : null, enabled_by: me, updated_at: new Date().toISOString() }).eq('community_slug', city);
@@ -409,7 +454,8 @@ Deno.serve(async (req) => {
       const { data: have } = await db.from('ve_outreach_contacts').select('listing_id');
       const skip = new Set([...(tried || []), ...(have || [])].map((r) => r.listing_id));
       let q = db.from('listings').select('id,name,website,category,address_city,address_state').eq('status', 'approved')
-        .is('owner_member_id', null).is('claimed_by_member_id', null).not('website', 'is', null).limit(1000);
+        .is('owner_member_id', null).is('claimed_by_member_id', null).not('website', 'is', null)
+        .or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').limit(1000);
       if (city === 'brands') q = q.in('category', ['Food Brands', 'Brands']);
       else { if (oc.cities) q = q.in('address_city', oc.cities); if (oc.states) q = q.in('address_state', oc.states); }
       const { data: ls } = await q;
