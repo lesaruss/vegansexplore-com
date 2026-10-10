@@ -440,6 +440,13 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
 
 ## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing`)
 
+**Version 3, locked by Sean 2026-10-10, not built yet: Guides move to credits.** Every paid Guide is $11 or 1 Guide
+credit, never a points price. Passport gives 1 credit a month (annual too, one a month); credits roll over up to 3; the
+$11 Founding Membership comes with 1 credit. Points are for talking to the Guides (text chat a few points a message, voice
+by the minute; no separate chat allowance) and can become 1 credit at about 2,500 points. Passport keeps crediting points
+as below until the voice cost per minute is known. Build list in the canon's `how`. Until it ships, what follows is what
+is live.
+
 "These guides are well worth way more than $11. They're not just simple PDFs. They're practically whole mini apps."
 Every paid Guide is **$11 or 1,100 points**, and a Guide a member unlocks is theirs to keep. The $11 Founding Membership
 credits 1,100 points ($1 = 100 points), enough for a first Guide of the member's choice. **Passport** ($11 a month or $111
