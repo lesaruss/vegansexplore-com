@@ -25,6 +25,11 @@
 // POST { action: 'checkout', tier: full|shopper, listing_slug? | name, city, website?, instagram? }  member -> { url }
 // GET  ?confirm=<Stripe session>                   marks the order paid, starts the audit, emails the owner and the team
 // POST { action: 'mine' }                          member -> { orders: [...], audits: [...] }
+// Secret Shopper (a Community Manager for their city's orders, or a super admin):
+// POST { action: 'shopper_list' } -> { visits }     POST { action: 'shopper_get', order_id } -> { place, report, missing } (the owner too, once sent)
+// POST { action: 'shopper_schedule', order_id, date }   POST { action: 'shopper_save', order_id, section, data }
+// POST { action: 'shopper_photo', order_id } -> { path, upload_url }   then shopper_photo_done { path, kind, caption }; shopper_photo_remove { path }
+// POST { action: 'shopper_send', order_id }          checks the report is complete, emails the owner and Sean (the meal to reimburse)
 // POST { action: 'get', id }                       -> the audit; the full detail only for its member, a super admin or ops
 // POST { action: 'sweep', limit? }                 cron or ops -> { started: [slugs] }   the monthly check-up, a few at a time,
 //      and the 90-day re-checks of paid audits
@@ -84,7 +89,7 @@ async function secret(key: string): Promise<string | null> {
   secrets[key] = v && v !== 'pending' ? v : null;
   return secrets[key];
 }
-type Caller = { ops: boolean; member: { id: string; email: string | null; admin: boolean } | null };
+type Caller = { ops: boolean; member: { id: string; email: string | null; name?: string; admin: boolean; cm?: string | null } | null };
 async function caller(req: Request): Promise<Caller> {
   const cron = req.headers.get('x-cron-secret');
   if (cron) { const cs = await secret('CRON_SECRET'); if (cs && cron === cs) return { ops: true, member: null }; }
@@ -94,8 +99,8 @@ async function caller(req: Request): Promise<Caller> {
   if (opsToken && token === opsToken) return { ops: true, member: null };
   const id = await verifyToken(token);
   if (!id) return { ops: false, member: null };
-  const { data: m } = await db.from('members').select('id, email, is_superadmin').eq('id', id).maybeSingle();
-  return { ops: false, member: m ? { id: m.id, email: m.email, admin: !!m.is_superadmin } : null };
+  const { data: m } = await db.from('members').select('id, email, name, is_superadmin, ve_role, home_community').eq('id', id).maybeSingle();
+  return { ops: false, member: m ? { id: m.id, email: m.email, name: m.name || '', admin: !!m.is_superadmin, cm: m.ve_role === 'community_manager' ? (m.home_community || '') : null } : null };
 }
 async function ipHash(req: Request): Promise<string> {
   const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
@@ -668,7 +673,7 @@ async function orderPaid(orderId: string, session: string) {
   const { data: a } = await db.from('ve_audits').insert({ tier: 'full', source: 'request', listing_id: o.listing_id, inputs: o.inputs, member_id: o.member_id,
     email: m?.email || null, order_id: o.id }).select('id').single();
   const where = await cityOf(o.listing_id, o.inputs);
-  await db.from('ve_audit_orders').update({ audit_id: a?.id || null, ...(o.tier === 'shopper' ? { shopper_status: 'to_arrange', shopper_assigned_to: (where?.to || [SEAN_EMAIL]).join(', ') } : {}) }).eq('id', o.id);
+  await db.from('ve_audit_orders').update({ audit_id: a?.id || null, community_slug: where?.slug || null, ...(o.tier === 'shopper' ? { shopper_status: 'to_arrange', shopper_assigned_to: (where?.to || [SEAN_EMAIL]).join(', ') } : {}) }).eq('id', o.id);
   if (a?.id) (EdgeRuntime as any).waitUntil(runAudit(a.id));
   const biz = o.inputs?.name || 'your restaurant', link = `${GUIDE_URL}#/audit/r/${a?.id || ''}`, first = String(m?.name || '').split(' ')[0] || 'there';
   if (m?.email) await mail([m.email], `Your full audit of ${biz} is running`,
@@ -684,6 +689,55 @@ async function orderPaid(orderId: string, session: string) {
     para('The price counts toward managed services if they sign up within 30 days.'), m?.email || undefined);
   return { ...o, audit_id: a?.id || null };
 }
+
+// ---- The Secret Shopper report (Sean, 2026-10-10: "Build the Secret Shopper report form next"; migration
+// 20261010_ve_audit_shopper.sql). The $149 order's visit is the city's Community Manager's (or a super admin's): they set the
+// day, visit, and fill in the report one section at a time. Sending it emails the owner, who reads it in the Guide.
+const SHOP_BUCKET = 'audit-shopper';
+const SHOP_SECTIONS: Record<string, string[]> = {
+  visit: ['date', 'time', 'party', 'mode', 'ordered', 'spent'],
+  welcome: ['greeted', 'rating', 'notes'],
+  wait: ['order_min', 'food_min', 'rating', 'notes'],
+  menu: ['labeled', 'rating', 'notes'],
+  food: ['rating', 'notes'],
+  clean: ['rating', 'notes'],
+  staff: ['question', 'answer', 'rating', 'notes'],
+  summary: ['went_well', 'to_fix', 'overall', 'return'],
+};
+const PHOTO_KINDS = ['food', 'room', 'menu', 'restroom', 'outside', 'receipt', 'other'];
+const SHOP_STATUS_NAME: Record<string, string> = { to_arrange: 'To arrange', scheduled: 'Visit set', visited: 'Report started', reported: 'Report sent' };
+function canShop(who: Caller, o: any) { return who.ops || !!who.member?.admin || (!!who.member?.cm && who.member.cm === o.community_slug); }
+async function signedPhotos(r: any) {
+  const ph = (r?.photos || []) as any[];
+  if (!ph.length) return [];
+  const { data } = await db.storage.from(SHOP_BUCKET).createSignedUrls(ph.map((p) => p.path), 3600);
+  return ph.map((p, i) => ({ ...p, url: data?.[i]?.signedUrl || null }));
+}
+async function shopperOrder(id: string) {
+  const { data: o } = await db.from('ve_audit_orders').select('*').eq('id', id).eq('tier', 'shopper').eq('status', 'paid').maybeSingle();
+  return o;
+}
+// What the shopper needs to find the place: its listing and what Google said in the audit.
+async function shopperPlace(o: any) {
+  const [{ data: l }, { data: a }] = await Promise.all([
+    o.listing_id ? db.from('listings').select('name, slug, address_street, address_city, address_state, phone, website').eq('id', o.listing_id).maybeSingle() : Promise.resolve({ data: null }),
+    o.audit_id ? db.from('ve_audits').select('facts').eq('id', o.audit_id).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
+  const g = (a as any)?.facts?.google || {};
+  return { name: (l as any)?.name || o.inputs?.name || 'The restaurant', slug: (l as any)?.slug || null,
+    address: g.address || [(l as any)?.address_street, (l as any)?.address_city, (l as any)?.address_state].filter(Boolean).join(', ') || o.inputs?.city || '',
+    phone: g.phone || (l as any)?.phone || null, website: g.website || (l as any)?.website || null, maps: g.maps || null, hours: g.hours || null };
+}
+function shopperMissing(r: any) {
+  const miss: string[] = [];
+  const need = (sec: string, k: string, label: string) => { const v = r?.[sec]?.[k]; if (v == null || v === '') miss.push(label); };
+  need('visit', 'date', 'the day you went'); need('visit', 'ordered', 'what you ordered'); need('visit', 'spent', 'what you spent');
+  for (const [sec, label] of [['welcome', 'the welcome'], ['wait', 'the wait'], ['menu', 'the menu'], ['food', 'the food'], ['clean', 'cleanliness'], ['staff', 'the staff']]) need(sec, 'rating', 'a rating for ' + label);
+  need('staff', 'question', 'the Vegan question you asked'); need('summary', 'went_well', 'what went well'); need('summary', 'to_fix', 'what to fix'); need('summary', 'overall', 'an overall rating');
+  if (((r?.photos || []) as any[]).filter((p) => p.kind !== 'receipt').length < 2) miss.push('at least two photos');
+  return miss;
+}
+
 async function confirmCheckout(sessionId: string): Promise<Response> {
   const go = (u: string) => new Response(null, { status: 302, headers: { Location: u } });
   for (const test of [false, true]) {
@@ -815,6 +869,103 @@ Deno.serve(async (req) => {
     await db.from('ve_audit_orders').update({ stripe_session: sj.id }).eq('id', o.id);
     return json({ url: sj.url, test_mode: test });
   }
+
+  // ---- The Secret Shopper report ----
+  if (action === 'shopper_list') {
+    if (!who.ops && !who.member?.admin && !who.member?.cm) return json({ error: 'not_yours', message: 'Secret Shopper visits are for Community Managers.' }, 403);
+    let q = db.from('ve_audit_orders').select('id, inputs, community_slug, shopper_status, shopper_report, paid_at, listing_id, test').eq('tier', 'shopper').eq('status', 'paid').order('paid_at', { ascending: true }).limit(200);
+    if (!who.ops && !who.member?.admin) q = q.eq('community_slug', who.member!.cm!);
+    const { data } = await q;
+    const order = ['to_arrange', 'scheduled', 'visited', 'reported'];
+    return json({ visits: (data || []).map((o: any) => ({ id: o.id, business: o.inputs?.name || null, city: o.inputs?.city || null, community: o.community_slug, test: o.test,
+      status: o.shopper_status || 'to_arrange', status_name: SHOP_STATUS_NAME[o.shopper_status || 'to_arrange'], paid_at: o.paid_at, scheduled_for: o.shopper_report?.scheduled_for || null, sent_at: o.shopper_report?.sent_at || null }))
+      .sort((a: any, b: any) => order.indexOf(a.status) - order.indexOf(b.status)) });
+  }
+  if (action === 'shopper_get') {
+    if (!isId(body.order_id)) return json({ error: 'id' }, 400);
+    const o = await shopperOrder(body.order_id);
+    if (!o) return json({ error: 'not_found' }, 404);
+    const owner = !!who.member && who.member.id === o.member_id;
+    if (!canShop(who, o) && !(owner && o.shopper_status === 'reported')) return json({ error: 'not_yours' }, 403);
+    const r = o.shopper_report || {};
+    return json({ id: o.id, status: o.shopper_status || 'to_arrange', status_name: SHOP_STATUS_NAME[o.shopper_status || 'to_arrange'], paid_at: o.paid_at, test: o.test,
+      place: await shopperPlace(o), report: { ...r, photos: await signedPhotos(r) }, missing: shopperMissing(r), can_edit: canShop(who, o) && o.shopper_status !== 'reported' });
+  }
+  if (['shopper_schedule', 'shopper_save', 'shopper_photo', 'shopper_photo_done', 'shopper_photo_remove', 'shopper_send'].includes(action)) {
+    if (!isId(body.order_id)) return json({ error: 'id' }, 400);
+    const o = await shopperOrder(body.order_id);
+    if (!o) return json({ error: 'not_found' }, 404);
+    if (!canShop(who, o)) return json({ error: 'not_yours' }, 403);
+    if (o.shopper_status === 'reported') return json({ error: 'sent', message: 'This report was sent already.' }, 400);
+    const r: any = o.shopper_report || {};
+    const put = async (next: any, status?: string) => {
+      const { error } = await db.from('ve_audit_orders').update({ shopper_report: next, ...(status ? { shopper_status: status } : {}) }).eq('id', o.id);
+      return error ? json({ error: 'save_failed', message: error.message }, 500) : null;
+    };
+    if (action === 'shopper_schedule') {
+      const d = clean(body.date, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return json({ error: 'date', message: 'Pick a day.' }, 400);
+      const bad = await put({ ...r, scheduled_for: d, scheduled_by: who.member?.id || null }, (o.shopper_status || 'to_arrange') === 'to_arrange' ? 'scheduled' : undefined);
+      return bad || json({ ok: true, scheduled_for: d });
+    }
+    if (action === 'shopper_save') {
+      const sec = String(body.section || '');
+      if (!SHOP_SECTIONS[sec]) return json({ error: 'section' }, 400);
+      const data: Record<string, unknown> = {};
+      for (const k of SHOP_SECTIONS[sec]) {
+        const v = (body.data || {})[k];
+        if (k === 'rating' || k === 'overall') { const n = Math.round(+v); data[k] = n >= 1 && n <= 5 ? n : null; }
+        else if (['party', 'order_min', 'food_min'].includes(k)) { const n = Math.round(+v); data[k] = Number.isFinite(n) && v !== '' && v != null && n >= 0 && n < 1000 ? n : null; }
+        else if (k === 'spent') { const n = Math.round(+String(v ?? '').replace(/[$,]/g, '') * 100) / 100; data[k] = Number.isFinite(n) && v !== '' && v != null && n >= 0 && n < 10000 ? n : null; }
+        else data[k] = clean(v, k === 'notes' || k === 'went_well' || k === 'to_fix' || k === 'answer' || k === 'ordered' ? 2000 : 200) || null;
+      }
+      const next = { ...r, [sec]: data, updated_at: new Date().toISOString(), shopper_id: r.shopper_id || who.member?.id || null, shopper_name: r.shopper_name || who.member?.name || null };
+      const bad = await put(next, ['to_arrange', 'scheduled'].includes(o.shopper_status || 'to_arrange') && sec === 'visit' && data.date ? 'visited' : undefined);
+      return bad || json({ ok: true, missing: shopperMissing(next) });
+    }
+    if (action === 'shopper_photo') {
+      if (((r.photos || []) as any[]).length >= 12) return json({ error: 'full', message: 'Twelve photos is the most. Take one off to add another.' }, 400);
+      const path = `${o.id}/${crypto.randomUUID()}.jpg`;
+      const { data: up, error } = await db.storage.from(SHOP_BUCKET).createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_failed', message: error?.message }, 500);
+      return json({ path, upload_url: up.signedUrl });
+    }
+    if (action === 'shopper_photo_done') {
+      const path = clean(body.path, 200);
+      if (!path.startsWith(o.id + '/') || !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/.test(path)) return json({ error: 'path' }, 400);
+      const kind = PHOTO_KINDS.includes(body.kind) ? body.kind : 'other';
+      const photos = ((r.photos || []) as any[]).filter((p) => p.path !== path).concat([{ path, kind, caption: clean(body.caption, 200) || null, at: new Date().toISOString() }]).slice(0, 12);
+      const bad = await put({ ...r, photos });
+      return bad || json({ ok: true, photos: await signedPhotos({ photos }) });
+    }
+    if (action === 'shopper_photo_remove') {
+      const path = clean(body.path, 200);
+      const photos = ((r.photos || []) as any[]).filter((p) => p.path !== path);
+      if (photos.length === (r.photos || []).length) return json({ error: 'not_found' }, 404);
+      await db.storage.from(SHOP_BUCKET).remove([path]);
+      const bad = await put({ ...r, photos });
+      return bad || json({ ok: true, photos: await signedPhotos({ photos }) });
+    }
+    // shopper_send
+    const miss = shopperMissing(r);
+    if (miss.length) return json({ error: 'missing', missing: miss, message: 'Before sending, add ' + miss.join(', ') + '.' }, 400);
+    const now = new Date().toISOString();
+    const bad = await put({ ...r, sent_at: now, sent_by: who.member?.id || null }, 'reported');
+    if (bad) return bad;
+    const place = await shopperPlace(o), link = `${GUIDE_URL}#/audit/shopper/${o.id}`;
+    const { data: owner } = await db.from('members').select('email, name').eq('id', o.member_id).maybeSingle();
+    if (owner?.email) await mail([owner.email], `${o.test ? '[TEST] ' : ''}Your Secret Shopper report for ${place.name}`,
+      para(`Hi ${esc(String(owner.name || '').split(' ')[0] || 'there')},`) +
+      para(`Our Secret Shopper visited <strong>${esc(place.name)}</strong> and the report is ready: the welcome, the wait, the menu and how your Vegan dishes are labeled, the food, cleanliness and how well your staff know the menu, with photos.`) +
+      para(`Read it here: <a href="${link}">${link}</a>`) +
+      para('Want help with what it found? Reply to this email. What you paid counts toward our managed services if you sign up within 30 days of your order.'), SEAN_EMAIL);
+    await mail([SEAN_EMAIL], `${o.test ? '[TEST] ' : ''}Secret Shopper report sent: ${place.name}`,
+      para(`${esc(who.member?.name || 'The team')} sent the Secret Shopper report for <strong>${esc(place.name)}</strong>.`) +
+      para(`Meal spent: <strong>$${Number(r.visit?.spent || 0).toFixed(2)}</strong> (covered up to $40)${((r.photos || []) as any[]).some((p) => p.kind === 'receipt') ? ', receipt photo attached in the report' : ', no receipt photo'}. Reimburse ${esc(who.member?.name || 'the shopper')} (${esc(who.member?.email || '')}).`) +
+      para(`The report: <a href="${SITE}/dashboard/secret-shopper#visit/${o.id}">${SITE}/dashboard/secret-shopper#visit/${o.id}</a>`));
+    return json({ ok: true, sent_at: now });
+  }
+
   // The signed-in member's audits: what they bought (with the re-check and the Secret Shopper) and their free checks.
   if (action === 'mine') {
     if (!who.member) return json({ orders: [], audits: [] });

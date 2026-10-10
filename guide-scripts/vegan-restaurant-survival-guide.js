@@ -285,6 +285,7 @@
   function viewAudit(sub) {
     var parts = String(sub || '').split('/');
     if (parts[0] === 'r' && parts[1]) return viewAuditResult(parts[1]);
+    if (parts[0] === 'shopper' && parts[1]) return viewShopper(parts[1]);
     var v = ++auditView;
     main.innerHTML = head('Your audit', 'A free check of your restaurant',
       'We look at your Google listing, your website, how you show up in search, and your Instagram, then list what you can fix right away. It takes about a minute.') +
@@ -338,7 +339,8 @@
       el.innerHTML = '<h3 class="dg-k" style="margin:24px 0 10px">Your audits</h3><div class="dg-rows">' +
         orders.map(function (o) {
           var re = o.recheck_audit_id ? 'Re-check ready' : 'Re-check ' + date(o.recheck_at);
-          return '<div class="dg-row"><div class="dg-row-main"><b>' + esc(o.business || 'Your restaurant') + '</b><span>' + (o.tier === 'shopper' ? 'Full audit with Secret Shopper' : 'Full audit') + ' &middot; ' + esc(date(o.paid_at)) + ' &middot; ' + esc(re) + '</span></div>' +
+          var shop = o.tier === 'shopper' ? (o.shopper_status === 'reported' ? ' &middot; <a href="#/audit/shopper/' + esc(o.id) + '" style="color:var(--g);font-weight:800">Secret Shopper report</a>' : ' &middot; Secret Shopper visit coming') : '';
+          return '<div class="dg-row"><div class="dg-row-main"><b>' + esc(o.business || 'Your restaurant') + '</b><span>' + (o.tier === 'shopper' ? 'Full audit with Secret Shopper' : 'Full audit') + ' &middot; ' + esc(date(o.paid_at)) + ' &middot; ' + esc(re) + shop + '</span></div>' +
             '<span class="dg-tag dg-tag-live">Paid</span><a class="dg-btn dg-ghost" href="#/audit/r/' + esc(o.recheck_audit_id || o.audit_id || '') + '">Open</a></div>';
         }).join('') +
         audits.slice(0, 6).map(function (a) {
@@ -346,6 +348,42 @@
             '<span class="dg-tag dg-tag-off">' + (a.tier === 'full' ? 'Full' : 'Free') + '</span><a class="dg-btn dg-ghost" href="#/audit/r/' + esc(a.id) + '">Open</a></div>';
         }).join('') + '</div>';
     }).catch(function () {});
+  }
+  // The Secret Shopper report, for the owner who bought it (ve-restaurant-audit shopper_get answers them once it is sent).
+  function viewShopper(id) {
+    var v = ++auditView;
+    main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<div class="dg-loading">Loading your report...</div>';
+    if (!token()) { main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">Sign in to read your Secret Shopper report.</p><button type="button" class="dg-btn" data-signin>Sign in</button>'; return; }
+    auditApi({ action: 'shopper_get', order_id: id }).then(function (d) {
+      if (v !== auditView) return;
+      if (!d.id) { main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">' + (d._status === 403 ? 'Your report shows here once our shopper sends it.' : 'We could not find that report.') + '</p>'; return; }
+      var r = d.report || {}, rate = function (x) { return x ? '<span class="rg-st rg-st-' + (x >= 4 ? 'good' : x === 3 ? 'review' : 'fix') + '">' + x + ' of 5</span>' : ''; };
+      var part = function (title, rating, lines) {
+        var body = lines.filter(function (l) { return l[1] != null && l[1] !== ''; }).map(function (l) { return '<p><strong>' + esc(l[0]) + ':</strong> ' + esc(l[1]) + '</p>'; }).join('');
+        return '<div class="rg-item">' + (rating ? rate(rating) : '<span></span>') + '<div><b>' + esc(title) + '</b></div>' + body + '</div>';
+      };
+      var g = function (sec, k) { return (r[sec] || {})[k]; };
+      var KN = { food: 'The food', room: 'The dining room', menu: 'The menu', restroom: 'The restroom', outside: 'Outside', receipt: 'Receipt', other: 'Photo' };
+      main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) +
+        head('Secret Shopper report', esc(d.place.name), 'Our shopper visited as a normal guest' + (g('visit', 'date') ? ' on ' + esc(new Date(g('visit', 'date') + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })) : '') + '. Here is what they found.') +
+        '<div class="rg-score"><div class="rg-main"><b>' + (g('summary', 'overall') || '&ndash;') + '<small style="font-size:16px"> of 5</small></b><span>Overall</span></div>' +
+        [['welcome', 'Welcome'], ['wait', 'Wait'], ['menu', 'Menu'], ['food', 'Food'], ['clean', 'Clean'], ['staff', 'Staff']].map(function (x) { return '<div><b>' + (g(x[0], 'rating') || '&ndash;') + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+        '<div class="rg-todo">' +
+        part('What went well', 0, [['', g('summary', 'went_well')]]).replace('<strong>:</strong> ', '') +
+        part('What to fix first', 0, [['', g('summary', 'to_fix')]]).replace('<strong>:</strong> ', '') +
+        part('The welcome', g('welcome', 'rating'), [['Greeted', g('welcome', 'greeted')], ['What happened', g('welcome', 'notes')]]) +
+        part('The wait', g('wait', 'rating'), [['Minutes until they ordered', g('wait', 'order_min')], ['Minutes until the food came', g('wait', 'food_min')], ['Notes', g('wait', 'notes')]]) +
+        part('The menu and Vegan labels', g('menu', 'rating'), [['Vegan labels', g('menu', 'labeled')], ['Notes', g('menu', 'notes')]]) +
+        part('The food', g('food', 'rating'), [['What they ordered', g('visit', 'ordered')], ['Notes', g('food', 'notes')]]) +
+        part('Cleanliness', g('clean', 'rating'), [['Notes', g('clean', 'notes')]]) +
+        part('The staff', g('staff', 'rating'), [['They asked', g('staff', 'question')], ['The answer', g('staff', 'answer')], ['Notes', g('staff', 'notes')]]) +
+        part('Would they go back?', 0, [['', g('summary', 'return')]]).replace('<strong>:</strong> ', '') +
+        '</div>' +
+        ((r.photos || []).filter(function (p) { return p.kind !== 'receipt'; }).length ? '<h3 class="dg-k" style="margin:18px 0 8px">Photos</h3><div class="dg-gallery">' + r.photos.filter(function (p) { return p.kind !== 'receipt'; }).map(function (p) {
+          return '<figure class="dg-gp"><a href="' + esc(p.url || '') + '" target="_blank" rel="noopener"><span style="background-image:url(\'' + esc(p.url || '') + '\')"></span></a><figcaption>' + esc(KN[p.kind] || 'Photo') + (p.caption ? ': ' + esc(p.caption) : '') + '</figcaption></figure>';
+        }).join('') + '</div>' : '') +
+        '<p class="rg-fine">Want help with what it found? <a href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Secret Shopper report: ' + d.place.name) + '">Write to our team</a>. What you paid counts toward our managed services within 30 days of your order.</p>';
+    }).catch(function () { if (v === auditView) main.innerHTML = crumb([['Your audit', '#/audit']]) + '<p class="dg-empty">We could not load your report just now. Refresh to try again.</p>'; });
   }
   function viewAuditResult(id) {
     var v = ++auditView, tries = 0;
