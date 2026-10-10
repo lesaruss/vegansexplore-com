@@ -606,6 +606,39 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   its own. Opening one stays in the Guide (`#/listing/<slug>`): the Guide's breadcrumb, what the Guide says
   about it, and the real `/directory/<slug>` page framed and sized to fit (Sean, 2026-10-08).
 
+## The restaurant audit (Sean, 2026-10-10; criteria approved the same day)
+
+"We could give them a simple audit for free and then in the actual guide, we go a bit deeper... just like BCPSMarcomm...
+scans their page for a set of defined criteria. Look at Google Local, SEO, Web and social." It is the heart of the Restaurant
+Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy Guide playbook) and a hook for business outreach.
+
+- Criteria (`ve_audit_criteria`, migration `20261010_ve_restaurant_audit.sql`): 40 weighted checks in four areas (Google Local,
+  SEO, Web, Social), each with a label, why, how to fix, the Guide chapter it links to (`chapter`, the step ids in the Guide)
+  and the a la carte service that does it (`service`, `ve-services` keys: `photo_shoot`, `reel`, `social_post`). `in_free`
+  marks the free check's ten. Change a criterion with a row update; the function reads them live.
+- Scoring, BCPS style: every item is Good, Fix, Review (double-check) or Skip (could not be checked, e.g. no website); the
+  score is Good weight over Good plus Fix weight (the distance from a perfect score). Review and Skip count for neither side.
+- `ve-restaurant-audit` (verify_jwt off, VE token checked inside): `find` (Directory search), `criteria`, `free` (anyone;
+  5 a day per visitor; a business checked in the last 7 days reuses that run, any tier), `full` (an owner of the Restaurant
+  Guide, `ve_owns_guide`, a super admin or the ops token; 10 a day), `get` (the full detail only for the audit's member, a
+  Guide owner, a super admin or ops; anyone else gets the free view: the free items with what was found, the other checks'
+  names, and `more_fix`, how many more things the full audit flags). Runs in the background (`EdgeRuntime.waitUntil`, 15 to
+  35 s); the ops token can pass `wait: true`. Rows in `ve_audits`.
+- Sources: Google Places API (New) (`GOOGLE_PLACES_API_KEY`; the listing's `google_place_id`, else a text search with the
+  name, street and city), PageSpeed Insights mobile (`GOOGLE_PAGESPEED_API_KEY`), our own read of the home page, robots.txt,
+  sitemap, menu page and up to 8 internal links, and Apify's Instagram profile scraper (`APIFY_API_TOKEN`, Starter plan, $29 a
+  month of usage; the Meta tokens in `lesaruss_secrets` are still `pending`). Facebook and TikTok are only looked for as links
+  on their site or listing.
+- Lessons from the first five (Blue Tree, Darbster, Rootz Soul, Vegan Cuban Cuisine, Sobe Vegan; 2026-10-10): many sites
+  turn away a scanner but not a browser, so a refused page is retried once as a browser, and a site that still refuses, while
+  Google's own speed test loads it, is a Review, not a Fix; builder template links (facebook.com/wix) are not the
+  restaurant's accounts; Google reads an address in the restaurant markup even when a visitor cannot see it (counts for the
+  Google match, not for "on your home page"); Google's city wins over ours; and when Google's match sits at a different
+  street than our listing, the audit says so (a chain branch or a move) instead of quietly checking another location.
+- Next: the Guide's Your audit tab (live site left, items right, as BCPS does), "Have us do it" on every Fix (a quote request
+  to the city's Community Manager until Sean sets prices), the monthly re-check, and the free check in the outreach emails
+  (an upgrade to the offer, not a change to the plan).
+
 ## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing` v3)
 
 "Instead of you buying guides with points, because it does feel weird... almost like Audible... you have credits to
