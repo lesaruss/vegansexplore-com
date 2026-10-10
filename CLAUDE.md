@@ -280,6 +280,13 @@ change the Directory there, not in the page. The page adds a city picker from `V
 (`/public/ve-hubs.js`), a hero with that city's art (New York for all cities), `?city=<hub slug>` and
 `?tab=<section>` in the address bar, and the Founding Membership box for non-members.
 
+Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
+logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
+`directory/logos/` files, or one an admin picked in the media library) or it is a podcast's own Apple Podcasts cover.
+Logos linked from elsewhere (Instagram pictures, whose links expire; website share images) were set aside on 2026-10-10
+into `listings.details.logo_unverified` (143 listings) and show the letter. Restore one after checking it with the line in
+`20261010_listing_logos_letter_unless_ours.sql`; a new logo is copied into our storage, never hot-linked.
+
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
 "South Florida is the prototype." Every city hub is one file, `/communities/hub.html`, served at
