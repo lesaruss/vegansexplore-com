@@ -275,6 +275,22 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   the page as `email_source`. Never guessed. Each listing is tried once (`ve_outreach_lookups`).
 - Ops: `ve-outreach` also takes `LESARUSS_ADMIN_TOKEN` for overview, preview, plan and find_emails; approving, changing a
   row and the city switch need a signed-in super admin.
+- **People lists: one engine for every brand** (Sean, 2026-10-10: "This should use the same engine we just created for
+  Vegans Explore to do outreach. We can select people in our system and add them to the distribution"; migration
+  `20261010_ve_outreach_lists.sql`). A `ve_outreach_cities` row is a list: `kind` `city` (businesses, everything above) or
+  `people` (people added from HQ > People). A people list has its own `program` (its three emails are
+  `ve_outreach_templates` rows with that program; business outreach is program `business-outreach`), `link_url` (where
+  `{link}` goes, made into the person's tracked /go/ link at the first email), `footer_reason` ("You are getting this because
+  ...") and `brand` (the HQ label), and the same switch, daily cap, send days, approval and sender. A person contact has no
+  listing (`segment` `person`, `person_id`, once per list by email); `ve_outreach_render` gives them `{first_name}` and `{link}`;
+  `ve_outreach_sync` marks them Joined when they become a paying LESARUSS AI member or start a 111 Day Theory journey after
+  their first email. The Depot here shows cities only (`overview` defaults to kind `city`; `interested` to businesses). HQ >
+  Distributions works the people lists through `ve-outreach` with the admin token and `as_member` (the owner's super admin
+  member id), which is honored only for people lists; `add_people`, `templates` and `template_save` are the people-list
+  actions. A people list's emails start as drafts and send only once marked ready in HQ. First list:
+  `111-day-theory-founding` (program `111-day-theory`, link `https://lesaruss.com/entry/join?program=111-day-theory`).
+  Before and after the migration, `ve_outreach_render` over every business contact and step rendered the same text (md5
+  d0864f6f38450faca8768a7f3eb13c86, 234 emails), and the Depot's overview returned the same 9 cities, 3 emails and 2 send days.
 - The June 2026 `listing_outreach` queue (the old $11 claim offer, never sent) was retired on 2026-10-10 (`skipped`, note).
 - **Cleaning up the Directory from here** (Sean, 2026-10-10: "remove people from the distribution list... move them to the
   closed and move them off the main list... leave a note"). Each business's preview has **The Directory listing**: team notes
