@@ -75,7 +75,8 @@
   };
   // Recorded 2026-10-10 (Sean approved the lines): one pose per tab, from her round 5 Oatly start pictures.
   ['pulse', 'brands', 'swaps', 'cookbook', 'look', 'join'].forEach(function (k) {
-    CLIPS[k] = { video: CLIP_BASE + 'dg-' + k + '.mp4', poster: CLIP_BASE + 'dg-poster-' + k + '.jpg' };
+    // ?v= changes when a clip is re-recorded, so no one is served the old one from cache (Brands, 2026-10-10: no counts).
+    CLIPS[k] = { video: CLIP_BASE + 'dg-' + k + '.mp4?v=2', poster: CLIP_BASE + 'dg-poster-' + k + '.jpg?v=2' };
   });
 
   var PANTRY = [
