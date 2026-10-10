@@ -462,42 +462,41 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   its own. Opening one stays in the Guide (`#/listing/<slug>`): the Guide's breadcrumb, what the Guide says
   about it, and the real `/directory/<slug>` page framed and sized to fit (Sean, 2026-10-08).
 
-## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing`)
+## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing` v3)
 
-**Version 3, locked by Sean 2026-10-10, not built yet: Guides move to credits.** Every paid Guide is $11 or 1 Guide
-credit, never a points price. Passport gives 1 credit a month (annual too, one a month); credits roll over up to 3; the
-$11 Founding Membership comes with 1 credit. Points are for talking to the Guides (text chat a few points a message, voice
-by the minute; no separate chat allowance) and can become 1 credit at about 2,500 points. Passport keeps crediting points
-as below until the voice cost per minute is known. Build list in the canon's `how`. Until it ships, what follows is what
-is live.
+"Instead of you buying guides with points, because it does feel weird... almost like Audible... you have credits to
+unlock guides... if you want the guide now, you just pay the 11 bucks... with the points, they can also speak to the
+guides." Every paid Guide is **$11 or 1 Guide credit**, never a points price, and a Guide a member unlocks is theirs to
+keep. The **$11 Founding Membership** comes with 1 credit. **Passport** ($11 a month or $111 a year) gives 1 credit a month
+(annual too, one a month) and still 1,100 points a month (13,200 for a year) until the voice cost per minute is known.
+Credits roll over up to **3**. **Points** are for talking to the Guides (text chat 4 points a message; voice by the minute
+once voice exists) and about **2,500 points become 1 credit**. **Free Guides** (the Welcome Guide, the Partner Guide) are
+open to everyone: they are the enrollment tool.
 
-"These guides are well worth way more than $11. They're not just simple PDFs. They're practically whole mini apps."
-Every paid Guide is **$11 or 1,100 points**, and a Guide a member unlocks is theirs to keep. The $11 Founding Membership
-credits 1,100 points ($1 = 100 points), enough for a first Guide of the member's choice. **Passport** ($11 a month or $111
-a year) gives **points, not access**: 1,100 points for every month paid, 13,200 for a year paid up front, credited by
-`ve-stripe-webhook` at signup and each renewal (Sean, 2026-10-10: unlocking 20 Guides in one Passport month and then
-downgrading must not decide who keeps what; points can buy other things too). **Free Guides** (the Welcome Guide, which
-walks through every section of the site in the Dairy Guide format, and the Partner Guide on a listing's Partner Dashboard
-tab) are open to everyone: they are the enrollment tool.
-
-- `ve_guides.access_rule`: `points` (cost 1,100), `free`, or the legacy `membership`. `ve-guide-unlock` `status`/`open`
-  return `via` (free, purchase, membership); `unlock` spends points and never charges twice.
-- The Dairy Guide is `points` since 2026-10-10 (Sean: "record it and flip"; migration `20261010_ve_dairy_guide_points.sql`).
-  Every member active at the flip owns it (`ve_guide_purchases`, 0 points spent; the flip added a row for anyone active
-  without one). Its page reads `access_rule` from
-  `ve-guide-unlock` (`ST` in `guide-scripts/vegan-dairy-guide.js`), so the flip switches every offer at once: signed out,
-  Join for $11 ("gives you 1,100 points: enough for this Guide"); an account that is not a Founding Member yet, Become a
-  Founding Member; enough points, **Unlock with 1,100 points** (`unlock`); short, **Add points** ($11 / $25 / $50 through
-  `ve-entry-checkout`, back with `?topup=success`) and Passport (1,100 points a month). Maya's Get access line on points
-  is `sayPoints`, played from `CLIPS.join_points` (`dg-join-p.mp4`, recorded 2026-10-10 in the old join clip's pose);
-  the welcome video no longer says the Guide comes with membership.
-- What the Guides say about prices lives in `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
-- Points live in two places: `members.lesars_balance` (what a Guide unlock, a reward or a campaign spends) and
+- Data (migration `20261010_ve_guide_credits.sql`): `members.guide_credits` and `guide_credit_ledger` (one row per
+  grant or spend, `unique (member_id, ref_id)` so nothing is granted twice). `ve_credit_grant` (cap 3; a grant at the cap
+  is recorded as `capped`, delta 0), `ve_credit_unlock`, `ve_credit_from_points` (2,500, both point balances),
+  `ve_guide_purchase_paid` (the $11 checkout; `ve_guide_purchases.paid_with` credit, cash, points). The Founding credit
+  comes from trigger `trg_ve_founding_credit` the moment a member becomes active (not for a member who already owns a
+  Guide, which was their first, and not for a Passport signup); Passport's monthly credit from `ve_passport_credit`
+  (ref `passport:<YYYY-MM>`, Eastern), run daily by cron `ve-passport-credits` and whenever the member opens a Guide.
+- `ve_guides.access_rule`: `credit`, `free`, or the older `points` and `membership`. `ve-guide-unlock`: `status`/`open`
+  (credits, balance, `credit_cap`, `points_per_credit`), `unlock` (a credit), `exchange` (points to a credit), `checkout`
+  (Stripe, $11 for that Guide, metadata type `ve_guide_purchase`, `confirm_fn` `ve-guide-unlock`; `GET ?confirm=` marks it
+  bought and returns with `?guide=bought`; test accounts use the test key).
+- The Dairy Guide page (`ST` in `guide-scripts/vegan-dairy-guide.js`) reads `access_rule`: signed out, Join for $11 (your
+  first credit comes with it); not a Founding Member yet, Become a Founding Member; a credit, **Unlock with 1 credit**; none,
+  **Get it now for $11**, Use 2,500 points for a credit (when they have them) and Passport. Maya's Get access line on credits
+  is `sayCredit`, played from `CLIPS.join_credit` (`dg-join-c.mp4`, Sean approved the line 2026-10-10; the voice's two long
+  pauses were shortened so it fits one take, `dg-join-c2.mp3`). The Restaurant Survival
+  Guide's button (`vegan-restaurant-survival-guide-gate.js`) does the same. The catalog (`/guides`), `/passport`,
+  `/welcome`, `/explore`, the homepage and the dashboard's Guide cards say $11 or 1 credit.
+- Guide chat spends points (`spend_points_for_chat`, reason `guide_chat_spend`); the monthly allowance rules are off.
+- Members active when the Dairy Guide left membership (2026-10-10) own it (`ve_guide_purchases`, 0 points).
+- Points live in two places: `members.lesars_balance` (what a reward, a campaign or the credit exchange spends) and
   `member_points.available_points` (the wallet, moved by `apply_member_points_delta`). Every function that moves points
-  moves both by the same amount (migration `20261010_points_both_balances.sql`, after profile-complete points could not
-  buy a Guide). A new points function does the same: `update members set lesars_balance = ...` next to its
-  `apply_member_points_delta` call. Guide chat's monthly allowance (`guide_chat_allotment`) and its 4-point charge
-  (`guide_chat_spend`) are not in `points_ledger_reason_check`, so both are refused and chat has been free so far.
+  moves both by the same amount (migration `20261010_points_both_balances.sql`). A new points function does the same.
+- What the Guides say about prices lives in `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
