@@ -38,6 +38,16 @@
 //          link is the business's own tracked /go/ link (ve_links, campaign business-outreach).
 //          Then partner onboarding (ve_partner_onboarding): the task email to whoever welcomes a newly approved partner,
 //          and the three onboarding emails from Sean (Day 2, 7 and 21 after approval, ve_onboarding_templates).
+//
+// People lists (Sean, 2026-10-10: "use the same engine... select people in our system and add them to the distribution";
+// migration 20261010_ve_outreach_lists.sql). A list (ve_outreach_cities row) is kind 'city' or 'people'; a people list
+// has its own program (emails), link_url and footer_reason, and the same switch, cap, send days and approval.
+//   overview { kind: 'people' }     the people lists (the default, kind 'city', is what the Vegans Explore Depot shows)
+//   interested { kind: 'people' }   people who clicked, replied or joined
+//   add_people { list, people: [{ person_id?, email, name? }] }  adds people to a list (skips do-not-email and repeats)
+//   templates { program }           a people list's three emails
+//   template_save { program, step, subject?, body?, status? }  edit them; status 'ready' lets them send
+// HQ calls with the admin token and as_member (the owner's member id, a super admin), honored only for people lists.
 // verify_jwt is false on deploy; tokens are verified here the way ve-links does it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -167,30 +177,38 @@ function nextSendAt(days: number): string {
   return d.toISOString();
 }
 const escHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-// A plain, personal-looking email: Sean's words, their links, and the required footer.
-function toHtml(body: string, business: string): string {
+// A plain, personal-looking email: Sean's words, their links, and the required footer. A business is "listed in the
+// Vegans Explore Directory"; a person on a people list gets that list's own reason (ve_outreach_cities.footer_reason).
+function toHtml(body: string, business: string, reason?: string | null): string {
   const paras = escHtml(body).split(/\n{2,}/).map((p) => '<p style="margin:0 0 16px">' +
     p.replace(/https?:\/\/[^\s<]+/g, (u) => `<a href="${u}" style="color:#1f5f22">${u}</a>`).replace(/\n/g, '<br>') + '</p>').join('');
   return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:600px">${paras}` +
-    `<p style="margin:28px 0 0;font-size:12px;line-height:1.5;color:#777">You are getting this because ${escHtml(business)} is listed in the Vegans Explore Directory. ` +
+    `<p style="margin:28px 0 0;font-size:12px;line-height:1.5;color:#777">${reason ? 'You are getting this because ' + escHtml(reason) : 'You are getting this because ' + escHtml(business) + ' is listed in the Vegans Explore Directory'}. ` +
     `<a href="{{unsubscribe_url}}" style="color:#777">Don't email me again</a>.<br>{{postal_address}}</p></div>`;
 }
-function toText(body: string, business: string): string {
-  return `${body}\n\n--\nYou are getting this because ${business} is listed in the Vegans Explore Directory.\nDon't email me again: {{unsubscribe_url}}\n{{postal_address}}`;
+function toText(body: string, business: string, reason?: string | null): string {
+  const why = reason ? `You are getting this because ${reason}` : `You are getting this because ${business} is listed in the Vegans Explore Directory`;
+  return `${body}\n\n--\n${why}.\nDon't email me again: {{unsubscribe_url}}\n{{postal_address}}`;
 }
 function linkCode() {
   const abc = 'abcdefghjkmnpqrstuvwxyz23456789';
   return 'bo-' + Array.from(crypto.getRandomValues(new Uint8Array(7)), (b) => abc[b % abc.length]).join('');
 }
-type Contact = { id: string; listing_id: string; community_slug: string; email: string; contact_name: string | null; segment: string; step: number; link_code: string | null };
-// The business's personal tracked link to its page, made once and used in all three emails.
-async function ensureLink(c: Contact, name: string, slug: string): Promise<string> {
+type Contact = { id: string; listing_id: string | null; community_slug: string; email: string; contact_name: string | null; segment: string; step: number; link_code: string | null };
+type List = { community_slug: string; name: string; kind: 'city' | 'people'; program: string; link_url: string | null; footer_reason: string | null; brand: string };
+async function listOf(slug: string): Promise<List | null> {
+  const { data } = await db.from('ve_outreach_cities').select('community_slug,name,kind,program,link_url,footer_reason,brand').eq('community_slug', slug).maybeSingle();
+  return (data as List) ?? null;
+}
+// The personal tracked link, made once and used in all three emails: a business's goes to its page, a person's to their
+// list's link (ve_outreach_cities.link_url), under the list's program as the campaign.
+async function ensureLink(c: Contact, name: string, destination: string, campaign = 'business-outreach'): Promise<string> {
   if (c.link_code) return c.link_code;
   for (let i = 0; i < 4; i++) {
     const code = linkCode();
     const { error } = await db.from('ve_links').insert({
-      code, label: ('Outreach: ' + name).slice(0, 120), destination: '/directory/' + slug, initiative_slug: 'business-outreach',
-      tags: ['business-outreach', c.community_slug, c.segment], channel: 'email', recipient_email: c.email.slice(0, 200),
+      code, label: ('Outreach: ' + name).slice(0, 120), destination, initiative_slug: campaign,
+      tags: [campaign, c.community_slug, c.segment], channel: 'email', recipient_email: c.email.slice(0, 200),
       recipient_name: (c.contact_name || name).slice(0, 120), active: true,
     });
     if (!error) { await db.from('ve_outreach_contacts').update({ link_code: code }).eq('id', c.id); return code; }
@@ -205,11 +223,20 @@ async function emailSend(payload: Record<string, unknown>) {
 // Render one step for one business, with its tracked link in place of the page address.
 // A test keeps the plain page address, so a test click never counts as the business's interest.
 async function build(c: Contact, step: number, test = false) {
-  const { data: l } = await db.from('listings').select('name,slug').eq('id', c.listing_id).single();
   const { data: r } = await db.rpc('ve_outreach_render', { p_contact: c.id, p_step: step });
   const m = r?.[0];
+  if (!c.listing_id) {
+    // A person on a people list (added from HQ > People): their list's link and footer.
+    const list = await listOf(c.community_slug);
+    if (!list || !m) throw new Error('could not render');
+    const name = c.contact_name || c.email;
+    const code = test || !m.page_url ? null : await ensureLink(c, name, String(m.page_url), list.program);
+    const body = code ? String(m.body).split(m.page_url).join(`${SITE}/go/${code}`) : String(m.body);
+    return { subject: String(m.subject), html: toHtml(body, name, list.footer_reason), text: toText(body, name, list.footer_reason), name, code };
+  }
+  const { data: l } = await db.from('listings').select('name,slug').eq('id', c.listing_id).single();
   if (!l || !m) throw new Error('could not render');
-  const code = test ? null : await ensureLink(c, l.name, l.slug);
+  const code = test ? null : await ensureLink(c, l.name, '/directory/' + l.slug);
   const body = code ? String(m.body).split(m.page_url).join(`${SITE}/go/${code}`) : String(m.body);
   return { subject: String(m.subject), html: toHtml(body, l.name), text: toText(body, l.name), name: l.name, code };
 }
@@ -225,8 +252,9 @@ async function tick() {
   if (room <= 0) return { synced, sent: 0, note: 'warm-up allowance used for today' };
   const { data: due } = await db.rpc('ve_outreach_due', { p_limit: 50 });
   const { data: today } = await db.rpc('ve_outreach_sent_today');
-  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap');
-  const { data: tpl } = await db.from('ve_outreach_templates').select('step,day_offset').order('step');
+  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap,program');
+  const { data: tpl } = await db.from('ve_outreach_templates').select('program,step,day_offset').order('step');
+  const programOf = new Map((cities || []).map((c) => [c.community_slug, c.program || 'business-outreach']));
   const capLeft = new Map((cities || []).map((c) => [c.community_slug, c.daily_cap - Number((today || []).find((t: { community_slug: string }) => t.community_slug === c.community_slug)?.n || 0)]));
   const out: unknown[] = [];
   for (const d of due || []) {
@@ -242,8 +270,9 @@ async function tick() {
         subject: m.subject, html: m.html, text: m.text, recipients: [{ email: c.email, first_name: first, name: c.contact_name || undefined }] });
       const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
       if (result === 'sent' || result === 'already_sent') {
-        const off = (tpl || []).find((t) => t.step === step)?.day_offset ?? 0;
-        const nextOff = (tpl || []).find((t) => t.step === step + 1)?.day_offset;
+        const prog = programOf.get(c.community_slug) || 'business-outreach';
+        const off = (tpl || []).find((t) => t.program === prog && t.step === step)?.day_offset ?? 0;
+        const nextOff = (tpl || []).find((t) => t.program === prog && t.step === step + 1)?.day_offset;
         await db.from('ve_outreach_contacts').update({ step, status: nextOff == null ? 'finished' : 'in_sequence', last_sent_at: new Date().toISOString(),
           next_send_at: nextOff == null ? null : nextSendAt(nextOff - off) }).eq('id', c.id);
         await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'sent', step, detail: { resend_id: res.results?.[0]?.id || null, link: m.code } });
@@ -322,6 +351,25 @@ async function onboardingTick() {
   return out;
 }
 
+// Which list an action works on, so HQ's as_member is honored only for people lists.
+async function targetList(action: string, body: Record<string, unknown>): Promise<string | null> {
+  if (['approve', 'cancel'].includes(action) && isId(body.batch_id)) {
+    const { data } = await db.from('ve_outreach_batches').select('community_slug').eq('id', body.batch_id).maybeSingle();
+    return data?.community_slug ?? null;
+  }
+  if (['remove', 'contact', 'test'].includes(action) && isId(body.contact_id)) {
+    const { data } = await db.from('ve_outreach_contacts').select('community_slug').eq('id', body.contact_id).maybeSingle();
+    return data?.community_slug ?? null;
+  }
+  if (['city', 'plan', 'waiting'].includes(action)) return clean(body.city, 60) || null;
+  if (action === 'add_people') return clean(body.list, 60) || null;
+  if (action === 'template_save') {
+    const { data } = await db.from('ve_outreach_cities').select('community_slug').eq('kind', 'people').eq('program', clean(body.program, 60)).limit(1);
+    return data?.[0]?.community_slug ?? null;
+  }
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
@@ -338,20 +386,39 @@ Deno.serve(async (req) => {
       await db.from('email_heartbeats').upsert({ name: 've-outreach', last_ok_at: new Date().toISOString(), detail: r, updated_at: new Date().toISOString() });
       return json({ ok: true, ...r });
     }
-    const me = await adminId(req);
+    let me = await adminId(req);
+    // HQ (hq.lesaruss.ai > Distributions) works the people lists: it checks the owner's own sign-in, then calls with the
+    // admin token and as_member (that owner's member id, a super admin). Only for lists of kind 'people'; a city still needs
+    // a super admin signed in here, as before (Sean, 2026-10-10).
+    if (!me && isId(body.as_member)) {
+      const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+      const at = await secretValue('LESARUSS_ADMIN_TOKEN');
+      if (at && given === at) {
+        const { data: m } = await db.from('members').select('is_superadmin').eq('id', body.as_member).maybeSingle();
+        const slug = await targetList(action, body);
+        const list = slug ? await listOf(slug) : null;
+        if (m?.is_superadmin && list?.kind === 'people') me = body.as_member;
+      }
+    }
     if (!me) {
-      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner', 'listing_edits'];
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner', 'listing_edits', 'add_people', 'templates'];
       const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
     }
 
     if (action === 'overview') {
-      const [{ data: cities }, { data: batches }, { data: templates }, { data: contacts }] = await Promise.all([
-        db.from('ve_outreach_cities').select('community_slug,name,enabled,daily_cap,committed_until').order('name'),
-        db.from('ve_outreach_batches').select('id,community_slug,send_on,status,approved_at').neq('status', 'cancelled').order('send_on'),
-        db.from('ve_outreach_templates').select('step,day_offset,subject,body,status').order('step'),
-        db.from('ve_outreach_contacts').select('community_slug,status,batch_id'),
+      // kind 'city' (the default, what the Vegans Explore Depot shows) or 'people' (HQ > Distributions).
+      const people = body.kind === 'people';
+      const cityCols: string = people ? 'community_slug,name,enabled,daily_cap,committed_until,kind,program,link_url,footer_reason,brand' : 'community_slug,name,enabled,daily_cap,committed_until';
+      const { data: cityRows } = await db.from('ve_outreach_cities').select(cityCols).eq('kind', people ? 'people' : 'city').order('name');
+      const cities = (cityRows || []) as unknown as (List & { enabled: boolean; daily_cap: number; committed_until: string | null })[];
+      const slugs = cities.map((c) => c.community_slug);
+      const programs = people ? [...new Set(cities.map((c) => c.program))] : ['business-outreach'];
+      const [{ data: batches }, { data: templates }, { data: contacts }] = await Promise.all([
+        db.from('ve_outreach_batches').select('id,community_slug,send_on,status,approved_at').neq('status', 'cancelled').in('community_slug', slugs.length ? slugs : ['-']).order('send_on'),
+        db.from('ve_outreach_templates').select((people ? 'program,step,day_offset,subject,body,status' : 'step,day_offset,subject,body,status') as string).in('program', programs).order('step'),
+        db.from('ve_outreach_contacts').select('community_slug,status,batch_id').in('community_slug', slugs.length ? slugs : ['-']),
       ]);
       const counts: Record<string, Record<string, number>> = {};
       const inBatch: Record<string, number> = {};
@@ -370,14 +437,14 @@ Deno.serve(async (req) => {
       if (action === 'batch') { if (!isId(body.batch_id)) return json({ error: 'batch_id' }, 400); q = q.eq('batch_id', body.batch_id); }
       else q = q.eq('community_slug', clean(body.city, 60)).eq('status', 'not_sent').is('batch_id', null);
       const { data: raw } = await q.limit(500);
-      const ids = (raw || []).map((r) => r.listing_id);
+      const ids = (raw || []).map((r) => r.listing_id).filter(Boolean);
       const { data: ls } = ids.length ? await db.from('listings')
         .select('id,name,slug,category,address_city,logo_url,tagline,brief_summary,vote_count,vegan_status,website,instagram,business_status,admin_notes:details->admin_notes')
         .in('id', ids) : { data: [] };
       const byId = new Map((ls || []).map((l) => [l.id, l]));
       // Brands first, then A to Z by name, so the order on screen never shifts.
       const rows = (raw || []).slice().sort((a, b) => (a.segment === b.segment ? 0 : a.segment === 'brand' ? -1 : 1) ||
-        String(byId.get(a.listing_id)?.name || '').localeCompare(String(byId.get(b.listing_id)?.name || '')));
+        String(byId.get(a.listing_id)?.name || a.contact_name || a.email || '').localeCompare(String(byId.get(b.listing_id)?.name || b.contact_name || b.email || '')));
       const guides = await Promise.all(ids.map((id) => db.rpc('ve_outreach_guides', { p_listing: id })));
       const G = new Map(ids.map((id, i) => [id, (guides[i].data || []).map((g: { title: string }) => g.title)]));
       return json({ ok: true, rows: rows.map((r) => ({ ...r, listing: byId.get(r.listing_id) || null, guides: G.get(r.listing_id) || [] })) });
@@ -386,7 +453,9 @@ Deno.serve(async (req) => {
     if (action === 'preview') {
       if (!isId(body.contact_id)) return json({ error: 'contact_id' }, 400);
       const steps = await Promise.all([1, 2, 3].map((s) => db.rpc('ve_outreach_render', { p_contact: body.contact_id, p_step: s })));
-      const { data: t } = await db.from('ve_outreach_templates').select('step,day_offset').order('step');
+      const { data: pc } = await db.from('ve_outreach_contacts').select('community_slug').eq('id', body.contact_id).maybeSingle();
+      const plist = pc ? await listOf(pc.community_slug) : null;
+      const { data: t } = await db.from('ve_outreach_templates').select('step,day_offset').eq('program', plist?.program || 'business-outreach').order('step');
       return json({ ok: true, emails: steps.map((r, i) => ({ step: i + 1, day: t?.[i]?.day_offset ?? null, ...(r.data?.[0] || {}) })) });
     }
 
@@ -457,9 +526,12 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'interested') {
-      const { data: rows } = await db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,status,stop_reason,step,route_to,assigned_member_id,interested_at,joined_at,updated_at')
-        .in('status', ['interested', 'joined']).order('updated_at', { ascending: false }).limit(300);
-      const ids = (rows || []).map((r) => r.listing_id);
+      // Businesses by default (the Vegans Explore Depot); kind 'people' for HQ's people lists.
+      let iq = db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,status,stop_reason,step,route_to,assigned_member_id,interested_at,joined_at,updated_at')
+        .in('status', ['interested', 'joined']);
+      iq = body.kind === 'people' ? iq.is('listing_id', null) : iq.not('listing_id', 'is', null);
+      const { data: rows } = await iq.order('updated_at', { ascending: false }).limit(300);
+      const ids = (rows || []).map((r) => r.listing_id).filter(Boolean);
       const { data: ls } = ids.length ? await db.from('listings').select('id,name,slug,category,address_city,phone').in('id', ids) : { data: [] };
       const mids = [...new Set((rows || []).map((r) => r.assigned_member_id).filter(Boolean))];
       const { data: ms } = mids.length ? await db.from('members').select('id,name').in('id', mids) : { data: [] };
@@ -612,6 +684,55 @@ Deno.serve(async (req) => {
       }
       const left = (ls || []).filter((l) => !skip.has(l.id) && l.website).length - todo.length;
       return json({ ok: true, checked: out.length, found: out.filter((o) => o.email).length, left: Math.max(0, left), results: out });
+    }
+
+    // ---- People lists (HQ > People and HQ > Distributions) ----
+    if (action === 'add_people') {
+      // people: [{ person_id?, email, name? }]. Adding never sends: a person waits until a send day is planned and approved.
+      const list = await listOf(clean(body.list, 60));
+      if (!list || list.kind !== 'people') return json({ error: 'list' }, 400);
+      const ppl = (Array.isArray(body.people) ? body.people : []).slice(0, 500);
+      const emails = ppl.map((p: { email?: unknown }) => clean(p?.email, 200).toLowerCase()).filter(isEmail);
+      const [{ data: sup }, { data: have }] = await Promise.all([
+        emails.length ? db.from('email_suppressions').select('email').eq('active', true).in('email', emails) : Promise.resolve({ data: [] }),
+        db.from('ve_outreach_contacts').select('email').eq('community_slug', list.community_slug).is('listing_id', null),
+      ]);
+      const blocked = new Set((sup || []).map((r: { email: string }) => r.email.toLowerCase()));
+      const onList = new Set((have || []).map((r: { email: string }) => r.email.toLowerCase()));
+      const out = { added: 0, already: 0, suppressed: 0, invalid: 0 };
+      for (const p of ppl) {
+        const email = clean(p?.email, 200).toLowerCase();
+        if (!isEmail(email)) { out.invalid++; continue; }
+        if (blocked.has(email)) { out.suppressed++; continue; }
+        if (onList.has(email)) { out.already++; continue; }
+        const { error } = await db.from('ve_outreach_contacts').insert({ community_slug: list.community_slug, segment: 'person', email,
+          contact_name: clean(p?.name, 120) || null, person_id: isId(p?.person_id) ? p.person_id : null, email_source: 'HQ > People' });
+        if (error) { out.already++; continue; }
+        onList.add(email); out.added++;
+      }
+      return json({ ok: true, ...out });
+    }
+
+    if (action === 'templates') {
+      const program = clean(body.program, 60);
+      const { data: pl } = await db.from('ve_outreach_cities').select('community_slug').eq('kind', 'people').eq('program', program).limit(1);
+      if (!pl?.length) return json({ error: 'program' }, 400);
+      const { data } = await db.from('ve_outreach_templates').select('program,step,day_offset,subject,body,status,updated_at').eq('program', program).order('step');
+      return json({ ok: true, templates: data || [] });
+    }
+
+    if (action === 'template_save') {
+      // A people list's own emails only; the business outreach emails are changed in the Vegans Explore Depot.
+      if (!me) return json({ error: 'admins_only' }, 403);
+      const program = clean(body.program, 60), step = Number(body.step);
+      const { data: pl } = await db.from('ve_outreach_cities').select('community_slug').eq('kind', 'people').eq('program', program).limit(1);
+      if (!pl?.length || ![1, 2, 3].includes(step)) return json({ error: 'program' }, 400);
+      const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (typeof body.subject === 'string') { const v = clean(body.subject, 160); if (!v) return json({ error: 'subject' }, 400); patch.subject = v; }
+      if (typeof body.body === 'string') { const v = String(body.body).replace(/\u0000/g, '').replace(/\r\n/g, '\n').trim().slice(0, 6000); if (!v) return json({ error: 'body' }, 400); patch.body = v; }
+      if (body.status === 'draft' || body.status === 'ready') patch.status = body.status;
+      const { error } = await db.from('ve_outreach_templates').update(patch).eq('program', program).eq('step', step);
+      return error ? json({ error: error.message }, 400) : json({ ok: true });
     }
 
     return json({ error: 'unknown action' }, 400);
