@@ -287,6 +287,14 @@ Logos linked from elsewhere (Instagram pictures, whose links expire; website sha
 into `listings.details.logo_unverified` (143 listings) and show the letter. Restore one after checking it with the line in
 `20261010_listing_logos_letter_unless_ours.sql`; a new logo is copied into our storage, never hot-linked.
 
+Duplicates (Sean, 2026-10-10: "merge the duplicates"): a listing is never deleted. A duplicate gets status `rejected` with
+`details.merged_into` (the listing that stays), `merged_at` and `status_before_merge`, and what pointed at it (outreach,
+votes, saves) moves to the listing that stays; a second queued outreach for the same business is `skipped`. 168 were
+merged on 2026-10-10 (`20261010_listing_duplicates_merged.sql`): three public pairs (BunnieCakes, The Rabbit Hole and
+Soulicious Vegan Kitchen, whose "Community Partner" copies became an extra category) and 165 hidden import copies of a
+listed business. Branches in different cities are not duplicates. Hidden import copies can share a slug with the public
+listing, so look a listing up by slug and `status = 'approved'`.
+
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
 "South Florida is the prototype." Every city hub is one file, `/communities/hub.html`, served at
