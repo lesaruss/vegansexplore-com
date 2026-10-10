@@ -330,6 +330,13 @@ returns every moment across every show, who said it, a quote, and a play button 
   "Precondition check failed" (probed 2026-10-10). So server-side caption reading does not work; the transcripts come from
   TurboScribe (Sean's account, $20 a month, takes YouTube links) as SRT files, or from YouTube's own API once the channel
   owner authorizes it (needs the YouTube Data API on the Google Cloud project and a sign-in per channel; nothing is set up).
+- **Depot > Content index** (`/admin/depot/content-index`, built 2026-10-10 when Sean subscribed to TurboScribe): each show's
+  progress (timestamped of all, hours) with **Copy the YouTube links** still waiting (for TurboScribe), a drop box for SRT files
+  or a ZIP of them (JSZip, `__MACOSX` skipped), and the episode list (search, show, Waiting or Timestamped). Dropped files are
+  matched to an episode by a YouTube id in the name, else by title words (Good match, Check this, No match, which defaults to
+  Skip); the review view (`#review`) lists the ones to check first, each with an episode picker, and Save sends each through
+  `ve-content-index` `srt` (source `turboscribe`). The function takes a signed-in super admin for `status`, `episodes` and
+  `srt`, and the admin token for everything.
 
 ## Tracked links (Sean, 2026-10-04)
 

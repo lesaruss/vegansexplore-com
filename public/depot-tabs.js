@@ -15,6 +15,7 @@
     { href: '/admin/depot/sources', label: 'Sources' },
     { href: '/admin/depot/links', label: 'Links' },
     { href: '/admin/depot/business-outreach', label: 'Business outreach' },
+    { href: '/admin/depot/content-index', label: 'Content index' },
     { href: '/admin/depot/dinners', label: 'Dinner guests' },
     { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },
     { href: '/admin/depot/logos', label: 'Logos' },

@@ -12,6 +12,8 @@
 //   youtube_batch { limit? }    the next episodes on YouTube with no transcript yet (default 10)
 //   srt { content_id, srt, source? }  save a transcript from an SRT file (TurboScribe)
 //   status                      how many episodes have a timestamped transcript, by show
+// Depot > Content index (a signed-in super admin, Bearer <ve_token>): status, episodes (every episode with its transcript
+// state), and srt (SRT files dropped on the page, matched to an episode there).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
@@ -112,12 +114,41 @@ async function youtube(contentId: string) {
   return { title: c.title, result: 'ready', segments: segs.length, auto: track.kind === 'asr', how: t.how };
 }
 
+function b64urlBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad);
+  return Uint8Array.from(bin, (c) => c.charCodeAt(0));
+}
+// A signed-in member's token (same key as ve-auth), for the Depot page.
+async function memberId(token: string): Promise<string | null> {
+  try {
+    const [h, p, sig] = token.split('.'); if (!h || !p || !sig) return null;
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!.slice(0, 32).padEnd(32, '0')), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    if (!(await crypto.subtle.verify('HMAC', key, b64urlBytes(sig), new TextEncoder().encode(`${h}.${p}`)))) return null;
+    const d = JSON.parse(new TextDecoder().decode(b64urlBytes(p)));
+    return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
+  } catch { return null; }
+}
+const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type, apikey, x-client-info', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
+
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
+  const res = await handle(req);
+  const h = new Headers(res.headers); Object.entries(CORS).forEach(([k, v]) => h.set(k, v));
+  return new Response(res.body, { status: res.status, headers: h });
+});
+
+async function handle(req: Request): Promise<Response> {
   const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
-  if (!sec?.value || given !== sec.value) return json({ error: 'unauthorized' }, 401);
   const body = await req.json().catch(() => ({}));
+  const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+  if (!sec?.value || given !== sec.value) {
+    // The Depot page: a signed-in super admin may read the status and the episodes, and save SRT files.
+    const id = given ? await memberId(given) : null;
+    const { data: m } = id ? await db.from('members').select('is_superadmin').eq('id', id).maybeSingle() : { data: null };
+    if (!m?.is_superadmin || !['status', 'episodes', 'srt'].includes(String(body.action))) return json({ error: 'unauthorized' }, 401);
+  }
   try {
     // What YouTube returns to this server, for diagnosing blocks.
     if (body.action === 'probe') {
@@ -146,10 +177,18 @@ Deno.serve(async (req) => {
       return json({ ok: true, done: results.length, left: (eps || []).filter((e) => !skip.has(e.id)).length - results.length, results });
     }
     if (body.action === 'srt') {
+      const { data: ep } = await db.from('ve_pulse_content').select('id').eq('id', String(body.content_id || '')).maybeSingle();
+      if (!ep) return json({ error: 'no_episode' }, 400);
       const segs = fromSrt(String(body.srt || ''));
       if (!segs.length) return json({ error: 'empty_srt' }, 400);
       await save(String(body.content_id), String(body.source || 'turboscribe'), 'en', segs, null);
       return json({ ok: true, segments: segs.length });
+    }
+    if (body.action === 'episodes') {
+      const { data: eps } = await db.from('ve_pulse_content').select('id,title,podcast_show,youtube_id,published_at,duration_seconds').not('podcast_show', 'is', null).order('published_at', { ascending: false }).limit(1000);
+      const { data: tr } = await db.from('ve_content_transcripts').select('content_id,source,status,words,duration_seconds,fetched_at');
+      const T = new Map((tr || []).map((t) => [t.content_id, t]));
+      return json({ ok: true, episodes: (eps || []).map((e) => ({ ...e, transcript: T.get(e.id) || null })) });
     }
     if (body.action === 'status') {
       const { data } = await db.rpc('ve_content_index_status');
@@ -159,4 +198,4 @@ Deno.serve(async (req) => {
   } catch (e) {
     return json({ error: String((e as Error).message || e) }, 500);
   }
-});
+}

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Content index | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Content index (Sean, 2026-10-10: "go ahead and start on the content index"). Step 1: a timestamped transcript for
+       every episode. YouTube refuses our server, so they come from TurboScribe as SRT files: copy a show's YouTube links
+       into TurboScribe, export the transcripts as SRT, drop them here (or a ZIP of them), check each file's episode, Save.
+       Data: ve-content-index (status, episodes, srt), ve_content_transcripts. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    [hidden]{display:none !important;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .crumbs{font-size:13px;font-weight:700;margin:0 0 14px;color:var(--ve-text-75);}
+    .crumbs a{color:var(--ve-green-deep);text-decoration:none;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;margin-bottom:18px;}
+    .show{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+    .show h3{font-size:15px;font-weight:900;}
+    .bar{height:8px;border-radius:6px;background:#eee;overflow:hidden;}.bar i{display:block;height:100%;background:var(--ve-green);}
+    .show small{font-size:12.5px;color:var(--ve-text-75);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:36px;}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .drop{border:2px dashed rgba(31,95,34,.35);border-radius:12px;background:#fbfdfb;padding:26px;text-align:center;cursor:pointer;}
+    .drop.on{background:var(--ve-green-light);border-color:var(--ve-green-deep);}
+    .drop b{display:block;font-size:16px;margin-bottom:4px;}
+    .drop span{font-size:13px;color:var(--ve-text-75);}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;background:#eee;color:#444;white-space:nowrap;}
+    .tag.on{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .tag.wait{background:#FFF1DC;color:#8a4b00;}
+    .tag.bad{background:#fde8e8;color:#a61b1b;}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px;}
+    .toolbar input,.toolbar select,.row select{font:inherit;font-size:13.5px;padding:9px 12px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;max-width:100%;}
+    .toolbar input{flex:1;min-width:200px;}
+    select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:44px !important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:12px 8px;}
+    .list{max-height:560px;overflow:auto;}
+    .row{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(0,1fr) 130px 110px;gap:12px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--ve-border);font-size:13px;}
+    .row small{display:block;color:var(--ve-text-75);}
+    .row.head{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#fff;}
+    .row .act{text-align:right;}
+    .rv{grid-template-columns:minmax(0,1.6fr) minmax(0,2.4fr) 120px;}
+    .rv select{width:100%;}
+    @media (max-width:760px){.row{grid-template-columns:1fr 1fr;}.row.head{display:none;}.rv{grid-template-columns:1fr;}}
+    .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:#a61b1b;}
+    .note{background:#FFF8EC;border:1px solid #F5D9A8;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;}
+    ol.steps{margin:0 0 0 20px;font-size:14px;}ol.steps li{margin:0 0 4px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Content index</h1>
+    <div id="depot-tabs"></div>
+    <div id="ci-gate" class="gate" hidden></div>
+    <div id="ci-app" hidden>
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+      <div id="view"></div>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-content-index';
+      var $ = function (id) { return document.getElementById(id); };
+      var V = function () { return $('view'); };
+      var EPS = [], PENDING = [];
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
+      function load() { return api({ action: 'episodes' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); EPS = d.episodes || []; }); }
+      function has(e) { return e.transcript && e.transcript.status === 'ready'; }
+      function crumbs(parts) { $('crumbs').innerHTML = parts.map(function (p, i) { return i < parts.length - 1 ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a> &rsaquo; ' : esc(p[0]); }).join(''); }
+      function copy(text, btn) {
+        var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1500); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy these', text); }); else window.prompt('Copy these', text);
+      }
+
+      function viewHome() {
+        crumbs([['Content index']]);
+        var shows = {};
+        EPS.forEach(function (e) { var s = shows[e.podcast_show] = shows[e.podcast_show] || { n: 0, done: 0, waitYt: [], noYt: 0, secs: 0 };
+          s.n++; if (has(e)) { s.done++; s.secs += e.transcript.duration_seconds || 0; } else if (e.youtube_id) { if (s.waitYt.indexOf(e.youtube_id) < 0) s.waitYt.push(e.youtube_id); } else s.noYt++; });
+        var names = Object.keys(shows).sort(function (a, b) { return shows[b].n - shows[a].n; });
+        V().innerHTML = '<p class="sub">Every episode gets a transcript with timestamps, so a Guide can play the exact moment someone talks about dairy, protein or anything else. YouTube will not hand captions to our server, so they come from TurboScribe.</p>' +
+          '<section class="card"><h2>How to add them</h2><ol class="steps"><li>Copy a show\'s YouTube links below and paste them into TurboScribe.</li><li>When they are done, export the transcripts as <b>SRT</b> (it keeps the timestamps). Keep TurboScribe\'s file names.</li><li>Drop the SRT files, or a ZIP of them, in the box below. Check each file\'s episode and press Save.</li></ol></section>' +
+          '<div class="grid">' + names.map(function (n) { var s = shows[n], pct = Math.round(100 * s.done / Math.max(1, s.n));
+            return '<div class="show"><h3>' + esc(n) + '</h3><div class="bar"><i style="width:' + pct + '%"></i></div><small><b>' + s.done + ' of ' + s.n + '</b> timestamped' + (s.secs ? ', ' + (s.secs / 3600).toFixed(1) + ' hours' : '') + '</small>' +
+              (s.waitYt.length ? '<button type="button" class="btn btn-ghost btn-sm" data-copy="' + esc(n) + '">Copy ' + s.waitYt.length + ' YouTube links</button>' : '') +
+              (s.noYt ? '<small>' + s.noYt + ' not on YouTube: transcribe their audio in TurboScribe.</small>' : '') + '</div>'; }).join('') + '</div>' +
+          '<section class="card"><h2>Add transcripts</h2><label class="drop" id="drop" for="files"><b>Drop SRT files or a ZIP here</b><span>or tap to choose them</span></label>' +
+          '<input type="file" id="files" accept=".srt,.zip,application/zip,text/plain" multiple hidden><p class="msg" id="d-msg" role="status" style="margin-top:8px"></p></section>' +
+          '<section class="card"><h2>Episodes</h2><div class="toolbar"><input type="search" id="q" placeholder="Search episodes" aria-label="Search episodes">' +
+          '<select id="fs" aria-label="Show"><option value="">All shows</option>' + names.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('') + '</select>' +
+          '<select id="ft" aria-label="Status"><option value="">Any status</option><option value="wait">Waiting</option><option value="done">Timestamped</option></select></div>' +
+          '<div class="list" id="eps"></div></section>';
+        Array.prototype.forEach.call(V().querySelectorAll('[data-copy]'), function (b) {
+          b.addEventListener('click', function () { copy(shows[b.dataset.copy].waitYt.map(function (id) { return 'https://youtu.be/' + id; }).join('\n'), b); });
+        });
+        ['q', 'fs', 'ft'].forEach(function (id) { $(id).addEventListener('input', drawEps); });
+        drawEps();
+        var drop = $('drop');
+        ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('on'); }); });
+        ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('on'); }); });
+        drop.addEventListener('drop', function (e) { readFiles(e.dataTransfer.files); });
+        $('files').addEventListener('change', function () { readFiles(this.files); });
+      }
+      function drawEps() {
+        var q = $('q').value.trim().toLowerCase(), fs = $('fs').value, ft = $('ft').value;
+        var rows = EPS.filter(function (e) { return (!fs || e.podcast_show === fs) && (!ft || (ft === 'done') === has(e)) && (!q || String(e.title).toLowerCase().indexOf(q) >= 0); });
+        $('eps').innerHTML = '<div class="row head"><div>Episode</div><div>Show</div><div>Transcript</div><div></div></div>' + rows.map(function (e) {
+          var t = e.transcript, tag = has(e) ? '<span class="tag on">Timestamped</span><small>' + esc(t.source === 'turboscribe' ? 'TurboScribe' : t.source) + '</small>' : '<span class="tag wait">Waiting</span>';
+          return '<div class="row"><div><strong>' + esc(e.title) + '</strong><small>' + esc(e.published_at ? new Date(e.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '') + '</small></div>' +
+            '<div><small>' + esc(e.podcast_show) + '</small></div><div>' + tag + '</div><div class="act">' + (e.youtube_id ? '<a class="btn btn-ghost btn-sm" href="https://youtu.be/' + esc(e.youtube_id) + '" target="_blank" rel="noopener">YouTube</a>' : '') + '</div></div>';
+        }).join('') + (rows.length ? '' : '<p class="sub" style="padding:12px 4px">Nothing matches.</p>');
+      }
+
+      // ---- Dropped files: read, match each to an episode by its name, then review ----
+      function norm(s) { return String(s || '').toLowerCase().replace(/\.(srt|txt)$/i, '').replace(/\b(e|ep|s\d+e)\d+\b/g, ' ').replace(/(pre-vegans|soflo vegans|vegans who lift|vegans explore)\s+podcast/g, ' ').replace(/turboscribe/g, ' ').replace(/[^a-z0-9]+/g, ' ').trim(); }
+      function words(s) { var w = {}; norm(s).split(' ').forEach(function (x) { if (x.length > 2) w[x] = 1; }); return w; }
+      function score(a, b) { var A = words(a), B = words(b), n = 0, ka = Object.keys(A), kb = Object.keys(B); ka.forEach(function (k) { if (B[k]) n++; }); return ka.length && kb.length ? (2 * n) / (ka.length + kb.length) : 0; }
+      function bestFor(name) {
+        var idm = name.match(/[A-Za-z0-9_-]{11}/g) || [];
+        var byId = EPS.filter(function (e) { return e.youtube_id && idm.indexOf(e.youtube_id) >= 0; })[0];
+        if (byId) return { ep: byId, s: 1 };
+        var best = null, s = 0; EPS.forEach(function (e) { var x = score(name, e.title); if (x > s) { s = x; best = e; } });
+        return { ep: s >= 0.35 ? best : null, s: s };
+      }
+      function readFiles(list) {
+        var files = Array.prototype.slice.call(list || []); if (!files.length) return;
+        $('d-msg').className = 'msg'; $('d-msg').textContent = 'Reading ' + files.length + (files.length === 1 ? ' file...' : ' files...');
+        var out = [];
+        Promise.all(files.map(function (f) {
+          if (/\.zip$/i.test(f.name) || f.type === 'application/zip') {
+            return JSZip.loadAsync(f).then(function (z) {
+              return Promise.all(Object.keys(z.files).filter(function (n) { return /\.srt$/i.test(n) && !z.files[n].dir && n.indexOf('__MACOSX') < 0; })
+                .map(function (n) { return z.files[n].async('string').then(function (t) { out.push({ name: n.split('/').pop(), text: t }); }); }));
+            });
+          }
+          return f.text().then(function (t) { out.push({ name: f.name, text: t }); });
+        })).then(function () {
+          out = out.filter(function (x) { return /-->/.test(x.text); });
+          if (!out.length) { $('d-msg').className = 'msg err'; $('d-msg').textContent = 'No SRT transcripts in those files. Export them from TurboScribe as SRT.'; return; }
+          PENDING = out.map(function (x) { var b = bestFor(x.name); return { name: x.name, text: x.text, ep: b.ep ? b.ep.id : '', s: b.s }; })
+            .sort(function (a, b) { return a.s - b.s; });
+          location.hash = 'review';
+        }).catch(function () { $('d-msg').className = 'msg err'; $('d-msg').textContent = 'Those files could not be read.'; });
+      }
+      function viewReview() {
+        if (!PENDING.length) { location.hash = ''; return; }
+        crumbs([['Content index', '#'], ['Check and save']]);
+        var opts = EPS.slice().sort(function (a, b) { return (a.podcast_show + a.title).localeCompare(b.podcast_show + b.title); });
+        V().innerHTML = '<p class="sub">Each file is matched to an episode by its name. The ones to check are at the top. Change any that are wrong, or set it to Skip.</p>' +
+          '<section class="card"><div class="list"><div class="row rv head"><div>File</div><div>Episode</div><div>Match</div></div>' + PENDING.map(function (p, i) {
+            var tag = !p.ep ? '<span class="tag bad">No match</span>' : p.s >= 0.6 ? '<span class="tag on">Good match</span>' : '<span class="tag wait">Check this</span>';
+            return '<div class="row rv"><div><strong>' + esc(p.name) + '</strong></div><div><select data-i="' + i + '" aria-label="Episode for ' + esc(p.name) + '"><option value="">Skip this file</option>' +
+              opts.map(function (e) { return '<option value="' + e.id + '"' + (e.id === p.ep ? ' selected' : '') + '>' + esc(e.podcast_show.replace(' Podcast', '') + ': ' + e.title) + (has(e) ? ' (has one)' : '') + '</option>'; }).join('') + '</select></div><div>' + tag + '</div></div>';
+          }).join('') + '</div><div class="toolbar" style="margin-top:14px"><button type="button" class="btn" id="save">Save transcripts</button><a class="btn btn-ghost" href="#">Cancel</a><span class="msg" id="r-msg" role="status"></span></div></section>';
+        Array.prototype.forEach.call(V().querySelectorAll('select[data-i]'), function (s) { s.addEventListener('change', function () { PENDING[+s.dataset.i].ep = s.value; }); });
+        $('save').addEventListener('click', save);
+      }
+      function save() {
+        var todo = PENDING.filter(function (p) { return p.ep; }), done = 0, bad = 0, b = $('save');
+        if (!todo.length) { $('r-msg').className = 'msg err'; $('r-msg').textContent = 'Every file is set to Skip.'; return; }
+        b.disabled = true;
+        (function next(i) {
+          if (i >= todo.length) {
+            $('r-msg').className = bad ? 'msg err' : 'msg';
+            $('r-msg').textContent = done + ' saved' + (bad ? ', ' + bad + ' could not be saved' : '') + '.';
+            PENDING = bad ? todo.filter(function (p) { return p.failed; }) : [];
+            return load().then(function () { if (!bad) setTimeout(function () { location.hash = ''; }, 900); });
+          }
+          $('r-msg').className = 'msg'; $('r-msg').textContent = 'Saving ' + (i + 1) + ' of ' + todo.length + '...';
+          api({ action: 'srt', content_id: todo[i].ep, srt: todo[i].text, source: 'turboscribe' }).then(function (d) { if (d && d.ok) done++; else { bad++; todo[i].failed = true; } next(i + 1); });
+        })(0);
+      }
+
+      function route() { if (location.hash === '#review') return viewReview(); viewHome(); }
+      window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('ci-gate').hidden = false; $('ci-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('ci-app').hidden = false;
+        load().then(route).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
