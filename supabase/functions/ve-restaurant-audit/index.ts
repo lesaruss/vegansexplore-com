@@ -4,17 +4,27 @@
 // Good, Fix, Review (double-check) or Skip (could not be checked, e.g. no website), and the score is the distance from a
 // perfect score (Review and Skip count for neither side).
 //
-// Free check (anyone): the items marked in_free, what we found, and how many more things the full audit flags. Never the
-// why or the how: that is the Restaurant Guide. Full audit: everything, with why, how, the Guide chapter and the service.
+// Free check (anyone; Sean, 2026-10-10: "let's not give them a score with the free audit, just a list of things they can
+// work on right away"): of the in_free items, the ones to fix, each with what we found, and how many more the full audit
+// flags. No score, no why or how. Full audit: every item with why, how, the Guide chapter and the service, and the score.
+// The full audit is a paid add-on of its own (Sean, 2026-10-10: "it should be an add on... not $111 or part of the
+// LESARUSS.AI membership... it could also include a secret shopper experience"); its price is not set, so until it is
+// sold only a super admin or ops can run one.
+//
+// Monthly check-ups (migration 20261010_ve_audit_checkups.sql): `sweep` (cron) audits the next local businesses due, and
+// every audit carries a closure flag (closed: Google shows it closed; quiet: two or more signs it may have closed).
 //
 // POST { action: 'find', q }                       anyone -> { listings: [{slug, name, city}] }   approved Directory listings
 // POST { action: 'criteria' }                      anyone -> { criteria: [{key, area, label, in_free}] }
 // POST { action: 'free', listing_slug? | name, city, website?, instagram?, email? }  anyone -> { id, status, cached? }
 //      one per business a week is reused; 5 a day per visitor
-// POST { action: 'full', listing_slug? | name, city, website?, instagram? }  owner of the Restaurant Guide (ve_owns_guide),
-//      a super admin, or the ops token -> { id, status }   10 a day per member
+// POST { action: 'full', listing_slug? | name, city, website?, instagram? }  a super admin or ops -> { id, status }
 // POST { action: 'get', id }                       -> the audit; the full detail only for its member, a super admin or ops
-// Ops (Bearer <LESARUSS_ADMIN_TOKEN>): free and full take wait: true to run in the request (tests).
+// POST { action: 'sweep', limit? }                 cron or ops -> { started: [slugs] }   the monthly check-up, a few at a time
+// POST { action: 'flags', city? }                  super admin -> { flags: [...] }       open closure flags, Google-closed first
+// POST { action: 'flag_review', audit_id, decision: still_open|closed, note? }  super admin  (closing goes through
+//      ve-outreach listing_closed; this records the decision so the flag comes down)
+// Ops (Bearer <LESARUSS_ADMIN_TOKEN>, or the cron's x-cron-secret): free and full take wait: true to run in the request.
 //
 // Sources: Google Places API (New) for the profile, PageSpeed Insights (mobile) for speed, accessibility and SEO, our own
 // fetch of the home page, robots.txt, sitemap and menu page, and Apify's Instagram profile scraper (public profiles).
@@ -26,7 +36,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
-const GUIDE = 'vegan-restaurant-survival-guide';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const UA = 'Mozilla/5.0 (compatible; VegansExploreAudit/1.0; +https://vegansexplore.com/guides/vegan-restaurant-survival-guide)';
 const LIMITS = { freePerVisitor: 5, fullPerMember: 10, freeReuseDays: 7 };
@@ -70,6 +79,8 @@ async function secret(key: string): Promise<string | null> {
 }
 type Caller = { ops: boolean; member: { id: string; email: string | null; admin: boolean } | null };
 async function caller(req: Request): Promise<Caller> {
+  const cron = req.headers.get('x-cron-secret');
+  if (cron) { const cs = await secret('CRON_SECRET'); if (cs && cron === cs) return { ops: true, member: null }; }
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   if (!token) return { ops: false, member: null };
   const opsToken = await secret('LESARUSS_ADMIN_TOKEN');
@@ -78,10 +89,6 @@ async function caller(req: Request): Promise<Caller> {
   if (!id) return { ops: false, member: null };
   const { data: m } = await db.from('members').select('id, email, is_superadmin').eq('id', id).maybeSingle();
   return { ops: false, member: m ? { id: m.id, email: m.email, admin: !!m.is_superadmin } : null };
-}
-async function ownsGuide(memberId: string): Promise<boolean> {
-  const { data } = await db.rpc('ve_owns_guide', { p_member: memberId, p_guide: GUIDE });
-  return !!data;
 }
 async function ipHash(req: Request): Promise<string> {
   const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
@@ -473,6 +480,26 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
   return out;
 }
 
+// May it have closed? Google saying so is a flag on its own; otherwise it takes two or more quieter signs.
+function closure(_items: Item[], g: any, w: any, igr: any): { level: 'closed' | 'quiet' | null; signals: string[] } {
+  const p = g?.place;
+  if (p && (p.businessStatus === 'CLOSED_PERMANENTLY' || p.businessStatus === 'CLOSED_TEMPORARILY'))
+    return { level: 'closed', signals: [p.businessStatus === 'CLOSED_PERMANENTLY' ? 'Google shows it as permanently closed' : 'Google shows it as temporarily closed'] };
+  const sig: string[] = [];
+  const blocked = [401, 403, 406, 429, 503].includes(w?.status);
+  if (w && !w.opened && !blocked && w.error !== 'no website') sig.push('Its website does not open');
+  const prof = igr?.profile;
+  if (igr?.handle && !igr?.error && !prof) sig.push(`Its Instagram (@${igr.handle}) no longer exists`);
+  else if (prof && !prof.private && (!prof.latest || Date.parse(prof.latest) < Date.now() - 180 * DAY_MS))
+    sig.push(prof.latest ? `No Instagram post since ${monthYear(prof.latest)}` : 'No Instagram posts');
+  if (w?.opened && w.years?.length && Math.max(...w.years) <= new Date().getFullYear() - 3) sig.push(`Its website footer says ${Math.max(...w.years)}`);
+  if (p && !p.regularOpeningHours?.weekdayDescriptions?.length) sig.push('Google has no hours for it');
+  const newest = (p?.reviews || []).map((r: any) => Date.parse(r.publishTime)).filter((n: number) => n > 0).sort((a: number, b: number) => b - a)[0];
+  if (p && newest && newest < Date.now() - 365 * DAY_MS) sig.push(`No Google review since ${monthYear(new Date(newest).toISOString())}`);
+  if (!g?.error && !p) sig.push('Google has no profile for it');
+  return { level: sig.length >= 2 ? 'quiet' : null, signals: sig };
+}
+
 function score(items: Item[], crit: Map<string, any>, only?: (k: string) => boolean) {
   const areas: Record<string, { score: number; max: number }> = {};
   let s = 0, m = 0;
@@ -523,7 +550,9 @@ async function runAudit(id: string) {
       pagespeed: ps,
       instagram: (igr as any).profile || { handle: (igr as any).handle || null, error: (igr as any).error || null },
     };
-    await db.from('ve_audits').update({ status: 'done', items, score: all.score, max_score: all.max, areas: all.areas, facts, finished_at: new Date().toISOString() }).eq('id', id);
+    const cl = closure(items, g, w, igr);
+    await db.from('ve_audits').update({ status: 'done', items, score: all.score, max_score: all.max, areas: all.areas, facts,
+      closure_level: cl.level, closure_signals: cl.signals.length ? cl.signals : null, finished_at: new Date().toISOString() }).eq('id', id);
   } catch (e) {
     console.error('audit failed', id, e);
     await db.from('ve_audits').update({ status: 'failed', error: String((e as Error)?.message || e).slice(0, 500), finished_at: new Date().toISOString() }).eq('id', id);
@@ -538,14 +567,14 @@ async function present(a: any, full: boolean) {
   if (a.status !== 'done') return base;
   const items = (a.items || []) as Item[];
   if (!full) {
+    // A list to work on, no score: the free checks that need fixing, each with what we found, most important first.
     const freeKeys = (k: string) => !!crit.get(k)?.in_free;
-    const s = score(items, crit, freeKeys);
-    const lockedFix = items.filter((it) => !freeKeys(it.key) && it.state === 'fix').length;
+    const todo = items.filter((it) => freeKeys(it.key) && it.state === 'fix')
+      .sort((x, y) => (crit.get(y.key)?.weight || 0) - (crit.get(x.key)?.weight || 0));
     return {
-      ...base, full: false, score: s.score, max_score: s.max, areas: s.areas,
-      items: items.filter((it) => freeKeys(it.key)).map((it) => ({ ...it, label: crit.get(it.key).label, area: crit.get(it.key).area })),
-      locked: items.filter((it) => !freeKeys(it.key)).map((it) => ({ label: crit.get(it.key)?.label, area: crit.get(it.key)?.area })),
-      more_fix: lockedFix,
+      ...base, tier: 'free', full: false,
+      todo: todo.map((it) => ({ key: it.key, label: crit.get(it.key).label, area: crit.get(it.key).area, found: it.found })),
+      more_fix: items.filter((it) => !freeKeys(it.key) && it.state === 'fix').length,
     };
   }
   return {
@@ -617,7 +646,8 @@ Deno.serve(async (req) => {
   if (action === 'full') {
     if (!who.ops) {
       if (!who.member) return json({ error: 'sign_in' }, 401);
-      if (!who.member.admin && !(await ownsGuide(who.member.id))) return json({ error: 'guide_required' }, 403);
+      // The full audit is its own add-on; until Sean sets its price it is run for a business by the team only.
+      if (!who.member.admin) return json({ error: 'not_available_yet', message: 'The full audit is coming soon as an add-on.' }, 403);
       const { count } = await db.from('ve_audits').select('id', { count: 'exact', head: true }).eq('member_id', who.member.id).eq('tier', 'full').gte('created_at', new Date(Date.now() - DAY_MS).toISOString());
       if ((count || 0) >= LIMITS.fullPerMember) return json({ error: 'limit', message: 'That is all the audits for today. Try again tomorrow.' }, 429);
     }
@@ -636,10 +666,59 @@ Deno.serve(async (req) => {
     if (!a) return json({ error: 'not_found' }, 404);
     // The full detail is the Guide: its member, a super admin or ops. A Guide owner may also open any free check in full.
     let full = who.ops || !!who.member?.admin;
-    if (!full && who.member) full = a.tier === 'full' ? a.member_id === who.member.id : await ownsGuide(who.member.id);
+    if (!full && who.member) full = a.tier === 'full' && a.member_id === who.member.id;
     // Anyone else sees the free view. The scan reads only public pages, so a free check can reuse a member's full audit
     // of the same business this week (nothing is scanned or paid for twice), and the visitor still sees only the free part.
     return json(await present(a, full));
+  }
+
+  // ---- Monthly check-ups ----
+  if (action === 'sweep') {
+    if (!who.ops) return json({ error: 'ops_only' }, 403);
+    const { data: due } = await db.rpc('ve_audit_sweep_due', { p_limit: Math.max(1, Math.min(+body.limit || 3, 10)) });
+    const ids: string[] = [], started: string[] = [];
+    for (const d of (due || []) as any[]) {
+      const r = await inputsFrom({ listing_slug: d.slug });
+      if (r.error) continue;
+      const { data: a } = await db.from('ve_audits').insert({ tier: 'full', source: 'checkup', listing_id: r.listing_id, inputs: { ...r.inputs, community: d.community_slug } }).select('id').single();
+      if (a) { ids.push(a.id); started.push(d.slug); }
+    }
+    const all = Promise.all(ids.map((id) => runAudit(id)));
+    if (body.wait) await all; else (EdgeRuntime as any).waitUntil(all);
+    return json({ started });
+  }
+
+  if (action === 'flags' || action === 'flag_review') {
+    if (!who.ops && !who.member?.admin) return json({ error: 'admins_only' }, 403);
+    if (action === 'flag_review') {
+      if (!isId(body.audit_id) || !['still_open', 'closed'].includes(body.decision)) return json({ error: 'bad_request' }, 400);
+      const { data: a } = await db.from('ve_audits').select('id, listing_id').eq('id', body.audit_id).maybeSingle();
+      if (!a?.listing_id) return json({ error: 'not_found' }, 404);
+      const { error } = await db.from('ve_audit_flag_reviews').upsert({ audit_id: a.id, listing_id: a.listing_id, decision: body.decision,
+        note: clean(body.note, 1000) || null, by_member: who.member?.id || null }, { onConflict: 'audit_id' });
+      if (error) return json({ error: error.message }, 400);
+      return json({ ok: true });
+    }
+    const { data: flags } = await db.rpc('ve_audit_open_flags');
+    const rows = (flags || []) as any[];
+    if (!rows.length) return json({ ok: true, flags: [], last_checkup: null });
+    const [{ data: ls }, { data: cities }, { data: audits }] = await Promise.all([
+      db.from('listings').select('id, name, slug, logo_url, category, address_city, address_state, website, instagram, ig_handle').in('id', rows.map((r) => r.listing_id)),
+      db.from('ve_outreach_cities').select('community_slug, name, cities, states').neq('community_slug', 'brands'),
+      db.from('ve_audits').select('id, facts').in('id', rows.map((r) => r.audit_id)),
+    ]);
+    const cityOf = (l: any) => (cities || []).find((c: any) => (!c.cities || c.cities.includes(l.address_city)) && (!c.states || c.states.includes(l.address_state)));
+    const out = rows.map((r) => {
+      const l = (ls || []).find((x: any) => x.id === r.listing_id) || {};
+      const c = cityOf(l);
+      const f = (audits || []).find((x: any) => x.id === r.audit_id)?.facts || {};
+      return { audit_id: r.audit_id, listing_id: r.listing_id, level: r.closure_level, signals: r.closure_signals || [], audited_at: r.audited_at,
+        city: c?.community_slug || null, city_name: c?.name || null,
+        listing: { name: l.name, slug: l.slug, logo_url: l.logo_url, category: l.category, address_city: l.address_city },
+        maps: f.google?.maps || null, website: f.website?.url || l.website || null, instagram: f.instagram?.username || l.ig_handle || null };
+    }).filter((r) => !body.city || r.city === body.city)
+      .sort((a, b) => (a.level === b.level ? b.signals.length - a.signals.length : a.level === 'closed' ? -1 : 1));
+    return json({ ok: true, flags: out });
   }
 
   return json({ error: 'unknown_action' }, 400);

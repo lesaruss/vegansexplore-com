@@ -621,12 +621,18 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy
   marks the free check's ten. Change a criterion with a row update; the function reads them live.
 - Scoring, BCPS style: every item is Good, Fix, Review (double-check) or Skip (could not be checked, e.g. no website); the
   score is Good weight over Good plus Fix weight (the distance from a perfect score). Review and Skip count for neither side.
+- **Free check, no score** (Sean, 2026-10-10: "let's not give them a score with the free audit, just a list of things they
+  can work on right away"): of the ten free checks, the ones to fix, each with what we found, most important first (`todo`),
+  and how many more the full audit flags (`more_fix`). Never a score, the why or the how.
+- **The full audit is its own add-on** (Sean, 2026-10-10: "the full audit will have more items and cost more. I'm not settled
+  on that cost. I don't want to just go with $111 or offer it as part of the LESARUSS.AI membership. It should be an add on.
+  It could also include a secret shopper experience"). Not part of the $11 Guide, the Partner plan or LESARUSS.AI. Its price
+  is open, so until it is sold only a super admin or ops can run one (`not_available_yet` for anyone else).
 - `ve-restaurant-audit` (verify_jwt off, VE token checked inside): `find` (Directory search), `criteria`, `free` (anyone;
-  5 a day per visitor; a business checked in the last 7 days reuses that run, any tier), `full` (an owner of the Restaurant
-  Guide, `ve_owns_guide`, a super admin or the ops token; 10 a day), `get` (the full detail only for the audit's member, a
-  Guide owner, a super admin or ops; anyone else gets the free view: the free items with what was found, the other checks'
-  names, and `more_fix`, how many more things the full audit flags). Runs in the background (`EdgeRuntime.waitUntil`, 15 to
-  35 s); the ops token can pass `wait: true`. Rows in `ve_audits`.
+  5 a day per visitor; a business checked in the last 7 days reuses that run, any tier), `full` (a super admin or ops), `get`
+  (the full detail only for the audit's member, a super admin or ops; anyone else gets the free list), `sweep`, `flags`,
+  `flag_review` (below). Runs in the background (`EdgeRuntime.waitUntil`, 15 to 35 s); ops can pass `wait: true`. Ops is the
+  `LESARUSS_ADMIN_TOKEN` or the cron's `x-cron-secret`. Rows in `ve_audits` (`source` request or checkup).
 - Sources: Google Places API (New) (`GOOGLE_PLACES_API_KEY`; the listing's `google_place_id`, else a text search with the
   name, street and city), PageSpeed Insights mobile (`GOOGLE_PAGESPEED_API_KEY`), our own read of the home page, robots.txt,
   sitemap, menu page and up to 8 internal links, and Apify's Instagram profile scraper (`APIFY_API_TOKEN`, Starter plan, $29 a
@@ -638,9 +644,58 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy
   restaurant's accounts; Google reads an address in the restaurant markup even when a visitor cannot see it (counts for the
   Google match, not for "on your home page"); Google's city wins over ours; and when Google's match sits at a different
   street than our listing, the audit says so (a chain branch or a move) instead of quietly checking another location.
+- **Monthly check-ups** (Sean, 2026-10-10: "run this audit on each of the cities once a month and flag any listings that may
+  seem like they are closed due to lack of social activity, out of date web information, and closed message on Google";
+  migration `20261010_ve_audit_checkups.sql`). Cron `ve-audit-sweep` (every 15 minutes, 06:00 to 07:45 UTC, 2 to 4 AM
+  Eastern) runs `sweep`: three local businesses at a time (`ve_audit_local_category`: Restaurants, Bakeries & Cafes, Markets,
+  Meal Prep, Catering, Fitness, Health and Wellness, Beauty, Clothing) in a `ve_outreach_cities` city with no audit in 28 days,
+  city by city (`ve_audit_sweep_due`). 263 on 2026-10-10 (South Florida 137, New York 52, Atlanta 30, Los Angeles 28, Central
+  Florida 14, London 2; DMV and Philadelphia have none listed yet), so every city is covered in about 11 nights. Each audit gets
+  a closure flag (`closure_level`, `closure_signals`): **closed** when Google shows the business closed, **quiet** with two or
+  more of: the website does not open (a site that only blocks scanners does not count), the Instagram is gone or has not
+  posted in six months, a footer three or more years old, no hours on Google, no Google review in a year, no Google profile.
+  One sign alone is recorded but not flagged. **Depot > Business outreach > Check-ups** (`#checkups`, `#checkup/<audit>`, a
+  card on the console's home) lists open flags (`ve_audit_open_flags()`), Google-closed first, by city; each opens with its
+  signs, Google Maps, website, Instagram and their page, and what the check found, then **No longer in business** (ve-outreach
+  `listing_closed`, the note on the listing) or **Still open** (`flag_review`, `ve_audit_flag_reviews`; a quiet flag stays
+  down 90 days, a Google-closed one returns next month if Google still says so). Until a Google-closed flag is reviewed,
+  `ve_outreach_due()` does not email that business.
+- Why it matters (Sean, 2026-10-10): "We are ultimately offering these businesses managed marketing services at a fraction of
+  the price because we leverage AI to build and maintain their presence... when they see the results, they will opt in
+  quickly, especially with it tied to our network and promotions. This will allow us to pay for multiple Community Managers in
+  each city with their fee coming directly from our clients." The audit is the front door to that service.
 - Next: the Guide's Your audit tab (live site left, items right, as BCPS does), "Have us do it" on every Fix (a quote request
   to the city's Community Manager until Sean sets prices), the monthly re-check, and the free check in the outreach emails
   (an upgrade to the offer, not a change to the plan).
+
+## Finding new places: the backlog check (Sean, 2026-10-10)
+
+"Can the scan also look for new Vegan restaurants as well?" then "Go, start with the backlog". About 2,970 listings sat
+quarantined since the May and June imports, never reviewed: 2,386 from our `ve_businesses` list (Instagram handles, no
+address, many of them people and creators), 441 from the spreadsheet (244 with a city or "South Florida", 174 a name only),
+129 from the SoFlo Vegans Facebook group (city and website), and a few others. `ve-discover` sorts them; nothing is listed
+until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_backlog_checks`, one row per listing).
+
+- Tracks: **google** (a place: looked up on Google Places by name, kept only in the same state and, when we know which of our
+  cities it is in, the same city area), **ig** (only a handle: read with Apify's Instagram profile scraper; a food business
+  with one of our cities in its bio or post locations then goes to Google too), **thin** (a name only: nothing to check).
+- Matching rules learned on the first batches: one name inside the other, or most real words shared with at least two of them
+  (one shared word matched "Green Bar and Kitchen" to "Living Green Cafe"); our state only (Inca Chicken, Hollywood FL, matched
+  Maryland); our city area only (South Florida's "Third Culture" matched Titusville); a renamed place ("Meraki Juice Kitchen is
+  NOW Christopher's Kitchen") is a duplicate of the listing it became. Instagram leaves the business flag off for many
+  restaurants, so a category or food words count as a business; creator categories (artist, writer, musician...) are people.
+- Verdicts: **Ready to list** (open, and Vegan by Google's Vegan restaurant category or the business's own name or Instagram
+  bio; Google's description saying "Vegan options" is only a Check), **Check**, **Not a restaurant**, **Closed** (Google, or an
+  Instagram quiet for over a year with no Google profile), **Already listed**, **Not found**, **A person**, **Not enough to check**.
+- Runs by cron `ve-discover-backlog` (every 2 minutes, 40 Instagram accounts and 25 Google lookups a run) until nothing is
+  left; then it costs nothing. Unschedule it once the summary says nothing is left.
+- **Depot > Business outreach > New places** (`#places/<verdict>[/<city>]`, `#place/<listing>`, a card on the home): each
+  verdict a tab with its count, by city; one business opens with what Google and Instagram said, links, and its website framed.
+  **Add to the Directory** needs a category and how Vegan it is (100% Vegan, Vegan options, Vegan friendly), picked on purpose,
+  and fills Google's address, place id, phone and website (`backlog_decide`); **Set aside** makes it `rejected` with a note,
+  never deleted. Closed, Not found, A person, Not enough to check and Already listed have **Set these aside** for the page. A
+  newly listed business joins its city's outreach through Find emails on the city card.
+- Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.
 
 ## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing` v3)
 
