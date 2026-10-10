@@ -242,6 +242,8 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   approves all three emails for that day's businesses. Plan sends proposes days: first send day and businesses per weekday
   (`ve_outreach_plan`, brands first). The first approval in a city sets its 15-day commitment
   (`ve_outreach_cities.committed_until`, shown on the city card): no big changes to the emails or the plan before then.
+  An upgrade to what we offer (Sean, 2026-10-10: the free restaurant audit "still falls in the plan, it's just an upgrade
+  to the offer") is not a change to the plan and can go into the emails at any time; the commitment guards the plan itself.
 - **Two gates before anything sends**: the batch is approved, and the city is on (Turn on sending / Pause sending on the city
   card, `ve_outreach_cities.enabled`, every city off until Sean turns it on). `ve_outreach_due()` is what goes next: approved
   send days whose day has come, then follow-ups when due, never a suppressed address.
