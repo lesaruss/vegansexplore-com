@@ -242,6 +242,8 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   approves all three emails for that day's businesses. Plan sends proposes days: first send day and businesses per weekday
   (`ve_outreach_plan`, brands first). The first approval in a city sets its 15-day commitment
   (`ve_outreach_cities.committed_until`, shown on the city card): no big changes to the emails or the plan before then.
+  An upgrade to what we offer (Sean, 2026-10-10: the free restaurant audit "still falls in the plan, it's just an upgrade
+  to the offer") is not a change to the plan and can go into the emails at any time; the commitment guards the plan itself.
 - **Two gates before anything sends**: the batch is approved, and the city is on (Turn on sending / Pause sending on the city
   card, `ve_outreach_cities.enabled`, every city off until Sean turns it on). `ve_outreach_due()` is what goes next: approved
   send days whose day has come, then follow-ups when due, never a suppressed address.
@@ -506,6 +508,10 @@ the ad rail) and combines them into something new. The reference is the Vegan Da
 (`guides/vegan-dairy-guide.html`, `guide-scripts/vegan-dairy-guide.js`): a menu, search for members,
 brands as approved Directory listings with votes, a Cookbook, and Maya as the Guide.
 
+**Building a new Guide: follow `docs/guides/BUILD-A-GUIDE.md`** (canon `canon-ve-guide-build-playbook`; Sean, 2026-10-10:
+"This is the prototype"). It lists every step that made the Dairy Guide, in order: decide, content, the page, pictures, the
+two scripts, recording, test, launch. Copy the Dairy Guide's files; never start a Guide from a blank page.
+
 - Signed out: the header holds the $11 Founding Membership box (members get search there). Each locked tab shows the
   real section blurred with a membership note on top (since 2026-10-09; the slideshow previews are gone), see The layout.
 - The Cookbook is the recipe and chef tool (Phase 1 live 2026-10-10): recipes are rows in `recipes` (status `live` or
@@ -547,15 +553,27 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   tab has its own pose (Sean: "each one you click on should look different"); the first page's picture is arms folded with an
   open smile (`dg-poster-overview.jpg`). Lines approved by Sean 2026-10-10; My list has its member clip too. Clips are made
   as one take each (Sean, 2026-10-10, on credit spend), re-done only if the ending or the lip sync fails.
+- **Maya never fades out, and phones get her full width** (Sean, 2026-10-10). Her welcome (`maya-dairy-welcome.mp4?v=3`)
+  was repaired: a stray one-frame flash at 29.47 s removed, the fade from and to black replaced by her first and last clear
+  frames (she stays on screen, frozen), a crackle at 17.3 s and four clicks smoothed, and its level raised to match the tab
+  clips (about -15 LUFS). On phones (900 px and under) she is full width on top with her words under her and a **Hide Maya /
+  Show Maya** switch (`#dgFold`, kept for the visit), and Back / N of M / Next sit under the content (`#dgTourM`); Next goes
+  back up to her.
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
-  at the top right (`.dg-acts`). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
+  stacked at the top right (`.dg-acts`, one above the other so the words keep their room on a phone; Sean, 2026-10-10). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
   stay the Directory's own card, with Save added under + Vote. Picture style and placement follow the Directory card.
 - **My list** (Sean, 2026-10-10: "a tab or a drop down that says my list"): a Guide owner taps Save on any swap, recipe, brand,
   cookbook or episode, and it shows in the My list tab (members only, after The truth), one kind per view
   (`#/mylist/swaps|recipes|brands|cookbooks|episodes|shared`), newest first, in the same tiles. Recipes you shared is the same
   list as Cookbook > My recipes (`drawMine`). Data: `ve_guide_saves` (migration `20261010_ve_guide_saves.sql`), through
   `ve-cookbook` `saves` / `save` (500 per member per Guide). Chefs, when they come, get the same tile with a square of their face.
+- **Guide banners** (LOCKED by Sean 2026-10-10 on the Dairy Guide: "lock it, go with B"). Every Guide's card on `/guides`
+  opens with a banner (`.gc-banner`, linking into the Guide): 800 x 500, rounded corners, a plain white background, the
+  Guide alone, centered, waist up, in the Vegans Explore tee (black or cream; Maya wears black), smiling and holding what the
+  Guide is about (Maya: a glass of oat milk and a carton reading only OAT), every finger in frame, no other words. Made in
+  Higgsfield (nano_banana_pro, 16:9, cropped to 16:10) from the Guide's current art, stored as
+  `vegan-media/media/guides/banners/<guide-slug>.jpg`. The other Guides follow this look, each with its own Guide.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
@@ -587,6 +605,39 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   `css` in `/public/ve-region-directory.js`) and the Directory's pills, search and Sort by, never a look of
   its own. Opening one stays in the Guide (`#/listing/<slug>`): the Guide's breadcrumb, what the Guide says
   about it, and the real `/directory/<slug>` page framed and sized to fit (Sean, 2026-10-08).
+
+## The restaurant audit (Sean, 2026-10-10; criteria approved the same day)
+
+"We could give them a simple audit for free and then in the actual guide, we go a bit deeper... just like BCPSMarcomm...
+scans their page for a set of defined criteria. Look at Google Local, SEO, Web and social." It is the heart of the Restaurant
+Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy Guide playbook) and a hook for business outreach.
+
+- Criteria (`ve_audit_criteria`, migration `20261010_ve_restaurant_audit.sql`): 40 weighted checks in four areas (Google Local,
+  SEO, Web, Social), each with a label, why, how to fix, the Guide chapter it links to (`chapter`, the step ids in the Guide)
+  and the a la carte service that does it (`service`, `ve-services` keys: `photo_shoot`, `reel`, `social_post`). `in_free`
+  marks the free check's ten. Change a criterion with a row update; the function reads them live.
+- Scoring, BCPS style: every item is Good, Fix, Review (double-check) or Skip (could not be checked, e.g. no website); the
+  score is Good weight over Good plus Fix weight (the distance from a perfect score). Review and Skip count for neither side.
+- `ve-restaurant-audit` (verify_jwt off, VE token checked inside): `find` (Directory search), `criteria`, `free` (anyone;
+  5 a day per visitor; a business checked in the last 7 days reuses that run, any tier), `full` (an owner of the Restaurant
+  Guide, `ve_owns_guide`, a super admin or the ops token; 10 a day), `get` (the full detail only for the audit's member, a
+  Guide owner, a super admin or ops; anyone else gets the free view: the free items with what was found, the other checks'
+  names, and `more_fix`, how many more things the full audit flags). Runs in the background (`EdgeRuntime.waitUntil`, 15 to
+  35 s); the ops token can pass `wait: true`. Rows in `ve_audits`.
+- Sources: Google Places API (New) (`GOOGLE_PLACES_API_KEY`; the listing's `google_place_id`, else a text search with the
+  name, street and city), PageSpeed Insights mobile (`GOOGLE_PAGESPEED_API_KEY`), our own read of the home page, robots.txt,
+  sitemap, menu page and up to 8 internal links, and Apify's Instagram profile scraper (`APIFY_API_TOKEN`, Starter plan, $29 a
+  month of usage; the Meta tokens in `lesaruss_secrets` are still `pending`). Facebook and TikTok are only looked for as links
+  on their site or listing.
+- Lessons from the first five (Blue Tree, Darbster, Rootz Soul, Vegan Cuban Cuisine, Sobe Vegan; 2026-10-10): many sites
+  turn away a scanner but not a browser, so a refused page is retried once as a browser, and a site that still refuses, while
+  Google's own speed test loads it, is a Review, not a Fix; builder template links (facebook.com/wix) are not the
+  restaurant's accounts; Google reads an address in the restaurant markup even when a visitor cannot see it (counts for the
+  Google match, not for "on your home page"); Google's city wins over ours; and when Google's match sits at a different
+  street than our listing, the audit says so (a chain branch or a move) instead of quietly checking another location.
+- Next: the Guide's Your audit tab (live site left, items right, as BCPS does), "Have us do it" on every Fix (a quote request
+  to the city's Community Manager until Sean sets prices), the monthly re-check, and the free check in the outreach emails
+  (an upgrade to the offer, not a change to the plan).
 
 ## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing` v3)
 

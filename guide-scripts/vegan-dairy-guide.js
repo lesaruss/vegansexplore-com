@@ -86,7 +86,7 @@
   // her picture and the bubble carries her words.
   var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/maya/dairy-guide/';
   var CLIPS = {
-    overview: { video: '/public/guides/maya-dairy-welcome.mp4?v=2', webm: '/public/guides/maya-dairy-welcome.webm?v=2', captions: '/public/guides/maya-dairy-welcome.vtt?v=2',
+    overview: { video: '/public/guides/maya-dairy-welcome.mp4?v=3', webm: '/public/guides/maya-dairy-welcome.webm?v=3', captions: '/public/guides/maya-dairy-welcome.vtt?v=2',
       // Her picture before the tour starts (Sean, 2026-10-10: "arms folded... you can see her teeth"), posed like the other tabs.
       poster: CLIP_BASE + 'dg-poster-overview.jpg?v=1' }
   };
@@ -241,7 +241,7 @@
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
     var m = mode(), price = box.querySelector('.dg-jb-price'), btn = box.querySelector('[data-join]'), signin = box.querySelector('.dg-jb-in');
     price.innerHTML = priced() && (m === 'unlock' || m === 'buy') ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
-      : '<b>$11</b><small>one time<br>' + (priced() ? 'with a Guide credit' : 'Founding Membership') + '</small>';
+      : '<b>$11</b><small>one time<br>purchase</small>'; // Sean, 2026-10-10: "$11 one time purchase", two rows
     btn.textContent = ctaLabel();
     signin.style.display = m === 'join' ? '' : 'none';
   }
@@ -1016,6 +1016,19 @@
 
   // ---------- Maya, on the right of every tab ----------
   var TOUR = { started: false, playing: false, paused: false, shown: null };
+  // Phones: Back / N of M / Next sit under the content too (dgTourM), and Maya folds away (Sean, 2026-10-10).
+  var tourM = document.getElementById('dgTourM'), foldBtn = document.getElementById('dgFold'), railEl = document.getElementById('dgRail');
+  function setFold(folded) {
+    railEl.classList.toggle('dg-folded', folded);
+    foldBtn.textContent = folded ? 'Show Maya' : 'Hide Maya'; foldBtn.setAttribute('aria-expanded', String(!folded));
+    try { sessionStorage.setItem('dg_maya_folded', folded ? '1' : ''); } catch (e) {}
+  }
+  foldBtn.addEventListener('click', function () {
+    var folded = !railEl.classList.contains('dg-folded');
+    if (folded && TOUR.playing) { TOUR.paused = true; stopMaya(); drawMaya(); }
+    setFold(folded);
+  });
+  try { if (sessionStorage.getItem('dg_maya_folded')) setFold(true); } catch (e) {}
   var mayaBox = document.getElementById('dgMaya'), bubble = document.getElementById('dgBubble'), playBtn = document.getElementById('dgPlay'), tourEl = document.getElementById('dgTour');
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
@@ -1061,7 +1074,7 @@
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
     playBtn.innerHTML = !TOUR.started ? '&#9654; Start the tour' : TOUR.playing ? 'Pause Maya' : '&#9654; Watch Maya';
-    tourEl.innerHTML = '<a class="dg-tnav" href="' + href(list[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + list.length + '</span>' +
+    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(list[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + list.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(list[Math.min(list.length - 1, i + 1)].k) + '"' + (i < list.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
 
