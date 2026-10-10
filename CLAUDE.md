@@ -562,6 +562,12 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   (`#/mylist/swaps|recipes|brands|cookbooks|episodes|shared`), newest first, in the same tiles. Recipes you shared is the same
   list as Cookbook > My recipes (`drawMine`). Data: `ve_guide_saves` (migration `20261010_ve_guide_saves.sql`), through
   `ve-cookbook` `saves` / `save` (500 per member per Guide). Chefs, when they come, get the same tile with a square of their face.
+- **Guide banners** (LOCKED by Sean 2026-10-10 on the Dairy Guide: "lock it, go with B"). Every Guide's card on `/guides`
+  opens with a banner (`.gc-banner`, linking into the Guide): 800 x 500, rounded corners, a plain white background, the
+  Guide alone, centered, waist up, in the Vegans Explore tee (black or cream; Maya wears black), smiling and holding what the
+  Guide is about (Maya: a glass of oat milk and a carton reading only OAT), every finger in frame, no other words. Made in
+  Higgsfield (nano_banana_pro, 16:9, cropped to 16:10) from the Guide's current art, stored as
+  `vegan-media/media/guides/banners/<guide-slug>.jpg`. The other Guides follow this look, each with its own Guide.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.

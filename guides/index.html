@@ -206,11 +206,17 @@
     /* ── Guide Catalog (new) ── */
     .gc-section { padding: 80px 56px; background: #fff; }
     .gc-section .section-sub { margin-bottom: 44px; }
+    @media (max-width: 600px) { .gc-section { padding: 48px 16px; } .gc-section .section-sub { margin-bottom: 28px; } }
     .gc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 900px) { .gc-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .gc-grid { grid-template-columns: 1fr; } }
     .gc-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 12px; padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.15s, transform 0.15s; }
     .gc-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+    /* Guide banners (Sean, 2026-10-10, locked on the Dairy Guide): 800 x 500, the Guide in the Vegans Explore tee on white,
+       holding what their Guide is about, across the top of the card with rounded corners. */
+    .gc-banner { display: block; aspect-ratio: 8 / 5; border-radius: 10px; overflow: hidden; background: #f4f6f4; margin-bottom: 4px; }
+    .gc-banner img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s; }
+    .gc-card:hover .gc-banner img { transform: scale(1.02); }
     .gc-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .gc-label { font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); }
     .gc-new-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; background: var(--ve-green-dark); border-radius: 20px; padding: 3px 10px; }
@@ -314,6 +320,7 @@
 
       <!-- The Vegan Dairy Guide - live; $11 or 1 Guide credit (Sean, 2026-10-10, canon-ve-guide-pricing v3) -->
       <div class="gc-card" role="listitem" data-slug="vegan-dairy-guide">
+        <a class="gc-banner" href="/guides/vegan-dairy-guide" tabindex="-1" aria-hidden="true"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/banners/vegan-dairy-guide.jpg" alt="" width="800" height="500" loading="lazy"></a>
         <div class="gc-topline"><span class="gc-label">Food</span><span class="gc-new-tag">New</span></div>
         <div class="gc-title">The Vegan Dairy Guide</div>
         <p class="gc-desc">Everything you need to go dairy-free: the brands to buy, swaps for every kind of dairy, recipes and cookbooks, the research and our interviews, with Maya walking you through it.</p>
