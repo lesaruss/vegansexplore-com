@@ -17,8 +17,16 @@
 // Ops (Bearer <LESARUSS_ADMIN_TOKEN>, Logan and crons): overview, batch, waiting, preview, plan and find_emails only.
 // Approving, changing a row and the city switch need a signed-in superadmin (Sean's call).
 //
-// Nothing here sends mail. The sender (not built yet) sends what ve_outreach_due() returns: approved batches in cities
-// that are switched on. verify_jwt is false on deploy; tokens are verified here the way ve-links does it.
+//   test        { contact_id, step?, to? }  sends that business's real email to you (or to), marked as a test
+//   interested                        the interest queue: who clicked, replied or claimed, and who it is routed to
+//
+// Cron (x-cron-secret, ve-outreach-send every 10 minutes), or the admin token:
+//   tick   reads what businesses did (ve_outreach_sync), then sends what ve_outreach_due() returns: approved send days
+//          in cities that are switched on, weekdays 9 AM to 5 PM Eastern, at most PER_TICK at a time, within each
+//          city's daily cap and the sending domain's warm-up allowance. Every email goes through email-send (from Sean,
+//          replies to contact@lesaruss.com, one-click unsubscribe, the postal address, an email_sends row), and the page
+//          link is the business's own tracked /go/ link (ve_links, campaign business-outreach).
+// verify_jwt is false on deploy; tokens are verified here the way ve-links does it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -124,15 +132,146 @@ async function lookup(website: string): Promise<{ email: string | null; source: 
   return { email: null, source: null, note: opened ? 'no email on site' : 'site did not open' };
 }
 
+// ---- Sending ----
+const SITE = 'https://vegansexplore.com';
+const FN_BASE = `${SUPABASE_URL}/functions/v1`;
+const BRAND = 'lesaruss';            // Sean A. Russell <sean@mail.lesaruss.ai>, replies to contact@lesaruss.com
+const PER_TICK = 6;                  // 6 every 10 minutes: a day of 30 goes out over about an hour, not in one burst
+async function secretValue(key: string): Promise<string | null> {
+  const { data } = await db.from('lesaruss_secrets').select('value').eq('key', key).maybeSingle();
+  return (data?.value as string) ?? null;
+}
+function eastern(d = new Date()) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hourCycle: 'h23', weekday: 'short', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit' }).formatToParts(d).map((x) => [x.type, x.value]));
+  return { date: `${p.year}-${p.month}-${p.day}`, hour: +p.hour, weekday: p.weekday as string };
+}
+function sendingHours() { const e = eastern(); return !['Sat', 'Sun'].includes(e.weekday) && e.hour >= 9 && e.hour < 17; }
+// The next email's time: that many days on, moved off the weekend, at 10 AM Eastern (14:00 UTC; 9 AM in winter).
+function nextSendAt(days: number): string {
+  const e = eastern();
+  const d = new Date(e.date + 'T14:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  while (d.getUTCDay() === 0 || d.getUTCDay() === 6) d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString();
+}
+const escHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// A plain, personal-looking email: Sean's words, their links, and the required footer.
+function toHtml(body: string, business: string): string {
+  const paras = escHtml(body).split(/\n{2,}/).map((p) => '<p style="margin:0 0 16px">' +
+    p.replace(/https?:\/\/[^\s<]+/g, (u) => `<a href="${u}" style="color:#1f5f22">${u}</a>`).replace(/\n/g, '<br>') + '</p>').join('');
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:600px">${paras}` +
+    `<p style="margin:28px 0 0;font-size:12px;line-height:1.5;color:#777">You are getting this because ${escHtml(business)} is listed in the Vegans Explore Directory. ` +
+    `<a href="{{unsubscribe_url}}" style="color:#777">Don't email me again</a>.<br>{{postal_address}}</p></div>`;
+}
+function toText(body: string, business: string): string {
+  return `${body}\n\n--\nYou are getting this because ${business} is listed in the Vegans Explore Directory.\nDon't email me again: {{unsubscribe_url}}\n{{postal_address}}`;
+}
+function linkCode() {
+  const abc = 'abcdefghjkmnpqrstuvwxyz23456789';
+  return 'bo-' + Array.from(crypto.getRandomValues(new Uint8Array(7)), (b) => abc[b % abc.length]).join('');
+}
+type Contact = { id: string; listing_id: string; community_slug: string; email: string; contact_name: string | null; segment: string; step: number; link_code: string | null };
+// The business's personal tracked link to its page, made once and used in all three emails.
+async function ensureLink(c: Contact, name: string, slug: string): Promise<string> {
+  if (c.link_code) return c.link_code;
+  for (let i = 0; i < 4; i++) {
+    const code = linkCode();
+    const { error } = await db.from('ve_links').insert({
+      code, label: ('Outreach: ' + name).slice(0, 120), destination: '/directory/' + slug, initiative_slug: 'business-outreach',
+      tags: ['business-outreach', c.community_slug, c.segment], channel: 'email', recipient_email: c.email.slice(0, 200),
+      recipient_name: (c.contact_name || name).slice(0, 120), active: true,
+    });
+    if (!error) { await db.from('ve_outreach_contacts').update({ link_code: code }).eq('id', c.id); return code; }
+  }
+  throw new Error('could not make a tracked link');
+}
+async function emailSend(payload: Record<string, unknown>) {
+  const admin = await secretValue('LESARUSS_ADMIN_TOKEN');
+  const r = await fetch(`${FN_BASE}/email-send`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin}` }, body: JSON.stringify(payload) });
+  return await r.json().catch(() => ({ ok: false, error: `email-send ${r.status}` }));
+}
+// Render one step for one business, with its tracked link in place of the page address.
+// A test keeps the plain page address, so a test click never counts as the business's interest.
+async function build(c: Contact, step: number, test = false) {
+  const { data: l } = await db.from('listings').select('name,slug').eq('id', c.listing_id).single();
+  const { data: r } = await db.rpc('ve_outreach_render', { p_contact: c.id, p_step: step });
+  const m = r?.[0];
+  if (!l || !m) throw new Error('could not render');
+  const code = test ? null : await ensureLink(c, l.name, l.slug);
+  const body = code ? String(m.body).split(m.page_url).join(`${SITE}/go/${code}`) : String(m.body);
+  return { subject: String(m.subject), html: toHtml(body, l.name), text: toText(body, l.name), name: l.name, code };
+}
+async function tick() {
+  const synced = (await db.rpc('ve_outreach_sync')).data;
+  if (!sendingHours()) return { synced, sent: 0, note: 'outside sending hours (weekdays 9 AM to 5 PM Eastern)' };
+  const { data: brand } = await db.from('email_brands').select('from_email').eq('slug', BRAND).single();
+  const domain = String(brand?.from_email || '').split('@')[1] || '';
+  const { data: w } = await db.rpc('email_warmup_allowance', { p_domain: domain });
+  const warm = w?.[0];
+  let room = warm?.enabled ? Math.max(0, warm.allowance - warm.sent_today) : PER_TICK;
+  room = Math.min(room, PER_TICK);
+  if (room <= 0) return { synced, sent: 0, note: 'warm-up allowance used for today' };
+  const { data: due } = await db.rpc('ve_outreach_due', { p_limit: 50 });
+  const { data: today } = await db.rpc('ve_outreach_sent_today');
+  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap');
+  const { data: tpl } = await db.from('ve_outreach_templates').select('step,day_offset').order('step');
+  const capLeft = new Map((cities || []).map((c) => [c.community_slug, c.daily_cap - Number((today || []).find((t: { community_slug: string }) => t.community_slug === c.community_slug)?.n || 0)]));
+  const out: unknown[] = [];
+  for (const d of due || []) {
+    if (out.length >= room) break;
+    if ((capLeft.get(d.community_slug) ?? 0) <= 0) continue;
+    const { data: c } = await db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,segment,step,link_code,status').eq('id', d.contact_id).single();
+    if (!c || c.step + 1 !== d.next_step || !['not_sent', 'in_sequence'].includes(c.status)) continue;
+    const step = d.next_step as number;
+    try {
+      const m = await build(c as Contact, step);
+      const first = (c.contact_name || '').trim().split(/\s+/)[0] || undefined;
+      const res = await emailSend({ brand: BRAND, campaign_ref: `ve-outreach-${c.id}-${step}`, list_ref: `ve-outreach:${c.community_slug}`,
+        subject: m.subject, html: m.html, text: m.text, recipients: [{ email: c.email, first_name: first, name: c.contact_name || undefined }] });
+      const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
+      if (result === 'sent' || result === 'already_sent') {
+        const off = (tpl || []).find((t) => t.step === step)?.day_offset ?? 0;
+        const nextOff = (tpl || []).find((t) => t.step === step + 1)?.day_offset;
+        await db.from('ve_outreach_contacts').update({ step, status: nextOff == null ? 'finished' : 'in_sequence', last_sent_at: new Date().toISOString(),
+          next_send_at: nextOff == null ? null : nextSendAt(nextOff - off) }).eq('id', c.id);
+        await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'sent', step, detail: { resend_id: res.results?.[0]?.id || null, link: m.code } });
+        capLeft.set(c.community_slug, (capLeft.get(c.community_slug) ?? 1) - 1);
+      } else if (result === 'suppressed') {
+        await db.from('ve_outreach_contacts').update({ status: 'opted_out', stop_reason: 'on the do-not-email list' }).eq('id', c.id);
+      } else if (result === 'invalid') {
+        await db.from('ve_outreach_contacts').update({ status: 'held', stop_reason: 'the email address is not valid' }).eq('id', c.id);
+      } else {
+        await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'note', step, detail: { send_failed: res?.results?.[0]?.error || res?.error || res?.errors || 'unknown' } });
+        const { count } = await db.from('ve_outreach_events').select('id', { count: 'exact', head: true }).eq('contact_id', c.id).eq('kind', 'note');
+        if ((count || 0) >= 3) await db.from('ve_outreach_contacts').update({ status: 'held', stop_reason: 'sending failed three times' }).eq('id', c.id);
+      }
+      out.push({ business: m.name, step, result });
+    } catch (e) {
+      out.push({ contact: c.id, step, result: 'error', error: String((e as Error).message || e) });
+    }
+  }
+  if (out.length) await db.rpc('ve_outreach_sync');
+  return { synced, sent: out.filter((o) => (o as { result: string }).result === 'sent').length, results: out };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
   try {
     const body = await req.json().catch(() => ({}));
     const action = String(body.action || '');
+    if (action === 'tick') {
+      const cron = req.headers.get('x-cron-secret');
+      const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+      const [cs, at] = await Promise.all([secretValue('CRON_SECRET'), secretValue('LESARUSS_ADMIN_TOKEN')]);
+      if (!((cron && cs && cron === cs) || (given && at && given === at))) return json({ error: 'unauthorized' }, 401);
+      const r = await tick();
+      await db.from('email_heartbeats').upsert({ name: 've-outreach', last_ok_at: new Date().toISOString(), detail: r, updated_at: new Date().toISOString() });
+      return json({ ok: true, ...r });
+    }
     const me = await adminId(req);
     if (!me) {
-      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails'];
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested'];
       const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
@@ -225,6 +364,31 @@ Deno.serve(async (req) => {
       await db.from('ve_outreach_contacts').update(patch).eq('id', c.id);
       if (body.hold) await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'status', detail: { status: 'held', by: me } });
       return json({ ok: true });
+    }
+
+    if (action === 'test') {
+      if (!me || !isId(body.contact_id)) return json({ error: 'admins_only' }, 403);
+      const step = [1, 2, 3].includes(Number(body.step)) ? Number(body.step) : 1;
+      let to = clean(body.to, 200).toLowerCase();
+      if (!to) { const { data: m } = await db.from('members').select('email').eq('id', me).single(); to = String(m?.email || '').toLowerCase(); }
+      if (!isEmail(to)) return json({ error: 'bad_email' }, 400);
+      const { data: c } = await db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,segment,step,link_code').eq('id', body.contact_id).single();
+      if (!c) return json({ error: 'contact' }, 400);
+      const m = await build(c as Contact, step, true);
+      const res = await emailSend({ brand: BRAND, campaign_ref: `ve-outreach-test-${c.id}-${step}`, subject: '[Test] ' + m.subject, html: m.html, text: m.text,
+        test_to: [to], recipients: [{ email: to, first_name: (c.contact_name || '').split(/\s+/)[0] || undefined }] });
+      return json({ ok: !!res?.ok, to, result: res?.results?.[0]?.result || res?.error || res?.errors });
+    }
+
+    if (action === 'interested') {
+      const { data: rows } = await db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,status,stop_reason,step,route_to,assigned_member_id,interested_at,joined_at,updated_at')
+        .in('status', ['interested', 'joined']).order('updated_at', { ascending: false }).limit(300);
+      const ids = (rows || []).map((r) => r.listing_id);
+      const { data: ls } = ids.length ? await db.from('listings').select('id,name,slug,category,address_city,phone').in('id', ids) : { data: [] };
+      const mids = [...new Set((rows || []).map((r) => r.assigned_member_id).filter(Boolean))];
+      const { data: ms } = mids.length ? await db.from('members').select('id,name').in('id', mids) : { data: [] };
+      const L = new Map((ls || []).map((l) => [l.id, l])), M = new Map((ms || []).map((m) => [m.id, m.name]));
+      return json({ ok: true, rows: (rows || []).map((r) => ({ ...r, listing: L.get(r.listing_id) || null, assigned_name: r.assigned_member_id ? M.get(r.assigned_member_id) || null : null })) });
     }
 
     if (action === 'city') {

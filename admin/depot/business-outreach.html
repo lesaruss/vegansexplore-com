@@ -111,6 +111,12 @@
         $('crumbs').innerHTML = parts.map(function (p, i) { return i < parts.length - 1 ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a> <span aria-hidden="true">&rsaquo;</span>' : '<span aria-current="page">' + esc(p[0]) + '</span>'; }).join(' ');
       }
       var STATUS = { proposed: ['Waiting for approval', 'wait'], approved: ['Approved', 'on'], sent: ['Sent', 'on'] };
+      // One business's place in its three emails, in plain words.
+      function who(r) {
+        var m = { not_sent: ['Not sent yet', 'off'], in_sequence: ['Day ' + [0, 0, 4, 10][r.step] + ' email sent', 'on'], finished: ['All three sent', 'on'],
+          interested: ['Interested', 'guide'], joined: ['Joined', 'on'], opted_out: ['Unsubscribed', 'off'], bounced: ['Bounced', 'wait'], held: ['Not emailing', 'off'] }[r.status] || [r.status, 'off'];
+        return '<span class="tag ' + m[1] + '">' + esc(m[0]) + '</span>';
+      }
       function linkify(t) { return esc(t).replace(/https?:\/\/[^\s<]+/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>'; }); }
       function logo(l) { return l && l.logo_url ? '<div class="logo" style="background-image:url(\'' + esc(l.logo_url) + '\')" aria-hidden="true"></div>' : '<div class="logo" aria-hidden="true">' + esc(((l && l.name) || '?').charAt(0)) + '</div>'; }
       function load() { return api({ action: 'overview' }).then(function (d) { if (!d.ok) throw new Error(d.error); data = d; }); }
@@ -120,7 +126,7 @@
         crumbs([['Business outreach']]);
         var upcoming = data.batches.filter(function (b) { return b.status !== 'sent'; });
         V().innerHTML =
-          '<p class="sub">Each send day is a batch. Open one to see every business in it, their page and the exact emails they will get, take anyone out, then approve it. Approving a batch approves all three emails for those businesses (Day 0 on the send day, Day 4 and Day 10 unless they answer). Nothing goes out while a city is off, and no email is sent from this page.</p>' +
+          '<p class="sub">Each send day is a batch. Open one to see every business in it, their page and the exact emails they will get, take anyone out, then approve it. Approving a batch approves all three emails for those businesses (Day 0 on the send day, Day 4 and Day 10 unless they answer). A city sends only once you turn it on: approved days go out from their send day, weekdays 9 AM to 5 PM Eastern, a few at a time, from you, with replies to contact@lesaruss.com.</p>' +
           '<section class="card batches"><h2>Upcoming sends</h2>' +
           (upcoming.length ? '<div class="list"><div class="item head"><div>Send day</div><div>City</div><div>Businesses</div><div>Status</div><div></div></div>' +
             upcoming.map(function (b) { var s = STATUS[b.status] || [b.status, 'off'];
@@ -132,13 +138,22 @@
             var inb = data.batches.filter(function (b) { return b.community_slug === c.community_slug && b.status !== 'sent'; }).reduce(function (a, b) { return a + b.size; }, 0);
             return '<div class="city"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3>' + esc(c.name) + '</h3>' +
               (c.enabled ? '<span class="tag on">On</span>' : '<span class="tag off">Off</span>') + '</div>' +
-              '<div class="nums"><div><b>' + (n.waiting || 0) + '</b><span>Not planned</span></div><div><b>' + inb + '</b><span>Planned</span></div><div><b>' + emailed + '</b><span>Emailed</span></div><div><b>' + ((n.interested || 0) + (n.joined || 0)) + '</b><span>Interested</span></div></div>' +
+              '<div class="nums"><div><b>' + (n.waiting || 0) + '</b><span>Not planned</span></div><div><b>' + inb + '</b><span>Planned</span></div><div><b>' + emailed + '</b><span>Emailed</span></div><div><b><a href="#interested" style="color:inherit">' + ((n.interested || 0) + (n.joined || 0)) + '</a></b><span>Interested</span></div></div>' +
               (c.committed_until ? '<small class="hint">Committed until ' + esc(day(c.committed_until)) + ': no big changes before then.</small>' : '') +
-              '<div class="row-btns"><a class="btn btn-sm" href="#plan/' + c.community_slug + '">Plan sends</a><button type="button" class="btn btn-ghost btn-sm" data-find="' + c.community_slug + '">Find emails</button></div>' +
+              '<div class="row-btns"><a class="btn btn-sm" href="#plan/' + c.community_slug + '">Plan sends</a><button type="button" class="btn btn-ghost btn-sm" data-find="' + c.community_slug + '">Find emails</button>' +
+              '<button type="button" class="btn ' + (c.enabled ? 'btn-warn' : 'btn-ghost') + ' btn-sm" data-switch="' + c.community_slug + '" data-on="' + (c.enabled ? '0' : '1') + '">' + (c.enabled ? 'Pause sending' : 'Turn on sending') + '</button></div>' +
               '<div class="msg" data-found="' + c.community_slug + '" role="status"></div></div>';
           }).join('') + '</div></section>' +
-          '<p class="hint" style="margin-top:16px"><a href="#emails">See the three emails</a></p>';
+          '<p class="hint" style="margin-top:16px"><a href="#interested">Interested businesses</a> &middot; <a href="#emails">See the three emails</a></p>';
         Array.prototype.forEach.call(V().querySelectorAll('[data-find]'), function (b) { b.addEventListener('click', function () { findEmails(b.dataset.find, b); }); });
+        Array.prototype.forEach.call(V().querySelectorAll('[data-switch]'), function (b) {
+          b.addEventListener('click', function () {
+            var on = b.dataset.on === '1', name = cityName(b.dataset.switch);
+            if (!confirm(on ? 'Turn on sending for ' + name + '? Approved send days go out from their day, weekdays 9 AM to 5 PM Eastern, a few at a time.' : 'Pause sending for ' + name + '? Nothing more goes out there until you turn it back on.')) return;
+            b.disabled = true;
+            api({ action: 'city', city: b.dataset.switch, enabled: on }).then(function (d) { if (!d.ok) { alert(d.error || 'That did not work.'); b.disabled = false; return; } return load().then(route); });
+          });
+        });
       }
 
       function findEmails(city, btn) {
@@ -191,7 +206,7 @@
             '<section class="card"><div class="list"><div class="item head"><div></div><div>Business</div><div>Email goes to</div><div>In our Guides</div><div></div></div>' +
             (rows.map(function (r) { var l = r.listing || {};
               return '<div class="item"><div>' + logo(l) + '</div><div><strong>' + esc(l.name) + '</strong><small>' + esc([l.category, l.address_city].filter(Boolean).join(' · ')) + (l.vote_count ? ' · ' + l.vote_count + ' votes' : '') + '</small></div>' +
-                '<div>' + esc(r.contact_name || '') + '<small>' + esc(r.email) + '</small><small>' + esc(r.email_source && /^http/.test(r.email_source) ? 'from ' + r.email_source.replace(/^https?:\/\//, '') : 'on file') + '</small></div>' +
+                '<div>' + who(r) + ' ' + esc(r.contact_name || '') + '<small>' + esc(r.email) + '</small><small>' + esc(r.email_source && /^http/.test(r.email_source) ? 'from ' + r.email_source.replace(/^https?:\/\//, '') : 'on file') + '</small></div>' +
                 '<div>' + (r.guides.length ? r.guides.map(function (g) { return '<span class="tag guide">' + esc(g) + '</span>'; }).join(' ') : '<small>Not yet</small>') + '</div>' +
                 '<div class="act"><a class="btn btn-ghost btn-sm" href="#batch/' + id + '/' + r.id + '">Preview</a></div></div>';
             }).join('') || '<p class="empty">Nobody in this day.</p>') + '</div></section>';
@@ -221,7 +236,7 @@
           V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + '</h2>' +
             '<p class="sub" style="margin-bottom:10px">' + esc(l.tagline || l.brief_summary || '') + '</p>' +
             '<div class="tabs" role="tablist">' + mails.map(function (m, i) { return '<button type="button" role="tab" aria-selected="' + (i === 0) + '" data-i="' + i + '">Day ' + m.day + '</button>'; }).join('') + '</div>' +
-            '<div id="mail"></div>' +
+            '<div id="mail"></div><div class="row-btns" style="margin-top:10px"><button type="button" class="btn btn-ghost btn-sm" id="c-test">Send me this as a test</button></div>' +
             (open ? '<h2 style="margin-top:18px">Fix before it goes</h2><form class="form" id="c-f"><label>Name<input id="c-name" value="' + esc(r.contact_name || '') + '" placeholder="First and last name"></label><label>Email<input id="c-email" type="email" value="' + esc(r.email) + '"></label><div><button class="btn btn-ghost">Save</button></div></form>' +
               '<div class="row-btns" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="c-out">Take out of this day</button><button class="btn btn-warn btn-sm" id="c-hold">Never email them</button></div>'
               : '<p class="hint">This day is approved, so the email can no longer be changed here.</p>') +
@@ -234,12 +249,37 @@
               '<p class="hint">The page link becomes ' + esc(l.name) + '\'s own tracked link when it is sent, so a click shows here and on Leads.</p>';
             Array.prototype.forEach.call(V().querySelectorAll('.tabs button'), function (t) { t.setAttribute('aria-selected', t.dataset.i == i); });
           }
-          Array.prototype.forEach.call(V().querySelectorAll('.tabs button'), function (t) { t.addEventListener('click', function () { show(+t.dataset.i); }); });
+          var cur = 0;
+          Array.prototype.forEach.call(V().querySelectorAll('.tabs button'), function (t) { t.addEventListener('click', function () { cur = +t.dataset.i; show(cur); }); });
           show(0);
+          $('c-test').addEventListener('click', function () {
+            var b = this; b.disabled = true;
+            api({ action: 'test', contact_id: cid, step: cur + 1 }).then(function (d) {
+              b.disabled = false; $('c-msg').className = d.ok ? 'msg' : 'msg err';
+              $('c-msg').textContent = d.ok ? 'Sent to ' + d.to + ' with [Test] in the subject. Its page link is the plain one, so your click does not count.' : 'Not sent: ' + (d.error || d.result || 'unknown');
+            });
+          });
           if (!open) return;
           $('c-f').addEventListener('submit', function (e) { e.preventDefault(); act({ action: 'contact', contact_id: cid, email: $('c-email').value, contact_name: $('c-name').value }, 'Saved.'); });
           $('c-out').addEventListener('click', function () { act({ action: 'remove', contact_id: cid }, '', '#batch/' + bid); });
           $('c-hold').addEventListener('click', function () { if (confirm('Never email ' + l.name + '?')) act({ action: 'remove', contact_id: cid, hold: true }, '', '#batch/' + bid); });
+        });
+      }
+
+      var REASON = { 'clicked their page': 'Clicked their page', replied: 'Replied', 'claimed their page': 'Claimed their page' };
+      function viewInterested() {
+        crumbs([['Business outreach', '#'], ['Interested']]);
+        V().innerHTML = '<p class="empty">Loading...</p>';
+        api({ action: 'interested' }).then(function (d) {
+          var rows = d.rows || [];
+          V().innerHTML = '<p class="sub">Everyone who clicked, replied or claimed. Their emails stop, and each one goes to their city\'s Community Manager, or to you while the city has none. Reach out personally.</p>' +
+            '<section class="card"><div class="list"><div class="item head"><div></div><div>Business</div><div>What they did</div><div>Goes to</div><div></div></div>' +
+            (rows.map(function (r) { var l = r.listing || {};
+              return '<div class="item"><div>' + logo(l) + '</div><div><strong>' + esc(l.name) + '</strong><small>' + esc([l.category, l.address_city].filter(Boolean).join(' · ')) + '</small><small>' + esc(r.email) + (l.phone ? ' · ' + esc(l.phone) : '') + '</small></div>' +
+                '<div>' + who(r) + '<small>' + esc(REASON[r.stop_reason] || r.stop_reason || '') + '</small></div>' +
+                '<div>' + esc(r.route_to === 'community_manager' ? (r.assigned_name || 'Community Manager') : 'You') + '</div>' +
+                '<div class="act"><a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(l.slug || '') + '" target="_blank" rel="noopener">Their page</a></div></div>';
+            }).join('') || '<p class="empty">Nobody yet. They show here as soon as they click, reply or claim.</p>') + '</div></section>';
         });
       }
 
@@ -257,6 +297,7 @@
         if (h[0] === 'batch' && h[1] && h[2]) return viewContact(h[1], h[2]);
         if (h[0] === 'batch' && h[1]) return viewBatch(h[1]);
         if (h[0] === 'emails') return viewEmails();
+        if (h[0] === 'interested') return viewInterested();
         viewHome();
       }
       window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });

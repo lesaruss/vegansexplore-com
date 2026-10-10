@@ -231,8 +231,8 @@ links a campaign to a listing, but the table has no public read, so it needs to 
 "Let's just make sure we're not sending any emails... when I say go... let's go city by city. And not try to hit everybody
 at once." Then: "see who is on the queue, approve who the emails are going to be going out to... on Monday, we're sending
 it to these 60... see what the draft is... and we commit to it for like maybe 15 days before we make any drastic changes."
-The goal is businesses on board for Q1 2027 through Front Row Start. Migrations `20261010_ve_outreach.sql` and
-`20261010_ve_outreach_batches.sql`; edge function `ve-outreach`; console **Depot > Business outreach**
+The goal is businesses on board for Q1 2027 through Front Row Start. Migrations `20261010_ve_outreach.sql`,
+`20261010_ve_outreach_batches.sql` and `20261010_ve_outreach_sender.sql`; edge function `ve-outreach`; console **Depot > Business outreach**
 (`/admin/depot/business-outreach`).
 
 - **The console** (one thing per view): Upcoming sends (each send day is a batch: Waiting for approval, Approved, Sent) and
@@ -242,9 +242,22 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   approves all three emails for that day's businesses. Plan sends proposes days: first send day and businesses per weekday
   (`ve_outreach_plan`, brands first). The first approval in a city sets its 15-day commitment
   (`ve_outreach_cities.committed_until`, shown on the city card): no big changes to the emails or the plan before then.
-- **Two gates before anything sends**: the batch is approved, and the city is on (`ve_outreach_cities.enabled`, every city
-  off). `ve_outreach_due()` is what a sender would send: approved batches whose day has come, then follow-ups when due,
-  never a suppressed address. **No sender is wired yet.**
+- **Two gates before anything sends**: the batch is approved, and the city is on (Turn on sending / Pause sending on the city
+  card, `ve_outreach_cities.enabled`, every city off until Sean turns it on). `ve_outreach_due()` is what goes next: approved
+  send days whose day has come, then follow-ups when due, never a suppressed address.
+- **The sender** (migration `20261010_ve_outreach_sender.sql`, `ve-outreach` `tick`, cron `ve-outreach-send` every 10
+  minutes): weekdays 9 AM to 5 PM Eastern only, 6 a tick (a day of 30 goes out over about an hour), within the city's
+  `daily_cap` (30) and the domain's warm-up allowance (`email_warmup_allowance`). Each email goes through `email-send`
+  (brand `lesaruss`: from Sean A. Russell <sean@mail.lesaruss.ai>, replies to contact@lesaruss.com, one-click unsubscribe,
+  the postal address, `campaign_ref` `ve-outreach-<contact>-<step>` so nothing is sent twice) as a plain personal email with
+  a small footer. The page link is the business's own tracked link (`ve_links`, `bo-<code>`, campaign `business-outreach`,
+  made at its first email). Day 4 and Day 10 are set for 10 AM Eastern on a weekday. Before every tick `ve_outreach_sync()`
+  reads what they did: a real click on their link or a reply (not an auto-reply) makes them Interested, a claim makes them
+  Joined, an unsubscribe or block makes them Unsubscribed, a bounce Bounced, and a send day turns Sent once everyone in it
+  has had their first email. Three failed sends hold a business. Heartbeat: `email_heartbeats` `ve-outreach`.
+- **Send me this as a test** (a business's preview, `ve-outreach` `test`): its real email to the signed-in admin with
+  [Test] in the subject and the plain page link, so the test click never counts. **Interested** (`#interested`, `ve-outreach`
+  `interested`): who clicked, replied or claimed, what they did, and who it is routed to.
 - **The emails** (`ve_outreach_templates`): three from Sean (sender `email_brands` `lesaruss`, replies to
   contact@lesaruss.com), Day 0 "We built a page for {business}", Day 4 "Your front-row seat{in_city}", Day 10 "Last note
   from me". `ve_outreach_render(contact, step)` fills them; the console and the sender both use it. `{in_city}` is " in
@@ -260,8 +273,7 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
 - Ops: `ve-outreach` also takes `LESARUSS_ADMIN_TOKEN` for overview, preview, plan and find_emails; approving, changing a
   row and the city switch need a signed-in super admin.
 - The June 2026 `listing_outreach` queue (the old $11 claim offer, never sent) was retired on 2026-10-10 (`skipped`, note).
-- Not built yet: the sender (Resend through the warmup, a personal `/go/` link each), click/reply/claim hooks, onboarding
-  after sign-up, and the interest queue's own view.
+- Not built yet: the welcome and personal onboarding after a business signs up.
 
 ## Tracked links (Sean, 2026-10-04)
 
