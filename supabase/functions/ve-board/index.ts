@@ -8,7 +8,7 @@
 // Membership), and a poster's contact line is only returned to active members, because
 // rescues share phone numbers and addresses here.
 //
-// POST { action: 'list', community, lane?, q?, kind?, category?, status?: 'open'|'resolved'|'all', before? }
+// POST { action: 'list', community, lane?, q?, kind?, category?, area?, status?: 'open'|'resolved'|'all', before? }
 //   -> { posts, viewer }                         public; token optional
 //
 // Sections (Sean, 2026-10-10): every city's Board has Requests & Offers, Jobs, Classifieds, Fosters
@@ -74,7 +74,9 @@ const LANES: Record<string, { kinds: string[]; categories: string[] }> = {
   rescues: { kinds: ['rescue'], categories: ['rescue_urgent', 'rescue_needed', 'rescue_update'] },
   // Suggest a Topic (Sean, 2026-10-10). The Pulse writer reads the city's pulse_idea suggestions; a
   // briefing that uses one carries briefing.suggestion_id, and publishing marks it covered (trigger).
-  suggest: { kinds: ['suggestion'], categories: ['pulse_idea', 'talk_idea', 'board_idea'] },
+  // A hot tip (Sean, 2026-10-10: "a way for people to leave news, hot tips, letting us know what's going on in
+  // their cities") is read by the Pulse writer the same way as a Daily Pulse idea.
+  suggest: { kinds: ['suggestion'], categories: ['hot_tip', 'pulse_idea', 'talk_idea', 'board_idea'] },
 };
 const KINDS = Object.values(LANES).flatMap((l) => l.kinds);
 const LANE_OF: Record<string, string> = Object.fromEntries(Object.entries(LANES).flatMap(([lane, l]) => l.kinds.map((k) => [k, lane])));
@@ -321,6 +323,10 @@ Deno.serve(async (req) => {
       else q = q.in('status', ['open', 'resolved']);
       if (lane.kinds.includes(body.kind)) q = q.eq('kind', body.kind);
       if (lane.categories.includes(body.category)) q = q.eq('category', body.category);
+      // Areas (Sean, 2026-10-10): a post is for one area of the city (VE_HUBS[].page.boardAreas) or the whole
+      // city (no area). Filtering by an area shows that area's posts and the whole-city ones, pinned included.
+      const area = clean(body.area, 120).replace(/["\\]/g, '');
+      if (area) q = q.or(`area.is.null,area.eq."${area}"`);
       const before = clean(body.before, 40);
       // The pinned post leads the first page only.
       if (before && !isNaN(Date.parse(before))) q = q.lt('created_at', before).eq('pinned', false);

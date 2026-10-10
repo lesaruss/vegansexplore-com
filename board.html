@@ -50,7 +50,7 @@
     .join-note { display: none; margin-top: 18px; background: #fff; border: 1.5px solid var(--ve-green-dark); border-radius: 12px; padding: 14px 16px; font-size: 14px; line-height: 1.55; color: var(--ve-text); }
     .join-note.show { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; justify-content: space-between; }
 
-    .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; padding: 22px 0 8px; align-items: center; }
+    .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 12px; padding: 22px 0 8px; align-items: center; }
     .search { width: 100%; }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0 14px; }
     .chip { border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text); border-radius: 999px; font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer; min-height: 38px; }
@@ -243,6 +243,8 @@
         <select id="category" class="select">
           <option value="">All categories</option>
         </select>
+        <label for="area-filter" class="visually-hidden">Area</label>
+        <select id="area-filter" class="select board-only"></select>
         <label for="status" class="visually-hidden">Status</label>
         <select id="status" class="select">
           <option value="open">Open</option>
@@ -301,7 +303,7 @@
         </fieldset>
         <div class="two">
           <label for="p-category" id="p-category-wrap">Category<select id="p-category" class="select"></select></label>
-          <label for="p-area">Area<span class="hint">Optional, for example: Broward, Wynwood, Delray Beach</span><input id="p-area" class="input" maxlength="120"></label>
+          <label for="p-area">Area<span class="hint">Where it is, so people nearby find it</span><select id="p-area" class="select"></select></label>
         </div>
         <label for="p-title">Title<span class="hint" id="p-title-hint">One line people will scan</span><input id="p-title" class="input" maxlength="140" required></label>
         <label for="p-body">Details<span class="hint" id="p-body-hint"></span><textarea id="p-body" maxlength="4000" required></textarea></label>
@@ -371,8 +373,8 @@
         post: 'Post a rescue', search: 'Search rescues, for example: hens, transport, pickup',
         titleHint: 'Who and where, for example: Six hens surrendered, need pickup by Friday', bodyHint: 'The animals, the area (never a home address), the deadline, and the help you need.', done: ['Mark rescued', 'Rescued'] },
       // Daily Pulse ideas feed the Pulse writer; a suggestion it uses is marked Covered with a link.
-      suggest: { name: 'Suggest a Topic', kind: 'suggestion', field: 'category', types: [['pulse_idea', 'For the Daily Pulse', 'For the Daily Pulse', 'tag-topic'], ['talk_idea', 'Something to talk about', 'Something to talk about', 'tag-offer'], ['board_idea', 'Idea for the board', 'An idea for the board', 'tag-cat']],
-        h1: 'What should your city talk about?', lede: 'Suggest a topic for the Daily Pulse, a conversation your city should have, or an idea for this board. Daily Pulse ideas are read when tomorrow\'s briefing is written.',
+      suggest: { name: 'Suggest a Topic', kind: 'suggestion', field: 'category', types: [['hot_tip', 'Hot tip', 'A hot tip: happening now', 'tag-request'], ['pulse_idea', 'For the Daily Pulse', 'For the Daily Pulse', 'tag-topic'], ['talk_idea', 'Something to talk about', 'Something to talk about', 'tag-offer'], ['board_idea', 'Idea for the board', 'An idea for the board', 'tag-cat']],
+        h1: 'What should your city talk about?', lede: 'Send a hot tip about something happening now, suggest a topic for the Daily Pulse, start a conversation, or share an idea for this board. Hot tips and Daily Pulse ideas are read when tomorrow\'s briefing is written.',
         post: 'Suggest a topic', search: 'Search suggestions, for example: markets, school lunches',
         titleHint: 'The topic in one line, for example: More Vegan options in school lunches', bodyHint: 'Why it matters to your city, and a link to the story if there is one.', done: ['Mark covered', 'Covered'] }
     };
@@ -382,7 +384,9 @@
     function boardName(lane, city) { return lane === 'board' ? city + ' board' : lane === 'classifieds' ? city + ' Classifieds' : lane === 'suggest' ? city + ' suggestions' : city + ' ' + LANES[lane].name + ' board'; }
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
-    var state = { lane: LANES[params.get('lane')] ? params.get('lane') : 'board', city: '', type: '', q: '', category: '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
+    // Areas a post can be for (VE_HUBS[].page.boardAreas, Sean 2026-10-10); no area means the whole city.
+    function areasFor(slug) { var h = window.VE_HUB ? VE_HUB(slug) : null; return (h && h.page && h.page.boardAreas) || []; }
+    var state = { lane: LANES[params.get('lane')] ? params.get('lane') : 'board', city: '', type: '', q: '', category: '', area: params.get('area') || '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function token() { return window.VEAuth && VEAuth.getToken ? (VEAuth.getToken() || '') : ''; }
@@ -444,12 +448,21 @@
     if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';
     $('city').innerHTML = hubs.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
     $('city').value = wanted; state.city = wanted;
+    function fillAreas() {
+      var list = areasFor(state.city), all = 'All of ' + hubName(state.city);
+      if (list.indexOf(state.area) < 0) state.area = '';
+      $('area-filter').innerHTML = '<option value="">' + esc(all) + '</option>' + list.map(function (a) { return '<option value="' + esc(a) + '">' + esc(a) + '</option>'; }).join('');
+      $('area-filter').value = state.area;
+      $('p-area').innerHTML = '<option value="">' + esc(all) + '</option>' + list.map(function (a) { return '<option value="' + esc(a) + '">' + esc(a) + '</option>'; }).join('');
+    }
+    fillAreas();
     $('category').innerHTML += CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
     $('p-category').innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
 
     function syncUrl() {
       var u = new URL(location.href); u.searchParams.set('community', state.city);
       if (state.lane !== 'board') u.searchParams.set('lane', state.lane); else u.searchParams.delete('lane');
+      if (state.area && state.lane !== 'pulse') u.searchParams.set('area', state.area); else u.searchParams.delete('area');
       if (state.current) u.searchParams.set('post', state.current.id); else u.searchParams.delete('post');
       history.replaceState(null, '', u.pathname + u.search);
     }
@@ -475,7 +488,8 @@
     Array.prototype.forEach.call(document.querySelectorAll('.lane'), function (b) {
       b.addEventListener('click', function () { if (state.lane === b.getAttribute('data-lane')) return; closePost(); setLane(b.getAttribute('data-lane')); state.q = ''; $('q').value = ''; syncUrl(); load(); });
     });
-    $('city').addEventListener('change', function () { state.city = this.value; try { localStorage.setItem('ve_selected_city', state.city); } catch (e) {} load(); });
+    $('city').addEventListener('change', function () { state.city = this.value; state.area = ''; fillAreas(); syncUrl(); try { localStorage.setItem('ve_selected_city', state.city); } catch (e) {} load(); });
+    $('area-filter').addEventListener('change', function () { state.area = this.value; syncUrl(); load(); });
     $('category').addEventListener('change', function () { state.category = this.value; load(); });
     $('status').addEventListener('change', function () { state.status = this.value; load(); });
     var searchTimer = null;
@@ -526,6 +540,7 @@
       var body = pulse ? { action: 'list', lane: 'pulse', community: state.city } : { action: 'list', lane: state.lane, community: state.city, status: state.status };
       if (!pulse && state.type) body[L.field] = state.type;
       if (state.lane === 'board' && state.category) body.category = state.category;
+      if (!pulse && state.area) body.area = state.area;
       if (state.q) body.q = state.q;
       if (append && state.last) body.before = state.last;
       $('status-line').textContent = 'Loading the ' + (pulse ? hubName(state.city) + ' Daily Pulse...' : boardName(state.lane, hubName(state.city)) + '...');
@@ -535,7 +550,7 @@
         var posts = d.posts || [];
         if (!append) $('posts').innerHTML = '';
         if (!posts.length && !append) {
-          $('posts').innerHTML = state.q || (!pulse && (state.type || state.category || state.status !== 'open'))
+          $('posts').innerHTML = state.q || (!pulse && (state.type || state.category || state.area || state.status !== 'open'))
             ? '<div class="empty"><strong>Nothing matches that yet.</strong>Try fewer words, or clear the filters.</div>'
             : pulse
               ? '<div class="empty"><strong>Today\'s briefing is on its way.</strong>Each day the Daily Pulse brings what is happening in ' + esc(hubName(state.city)) + ': the stories people are talking about, what is coming up, and one thing you can do.</div>'
@@ -708,7 +723,7 @@
       $('c-title').textContent = 'Post to the ' + boardName(state.lane, hubName(state.city));
       $('c-types').innerHTML = L.types.map(function (t, i) { return '<label><input type="radio" name="ptype" value="' + t[0] + '"' + (i ? '' : ' checked') + '> ' + esc(t[2]) + '</label>'; }).join('');
       $('p-category-wrap').hidden = state.lane !== 'board'; $('p-category').required = state.lane === 'board';
-      $('p-title-hint').textContent = L.titleHint; $('p-body-hint').textContent = L.bodyHint;
+      $('p-title-hint').textContent = L.titleHint; $('p-body-hint').textContent = L.bodyHint; $('p-area').value = state.area;
       $('post-msg').textContent = ''; openDialog('composer');
     });
     $('join-note-btn').addEventListener('click', function () { gate(); });

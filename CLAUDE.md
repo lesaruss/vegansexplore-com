@@ -346,6 +346,14 @@ desktop, three by two on a phone.
   `briefing.suggestion_id`; when that briefing goes live, trigger `trg_ve_board_suggestion_covered` marks the suggestion
   Covered and replies with the link (migration `20261010_ve_board_suggest_topic.sql`). On a phone the toggles are three
   across with Suggest a Topic across the bottom.
+- **Areas** (Sean, 2026-10-10: "they can pick specific cities, they can choose all cities, and then people can further
+  drill down"): a post is for one area of its city or the whole city (`ve_board_posts.area`, empty = whole city), and an
+  area filter beside search shows that area's posts plus the whole-city ones (`ve-board` list `area`, `?area=` in the address
+  bar). The areas are `VE_HUBS[].page.boardAreas` in `/public/ve-hubs.js`: South Florida by county, DMV as DC / Maryland /
+  Virginia, New York by borough, London by compass point. Change a city's areas there.
+- **Hot tips** (Sean, 2026-10-10: "a way for people to leave news, hot tips, letting us know what's going on in their
+  cities"): the first Suggest a Topic type (`hot_tip`). The Pulse writer reads open hot tips with the Daily Pulse ideas
+  (migration `20261010_ve_board_areas_hot_tips.sql`).
 
 ## Daily Pulse on autopilot (Sean, 2026-10-05)
 
