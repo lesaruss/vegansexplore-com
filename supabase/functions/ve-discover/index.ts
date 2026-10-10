@@ -110,7 +110,7 @@ async function cityIn(text: string): Promise<string | null> {
 // ---- Google Places ----
 const FIELDS = ['id', 'displayName', 'formattedAddress', 'addressComponents', 'location', 'businessStatus', 'primaryType', 'primaryTypeDisplayName', 'types',
   'googleMapsUri', 'websiteUri', 'nationalPhoneNumber', 'rating', 'userRatingCount', 'editorialSummary'];
-async function findPlace(name: string, where: string, site: string) {
+async function findPlace(name: string, where: string, site: string, state = '') {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key) throw new Error('no Google key');
   const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
@@ -119,7 +119,10 @@ async function findPlace(name: string, where: string, site: string) {
     body: JSON.stringify({ textQuery: `${name} ${where}`.replace(/\s+/g, ' ').trim(), maxResultCount: 5 }),
   });
   if (!r.ok) throw new Error(`places ${r.status}`);
-  const places = ((await r.json()).places || []) as any[];
+  const all = ((await r.json()).places || []) as any[];
+  // A name search can land in another state (Inca Chicken in Hollywood, FL matched one in Maryland): keep only our state.
+  const st = /^(fl|florida)$/i.test(state) ? 'FL' : state.length === 2 ? state.toUpperCase() : '';
+  const places = st ? all.filter((p) => (p.addressComponents || []).some((c: any) => (c.types || []).includes('administrative_area_level_1') && String(c.shortText).toUpperCase() === st)) : all;
   const want = words(name), dom = domain(site);
   // Their own website is the surest match; otherwise a real word of the name in Google's name.
   return places.find((p) => dom && domain(p.websiteUri || '') === dom)
@@ -146,6 +149,12 @@ async function duplicateOf(l: any, place: any, handle: string): Promise<string |
   if (city) {
     const { data } = await db.from('listings').select('id, name').eq('status', 'approved').eq('address_city', city).ilike('name', `%${String(l.name || '').replace(/[%_,()]/g, ' ').trim().slice(0, 40)}%`).limit(5);
     const hit = (data || []).find((x: any) => norm(x.name) === norm(l.name) || (place?.name && norm(x.name) === norm(place.name)));
+    if (hit) return hit.id;
+  }
+  // Renamed: Google's name carries a listed business's name ("Meraki Juice Kitchen is NOW Christopher's Kitchen").
+  if (place?.name && place?.city && /\bnow\b|formerly|\bfka\b/i.test(place.name)) {
+    const { data } = await db.from('listings').select('id, name').eq('status', 'approved').eq('address_city', place.city).limit(400);
+    const hit = (data || []).find((x: any) => norm(x.name).length > 5 && norm(place.name).includes(norm(x.name)));
     if (hit) return hit.id;
   }
   return null;
@@ -178,19 +187,21 @@ async function readInstagram(handles: string[]) {
 async function decideGoogle(row: any, l: any, ig: any) {
   const where = row.city_guess || l.address_city || l.location || (l.address_state === 'FL' ? 'Florida' : '') || '';
   const name = l.name && !/^@/.test(l.name) ? l.name : (ig?.name || l.name);
-  const p = placeSummary(await findPlace(name, where, l.website || ig?.link || ''));
+  const p = placeSummary(await findPlace(name, where, l.website || ig?.link || '', l.address_state || (/south florida|miami|broward|palm beach/i.test(where) ? 'FL' : '')));
   const handle = handleOf(l.ig_handle || l.instagram || '');
   const dup = await duplicateOf(l, p, handle);
-  const veganText = `${l.name} ${p?.name || ''} ${p?.summary || ''} ${ig?.bio || ''} ${ig?.category || ''}`;
-  const isVegan = (p?.types || []).includes('vegan_restaurant') || VEGAN_RE.test(veganText);
+  // Vegan only on strong signs: Google's Vegan restaurant category, or the business's own name or Instagram bio. Google's
+  // description saying "Vegan options" is a Check, not a listing.
+  const isVegan = (p?.types || []).includes('vegan_restaurant') || VEGAN_RE.test(`${l.name} ${p?.name || ''} ${ig?.bio || ''} ${ig?.category || ''}`);
+  const mentions = !isVegan && VEGAN_RE.test(p?.summary || '');
   const isFood = (p?.types || []).some((t: string) => FOOD_TYPE_RE.test(t)) || FOOD_WORD_RE.test(`${ig?.category || ''} ${ig?.bio || ''} ${l.category || ''}`);
   let verdict: string, reason: string;
   if (dup) { verdict = 'listed'; reason = 'Already in the Directory'; }
   else if (!p) { verdict = ig ? 'check' : 'gone'; reason = ig ? 'On Instagram, but we could not find it on Google' : `Google has no match for "${name}"${where ? ' in ' + where : ''}`; }
   else if (p.status === 'CLOSED_PERMANENTLY') { verdict = 'closed'; reason = 'Google shows it as permanently closed'; }
   else if (p.status === 'CLOSED_TEMPORARILY') { verdict = 'closed'; reason = 'Google shows it as temporarily closed'; }
-  else if (isVegan && isFood) { verdict = 'list'; reason = (p.types || []).includes('vegan_restaurant') ? `Open; Google lists it as ${p.type_name || 'a Vegan restaurant'}` : 'Open; its name or description says Vegan'; }
-  else if (isFood) { verdict = 'check'; reason = `Open; Google lists it as ${p.type_name || 'a food business'}, Vegan not confirmed`; }
+  else if (isVegan && isFood) { verdict = 'list'; reason = (p.types || []).includes('vegan_restaurant') ? `Open; Google lists it as a Vegan restaurant` : `Open (${p.type_name || 'food'}); its name or Instagram says Vegan`; }
+  else if (isFood) { verdict = 'check'; reason = `Open; Google lists it as ${p.type_name || 'a food business'}` + (mentions ? '; Google mentions Vegan options' : ', Vegan not confirmed'); }
   else { verdict = 'other'; reason = `Open; Google lists it as ${p.type_name || p.type || 'another kind of business'}`; }
   const community = p ? await communityOf(p.city, p.state) : null;
   return { place: p, verdict, reason, duplicate_of: dup, community_slug: community };
@@ -223,12 +234,14 @@ async function backlogRun(igN: number, gN: number) {
       else if (ig.error) patch = { attempts: r.attempts + 1, error: ig.error };
       else {
         const dup = await duplicateOf(l, null, h);
-        const food = FOOD_WORD_RE.test(`${ig.category || ''} ${ig.bio || ''}`) || VEGAN_RE.test(ig.category || '');
+        const food = FOOD_WORD_RE.test(`${ig.category || ''} ${ig.bio || ''} ${ig.name || ''}`) || VEGAN_RE.test(ig.category || '');
+        // Instagram leaves isBusinessAccount off for many restaurant accounts; a category or food words count as a business.
+        const business = ig.business || !!ig.category || food;
         const city = await cityIn(`${ig.bio} ${ig.places.join(' | ')}`);
         const quiet = !ig.latest || Date.parse(ig.latest) < Date.now() - 365 * DAY_MS;
         const igSave = { handle: h, ...ig };
         if (dup) patch = { stage: 'done', ig: igSave, verdict: 'listed', reason: 'Already in the Directory', duplicate_of: dup, checked_at: now };
-        else if (!ig.business) patch = { stage: 'done', ig: igSave, verdict: 'person', reason: ig.private ? 'A private personal account' : 'A personal account, not a business', checked_at: now };
+        else if (!business) patch = { stage: 'done', ig: igSave, verdict: 'person', reason: ig.private ? 'A private personal account' : 'A personal account, not a business', checked_at: now };
         else if (!food) patch = { stage: 'done', ig: igSave, verdict: 'other', reason: `A business on Instagram${ig.category ? ': ' + ig.category : ''}`, city_guess: city, checked_at: now };
         else if (city) patch = { stage: 'ig_done', ig: igSave, city_guess: city };
         else patch = { stage: 'done', ig: igSave, verdict: quiet ? 'closed' : 'check',
