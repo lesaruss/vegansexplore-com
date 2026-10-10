@@ -68,7 +68,7 @@
     { k: 'cookbook', label: 'Cookbook', lock: 1, say: 'The Cookbook keeps growing: recipes you can make at home, and the dairy-free cookbooks people love most.' },
     { k: 'look', label: 'See for yourself', lock: 1, say: 'See for yourself is how milk is made, in plain facts. No graphic images. Open it when you\'re ready, or skip it.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Guide comes with the eleven dollar Founding Membership, one time. Already a member? Sign in and it opens. Come join us!',
-      // Once the Guide is priced in points (canon-ve-guide-pricing). Waiting for Sean's OK and a recording (CLIPS.join_points).
+      // Once the Guide is priced in points (canon-ve-guide-pricing), recorded as CLIPS.join_points (Sean approved, 2026-10-10).
       sayPoints: 'Every Guide is eleven dollars or eleven hundred points. Join for eleven dollars and you get eleven hundred points, enough for this one. Come join us!' }
   ];
   // Maya on camera. Overview is her welcome; every other tab gets a clip under 10 seconds (el-media voice, Wan 2.7,
@@ -83,6 +83,8 @@
     // ?v= changes when a clip is re-recorded, so no one is served the old one from cache (Brands, 2026-10-10: no counts).
     CLIPS[k] = { video: CLIP_BASE + 'dg-' + k + '.mp4?v=2', poster: CLIP_BASE + 'dg-poster-' + k + '.jpg?v=2' };
   });
+  // Get access once the Guide is priced in points (Sean approved the line 2026-10-10), same pose as dg-join.
+  CLIPS.join_points = { video: CLIP_BASE + 'dg-join-p.mp4?v=1', poster: CLIP_BASE + 'dg-poster-join-p.jpg?v=1' };
 
   var PANTRY = [
     ['Cashews', /cashew/i], ['Soy milk', /soy milk/i], ['Plant milk', /plant milk/i], ['Coconut milk or cream', /coconut (milk|cream)/i],
