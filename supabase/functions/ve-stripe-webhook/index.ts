@@ -360,9 +360,13 @@ Deno.serve(async (req: Request) => {
 
   let event: Stripe.Event | null = null
   let lastErr: any = null
+  // Which signing secret verified this event, so a branch can tell which
+  // Stripe account it came from (STRIPE_WEBHOOK_SECRET is VE's own account).
+  let verifiedWith: string | null = null
   for (const secret of WEBHOOK_SECRETS) {
     try {
       event = await stripe.webhooks.constructEventAsync(body, sig, secret)
+      verifiedWith = secret
       break
     } catch (err) {
       lastErr = err
@@ -572,11 +576,15 @@ Deno.serve(async (req: Request) => {
         return new Response(`Update error: ${memberUpdateError.message}`, { status: 500 })
       }
 
+      // Points per payment (Sean, 2026-10-10, canon-ve-guide-pricing): 1,100 for a month, 13,200
+      // (twelve months) for a year paid up front. Passport gives points, never Guide access itself,
+      // so Guides a member unlocks stay theirs if they stop Passport.
+      const passportPoints = subscriptionPeriod === 'annual' ? 13200 : 1100
       const { data: result, error: creditError } = await supabase.rpc('credit_points_purchase', {
         p_member_id: memberId,
-        p_amount: 1100,
+        p_amount: passportPoints,
         p_stripe_session_id: session.id,
-        p_package: 'passport_monthly',
+        p_package: subscriptionPeriod === 'annual' ? 'passport_annual' : 'passport_monthly',
       })
 
       if (creditError) {
@@ -597,8 +605,8 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: 'Your Passport is active - +1,100 Points added',
-              html: buildPassportReceiptEmail({ points: 1100, balance: result.balance, renewal: false })
+              subject: `Your Passport is active - +${passportPoints.toLocaleString()} Points added`,
+              html: buildPassportReceiptEmail({ points: passportPoints, balance: result.balance, renewal: false })
             })
           })
         }
@@ -1232,7 +1240,21 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ received: true, purchase: 'paid' }), { headers: { 'Content-Type': 'application/json' } })
     }
 
-    // --- Legacy pre-launch founding-membership branch (unchanged) ---
+    // --- Legacy pre-launch founding-membership branch ---
+    // GUARD (2026-10-08, Logan): this branch runs ONLY for events from VE's own
+    // Stripe account. Every other account (the shared LESARUSS account above
+    // all) carries many brands' checkouts that have their own webhooks, and an
+    // unmatched one must never fall through to a VEGANS EXPLORE welcome. Real
+    // case: Sean's 2026-10-08 Humble Cabbage tee order (humblecabbage.com
+    // checkout, LESARUSS account) got the VE founding-member email and a
+    // vegans-explore list subscription. The 2026-08-31 campaign_pledge guard
+    // above fixed one instance; this closes the whole class.
+    const isVeAccountEvent = !!verifiedWith && verifiedWith === Deno.env.get('STRIPE_WEBHOOK_SECRET')
+    if (!isVeAccountEvent) {
+      console.log('Skipping legacy founding-membership branch for non-VE-account session:', session.id, JSON.stringify(session.metadata ?? {}))
+      return new Response(JSON.stringify({ received: true, ignored: 'not_a_ve_account_session' }), { headers: { 'Content-Type': 'application/json' } })
+    }
+
     const email = session.customer_details?.email
     const name = session.customer_details?.name || ''
 
@@ -1381,7 +1403,7 @@ Deno.serve(async (req: Request) => {
 
       const { data: member, error: lookupError } = await supabase
         .from('members')
-        .select('id, email')
+        .select('id, email, subscription_period')
         .eq('stripe_subscription_id', subscriptionId)
         .eq('membership_tier', 'passport')
         .maybeSingle()
@@ -1392,11 +1414,13 @@ Deno.serve(async (req: Request) => {
       }
 
       if (member) {
+        const annual = member.subscription_period === 'annual'
+        const renewalPoints = annual ? 13200 : 1100
         const { data: result, error: creditError } = await supabase.rpc('credit_points_purchase', {
           p_member_id: member.id,
-          p_amount: 1100,
+          p_amount: renewalPoints,
           p_stripe_session_id: invoice.id,
-          p_package: 'passport_monthly_renewal',
+          p_package: annual ? 'passport_annual_renewal' : 'passport_monthly_renewal',
         })
 
         if (creditError) {
@@ -1414,8 +1438,8 @@ Deno.serve(async (req: Request) => {
                 body: JSON.stringify({
                   from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
                   to: member.email,
-                  subject: 'Your Passport renewed - +1,100 Points added',
-                  html: buildPassportReceiptEmail({ points: 1100, balance: result.balance, renewal: true })
+                  subject: `Your Passport renewed - +${renewalPoints.toLocaleString()} Points added`,
+                  html: buildPassportReceiptEmail({ points: renewalPoints, balance: result.balance, renewal: true })
                 })
               })
             }

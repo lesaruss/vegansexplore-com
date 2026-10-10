@@ -3,16 +3,22 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ve-guide-unlock: access to a Vegans Explore Guide.
 //
-// Two access rules, per ve_guides.access_rule:
+// Pricing (Sean, 2026-10-10, canon-ve-guide-pricing): every paid Guide is $11 or 1,100 points, the
+// $11 Founding Membership's 1,100 points buy a first Guide, and free Guides open for everyone, signed
+// in or not. Passport gives points (1,100 a month, 13,200 a year), never access itself: a Guide a
+// member unlocks is theirs to keep if they stop Passport.
+//
+// Access rules, per ve_guides.access_rule:
+//   free        (the Welcome Guide, the Partner Guide): open to everyone.
 //   points      (Vegan Restaurant Survival Guide): a member unlocks it by spending
 //               points (spend_points_for_guide), which writes ve_guide_purchases.
 //   membership  (The Vegan Dairy Guide, Sean 2026-10-07): the Guide comes with the
 //               $11 Founding Membership. Any member whose membership_status is
 //               'active' (Founding Member, Passport, or a membership on us) has it,
-//               and so does anyone with a ve_guide_purchases row.
+//               and so does anyone with a ve_guide_purchases row. Legacy: new Guides use points.
 //
 // Actions (POST ?action=):
-//   status  {slug, token?}  -> {loggedIn, unlocked, balance, cost, access_rule, membership_status}
+//   status  {slug, token?}  -> {loggedIn, unlocked, via, balance, cost, access_rule, membership_status}
 //   unlock  {slug, token}   -> spend points (points guides only)
 //   open    {slug, token}   -> status fields, plus {html} with the Guide's members-only
 //                              screens (ve_guides.content_html) when unlocked. This is
@@ -101,15 +107,18 @@ serve(async (req: Request) => {
     const auth = body.token ? await verifyToken(body.token) : null;
 
     // Who this person is, and whether they have this Guide.
+    // via says why it is open: free, purchase or membership.
     async function access() {
-      if (!auth) return { loggedIn: false, unlocked: false, balance: 0, membership_status: null as string | null };
+      const free = guide!.access_rule === 'free';
+      if (!auth) return { loggedIn: false, unlocked: free, via: free ? 'free' : null, balance: 0, membership_status: null as string | null };
       const [{ data: purchase }, { data: member }] = await Promise.all([
         supabase.from('ve_guide_purchases').select('id').eq('member_id', auth.sub).eq('guide_id', guide!.id).maybeSingle(),
         supabase.from('members').select('lesars_balance, membership_status').eq('id', auth.sub).maybeSingle(),
       ]);
       const status = member?.membership_status ?? null;
-      const viaMembership = guide!.access_rule === 'membership' && status === 'active';
-      return { loggedIn: !!member, unlocked: !!member && (!!purchase || viaMembership), balance: member?.lesars_balance ?? 0, membership_status: status };
+      const via = free ? 'free' : !member ? null : purchase ? 'purchase'
+        : guide!.access_rule === 'membership' && status === 'active' ? 'membership' : null;
+      return { loggedIn: !!member, unlocked: !!via, via, balance: member?.lesars_balance ?? 0, membership_status: status };
     }
 
     if (action === 'status' || action === 'open') {
@@ -124,7 +133,10 @@ serve(async (req: Request) => {
 
     if (action === 'unlock') {
       if (!auth) return json({ error: 'not_authenticated' }, 401);
-      if (guide.access_rule === 'membership') return json({ error: 'membership_guide' }, 400);
+      if (guide.access_rule !== 'points') return json({ error: guide.access_rule === 'free' ? 'free_guide' : 'membership_guide' }, 400);
+      // Never charge twice for a Guide someone already has.
+      const a = await access();
+      if (a.unlocked) return json({ unlocked: true, already: true, via: a.via, balance: a.balance });
       const { data, error } = await supabase.rpc('spend_points_for_guide', {
         p_member_id: auth.sub,
         p_guide_slug: slug,

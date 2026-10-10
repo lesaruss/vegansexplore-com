@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Community Board | Vegans Explore</title>
-  <meta name="description" content="Ask your city and find who can help. Requests and offers from the Vegans Explore community: rescue, fostering, transport, food, services and volunteers.">
+  <meta name="description" content="Your city's Vegan Community Board: the Daily Pulse, requests and offers, jobs, classifieds, fosters, rescues and topic suggestions from the Vegans Explore community.">
   <!-- Inside the dashboard window the Board drops its own nav and footer, the way the Depot
        pages do; on the public site it keeps both. -->
   <script>try { if (window.self !== window.top && window.parent.location.origin === location.origin) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
@@ -50,7 +50,7 @@
     .join-note { display: none; margin-top: 18px; background: #fff; border: 1.5px solid var(--ve-green-dark); border-radius: 12px; padding: 14px 16px; font-size: 14px; line-height: 1.55; color: var(--ve-text); }
     .join-note.show { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; justify-content: space-between; }
 
-    .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; padding: 22px 0 8px; align-items: center; }
+    .toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 12px; padding: 22px 0 8px; align-items: center; }
     .search { width: 100%; }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0 14px; }
     .chip { border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text); border-radius: 999px; font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer; min-height: 38px; }
@@ -84,6 +84,19 @@
     .lane { appearance: none; background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px; font: inherit; font-size: 15px; font-weight: 800; color: var(--ve-text-60); padding: 12px 14px; cursor: pointer; min-height: 44px; }
     .lane[aria-selected="true"] { color: var(--ve-text); border-bottom-color: var(--ve-green-dark); }
     .lane:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    /* Seven sections (Sean, 2026-10-10): on a phone the row becomes a grid of toggles, three across,
+       with Suggest a Topic across the bottom. */
+    .lanes { flex-wrap: wrap; }
+    @media (max-width: 720px) {
+      .lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; border-bottom: none; }
+      .lane:last-child { grid-column: 1 / -1; }
+      .lane { border: 1.5px solid var(--ve-border); border-radius: 6px; margin: 0; padding: 10px 6px; font-size: 13px; background: #fff; }
+      .lane[aria-selected="true"] { background: var(--ve-text); border-color: var(--ve-text); color: #fff; }
+    }
+    .tag-urgent { background: #fde8e8; color: var(--ve-danger); }
+    .tag-pinned { background: var(--ve-text); color: #fff; }
+    .post-card.pinned { border-color: var(--ve-green-dark); }
+    body:not([data-lane="board"]) #category { display: none; }
     .tag-topic { background: var(--ve-green-light); color: var(--ve-green-dark); }
     .tag-today { background: var(--ve-green-dark); color: #fff; }
     .tag-national { background: #efefef; color: #3d3d3d; }
@@ -193,8 +206,8 @@
     <header class="board-head">
       <div class="wrap">
         <p class="eyebrow">Community Board</p>
-        <h1 class="board-only">Ask your city. Find who can help.</h1>
-        <p class="lede board-only">Need a foster for six hens, a ride to the vet, or a hand at an event? Post it here, where your city can find it, answer it, and find it again later.</p>
+        <h1 class="board-only" id="lane-h1">Ask your city. Find who can help.</h1>
+        <p class="lede board-only" id="lane-lede">Need a ride to the vet, a hand at an event, or have something to give? Post it here, where your city can find it, answer it, and find it again later.</p>
         <h1 class="pulse-only">The Daily Pulse</h1>
         <p class="lede pulse-only">Your city's daily briefing: what is happening, what people are talking about, what is coming up, and one thing you can do about it. Then tell your city what you think.</p>
         <div class="head-row">
@@ -209,6 +222,11 @@
         <div class="lanes" role="tablist" aria-label="Board sections">
           <button type="button" class="lane" role="tab" id="lane-pulse" data-lane="pulse" aria-selected="false">Daily Pulse</button>
           <button type="button" class="lane" role="tab" id="lane-board" data-lane="board" aria-selected="true">Requests &amp; Offers</button>
+          <button type="button" class="lane" role="tab" id="lane-jobs" data-lane="jobs" aria-selected="false">Jobs</button>
+          <button type="button" class="lane" role="tab" id="lane-classifieds" data-lane="classifieds" aria-selected="false">Classifieds</button>
+          <button type="button" class="lane" role="tab" id="lane-fosters" data-lane="fosters" aria-selected="false">Fosters</button>
+          <button type="button" class="lane" role="tab" id="lane-rescues" data-lane="rescues" aria-selected="false">Rescues</button>
+          <button type="button" class="lane" role="tab" id="lane-suggest" data-lane="suggest" aria-selected="false">Suggest a Topic</button>
         </div>
       </div>
     </header>
@@ -225,18 +243,16 @@
         <select id="category" class="select">
           <option value="">All categories</option>
         </select>
+        <label for="area-filter" class="visually-hidden">Area</label>
+        <select id="area-filter" class="select board-only"></select>
         <label for="status" class="visually-hidden">Status</label>
         <select id="status" class="select">
           <option value="open">Open</option>
-          <option value="resolved">Resolved</option>
+          <option value="resolved" id="status-done">Resolved</option>
           <option value="all">All</option>
         </select>
       </form>
-      <div class="chips" role="group" aria-label="Show">
-        <button type="button" class="chip" data-kind="" aria-pressed="true">Everything</button>
-        <button type="button" class="chip" data-kind="request" aria-pressed="false">Requests</button>
-        <button type="button" class="chip" data-kind="offer" aria-pressed="false">Offers</button>
-      </div>
+      <div class="chips" id="chips" role="group" aria-label="Show"></div>
       <p class="status-line" id="status-line" role="status" aria-live="polite"></p>
       <div class="posts" id="posts"></div>
       <div class="more-row"><button type="button" class="btn btn-ghost" id="more" hidden>Show more</button></div>
@@ -283,17 +299,14 @@
       <form class="stack" id="post-form">
         <fieldset style="border:none">
           <legend class="field-label" style="margin-bottom:8px">This is</legend>
-          <div class="seg">
-            <label><input type="radio" name="kind" value="request" checked> A request: I need help</label>
-            <label><input type="radio" name="kind" value="offer"> An offer: I can help</label>
-          </div>
+          <div class="seg" id="c-types"></div>
         </fieldset>
         <div class="two">
-          <label for="p-category">Category<select id="p-category" class="select" required></select></label>
-          <label for="p-area">Area<span class="hint">Optional, for example: Broward, Wynwood, Delray Beach</span><input id="p-area" class="input" maxlength="120"></label>
+          <label for="p-category" id="p-category-wrap">Category<select id="p-category" class="select"></select></label>
+          <label for="p-area">Area<span class="hint">Where it is, so people nearby find it</span><select id="p-area" class="select"></select></label>
         </div>
-        <label for="p-title">Title<span class="hint">One line people will scan, for example: Foster needed for six hens</span><input id="p-title" class="input" maxlength="140" required></label>
-        <label for="p-body">Details<textarea id="p-body" maxlength="4000" required></textarea></label>
+        <label for="p-title">Title<span class="hint" id="p-title-hint">One line people will scan</span><input id="p-title" class="input" maxlength="140" required></label>
+        <label for="p-body">Details<span class="hint" id="p-body-hint"></span><textarea id="p-body" maxlength="4000" required></textarea></label>
         <label for="p-contact">How to reach you<span class="hint">Optional. Only members who are signed in can see this.</span><input id="p-contact" class="input" maxlength="200" placeholder="Phone, email, or Instagram"></label>
         <div><button type="submit" class="btn btn-primary" id="post-submit">Post it</button></div>
         <p class="form-msg" id="post-msg" role="status" aria-live="polite"></p>
@@ -331,11 +344,49 @@
   <script>
   (function () {
     var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-board';
-    var CATEGORIES = [['rescue', 'Rescue'], ['fostering', 'Fostering'], ['transport', 'Transport'], ['food', 'Food'], ['services', 'Services'], ['volunteers', 'Volunteers'], ['other', 'Other']];
-    var CAT_LABEL = {}; CATEGORIES.forEach(function (c) { CAT_LABEL[c[0]] = c[1]; });
+    // Requests & Offers categories. Rescue and fostering have their own boards now (old posts keep the labels).
+    var CATEGORIES = [['transport', 'Transport'], ['food', 'Food'], ['services', 'Services'], ['volunteers', 'Volunteers'], ['other', 'Other']];
+    var CAT_LABEL = { rescue: 'Rescue', fostering: 'Fostering' }; CATEGORIES.forEach(function (c) { CAT_LABEL[c[0]] = c[1]; });
+    // The Board's six sections (Sean, 2026-10-10). Requests & Offers filters by kind; Jobs, Classifieds,
+    // Fosters and Rescues by type (the post's category). Types: [value, chip and tag label, composer
+    // label, tag class]. Every posting lane opens on a pinned "How it works" post from Vegans Explore.
+    var LANES = {
+      pulse: { name: 'Daily Pulse', search: 'Search the Daily Pulse, for example: market, opening, Miami' },
+      board: { name: 'Requests & Offers', field: 'kind', types: [['request', 'Requests', 'A request: I need help', 'tag-request'], ['offer', 'Offers', 'An offer: I can help', 'tag-offer']],
+        h1: 'Ask your city. Find who can help.', lede: 'Need a ride to the vet, a hand at an event, or have something to give? Post it here, where your city can find it, answer it, and find it again later.',
+        post: 'Post a request or offer', search: 'Search requests and offers, for example: transport, food, Broward',
+        titleHint: 'One line people will scan, for example: Ride to the vet on Saturday', bodyHint: 'What you need or can offer, where, and by when.', done: ['Mark resolved', 'Resolved'] },
+      jobs: { name: 'Jobs', kind: 'job', field: 'category', types: [['hiring', 'Hiring', 'Hiring', 'tag-offer'], ['seeking', 'Looking for work', 'Looking for work', 'tag-request']],
+        h1: 'Work that fits a Vegan life.', lede: 'Vegan businesses hiring in your city, and members looking for work. Say the role, the pay, and how to apply.',
+        post: 'Post a job', search: 'Search jobs, for example: cook, barista, part time',
+        titleHint: 'The role and the place, for example: Line cook at a Vegan bakery', bodyHint: 'The work, the pay or rate, the hours, and how to apply.', done: ['Mark filled', 'Filled'] },
+      classifieds: { name: 'Classifieds', kind: 'classified', field: 'category', types: [['for_sale', 'For sale', 'For sale', 'tag-offer'], ['free', 'Free', 'Free', 'tag-offer'], ['wanted', 'Wanted', 'Wanted', 'tag-request'], ['trade', 'Trade', 'Trade', 'tag-cat']],
+        h1: 'Buy, sell, swap and give away.', lede: 'Vegan goods from people in your city: for sale, free, wanted or to trade. Meet in public and see it before you pay.',
+        post: 'Post a listing', search: 'Search classifieds, for example: blender, bike, free',
+        titleHint: 'What it is and the price, for example: Vitamix 5200, $180', bodyHint: 'The condition, the size, the pickup area, and when you are around.', done: ['Mark gone', 'Gone'] },
+      fosters: { name: 'Fosters', kind: 'foster', field: 'category', types: [['foster_needed', 'Needs a foster', 'Needs a foster', 'tag-request'], ['foster_offered', 'Can foster', 'Can foster', 'tag-offer']],
+        h1: 'Find a foster. Be a foster.', lede: 'Animals who need a temporary home, and the people in your city who can open theirs.',
+        post: 'Post to Fosters', search: 'Search fosters, for example: kittens, hens, rabbits',
+        titleHint: 'Who and for how long, for example: Two kittens need a foster for three weeks', bodyHint: 'Species, how many, age, any medical or behavior needs, how long, and what is covered.', done: ['Mark placed', 'Placed'] },
+      rescues: { name: 'Rescues', kind: 'rescue', field: 'category', types: [['rescue_urgent', 'Urgent', 'Urgent', 'tag-urgent'], ['rescue_needed', 'Needs a rescue', 'Needs a rescue', 'tag-request'], ['rescue_update', 'Update', 'Update', 'tag-offer']],
+        h1: 'Rescues in your city.', lede: 'Animals who need to be pulled, picked up or saved, and the people who can help. If an animal is in danger right now, call animal control or an emergency vet first.',
+        post: 'Post a rescue', search: 'Search rescues, for example: hens, transport, pickup',
+        titleHint: 'Who and where, for example: Six hens surrendered, need pickup by Friday', bodyHint: 'The animals, the area (never a home address), the deadline, and the help you need.', done: ['Mark rescued', 'Rescued'] },
+      // Daily Pulse ideas feed the Pulse writer; a suggestion it uses is marked Covered with a link.
+      suggest: { name: 'Suggest a Topic', kind: 'suggestion', field: 'category', types: [['hot_tip', 'Hot tip', 'A hot tip: happening now', 'tag-request'], ['pulse_idea', 'For the Daily Pulse', 'For the Daily Pulse', 'tag-topic'], ['talk_idea', 'Something to talk about', 'Something to talk about', 'tag-offer'], ['board_idea', 'Idea for the board', 'An idea for the board', 'tag-cat']],
+        h1: 'What should your city talk about?', lede: 'Send a hot tip about something happening now, suggest a topic for the Daily Pulse, start a conversation, or share an idea for this board. Hot tips and Daily Pulse ideas are read when tomorrow\'s briefing is written.',
+        post: 'Suggest a topic', search: 'Search suggestions, for example: markets, school lunches',
+        titleHint: 'The topic in one line, for example: More Vegan options in school lunches', bodyHint: 'Why it matters to your city, and a link to the story if there is one.', done: ['Mark covered', 'Covered'] }
+    };
+    var LANE_OF = { request: 'board', offer: 'board', topic: 'pulse', job: 'jobs', classified: 'classifieds', foster: 'fosters', rescue: 'rescues', suggestion: 'suggest' };
+    var TYPE = {}; Object.keys(LANES).forEach(function (k) { (LANES[k].types || []).forEach(function (t) { TYPE[t[0]] = t; }); });
+    function laneOf(post) { return LANE_OF[post.kind] || 'board'; }
+    function boardName(lane, city) { return lane === 'board' ? city + ' board' : lane === 'classifieds' ? city + ' Classifieds' : lane === 'suggest' ? city + ' suggestions' : city + ' ' + LANES[lane].name + ' board'; }
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
-    var state = { lane: params.get('lane') === 'pulse' ? 'pulse' : 'board', city: '', kind: '', q: '', category: '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
+    // Areas a post can be for (VE_HUBS[].page.boardAreas, Sean 2026-10-10); no area means the whole city.
+    function areasFor(slug) { var h = window.VE_HUB ? VE_HUB(slug) : null; return (h && h.page && h.page.boardAreas) || []; }
+    var state = { lane: LANES[params.get('lane')] ? params.get('lane') : 'board', city: '', type: '', q: '', category: '', area: params.get('area') || '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function token() { return window.VEAuth && VEAuth.getToken ? (VEAuth.getToken() || '') : ''; }
@@ -366,9 +417,12 @@
           (post.community === 'national' ? '<span class="tag tag-national">National</span>' : '') +
           (post.status === 'hidden' ? '<span class="tag tag-hidden">Hidden</span>' : '') + (post.status === 'draft' ? '<span class="tag tag-hidden">Draft</span>' : '');
       }
-      var out = '<span class="tag tag-' + post.kind + '">' + (post.kind === 'offer' ? 'Offer' : 'Request') + '</span>' +
+      var lane = laneOf(post), out;
+      if (post.pinned) out = '<span class="tag tag-pinned">How it works</span>';
+      else if (lane === 'board') out = '<span class="tag tag-' + post.kind + '">' + (post.kind === 'offer' ? 'Offer' : 'Request') + '</span>' +
         '<span class="tag tag-cat">' + esc(CAT_LABEL[post.category] || post.category) + '</span>';
-      if (post.status === 'resolved') out += '<span class="tag tag-resolved">Resolved</span>';
+      else { var t = TYPE[post.category] || [post.category, post.category, '', 'tag-cat']; out = '<span class="tag ' + t[3] + '">' + esc(t[1]) + '</span>'; }
+      if (post.status === 'resolved') out += '<span class="tag tag-resolved">' + LANES[lane].done[1] + '</span>';
       if (post.status === 'hidden') out += '<span class="tag tag-hidden">Hidden</span>';
       return out;
     }
@@ -394,38 +448,57 @@
     if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';
     $('city').innerHTML = hubs.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
     $('city').value = wanted; state.city = wanted;
+    function fillAreas() {
+      var list = areasFor(state.city), all = 'All of ' + hubName(state.city);
+      if (list.indexOf(state.area) < 0) state.area = '';
+      $('area-filter').innerHTML = '<option value="">' + esc(all) + '</option>' + list.map(function (a) { return '<option value="' + esc(a) + '">' + esc(a) + '</option>'; }).join('');
+      $('area-filter').value = state.area;
+      $('p-area').innerHTML = '<option value="">' + esc(all) + '</option>' + list.map(function (a) { return '<option value="' + esc(a) + '">' + esc(a) + '</option>'; }).join('');
+    }
+    fillAreas();
     $('category').innerHTML += CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
     $('p-category').innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
 
     function syncUrl() {
       var u = new URL(location.href); u.searchParams.set('community', state.city);
-      if (state.lane === 'pulse') u.searchParams.set('lane', 'pulse'); else u.searchParams.delete('lane');
+      if (state.lane !== 'board') u.searchParams.set('lane', state.lane); else u.searchParams.delete('lane');
+      if (state.area && state.lane !== 'pulse') u.searchParams.set('area', state.area); else u.searchParams.delete('area');
       if (state.current) u.searchParams.set('post', state.current.id); else u.searchParams.delete('post');
       history.replaceState(null, '', u.pathname + u.search);
     }
+    // Every lane but the Pulse is a posting board (body.lane-board); data-lane names which one.
     function setLane(lane) {
-      state.lane = lane === 'pulse' ? 'pulse' : 'board';
-      document.body.classList.toggle('lane-pulse', state.lane === 'pulse');
-      document.body.classList.toggle('lane-board', state.lane === 'board');
+      state.lane = LANES[lane] ? lane : 'board';
+      var pulse = state.lane === 'pulse', L = LANES[state.lane];
+      document.body.classList.toggle('lane-pulse', pulse);
+      document.body.classList.toggle('lane-board', !pulse);
+      document.body.setAttribute('data-lane', state.lane);
       Array.prototype.forEach.call(document.querySelectorAll('.lane'), function (b) { b.setAttribute('aria-selected', b.getAttribute('data-lane') === state.lane ? 'true' : 'false'); });
-      $('q').placeholder = state.lane === 'pulse' ? 'Search the Daily Pulse, for example: market, opening, Miami' : 'Search requests and offers, for example: foster, transport, Broward';
-      document.title = (state.lane === 'pulse' ? 'Daily Pulse' : 'Community Board') + ' | Vegans Explore';
+      $('q').placeholder = L.search;
+      state.type = ''; state.category = ''; $('category').value = '';
+      if (!pulse) {
+        $('lane-h1').textContent = L.h1; $('lane-lede').textContent = L.lede; $('new-post').textContent = L.post;
+        $('status-done').textContent = L.done[1];
+        $('chips').innerHTML = '<button type="button" class="chip" data-type="" aria-pressed="true">Everything</button>' +
+          L.types.map(function (t) { return '<button type="button" class="chip" data-type="' + t[0] + '" aria-pressed="false">' + esc(t[1]) + '</button>'; }).join('');
+      }
+      document.title = (pulse ? 'Daily Pulse' : state.lane === 'board' ? 'Community Board' : L.name + ' | Community Board') + ' | Vegans Explore';
     }
     setLane(state.lane);
     Array.prototype.forEach.call(document.querySelectorAll('.lane'), function (b) {
       b.addEventListener('click', function () { if (state.lane === b.getAttribute('data-lane')) return; closePost(); setLane(b.getAttribute('data-lane')); state.q = ''; $('q').value = ''; syncUrl(); load(); });
     });
-    $('city').addEventListener('change', function () { state.city = this.value; try { localStorage.setItem('ve_selected_city', state.city); } catch (e) {} load(); });
+    $('city').addEventListener('change', function () { state.city = this.value; state.area = ''; fillAreas(); syncUrl(); try { localStorage.setItem('ve_selected_city', state.city); } catch (e) {} load(); });
+    $('area-filter').addEventListener('change', function () { state.area = this.value; syncUrl(); load(); });
     $('category').addEventListener('change', function () { state.category = this.value; load(); });
     $('status').addEventListener('change', function () { state.status = this.value; load(); });
     var searchTimer = null;
     $('q').addEventListener('input', function () { clearTimeout(searchTimer); var v = this.value; searchTimer = setTimeout(function () { state.q = v.trim(); load(); }, 350); });
     $('search-form').addEventListener('submit', function (e) { e.preventDefault(); state.q = $('q').value.trim(); load(); });
-    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (b) {
-      b.addEventListener('click', function () {
-        Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        state.kind = b.getAttribute('data-kind'); load();
-      });
+    $('chips').addEventListener('click', function (e) {
+      var b = e.target.closest('.chip'); if (!b) return;
+      Array.prototype.forEach.call(this.querySelectorAll('.chip'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      state.type = b.getAttribute('data-type'); load();
     });
 
     // ---- List -------------------------------------------------------------------------
@@ -443,7 +516,7 @@
     function card(post) {
       if (post.kind === 'topic') return topicCard(post);
       var p = post.poster || {};
-      return '<button type="button" class="post-card' + (post.status === 'resolved' ? ' resolved' : '') + '" data-id="' + post.id + '">' +
+      return '<button type="button" class="post-card' + (post.status === 'resolved' ? ' resolved' : '') + (post.pinned ? ' pinned' : '') + '" data-id="' + post.id + '">' +
         '<div class="tags">' + tags(post) + '</div>' +
         '<div class="post-title">' + esc(post.title) + '</div>' +
         '<div class="post-body">' + esc(post.body) + '</div>' +
@@ -463,23 +536,25 @@
     }
     function load(append) {
       var pulse = state.lane === 'pulse';
-      var body = pulse ? { action: 'list', lane: 'pulse', community: state.city } : { action: 'list', community: state.city, status: state.status };
-      if (!pulse && state.kind) body.kind = state.kind;
-      if (!pulse && state.category) body.category = state.category;
+      var L = LANES[state.lane];
+      var body = pulse ? { action: 'list', lane: 'pulse', community: state.city } : { action: 'list', lane: state.lane, community: state.city, status: state.status };
+      if (!pulse && state.type) body[L.field] = state.type;
+      if (state.lane === 'board' && state.category) body.category = state.category;
+      if (!pulse && state.area) body.area = state.area;
       if (state.q) body.q = state.q;
       if (append && state.last) body.before = state.last;
-      $('status-line').textContent = 'Loading the ' + hubName(state.city) + (pulse ? ' Daily Pulse...' : ' board...');
+      $('status-line').textContent = 'Loading the ' + (pulse ? hubName(state.city) + ' Daily Pulse...' : boardName(state.lane, hubName(state.city)) + '...');
       call(body).then(function (d) {
         if (d.viewer) state.viewer = d.viewer;
         renderJoinNote();
         var posts = d.posts || [];
         if (!append) $('posts').innerHTML = '';
         if (!posts.length && !append) {
-          $('posts').innerHTML = state.q || (!pulse && (state.kind || state.category || state.status !== 'open'))
+          $('posts').innerHTML = state.q || (!pulse && (state.type || state.category || state.area || state.status !== 'open'))
             ? '<div class="empty"><strong>Nothing matches that yet.</strong>Try fewer words, or clear the filters.</div>'
             : pulse
               ? '<div class="empty"><strong>Today\'s briefing is on its way.</strong>Each day the Daily Pulse brings what is happening in ' + esc(hubName(state.city)) + ': the stories people are talking about, what is coming up, and one thing you can do.</div>'
-              : '<div class="empty"><strong>The ' + esc(hubName(state.city)) + ' board is ready for its first post.</strong>Need something, or have something to offer? Post it and your city can answer.</div>';
+              : '<div class="empty"><strong>The ' + esc(boardName(state.lane, hubName(state.city))) + ' is ready for its first post.</strong>Post it here and your city can answer.</div>';
         } else {
           $('posts').insertAdjacentHTML('beforeend', posts.map(card).join(''));
         }
@@ -488,7 +563,7 @@
         var shown = document.querySelectorAll('.post-card').length;
         $('status-line').textContent = !shown ? '' : pulse
           ? shown + (shown === 1 ? ' topic' : ' topics') + ' for ' + hubName(state.city) + ' and the whole country'
-          : shown + (shown === 1 ? ' post' : ' posts') + ' on the ' + hubName(state.city) + ' board';
+          : shown + (shown === 1 ? ' post' : ' posts') + ' on the ' + boardName(state.lane, hubName(state.city));
       }).catch(function () { $('status-line').textContent = 'The board could not load. Please refresh the page.'; });
     }
     $('more').addEventListener('click', function () { load(true); });
@@ -531,7 +606,7 @@
       call({ action: 'get', id: id }).then(function (d) {
         if (!d.post) { closePost(); $('status-line').textContent = 'That post is no longer on the board.'; return; }
         if (d.viewer) state.viewer = d.viewer;
-        if (d.post.kind === 'topic' && state.lane !== 'pulse') { setLane('pulse'); load(); }
+        if (laneOf(d.post) !== state.lane) { setLane(laneOf(d.post)); load(); }
         var first = $('detail').hidden;
         state.current = d.post;
         if (push) { var u = new URL(location.href); u.searchParams.set('post', id); history.pushState({ post: id }, '', u.pathname + u.search); }
@@ -553,22 +628,23 @@
       var p = post.poster || {};
       $('d-tags').innerHTML = tags(post);
       $('d-title').textContent = post.title;
-      var topic = post.kind === 'topic';
+      var topic = post.kind === 'topic', lane = laneOf(post), L = LANES[lane];
       $('d-when').textContent = topic
         ? 'Daily Pulse · ' + ago(post.created_at) + ' · ' + (post.community === 'national' ? 'National' : hubName(post.community))
+        : post.pinned ? 'Pinned · ' + L.name + ' · ' + hubName(post.community)
         : 'Posted ' + ago(post.created_at) + (post.area ? ' · ' + post.area : '') + ' · ' + hubName(post.community);
       $('d-body').textContent = post.body;
       $('d-question').hidden = !topic || !post.question; $('d-question').innerHTML = topic && post.question ? '<span class="q-label">Today\'s question</span>' + esc(post.question) : '';
-      $('d-back-label').textContent = topic ? 'Back to the Daily Pulse' : 'Back to the board';
+      $('d-back-label').textContent = topic ? 'Back to the Daily Pulse' : lane === 'board' ? 'Back to the board' : 'Back to ' + L.name;
       $('detail').classList.toggle('is-topic', topic);
-      $('d-back').setAttribute('href', '/board?' + (topic ? 'lane=pulse&' : '') + 'community=' + state.city);
+      $('d-back').setAttribute('href', '/board?' + (lane !== 'board' ? 'lane=' + lane + '&' : '') + 'community=' + state.city);
       $('d-briefing').innerHTML = topic && window.VEPulse ? VEPulse.briefing(post) : '';
       var src = $('d-source');
       if (topic && post.source_url && !(post.briefing && post.briefing.stories && post.briefing.stories.length)) {
         src.innerHTML = 'Source: <a href="' + esc(post.source_url) + '" target="_blank" rel="noopener noreferrer">' + esc(post.source_name || 'Read the original story') + '</a> (opens the original story)';
         src.hidden = false;
       } else src.hidden = true;
-      $('d-trust').hidden = topic;
+      $('d-trust').hidden = topic || post.pinned;
       $('reply-form').querySelector('.hint').textContent = topic ? 'Share your experience or your view. Keep it kind; your city reads this too.' : 'Offer help, ask a question, or point them to someone who can.';
       var c = $('d-contact');
       if (post.contact) { c.className = 'contact-box'; c.innerHTML = '<strong>How to reach them:</strong> ' + esc(post.contact); c.hidden = false; }
@@ -581,13 +657,13 @@
       $('d-trust').innerHTML = avatar(p) + '<div><div class="trust-name">' + esc(p.name || 'Member') + (p.community_manager ? ' <span class="badge-cm">Community Manager</span>' : '') + '</div>' +
         (p.headline ? '<div class="trust-lines">' + esc(p.headline) + '</div>' : '') + '<div class="trust-lines">' + esc(lines.join(' · ')) + '</div></div>';
       // Resolving is the poster's job, so it stays a button; the rest are quiet links at the bottom.
-      $('d-primary').innerHTML = !topic && (post.mine || state.viewer.moderator) ? '<button type="button" class="btn btn-ghost" id="toggle-resolve">' + (post.status === 'resolved' ? 'Reopen it' : 'Mark resolved') + '</button>' : '';
+      $('d-primary').innerHTML = !topic && !post.pinned && (post.mine || state.viewer.moderator) ? '<button type="button" class="btn btn-ghost" id="toggle-resolve">' + (post.status === 'resolved' ? 'Reopen it' : L.done[0]) + '</button>' : '';
       $('d-primary').hidden = !$('d-primary').innerHTML;
       var a = '<button type="button" id="copy-link">Copy link</button>';
       if (!post.mine) a += '<button type="button" id="report-post">Report this post</button>';
       if (state.viewer.moderator) a += '<button type="button" id="mod-post">' + (post.status === 'hidden' ? 'Restore post' : 'Hide post (moderators)') + '</button>';
       $('d-actions').innerHTML = a;
-      $('d-replies-title').textContent = topic ? (replies.length ? 'The conversation (' + replies.length + ')' : 'Start the conversation') : (replies.length ? replies.length + (replies.length === 1 ? ' reply' : ' replies') : 'No replies yet');
+      $('d-replies-title').textContent = topic ? (replies.length ? 'The conversation (' + replies.length + ')' : 'Start the conversation') : post.pinned ? (replies.length ? 'Questions (' + replies.length + ')' : 'Questions about this board? Ask below') : (replies.length ? replies.length + (replies.length === 1 ? ' reply' : ' replies') : 'No replies yet');
       $('d-replies').innerHTML = replies.map(function (r) {
         var rp = r.poster || {};
         return '<div class="reply"><div class="post-meta" style="margin-top:0"><span class="who">' + avatar(rp) + esc(rp.name || 'Member') + (rp.community_manager ? ' <span class="badge-cm">Community Manager</span>' : '') + '</span><span>' + ago(r.created_at) + '</span>' + (r.hidden ? '<span class="tag tag-hidden">Hidden</span>' : '') + '</div>' +
@@ -609,7 +685,7 @@
       } else if (e.target.id === 'mod-post') {
         call({ action: 'moderate', post_id: post.id, op: post.status === 'hidden' ? 'restore' : 'hide' }).then(function (d) { if (!handleError(d)) { openPost(post.id); load(); } });
       } else if (e.target.id === 'copy-link') {
-        var link = location.origin + '/board?' + (post.kind === 'topic' ? 'lane=pulse&' : '') + 'community=' + (post.community === 'national' ? state.city : post.community) + '&post=' + post.id;
+        var link = location.origin + '/board?' + (laneOf(post) !== 'board' ? 'lane=' + laneOf(post) + '&' : '') + 'community=' + (post.community === 'national' ? state.city : post.community) + '&post=' + post.id;
         (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { e.target.textContent = 'Link copied'; }, function () { prompt('Copy this link', link); });
       }
     }
@@ -642,15 +718,21 @@
 
     // ---- New post -----------------------------------------------------------------------
     $('new-post').addEventListener('click', function () {
-      if (!gate('Become a Founding Member to post a request or offer to your city.')) return;
-      $('c-city').textContent = hubName(state.city); $('post-msg').textContent = ''; openDialog('composer');
+      if (!gate('Become a Founding Member to post to your city\'s board.')) return;
+      var L = LANES[state.lane];
+      $('c-title').textContent = 'Post to the ' + boardName(state.lane, hubName(state.city));
+      $('c-types').innerHTML = L.types.map(function (t, i) { return '<label><input type="radio" name="ptype" value="' + t[0] + '"' + (i ? '' : ' checked') + '> ' + esc(t[2]) + '</label>'; }).join('');
+      $('p-category-wrap').hidden = state.lane !== 'board'; $('p-category').required = state.lane === 'board';
+      $('p-title-hint').textContent = L.titleHint; $('p-body-hint').textContent = L.bodyHint; $('p-area').value = state.area;
+      $('post-msg').textContent = ''; openDialog('composer');
     });
     $('join-note-btn').addEventListener('click', function () { gate(); });
     $('post-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      var kind = (document.querySelector('input[name="kind"]:checked') || {}).value || 'request';
+      var L = LANES[state.lane], type = (document.querySelector('input[name="ptype"]:checked') || {}).value || L.types[0][0];
+      var kind = state.lane === 'board' ? type : L.kind, category = state.lane === 'board' ? $('p-category').value : type;
       $('post-submit').disabled = true;
-      call({ action: 'create', community: state.city, kind: kind, category: $('p-category').value, title: $('p-title').value.trim(), body: $('p-body').value.trim(), area: $('p-area').value.trim(), contact: $('p-contact').value.trim() })
+      call({ action: 'create', community: state.city, kind: kind, category: category, title: $('p-title').value.trim(), body: $('p-body').value.trim(), area: $('p-area').value.trim(), contact: $('p-contact').value.trim() })
         .then(function (d) {
           $('post-submit').disabled = false;
           if (handleError(d, $('post-msg'))) return;

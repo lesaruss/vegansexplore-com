@@ -7,6 +7,7 @@
   var TABS = [
     { href: '/admin/depot/inbox', label: 'Inbox' },
     { href: '/admin/depot/bounties', label: 'Bounties' },
+    { href: '/admin/depot/cookbook', label: 'Cookbook' },
     { href: '/admin/depot', label: 'Library' },
     { href: '/admin/depot/onboarding', label: 'Onboarding' },
     { href: '/admin/depot/preview', label: 'Preview journeys' },
