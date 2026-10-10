@@ -1358,18 +1358,18 @@
   // "Join Free" state.
   var GUIDE_CATALOG = [
     { slug: null, label: 'Getting Started', thumb: '👋', title: 'Welcome Guide', desc: 'Your first steps on Vegans Explore: set up your profile, find your city, and see how Points work.', chips: [{ text: '5 Steps' }, { text: 'Free', cls: 'free' }], cta: { text: 'Start Guide', href: '/welcome', embed: true } },
-    { slug: 'vegan-restaurant-survival-guide', label: 'Business', thumb: '🍽️', title: 'Vegan Restaurant Survival Guide', desc: 'A personalized 10-step walkthrough for restaurant owners navigating the Vegan market -- built and ready, with narration audio and a completion badge.', chips: [{ text: '10 Steps' }, { text: 'Personalized For You' }, { text: '1,100 Points', cls: 'price' }], cta: { text: 'View Guide', href: '/guides/vegan-restaurant-survival-guide', embed: true } },
-    { slug: 'entrepreneur', label: 'Entrepreneur Path', soon: true, thumb: '🚀', title: 'Entrepreneur Guide', desc: 'Getting your Vegan business listed, claimed, and growing on the platform -- step by step.', chips: [{ text: '~1,100 Points', cls: 'price' }] },
-    { slug: 'creator', label: 'Creator Path', soon: true, thumb: '🎬', title: 'Creator Guide', desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.', chips: [{ text: '~1,100 Points', cls: 'price' }] },
-    { slug: 'nonprofit', label: 'Nonprofit Path', soon: true, thumb: '🤝', title: 'Nonprofit Guide', desc: "Building your org's community on the platform and growing your base of supporters.", chips: [{ text: '~1,100 Points', cls: 'price' }] },
-    { slug: 'prevegan', label: 'Pre-Vegan Path', soon: true, thumb: '🌱', title: 'Pre-Vegan Guide', desc: 'Real answers for going Vegan-curious to confident: what to eat, what to expect, and how to start.', chips: [{ text: '~1,100 Points', cls: 'price' }] },
-    { slug: 'seasonedvegan', label: 'Seasoned Vegan Path', soon: true, thumb: '🌍', title: 'Seasoned Vegan Guide', desc: 'Deepen your impact: advocacy, mentoring, and connecting with the global movement.', chips: [{ text: '~1,100 Points', cls: 'price' }] },
+    { slug: 'vegan-restaurant-survival-guide', label: 'Business', thumb: '🍽️', title: 'Vegan Restaurant Survival Guide', desc: 'A personalized 10-step walkthrough for restaurant owners navigating the Vegan market -- built and ready, with narration audio and a completion badge.', chips: [{ text: '10 Steps' }, { text: 'Personalized For You' }, { text: '$11 or 1 credit', cls: 'price' }], cta: { text: 'View Guide', href: '/guides/vegan-restaurant-survival-guide', embed: true } },
+    { slug: 'entrepreneur', label: 'Entrepreneur Path', soon: true, thumb: '🚀', title: 'Entrepreneur Guide', desc: 'Getting your Vegan business listed, claimed, and growing on the platform -- step by step.', chips: [{ text: '$11 or 1 credit', cls: 'price' }] },
+    { slug: 'creator', label: 'Creator Path', soon: true, thumb: '🎬', title: 'Creator Guide', desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.', chips: [{ text: '$11 or 1 credit', cls: 'price' }] },
+    { slug: 'nonprofit', label: 'Nonprofit Path', soon: true, thumb: '🤝', title: 'Nonprofit Guide', desc: "Building your org's community on the platform and growing your base of supporters.", chips: [{ text: '$11 or 1 credit', cls: 'price' }] },
+    { slug: 'prevegan', label: 'Pre-Vegan Path', soon: true, thumb: '🌱', title: 'Pre-Vegan Guide', desc: 'Real answers for going Vegan-curious to confident: what to eat, what to expect, and how to start.', chips: [{ text: '$11 or 1 credit', cls: 'price' }] },
+    { slug: 'seasonedvegan', label: 'Seasoned Vegan Path', soon: true, thumb: '🌍', title: 'Seasoned Vegan Guide', desc: 'Deepen your impact: advocacy, mentoring, and connecting with the global movement.', chips: [{ text: '$11 or 1 credit', cls: 'price' }] },
     // Folded in from the Your Tools "Choose Your Topics" tile (2026-09-08,
     // Sean, Fieldy field note): "that's gonna be under the guide section...
     // we don't need this additional section." Same catalog, same Notify Me
     // waitlist pattern as the other in-development guides above -- just
     // living in the one place guides actually live now.
-    { slug: 'mini-guides', label: 'Mini Guides', soon: true, thumb: '🧭', title: 'Choose Your Topics', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1,100 points each. Passport members earn points toward these every month.', chips: [{ text: '$11 or 1,100 Points', cls: 'price' }] }
+    { slug: 'mini-guides', label: 'Mini Guides', soon: true, thumb: '🧭', title: 'Choose Your Topics', desc: 'Focused mini-guides on running events, growing on social, and more -- $11 or 1 Guide credit each. Passport members get a Guide credit every month.', chips: [{ text: '$11 or 1 credit', cls: 'price' }] }
   ];
   function gcSubmitDashWaitlist(btn, slug) {
     var card = btn.closest('.gc-card');

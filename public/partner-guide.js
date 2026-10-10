@@ -290,7 +290,7 @@
         '<li>A seat in our upcoming campaigns, starting this season</li>' +
         '<li>Entry to member events, including Community Nights</li>' +
         '<li>Full community access: post, join your city, follow and save</li>' +
-        '<li>1,100 Points to use toward guides</li>' +
+        '<li>Your first Guide credit: unlock any Guide</li>' +
       '</ul>' +
       '<div class="vpg-actions" style="margin-top:0;"><button type="button" class="vpg-btn" data-auth="' + (signedIn ? 'pay' : 'signup') + '">Become a Founding Member, $11</button>' +
       (signedIn ? '' : '<button type="button" class="vpg-btn ghost" data-auth="login">I am a member, log in</button>') + '</div>' +
