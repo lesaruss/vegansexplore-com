@@ -271,7 +271,7 @@ Deno.serve(async (req) => {
     }
     const me = await adminId(req);
     if (!me) {
-      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested'];
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test'];
       const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
@@ -367,17 +367,20 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'test') {
-      if (!me || !isId(body.contact_id)) return json({ error: 'admins_only' }, 403);
+      // Signed-in admins send a real test; the ops token may only dry-run (render and pass email-send's checks, send nothing).
+      const dry = body.dry_run === true;
+      if ((!me && !dry) || !isId(body.contact_id)) return json({ error: 'admins_only' }, 403);
       const step = [1, 2, 3].includes(Number(body.step)) ? Number(body.step) : 1;
       let to = clean(body.to, 200).toLowerCase();
-      if (!to) { const { data: m } = await db.from('members').select('email').eq('id', me).single(); to = String(m?.email || '').toLowerCase(); }
+      if (!to && me) { const { data: m } = await db.from('members').select('email').eq('id', me).single(); to = String(m?.email || '').toLowerCase(); }
+      if (!to && dry) to = 'dry-run@vegansexplore.com';
       if (!isEmail(to)) return json({ error: 'bad_email' }, 400);
       const { data: c } = await db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,segment,step,link_code').eq('id', body.contact_id).single();
       if (!c) return json({ error: 'contact' }, 400);
       const m = await build(c as Contact, step, true);
       const res = await emailSend({ brand: BRAND, campaign_ref: `ve-outreach-test-${c.id}-${step}`, subject: '[Test] ' + m.subject, html: m.html, text: m.text,
-        test_to: [to], recipients: [{ email: to, first_name: (c.contact_name || '').split(/\s+/)[0] || undefined }] });
-      return json({ ok: !!res?.ok, to, result: res?.results?.[0]?.result || res?.error || res?.errors });
+        test_to: [to], dry_run: dry, recipients: [{ email: to, first_name: (c.contact_name || '').split(/\s+/)[0] || undefined }] });
+      return json({ ok: !!res?.ok, to, result: res?.results?.[0]?.result || res?.error || res?.errors, preview: dry ? res?.preview : undefined });
     }
 
     if (action === 'interested') {
