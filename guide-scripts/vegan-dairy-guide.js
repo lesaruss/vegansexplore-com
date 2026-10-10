@@ -69,9 +69,14 @@
   // Maya on camera. Overview is her welcome; every other tab gets a clip under 10 seconds (el-media voice, Wan 2.7,
   // scripts/brand-door/assemble_r5.py), stored in vegan-media/media/maya/dairy-guide/. Until a tab has one, she shows
   // her picture and the bubble carries her words.
+  var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/maya/dairy-guide/';
   var CLIPS = {
     overview: { video: '/public/guides/maya-dairy-welcome.mp4', webm: '/public/guides/maya-dairy-welcome.webm', captions: '/public/guides/maya-dairy-welcome.vtt' }
   };
+  // Recorded 2026-10-10 (Sean approved the lines): one pose per tab, from her round 5 Oatly start pictures.
+  ['pulse', 'brands', 'swaps', 'cookbook', 'look', 'join'].forEach(function (k) {
+    CLIPS[k] = { video: CLIP_BASE + 'dg-' + k + '.mp4', poster: CLIP_BASE + 'dg-poster-' + k + '.jpg' };
+  });
 
   var PANTRY = [
     ['Cashews', /cashew/i], ['Soy milk', /soy milk/i], ['Plant milk', /plant milk/i], ['Coconut milk or cream', /coconut (milk|cream)/i],
@@ -512,7 +517,8 @@
     TOUR.shown = k; stopMaya();
     [].forEach.call(vid.querySelectorAll('track'), function (t) { t.remove(); });
     if (c) {
-      vid.poster = c.poster || ''; vid.src = c.webm && !vid.canPlayType('video/mp4') ? c.webm : c.video;
+      if (c.poster) vid.poster = c.poster; else vid.removeAttribute('poster');
+      vid.src = c.webm && !vid.canPlayType('video/mp4') ? c.webm : c.video;
       if (c.captions) { var tr = document.createElement('track'); tr.kind = 'captions'; tr.src = c.captions; tr.srclang = 'en'; tr.label = 'English'; tr.default = true; vid.appendChild(tr); }
       if (!vid.parentNode) mayaBox.appendChild(vid);
       vid.style.display = '';

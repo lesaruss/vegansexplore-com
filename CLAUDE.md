@@ -364,7 +364,11 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   ("it's literally the pulse but just on dairy free food"): sourced facts plus our published episodes and interviews
   (`ve_pulse_content` slugs in `PULSE_PICKS`), played inside the Guide. Why it matters (Sean): each Guide is content
   for the site that fills the Directory with brands and is the top of the funnel for new members; the next one is
-  nutritional supplements.
+  nutritional supplements. The Dairy Guide's tab clips (2026-10-10, lines approved by Sean) are
+  `vegan-media/media/maya/dairy-guide/dg-<tab>.mp4` and `dg-poster-<tab>.jpg` (`CLIPS` in the script; a tab's `say` must
+  match its recording): el-media tts in Maya's voice, Wan 2.7 from her round 5 Oatly start pictures (one pose per tab), cut
+  with `assemble_r5.py` in Higgsfield's sandbox. Its mouth reading misfired on most takes, so every ending was checked by eye
+  and two were cut by hand (look 7.5 s, join 7.85 s, just before a wink).
 - A Guide shows Directory listings with the Directory's own card (`VERegionDirectory.card` / `wire` /
   `css` in `/public/ve-region-directory.js`) and the Directory's pills, search and Sort by, never a look of
   its own. Opening one stays in the Guide (`#/listing/<slug>`): the Guide's breadcrumb, what the Guide says
