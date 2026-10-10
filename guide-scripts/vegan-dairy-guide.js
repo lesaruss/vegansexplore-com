@@ -19,7 +19,7 @@
  * Access (Sean, 2026-10-10, canon-ve-guide-pricing): every paid Guide is $11 or 1,100 points. ve_guides.access_rule
  * decides the offer: 'membership' (the old rule) comes with the $11 Founding Membership; 'points' means a member
  * unlocks it with 1,100 points (ve-guide-unlock unlock), adds points if short (ve-entry-checkout, ?topup=success), or
- * has Passport; joining for $11 credits 1,100 points. ST holds what the server says. The members-only text (research 4-6, See for yourself,
+ * gets Passport (1,100 points a month); joining for $11 credits 1,100 points. ST holds what the server says. The members-only text (research 4-6, See for yourself,
  * swaps, recipes, resources) is ve_guides.content_html for slug vegan-dairy-guide-site, handed out by
  * ve-guide-unlock ?action=open only to active members. Never add it to this repo: Vercel serves it, so anything here
  * is public. Joining reuses VEAuth.showAuthModal and the Founding Membership window (ve-entry-checkout); checkout
@@ -112,8 +112,8 @@
   var MEM = null;                // members-only payload
   // What ve-guide-unlock says about this visitor and this Guide. Pricing (Sean, 2026-10-10, canon-ve-guide-pricing):
   // once access_rule is 'points', the Guide is $11 or 1,100 points; the $11 Founding Membership credits 1,100 points;
-  // Passport opens every Guide. While it still says 'membership', the page keeps the old offer, so flipping the row
-  // switches the whole page at once.
+  // Passport gives 1,100 points a month, not access itself. While it still says 'membership', the page keeps the old
+  // offer, so flipping the row switches the whole page at once.
   var ST = { rule: 'membership', cost: 1100, balance: 0, active: false, via: null };
   var BRANDS = null, BOOKS = null, PODS = null, PRODUCTS = {}, PRODUCT_BY_SLUG = {}, STORES = {};
   var lookOpen = false, curTab = 'overview';
@@ -180,14 +180,14 @@
     if (!priced()) return 'It comes with the $11 Founding Membership, one time.';
     var m = mode();
     if (m === 'unlock') return 'Unlock it with ' + pts(ST.cost) + ' points. You have ' + pts(ST.balance) + '.';
-    if (m === 'topup') return 'It is ' + pts(ST.cost) + ' points and you have ' + pts(ST.balance) + '. Add points, or get Passport: it opens every Guide.';
+    if (m === 'topup') return 'It is ' + pts(ST.cost) + ' points and you have ' + pts(ST.balance) + '. Add points, or get Passport: ' + pts(ST.cost) + ' points every month.';
     return 'Joining is $11, one time, and gives you ' + pts(ST.cost) + ' points: enough for this Guide.';
   }
   function ctaBtns(small) {
     var m = mode(), link = small ? ' style="font-size:12.5px;font-weight:800;color:var(--g)"' : '';
     return '<div class="dg-btns"' + (small ? ' style="margin-top:6px"' : '') + '><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
       (m === 'join' ? '<a href="#" data-signin' + link + '>Already a member? Sign in</a>' : '') +
-      (m === 'topup' ? '<a href="/passport"' + link + '>Passport opens every Guide</a>' : '') + '</div>';
+      (m === 'topup' ? '<a href="/passport"' + link + '>Passport: ' + pts(ST.cost) + ' points a month</a>' : '') + '</div>';
   }
   function take(d) {
     if (!d || d.error) return;
@@ -601,7 +601,7 @@
   // comes if you're already a Vegans Explore member... a one-time founding membership of $11").
   function viewJoin() {
     if (member()) {
-      var how = ST.via === 'passport' ? 'Passport opens every Guide, this one included.' : ST.via === 'purchase' && priced() ? 'You unlocked it, and it is yours to keep.'
+      var how = ST.via === 'purchase' && priced() ? 'You unlocked it, and it is yours to keep.'
         : 'It came with your Founding Membership.';
       main.innerHTML = head('Your Guide', 'The whole Guide is yours', how + ' Thank you for being here.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return;
     }
@@ -619,7 +619,7 @@
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status + '</div>');
       return;
     }
-    var passport = '<p class="dg-pp">Or get <a href="/passport">Passport</a>: it opens every Guide.</p>', box;
+    var passport = '<p class="dg-pp">Or get <a href="/passport">Passport</a>: ' + pts(ST.cost) + ' points every month, enough for a Guide a month.</p>', box;
     if (m === 'unlock') {
       box = '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide and it is yours to keep.</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status;
@@ -909,8 +909,8 @@
       .catch(function () { btn.disabled = false; btn.innerHTML = was; setStatus('Checkout did not open. Try again in a minute.'); });
   }
 
-  // Back from checkout. A membership on the old rule, or Passport, opens the Guide; on points, the new points open
-  // the unlock button. Stripe's webhook can take a few seconds, so this asks again for about 20 seconds.
+  // Back from checkout. A membership on the old rule opens the Guide; on points, the new points open
+  // the unlock button (Passport's monthly points too). Stripe's webhook can take a few seconds, so this asks again for about 20 seconds.
   function confirmAfterCheckout(tok, tries, what) {
     setStatus(what === 'topup' ? 'Adding your points...' : 'Confirming your membership...');
     access = 'pending';
