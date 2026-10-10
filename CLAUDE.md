@@ -547,6 +547,12 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   tab has its own pose (Sean: "each one you click on should look different"); the first page's picture is arms folded with an
   open smile (`dg-poster-overview.jpg`). Lines approved by Sean 2026-10-10; My list has its member clip too. Clips are made
   as one take each (Sean, 2026-10-10, on credit spend), re-done only if the ending or the lip sync fails.
+- **Maya never fades out, and phones get her full width** (Sean, 2026-10-10). Her welcome (`maya-dairy-welcome.mp4?v=3`)
+  was repaired: a stray one-frame flash at 29.47 s removed, the fade from and to black replaced by her first and last clear
+  frames (she stays on screen, frozen), a crackle at 17.3 s and four clicks smoothed, and its level raised to match the tab
+  clips (about -15 LUFS). On phones (900 px and under) she is full width on top with her words under her and a **Hide Maya /
+  Show Maya** switch (`#dgFold`, kept for the visit), and Back / N of M / Next sit under the content (`#dgTourM`); Next goes
+  back up to her.
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
   at the top right (`.dg-acts`). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
