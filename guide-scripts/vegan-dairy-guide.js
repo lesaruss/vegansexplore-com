@@ -67,8 +67,8 @@
     { k: 'brands', label: 'Brands', lock: 1, say: 'Stop guessing in the dairy aisle. Here are the brands to buy, sorted by what you\'re replacing, and voted on by members.' },
     { k: 'swaps', label: 'Swaps', lock: 1, say: 'Swaps show you how to replace dairy when you cook, from the shelf or your pantry. Buttermilk is free to try, so start there.' },
     { k: 'cookbook', label: 'Cookbook', lock: 1, say: 'The Cookbook keeps growing: recipes you can make at home, and the dairy-free cookbooks people love most.' },
-    // Named The truth on 2026-10-10 (Sean). Her recorded line still says See for yourself until a new one is approved.
-    { k: 'look', label: 'The truth', lock: 1, say: 'See for yourself is how milk is made, in plain facts. No graphic images. Open it when you\'re ready, or skip it.' },
+    // Named The truth on 2026-10-10 (Sean); he approved the new line the same day (dg-look.mp4 ?v=3).
+    { k: 'look', label: 'The truth', lock: 1, say: 'The truth is how milk is really made, in plain facts. No graphic images. Open it when you\'re ready, or skip it.' },
     // My list is for the Guide's members only, after the tour's last tab. No clip: her picture and these words.
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you save lands here: swaps, recipes, brands, cookbooks and episodes, plus the recipes you shared.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Guide comes with the eleven dollar Founding Membership, one time. Already a member? Sign in and it opens. Come join us!',
@@ -90,6 +90,7 @@
   });
   // Get access on credits (Sean approved the line 2026-10-10), same pose as dg-join; the two long pauses in the voice
   // were shortened to fit one take (dg-join-c2.mp3).
+  CLIPS.look = { video: CLIP_BASE + 'dg-look.mp4?v=3', poster: CLIP_BASE + 'dg-poster-look.jpg?v=3' }; // The truth, re-recorded 2026-10-10
   CLIPS.join_credit = { video: CLIP_BASE + 'dg-join-c.mp4?v=1', poster: CLIP_BASE + 'dg-poster-join-c.jpg?v=1' };
 
   var PANTRY = [
