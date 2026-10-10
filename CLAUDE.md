@@ -340,6 +340,12 @@ desktop, three by two on a phone.
   `20261010_ve_board_sections.sql` is idempotent: re-run its insert with the city added).
 - "Done" reads per section: Mark resolved, filled, gone, placed, rescued.
 - The local Daily Pulse runs for every city (`pulse_auto.communities`, same migration).
+- **Suggest a Topic** (Sean, 2026-10-10), the seventh section (`?lane=suggest`, kind `suggestion`): For the Daily Pulse
+  (`pulse_idea`), Something to talk about (`talk_idea`), An idea for the board (`board_idea`); done reads Covered. The Pulse
+  writer reads the city's open `pulse_idea` posts, most replied first, uses one only with a real source, and sets
+  `briefing.suggestion_id`; when that briefing goes live, trigger `trg_ve_board_suggestion_covered` marks the suggestion
+  Covered and replies with the link (migration `20261010_ve_board_suggest_topic.sql`). On a phone the toggles are three
+  across with Suggest a Topic across the bottom.
 
 ## Daily Pulse on autopilot (Sean, 2026-10-05)
 

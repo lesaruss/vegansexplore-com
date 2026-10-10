@@ -12,7 +12,7 @@
 //   -> { posts, viewer }                         public; token optional
 //
 // Sections (Sean, 2026-10-10): every city's Board has Requests & Offers, Jobs, Classifieds, Fosters
-// and Rescues beside the Daily Pulse. A lane is a set of kinds (LANES); in the new lanes the
+// and Rescues beside the Daily Pulse, then Suggest a Topic. A lane is a set of kinds (LANES); in the new lanes the
 // category is the post's type (Hiring or Looking for work, For sale or Free...). Each lane opens
 // on a pinned "How it works" post (pinned, category 'guide'), shown as from Vegans Explore.
 // POST { action: 'get', id }                    -> { post, replies, viewer }   public
@@ -72,6 +72,9 @@ const LANES: Record<string, { kinds: string[]; categories: string[] }> = {
   classifieds: { kinds: ['classified'], categories: ['for_sale', 'free', 'wanted', 'trade'] },
   fosters: { kinds: ['foster'], categories: ['foster_needed', 'foster_offered'] },
   rescues: { kinds: ['rescue'], categories: ['rescue_urgent', 'rescue_needed', 'rescue_update'] },
+  // Suggest a Topic (Sean, 2026-10-10). The Pulse writer reads the city's pulse_idea suggestions; a
+  // briefing that uses one carries briefing.suggestion_id, and publishing marks it covered (trigger).
+  suggest: { kinds: ['suggestion'], categories: ['pulse_idea', 'talk_idea', 'board_idea'] },
 };
 const KINDS = Object.values(LANES).flatMap((l) => l.kinds);
 const LANE_OF: Record<string, string> = Object.fromEntries(Object.entries(LANES).flatMap(([lane, l]) => l.kinds.map((k) => [k, lane])));
@@ -223,7 +226,8 @@ function cleanBriefing(b: any) {
     action = { title: str(b.action.title, 80), text: str(b.action.text, 300), label: str(b.action.label, 40) || 'Take action', url };
     if (!action.title || !(isUrl(url) || sitePath(url))) action = null;
   }
-  return stories.length || events.length || action ? { stories, events, action } : null;
+  const suggestion_id = isId(b.suggestion_id) ? b.suggestion_id : null;
+  return stories.length || events.length || action ? { stories, events, action, ...(suggestion_id ? { suggestion_id } : {}) } : null;
 }
 
 // Read a pasted link for its title and outlet, so the queued draft names the story before the

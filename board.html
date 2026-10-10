@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Community Board | Vegans Explore</title>
-  <meta name="description" content="Your city's Vegan Community Board: the Daily Pulse, requests and offers, jobs, classifieds, fosters and rescues from the Vegans Explore community.">
+  <meta name="description" content="Your city's Vegan Community Board: the Daily Pulse, requests and offers, jobs, classifieds, fosters, rescues and topic suggestions from the Vegans Explore community.">
   <!-- Inside the dashboard window the Board drops its own nav and footer, the way the Depot
        pages do; on the public site it keeps both. -->
   <script>try { if (window.self !== window.top && window.parent.location.origin === location.origin) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
@@ -84,9 +84,12 @@
     .lane { appearance: none; background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px; font: inherit; font-size: 15px; font-weight: 800; color: var(--ve-text-60); padding: 12px 14px; cursor: pointer; min-height: 44px; }
     .lane[aria-selected="true"] { color: var(--ve-text); border-bottom-color: var(--ve-green-dark); }
     .lane:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
-    /* Six sections (Sean, 2026-10-10): on a phone the row becomes a three-by-two grid of toggles. */
+    /* Seven sections (Sean, 2026-10-10): on a phone the row becomes a grid of toggles, three across,
+       with Suggest a Topic across the bottom. */
+    .lanes { flex-wrap: wrap; }
     @media (max-width: 720px) {
       .lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; border-bottom: none; }
+      .lane:last-child { grid-column: 1 / -1; }
       .lane { border: 1.5px solid var(--ve-border); border-radius: 6px; margin: 0; padding: 10px 6px; font-size: 13px; background: #fff; }
       .lane[aria-selected="true"] { background: var(--ve-text); border-color: var(--ve-text); color: #fff; }
     }
@@ -223,6 +226,7 @@
           <button type="button" class="lane" role="tab" id="lane-classifieds" data-lane="classifieds" aria-selected="false">Classifieds</button>
           <button type="button" class="lane" role="tab" id="lane-fosters" data-lane="fosters" aria-selected="false">Fosters</button>
           <button type="button" class="lane" role="tab" id="lane-rescues" data-lane="rescues" aria-selected="false">Rescues</button>
+          <button type="button" class="lane" role="tab" id="lane-suggest" data-lane="suggest" aria-selected="false">Suggest a Topic</button>
         </div>
       </div>
     </header>
@@ -365,12 +369,17 @@
       rescues: { name: 'Rescues', kind: 'rescue', field: 'category', types: [['rescue_urgent', 'Urgent', 'Urgent', 'tag-urgent'], ['rescue_needed', 'Needs a rescue', 'Needs a rescue', 'tag-request'], ['rescue_update', 'Update', 'Update', 'tag-offer']],
         h1: 'Rescues in your city.', lede: 'Animals who need to be pulled, picked up or saved, and the people who can help. If an animal is in danger right now, call animal control or an emergency vet first.',
         post: 'Post a rescue', search: 'Search rescues, for example: hens, transport, pickup',
-        titleHint: 'Who and where, for example: Six hens surrendered, need pickup by Friday', bodyHint: 'The animals, the area (never a home address), the deadline, and the help you need.', done: ['Mark rescued', 'Rescued'] }
+        titleHint: 'Who and where, for example: Six hens surrendered, need pickup by Friday', bodyHint: 'The animals, the area (never a home address), the deadline, and the help you need.', done: ['Mark rescued', 'Rescued'] },
+      // Daily Pulse ideas feed the Pulse writer; a suggestion it uses is marked Covered with a link.
+      suggest: { name: 'Suggest a Topic', kind: 'suggestion', field: 'category', types: [['pulse_idea', 'For the Daily Pulse', 'For the Daily Pulse', 'tag-topic'], ['talk_idea', 'Something to talk about', 'Something to talk about', 'tag-offer'], ['board_idea', 'Idea for the board', 'An idea for the board', 'tag-cat']],
+        h1: 'What should your city talk about?', lede: 'Suggest a topic for the Daily Pulse, a conversation your city should have, or an idea for this board. Daily Pulse ideas are read when tomorrow\'s briefing is written.',
+        post: 'Suggest a topic', search: 'Search suggestions, for example: markets, school lunches',
+        titleHint: 'The topic in one line, for example: More Vegan options in school lunches', bodyHint: 'Why it matters to your city, and a link to the story if there is one.', done: ['Mark covered', 'Covered'] }
     };
-    var LANE_OF = { request: 'board', offer: 'board', topic: 'pulse', job: 'jobs', classified: 'classifieds', foster: 'fosters', rescue: 'rescues' };
+    var LANE_OF = { request: 'board', offer: 'board', topic: 'pulse', job: 'jobs', classified: 'classifieds', foster: 'fosters', rescue: 'rescues', suggestion: 'suggest' };
     var TYPE = {}; Object.keys(LANES).forEach(function (k) { (LANES[k].types || []).forEach(function (t) { TYPE[t[0]] = t; }); });
     function laneOf(post) { return LANE_OF[post.kind] || 'board'; }
-    function boardName(lane, city) { return lane === 'board' ? city + ' board' : lane === 'classifieds' ? city + ' Classifieds' : city + ' ' + LANES[lane].name + ' board'; }
+    function boardName(lane, city) { return lane === 'board' ? city + ' board' : lane === 'classifieds' ? city + ' Classifieds' : lane === 'suggest' ? city + ' suggestions' : city + ' ' + LANES[lane].name + ' board'; }
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
     var state = { lane: LANES[params.get('lane')] ? params.get('lane') : 'board', city: '', type: '', q: '', category: '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
