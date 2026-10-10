@@ -256,7 +256,8 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   Joined, an unsubscribe or block makes them Unsubscribed, a bounce Bounced, and a send day turns Sent once everyone in it
   has had their first email. Three failed sends hold a business. Heartbeat: `email_heartbeats` `ve-outreach`.
 - **Send me this as a test** (a business's preview, `ve-outreach` `test`): its real email to the signed-in admin with
-  [Test] in the subject and the plain page link, so the test click never counts. **Interested** (`#interested`, `ve-outreach`
+  [Test] in the subject and the plain page link, so the test click never counts (the ops token can only dry-run it:
+  `dry_run: true` renders it and passes email-send's checks without sending). **Interested** (`#interested`, `ve-outreach`
   `interested`): who clicked, replied or claimed, what they did, and who it is routed to.
 - **The emails** (`ve_outreach_templates`): three from Sean (sender `email_brands` `lesaruss`, replies to
   contact@lesaruss.com), Day 0 "We built a page for {business}", Day 4 "Your front-row seat{in_city}", Day 10 "Last note
