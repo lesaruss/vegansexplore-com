@@ -65,6 +65,9 @@
     .dg-play{font-family:inherit;width:100%;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:11px 14px;border-radius:6px;border:1.5px solid var(--g);background:var(--g);color:#fff;cursor:pointer;}
     .dg-play.go{background:#22C55E;border-color:#22C55E;color:#03170a;}
     .dg-play[hidden]{display:none;}
+    .dg-tour.dg-tour-m{display:none;}
+    .dg-namebar{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .dg-fold{display:none;align-items:center;gap:6px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink75);cursor:pointer;}
     .dg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;color:var(--ink55);}
     .dg-tnav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
     .dg-tnav.next{border-color:var(--g);background:var(--g);color:#fff;}
@@ -358,14 +361,19 @@
       .dg-menu-select{display:block;margin-top:12px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}
       .dg-joinbox{width:100%;flex-wrap:wrap;}
       .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
-      .dg-rail{order:-1;display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 12px;align-items:start;}
-      .dg-maya{grid-row:span 3;}
-      .dg-tour{grid-column:1 / -1;}
+      /* Phones (Sean, 2026-10-10): Maya full width on top with her words under her, a Hide / Show switch so she never
+         takes over the screen, and Back / N of M / Next at the bottom of the content; Next goes back up to her. */
+      .dg-rail{order:-1;display:flex;flex-direction:column;gap:10px;}
+      .dg-maya{aspect-ratio:1/1;width:100%;}
+      .dg-rail .dg-tour{display:none;}
+      .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
+      .dg-fold{display:inline-flex;}
+      .dg-rail.dg-folded .dg-maya,.dg-rail.dg-folded .dg-bubble,.dg-rail.dg-folded .dg-play{display:none;}
       .dg-books{grid-template-columns:repeat(4,minmax(0,1fr));}
       .dg-facts2{grid-template-columns:minmax(0,1fr);}
       .dg-gated{max-height:none;}
     }
-    @media (max-width:480px){.dg-rail{grid-template-columns:96px minmax(0,1fr);}.dg-bubble{font-size:13px;padding:10px 12px;}}
+    @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
   </style>
 </head>
 <body>
@@ -396,13 +404,15 @@
 
 <div class="dg-app" id="dgApp">
   <main class="dg-main" id="dgMain" aria-live="polite"><div class="dg-loading">Loading the Guide...</div></main>
+  <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
 
   <!-- Maya stays here on every tab (Sean, 2026-10-09). Overview plays her welcome (ElevenLabs voice, Wan 2.7 lip
        sync, Kling b-roll, captions); every other tab plays its own short clip once recorded (CLIPS in the script),
        and until then shows her picture with her words in the bubble. -->
   <aside class="dg-rail" id="dgRail" aria-label="Maya, your Guide">
     <div class="dg-maya" id="dgMaya"></div>
-    <div class="dg-maya-name"><b>Maya</b> &middot; Your Guide to going dairy-free</div>
+    <div class="dg-namebar"><div class="dg-maya-name"><b>Maya</b> &middot; Your Guide to going dairy-free</div>
+      <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide Maya</button></div>
     <div class="dg-bubble" id="dgBubble"></div>
     <button type="button" class="dg-play go" id="dgPlay">&#9654; Start the tour</button>
     <div class="dg-tour" id="dgTour"></div>
