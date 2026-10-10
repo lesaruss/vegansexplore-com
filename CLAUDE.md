@@ -618,12 +618,18 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy
   marks the free check's ten. Change a criterion with a row update; the function reads them live.
 - Scoring, BCPS style: every item is Good, Fix, Review (double-check) or Skip (could not be checked, e.g. no website); the
   score is Good weight over Good plus Fix weight (the distance from a perfect score). Review and Skip count for neither side.
+- **Free check, no score** (Sean, 2026-10-10: "let's not give them a score with the free audit, just a list of things they
+  can work on right away"): of the ten free checks, the ones to fix, each with what we found, most important first (`todo`),
+  and how many more the full audit flags (`more_fix`). Never a score, the why or the how.
+- **The full audit is its own add-on** (Sean, 2026-10-10: "the full audit will have more items and cost more. I'm not settled
+  on that cost. I don't want to just go with $111 or offer it as part of the LESARUSS.AI membership. It should be an add on.
+  It could also include a secret shopper experience"). Not part of the $11 Guide, the Partner plan or LESARUSS.AI. Its price
+  is open, so until it is sold only a super admin or ops can run one (`not_available_yet` for anyone else).
 - `ve-restaurant-audit` (verify_jwt off, VE token checked inside): `find` (Directory search), `criteria`, `free` (anyone;
-  5 a day per visitor; a business checked in the last 7 days reuses that run, any tier), `full` (an owner of the Restaurant
-  Guide, `ve_owns_guide`, a super admin or the ops token; 10 a day), `get` (the full detail only for the audit's member, a
-  Guide owner, a super admin or ops; anyone else gets the free view: the free items with what was found, the other checks'
-  names, and `more_fix`, how many more things the full audit flags). Runs in the background (`EdgeRuntime.waitUntil`, 15 to
-  35 s); the ops token can pass `wait: true`. Rows in `ve_audits`.
+  5 a day per visitor; a business checked in the last 7 days reuses that run, any tier), `full` (a super admin or ops), `get`
+  (the full detail only for the audit's member, a super admin or ops; anyone else gets the free list), `sweep`, `flags`,
+  `flag_review` (below). Runs in the background (`EdgeRuntime.waitUntil`, 15 to 35 s); ops can pass `wait: true`. Ops is the
+  `LESARUSS_ADMIN_TOKEN` or the cron's `x-cron-secret`. Rows in `ve_audits` (`source` request or checkup).
 - Sources: Google Places API (New) (`GOOGLE_PLACES_API_KEY`; the listing's `google_place_id`, else a text search with the
   name, street and city), PageSpeed Insights mobile (`GOOGLE_PAGESPEED_API_KEY`), our own read of the home page, robots.txt,
   sitemap, menu page and up to 8 internal links, and Apify's Instagram profile scraper (`APIFY_API_TOKEN`, Starter plan, $29 a
@@ -635,6 +641,26 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy
   restaurant's accounts; Google reads an address in the restaurant markup even when a visitor cannot see it (counts for the
   Google match, not for "on your home page"); Google's city wins over ours; and when Google's match sits at a different
   street than our listing, the audit says so (a chain branch or a move) instead of quietly checking another location.
+- **Monthly check-ups** (Sean, 2026-10-10: "run this audit on each of the cities once a month and flag any listings that may
+  seem like they are closed due to lack of social activity, out of date web information, and closed message on Google";
+  migration `20261010_ve_audit_checkups.sql`). Cron `ve-audit-sweep` (every 15 minutes, 06:00 to 07:45 UTC, 2 to 4 AM
+  Eastern) runs `sweep`: three local businesses at a time (`ve_audit_local_category`: Restaurants, Bakeries & Cafes, Markets,
+  Meal Prep, Catering, Fitness, Health and Wellness, Beauty, Clothing) in a `ve_outreach_cities` city with no audit in 28 days,
+  city by city (`ve_audit_sweep_due`). 263 on 2026-10-10 (South Florida 137, New York 52, Atlanta 30, Los Angeles 28, Central
+  Florida 14, London 2; DMV and Philadelphia have none listed yet), so every city is covered in about 11 nights. Each audit gets
+  a closure flag (`closure_level`, `closure_signals`): **closed** when Google shows the business closed, **quiet** with two or
+  more of: the website does not open (a site that only blocks scanners does not count), the Instagram is gone or has not
+  posted in six months, a footer three or more years old, no hours on Google, no Google review in a year, no Google profile.
+  One sign alone is recorded but not flagged. **Depot > Business outreach > Check-ups** (`#checkups`, `#checkup/<audit>`, a
+  card on the console's home) lists open flags (`ve_audit_open_flags()`), Google-closed first, by city; each opens with its
+  signs, Google Maps, website, Instagram and their page, and what the check found, then **No longer in business** (ve-outreach
+  `listing_closed`, the note on the listing) or **Still open** (`flag_review`, `ve_audit_flag_reviews`; a quiet flag stays
+  down 90 days, a Google-closed one returns next month if Google still says so). Until a Google-closed flag is reviewed,
+  `ve_outreach_due()` does not email that business.
+- Why it matters (Sean, 2026-10-10): "We are ultimately offering these businesses managed marketing services at a fraction of
+  the price because we leverage AI to build and maintain their presence... when they see the results, they will opt in
+  quickly, especially with it tied to our network and promotions. This will allow us to pay for multiple Community Managers in
+  each city with their fee coming directly from our clients." The audit is the front door to that service.
 - Next: the Guide's Your audit tab (live site left, items right, as BCPS does), "Have us do it" on every Fix (a quote request
   to the city's Community Manager until Sean sets prices), the monthly re-check, and the free check in the outreach emails
   (an upgrade to the offer, not a change to the plan).
