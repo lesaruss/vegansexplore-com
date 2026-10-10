@@ -3059,6 +3059,17 @@
     else if (location.pathname + location.search !== url) history.pushState({ tabKey: 'tools', frame: 'bounties' }, '', url);
   }
   window.openBounties = openBounties;
+  // Secret Shopper visits (Sean, 2026-10-10): the city's Community Manager writes the report for a $149 restaurant audit.
+  // The page opens under "Dashboard / Secret Shopper" and the address bar reads /dashboard/secret-shopper with its view.
+  function openShopper(hash, noPush) {
+    var h = String(hash || '').replace(/^#?/, '');
+    if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
+    openConsoleFrame('/secret-shopper' + (h ? '#' + h : ''), 'Secret Shopper');
+    var url = '/dashboard/secret-shopper' + (h ? '#' + h : '');
+    if (noPush) history.replaceState({ tabKey: 'tools', frame: 'secret-shopper' }, '', url);
+    else if (location.pathname + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'secret-shopper' }, '', url);
+  }
+  window.openShopper = openShopper;
   // A page inside the frame can size it (the Depot pages do, /public/depot-tabs.js), so a tall
   // page scrolls with the dashboard instead of inside a fixed-height box (Sean, 2026-09-29).
   // The page is told which part of it is on screen, so its pop-ups open in view.
@@ -3085,6 +3096,10 @@
       tellFrameView();
     } else if (e.data.type === 've-frame-url') {
       var fp = String(e.data.path || '');
+      if (/^\/secret-shopper(#|$)/.test(fp) && /^\/dashboard\/secret-shopper/.test(location.pathname)) {
+        var wantS = '/dashboard/secret-shopper' + fp.replace(/^\/secret-shopper/, '');
+        if (location.pathname + location.hash !== wantS) history.replaceState(history.state, '', wantS);
+      }
       if (/^\/bounties(\?|$)/.test(fp) && /^\/dashboard\/bounties/.test(location.pathname)) {
         var want = '/dashboard/bounties' + fp.replace(/^\/bounties/, '');
         if (location.pathname + location.search !== want) history.replaceState(history.state, '', want);
@@ -3286,6 +3301,7 @@
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
       grid.appendChild(dpAccessCard({ icon: '📌', bg: '#EAF7EA', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }));
+      grid.appendChild(dpAccessCard({ icon: '🕵️', bg: '#F1EBFE', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } }));
       grid.appendChild(dpAccessCard({ icon: '🔗', bg: '#FEF0DD', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } }));
       grid.appendChild(dpAccessCard({ icon: '📊', bg: '#EAF7EA', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
       return;
@@ -3303,6 +3319,7 @@
     if (member.ve_tier && member.ve_tier !== 'free') {
       access.push({ icon: '🧭', bg: '#E8F8EF', title: 'Choose Your Guide', desc: 'Pick a dedicated guide to walk with you. A Passport benefit.', fn: function () { if (window.activateDashTab) activateDashTab('tools'); openChooseGuide(); } });
     }
+    if (member.ve_role === 'community_manager') access.push({ icon: '🕵️', bg: '#F1EBFE', title: 'Secret Shopper', desc: 'Restaurant visits in your city: set the day, then write the report.', fn: function () { openShopper(''); } });
     access.push({ icon: '🌆', bg: '#F1EBFE', title: 'Communities', desc: 'Explore and join Vegans Explore communities.', fn: function () { if (window.activateDashTab) activateDashTab('communities'); } });
     access.forEach(function (c) { grid.appendChild(dpAccessCard(c)); });
   }
@@ -3423,6 +3440,7 @@
     window.addEventListener('popstate', function (e) {
       if (/^\/dashboard\/bounties\/?$/.test(location.pathname)) { openBounties(location.search, true); return; }
       if (/^\/dashboard\/guide\/?$/.test(location.pathname)) { openGuide(location.search, true); return; }
+      if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) { openShopper(location.hash, true); return; }
       var key = (e.state && e.state.tabKey) || tabKeyFromPath() || sections[0].getAttribute('data-tab-key');
       activate(key, { skipHistory: true });
     });
@@ -3435,6 +3453,7 @@
     activate(tabKeyFromPath() || sections[0].getAttribute('data-tab-key'), { skipHistory: true });
     if (landedOnBounties !== null) openBounties(landedOnBounties, true);
     if (/^\/dashboard\/guide\/?$/.test(location.pathname)) openGuide(location.search, true);
+    if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) openShopper(location.hash, true);
   }
 
   // Bounties topic toggle (2026-09-07, Logan, Sean direction). Only "All" is

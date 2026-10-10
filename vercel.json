@@ -32,7 +32,7 @@
       "destination": "/dashboard/center-console"
     },
     {
-      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities)",
+      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|secret-shopper)",
       "destination": "/dashboard/center-console"
     },
     {
