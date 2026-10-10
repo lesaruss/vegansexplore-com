@@ -668,6 +668,35 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, being rebuilt on the Dairy
   to the city's Community Manager until Sean sets prices), the monthly re-check, and the free check in the outreach emails
   (an upgrade to the offer, not a change to the plan).
 
+## Finding new places: the backlog check (Sean, 2026-10-10)
+
+"Can the scan also look for new Vegan restaurants as well?" then "Go, start with the backlog". About 2,970 listings sat
+quarantined since the May and June imports, never reviewed: 2,386 from our `ve_businesses` list (Instagram handles, no
+address, many of them people and creators), 441 from the spreadsheet (244 with a city or "South Florida", 174 a name only),
+129 from the SoFlo Vegans Facebook group (city and website), and a few others. `ve-discover` sorts them; nothing is listed
+until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_backlog_checks`, one row per listing).
+
+- Tracks: **google** (a place: looked up on Google Places by name, kept only in the same state and, when we know which of our
+  cities it is in, the same city area), **ig** (only a handle: read with Apify's Instagram profile scraper; a food business
+  with one of our cities in its bio or post locations then goes to Google too), **thin** (a name only: nothing to check).
+- Matching rules learned on the first batches: one name inside the other, or most real words shared with at least two of them
+  (one shared word matched "Green Bar and Kitchen" to "Living Green Cafe"); our state only (Inca Chicken, Hollywood FL, matched
+  Maryland); our city area only (South Florida's "Third Culture" matched Titusville); a renamed place ("Meraki Juice Kitchen is
+  NOW Christopher's Kitchen") is a duplicate of the listing it became. Instagram leaves the business flag off for many
+  restaurants, so a category or food words count as a business; creator categories (artist, writer, musician...) are people.
+- Verdicts: **Ready to list** (open, and Vegan by Google's Vegan restaurant category or the business's own name or Instagram
+  bio; Google's description saying "Vegan options" is only a Check), **Check**, **Not a restaurant**, **Closed** (Google, or an
+  Instagram quiet for over a year with no Google profile), **Already listed**, **Not found**, **A person**, **Not enough to check**.
+- Runs by cron `ve-discover-backlog` (every 2 minutes, 40 Instagram accounts and 25 Google lookups a run) until nothing is
+  left; then it costs nothing. Unschedule it once the summary says nothing is left.
+- **Depot > Business outreach > New places** (`#places/<verdict>[/<city>]`, `#place/<listing>`, a card on the home): each
+  verdict a tab with its count, by city; one business opens with what Google and Instagram said, links, and its website framed.
+  **Add to the Directory** needs a category and how Vegan it is (100% Vegan, Vegan options, Vegan friendly), picked on purpose,
+  and fills Google's address, place id, phone and website (`backlog_decide`); **Set aside** makes it `rejected` with a note,
+  never deleted. Closed, Not found, A person, Not enough to check and Already listed have **Set these aside** for the page. A
+  newly listed business joins its city's outreach through Find emails on the city card.
+- Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.
+
 ## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing` v3)
 
 "Instead of you buying guides with points, because it does feel weird... almost like Audible... you have credits to
