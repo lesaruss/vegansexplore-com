@@ -76,6 +76,8 @@ const words = (s: string) => String(s || '').toLowerCase().normalize('NFKD').rep
 const overlap = (a: string[], b: string[]) => a.filter((w) => b.includes(w)).length;
 const norm = (s: string) => String(s || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '');
 const domain = (u: string) => { try { return new URL(/^https?:/i.test(u) ? u : 'https://' + u).hostname.replace(/^www\./, '').toLowerCase(); } catch { return ''; } };
+// Instagram categories for people and creators, not businesses we would list.
+const CREATOR_RE = /^(artist|musician|musician\/band|writer|author|blogger|personal blog|digital creator|video creator|public figure|athlete|community|gamer|comedian|actor|photographer|creator|influencer|entrepreneur|health\/beauty|just for fun|education|coach)$/i;
 const VEGAN_RE = /\b(vegan|plant[- ]?based|100% plant)\b/i;
 const FOOD_TYPE_RE = /restaurant|cafe|bakery|food|meal_|juice|grocery|supermarket|ice_cream|dessert|coffee|deli|^bar$|catering|market|bistro|diner|pizza|sandwich|confectioner|tea_house|brunch|breakfast/;
 const FOOD_WORD_RE = /restaurant|caf[eé]|bakery|food|juice|grocer|market|kitchen|catering|caterer|chef|meal|dessert|ice cream|donut|pizza|deli|coffee|tea|smoothie|bistro|eatery|taco|burger|vegan (restaurant|bakery|cafe)|food truck|personal chef/i;
@@ -125,8 +127,15 @@ async function findPlace(name: string, where: string, site: string, state = '') 
   const places = st ? all.filter((p) => (p.addressComponents || []).some((c: any) => (c.types || []).includes('administrative_area_level_1') && String(c.shortText).toUpperCase() === st)) : all;
   const want = words(name), dom = domain(site);
   // Their own website is the surest match; otherwise a real word of the name in Google's name.
-  return places.find((p) => dom && domain(p.websiteUri || '') === dom)
-    || places.find((p) => want.length && overlap(want, words(p.displayName?.text || '')) >= Math.min(2, want.length)) || null;
+  // A name match needs one name inside the other ("El Patio" in "El Patio Restaurant Latin Fusion"), or most of the real
+  // words shared with at least two of them. One shared word is not enough ("Green Bar and Kitchen" is not "Living Green Cafe").
+  const nameMatch = (g: string) => {
+    const a = norm(name), b = norm(g);
+    if (a.length >= 5 && (b.includes(a) || (b.length >= 5 && a.includes(b)))) return true;
+    const gw = words(g), o = overlap(want, gw);
+    return want.length >= 2 && o >= 2 && o / want.length >= 0.75;
+  };
+  return places.find((p) => dom && domain(p.websiteUri || '') === dom) || places.find((p) => nameMatch(p.displayName?.text || '')) || null;
 }
 const comp = (p: any, t: string, short = false) => (p?.addressComponents || []).find((c: any) => (c.types || []).includes(t))?.[short ? 'shortText' : 'longText'] || '';
 const placeSummary = (p: any) => p ? {
@@ -236,12 +245,12 @@ async function backlogRun(igN: number, gN: number) {
         const dup = await duplicateOf(l, null, h);
         const food = FOOD_WORD_RE.test(`${ig.category || ''} ${ig.bio || ''} ${ig.name || ''}`) || VEGAN_RE.test(ig.category || '');
         // Instagram leaves isBusinessAccount off for many restaurant accounts; a category or food words count as a business.
-        const business = ig.business || !!ig.category || food;
+        const business = !CREATOR_RE.test(ig.category || '') && (ig.business || !!ig.category || food);
         const city = await cityIn(`${ig.bio} ${ig.places.join(' | ')}`);
         const quiet = !ig.latest || Date.parse(ig.latest) < Date.now() - 365 * DAY_MS;
         const igSave = { handle: h, ...ig };
         if (dup) patch = { stage: 'done', ig: igSave, verdict: 'listed', reason: 'Already in the Directory', duplicate_of: dup, checked_at: now };
-        else if (!business) patch = { stage: 'done', ig: igSave, verdict: 'person', reason: ig.private ? 'A private personal account' : 'A personal account, not a business', checked_at: now };
+        else if (!business) patch = { stage: 'done', ig: igSave, verdict: 'person', reason: ig.private ? 'A private personal account' : ig.category ? `A person or creator (${ig.category}), not a business` : 'A personal account, not a business', checked_at: now };
         else if (!food) patch = { stage: 'done', ig: igSave, verdict: 'other', reason: `A business on Instagram${ig.category ? ': ' + ig.category : ''}`, city_guess: city, checked_at: now };
         else if (city) patch = { stage: 'ig_done', ig: igSave, city_guess: city };
         else patch = { stage: 'done', ig: igSave, verdict: quiet ? 'closed' : 'check',
