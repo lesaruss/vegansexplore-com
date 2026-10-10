@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Cookbook | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Cookbook (Cookbook Phase 1, 2026-10-10): the recipes members share wait here for Sean. Approving puts a recipe
+       in the Cookbook and pays the member 50 points, once. "Didn't work for me" from 3 different members pulls a recipe for
+       retesting; their notes show here, and Put it back or Take it down settles it. One recipe per view (#recipe/<id>).
+       Data: ve-cookbook queue / review, function ve_recipe_review. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-text-55:rgba(26,26,26,0.6);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:22px;font-weight:900;line-height:1.2;margin:6px 0 8px;}
+    .k{font-size:11px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-55);margin-bottom:12px;}
+    .crumb a{color:var(--ve-green-deep);text-decoration:none;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:14px;}
+    .filters{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:8px;background:#eceeec;}
+    .filters button{font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:8px 12px;border:0;border-radius:6px;background:transparent;color:var(--ve-text-75);cursor:pointer;}
+    .filters button[aria-pressed="true"]{background:#fff;color:var(--ve-green-deep);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+    .filters b{font-weight:900;margin-left:4px;color:var(--ve-text-55);}
+    .bar input{flex:0 1 320px;font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid var(--ve-border);border-radius:6px;background:#fff;}
+    .rows{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 300px);min-height:240px;overflow:auto;padding-right:4px;}
+    .row{display:grid;grid-template-columns:minmax(0,1fr) 170px 120px;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:12px 16px;}
+    .row b{display:block;font-size:14.5px;font-weight:800;}
+    .row .meta{font-size:12.5px;color:var(--ve-text-55);}
+    @media (max-width:700px){.row{grid-template-columns:minmax(0,1fr);}}
+    .tag{justify-self:start;display:inline-block;font-size:10px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;padding:3px 8px;white-space:nowrap;}
+    .t-pending{background:#fff4e2;color:#6b3f00;}
+    .t-retesting{background:#fff4e2;color:#8a5a00;}
+    .t-live{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .t-rejected{background:#fbeeec;color:#8a1c12;}
+    .t-retired{background:#eef0ee;color:#4a4f4a;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 16px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:#f4f5f4;}
+    .btn-red{background:#fff;color:#8a1c12;border:1px solid rgba(138,28,18,0.4);}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:20px 22px;margin:0 0 14px;}
+    .detail{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:16px;align-items:start;}
+    @media (max-width:900px){.detail{grid-template-columns:minmax(0,1fr);}}
+    .cols{display:grid;grid-template-columns:minmax(200px,0.8fr) minmax(0,1.6fr);gap:20px;}
+    @media (max-width:700px){.cols{grid-template-columns:minmax(0,1fr);}}
+    ul.ing,ol.steps{padding-left:20px;}
+    ul.ing li,ol.steps li{font-size:14px;margin-bottom:5px;color:var(--ve-text-75);}
+    .tip{font-size:13px;background:#fff7e8;color:#8a5a00;border-radius:6px;padding:6px 9px;margin-top:8px;}
+    .notes{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+    .note{font-size:13.5px;background:#f7f8f7;border-radius:8px;padding:8px 10px;}
+    .note span{display:block;font-size:11.5px;color:var(--ve-text-55);}
+    .acts{display:flex;flex-direction:column;gap:8px;}
+    .acts textarea{width:100%;font-family:inherit;font-size:14px;padding:9px 11px;border:1.5px solid var(--ve-border);border-radius:6px;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .empty{font-size:14px;color:var(--ve-text-55);padding:14px 0;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Cookbook</h1>
+    <div id="depot-tabs"></div>
+    <div id="ck-gate" class="gate" hidden></div>
+    <div id="ck-app" hidden></div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-cookbook';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('ck-app'), ALL = [], filter = 'pending', q = '';
+      var FILTERS = [['pending', 'Waiting for approval'], ['retesting', 'Being retested'], ['live', 'Live'], ['rejected', 'Needs a change'], ['retired', 'Not live']];
+      var GUIDE_NAMES = { 'vegan-dairy-guide': 'The Vegan Dairy Guide' };
+      var LABEL = { pending: 'Waiting for approval', retesting: 'Being retested', live: 'Live', rejected: 'Needs a change', retired: 'Not live' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''; }
+      function who(r) { return r.author.kind === 'guide' ? r.author.name + ' (Guide)' : r.author.name + (r.author_email ? ' · ' + r.author_email : ''); }
+
+      function viewList() {
+        var counts = {}; ALL.forEach(function (r) { counts[r.status] = (counts[r.status] || 0) + 1; });
+        var words = q.trim().toLowerCase();
+        var rows = ALL.filter(function (r) { return r.status === filter && (!words || (r.title + ' ' + who(r)).toLowerCase().indexOf(words) >= 0); })
+          .sort(function (a, b) { return filter === 'retesting' ? b.reports - a.reports : String(b.submitted_at || b.live_at || '').localeCompare(String(a.submitted_at || a.live_at || '')); });
+        app.innerHTML = '<p class="sub">Recipes members share wait here. Approving puts one in the Cookbook and pays them 50 points, once. When three different members say a recipe did not work for them, it shows as Being retested until you put it back or take it down.</p>' +
+          '<div class="bar"><div class="filters" role="group">' + FILTERS.map(function (f) { return '<button type="button" data-f="' + f[0] + '" aria-pressed="' + (f[0] === filter) + '">' + f[1] + (counts[f[0]] ? '<b>' + counts[f[0]] + '</b>' : '') + '</button>'; }).join('') + '</div>' +
+          '<input type="search" id="ck-q" placeholder="Search recipes or people" aria-label="Search" value="' + esc(q) + '"></div>' +
+          '<div class="rows">' + (rows.map(function (r) {
+            return '<div class="row"><div><b>' + esc(r.title) + '</b><span class="meta">' + esc(who(r)) + ' &middot; ' + (r.submitted_at ? 'sent ' + when(r.submitted_at) : 'live ' + when(r.live_at)) +
+              (r.reports ? ' &middot; ' + r.reports + (r.reports === 1 ? ' said it did not work' : ' said it did not work') : '') + (r.votes ? ' &middot; ' + r.votes + (r.votes === 1 ? ' vote' : ' votes') : '') + '</span></div>' +
+              '<span class="tag t-' + r.status + '">' + LABEL[r.status] + '</span><a class="btn btn-ghost" href="#recipe/' + r.id + '">Open</a></div>';
+          }).join('') || '<p class="empty">' + (filter === 'pending' ? 'Nothing waiting. New recipes email you when they arrive.' : 'None here.') + '</p>') + '</div>';
+        $('ck-q').addEventListener('input', function () { q = this.value; var pos = this.selectionStart; viewList(); var el = $('ck-q'); el.focus(); el.setSelectionRange(pos, pos); });
+      }
+      function viewRecipe(id) {
+        var r = null; ALL.forEach(function (x) { if (x.id === id) r = x; });
+        if (!r) { app.innerHTML = '<div class="crumb"><a href="#">Cookbook</a> &rsaquo; Recipe</div><p class="empty">That recipe is not in the queue.</p>'; return; }
+        var acts = {
+          pending: '<button type="button" class="btn" data-op="approve">Approve, 50 points</button><textarea id="ck-note" rows="3" placeholder="What needs to change (required to send it back)"></textarea><button type="button" class="btn btn-red" data-op="reject">Send it back</button>',
+          rejected: '<button type="button" class="btn" data-op="approve">Approve after all, 50 points</button>',
+          retesting: '<button type="button" class="btn" data-op="restore">Put it back, it works</button><button type="button" class="btn btn-red" data-op="retire">Take it down</button>',
+          live: '<button type="button" class="btn btn-red" data-op="retire">Take it down</button>',
+          retired: '<button type="button" class="btn btn-ghost" data-op="restore">Put it back</button>'
+        }[r.status] || '';
+        app.innerHTML = '<div class="crumb"><a href="#">Cookbook</a> &rsaquo; <a href="#" data-back>' + esc(LABEL[r.status]) + '</a> &rsaquo; ' + esc(r.title) + '</div>' +
+          '<div class="detail"><div class="panel"><span class="tag t-' + r.status + '">' + LABEL[r.status] + '</span><h2>' + esc(r.title) + '</h2>' +
+          '<p class="sub" style="margin-bottom:6px">' + esc(who(r)) + (r.submitted_at ? ' &middot; sent ' + when(r.submitted_at) : '') + (r.guides.length ? ' &middot; from ' + esc(r.guides.map(function (g) { return GUIDE_NAMES[g] || g; }).join(', ')) : '') + '</p>' +
+          (r.summary ? '<p class="sub">' + esc(r.summary) + '</p>' : '') + '<p class="sub">' + [r.time, r.servings ? 'Serves ' + r.servings : ''].filter(Boolean).map(esc).join(' &middot; ') + '</p>' +
+          '<div class="cols">' + (r.ingredients.length ? '<div><p class="k">What you need</p><ul class="ing">' + r.ingredients.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>' : '') +
+          '<div><p class="k">Steps</p><ol class="steps">' + r.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' + (r.tip ? '<div class="tip">Tip: ' + esc(r.tip) + '</div>' : '') + '</div></div></div>' +
+          '<div><div class="panel"><p class="k">Decide</p><div class="acts">' + acts + '<span class="msg" id="ck-msg" role="status"></span></div>' +
+          (r.review_note ? '<p class="sub" style="margin-top:10px">Last note: ' + esc(r.review_note) + '</p>' : '') + '</div>' +
+          (r.notes.length ? '<div class="panel"><p class="k">Didn\'t work for them</p><div class="notes">' + r.notes.map(function (n) { return '<div class="note">' + esc(n.note || 'No note') + '<span>' + when(n.at) + '</span></div>'; }).join('') + '</div></div>' : '') + '</div></div>';
+      }
+      function route() {
+        var m = location.hash.match(/^#recipe\/([0-9a-f-]{36})/);
+        if (m) viewRecipe(m[1]); else viewList();
+        window.scrollTo(0, 0);
+      }
+      app.addEventListener('click', function (e) {
+        var b;
+        if ((b = e.target.closest('[data-f]'))) { filter = b.getAttribute('data-f'); viewList(); return; }
+        if (e.target.closest('[data-back]')) { e.preventDefault(); var m = location.hash.match(/^#recipe\/(.+)/); ALL.forEach(function (r) { if (m && r.id === m[1]) filter = r.status; }); location.hash = ''; return; }
+        if ((b = e.target.closest('[data-op]'))) {
+          var id = location.hash.replace(/^#recipe\//, ''), op = b.getAttribute('data-op'), note = ($('ck-note') || {}).value || '';
+          if (op === 'reject' && !note.trim()) { $('ck-msg').textContent = 'Say what needs to change, so they can fix it and send it again.'; return; }
+          if (op === 'retire' && !confirm('Take this recipe down? Members stop seeing it. You can put it back later.')) return;
+          b.disabled = true; $('ck-msg').textContent = 'Saving...';
+          api({ action: 'review', recipe_id: id, op: op, note: note }).then(function (d) {
+            if (!d.ok) { b.disabled = false; $('ck-msg').textContent = d.message || (d.error === 'not_pending' ? 'Someone already decided this one. Refresh.' : 'Did not save.'); return; }
+            $('ck-msg').textContent = op === 'approve' ? 'In the Cookbook' + (d.points_paid ? ', 50 points paid and the member emailed.' : '.') : op === 'reject' ? 'Sent back. They have an email with your note.' : op === 'restore' ? 'Back in the Cookbook.' : 'Taken down.';
+            load(function () { setTimeout(function () { filter = d.status === 'live' ? 'live' : filter; route(); }, 900); });
+          }).catch(function () { b.disabled = false; $('ck-msg').textContent = 'Could not connect.'; });
+        }
+      });
+      function load(then) {
+        return api({ action: 'queue' }).then(function (d) {
+          if (!d.recipes) throw new Error(d.error);
+          ALL = d.recipes; if (then) then(); else route();
+        }).catch(function () { app.innerHTML = '<p class="sub">The Cookbook queue did not load. Refresh to try again.</p>'; });
+      }
+      window.addEventListener('hashchange', route);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('ck-gate').hidden = false; $('ck-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="ck-signin">Sign in</button>'; $('ck-signin').onclick = function () { VEAuth.showAuthModal('Sign in to review recipes.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('ck-gate').hidden = false; $('ck-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        app.hidden = false; app.innerHTML = '<p class="sub">Loading...</p>';
+        load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
