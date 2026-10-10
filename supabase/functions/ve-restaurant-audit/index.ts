@@ -17,7 +17,7 @@
 // every audit carries a closure flag (closed: Google shows it closed; quiet: two or more signs it may have closed).
 //
 // POST { action: 'find', q }                       anyone -> { listings: [{slug, name, city}] }   approved Directory listings
-// POST { action: 'criteria' }                      anyone -> { criteria: [{key, area, label, in_free}] }
+// POST { action: 'criteria' }                      anyone -> { criteria: [{key, area, label, in_free, chapter}] }  chapter: the Guide's fix
 // POST { action: 'free', listing_slug? | name, city, website?, instagram?, email? }  anyone -> { id, status, cached? }
 //      one per business a week is reused; 5 a day per visitor
 // POST { action: 'full', listing_slug? | name, city, website?, instagram? }  a super admin or ops -> { id, status }  (no charge)
@@ -570,7 +570,11 @@ async function runAudit(id: string) {
 // items the full audit holds. Full: every item with its why, how, Guide chapter and service.
 async function present(a: any, full: boolean) {
   const crit = await criteriaMap();
-  const base = { id: a.id, tier: a.tier, status: a.status, created_at: a.created_at, finished_at: a.finished_at, business: a.inputs?.name || null, error: a.status === 'failed' ? 'The audit could not finish. Try again in a few minutes.' : undefined };
+  // target: what the audit ran on (all public), so the page can offer the full audit of the same business.
+  const t = a.inputs || {};
+  const base = { id: a.id, tier: a.tier, status: a.status, created_at: a.created_at, finished_at: a.finished_at, business: t.name || null,
+    target: { listing_slug: t.slug || null, name: t.name || null, city: t.city || null, website: t.website || null, instagram: t.instagram || null },
+    error: a.status === 'failed' ? 'The audit could not finish. Try again in a few minutes.' : undefined };
   if (a.status !== 'done') return base;
   const items = (a.items || []) as Item[];
   if (!full) {
@@ -718,7 +722,7 @@ Deno.serve(async (req) => {
   }
   if (action === 'criteria') {
     const crit = await criteriaMap();
-    return json({ criteria: [...crit.values()].map((c: any) => ({ key: c.key, area: c.area, label: c.label, in_free: c.in_free })) });
+    return json({ criteria: [...crit.values()].map((c: any) => ({ key: c.key, area: c.area, label: c.label, in_free: c.in_free, chapter: c.chapter })) });
   }
 
   if (action === 'free') {
