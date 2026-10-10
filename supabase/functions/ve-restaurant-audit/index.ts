@@ -275,6 +275,7 @@ async function website(url: string) {
       menu = { kind: !mp.ok ? 'broken' : prices >= 5 || mt.split(' ').length > 250 ? 'text' : /\.pdf/i.test(mp.text) ? 'pdf' : 'thin', url: mu };
     }
   } else if ((text.match(/\$\s?\d{1,3}(\.\d{2})?/g) || []).length >= 5) menu = { kind: 'text', url: home.url };
+  else if (/href=["']#(our-?|full-?)?menus?["']/i.test(html)) menu = { kind: 'section', url: home.url };
 
   // Main links: the first few same-site links, each opened once.
   const internal = [...new Set(hrefs.map((a) => abs(a.href)).filter((h) => { try { const u = new URL(h); return u.hostname === base.hostname && /^https?:$/.test(u.protocol) && u.pathname !== base.pathname && !/\.(pdf|jpe?g|png|webp|gif|zip)$/i.test(u.pathname); } catch { return false; } }))].slice(0, 8);
@@ -315,7 +316,8 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
   const out: Item[] = [];
   const add = (key: string, state: State, found: string) => out.push({ key, state, found });
   const p = g?.place;
-  const city = String(inp.city || p?.addressComponents?.find((c: any) => (c.types || []).includes('locality'))?.longText || '').trim();
+  // Google's address first: it is what diners see, and our Directory's city can be out of date.
+  const city = String(p?.addressComponents?.find((c: any) => (c.types || []).includes('locality'))?.longText || inp.city || '').trim();
   const site = w?.opened ? w : null;
   const prof = ig?.profile && !ig.profile.private ? ig.profile : null;
 
@@ -419,6 +421,7 @@ function evaluate(inp: any, g: any, w: any, ps: any, ig: any): Item[] {
     if (m.kind === 'image') return ['fix', 'Your menu is a picture.'];
     if (m.kind === 'ordering') return ['review', 'Your menu link goes to an ordering site, not a menu page of your own.'];
     if (m.kind === 'broken') return ['fix', 'Your menu link does not open.'];
+    if (m.kind === 'section') return ['review', 'Your menu is a section of your home page, but we could not read dishes and prices there; it may be pictures.'];
     if (m.kind === 'thin') return ['review', 'Your menu page has little text on it; it may be pictures or an embedded file.'];
     return ['fix', 'We did not find a menu on your website.'];
   });
