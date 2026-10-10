@@ -22,6 +22,8 @@
 //   partners                          New partners: every business that claimed its page, waiting for approval or onboarding
 //   partner     { listing_id }        one partner: the checklist, the onboarding emails (sent and next), notes
 //   partner_check { listing_id, item, done }  ticks a checklist item (welcome, details, media, campaigns)
+//   listing_edits  { listing_id }      what the owner changed on their page (ve_listing_edits), newest first
+//   listing_edit_undo { edit_id }     puts one change back, if nothing changed the same thing since
 //   listing_note   { contact_id | listing_id, note }   a note on the business's Directory listing (details.admin_notes)
 //   listing_closed { contact_id, note? }  no longer in business: the listing is marked permanently closed (shown only
 //                                         under the Directory's Closed filter, never in All) and the business leaves
@@ -338,7 +340,7 @@ Deno.serve(async (req) => {
     }
     const me = await adminId(req);
     if (!me) {
-      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner'];
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner', 'listing_edits'];
       const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
@@ -542,6 +544,38 @@ Deno.serve(async (req) => {
         await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'status', detail: { status: 'held', why: 'closed', by: me } });
       }
       return json({ ok: true, notes });
+    }
+
+    if (action === 'listing_edits') {
+      if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
+      const { data } = await db.from('ve_listing_edits').select('id,field,old_value,new_value,meta,undone_at,created_at').eq('listing_id', body.listing_id).order('created_at', { ascending: false }).limit(100);
+      return json({ ok: true, edits: data || [] });
+    }
+
+    if (action === 'listing_edit_undo') {
+      if (!me || !isId(body.edit_id)) return json({ error: 'admins_only' }, 403);
+      const { data: e } = await db.from('ve_listing_edits').select('*').eq('id', body.edit_id).maybeSingle();
+      if (!e || e.undone_at) return json({ error: 'not_found' }, 404);
+      const { data: l } = await db.from('listings').select('*').eq('id', e.listing_id).single();
+      const COL: Record<string, string> = { hours: 'google_hours_json', logo: 'logo_url' };
+      const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      const same = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+      if (e.field === 'photo_add' || e.field === 'photo_remove') {
+        const g: string[] = (l.gallery_urls || []).slice();
+        if (e.field === 'photo_add') patch.gallery_urls = g.filter((u) => u !== e.new_value);
+        else if (!g.includes(e.old_value)) patch.gallery_urls = [...g, e.old_value];
+      } else {
+        const col = COL[e.field] || e.field;
+        if (!(col in l)) return json({ error: 'bad_field' }, 400);
+        let cur = l[col]; if (col === 'google_hours_json' && typeof cur === 'string') { try { cur = JSON.parse(cur); } catch { /* keep */ } }
+        let nv = e.new_value; if (col === 'google_hours_json' && typeof nv === 'string') { try { nv = JSON.parse(nv); } catch { /* keep */ } }
+        if (!same(cur, nv)) return json({ error: 'changed_since' }, 409);
+        patch[col] = e.old_value;
+      }
+      const { error } = await db.from('listings').update(patch).eq('id', e.listing_id);
+      if (error) return json({ error: error.message }, 400);
+      await db.from('ve_listing_edits').update({ undone_at: new Date().toISOString(), undone_by: me }).eq('id', e.id);
+      return json({ ok: true });
     }
 
     if (action === 'city') {

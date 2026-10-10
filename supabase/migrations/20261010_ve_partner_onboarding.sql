@@ -4,7 +4,7 @@
 -- One row per business that claims its page (ve_listing_claims, paid or submitted, never a test). It waits for Sean's
 -- approval (Depot > Claims); approving starts it:
 --   automatic: three emails from Sean after the "your page is confirmed" email ve-claims already sends
---     Day 2   make the page yours (reply with a logo, photos and anything to change; we update it)
+--     Day 2   make the page yours (Edit your page on the Partner Dashboard, or reply and we do it)
 --     Day 7   the first week's numbers (views and visitors, from ve_listing_events)
 --     Day 21  what's coming in Q1, and what they want to be part of (and, on Front Row Start, when the first charge is)
 --   personal: a checklist for the city's Community Manager, or Sean when the city has none, who is emailed the task:
@@ -136,13 +136,9 @@ grant execute on function public.ve_onboarding_render(uuid, integer), public.ve_
 insert into public.ve_onboarding_templates (step, day_after, subject, body) values
 (1, 2, 'Let''s make {business}''s page yours', $t$Hi {first_name},
 
-Now that your page is confirmed, let's get it looking its best. Reply to this email with:
+Now that your page is confirmed, let's get it looking its best. On your page, open the Partner Dashboard tab and press Edit your page. You can add your logo and photos and update your description, hours and links, and it takes about five minutes: {dashboard_link}
 
-1. Your logo, a clear full-size file
-2. Three to five photos you love
-3. Anything on the page that should change: hours, your description, what people should order first
-
-We'll put it all on your page for you: {page_link}
+Rather we do it? Reply with your logo, three to five photos you love, and anything that should change, and we'll put it on your page for you.
 
 Sean$t$),
 (2, 7, '{business}''s first week on Vegans Explore', $t$Hi {first_name},

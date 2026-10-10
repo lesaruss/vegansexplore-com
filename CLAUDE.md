@@ -284,12 +284,25 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   Find emails skip closed businesses (migration `20261010_ve_outreach_listing_cleanup.sql`). Send days list brands first,
   then A to Z, so the order never shifts. On 2026-10-10 five businesses the Directory already marked closed came off the list
   before anything was sent, and Darbster's blurry logo was set aside for the letter (Sean).
+- **Owners edit their own page** (Sean, 2026-10-10: "go ahead and build the owner page editing"). Any owner of a listing (the
+  approved claim makes them `owner_member_id`), with or without a plan, gets **Edit your page** on the Partner Dashboard tab
+  (`mountOwnerEditor` in `directory/listing.html`): four steps, one per view (`?tab=brand&edit=about|hours|contact|photos`),
+  Back / Step N of M / Save and next: About (the one line and the description), Hours (each day in their own words, empty
+  hides it, saved as `google_hours_json` {Day: text}), Contact and links (phone, website, Instagram, booking, Uber Eats,
+  DoorDash, street and ZIP), Logo and photos (logo at least 400 px on the shorter side, up to 12 photos at least 1000 px,
+  into `vegan-media/media/listings/<slug>/owner-*`, checked in the page and again in the function; an owner's logo replaces a
+  set-aside one, `details.logo_source = 'owner'`; photos go to `gallery_urls`, which the page shows). Their name, city,
+  category and how Vegan they are stay ours. Changes go live at once (`ve-claims` `owner_page`, `owner_update`,
+  `owner_photo_url`, `owner_photo_done`, `owner_photo_remove`), each one a row in `ve_listing_edits` with the value it
+  replaced (migration `20261010_ve_listing_edits.sql`), and the account manager (else Sean) is emailed what changed. A new
+  partner's page in the Depot lists **Their changes** with **Undo** (`ve-outreach` `listing_edits`, `listing_edit_undo`, which
+  refuses when the same thing was changed again since).
 - **New partners: onboarding** (Sean, 2026-10-10: "go ahead and build the onboarding"; migration
   `20261010_ve_partner_onboarding.sql`). Every business that claims its page (`ve_listing_claims` paid or submitted, never a
   test) gets a `ve_partner_onboarding` row through trigger `trg_ve_partner_onboarding`: Waiting for your approval, then, when
   Sean approves the claim in Depot > Claims, Welcoming. Approval starts two things. **Automatic**: three emails from Sean after
   ve-claims' own "your page is confirmed" (`ve_onboarding_templates`, rendered by `ve_onboarding_render`): Day 2 make the page
-  yours (reply with a logo, photos and changes; we update it, since owners who are not brands cannot edit their page yet),
+  yours (Edit your page on the Partner Dashboard, or reply with a logo, photos and changes and we do it),
   Day 7 the first week's numbers (views and visitors from `ve_listing_events`), Day 21 what's coming in Q1 and what they want
   to be part of, plus, on Front Row Start, the date of their first charge. **Personal**: the city's Community Manager, or Sean
   when the city has none, is emailed the task (welcome them within 2 days, with their contact details and the checklist), and

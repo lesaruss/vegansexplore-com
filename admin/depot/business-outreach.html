@@ -419,6 +419,36 @@
             });
           }
           drawNotes(l.admin_notes || []);
+          // What the owner changed on their page, newest first, each with Undo.
+          var ed = document.createElement('div'); ed.style.cssText = 'border-top:1px solid var(--ve-border);margin-top:18px;padding-top:16px';
+          $('lp').parentNode.appendChild(ed);
+          var FIELD = { tagline: 'One line', description: 'Description', phone: 'Phone', website: 'Website', instagram: 'Instagram', booking_url: 'Booking link',
+            uber_eats_url: 'Uber Eats link', doordash_url: 'DoorDash link', address_street: 'Street address', address_zip: 'ZIP code', hours: 'Hours',
+            logo: 'Logo', photo_add: 'Photo added', photo_remove: 'Photo removed' };
+          function shown(v) { if (v == null || v === '') return 'empty'; if (typeof v === 'object') return Object.keys(v).map(function (k) { return k.slice(0, 3) + ' ' + v[k]; }).join(', '); return String(v); }
+          function drawEdits() {
+            api({ action: 'listing_edits', listing_id: id }).then(function (x) {
+              var list = x.edits || [];
+              ed.innerHTML = '<h2>Their changes</h2>' + (list.length ? '<ul class="notes">' + list.map(function (e) {
+                var pic = /^(logo|photo_add|photo_remove)$/.test(e.field);
+                return '<li><b>' + esc(FIELD[e.field] || e.field) + '</b>' + (e.undone_at ? ' <span class="tag off">Undone</span>' : '') +
+                  (pic ? ' <a href="' + esc(e.new_value || e.old_value) + '" target="_blank" rel="noopener">see the picture</a>' : '<br>' + esc(shown(e.new_value)).slice(0, 220)) +
+                  '<small>' + esc(pdate(e.created_at)) + (pic ? '' : ' · was: ' + esc(shown(e.old_value)).slice(0, 120)) + '</small>' +
+                  (e.undone_at ? '' : '<button type="button" class="btn btn-ghost btn-sm" data-undo="' + e.id + '" style="margin-top:6px">Undo</button>') + '</li>';
+              }).join('') + '</ul><p class="msg" id="u-msg" role="status"></p>' : '<p class="hint">They have not changed anything on their page yet.</p>');
+              Array.prototype.forEach.call(ed.querySelectorAll('[data-undo]'), function (b) {
+                b.addEventListener('click', function () {
+                  if (!confirm('Put this back the way it was?')) return;
+                  b.disabled = true;
+                  api({ action: 'listing_edit_undo', edit_id: b.dataset.undo }).then(function (r) {
+                    if (!r.ok) { b.disabled = false; $('u-msg').className = 'msg err'; $('u-msg').textContent = r.error === 'changed_since' ? 'They changed it again since, so undo the newer change first.' : (r.error || 'That did not work.'); return; }
+                    drawEdits();
+                  });
+                });
+              });
+            });
+          }
+          drawEdits();
         });
       }
 

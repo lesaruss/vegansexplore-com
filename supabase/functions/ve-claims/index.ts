@@ -781,6 +781,131 @@ Deno.serve(async (req) => {
       `<p><a href="https://vegansexplore.com/directory/${encodeURIComponent(pt.listing.slug)}?tab=products&product=${encodeURIComponent(prod.slug)}">See it on the page</a>. The old version is kept in ve_product_edits if it needs undoing.</p>`, member.email || undefined);
     return json({ ok: true, changed: edits.length, image_url: patch.image_url || (vkey && patch.variants ? variants[vi].image : undefined) });
   }
+  // ---- The owner edits their own page (Sean, 2026-10-10: "go ahead and build the owner page editing"). Any business owner
+  // (the approved claim makes them owner_member_id), with or without a plan. Changes go live at once; each is a row in
+  // ve_listing_edits with the value it replaced, so Depot > Business outreach > New partners can undo it, and the account
+  // manager (else Sean) is emailed what changed. How Vegan the business is, its name, city and category stay with us.
+  if (['owner_page', 'owner_update', 'owner_photo_url', 'owner_photo_done', 'owner_photo_remove'].includes(body.action)) {
+    const lid = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(lid)) return json({ error: 'bad_listing' }, 400);
+    const { data: l } = await db.from('listings').select('id, name, slug, status, owner_member_id, claimed_by_member_id, tagline, description, phone, website, instagram, booking_url, uber_eats_url, doordash_url, address_street, address_city, address_state, address_zip, google_hours_json, logo_url, gallery_urls, details').eq('id', lid).maybeSingle();
+    if (!l || l.status !== 'approved') return json({ error: 'not_found' }, 404);
+    const isOwner = l.owner_member_id === memberId || l.claimed_by_member_id === memberId;
+    if (!isOwner && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
+    const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const hoursOf = (h: any): Record<string, string> => {
+      let v = h; if (typeof v === 'string') { try { v = JSON.parse(v); } catch { v = null; } }
+      const out: Record<string, string> = {};
+      if (Array.isArray(v)) v.forEach((x: any) => { const d = x?.day || x?.name; if (d) out[d] = String(x.hours || x.openingHours || x.time || ''); });
+      else if (v && typeof v === 'object') Object.keys(v).forEach((d) => { out[d] = String(v[d] ?? ''); });
+      return out;
+    };
+    const photos = (l.gallery_urls || []).filter((u: string) => /^https:\/\//.test(u));
+    const log = async (edits: { field: string; old_value: unknown; new_value: unknown; meta?: unknown }[]) => {
+      if (!edits.length) return;
+      await db.from('ve_listing_edits').insert(edits.map((e) => ({ listing_id: l.id, member_id: memberId, field: e.field,
+        old_value: e.old_value == null ? null : e.old_value, new_value: e.new_value == null ? null : e.new_value, meta: e.meta || {} })));
+      const NAMES: Record<string, string> = { tagline: 'the one-line description', description: 'the description', phone: 'the phone number', website: 'the website',
+        instagram: 'Instagram', booking_url: 'the booking link', uber_eats_url: 'the Uber Eats link', doordash_url: 'the DoorDash link', address_street: 'the street address',
+        address_zip: 'the ZIP code', hours: 'the hours', logo: 'the logo', photo_add: 'a photo (added)', photo_remove: 'a photo (removed)' };
+      await mailTo([accountManager(l)], `${l.name} updated their page`,
+        `<p><b>${esc(l.name)}</b> changed ${[...new Set(edits.map((e) => NAMES[e.field] || e.field))].map(esc).join(', ')} on their page.</p>` +
+        `<p><a href="https://vegansexplore.com/directory/${encodeURIComponent(l.slug)}">See the page</a>. Every change can be undone from Depot &gt; Business outreach &gt; New partners.</p>`, member.email || undefined);
+    };
+
+    if (body.action === 'owner_page') {
+      return json({ ok: true, listing: { id: l.id, name: l.name, slug: l.slug, tagline: l.tagline || '', description: l.description || '', phone: l.phone || '', website: l.website || '',
+        instagram: l.instagram || '', booking_url: l.booking_url || '', uber_eats_url: l.uber_eats_url || '', doordash_url: l.doordash_url || '',
+        address_street: l.address_street || '', address_city: l.address_city || '', address_state: l.address_state || '', address_zip: l.address_zip || '',
+        hours: hoursOf(l.google_hours_json), logo_url: l.logo_url || '', photos }, days: DAYS, limits: { logo_min: 400, photo_min: 1000, photos_max: 12 } });
+    }
+
+    if (body.action === 'owner_update') {
+      const f = body.fields || {};
+      const patch: Record<string, unknown> = {}, edits: { field: string; old_value: unknown; new_value: unknown }[] = [];
+      const urlOk = (v: string) => v === '' || /^https?:\/\/[^\s]+\.[^\s]+$/i.test(v);
+      const TEXT: [string, number][] = [['tagline', 140], ['description', 2000], ['phone', 40], ['address_street', 160], ['address_zip', 12]];
+      for (const [k, max] of TEXT) if (typeof f[k] === 'string') {
+        const v = plain(f[k], max);
+        if (v !== (l[k] || '')) { patch[k] = v || null; edits.push({ field: k, old_value: l[k] || null, new_value: v || null }); }
+      }
+      if (typeof f.instagram === 'string') {
+        const v = plain(f.instagram, 60).replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
+        if (v && !/^[A-Za-z0-9._]{1,30}$/.test(v)) return json({ error: 'bad_instagram' }, 400);
+        if (v !== (l.instagram || '')) { patch.instagram = v || null; edits.push({ field: 'instagram', old_value: l.instagram || null, new_value: v || null }); }
+      }
+      for (const k of ['website', 'booking_url', 'uber_eats_url', 'doordash_url']) if (typeof f[k] === 'string') {
+        let v = plain(f[k], 500);
+        if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
+        if (!urlOk(v)) return json({ error: 'bad_link', field: k }, 400);
+        if (v !== (l[k] || '')) { patch[k] = v || null; edits.push({ field: k, old_value: l[k] || null, new_value: v || null }); }
+      }
+      if (f.hours && typeof f.hours === 'object') {
+        const old = hoursOf(l.google_hours_json), next: Record<string, string> = {};
+        for (const d of DAYS) { const v = plain(String(f.hours[d] ?? ''), 60); if (v) next[d] = v; }
+        if (JSON.stringify(next) !== JSON.stringify(Object.fromEntries(DAYS.filter((d) => old[d]).map((d) => [d, old[d]])))) {
+          patch.google_hours_json = Object.keys(next).length ? next : null; edits.push({ field: 'hours', old_value: l.google_hours_json || null, new_value: patch.google_hours_json });
+        }
+      }
+      if (!edits.length) return json({ ok: true, changed: 0 });
+      patch.updated_at = new Date().toISOString();
+      const { error } = await db.from('listings').update(patch).eq('id', l.id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      await log(edits);
+      return json({ ok: true, changed: edits.length });
+    }
+
+    if (body.action === 'owner_photo_url') {
+      const kind = body.kind === 'logo' ? 'logo' : 'photo';
+      if (kind === 'photo' && photos.length >= 12) return json({ error: 'too_many_photos', max: 12 }, 400);
+      const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' } as Record<string, string>)[String(body.content_type || '')];
+      if (!ext) return json({ error: 'file_type' }, 400);
+      const bytes = Number(body.bytes) || 0;
+      if (bytes <= 0 || bytes > 15728640) return json({ error: 'file_size' }, 400);
+      const path = `media/listings/${l.slug}/owner-${kind}-${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+      const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_url_failed', message: error?.message }, 500);
+      return json({ path, signed_url: up.signedUrl });
+    }
+
+    if (body.action === 'owner_photo_done') {
+      const kind = body.kind === 'logo' ? 'logo' : 'photo';
+      const path = String(body.path || '');
+      if (!path.startsWith(`media/listings/${l.slug}/owner-${kind}-`) || path.includes('..')) return json({ error: 'bad_path' }, 400);
+      const { data: file, error } = await db.storage.from('vegan-media').download(path);
+      if (error || !file) return json({ error: 'not_uploaded' }, 409);
+      const size = imageSize(new Uint8Array(await file.arrayBuffer()));
+      const min = kind === 'logo' ? 400 : 1000;
+      if (!size || Math.min(size.w, size.h) < min) {
+        await db.storage.from('vegan-media').remove([path]);
+        return json({ error: 'low_quality', width: size?.w ?? null, height: size?.h ?? null, min }, 422);
+      }
+      const url = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/${path}`;
+      if (kind === 'logo') {
+        const details = { ...(l.details || {}) } as Record<string, unknown>;
+        delete details.logo_unverified; delete details.logo_unverified_at; delete details.logo_unverified_why;
+        details.logo_source = 'owner';
+        await db.from('listings').update({ logo_url: url, details, updated_at: new Date().toISOString() }).eq('id', l.id);
+        await log([{ field: 'logo', old_value: l.logo_url || null, new_value: url, meta: size }]);
+        return json({ ok: true, logo_url: url });
+      }
+      if (photos.length >= 12) { await db.storage.from('vegan-media').remove([path]); return json({ error: 'too_many_photos', max: 12 }, 400); }
+      const next = [...photos, url];
+      await db.from('listings').update({ gallery_urls: next, updated_at: new Date().toISOString() }).eq('id', l.id);
+      await log([{ field: 'photo_add', old_value: null, new_value: url, meta: size }]);
+      return json({ ok: true, photos: next });
+    }
+
+    if (body.action === 'owner_photo_remove') {
+      const url = String(body.url || '');
+      if (!photos.includes(url)) return json({ error: 'not_found' }, 404);
+      const next = photos.filter((u: string) => u !== url);
+      await db.from('listings').update({ gallery_urls: next, updated_at: new Date().toISOString() }).eq('id', l.id);
+      await log([{ field: 'photo_remove', old_value: url, new_value: null }]);
+      return json({ ok: true, photos: next });
+    }
+  }
+
   // Any Vegan business, anywhere, applies to be listed (Sean, 2026-10-09: "any vegan business can apply to be part of the
   // directory... and that then brings them into our whole ecosystem"). The listing is made unlisted (quarantined) with a
   // claim waiting in Depot > Claims; approving it lists the business and makes the applicant its owner.

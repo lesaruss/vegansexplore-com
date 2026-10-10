@@ -2236,7 +2236,13 @@ function loadPartnerHome(l){
   if(new URLSearchParams(location.search).get('preview') === 'member-owner'){ el.innerHTML = partnerUpsell(l); return; }
   if(!owner){ mountPartnerLocked(el, l); return; }
   var lk = document.querySelector('.tab-btn[data-tab="brand"] .pd-lock'); if(lk) lk.remove();
-  el.innerHTML = '<div class="bp-head"><h3>Your dashboard</h3><span>How many people find ' + esc(l.name) + ' on Vegans Explore. <a href="/claim?listing=' + encodeURIComponent(l.slug || '') + '">Your plan and Passport</a></span></div><div class="aisle-empty">Loading your numbers...</div>';
+  // Edit your page (Sean, 2026-10-10): its own view, one step at a time, ?edit=<step>.
+  var editStep = new URLSearchParams(location.search).get('edit');
+  if(editStep){ mountOwnerEditor(el, l, editStep); return; }
+  el.innerHTML = '<div class="bp-head"><h3>Your dashboard</h3><span>How many people find ' + esc(l.name) + ' on Vegans Explore. <a href="/claim?listing=' + encodeURIComponent(l.slug || '') + '">Your plan and Passport</a></span></div>' +
+    '<div class="oe-cta"><div><b>Your page</b><span>Update your description, hours, links, logo and photos. Changes show on your page right away.</span></div><button type="button" class="bd-btn" data-oe-open>Edit your page</button></div>' +
+    '<div class="aisle-empty">Loading your numbers...</div>';
+  var ob = el.querySelector('[data-oe-open]'); if(ob) ob.addEventListener('click', function(){ ownerEditGo(el, l, 'about'); });
   fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: 30 }) })
     .then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){
       var box = el.querySelector('.aisle-empty'); if(!box) return;
@@ -2248,6 +2254,151 @@ function loadPartnerHome(l){
       box.outerHTML = '<div class="bd-tiles"><div><b>' + n(T.view) + '</b><span>Page views, 30 days</span></div><div><b>' + n(d.stats.visitors) + '</b><span>Visitors</span></div></div>' +
         '<p class="bd-small">' + (d.stats.since ? 'Counting since ' + new Date(d.stats.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. ' : '') + 'Each visitor counts once every 30 minutes; automated browsers are not counted.</p>';
     });
+}
+
+// ---- The owner edits their page (Sean, 2026-10-10). Four steps, one per view (?edit=about|hours|contact|photos), Back /
+// Step N of M / Next at the bottom; Next saves the step (ve-claims owner_update), photos save as they upload. Changes go
+// live at once and each one is logged (ve_listing_edits) so Vegans Explore can undo it.
+var OE_STEPS = [['about', 'About'], ['hours', 'Hours'], ['contact', 'Contact and links'], ['photos', 'Logo and photos']];
+var OE_DATA = null;
+function ownerEditGo(el, l, step){
+  var u = new URL(location.href);
+  if(step){ u.searchParams.set('tab', 'brand'); u.searchParams.set('edit', step); } else u.searchParams.delete('edit');
+  history.pushState(null, '', u.pathname + u.search + u.hash);
+  if(step) mountOwnerEditor(el, l, step); else { OE_DATA = null; loadPartnerHome(l); }
+  var top = el.getBoundingClientRect().top + window.scrollY - 120; if(window.scrollY > top) window.scrollTo(0, Math.max(0, top));
+}
+window.addEventListener('popstate', function(){
+  var el = document.getElementById('pd-home'); if(!el || !window.__veListing) return;
+  if(new URLSearchParams(location.search).get('tab') === 'brand') loadPartnerHome(window.__veListing);
+});
+function oeCss(){
+  if(document.getElementById('oe-css')) return;
+  var st = document.createElement('style'); st.id = 'oe-css';
+  st.textContent = '.oe-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:#f4f8f4;border:1px solid rgba(31,95,34,.18);border-radius:10px;padding:14px 16px;margin:0 0 16px}' +
+    '.oe-cta b{display:block;font-size:15px}.oe-cta span{font-size:13px;color:rgba(26,26,26,.75)}' +
+    '.oe-steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}.oe-steps span{font-size:12px;font-weight:800;padding:6px 12px;border-radius:6px;background:#f1f1f1;color:#555}.oe-steps span.on{background:#1f5f22;color:#fff}' +
+    '.oe-f{display:flex;flex-direction:column;gap:5px;margin:0 0 14px;font-size:13px;font-weight:800}.oe-f small{font-weight:500;color:rgba(26,26,26,.7)}' +
+    '.oe-f input,.oe-f textarea{font:inherit;font-size:15px;font-weight:400;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;box-sizing:border-box}.oe-f textarea{min-height:150px;resize:vertical;line-height:1.5}' +
+    '.oe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:0 14px}' +
+    '.oe-hours{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;align-items:center;margin:0 0 14px}.oe-hours label{font-size:13px;font-weight:800}.oe-hours input{font:inherit;font-size:15px;padding:9px 12px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;box-sizing:border-box}' +
+    '.oe-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid rgba(0,0,0,.09);padding-top:14px;margin-top:6px}.oe-nav .n{font-size:13px;font-weight:700;color:rgba(26,26,26,.7)}' +
+    '.oe-msg{font-size:13px;font-weight:700;color:#1f5f22;min-height:18px;margin:0 0 10px}.oe-msg.bad{color:#a61b1b}' +
+    '.oe-logo{display:flex;gap:14px;align-items:center;margin:0 0 18px}.oe-logo .pic{width:88px;height:88px;border-radius:10px;background:#EAF7EA center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#1f5f22;flex:0 0 auto}' +
+    '.oe-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:0 0 12px}.oe-photos div{position:relative;aspect-ratio:1/1;border-radius:8px;background:#eee center/cover no-repeat}' +
+    '.oe-photos button{position:absolute;top:6px;right:6px;font:inherit;font-size:11px;font-weight:800;padding:4px 8px;border-radius:6px;border:0;background:rgba(0,0,0,.7);color:#fff;cursor:pointer}' +
+    '.oe-file{display:inline-flex}.oe-file input{position:absolute;width:1px;height:1px;opacity:0}';
+  document.head.appendChild(st);
+}
+function oeCall(body){
+  return fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+    .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
+}
+function mountOwnerEditor(el, l, step){
+  oeCss(); window.__veListing = l;
+  var i = OE_STEPS.map(function(x){ return x[0]; }).indexOf(step); if(i < 0) i = 0; step = OE_STEPS[i][0];
+  if(!OE_DATA){
+    el.innerHTML = '<div class="aisle-empty">Loading your page...</div>';
+    oeCall({ action: 'owner_page', listing_id: l.id }).then(function(d){
+      if(!d || !d.ok){ el.innerHTML = '<div class="aisle-empty">We could not open your page just now. Try again in a moment.</div>'; return; }
+      OE_DATA = d; mountOwnerEditor(el, l, step);
+    });
+    return;
+  }
+  var D = OE_DATA.listing, LIM = OE_DATA.limits || { logo_min: 400, photo_min: 1000, photos_max: 12 };
+  var head = '<div class="bp-head"><h3><a href="#" data-oe-home style="color:inherit">Your dashboard</a> &rsaquo; Edit your page</h3><span>Changes show on your page right away.</span></div>' +
+    '<div class="oe-steps">' + OE_STEPS.map(function(x, k){ return '<span class="' + (k === i ? 'on' : '') + '">' + (k + 1) + '. ' + esc(x[1]) + '</span>'; }).join('') + '</div>';
+  var body = '';
+  if(step === 'about'){
+    body = '<label class="oe-f">One line about ' + esc(D.name) + '<small>What people see first. Up to 140 characters.</small><input id="oe-tagline" maxlength="140" value="' + esc(D.tagline) + '"></label>' +
+      '<label class="oe-f">Your description<small>What you serve or make, what makes you different, what to try first.</small><textarea id="oe-description" maxlength="2000">' + esc(D.description) + '</textarea></label>' +
+      '<p class="bd-small">Your name, city, category and how Vegan you are stay as we have them. To change one, reply to any email from us.</p>';
+  } else if(step === 'hours'){
+    body = '<p class="bd-small" style="margin:0 0 12px">Write each day the way you want it shown, for example 11 AM to 9 PM, or Closed. Leave a day empty to hide it.</p><div class="oe-hours">' +
+      (OE_DATA.days || []).map(function(d){ return '<label for="oe-h-' + d + '">' + d + '</label><input id="oe-h-' + d + '" data-day="' + d + '" maxlength="60" value="' + esc((D.hours || {})[d] || '') + '" placeholder="11 AM to 9 PM">'; }).join('') + '</div>';
+  } else if(step === 'contact'){
+    var f = function(id, label, hint, v, ph){ return '<label class="oe-f">' + label + (hint ? '<small>' + hint + '</small>' : '') + '<input id="oe-' + id + '" value="' + esc(v) + '" placeholder="' + esc(ph || '') + '"></label>'; };
+    body = '<div class="oe-grid">' + f('phone', 'Phone', '', D.phone, '(305) 555-0100') + f('website', 'Website', '', D.website, 'https://') +
+      f('instagram', 'Instagram', 'Your handle, without the @', D.instagram, 'yourbusiness') + f('booking_url', 'Reservations or booking link', '', D.booking_url, 'https://') +
+      f('uber_eats_url', 'Uber Eats link', '', D.uber_eats_url, 'https://') + f('doordash_url', 'DoorDash link', '', D.doordash_url, 'https://') +
+      f('address_street', 'Street address', esc([D.address_city, D.address_state].filter(Boolean).join(', ')), D.address_street, '') + f('address_zip', 'ZIP code', '', D.address_zip, '') + '</div>';
+  } else {
+    body = '<div class="oe-logo"><div class="pic" id="oe-logo-pic"' + (D.logo_url ? ' style="background-image:url(\'' + esc(D.logo_url) + '\')"' : '') + '>' + (D.logo_url ? '' : esc(l.initials || (D.name || '?').charAt(0))) + '</div>' +
+      '<div><b>Your logo</b><p class="bd-small" style="margin:4px 0 8px">A clear, official logo, at least ' + LIM.logo_min + ' pixels on its shorter side. Until you add one, your page shows the first letter of your name.</p>' +
+      '<label class="bd-btn o oe-file">' + (D.logo_url ? 'Replace your logo' : 'Add your logo') + '<input type="file" accept="image/jpeg,image/png,image/webp" data-oe-up="logo"></label></div></div>' +
+      '<b>Your photos</b><p class="bd-small" style="margin:4px 0 10px">Up to ' + LIM.photos_max + ' photos you own, at least ' + LIM.photo_min + ' pixels on the shorter side, so they look sharp.</p>' +
+      '<div class="oe-photos">' + (D.photos || []).map(function(u){ return '<div style="background-image:url(\'' + esc(u) + '\')"><button type="button" data-oe-rm="' + esc(u) + '">Remove</button></div>'; }).join('') + '</div>' +
+      ((D.photos || []).length < LIM.photos_max ? '<label class="bd-btn o oe-file">Add a photo<input type="file" accept="image/jpeg,image/png,image/webp" data-oe-up="photo"></label>' : '');
+  }
+  el.innerHTML = head + '<div id="oe-body">' + body + '</div><p class="oe-msg" id="oe-msg" role="status"></p>' +
+    '<div class="oe-nav">' + (i > 0 ? '<button type="button" class="bd-btn o" data-oe-back>Back</button>' : '<button type="button" class="bd-btn o" data-oe-home>Back to your dashboard</button>') +
+    '<span class="n">Step ' + (i + 1) + ' of ' + OE_STEPS.length + '</span>' +
+    '<button type="button" class="bd-btn" data-oe-next>' + (i < OE_STEPS.length - 1 ? 'Save and next' : 'Done') + '</button></div>';
+  var msg = function(t, bad){ var m = document.getElementById('oe-msg'); if(m){ m.textContent = t; m.classList.toggle('bad', !!bad); } };
+  var val = function(id){ var x = document.getElementById('oe-' + id); return x ? x.value : undefined; };
+  function fields(){
+    if(step === 'about') return { tagline: val('tagline'), description: val('description') };
+    if(step === 'hours'){ var h = {}; Array.prototype.forEach.call(el.querySelectorAll('[data-day]'), function(x){ h[x.dataset.day] = x.value; }); return { hours: h }; }
+    if(step === 'contact'){ var o = {}; ['phone', 'website', 'instagram', 'booking_url', 'uber_eats_url', 'doordash_url', 'address_street', 'address_zip'].forEach(function(k){ o[k] = val(k); }); return o; }
+    return null;
+  }
+  function save(){
+    var f = fields(); if(!f) return Promise.resolve(true);
+    msg('Saving...');
+    return oeCall({ action: 'owner_update', listing_id: l.id, fields: f }).then(function(r){
+      if(!r || !r.ok){
+        msg(r && r.error === 'bad_link' ? 'That link does not look right. Check it starts with https:// and try again.' : r && r.error === 'bad_instagram' ? 'That Instagram handle does not look right.' : 'Could not save. Try again.', true);
+        return false;
+      }
+      Object.keys(f).forEach(function(k){ if(k === 'hours'){ var h = {}; Object.keys(f.hours).forEach(function(d){ if(String(f.hours[d]).trim()) h[d] = String(f.hours[d]).trim(); }); D.hours = h; } else D[k] = f[k]; });
+      if(r.changed) Object.keys(f).forEach(function(k){ if(k !== 'hours') l[k] = f[k]; });
+      msg(r.changed ? 'Saved. It is live on your page.' : 'Nothing changed.');
+      return true;
+    });
+  }
+  Array.prototype.forEach.call(el.querySelectorAll('[data-oe-home]'), function(b){ b.addEventListener('click', function(e){ e.preventDefault(); ownerEditGo(el, l, null); }); });
+  var bk = el.querySelector('[data-oe-back]'); if(bk) bk.addEventListener('click', function(){ ownerEditGo(el, l, OE_STEPS[i - 1][0]); });
+  el.querySelector('[data-oe-next]').addEventListener('click', function(){
+    var b = this; b.disabled = true;
+    save().then(function(ok){ b.disabled = false; if(!ok) return; if(i < OE_STEPS.length - 1) ownerEditGo(el, l, OE_STEPS[i + 1][0]); else { ownerEditGo(el, l, null); setTimeout(function(){ location.reload(); }, 50); } });
+  });
+  function dims(file){ return new Promise(function(res){ var u = URL.createObjectURL(file), im = new Image(); im.onload = function(){ res({ w: im.naturalWidth, h: im.naturalHeight }); URL.revokeObjectURL(u); }; im.onerror = function(){ res(null); URL.revokeObjectURL(u); }; im.src = u; }); }
+  Array.prototype.forEach.call(el.querySelectorAll('[data-oe-up]'), function(inp){
+    inp.addEventListener('change', function(){
+      var file = inp.files && inp.files[0], kind = inp.dataset.oeUp, min = kind === 'logo' ? LIM.logo_min : LIM.photo_min; if(!file) return;
+      if(!/^image\/(jpeg|png|webp)$/.test(file.type)){ msg('Please use a JPG, PNG or WebP file.', true); return; }
+      dims(file).then(function(d){
+        if(!d){ msg('That file could not be read as a picture.', true); return; }
+        if(Math.min(d.w, d.h) < min){ msg('This picture is ' + d.w + ' by ' + d.h + ' pixels, too small to look sharp. Please use one at least ' + min + ' pixels on the shorter side.', true); return; }
+        msg('Uploading...');
+        oeCall({ action: 'owner_photo_url', listing_id: l.id, kind: kind, content_type: file.type, bytes: file.size }).then(function(u){
+          if(!u || !u.signed_url){ msg(u && u.error === 'file_size' ? 'That file is over 15 MB. Please use a smaller one.' : u && u.error === 'too_many_photos' ? 'You have the most photos a page can hold. Remove one first.' : 'Could not start the upload. Try again.', true); return; }
+          var x = new XMLHttpRequest(); x.open('PUT', u.signed_url); x.setRequestHeader('Content-Type', file.type); x.setRequestHeader('x-upsert', 'true');
+          x.onload = function(){
+            if(x.status >= 300){ msg('The upload did not go through. Try again.', true); return; }
+            oeCall({ action: 'owner_photo_done', listing_id: l.id, kind: kind, path: u.path }).then(function(r){
+              if(r && r.error === 'low_quality'){ msg('That picture is too small to look sharp. Please use one at least ' + min + ' pixels on the shorter side.', true); return; }
+              if(!r || !r.ok){ msg('Could not save it. Try again.', true); return; }
+              if(r.logo_url){ D.logo_url = r.logo_url; l.logo_url = r.logo_url; }
+              if(r.photos) D.photos = r.photos;
+              mountOwnerEditor(el, l, step); msg(kind === 'logo' ? 'Your logo is live on your page.' : 'Your photo is live on your page.');
+            });
+          };
+          x.onerror = function(){ msg('The upload did not go through. Check your connection and try again.', true); };
+          x.send(file);
+        });
+      });
+    });
+  });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-oe-rm]'), function(b){
+    b.addEventListener('click', function(){
+      if(!confirm('Remove this photo from your page?')) return;
+      oeCall({ action: 'owner_photo_remove', listing_id: l.id, url: b.dataset.oeRm }).then(function(r){
+        if(!r || !r.ok){ msg('Could not remove it. Try again.', true); return; }
+        D.photos = r.photos; mountOwnerEditor(el, l, step); msg('Removed from your page.');
+      });
+    });
+  });
 }
 function partnerUpsell(l){
   var front = Date.now() < Date.parse('2027-01-01T05:00:00Z');
