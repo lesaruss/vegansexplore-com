@@ -229,24 +229,39 @@ links a campaign to a listing, but the table has no public read, so it needs to 
 ## Business outreach, city by city (Sean, 2026-10-10)
 
 "Let's just make sure we're not sending any emails... when I say go... let's go city by city. And not try to hit everybody
-at once." The goal is businesses on board for Q1 2027 through Front Row Start (no charge until January 1, cancel before then
-and owe nothing). Migration `20261010_ve_outreach.sql`.
+at once." Then: "see who is on the queue, approve who the emails are going to be going out to... on Monday, we're sending
+it to these 60... see what the draft is... and we commit to it for like maybe 15 days before we make any drastic changes."
+The goal is businesses on board for Q1 2027 through Front Row Start. Migrations `20261010_ve_outreach.sql` and
+`20261010_ve_outreach_batches.sql`; edge function `ve-outreach`; console **Depot > Business outreach**
+(`/admin/depot/business-outreach`).
 
-- `ve_outreach_cities`: one row per city with the `VE_HUBS` match rule (change both together), `enabled` (every city
-  **off**; only Sean turns one on) and `daily_cap` (30).
-- `ve_outreach_templates`: three emails from Sean (sender `email_brands` `lesaruss`, replies to contact@lesaruss.com), Day 0
-  "We built a page for {business}", Day 4 "Your front-row seat in {city}", Day 10 "Last note from me". Placeholders
-  `{first_name} {business} {city} {link} {guide}` (`{guide}` is Liz, or Maya for a Dairy Guide brand). No price in them:
-  the $111 is on the Partner Dashboard. `{link}` is the business's personal tracked `/go/` link to its page.
-- `ve_outreach_contacts`: one per listing (public, unclaimed, with an email), status Not sent yet (`not_sent`) until its
-  city is on. A click, reply or claim makes it `interested`; trigger `trg_ve_outreach_route` stops the sequence and routes it
-  to the city's Community Manager, or Sean when the city has none. `ve_outreach_queue` is the interest queue;
-  `ve_outreach_events` is the history.
-- `ve_outreach_due()` is what a sender would send now (enabled cities only, within the cap, brands first, never a
-  suppressed address). **No sender is wired yet**: it returns nothing while every city is off.
+- **The console** (one thing per view): Upcoming sends (each send day is a batch: Waiting for approval, Approved, Sent) and
+  the cities. A send day lists its businesses (who they are, where the email goes and where we found it, the Guides they
+  are in) with Preview; a business opens its three emails exactly as they go out beside its real page (framed,
+  `?preview=1`), where Sean can fix the name or email, take it out of the day or mark it Never email. **Approve this send**
+  approves all three emails for that day's businesses. Plan sends proposes days: first send day and businesses per weekday
+  (`ve_outreach_plan`, brands first). The first approval in a city sets its 15-day commitment
+  (`ve_outreach_cities.committed_until`, shown on the city card): no big changes to the emails or the plan before then.
+- **Two gates before anything sends**: the batch is approved, and the city is on (`ve_outreach_cities.enabled`, every city
+  off). `ve_outreach_due()` is what a sender would send: approved batches whose day has come, then follow-ups when due,
+  never a suppressed address. **No sender is wired yet.**
+- **The emails** (`ve_outreach_templates`): three from Sean (sender `email_brands` `lesaruss`, replies to
+  contact@lesaruss.com), Day 0 "We built a page for {business}", Day 4 "Your front-row seat{in_city}", Day 10 "Last note
+  from me". `ve_outreach_render(contact, step)` fills them; the console and the sender both use it. `{in_city}` is " in
+  South Florida" (nothing for a national brand), `{guide}` is Liz (Maya for a Dairy Guide brand), and `{guide_line}` names a
+  Guide the business is in, as a brand or as a store carrying its products (`ve_outreach_guides`), with a link to it in the
+  Guide (`/guides/<guide>#/listing/<slug>`). No price in the emails: the $111 is on the Partner Dashboard.
+- **Contacts** (`ve_outreach_contacts`): one per public, unclaimed listing with an email, by city; national brands are
+  their own row, `brands`. A click, reply or claim makes it `interested`; `trg_ve_outreach_route` stops its emails and
+  routes it to the city's Community Manager, or Sean. `ve_outreach_queue` is the interest queue.
+- **Find emails** (city card, `ve-outreach` `find_emails`, 20 websites a press): reads the business's own home, contact
+  and about pages, server side, and takes only an email published there (mailto, plain text, Cloudflare-protected), with
+  the page as `email_source`. Never guessed. Each listing is tried once (`ve_outreach_lookups`).
+- Ops: `ve-outreach` also takes `LESARUSS_ADMIN_TOKEN` for overview, preview, plan and find_emails; approving, changing a
+  row and the city switch need a signed-in super admin.
 - The June 2026 `listing_outreach` queue (the old $11 claim offer, never sent) was retired on 2026-10-10 (`skipped`, note).
-- Not built yet: the sender (Resend through the warmup), click/reply/claim hooks, the HQ console, onboarding after sign-up.
-  Most listings have no email (35 contacts across all cities, 20 in South Florida), so finding emails comes first.
+- Not built yet: the sender (Resend through the warmup, a personal `/go/` link each), click/reply/claim hooks, onboarding
+  after sign-up, and the interest queue's own view.
 
 ## Tracked links (Sean, 2026-10-04)
 
