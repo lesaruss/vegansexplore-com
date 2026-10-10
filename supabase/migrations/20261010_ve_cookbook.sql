@@ -99,6 +99,8 @@ begin
     if r.author_kind = 'member' and r.author_member_id is not null
        and not exists (select 1 from points_ledger where ref_id = 'recipe:' || r.id) then
       insert into points_ledger (member_id, delta, reason, ref_id) values (r.author_member_id, 50, 'recipe_approved', 'recipe:' || r.id);
+      -- Both balances, the way spend_points_for_guide moves them: a Guide unlock spends members.lesars_balance.
+      update members set lesars_balance = coalesce(lesars_balance, 0) + 50 where id = r.author_member_id;
       select apply_member_points_delta(r.author_member_id, 50) into w;
       paid := true;
     end if;
