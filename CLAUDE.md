@@ -461,7 +461,18 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   browser (1600 px JPEG, which drops location data), go to `vegan-media/media/guides/dairy/made/` through a signed upload
   (`photo_start`, `photo_done`, five a day, 15 MB cap), wait in **Depot > Cookbook > Made it photos** (`#photos`, `photo_queue`,
   `photo_review`), and show with the member's first name once approved (`recipe_photos`, migration `20261010_dairy_guide_v2.sql`).
-  See for yourself is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts).
+  The truth (named See for yourself until 2026-10-10; Sean: "that's just the harsh reality that people don't want to see")
+  is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts). Maya's recorded line
+  on it still says See for yourself until Sean approves a new one.
+- **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
+  recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
+  at the top right (`.dg-acts`). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
+  stay the Directory's own card, with Save added under + Vote. Picture style and placement follow the Directory card.
+- **My list** (Sean, 2026-10-10: "a tab or a drop down that says my list"): a Guide owner taps Save on any swap, recipe, brand,
+  cookbook or episode, and it shows in the My list tab (members only, after The truth), one kind per view
+  (`#/mylist/swaps|recipes|brands|cookbooks|episodes|shared`), newest first, in the same tiles. Recipes you shared is the same
+  list as Cookbook > My recipes (`drawMine`). Data: `ve_guide_saves` (migration `20261010_ve_guide_saves.sql`), through
+  `ve-cookbook` `saves` / `save` (500 per member per Guide). Chefs, when they come, get the same tile with a square of their face.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
