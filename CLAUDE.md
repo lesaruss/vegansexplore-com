@@ -226,6 +226,28 @@ prize for the most points, prizes for each city's top 10, and digital rewards (c
 links a campaign to a listing, but the table has no public read, so it needs to come through the
 `ve-bounties` function first.
 
+## Business outreach, city by city (Sean, 2026-10-10)
+
+"Let's just make sure we're not sending any emails... when I say go... let's go city by city. And not try to hit everybody
+at once." The goal is businesses on board for Q1 2027 through Front Row Start (no charge until January 1, cancel before then
+and owe nothing). Migration `20261010_ve_outreach.sql`.
+
+- `ve_outreach_cities`: one row per city with the `VE_HUBS` match rule (change both together), `enabled` (every city
+  **off**; only Sean turns one on) and `daily_cap` (30).
+- `ve_outreach_templates`: three emails from Sean (sender `email_brands` `lesaruss`, replies to contact@lesaruss.com), Day 0
+  "We built a page for {business}", Day 4 "Your front-row seat in {city}", Day 10 "Last note from me". Placeholders
+  `{first_name} {business} {city} {link} {guide}` (`{guide}` is Liz, or Maya for a Dairy Guide brand). No price in them:
+  the $111 is on the Partner Dashboard. `{link}` is the business's personal tracked `/go/` link to its page.
+- `ve_outreach_contacts`: one per listing (public, unclaimed, with an email), status Not sent yet (`not_sent`) until its
+  city is on. A click, reply or claim makes it `interested`; trigger `trg_ve_outreach_route` stops the sequence and routes it
+  to the city's Community Manager, or Sean when the city has none. `ve_outreach_queue` is the interest queue;
+  `ve_outreach_events` is the history.
+- `ve_outreach_due()` is what a sender would send now (enabled cities only, within the cap, brands first, never a
+  suppressed address). **No sender is wired yet**: it returns nothing while every city is off.
+- The June 2026 `listing_outreach` queue (the old $11 claim offer, never sent) was retired on 2026-10-10 (`skipped`, note).
+- Not built yet: the sender (Resend through the warmup), click/reply/claim hooks, the HQ console, onboarding after sign-up.
+  Most listings have no email (35 contacts across all cities, 20 in South Florida), so finding emails comes first.
+
 ## Tracked links (Sean, 2026-10-04)
 
 Every link we send for a campaign (a one-on-one message, an email, a post, a flyer) is a tracked
