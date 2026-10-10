@@ -224,6 +224,11 @@ async function decideGoogle(row: any, l: any, ig: any) {
 
 async function backlogRun(igN: number, gN: number) {
   let checked = 0;
+  // Three failed tries: it goes to Check with the reason, so it is seen instead of sitting unsorted.
+  const { data: stuck } = await db.from('ve_backlog_checks').select('listing_id, error, track').in('stage', ['pending', 'ig_done']).gte('attempts', 3).limit(200);
+  for (const r of (stuck || []) as any[]) {
+    await db.from('ve_backlog_checks').update({ stage: 'done', verdict: 'check', reason: `We could not read it on ${r.track === 'ig' ? 'Instagram' : 'Google'} (${r.error || 'no answer'}); look by hand`, checked_at: new Date().toISOString() }).eq('listing_id', r.listing_id);
+  }
   // 1. Instagram: one batch of accounts.
   const { data: igRows } = await db.from('ve_backlog_checks').select('listing_id, attempts').eq('track', 'ig').eq('stage', 'pending').lt('attempts', 3).limit(igN);
   if (igRows?.length) {
@@ -246,6 +251,8 @@ async function backlogRun(igN: number, gN: number) {
       if (!h) patch = { stage: 'done', verdict: 'thin', reason: 'The Instagram handle we have is not a real handle', checked_at: now };
       else if (!ig) patch = { attempts: r.attempts + 1, error: 'no answer from Instagram' };
       else if (ig.missing) patch = { stage: 'done', ig: { handle: h, missing: true }, verdict: 'gone', reason: `@${h} does not exist on Instagram`, checked_at: now };
+      // Age-restricted accounts (often bars and drink brands) never open to the scraper: a person looks.
+      else if (/restricted/i.test(ig.error)) patch = { stage: 'done', ig: { handle: h }, verdict: 'check', reason: `@${h} is an age-restricted Instagram account; look by hand`, checked_at: now };
       else if (ig.error) patch = { attempts: r.attempts + 1, error: ig.error };
       else {
         const dup = await duplicateOf(l, null, h);
