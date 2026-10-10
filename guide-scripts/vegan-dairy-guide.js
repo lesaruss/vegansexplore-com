@@ -241,7 +241,7 @@
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
     var m = mode(), price = box.querySelector('.dg-jb-price'), btn = box.querySelector('[data-join]'), signin = box.querySelector('.dg-jb-in');
     price.innerHTML = priced() && (m === 'unlock' || m === 'buy') ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
-      : '<b>$11</b><small>one time<br>' + (priced() ? 'with a Guide credit' : 'Founding Membership') + '</small>';
+      : '<b>$11</b><small>one time<br>purchase</small>'; // Sean, 2026-10-10: "$11 one time purchase", two rows
     btn.textContent = ctaLabel();
     signin.style.display = m === 'join' ? '' : 'none';
   }

@@ -42,9 +42,11 @@
     body.dg-member .dg-for-member{display:block !important;}
     body.dg-member .dg-for-guest{display:none !important;}
     .dg-joinbox{flex:0 0 auto;display:flex;align-items:center;gap:14px;background:rgba(6,14,8,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(197,242,199,0.28);border-radius:12px;padding:9px 10px 9px 16px;}
-    .dg-jb-price{display:flex;align-items:baseline;gap:6px;white-space:nowrap;}
-    .dg-jb-price b{font-size:26px;font-weight:900;line-height:1;}
-    .dg-jb-price small{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;line-height:1.3;}
+    /* The price is as tall as the button beside it: $11, then "one time / purchase" on two rows (Sean, 2026-10-10) */
+    .dg-jb-price{display:flex;align-items:center;gap:8px;white-space:nowrap;height:42px;}
+    .dg-jb-price b{font-size:38px;font-weight:900;line-height:42px;letter-spacing:-0.01em;}
+    .dg-jb-price small{display:block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;line-height:16px;}
+    .dg-joinbox .dg-btn{min-height:42px;}
     .dg-jb-in{font-size:12px;line-height:1.35;color:#e6f4e7;}
     .dg-jb-in a{color:#c5f2c7;font-weight:800;white-space:nowrap;}
     .dg-status{font-size:12.5px;font-weight:700;color:#ffd79a;}
@@ -370,7 +372,13 @@
       .dg-top{padding:16px 16px 14px;}
       .dg-menu{display:none;}
       .dg-menu-select{display:block;margin-top:12px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}
-      .dg-joinbox{width:100%;flex-wrap:wrap;}
+      /* Phones: price and button on one row, the button filling it; Already a member? Sign in on one line under them */
+      .dg-joinbox{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px 14px;padding:12px 12px 12px 14px;}
+      .dg-joinbox .dg-btn{width:100%;}
+      .dg-joinbox .dg-jb-in{grid-column:1 / -1;text-align:center;border-top:1px solid rgba(197,242,199,0.2);padding-top:9px;}
+      .dg-joinbox .dg-jb-in br{display:none;}
+      .dg-joinbox .dg-jb-in a{margin-left:4px;}
+      .dg-joinbox .dg-status{grid-column:1 / -1;}
       .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
       /* Phones (Sean, 2026-10-10): Maya full width on top with her words under her, a Hide / Show switch so she never
          takes over the screen, and Back / N of M / Next at the bottom of the content; Next goes back up to her. */
@@ -399,7 +407,7 @@
     </div>
     <!-- Visitors: the $11 box. Members: search. body.dg-member switches them. -->
     <div class="dg-joinbox dg-for-guest">
-      <div class="dg-jb-price"><b>$11</b><small>one time<br>Founding Membership</small></div>
+      <div class="dg-jb-price"><b>$11</b><small>one time<br>purchase</small></div>
       <button type="button" class="dg-btn" data-join>Join for $11</button>
       <div class="dg-jb-in">Already a member?<br><a href="#" data-signin>Sign in</a></div>
       <span class="dg-status" role="status"></span>
