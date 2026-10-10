@@ -418,23 +418,26 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
 ## Guide pricing (LOCKED by Sean 2026-10-10, canon `canon-ve-guide-pricing`)
 
 "These guides are well worth way more than $11. They're not just simple PDFs. They're practically whole mini apps."
-Every paid Guide is **$11 or 1,100 points**. The $11 Founding Membership credits 1,100 points ($1 = 100 points), enough
-for a first Guide of the member's choice. **Passport** ($11 a month or $111 a year, `members.membership_tier = 'passport'`)
-opens every Guide, current and future, while it is active. **Free Guides** (the Welcome Guide, which walks through every
-section of the site in the Dairy Guide format, and the Partner Guide on a listing's Partner Dashboard tab) are open to
-everyone: they are the enrollment tool.
+Every paid Guide is **$11 or 1,100 points**, and a Guide a member unlocks is theirs to keep. The $11 Founding Membership
+credits 1,100 points ($1 = 100 points), enough for a first Guide of the member's choice. **Passport** ($11 a month or $111
+a year) gives **points, not access**: 1,100 points for every month paid, 13,200 for a year paid up front, credited by
+`ve-stripe-webhook` at signup and each renewal (Sean, 2026-10-10: unlocking 20 Guides in one Passport month and then
+downgrading must not decide who keeps what; points can buy other things too). **Free Guides** (the Welcome Guide, which
+walks through every section of the site in the Dairy Guide format, and the Partner Guide on a listing's Partner Dashboard
+tab) are open to everyone: they are the enrollment tool.
 
 - `ve_guides.access_rule`: `points` (cost 1,100), `free`, or the legacy `membership`. `ve-guide-unlock` `status`/`open`
-  return `via` (free, purchase, passport, membership); `unlock` spends points and never charges a Passport member.
+  return `via` (free, purchase, membership); `unlock` spends points and never charges twice.
 - The Dairy Guide is still `membership` until it flips to `points` (the commented line in `20261010_ve_guide_pricing.sql`).
   Every member active on 2026-10-10 already owns it (35 rows in `ve_guide_purchases`, 0 points spent); at the flip,
   members who joined since get their row too. Its page is ready for both rules and reads `access_rule` from
   `ve-guide-unlock` (`ST` in `guide-scripts/vegan-dairy-guide.js`), so the flip switches every offer at once: signed out,
   Join for $11 ("gives you 1,100 points: enough for this Guide"); an account that is not a Founding Member yet, Become a
   Founding Member; enough points, **Unlock with 1,100 points** (`unlock`); short, **Add points** ($11 / $25 / $50 through
-  `ve-entry-checkout`, back with `?topup=success`) and Passport. Maya's Get access line on points is `sayPoints`, played
-  from `CLIPS.join_points` once recorded; the welcome video no longer says the Guide comes with membership.
-- What the Guides say about prices lives in `ve-guide-platform-facts` and `guide_kb_answers`; both say 1,100 now.
+  `ve-entry-checkout`, back with `?topup=success`) and Passport (1,100 points a month). Maya's Get access line on points
+  is `sayPoints`, played from `CLIPS.join_points` once recorded; the welcome video no longer says the Guide comes with
+  membership.
+- What the Guides say about prices lives in `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

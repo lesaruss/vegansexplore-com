@@ -1,6 +1,6 @@
--- Guide pricing (Sean, 2026-10-10, canon-ve-guide-pricing): every paid Guide is $11 or 1,100 points,
--- Passport opens every Guide (ve-guide-unlock), and free Guides (the Welcome Guide, the Partner Guide)
--- open for everyone. The Dairy Guide moves from "comes with the membership" to points once its page
+-- Guide pricing (Sean, 2026-10-10, canon-ve-guide-pricing): every paid Guide is $11 or 1,100 points and
+-- is kept once unlocked; Passport gives points (1,100 a month, 13,200 a year, ve-stripe-webhook), not
+-- access; free Guides (the Welcome Guide, the Partner Guide) open for everyone. The Dairy Guide moves from "comes with the membership" to points once its page
 -- offers the unlock; members active today keep it, because they were told it came with their membership.
 
 alter table public.ve_guides drop constraint if exists ve_guides_access_rule_check;
