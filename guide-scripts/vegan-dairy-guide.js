@@ -178,11 +178,6 @@
     return '<div class="dg-swap"><h3>' + esc(s.replace) + '</h3><dl><dt>Shelf</dt><dd>' + esc(s.shelf) + '</dd><dt>Pantry</dt><dd>' + esc(s.pantry) + '</dd></dl>' +
       (s.tip ? '<div class="dg-tip">' + esc(s.tip) + '</div>' : '') + '</div>';
   }
-  function recipeCard(r, sub) {
-    return '<div class="dg-card dg-recipe"><h3>' + esc(r.title) + '</h3><div class="dg-bcat">' + esc(sub) + '</div>' +
-      (r.steps.length > 1 ? '<ol>' + r.steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' : '<p style="margin-top:8px">' + esc(r.steps[0]) + '</p>') +
-      (r.tip ? '<div class="dg-note">Tip: ' + esc(r.tip) + '</div>' : '') + '</div>';
-  }
   function podCard(p) {
     return '<a class="dg-pod" href="#/pulse/watch/' + encodeURIComponent(p.slug) + '"><div class="dg-pod-img" style="background-image:url(\'' + esc(p.thumbnail_url || '') + '\')"></div>' +
       '<div class="dg-pod-b"><div class="dg-pod-show">' + esc(p.podcast_show || 'Vegans Explore') + '</div><div class="dg-pod-t">' + esc(p.title) + '</div><div class="dg-pod-s">' + esc(p.summary || '') + '</div></div></a>';
@@ -299,56 +294,123 @@
     draw();
   }
 
-  // The Cookbook (Sean, 2026-10-07): recipes, cookbooks and chefs, plus "What can I make?" from what is in the kitchen.
-  function cookRecipes() {
-    var ours = MEM.recipes.map(function (r) { return { title: r.title, from: 'Vegans Explore kitchen', time: r.time, steps: r.steps, tip: r.tip }; });
-    var pantry = MEM.swaps.filter(function (s) { return /blend|pulse|simmer|whip|stir|warm|tbsp|cup/i.test(s.pantry) && s.pantry.length > 40; })
-      .map(function (s) { return { title: 'Homemade ' + s.replace.toLowerCase().replace(/, (cooking|baking)$/, ''), from: 'From the swap list', time: '', steps: [s.pantry], tip: s.tip }; });
-    return ours.concat(pantry);
+  // The Cookbook (Sean, 2026-10-07; Phase 1 built 2026-10-10). Recipes come from ve-cookbook: Maya's (Guide badge) and
+  // the ones members share (Waiting for approval until Sean approves them in Depot > Cookbook; 50 points when they go in).
+  // Members vote for a recipe and can say "didn't work for me"; three different members pull it for retesting.
+  // One thing per view: #/cookbook (the list), #/cookbook/r/<slug> (one recipe), #/cookbook/new/<step> (share one),
+  // #/cookbook/mine (yours, with where each one stands).
+  var COOK_URL = SB + '/functions/v1/ve-cookbook';
+  var COOK = null, COOK_TITLES = null, VOTED = {}, REPORTED = {}, MINE = null, cookFilter = '';
+  function cookApi(body) {
+    var a = auth(), tok = a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null, h = { 'Content-Type': 'application/json' };
+    if (tok) h.Authorization = 'Bearer ' + tok;
+    return fetch(COOK_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
   }
+  function loadCookbook(then) {
+    cookApi({ action: 'list', guide: 'vegan-dairy-guide' }).then(function (d) {
+      if (d.member) {
+        COOK = d.recipes || []; VOTED = {}; REPORTED = {};
+        (d.voted || []).forEach(function (id) { VOTED[id] = 1; }); (d.reported || []).forEach(function (id) { REPORTED[id] = 1; });
+      } else COOK_TITLES = (d.recipes || []).map(function (r) { return r.title; });
+      if (then) then();
+    }).catch(function () { if (COOK == null) COOK = member() ? [] : null; if (then) then(); });
+  }
+  function recipeBySlug(slug) { var f = null; (COOK || []).forEach(function (r) { if (r.slug === slug) f = r; }); return f; }
+  var STATUS_TAG = { pending: ['Waiting for approval', 'wait'], live: ['Live', 'live'], retesting: ['Being retested', 'retest'], rejected: ['Needs a change', 'change'], retired: ['Not live', 'off'] };
+  function tag(st) { var t = STATUS_TAG[st]; return t ? '<span class="dg-tag dg-tag-' + t[1] + '">' + esc(t[0]) + '</span>' : ''; }
+  function byline(r) {
+    if (r.author.kind === 'guide') {
+      var art = window.VEGuideArt ? VEGuideArt(r.author.guide || 'maya', 'square') : '';
+      return '<span class="dg-by">' + (art ? '<i style="background-image:url(\'' + esc(art) + '\')"></i>' : '') + '<b>' + esc(r.author.name) + '</b><span class="dg-badge">Guide</span></span>';
+    }
+    return '<span class="dg-by"><b>' + esc(r.author.name) + '</b><span class="dg-badge dg-badge-m">' + (r.author.kind === 'chef' ? 'Chef' : 'Member') + '</span></span>';
+  }
+  function recipeTile(r) {
+    return '<a class="dg-rcp" href="#/cookbook/r/' + encodeURIComponent(r.slug) + '"><div class="dg-rcp-top">' + byline(r) + (r.status === 'retesting' ? tag('retesting') : '') + '</div>' +
+      '<h3>' + esc(r.title) + '</h3><div class="dg-rcp-meta">' + [r.time, r.steps.length > 1 ? r.steps.length + ' steps' : 'One step'].filter(Boolean).map(esc).join(' &middot; ') +
+      '<span class="dg-votes' + (VOTED[r.id] ? ' on' : '') + '">' + HEART + (r.votes || 0) + '</span></div></a>';
+  }
+  var HEART = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+
+  // What can I make? reads the same recipes.
+  function cookRecipes() { return (COOK || []).map(function (r) { return { title: r.title, slug: r.slug, from: r.author.name, steps: r.steps, ingredients: r.ingredients }; }); }
   var pantryPick = {};
+  var COOK_SUBS = [['Recipes', ''], ['What can I make?', 'make'], ['Cookbooks', 'books'], ['Chefs', 'chefs'], ['My recipes', 'mine']];
   function viewCookbook(sub) {
+    var parts = String(sub || '').split('/');
     if (!member()) {
-      main.innerHTML = head('Cookbook', 'The Cookbook', 'An ongoing list of recipes you can make at home, and the dairy-free cookbooks people love most. The list keeps growing.') +
-        '<div class="dg-cookpv"><div>' + gated('<div class="dg-grid">' + RECIPE_NAMES.slice(0, 4).map(function (r) { return skel(r, 3); }).join('') + '</div>', 'Recipes and cookbooks', 'Dairy-free staples you can make from your pantry, and the cookbooks members rank highest.') + '</div>' +
+      var names = (COOK_TITLES && COOK_TITLES.length ? COOK_TITLES : RECIPE_NAMES).slice(0, 4);
+      main.innerHTML = head('Cookbook', 'The Cookbook', 'An ongoing list of recipes you can make at home, and the dairy-free cookbooks people love most. Members share their own, too. The list keeps growing.') +
+        '<div class="dg-cookpv"><div>' + gated('<div class="dg-grid">' + names.map(function (r) { return skel(r, 3); }).join('') + '</div>', 'Recipes and cookbooks', 'Dairy-free recipes from Maya and members, and the cookbooks members rank highest.') + '</div>' +
         '<div><div class="dg-k" style="margin-bottom:10px">Cookbooks, voted on by members</div><div class="dg-books">' + COVERS.map(function (c) {
           return '<img src="https://covers.openlibrary.org/b/id/' + c[1] + '-M.jpg" alt="' + esc(c[0]) + ' cover" loading="lazy">'; }).join('') + '</div></div></div>';
+      if (COOK_TITLES == null) loadCookbook(function () { if (curTab === 'cookbook' && !member()) viewCookbook(sub); });
       return;
     }
-    var subs = [['Recipes', ''], ['What can I make?', 'make'], ['Cookbooks', 'books'], ['Chefs', 'chefs']];
-    var cur = { make: 1, books: 1, chefs: 1 }[sub] ? sub : '';
-    var t = toggles(subs.map(function (x) { return [x[0], '#/cookbook' + (x[1] ? '/' + x[1] : '')]; }), subs.filter(function (x) { return x[1] === cur; })[0][0]);
-    var ledes = { '': 'Dairy-free staples you can make at home.', make: 'Tick what you have. Recipes that use the most of it come first.', books: 'Cookbooks from the Vegans Explore Directory, most voted first.', chefs: 'Chefs who cook dairy-free, with their recipes and what they offer.' };
+    if (parts[0] === 'r' && parts[1]) return viewRecipe(decodeURIComponent(parts[1]));
+    if (parts[0] === 'new') return viewShare(+parts[1] || 1);
+    if (parts[0] === 'sent') return viewSent();
+    var cur = { make: 1, books: 1, chefs: 1, mine: 1 }[parts[0]] ? parts[0] : '';
+    var t = toggles(COOK_SUBS.map(function (x) { return [x[0], '#/cookbook' + (x[1] ? '/' + x[1] : '')]; }), COOK_SUBS.filter(function (x) { return x[1] === cur; })[0][0]);
+    var ledes = { '': 'Recipes from Maya and members, most loved first. Made one of your own? Share it.', make: 'Tick what you have. Recipes that use the most of it come first.',
+      books: 'Cookbooks from the Vegans Explore Directory, most voted first.', chefs: 'Chefs who cook dairy-free, with their recipes and what they offer.', mine: 'The recipes you shared, and where each one stands.' };
+    var share = '<a class="dg-btn" href="#/cookbook/new/1">Share a recipe</a>';
     var body = '';
-    if (cur === '') body = '<div class="dg-grid">' + cookRecipes().map(function (r) { return recipeCard(r, r.from + (r.time ? ' · ' + r.time : '')); }).join('') + '</div>';
-    else if (cur === 'make') body = '<div class="dg-chips" id="dgPantry">' + PANTRY.map(function (p, i) { return '<button type="button" class="dg-chip" data-p="' + i + '" aria-pressed="' + !!pantryPick[i] + '">' + esc(p[0]) + '</button>'; }).join('') + '</div><div class="dg-grid" id="dgMake"></div>';
+    if (cur === '') {
+      body = '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search recipes (cashew, ice cream...)" aria-label="Search recipes" value="' + esc(cookFilter) + '">' + share + '</div>' +
+        '<div class="dg-grid" id="dgList">' + (COOK ? '' : '<div class="dg-loading">Loading recipes...</div>') + '</div>';
+    } else if (cur === 'make') body = '<div class="dg-chips" id="dgPantry">' + PANTRY.map(function (p, i) { return '<button type="button" class="dg-chip" data-p="' + i + '" aria-pressed="' + !!pantryPick[i] + '">' + esc(p[0]) + '</button>'; }).join('') + '</div><div class="dg-grid" id="dgMake"></div>';
     else if (cur === 'books') body = dirTools([], 'Search cookbooks (cheese, ice cream...)', 'Search cookbooks') + dirGrid('dgList', BOOKS ? '' : '<div class="dg-loading">Loading cookbooks...</div>') +
       '<div class="dg-k" style="margin:22px 0 10px">Resources</div><div class="dg-grid">' + MEM.resources.map(function (r) {
         return '<div class="dg-card"><h3>' + esc(r.title) + '</h3><p>' + esc(r.text) + '</p>' + sources([[r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), r.url]]) + '</div>'; }).join('') + '</div>';
+    else if (cur === 'mine') body = '<div class="dg-tools">' + share + '<span class="dg-count">50 points for every recipe that goes into the Cookbook.</span></div><div id="dgMine"><div class="dg-loading">Loading your recipes...</div></div>';
     else body = '<div class="dg-chef-empty"><div><h3>Chefs are coming to the Cookbook</h3><p>We are partnering with chefs who specialize in dairy-free cooking. Each one shares recipes here, linked to their profile with their classes, books and services.</p></div>' +
       '<a class="dg-btn" href="/partners">Are you a chef? Get featured</a></div>';
     main.innerHTML = head('Cookbook', 'The Cookbook', ledes[cur], t) + body;
+    if (cur === '') {
+      var fEl = document.getElementById('dgFilter');
+      var drawR = function () {
+        if (!COOK) return;
+        var q = cookFilter.trim().toLowerCase();
+        var rows = COOK.filter(function (r) { return !q || (r.title + ' ' + r.ingredients.join(' ') + ' ' + r.steps.join(' ') + ' ' + r.author.name).toLowerCase().indexOf(q) >= 0; });
+        document.getElementById('dgList').innerHTML = rows.map(recipeTile).join('') || '<p class="dg-empty">' + (COOK.length ? 'No match. Try another word.' : 'No recipes yet. Be the first to share one.') + '</p>';
+      };
+      fEl.addEventListener('input', function () { cookFilter = fEl.value; drawR(); });
+      if (COOK) drawR(); else loadCookbook(function () { if (location.hash.replace(/^#\/?/, '') === 'cookbook' || location.hash === '#/cookbook/') drawR(); });
+    }
     if (cur === 'make') {
-      var grid = document.getElementById('dgMake'), all = cookRecipes();
+      var grid = document.getElementById('dgMake');
       var draw = function () {
-        var picked = Object.keys(pantryPick).filter(function (k) { return pantryPick[k]; }).map(Number);
-        if (!picked.length) { grid.innerHTML = all.map(function (r) { return recipeCard({ title: r.title, steps: r.steps }, r.from); }).join(''); return; }
-        var rows = all.map(function (r) { var txt = r.title + ' ' + r.steps.join(' '); return { r: r, uses: picked.filter(function (i) { return PANTRY[i][1].test(txt); }) }; })
+        var all = cookRecipes(), picked = Object.keys(pantryPick).filter(function (k) { return pantryPick[k]; }).map(Number);
+        var tile = function (r, sub) { return '<a class="dg-rcp" href="#/cookbook/r/' + encodeURIComponent(r.slug) + '"><h3>' + esc(r.title) + '</h3><div class="dg-rcp-meta">' + esc(sub) + '</div></a>'; };
+        if (!picked.length) { grid.innerHTML = all.map(function (r) { return tile(r, r.from); }).join(''); return; }
+        var rows = all.map(function (r) { var txt = r.title + ' ' + r.ingredients.join(' ') + ' ' + r.steps.join(' '); return { r: r, uses: picked.filter(function (i) { return PANTRY[i][1].test(txt); }) }; })
           .filter(function (x) { return x.uses.length; }).sort(function (a, b) { return b.uses.length - a.uses.length; });
-        grid.innerHTML = rows.map(function (x) { return recipeCard({ title: x.r.title, steps: x.r.steps }, 'Uses ' + x.uses.map(function (i) { return PANTRY[i][0].toLowerCase(); }).join(', ')); }).join('') ||
+        grid.innerHTML = rows.map(function (x) { return tile(x.r, 'Uses ' + x.uses.map(function (i) { return PANTRY[i][0].toLowerCase(); }).join(', ')); }).join('') ||
           '<p class="dg-empty">Nothing uses those yet. Try adding another ingredient.</p>';
       };
       document.getElementById('dgPantry').addEventListener('click', function (e) {
         var c = e.target.closest('[data-p]'); if (!c) return;
         var i = c.getAttribute('data-p'); pantryPick[i] = !pantryPick[i]; c.setAttribute('aria-pressed', String(!!pantryPick[i])); draw();
       });
-      draw();
+      if (COOK) draw(); else loadCookbook(draw);
+    }
+    if (cur === 'mine') {
+      cookApi({ action: 'mine' }).then(function (d) {
+        MINE = d.recipes || [];
+        var el = document.getElementById('dgMine'); if (!el) return;
+        el.innerHTML = MINE.length ? '<div class="dg-rows">' + MINE.map(function (r) {
+          return '<div class="dg-row"><div class="dg-row-main"><b>' + esc(r.title) + '</b><span>' + (r.submitted_at ? 'Sent ' + esc(new Date(r.submitted_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })) : '') +
+            (r.status === 'rejected' && r.review_note ? ' &middot; ' + esc(r.review_note) : '') + '</span></div>' + tag(r.status) +
+            (r.status === 'live' || r.status === 'retesting' ? '<a class="dg-btn dg-ghost" href="#/cookbook/r/' + encodeURIComponent(r.slug) + '">Open</a>' : r.status === 'rejected' ? '<a class="dg-btn dg-ghost" href="#/cookbook/new/1" data-again="' + esc(r.id) + '">Send again</a>' : '<span class="dg-btn dg-ghost" aria-disabled="true" style="opacity:.45">Open</span>') + '</div>';
+        }).join('') + '</div>' : '<p class="dg-empty">You have not shared a recipe yet. It takes two minutes, and it is 50 points once it is in.</p>';
+      }).catch(function () { var el = document.getElementById('dgMine'); if (el) el.innerHTML = '<p class="dg-empty">We could not load your recipes just now. Try again in a moment.</p>'; });
     }
     if (cur === 'books' && BOOKS) {
-      var sortEl = document.getElementById('dgSort'), fEl = document.getElementById('dgFilter');
+      var sortEl = document.getElementById('dgSort'), fB = document.getElementById('dgFilter');
       sortEl.value = sortPref;
       var drawB = function () {
-        var q = fEl.value.trim().toLowerCase();
+        var q = fB.value.trim().toLowerCase();
         var rows = sortBy(BOOKS, sortPref).filter(function (l) { return !q || (l.name + ' ' + JSON.stringify(l.details || {})).toLowerCase().indexOf(q) >= 0; });
         document.getElementById('dgCount').textContent = rows.length + (rows.length === 1 ? ' cookbook' : ' cookbooks');
         var listEl = document.getElementById('dgList');
@@ -356,10 +418,122 @@
         wireCards(listEl);
       };
       sortEl.addEventListener('change', function () { sortPref = sortEl.value; drawB(); });
-      fEl.addEventListener('input', drawB);
+      fB.addEventListener('input', drawB);
       drawB();
     }
   }
+
+  // One recipe on its own: who made it, what goes in, the steps, a vote and "didn't work for me".
+  var reportOpen = false;
+  function viewRecipe(slug) {
+    var crumbs = crumb([['Cookbook', '#/cookbook'], ['Recipes', '#/cookbook']]);
+    if (!COOK) { main.innerHTML = crumbs + '<div class="dg-loading">Loading...</div>'; loadCookbook(function () { if (location.hash.indexOf('#/cookbook/r/') === 0) viewRecipe(slug); }); return; }
+    var r = recipeBySlug(slug);
+    if (!r) { main.innerHTML = crumbs + '<p class="dg-empty">That recipe is not in the Cookbook.</p>'; return; }
+    var voted = !!VOTED[r.id], reported = !!REPORTED[r.id];
+    main.innerHTML = crumb([['Cookbook', '#/cookbook'], ['Recipes', '#/cookbook'], [r.title]]) +
+      '<div class="dg-recipe-v"><div class="dg-recipe-h"><div>' + byline(r) + '<h2 class="dg-h1">' + esc(r.title) + '</h2>' +
+      (r.summary ? '<p class="dg-lede" style="margin-bottom:6px">' + esc(r.summary) + '</p>' : '') +
+      '<div class="dg-rcp-meta">' + [r.time, r.servings ? 'Serves ' + r.servings : ''].filter(Boolean).map(esc).join(' &middot; ') + '</div></div>' +
+      '<div class="dg-recipe-acts">' + (r.status === 'retesting' ? tag('retesting') : '') +
+      '<button type="button" class="dg-vote' + (voted ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + voted + '">' + HEART + '<span>' + (voted ? 'You love this' : 'Vote') + '</span><b>' + (r.votes || 0) + '</b></button></div></div>' +
+      (r.status === 'retesting' ? '<p class="dg-note" style="margin:0 0 14px">A few members said this one did not work for them, so we are making it again. It stays here while we do.</p>' : '') +
+      '<div class="dg-recipe-b">' + (r.ingredients.length ? '<div><div class="dg-k">What you need</div><ul class="dg-ing">' + r.ingredients.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>' : '') +
+      '<div><div class="dg-k">' + (r.steps.length > 1 ? 'Steps' : 'How to make it') + '</div><ol class="dg-steps">' + r.steps.map(function (st) { return '<li>' + esc(st) + '</li>'; }).join('') + '</ol>' +
+      (r.tip ? '<div class="dg-note">Tip: ' + esc(r.tip) + '</div>' : '') + '</div></div>' +
+      '<div class="dg-report" id="dgReport">' + (reported ? '<p>Thank you for telling us it did not work for you. We read every note.</p>'
+        : reportOpen ? '<label for="dgRepNote"><b>What went wrong?</b> (optional)</label><textarea id="dgRepNote" rows="2" maxlength="600" placeholder="Too thin, split when heated, the timing was off..."></textarea><div class="dg-btns"><button type="button" class="dg-btn dg-ghost" data-report="' + esc(r.id) + '">Send it</button><button type="button" class="dg-link" data-report-cancel>Never mind</button></div><span class="dg-status" role="status"></span>'
+        : '<button type="button" class="dg-link" data-report-open>Didn\'t work for me</button>') + '</div></div>';
+  }
+
+  // Share a recipe: three steps, one view each (paginated forms, canon rule 14). The draft stays while they move between steps.
+  var DRAFT = { title: '', summary: '', time_text: '', servings: '', ingredients: '', steps: '', tip: '' };
+  try { var saved = JSON.parse(sessionStorage.getItem('dg_recipe_draft') || 'null'); if (saved) DRAFT = saved; } catch (e) {}
+  function keepDraft() { try { sessionStorage.setItem('dg_recipe_draft', JSON.stringify(DRAFT)); } catch (e) {} }
+  var SHARE_STEPS = ['About it', 'What you need', 'How to make it'];
+  function field(id, label, value, opts) {
+    opts = opts || {};
+    return '<label class="dg-field" for="' + id + '"><span>' + esc(label) + (opts.optional ? ' <i>(optional)</i>' : '') + '</span>' + (opts.hint ? '<small>' + esc(opts.hint) + '</small>' : '') +
+      (opts.rows ? '<textarea id="' + id + '" rows="' + opts.rows + '" maxlength="' + (opts.max || 4000) + '" placeholder="' + esc(opts.ph || '') + '">' + esc(value) + '</textarea>'
+        : '<input id="' + id + '" type="text" maxlength="' + (opts.max || 120) + '" value="' + esc(value) + '" placeholder="' + esc(opts.ph || '') + '">') + '</label>';
+  }
+  function viewShare(step) {
+    step = Math.max(1, Math.min(3, step));
+    var steps = '<ol class="dg-stepnames">' + SHARE_STEPS.map(function (n, i) { return '<li' + (i + 1 === step ? ' aria-current="step"' : i + 1 < step ? ' class="done"' : '') + '><span>' + (i + 1) + '</span>' + esc(n) + '</li>'; }).join('') + '</ol>';
+    var body = step === 1
+      ? field('dgT', 'Name of the recipe', DRAFT.title, { max: 80, ph: 'Cashew queso' }) + field('dgS', 'In one line', DRAFT.summary, { optional: 1, max: 240, ph: 'A creamy dip that sets up in 15 minutes' }) +
+        '<div class="dg-two">' + field('dgTm', 'How long it takes', DRAFT.time_text, { optional: 1, max: 40, ph: '15 minutes' }) + field('dgSv', 'Serves', DRAFT.servings, { optional: 1, max: 40, ph: '4' }) + '</div>'
+      : step === 2
+      ? field('dgI', 'Ingredients', DRAFT.ingredients, { rows: 9, hint: 'One per line, with the amount: 1 cup soaked cashews', ph: '1 cup soaked cashews\n1/2 cup salsa\n2 tbsp nutritional yeast' })
+      : field('dgSt', 'Steps', DRAFT.steps, { rows: 7, hint: 'One step per line', ph: 'Blend everything until smooth.\nWarm gently and serve.' }) + field('dgTp', 'A tip', DRAFT.tip, { optional: 1, max: 300, ph: 'Add a jalapeno for heat.' }) +
+        '<p class="dg-sharenote">We read every recipe before it goes in. Once it is in the Cookbook, it shows with your first name and last initial, and 50 points go into your account.</p>';
+    main.innerHTML = crumb([['Cookbook', '#/cookbook'], ['Share a recipe']]) + '<h2 class="dg-h1">Share a recipe</h2>' + steps +
+      '<form class="dg-form" id="dgShare" novalidate>' + body + '<span class="dg-status" role="status" id="dgShareMsg"></span>' +
+      '<div class="dg-formnav"><a class="dg-btn dg-ghost" href="' + (step > 1 ? '#/cookbook/new/' + (step - 1) : '#/cookbook') + '">Back</a><span>Step ' + step + ' of 3</span>' +
+      '<button type="submit" class="dg-btn">' + (step < 3 ? 'Next' : 'Send it in') + '</button></div></form>';
+    var form = document.getElementById('dgShare'), msg = document.getElementById('dgShareMsg');
+    function grab() {
+      var v = function (id) { var el = document.getElementById(id); return el ? el.value : null; };
+      if (step === 1) { DRAFT.title = v('dgT'); DRAFT.summary = v('dgS'); DRAFT.time_text = v('dgTm'); DRAFT.servings = v('dgSv'); }
+      if (step === 2) DRAFT.ingredients = v('dgI');
+      if (step === 3) { DRAFT.steps = v('dgSt'); DRAFT.tip = v('dgTp'); }
+      keepDraft();
+    }
+    form.addEventListener('input', grab);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault(); grab(); msg.textContent = '';
+      var count = function (t) { return String(t || '').split(/\n+/).filter(function (x) { return x.trim(); }).length; };
+      if (step === 1 && String(DRAFT.title).trim().length < 3) { msg.textContent = 'Give your recipe a name.'; return; }
+      if (step === 2 && count(DRAFT.ingredients) < 2) { msg.textContent = 'List at least two ingredients, one per line.'; return; }
+      if (step < 3) { location.hash = '#/cookbook/new/' + (step + 1); return; }
+      if (!count(DRAFT.steps)) { msg.textContent = 'Add the steps, one per line.'; return; }
+      var btn = form.querySelector('button[type="submit"]'); btn.disabled = true; btn.textContent = 'Sending...';
+      cookApi({ action: 'submit', guide: 'vegan-dairy-guide', title: DRAFT.title, summary: DRAFT.summary, time_text: DRAFT.time_text, servings: DRAFT.servings, ingredients: DRAFT.ingredients, steps: DRAFT.steps, tip: DRAFT.tip }).then(function (d) {
+        if (!d.ok) { msg.textContent = d.message || 'We could not send it just now. Try again in a moment.'; btn.disabled = false; btn.textContent = 'Send it in'; return; }
+        DRAFT = { title: '', summary: '', time_text: '', servings: '', ingredients: '', steps: '', tip: '' }; keepDraft(); MINE = null;
+        location.hash = '#/cookbook/sent';
+      }).catch(function () { msg.textContent = 'We could not send it just now. Try again in a moment.'; btn.disabled = false; btn.textContent = 'Send it in'; });
+    });
+  }
+  function viewSent() {
+    main.innerHTML = crumb([['Cookbook', '#/cookbook'], ['Share a recipe']]) + '<div class="dg-done"><div class="dg-k">Sent</div><h2 class="dg-h1">Thank you. Your recipe is waiting for approval.</h2>' +
+      '<p class="dg-lede">We read every recipe before it goes into the Cookbook, and we will email you when it is in. That is when 50 points go into your account.</p>' +
+      '<div class="dg-btns"><a class="dg-btn" href="#/cookbook/mine">See my recipes</a><a class="dg-btn dg-ghost" href="#/cookbook">Back to the Cookbook</a></div></div>';
+  }
+  document.addEventListener('click', function (e) {
+    var el;
+    if ((el = e.target.closest('[data-again]'))) {
+      (MINE || []).forEach(function (r) {
+        if (r.id !== el.getAttribute('data-again')) return;
+        DRAFT = { title: r.title, summary: r.summary || '', time_text: r.time || '', servings: r.servings || '', ingredients: r.ingredients.join('\n'), steps: r.steps.join('\n'), tip: r.tip || '' }; keepDraft();
+      });
+      return;
+    }
+    if (e.target.closest('[data-report-open]')) { reportOpen = true; route(); return; }
+    if (e.target.closest('[data-report-cancel]')) { reportOpen = false; route(); return; }
+    if ((el = e.target.closest('[data-report]'))) {
+      var id = el.getAttribute('data-report'), note = (document.getElementById('dgRepNote') || {}).value || '';
+      el.disabled = true;
+      cookApi({ action: 'report', recipe_id: id, note: note }).then(function (d) {
+        if (!d.ok) { var m = document.querySelector('#dgReport .dg-status'); if (m) m.textContent = d.message || 'We could not send it just now.'; el.disabled = false; return; }
+        REPORTED[id] = 1; reportOpen = false;
+        (COOK || []).forEach(function (r) { if (r.id === id && d.status) r.status = d.status; });
+        route();
+      }).catch(function () { el.disabled = false; });
+      return;
+    }
+    if ((el = e.target.closest('[data-vote]'))) {
+      var rid = el.getAttribute('data-vote'), on = !VOTED[rid];
+      el.disabled = true;
+      cookApi({ action: 'vote', recipe_id: rid, on: on }).then(function (d) {
+        el.disabled = false;
+        if (!d.ok) { el.title = d.message || ''; return; }
+        if (on) VOTED[rid] = 1; else delete VOTED[rid];
+        (COOK || []).forEach(function (r) { if (r.id === rid) r.votes = d.vote_count; });
+        route();
+      }).catch(function () { el.disabled = false; });
+    }
+  });
 
   function viewLook() {
     var h = head('See for yourself', 'How milk is made', 'Plain facts from USDA and dairy-industry sources about how milk is produced on US farms. No graphic images, and always behind a clear warning.');
@@ -471,7 +645,7 @@
       ((l.details && l.details.dairy_guide) || []).forEach(function (i) { out.push({ t: 'Brands', title: l.name + ', ' + i.cat, text: 'Made from ' + i.base + '. Where: ' + i.where + (i.note ? '. ' + i.note : ''), href: '#/listing/' + encodeURIComponent(l.slug) }); });
     });
     MEM.swaps.forEach(function (s) { out.push({ t: 'Swaps', title: s.replace, text: 'Shelf: ' + s.shelf + ' Pantry: ' + s.pantry + (s.tip ? ' ' + s.tip : ''), href: '#/swaps/' + slugify(s.group) }); });
-    MEM.recipes.forEach(function (r) { out.push({ t: 'Cookbook', title: r.title, text: r.steps.join(' '), href: '#/cookbook' }); });
+    (COOK || []).forEach(function (r) { out.push({ t: 'Cookbook', title: r.title, text: r.author.name + '. ' + r.ingredients.join(', ') + ' ' + r.steps.join(' '), href: '#/cookbook/r/' + encodeURIComponent(r.slug) }); });
     (BOOKS || []).forEach(function (l) { var b = (l.details && l.details.dairy_guide_book) || {}; out.push({ t: 'Cookbook', title: b.title || l.name, text: 'Cookbook by ' + [b.author, b.topic].filter(Boolean).join(', '), href: '#/listing/' + encodeURIComponent(l.slug) }); });
     MEM.look.facts.forEach(function (f) { out.push({ t: 'See for yourself', title: f[0], text: f[1], href: '#/look' }); });
     return out;
@@ -583,7 +757,7 @@
     drawMaya();
     if (view !== 'search') { main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0); }
   }
-  window.addEventListener('hashchange', route);
+  window.addEventListener('hashchange', function () { reportOpen = false; route(); });
 
   // ---------- access ----------
   function api(action, tok) {
@@ -599,6 +773,7 @@
     MEM = el ? JSON.parse(el.textContent) : null;
     access = MEM ? 'member' : 'pending';
     route();
+    if (MEM) loadCookbook(function () { if (curTab === 'cookbook' || /^#\/search\//.test(location.hash)) route(); });
   }
   // Brands, cookbooks and the Pulse episodes are public rows, so everyone loads them: members use them, and the blurred
   // previews show the real thing to everyone else.
