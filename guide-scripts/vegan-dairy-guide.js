@@ -60,13 +60,19 @@
     ['Butter', ['Butter for baking', 'Butter for cooking', 'Ghee']], ['Cheese', ['Cream cheese', 'Parmesan', 'Cheese sauce', 'Ricotta']], ['Yogurt & sour cream', ['Yogurt', 'Sour cream']]];
   var RECIPE_NAMES = ['Make your own nut milk', 'Banana ice cream', 'Cashew sour cream', 'Cashew cream cheese', 'Potato cheese sauce', 'Tofu ricotta'];
 
-  // The tabs, in tour order, and what Maya says on each. A tab's `say` must match its recording.
+  // The tabs, in tour order, and what Maya says on each. A tab's `say` must match its recording. Two experiences (Sean,
+  // 2026-10-10): `say` tells a visitor why to get the Guide; `sayMember` walks a member through what they have (CLIPS_M).
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Maya! Press Start the tour and I\'ll walk you through the Dairy Guide, one tab at a time.', playing: 'Hi, I\'m Maya, and welcome to the Vegan Dairy Guide! Press Next when you\'re ready for the next tab.' },
-    { k: 'pulse', label: 'Pulse', lock: 1, say: 'This is the Dairy-Free Pulse: what the research says, every fact sourced, plus our podcasts and interviews on dairy.' },
-    { k: 'brands', label: 'Brands', lock: 1, say: 'Stop guessing in the dairy aisle. Here are the brands to buy, sorted by what you\'re replacing, and voted on by members.' },
-    { k: 'swaps', label: 'Swaps', lock: 1, say: 'Swaps show you how to replace dairy when you cook, from the shelf or your pantry. Buttermilk is free to try, so start there.' },
-    { k: 'cookbook', label: 'Cookbook', lock: 1, say: 'The Cookbook keeps growing: recipes you can make at home, and the dairy-free cookbooks people love most.' },
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Maya! Press Start the tour and I\'ll walk you through the Dairy Guide, one tab at a time.', playing: 'Hi, I\'m Maya, and welcome to the Vegan Dairy Guide! Press Next when you\'re ready for the next tab.',
+      sayMember: 'Welcome in, the whole Dairy Guide is yours now! Press Next and I\'ll walk you through every tab, and save anything you love to My list.' },
+    { k: 'pulse', label: 'Pulse', lock: 1, say: 'This is the Dairy-Free Pulse: what the research says, every fact sourced, plus our podcasts and interviews on dairy.',
+      sayMember: 'Start with the Pulse: every fact links to its source. Flip to Podcasts and interviews to watch, vote and save your favorites.' },
+    { k: 'brands', label: 'Brands', lock: 1, say: 'Stop guessing in the dairy aisle. Here are the brands to buy, sorted by what you\'re replacing, and voted on by members.',
+      sayMember: 'Pick what you\'re replacing and find the brands to buy, and where to buy them. Vote for the ones you love, and save them.' },
+    { k: 'swaps', label: 'Swaps', lock: 1, say: 'Swaps show you how to replace dairy when you cook, from the shelf or your pantry. Buttermilk is free to try, so start there.',
+      sayMember: 'Every swap gives you a shelf option and a pantry option. Vote for the ones that work for you, and save them to My list.' },
+    { k: 'cookbook', label: 'Cookbook', lock: 1, say: 'The Cookbook has recipes to make at home, What can I make from your pantry, the cookbooks members love, and chefs coming soon.',
+      sayMember: 'Make a recipe, or tick what\'s in your pantry under What can I make. Browse the cookbooks, share your own for points, and chefs are coming.' },
     // Named The truth on 2026-10-10 (Sean); he approved the new line the same day (dg-look.mp4 ?v=3).
     { k: 'look', label: 'The truth', lock: 1, say: 'The truth is how milk is really made, in plain facts. No graphic images. Open it when you\'re ready, or skip it.' },
     // My list is for the Guide's members only, after the tour's last tab. No clip: her picture and these words.
@@ -92,8 +98,11 @@
   // Get access on credits (Sean approved the line 2026-10-10), same pose as dg-join; the two long pauses in the voice
   // were shortened to fit one take (dg-join-c2.mp3).
   // Cookbook re-recorded 2026-10-10 from its own pose (open cookbook, thumbs up); it had shared Swaps' pose.
-  CLIPS.cookbook = { video: CLIP_BASE + 'dg-cookbook.mp4?v=3', poster: CLIP_BASE + 'dg-poster-cookbook.jpg?v=3' };
+  CLIPS.cookbook = { video: CLIP_BASE + 'dg-cookbook.mp4?v=4', poster: CLIP_BASE + 'dg-poster-cookbook.jpg?v=4' };
   CLIPS.look = { video: CLIP_BASE + 'dg-look.mp4?v=3', poster: CLIP_BASE + 'dg-poster-look.jpg?v=3' }; // The truth, re-recorded 2026-10-10
+  // Members hear what they have (Sean approved the lines 2026-10-10), each tab in its own pose: dg-m-<tab>.mp4.
+  var CLIPS_M = {};
+  ['overview', 'pulse', 'brands', 'swaps', 'cookbook'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'dg-m-' + k + '.mp4?v=1', poster: CLIP_BASE + 'dg-m-poster-' + k + '.jpg?v=1' }; });
   CLIPS.join_credit = { video: CLIP_BASE + 'dg-join-c.mp4?v=1', poster: CLIP_BASE + 'dg-poster-join-c.jpg?v=1' };
 
   var PANTRY = [
@@ -1011,11 +1020,11 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Maya, your Guide');
-  function clip(k) { return k === 'join' && priced() ? CLIPS.join_credit || null : CLIPS[k] || null; }
+  function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; return k === 'join' && priced() ? CLIPS.join_credit || null : CLIPS[k] || null; }
   function cueMaya(k) {
     var c = clip(k);
-    if (TOUR.shown === k) return;
-    TOUR.shown = k; stopMaya();
+    if (TOUR.shown === k && TOUR.asMember === member()) return; // a visitor who unlocks the Guide gets the member clip
+    TOUR.shown = k; TOUR.asMember = member(); stopMaya();
     [].forEach.call(vid.querySelectorAll('track'), function (t) { t.remove(); });
     if (c) {
       if (c.poster) vid.poster = c.poster; else vid.removeAttribute('poster');
@@ -1047,7 +1056,7 @@
   function drawMaya() {
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = TOUR.started && t.playing ? t.playing : priced() && t.sayCredit ? t.sayCredit : t.say; // the welcome carries its own captions
+    bubble.textContent = member() && t.sayMember ? t.sayMember : TOUR.started && t.playing ? t.playing : priced() && t.sayCredit ? t.sayCredit : t.say; // the welcome carries its own captions
     var has = !!clip(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);

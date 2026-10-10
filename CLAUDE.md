@@ -533,6 +533,13 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
   is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts). Maya's line on it was
   re-recorded the same day with Sean's approval ("The truth is how milk is really made...", `dg-look.mp4?v=3`, take 1 of 2,
   cut at 6.6 s on a closed-lip smile).
+- **Two experiences, two scripts** (Sean, 2026-10-10: "The first one is letting you know why you should get it. And then the
+  other one is walking you through what you have"). Each tab's `say` is for visitors and `sayMember` for members who own the
+  Guide; `clip()` plays `CLIPS_M[tab]` (`dg-m-<tab>.mp4`) to members and `CLIPS[tab]` to visitors, and switches the moment a
+  visitor unlocks. Cookbook names everything in it (recipes, What can I make?, cookbooks, chefs coming, share your own). Every
+  tab has its own pose (Sean: "each one you click on should look different"); the first page's picture is arms folded with an
+  open smile (`dg-poster-overview.jpg`). Lines approved by Sean 2026-10-10. My list's member clip is not recorded yet (her
+  picture and words show until it is).
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
   at the top right (`.dg-acts`). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
