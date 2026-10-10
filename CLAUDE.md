@@ -335,8 +335,11 @@ returns every moment across every show, who said it, a quote, and a play button 
 - **Depot > Content index** (`/admin/depot/content-index`, built 2026-10-10 when Sean subscribed to TurboScribe): each show's
   progress (timestamped of all, hours) with **Copy the YouTube links** still waiting (for TurboScribe), a drop box for SRT files
   or a ZIP of them (JSZip, `__MACOSX` skipped), and the episode list (search, show, Waiting or Timestamped). Dropped files are
-  matched to an episode by a YouTube id in the name, else by title words (Good match, Check this, No match, which defaults to
-  Skip); the review view (`#review`) lists the ones to check first, each with an episode picker, and Save sends each through
+  matched to an episode by `ve-content-index` `match` (Sean, 2026-10-10: "look at the transcript to figure out the title"): the
+  show initials and episode number in the file name (SFV 012, VWL S5E7, PV E16, VEP 45; `codeOf`), then the title's words heard
+  in the opening (a guest's name counts far more than common words), line-for-line overlap with an untimed transcript we already
+  hold, and "episode 12" said early (Good match, Check this, Skip). The review view (`#review`) lists the ones to check first,
+  each with its opening lines, the top three suggestions and a search box (a guest, a topic, "SFV 12"), and Save sends each through
   `ve-content-index` `srt` (source `turboscribe`). The function takes a signed-in super admin for `status`, `episodes` and
   `srt`, and the admin token for everything.
 
