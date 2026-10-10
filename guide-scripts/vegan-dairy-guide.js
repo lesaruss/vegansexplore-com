@@ -104,10 +104,10 @@
   // ... and then eventually replace it out once we get real photos"). Generated photos, labelled illustrative where they
   // open. A swap uses its own picture, else its homemade recipe's, else a plain tile until one is made.
   var IMG_BASE = SB + '/storage/v1/object/public/vegan-media/media/guides/dairy/';
-  var SWAP_IMG = { 'sour-cream': 's-sour-cream', milk: 'r-maya-nut-milk', buttermilk: 'r-maya-homemade-buttermilk', 'heavy-cream-cooking': 'r-maya-homemade-heavy-cream',
-    'whipped-cream': 'r-maya-homemade-whipped-cream', 'cream-cheese': 'r-maya-homemade-cream-cheese', parmesan: 'r-maya-homemade-parmesan', 'cheese-sauce': 'r-maya-homemade-cheese-sauce',
-    ricotta: 'r-maya-homemade-ricotta', 'evaporated-milk': 'r-maya-homemade-evaporated-milk', 'sweetened-condensed-milk': 'r-maya-homemade-sweetened-condensed-milk', ghee: 'r-maya-homemade-ghee' };
-  function swapImg(s) { var f = SWAP_IMG[slugify(s.replace)]; return f ? IMG_BASE + f + '.jpg' : ''; }
+  // Each swap has its own picture: the swap in use (milk in coffee, butter in a skillet). Illustrative until real photos.
+  var SWAP_IMG = ['milk', 'milk-in-coffee', 'buttermilk', 'butter-baking', 'butter-cooking', 'heavy-cream-cooking', 'whipped-cream', 'sour-cream',
+    'cream-cheese', 'yogurt', 'parmesan', 'cheese-sauce', 'ricotta', 'evaporated-milk', 'sweetened-condensed-milk', 'ghee'];
+  function swapImg(s) { var k = slugify(s.replace); return SWAP_IMG.indexOf(k) >= 0 ? IMG_BASE + 's-' + k + '.jpg' : ''; }
   var LEAF_SVG = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 19c0-8 6-14 15-14 0 9-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>';
   function thumb(url, alt) {
     return '<span class="dg-th' + (url ? '' : ' dg-th-none') + '" role="img" aria-label="' + esc(alt) + '"' + (url ? ' style="background-image:url(\'' + esc(url) + '\')"' : '') + '>' + (url ? '' : LEAF_SVG) + '</span>';
