@@ -155,7 +155,7 @@ function shingles(s: string, n = 5, cap = 4000) {
 // as well with initials for the podcast"): SFV 012, VWL S5E7, PV E16. Episodes carry theirs in the title (Ep 001, E109,
 // S5E7) or episode_number.
 const SHOWS: [RegExp, string][] = [[/\b(sfvp?|soflo|sfl)\b/i, 'SoFlo Vegans Podcast'], [/\b(vwlp?|vegans who lift)\b/i, 'Vegans Who Lift Podcast'],
-  [/\b(pvp?|pre[- ]?vegans?)\b/i, 'Pre-Vegans Podcast'], [/\b(vep|vex|vegans explore)\b/i, 'Vegans Explore Podcast']];
+  [/\b(pvp?|pre[- ]?vegans?)\b/i, 'Pre-Vegans Podcast'], [/\b(vepp?|vex|vegans explore)\b/i, 'Vegans Explore Podcast']];
 function codeOf(s: string, strict = false) {
   const x = String(s || '').replace(/\.(srt|txt|mp3|m4a|wav|mp4)$/gi, '').replace(/[_.]+/g, ' ');
   const show = (SHOWS.find(([r]) => r.test(x)) || [null, null])[1];
@@ -244,7 +244,7 @@ async function handle(req: Request): Promise<Response> {
     }
     if (body.action === 'match') return json({ ok: true, files: await match(Array.isArray(body.files) ? body.files : []) });
     if (body.action === 'episodes') {
-      const { data: eps } = await db.from('ve_pulse_content').select('id,title,podcast_show,youtube_id,published_at,duration_seconds').not('podcast_show', 'is', null).order('published_at', { ascending: false }).limit(1000);
+      const { data: eps } = await db.from('ve_pulse_content').select('id,title,podcast_show,episode_number,season,youtube_id,published_at,duration_seconds').not('podcast_show', 'is', null).order('published_at', { ascending: false }).limit(1000);
       const { data: tr } = await db.from('ve_content_transcripts').select('content_id,source,status,words,duration_seconds,fetched_at');
       const T = new Map((tr || []).map((t) => [t.content_id, t]));
       return json({ ok: true, episodes: (eps || []).map((e) => ({ ...e, transcript: T.get(e.id) || null })) });

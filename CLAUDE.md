@@ -359,7 +359,12 @@ returns every moment across every show, who said it, a quote, and a play button 
   `ve-content-index` `srt` (source `turboscribe`, and the file's name in `ve_content_transcripts.file_name`). Nothing is dropped
   silently (Sean, 2026-10-10: 50 files dropped, 34 saved): a file whose transcript is already saved says so (`match`
   `saved_as`, from the transcript's opening, `head`) and stays out, two files set to one episode block Save, and files left on
-  Skip stay on the screen after Save with a note. Drop the whole folder again any time; only the missing ones need a look. The function takes a signed-in super admin for `status`, `episodes` and
+  Skip stay on the screen after Save with a note. Drop the whole folder again any time; only the missing ones need a look. The episode list runs in each show's number order (Sean,
+  2026-10-22: "sort the podcast episodes for the shows by number. This way I know what didn't upload"), each row with its code
+  (VEP 41, SFV 12, PV 5, VWL S5E7) from `ve_pulse_content.episode_number`. Vegans Explore episodes are numbered by release from
+  2025-11-01, leaving out the two "South Florida Vegans" cross-posts; Sean's TurboScribe files VEP 0041 to 0070 matched those
+  numbers one for one. The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
+  (relabeled 2026-10-22). The function takes a signed-in super admin for `status`, `episodes` and
   `srt`, and the admin token for everything.
 
 ## Tracked links (Sean, 2026-10-04)
