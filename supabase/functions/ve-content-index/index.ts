@@ -244,7 +244,7 @@ async function handle(req: Request): Promise<Response> {
     }
     if (body.action === 'match') return json({ ok: true, files: await match(Array.isArray(body.files) ? body.files : []) });
     if (body.action === 'episodes') {
-      const { data: eps } = await db.from('ve_pulse_content').select('id,title,podcast_show,youtube_id,published_at,duration_seconds').not('podcast_show', 'is', null).order('published_at', { ascending: false }).limit(1000);
+      const { data: eps } = await db.from('ve_pulse_content').select('id,title,podcast_show,episode_number,season,youtube_id,published_at,duration_seconds').not('podcast_show', 'is', null).order('published_at', { ascending: false }).limit(1000);
       const { data: tr } = await db.from('ve_content_transcripts').select('content_id,source,status,words,duration_seconds,fetched_at');
       const T = new Map((tr || []).map((t) => [t.content_id, t]));
       return json({ ok: true, episodes: (eps || []).map((e) => ({ ...e, transcript: T.get(e.id) || null })) });

@@ -44,6 +44,7 @@
     .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;background:#eee;color:#444;white-space:nowrap;}
     .tag.on{background:var(--ve-green-light);color:var(--ve-green-deep);}
     .tag.wait{background:#FFF1DC;color:#8a4b00;}
+    .num{display:inline-block;min-width:58px;font-size:12px;font-weight:800;color:var(--ve-green-deep);font-variant-numeric:tabular-nums;}
     .tag.bad{background:#fde8e8;color:#a61b1b;}
     .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px;}
     .toolbar input,.toolbar select,.row select{font:inherit;font-size:13.5px;padding:9px 12px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;max-width:100%;}
@@ -137,12 +138,24 @@
         drop.addEventListener('drop', function (e) { readFiles(e.dataTransfer.files); });
         $('files').addEventListener('change', function () { readFiles(this.files); });
       }
+      // Each show in episode order, so a missing number stands out (Sean, 2026-10-22: "sort the podcast episodes for the shows
+      // by number. This way I know what didn't upload"). The code matches the file names: VEP 41, SFV 12, PV 5, VWL S5E7.
+      var INIT = { 'Vegans Explore Podcast': 'VEP', 'SoFlo Vegans Podcast': 'SFV', 'Vegans Who Lift Podcast': 'VWL', 'Pre-Vegans Podcast': 'PV' };
+      var ORDER = ['Vegans Explore Podcast', 'SoFlo Vegans Podcast', 'Vegans Who Lift Podcast', 'Pre-Vegans Podcast'];
+      function code(e) { if (e.episode_number == null) return ''; var sn = String(e.season || '').match(/\d+/);
+        return (INIT[e.podcast_show] || '') + ' ' + (e.podcast_show === 'Vegans Who Lift Podcast' && sn ? 'S' + sn[0] + 'E' + e.episode_number : e.episode_number); }
+      function byNumber(a, b) {
+        var sa = ORDER.indexOf(a.podcast_show), sb = ORDER.indexOf(b.podcast_show); if (sa !== sb) return (sa < 0 ? 99 : sa) - (sb < 0 ? 99 : sb);
+        var na = a.episode_number, nb = b.episode_number; if ((na == null) !== (nb == null)) return na == null ? 1 : -1;
+        if (na != null && na !== nb) return na - nb;
+        return String(a.published_at || '').localeCompare(String(b.published_at || ''));
+      }
       function drawEps() {
         var q = $('q').value.trim().toLowerCase(), fs = $('fs').value, ft = $('ft').value;
-        var rows = EPS.filter(function (e) { return (!fs || e.podcast_show === fs) && (!ft || (ft === 'done') === has(e)) && (!q || String(e.title).toLowerCase().indexOf(q) >= 0); });
+        var rows = EPS.filter(function (e) { return (!fs || e.podcast_show === fs) && (!ft || (ft === 'done') === has(e)) && (!q || (String(e.title) + ' ' + code(e)).toLowerCase().indexOf(q) >= 0); }).sort(byNumber);
         $('eps').innerHTML = '<div class="row head"><div>Episode</div><div>Show</div><div>Transcript</div><div></div></div>' + rows.map(function (e) {
           var t = e.transcript, tag = has(e) ? '<span class="tag on">Timestamped</span><small>' + esc(t.source === 'turboscribe' ? 'TurboScribe' : t.source) + '</small>' : '<span class="tag wait">Waiting</span>';
-          return '<div class="row"><div><strong>' + esc(e.title) + '</strong><small>' + esc(e.published_at ? new Date(e.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '') + '</small></div>' +
+          return '<div class="row"><div><strong>' + (code(e) ? '<span class="num">' + esc(code(e)) + '</span> ' : '') + esc(e.title) + '</strong><small>' + esc(e.published_at ? new Date(e.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '') + '</small></div>' +
             '<div><small>' + esc(e.podcast_show) + '</small></div><div>' + tag + '</div><div class="act">' + (e.youtube_id ? '<a class="btn btn-ghost btn-sm" href="https://youtu.be/' + esc(e.youtube_id) + '" target="_blank" rel="noopener">YouTube</a>' : '') + '</div></div>';
         }).join('') + (rows.length ? '' : '<p class="sub" style="padding:12px 4px">Nothing matches.</p>');
       }
