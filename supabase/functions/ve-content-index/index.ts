@@ -155,7 +155,7 @@ function shingles(s: string, n = 5, cap = 4000) {
 // as well with initials for the podcast"): SFV 012, VWL S5E7, PV E16. Episodes carry theirs in the title (Ep 001, E109,
 // S5E7) or episode_number.
 const SHOWS: [RegExp, string][] = [[/\b(sfvp?|soflo|sfl)\b/i, 'SoFlo Vegans Podcast'], [/\b(vwlp?|vegans who lift)\b/i, 'Vegans Who Lift Podcast'],
-  [/\b(pvp?|pre[- ]?vegans?)\b/i, 'Pre-Vegans Podcast'], [/\b(vep|vex|vegans explore)\b/i, 'Vegans Explore Podcast']];
+  [/\b(pvp?|pre[- ]?vegans?)\b/i, 'Pre-Vegans Podcast'], [/\b(vepp?|vex|vegans explore)\b/i, 'Vegans Explore Podcast']];
 function codeOf(s: string, strict = false) {
   const x = String(s || '').replace(/\.(srt|txt|mp3|m4a|wav|mp4)$/gi, '').replace(/[_.]+/g, ' ');
   const show = (SHOWS.find(([r]) => r.test(x)) || [null, null])[1];
