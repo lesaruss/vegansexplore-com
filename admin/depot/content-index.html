@@ -218,7 +218,12 @@
               var r = res[i] || {}, c = (r.candidates || []).filter(function (k) { return byId(k.id); }), top = c[0] || { id: '', score: 0 };
               // A file whose transcript is already saved stays out of the way (Skip), with its episode one tap away.
               if (r.saved_as && byId(r.saved_as)) return { name: x.name, text: x.text, open: x.plain.split(' ').slice(0, 45).join(' '), cands: [{ id: r.saved_as, score: 1 }], ep: '', s: 2, saved: r.saved_as };
-              return { name: x.name, text: x.text, open: x.plain.split(' ').slice(0, 45).join(' '), cands: c, ep: top.score >= 0.35 ? top.id : '', s: top.score };
+              // Replacing a saved transcript is never a guess (Sean's "Dr. Klaper Podcast 02" landed on #27 and replaced its
+              // transcript, 2026-10-23): below a near-certain match, an episode that already has one waits for a pick.
+              var guard = top.id && has(byId(top.id)) && top.score < 0.75;
+              var free = guard ? c.filter(function (k) { return k.score >= 0.35 && !has(byId(k.id)); })[0] : null;
+              return { name: x.name, text: x.text, open: x.plain.split(' ').slice(0, 45).join(' '), cands: c, guard: guard,
+                ep: free ? free.id : top.score >= 0.35 && !guard ? top.id : '', s: free ? Math.min(free.score, 0.59) : top.score };
             });
             // Two files on one episode (Sean, 2026-10-23: "this is not a smooth process"): the stronger match keeps it and the
             // other moves to its next best free episode, so "Same episode" only shows when there is no good second choice.
@@ -258,6 +263,8 @@
           var q = PENDING[i], e = byId(q.ep), said = nameCode(q.name), notes = [];
           if (e && has(e)) notes.push('already has one, this replaces it');
           if (e && said && code(e) && said !== code(e)) notes.push('its name says ' + said + ': check it is the right episode');
+          if (e && q.guard && !q.picked && q.cands[0].id !== q.ep) notes.push('its best match, ' + esc(label(byId(q.cands[0].id))) + ', already has a transcript, so this went to the next best: pick that one only if this file should replace it');
+          if (!e && q.guard && !q.picked) notes.push('its best match, ' + esc(label(byId(q.cands[0].id))) + ', already has a transcript: pick it above only if this file should replace it');
           if (q.moved && !q.picked) notes.push(esc(q.moved.by) + ' matched ' + esc(label(byId(q.moved.from)) || 'its first choice') + ' better, so this moved to its next best');
           return (e ? esc(label(e)) : 'Skip this file: pick its episode above or search') + (notes.length ? ' <small>(' + notes.join('; ') + ')</small>' : '');
         }
