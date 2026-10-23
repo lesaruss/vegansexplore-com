@@ -189,8 +189,11 @@ async function match(files: { name?: string; head?: string }[]) {
       let same = 0; if (e.sh && fsh.size) { let n = 0; fsh.forEach((x) => { if (e.sh!.has(x)) n++; }); same = n / Math.min(fsh.size, e.sh.size); }
       const num = said && e.code.num && +said[1] === e.code.num ? 0.15 : 0;
       const showOk = !fc.show || fc.show === e.podcast_show;
-      const numOk = fc.num != null && e.code.num === fc.num && (fc.season == null || fc.season === e.code.season);
-      const code = numOk && fc.show && showOk ? 0.75 : numOk && !fc.show ? 0.3 : 0;
+      // The number in the name counts in full only when the opening agrees (Sean, 2026-10-23: two files were both named
+      // VEP 0095, and the number alone put Juicy Marbles on Jason Kartalian's episode). A bare number with no show code
+      // ("Dr. Michael Klaper 03") is a take or a part, not an episode, and does not count.
+      const numOk = fc.show && showOk && fc.num != null && e.code.num === fc.num && (fc.season == null || fc.season === e.code.season);
+      const code = numOk ? 0.4 + (t >= 0.15 || sm >= 0.15 ? 0.35 : 0) : 0;
       const score = Math.min(1, same > 0.08 ? 0.9 + same : code + 0.6 * t + 0.25 * sm + 0.35 * nm + num) * (showOk ? 1 : 0.5);
       return { id: e.id, score: Math.round(score * 100) / 100 };
     }).sort((a, b) => b.score - a.score).slice(0, 5);
