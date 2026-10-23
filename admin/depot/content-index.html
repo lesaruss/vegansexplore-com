@@ -12,7 +12,10 @@
     /* Content index (Sean, 2026-10-10: "go ahead and start on the content index"). Step 1: a timestamped transcript for
        every episode. YouTube refuses our server, so they come from TurboScribe as SRT files: copy a show's YouTube links
        into TurboScribe, export the transcripts as SRT, drop them here (or a ZIP of them), check each file's episode, Save.
-       Data: ve-content-index (status, episodes, srt), ve_content_transcripts. */
+       Data: ve-content-index (status, episodes, srt), ve_content_transcripts.
+       Step 3, search and clips (Sean, 2026-10-23: "start step 3"): Search (#search?q=&topic=&show=) finds the tagged moments
+       (ve-content-index topics, search) and a moment (#moment/<id>) plays that exact stretch of the episode on YouTube with
+       the rest of the episode's moments under it (moment). Here first, so Sean can judge it before members get it. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -71,6 +74,26 @@
     .msg.err{color:#a61b1b;}
     .note{background:#FFF8EC;border:1px solid #F5D9A8;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;}
     ol.steps{margin:0 0 0 20px;font-size:14px;}ol.steps li{margin:0 0 4px;}
+    .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .mcard{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;}
+    .mcard .ep{font-size:11.5px;font-weight:800;color:var(--ve-green-deep);text-transform:uppercase;letter-spacing:.05em;}
+    .mcard .ep span{color:var(--ve-text-75);font-weight:700;text-transform:none;letter-spacing:0;}
+    .mcard .sum{font-size:14px;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .mcard .who{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:13px;font-style:italic;color:var(--ve-text-75);border-left:3px solid var(--ve-green-light);padding-left:10px;}
+    .mcard .quote{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .tpcs{display:flex;flex-wrap:wrap;gap:5px;}
+    .tpc{font:inherit;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--ve-green-light);color:var(--ve-green-deep);border:0;cursor:pointer;text-decoration:none;}
+    .mcard .go{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:4px;}
+    .tm{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;}
+    .mview{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px;align-items:start;}
+    @media (max-width:900px){.mview{grid-template-columns:1fr;}}
+    .player{position:relative;width:100%;aspect-ratio:16/9;background:#111;border-radius:12px;overflow:hidden;}
+    .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+    .player .none{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ddd;font-size:14px;padding:20px;text-align:center;}
+    .eplist a{display:grid;grid-template-columns:62px 1fr;gap:8px;padding:8px 4px;border-bottom:1px solid var(--ve-border);font-size:13px;color:var(--ve-text);text-decoration:none;}
+    .eplist a:hover{background:var(--ve-green-light);}
+    .eplist a.on{background:var(--ve-green-light);font-weight:700;}
   </style>
 </head>
 <body>
@@ -121,6 +144,7 @@
             return '<div class="show"><h3>' + esc(n) + '</h3><div class="bar"><i style="width:' + pct + '%"></i></div><small><b>' + s.done + ' of ' + s.n + '</b> timestamped' + (s.secs ? ', ' + (s.secs / 3600).toFixed(1) + ' hours' : '') + '</small>' +
               (s.waitYt.length ? '<button type="button" class="btn btn-ghost btn-sm" data-copy="' + esc(n) + '">Copy ' + s.waitYt.length + ' YouTube links</button>' : '') +
               (s.noYt ? '<small>' + s.noYt + ' not on YouTube: transcribe their audio in TurboScribe.</small>' : '') + '</div>'; }).join('') + '</div>' +
+          '<section class="card"><h2>Search the moments</h2><p class="sub" style="margin-bottom:10px" id="m-count">Every tagged moment, by topic or by words, played from the exact second.</p><a class="btn" href="#search">Search the moments</a></section>' +
           '<section class="card"><h2>Add transcripts</h2><label class="drop" id="drop" for="files"><b>Drop SRT files or a ZIP here</b><span>or tap to choose them</span></label>' +
           '<input type="file" id="files" accept=".srt,.zip,application/zip,text/plain" multiple hidden><p class="msg" id="d-msg" role="status" style="margin-top:8px"></p></section>' +
           '<section class="card"><h2>Episodes</h2><div class="toolbar"><input type="search" id="q" placeholder="Search episodes" aria-label="Search episodes">' +
@@ -130,6 +154,7 @@
         Array.prototype.forEach.call(V().querySelectorAll('[data-copy]'), function (b) {
           b.addEventListener('click', function () { copy(shows[b.dataset.copy].waitYt.map(function (id) { return 'https://youtu.be/' + id; }).join('\n'), b); });
         });
+        topics().then(function (t) { if ($('m-count') && t) $('m-count').textContent = t.moments + ' moments from ' + t.episodes_tagged + ' episodes so far' + (t.episodes_waiting ? ', ' + t.episodes_waiting + ' more being tagged' : '') + '. Search them by topic or by words and play the exact second.'; });
         ['q', 'fs', 'ft'].forEach(function (id) { $(id).addEventListener('input', drawEps); });
         drawEps();
         var drop = $('drop');
@@ -253,7 +278,71 @@
         })(0);
       }
 
-      function route() { if (location.hash === '#review') return viewReview(); REVIEW_NOTE = ''; viewHome(); }
+      // ---- Step 3: search the tagged moments and play one ----
+      var TOPICS = null;
+      function topics() { return TOPICS ? Promise.resolve(TOPICS) : api({ action: 'topics' }).then(function (d) { if (d && d.ok) TOPICS = d; return TOPICS; }); }
+      function clock(sec) { sec = Math.max(0, Math.floor(+sec || 0)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), x = sec % 60;
+        return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
+      function topicLabel(slug) { var t = TOPICS && (TOPICS.topics || []).filter(function (x) { return x.slug === slug; })[0]; return t ? t.label : slug; }
+      function params() { var q = (location.hash.split('?')[1] || ''), o = {}; q.split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('='); o[decodeURIComponent(kv.slice(0, i))] = decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); }); return o; }
+      function searchHash(o) { var p = ['q', 'topic', 'show'].filter(function (k) { return o[k]; }).map(function (k) { return k + '=' + encodeURIComponent(o[k]); }); return '#search' + (p.length ? '?' + p.join('&') : ''); }
+      var LAST_SEARCH = '#search';
+      function epCode(m) { return code({ podcast_show: m.podcast_show, episode_number: m.episode_number, season: null }); }
+      function viewSearch() {
+        var o = params(); LAST_SEARCH = searchHash(o);
+        crumbs([['Content index', '#'], ['Search']]);
+        V().innerHTML = '<p class="sub">Every moment the Background writer has tagged so far, best match first. Search words ("protein powder", "Ed Winters") or pick a topic.</p>' +
+          '<form class="toolbar" id="sf"><input type="search" id="sq" placeholder="Search the moments" aria-label="Search the moments" value="' + esc(o.q || '') + '">' +
+          '<select id="st" aria-label="Topic"><option value="">All topics</option></select>' +
+          '<select id="ss" aria-label="Show"><option value="">All shows</option>' + ORDER.map(function (n) { return '<option' + (o.show === n ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('') + '</select>' +
+          '<button class="btn" type="submit">Search</button></form><p class="msg" id="s-msg" role="status"></p><div class="mgrid" id="sres"></div>';
+        topics().then(function (t) {
+          var sel = $('st'); if (!sel || !t) return;
+          sel.innerHTML = '<option value="">All topics</option>' + (t.topics || []).map(function (x) { return '<option value="' + esc(x.slug) + '"' + (o.topic === x.slug ? ' selected' : '') + '>' + esc(x.label) + ' (' + x.moments + ')</option>'; }).join('');
+        });
+        $('sf').addEventListener('submit', function (ev) { ev.preventDefault(); location.hash = searchHash({ q: $('sq').value.trim(), topic: $('st').value, show: $('ss').value }); });
+        ['st', 'ss'].forEach(function (id) { $(id).addEventListener('change', function () { location.hash = searchHash({ q: $('sq').value.trim(), topic: $('st').value, show: $('ss').value }); }); });
+        $('s-msg').textContent = 'Searching...';
+        Promise.all([topics(), api({ action: 'search', q: o.q || '', topic: o.topic || '', show: o.show || '', limit: 120 })]).then(function (r) {
+          var d = r[1];
+          if (!d || !d.ok) { $('s-msg').className = 'msg err'; $('s-msg').textContent = 'Search did not work: ' + ((d && d.error) || 'network'); return; }
+          var ms = d.moments || [];
+          $('s-msg').className = 'msg'; $('s-msg').textContent = ms.length ? (d.total > ms.length ? 'The best ' + ms.length + ' of ' + d.total + ' moments.' : d.total + (d.total === 1 ? ' moment.' : ' moments.')) : 'No moments match yet. More are tagged every 15 minutes.';
+          $('sres').innerHTML = ms.map(function (m) {
+            return '<article class="mcard"><div class="ep">' + esc(epCode(m) || m.podcast_show.replace(' Podcast', '')) + ' <span>' + esc(m.title) + '</span></div>' +
+              '<div class="sum">' + esc(m.summary) + '</div><div class="who">' + esc(m.speaker) + '</div><div class="quote">&ldquo;' + esc(m.quote) + '&rdquo;</div>' +
+              '<div class="tpcs">' + (m.topics || []).map(function (t) { return '<a class="tpc" href="' + searchHash({ topic: t }) + '">' + esc(topicLabel(t)) + '</a>'; }).join('') + '</div>' +
+              '<div class="go"><span class="tm">' + clock(m.start_s) + ' to ' + clock(m.end_s) + '</span><a class="btn btn-sm" href="#moment/' + esc(m.id) + '">Play</a></div></article>';
+          }).join('');
+        });
+      }
+      function viewMoment(id) {
+        crumbs([['Content index', '#'], ['Search', LAST_SEARCH], ['Moment']]);
+        V().innerHTML = '<p class="msg" role="status">Loading...</p>';
+        Promise.all([topics(), api({ action: 'moment', id: id })]).then(function (r) {
+          var d = r[1];
+          if (!d || !d.ok) { V().innerHTML = '<p class="msg err">That moment is not in the index (it may have been tagged again). <a href="' + LAST_SEARCH + '">Back to search</a></p>'; return; }
+          var m = d.moment, s = Math.floor(+m.start_s), e = Math.ceil(+m.end_s);
+          crumbs([['Content index', '#'], ['Search', LAST_SEARCH], [(epCode(m) ? epCode(m) + ' ' : '') + m.title]]);
+          V().innerHTML = '<div class="mview"><div><div class="player">' + (m.youtube_id
+              ? '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(m.youtube_id) + '?start=' + s + '&end=' + e + '&autoplay=1&rel=0" title="' + esc(m.title) + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'
+              : '<div class="none">This episode is not on YouTube yet, so it cannot play here. The moment runs ' + clock(s) + ' to ' + clock(e) + '.</div>') + '</div>' +
+            '<div class="card" style="margin-top:14px"><div class="tm">' + clock(s) + ' to ' + clock(e) + '</div><p style="margin:6px 0;font-size:17px;font-weight:800;line-height:1.35">' + esc(m.summary) + '</p>' +
+            '<p class="who" style="font-size:13px;margin-bottom:8px">' + esc(m.speaker) + ', ' + esc(m.podcast_show) + '</p><p class="quote">&ldquo;' + esc(m.quote) + '&rdquo;</p>' +
+            '<div class="tpcs" style="margin-top:10px">' + (m.topics || []).map(function (t) { return '<a class="tpc" href="' + searchHash({ topic: t }) + '">' + esc(topicLabel(t)) + '</a>'; }).join('') + '</div>' +
+            (m.youtube_id ? '<p style="margin-top:12px"><a class="btn btn-ghost btn-sm" href="https://youtu.be/' + encodeURIComponent(m.youtube_id) + '?t=' + s + '" target="_blank" rel="noopener">Keep watching on YouTube</a></p>' : '') + '</div></div>' +
+            '<section class="card"><h2>In this episode</h2><div class="eplist">' + (d.episode || []).map(function (o) {
+              return '<a href="#moment/' + esc(o.id) + '"' + (o.id === m.id ? ' class="on" aria-current="true"' : '') + '><span class="tm">' + clock(o.start_s) + '</span><span>' + esc(o.summary) + '</span></a>'; }).join('') + '</div></section></div>';
+        });
+      }
+
+      function route() {
+        var h = location.hash;
+        if (h === '#review') return viewReview();
+        if (h.indexOf('#search') === 0) return viewSearch();
+        if (h.indexOf('#moment/') === 0) return viewMoment(h.slice(8));
+        REVIEW_NOTE = ''; viewHome();
+      }
       window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
