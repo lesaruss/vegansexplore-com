@@ -366,6 +366,17 @@ returns every moment across every show, who said it, a quote, and a play button 
   numbers one for one. The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
   (relabeled 2026-10-22). The function takes a signed-in super admin for `status`, `episodes` and
   `srt`, and the admin token for everything.
+- Step 2, moments by topic (started 2026-10-23, Sean: "you can start step two now, and I'll continue uploading"; migration
+  `20261023_ve_content_moments.sql`, playbook `ve-content-index` in HQ). The Background writer (dispatcher source
+  `content_moments_tag`, Station 2, batch 3, on the subscription) reads each transcript (`ve_content_transcript_lines`) and saves
+  its moments through `ve_content_moments_save(content_id, moments)`: start and end second, speaker, the quote word for word,
+  a one-line summary, one to three topics from `ve_content_topics` (42 slugs; add a row to add a topic). The save checks every
+  moment (topics on the list, times inside the episode, 15 seconds to 10 minutes long so a clip plays as a whole thought, Sean
+  2026-10-23; the quote really said within 30 seconds of the start) and returns the
+  rejected ones with why. A transcript is queued (`tag_status`) whenever it is saved, replaced or set ready, so Sean's drops are
+  tagged on the next run. Nothing is deleted: each save is a run (`run_id`), the transcript points at its latest (`moments_run`),
+  and `ve_content_moments_live` is what counts (ready transcripts, latest run, with the episode's title, show, number and
+  YouTube id). Proven 2026-10-23 on Vegans Explore episode 1 (7 moments; a made-up quote and an off-list topic were refused).
 
 ## Tracked links (Sean, 2026-10-04)
 
