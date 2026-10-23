@@ -190,6 +190,9 @@
       // guest and words heard in the opening), then review with a search to pick any episode by hand ----
       function plain(srt) { return String(srt).replace(/\r/g, '').split(/\n\s*\n/).map(function (b) { var l = b.trim().split('\n'), i = l.findIndex(function (x) { return x.indexOf('-->') >= 0; }); return i < 0 ? '' : l.slice(i + 1).join(' '); }).join(' ').replace(/\s+/g, ' ').trim(); }
       function byId(id) { return EPS.filter(function (e) { return e.id === id; })[0]; }
+      // The code in a file's name, the way the list writes it (VEP 0095 -> VEP 95), to flag a name that disagrees with its pick.
+      function nameCode(n) { var m = String(n || '').match(/\b(vepp?|sfv|pv|vwl)\s*[-_ ]?\s*(?:s0*(\d+)\s*)?e?0*(\d{1,4})\b/i); if (!m) return '';
+        var k = m[1].toUpperCase().replace('VEPP', 'VEP'); return k + ' ' + (m[2] ? 'S' + (+m[2]) + 'E' + (+m[3]) : (+m[3])); }
       function label(e) { var c = code(e); return (c ? c + ' ' : e.podcast_show.replace(' Podcast', '') + ': ') + e.title.replace(/\s*\|\s*(SoFlo Vegans|Vegans Who Lift|Pre-Vegans|Vegans Explore) Podcast\s*$/i, ''); }
       function readFiles(list) {
         var files = Array.prototype.slice.call(list || []); if (!files.length) return;
@@ -215,8 +218,24 @@
               var r = res[i] || {}, c = (r.candidates || []).filter(function (k) { return byId(k.id); }), top = c[0] || { id: '', score: 0 };
               // A file whose transcript is already saved stays out of the way (Skip), with its episode one tap away.
               if (r.saved_as && byId(r.saved_as)) return { name: x.name, text: x.text, open: x.plain.split(' ').slice(0, 45).join(' '), cands: [{ id: r.saved_as, score: 1 }], ep: '', s: 2, saved: r.saved_as };
-              return { name: x.name, text: x.text, open: x.plain.split(' ').slice(0, 45).join(' '), cands: c, ep: top.score >= 0.35 ? top.id : '', s: top.score };
-            }).sort(function (a, b) { return a.s - b.s; });
+              // Replacing a saved transcript is never a guess (Sean's "Dr. Klaper Podcast 02" landed on #27 and replaced its
+              // transcript, 2026-10-23): below a near-certain match, an episode that already has one waits for a pick.
+              var guard = top.id && has(byId(top.id)) && top.score < 0.75;
+              var free = guard ? c.filter(function (k) { return k.score >= 0.35 && !has(byId(k.id)); })[0] : null;
+              return { name: x.name, text: x.text, open: x.plain.split(' ').slice(0, 45).join(' '), cands: c, guard: guard,
+                ep: free ? free.id : top.score >= 0.35 && !guard ? top.id : '', s: free ? Math.min(free.score, 0.59) : top.score };
+            });
+            // Two files on one episode (Sean, 2026-10-23: "this is not a smooth process"): the stronger match keeps it and the
+            // other moves to its next best free episode, so "Same episode" only shows when there is no good second choice.
+            var taken = {};
+            PENDING.slice().sort(function (a, b) { return b.s - a.s; }).forEach(function (p) {
+              if (!p.ep) return;
+              if (!taken[p.ep]) { taken[p.ep] = p; return; }
+              var alt = p.cands.filter(function (k) { return k.score >= 0.35 && k.id !== p.ep && !taken[k.id]; })[0];
+              if (!alt) return;
+              p.moved = { from: p.ep, by: taken[p.ep].name }; p.ep = alt.id; p.s = Math.min(p.s, alt.score, 0.59); taken[alt.id] = p;
+            });
+            PENDING.sort(function (a, b) { return a.s - b.s; });
             location.hash = 'review';
           });
         }).catch(function () { $('d-msg').className = 'msg err'; $('d-msg').textContent = 'Those files could not be read.'; });
@@ -234,13 +253,21 @@
             var e = byId(p.ep);
             return '<div class="rvc" data-i="' + i + '">' + (p.saved ? '<p class="sub" style="margin:0 0 4px">Already saved to ' + esc(label(byId(p.saved))) + '. Leave it on Skip.</p>' : '') + '<div class="rvh"><strong>' + esc(p.name) + '</strong><span data-tag>' + tagFor(p) + '</span></div>' +
               '<p class="open">&ldquo;' + esc(p.open) + '&hellip;&rdquo;</p>' +
-              '<div class="pick"><span class="lbl">Episode</span> <span data-cur>' + (e ? esc(label(e)) + (has(e) ? ' <small>(already has one, this replaces it)</small>' : '') : 'Skip this file') + '</span></div>' +
+              '<div class="pick"><span class="lbl">Episode</span> <span data-cur>' + cur(i) + '</span></div>' +
               (p.cands.length ? '<div class="chips">' + p.cands.slice(0, 3).map(function (k) { var x = byId(k.id); return '<button type="button" class="chip' + (k.id === p.ep ? ' on' : '') + '" data-id="' + k.id + '">' + esc(label(x)) + '</button>'; }).join('') + '<button type="button" class="chip skip" data-id="">Skip</button></div>' : '') +
               '<input type="search" class="find" placeholder="Search episodes: a guest, a topic, SFV 12" aria-label="Search episodes for ' + esc(p.name) + '"><div class="hits"></div></div>';
           }).join('') + '</div><div class="toolbar" style="margin-top:14px"><button type="button" class="btn" id="save">Save transcripts</button><a class="btn btn-ghost" href="#">Cancel</a><span class="msg" id="r-msg" role="status"></span></div></section>';
         // Picking an episode another file holds takes it (Sean, 2026-10-23: "I click the one and nothing happens"): the other
         // file goes back to Skip with its own suggestions, so two files never sit on one episode and every click shows.
-        function cur(i) { var q = PENDING[i], e = byId(q.ep); return e ? esc(label(e)) + (has(e) ? ' <small>(already has one, this replaces it)</small>' : '') : 'Skip this file: pick its episode above or search'; }
+        function cur(i) {
+          var q = PENDING[i], e = byId(q.ep), said = nameCode(q.name), notes = [];
+          if (e && has(e)) notes.push('already has one, this replaces it');
+          if (e && said && code(e) && said !== code(e)) notes.push('its name says ' + said + ': check it is the right episode');
+          if (e && q.guard && !q.picked && q.cands[0].id !== q.ep) notes.push('its best match, ' + esc(label(byId(q.cands[0].id))) + ', already has a transcript, so this went to the next best: pick that one only if this file should replace it');
+          if (!e && q.guard && !q.picked) notes.push('its best match, ' + esc(label(byId(q.cands[0].id))) + ', already has a transcript: pick it above only if this file should replace it');
+          if (q.moved && !q.picked) notes.push(esc(q.moved.by) + ' matched ' + esc(label(byId(q.moved.from)) || 'its first choice') + ' better, so this moved to its next best');
+          return (e ? esc(label(e)) : 'Skip this file: pick its episode above or search') + (notes.length ? ' <small>(' + notes.join('; ') + ')</small>' : '');
+        }
         function setEp(box, id) {
           var i = +box.dataset.i, p = PENDING[i]; p.ep = id; p.picked = true;
           if (id) PENDING.forEach(function (o, j) { if (j !== i && o.ep === id) { o.ep = ''; o.picked = false; o.bumped = p.name; } });

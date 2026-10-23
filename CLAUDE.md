@@ -367,7 +367,13 @@ returns every moment across every show, who said it, a quote, and a play button 
   Why Nutrition Belongs at the Center" (2026-01-16) is the same YouTube video as #77 and has no number, and Sean's 93 (2026-02-01)
   is not in our list, so 78 to 92 run by release and 94 onward line up again (#100 is "100 Episodes"). On the review screen,
   picking an episode another file holds takes it and sends that file back to Skip with a note, and episode search takes a
-  number (VEP 88). The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
+  number (VEP 88). Same day, after two files were both named VEP 0095 (Juicy Marbles and Jason Kartalian) and two Klaper files were
+  named "03": a number in a file's name counts in full (0.75) only when the opening agrees with that episode's title or
+  summary, else 0.4, so the opening wins a disagreement; a bare number with no show code counts for nothing. When two files
+  still land on one episode, the stronger match keeps it and the other moves to its next best free episode (0.35 or more),
+  marked Check this with why, and a file whose name says another code than its episode says so. Replacing a saved
+  transcript is never a guess ("Dr. Klaper Podcast 02" had replaced #27's transcript): below 0.75, a file whose best match
+  already has one goes to its next best free episode, or waits on Skip, with a note; picking it by hand still replaces. The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
   (relabeled 2026-10-22). The function takes a signed-in super admin for `status`, `episodes` and
   `srt`, and the admin token for everything.
 - Step 2, moments by topic (started 2026-10-23, Sean: "you can start step two now, and I'll continue uploading"; migration
