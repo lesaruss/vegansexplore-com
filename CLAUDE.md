@@ -363,7 +363,11 @@ returns every moment across every show, who said it, a quote, and a play button 
   2026-10-22: "sort the podcast episodes for the shows by number. This way I know what didn't upload"), each row with its code
   (VEP 41, SFV 12, PV 5, VWL S5E7) from `ve_pulse_content.episode_number`. Vegans Explore episodes are numbered by release from
   2025-11-01, leaving out the two "South Florida Vegans" cross-posts; Sean's TurboScribe files VEP 0041 to 0070 matched those
-  numbers one for one. The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
+  numbers one for one. Two exceptions found 2026-10-23 when VEP 0078 to 0090 landed one episode off: "Moving Medicine Forward:
+  Why Nutrition Belongs at the Center" (2026-01-16) is the same YouTube video as #77 and has no number, and Sean's 93 (2026-02-01)
+  is not in our list, so 78 to 92 run by release and 94 onward line up again (#100 is "100 Episodes"). On the review screen,
+  picking an episode another file holds takes it and sends that file back to Skip with a note, and episode search takes a
+  number (VEP 88). The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
   (relabeled 2026-10-22). The function takes a signed-in super admin for `status`, `episodes` and
   `srt`, and the admin token for everything.
 - Step 2, moments by topic (started 2026-10-23, Sean: "you can start step two now, and I'll continue uploading"; migration
@@ -377,6 +381,15 @@ returns every moment across every show, who said it, a quote, and a play button 
   tagged on the next run. Nothing is deleted: each save is a run (`run_id`), the transcript points at its latest (`moments_run`),
   and `ve_content_moments_live` is what counts (ready transcripts, latest run, with the episode's title, show, number and
   YouTube id). Proven 2026-10-23 on Vegans Explore episode 1 (7 moments; a made-up quote and an off-list topic were refused).
+- Step 3, search and clips (started 2026-10-23, Sean: "start step 3"; migration `20261023_ve_content_search.sql`). In
+  **Depot > Content index** first, so Sean can judge it before members get it: **Search** (`#search?q=&topic=&show=`, a card
+  on the home view with the moment count) finds moments by words and topic, best match first (`ve_content_moments_search`,
+  Postgres text search over the summary and topics, then the quote, then the speaker and title; `websearch` syntax), each
+  card with its episode code, summary, speaker, quote, topics and Play; a **moment** (`#moment/<id>`, `ve_content_moment_get`)
+  plays that stretch in the YouTube player (`youtube-nocookie` embed with `start` and `end`) with Keep watching on YouTube and
+  the rest of the episode's moments beside it. Topic counts and tagging progress: `ve_content_topic_counts()`. `ve-content-index`
+  actions `topics`, `search`, `moment` (super admin or the admin token). Not yet: members' search and the Guides' Pulse tabs
+  playing moments; episodes not on YouTube cannot play.
 
 ## Tracked links (Sean, 2026-10-04)
 

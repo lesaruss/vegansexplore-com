@@ -14,6 +14,8 @@
 //   status                      how many episodes have a timestamped transcript, by show
 // Depot > Content index (a signed-in super admin, Bearer <ve_token>): status, episodes (every episode with its transcript
 // state), match (which episode each dropped file is, read from what is said in it) and srt (save a file to its episode).
+// Step 3, search and clips (Sean, 2026-10-23): topics (each topic's moment count and how far tagging has got), search { q,
+// topic, show, limit } (tagged moments, best first) and moment { id } (one moment and the rest of its episode's).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
@@ -205,7 +207,7 @@ async function handle(req: Request): Promise<Response> {
     // The Depot page: a signed-in super admin may read the status and the episodes, and save SRT files.
     const id = given ? await memberId(given) : null;
     const { data: m } = id ? await db.from('members').select('is_superadmin').eq('id', id).maybeSingle() : { data: null };
-    if (!m?.is_superadmin || !['status', 'episodes', 'match', 'srt'].includes(String(body.action))) return json({ error: 'unauthorized' }, 401);
+    if (!m?.is_superadmin || !['status', 'episodes', 'match', 'srt', 'topics', 'search', 'moment'].includes(String(body.action))) return json({ error: 'unauthorized' }, 401);
   }
   try {
     // What YouTube returns to this server, for diagnosing blocks.
@@ -248,6 +250,22 @@ async function handle(req: Request): Promise<Response> {
       const { data: tr } = await db.from('ve_content_transcripts').select('content_id,source,status,words,duration_seconds,fetched_at');
       const T = new Map((tr || []).map((t) => [t.content_id, t]));
       return json({ ok: true, episodes: (eps || []).map((e) => ({ ...e, transcript: T.get(e.id) || null })) });
+    }
+    if (body.action === 'topics') {
+      const { data, error } = await db.rpc('ve_content_topic_counts');
+      if (error) throw error;
+      return json({ ok: true, ...data });
+    }
+    if (body.action === 'search') {
+      const { data, error } = await db.rpc('ve_content_moments_search', { p_q: String(body.q || '').slice(0, 200) || null, p_topic: String(body.topic || '') || null,
+        p_show: String(body.show || '') || null, p_limit: Math.max(1, Math.min(200, Number(body.limit) || 60)) });
+      if (error) throw error;
+      return json({ ok: true, ...data });
+    }
+    if (body.action === 'moment') {
+      const { data, error } = await db.rpc('ve_content_moment_get', { p_id: String(body.id || '') });
+      if (error) throw error;
+      return data ? json({ ok: true, ...data }) : json({ error: 'not_found' }, 404);
     }
     if (body.action === 'status') {
       const { data } = await db.rpc('ve_content_index_status');
