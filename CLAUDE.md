@@ -371,7 +371,8 @@ returns every moment across every show, who said it, a quote, and a play button 
   `content_moments_tag`, Station 2, batch 3, on the subscription) reads each transcript (`ve_content_transcript_lines`) and saves
   its moments through `ve_content_moments_save(content_id, moments)`: start and end second, speaker, the quote word for word,
   a one-line summary, one to three topics from `ve_content_topics` (42 slugs; add a row to add a topic). The save checks every
-  moment (topics on the list, times inside the episode, the quote really said within 30 seconds of the start) and returns the
+  moment (topics on the list, times inside the episode, 15 seconds to 10 minutes long so a clip plays as a whole thought, Sean
+  2026-10-23; the quote really said within 30 seconds of the start) and returns the
   rejected ones with why. A transcript is queued (`tag_status`) whenever it is saved, replaced or set ready, so Sean's drops are
   tagged on the next run. Nothing is deleted: each save is a run (`run_id`), the transcript points at its latest (`moments_run`),
   and `ve_content_moments_live` is what counts (ready transcripts, latest run, with the episode's title, show, number and

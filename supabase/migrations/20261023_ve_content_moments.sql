@@ -150,7 +150,7 @@ begin
       tp := array(select jsonb_array_elements_text(coalesce(m -> 'topics', '[]'::jsonb)));
       if s is null or e is null or s < 0 or e <= s then why := 'start and end must be seconds, end after start';
       elsif e > dur + 5 then why := 'ends after the episode does';
-      elsif e - s < 5 or e - s > 600 then why := 'a moment runs 5 seconds to 10 minutes';
+      elsif e - s < 15 or e - s > 600 then why := 'a moment runs 15 seconds to 10 minutes: widen a short one to the whole point';
       elsif cardinality(tp) not between 1 and 3 then why := 'one to three topics';
       elsif exists (select 1 from unnest(tp) x where x not in (select slug from ve_content_topics)) then
         why := 'topic not on the list: ' || (select string_agg(x, ', ') from unnest(tp) x where x not in (select slug from ve_content_topics));
@@ -213,7 +213,7 @@ Vegans Explore content index, Step 2. Our podcast episodes have timestamped tran
    Read the topic list once per run: select slug, label, about from ve_content_topics order by sort;
 3. Find the moments. A moment is a stretch where someone says something worth finding by topic: a point, a story, advice, a fact, an opinion. Skip the intro, sponsor reads, "subscribe" and goodbyes, and small talk.
    - About one moment for every two to four minutes of real talk; a short daily episode may have two or three, a long interview fifteen to twenty-five. A two-minute promo may have none.
-   - start_s: the second the point begins (the start of the line where it begins). end_s: where it is finished. Usually 20 seconds to 3 minutes.
+   - start_s: the second the point begins (the start of the line where it begins). end_s: where it is finished. Usually 20 seconds to 3 minutes; never under 15 seconds (widen it to the whole point, so the clip plays as a thought, not a soundbite). A list episode, like a top 10 or a roundup, gets one moment per item worth finding.
    - speaker: the person talking, by name. The host of Vegans Explore, SoFlo Vegans and Pre-Vegans is Sean A. Russell (the captions often spell him Shawn). Vegans Who Lift is hosted by Brooke Sellers and John Thomas. Take a guest's name from the title or from how they are introduced, spelled the way the title spells it. If you cannot tell who is talking, use "Guest" or "Host".
    - quote: their words copied exactly from the transcript, 20 to 300 characters, from inside the moment. Fix nothing in it, not even spelling; it is checked word for word.
    - summary: one sentence in your own words, under 200 characters, saying what is said, for example "Dr. Klaper explains why fiber feeds the gut bacteria that lower inflammation." Always capitalize Vegan, Vegans and Veganism. No em dashes or en dashes. Never add facts that are not said.
