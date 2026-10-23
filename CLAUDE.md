@@ -363,7 +363,11 @@ returns every moment across every show, who said it, a quote, and a play button 
   2026-10-22: "sort the podcast episodes for the shows by number. This way I know what didn't upload"), each row with its code
   (VEP 41, SFV 12, PV 5, VWL S5E7) from `ve_pulse_content.episode_number`. Vegans Explore episodes are numbered by release from
   2025-11-01, leaving out the two "South Florida Vegans" cross-posts; Sean's TurboScribe files VEP 0041 to 0070 matched those
-  numbers one for one. The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
+  numbers one for one. Two exceptions found 2026-10-23 when VEP 0078 to 0090 landed one episode off: "Moving Medicine Forward:
+  Why Nutrition Belongs at the Center" (2026-01-16) is the same YouTube video as #77 and has no number, and Sean's 93 (2026-02-01)
+  is not in our list, so 78 to 92 run by release and 94 onward line up again (#100 is "100 Episodes"). On the review screen,
+  picking an episode another file holds takes it and sends that file back to Skip with a note, and episode search takes a
+  number (VEP 88). The 26 Brooke & John episodes from May 2024 to January 2025 are Vegans Who Lift, not Vegans Explore
   (relabeled 2026-10-22). The function takes a signed-in super admin for `status`, `episodes` and
   `srt`, and the admin token for everything.
 - Step 2, moments by topic (started 2026-10-23, Sean: "you can start step two now, and I'll continue uploading"; migration

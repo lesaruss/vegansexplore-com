@@ -67,6 +67,7 @@
     .chip,.hit{font:inherit;font-size:12.5px;text-align:left;padding:7px 11px;border:1px solid rgba(31,95,34,.35);border-radius:6px;background:#fff;cursor:pointer;}
     .chip:hover,.hit:hover{background:var(--ve-green-light);}
     .chip.skip{border-color:rgba(0,0,0,.2);color:#555;}
+    .chip.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
     .find{font:inherit;font-size:13.5px;padding:9px 12px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;max-width:640px;}
     .hits{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:6px;}
     @media (max-width:760px){.row{grid-template-columns:1fr 1fr;}.row.head{display:none;}}
@@ -189,7 +190,7 @@
       // guest and words heard in the opening), then review with a search to pick any episode by hand ----
       function plain(srt) { return String(srt).replace(/\r/g, '').split(/\n\s*\n/).map(function (b) { var l = b.trim().split('\n'), i = l.findIndex(function (x) { return x.indexOf('-->') >= 0; }); return i < 0 ? '' : l.slice(i + 1).join(' '); }).join(' ').replace(/\s+/g, ' ').trim(); }
       function byId(id) { return EPS.filter(function (e) { return e.id === id; })[0]; }
-      function label(e) { return e.podcast_show.replace(' Podcast', '') + ': ' + e.title.replace(/\s*\|\s*(SoFlo Vegans|Vegans Who Lift|Pre-Vegans|Vegans Explore) Podcast\s*$/i, ''); }
+      function label(e) { var c = code(e); return (c ? c + ' ' : e.podcast_show.replace(' Podcast', '') + ': ') + e.title.replace(/\s*\|\s*(SoFlo Vegans|Vegans Who Lift|Pre-Vegans|Vegans Explore) Podcast\s*$/i, ''); }
       function readFiles(list) {
         var files = Array.prototype.slice.call(list || []); if (!files.length) return;
         $('d-msg').className = 'msg'; $('d-msg').textContent = 'Reading ' + files.length + (files.length === 1 ? ' file...' : ' files...');
@@ -222,7 +223,7 @@
       }
       // Two files set to one episode: the second would overwrite the first (how files went missing on 2026-10-10).
       function dupes() { var n = {}; PENDING.forEach(function (p) { if (p.ep) n[p.ep] = (n[p.ep] || 0) + 1; }); return n; }
-      function tagFor(p) { return p.ep && dupes()[p.ep] > 1 ? '<span class="tag bad">Same episode as another file</span>' : !p.ep && p.saved ? '<span class="tag on">Already saved</span>' : !p.ep ? '<span class="tag bad">Skip</span>' : p.picked ? '<span class="tag on">You picked</span>' : p.s >= 0.6 ? '<span class="tag on">Good match</span>' : '<span class="tag wait">Check this</span>'; }
+      function tagFor(p) { return p.ep && dupes()[p.ep] > 1 ? '<span class="tag bad">Same episode as ' + esc(PENDING.filter(function (o) { return o !== p && o.ep === p.ep; }).map(function (o) { return o.name; })[0] || 'another file') + '</span>' : !p.ep && p.saved ? '<span class="tag on">Already saved</span>' : !p.ep ? '<span class="tag bad">Skip</span>' : p.picked ? '<span class="tag on">You picked</span>' : p.s >= 0.6 ? '<span class="tag on">Good match</span>' : '<span class="tag wait">Check this</span>'; }
       function viewReview() {
         if (!PENDING.length) { location.hash = ''; return; }
         crumbs([['Content index', '#'], ['Check and save']]);
@@ -234,14 +235,22 @@
             return '<div class="rvc" data-i="' + i + '">' + (p.saved ? '<p class="sub" style="margin:0 0 4px">Already saved to ' + esc(label(byId(p.saved))) + '. Leave it on Skip.</p>' : '') + '<div class="rvh"><strong>' + esc(p.name) + '</strong><span data-tag>' + tagFor(p) + '</span></div>' +
               '<p class="open">&ldquo;' + esc(p.open) + '&hellip;&rdquo;</p>' +
               '<div class="pick"><span class="lbl">Episode</span> <span data-cur>' + (e ? esc(label(e)) + (has(e) ? ' <small>(already has one, this replaces it)</small>' : '') : 'Skip this file') + '</span></div>' +
-              (p.cands.length ? '<div class="chips">' + p.cands.slice(0, 3).map(function (k) { var x = byId(k.id); return '<button type="button" class="chip" data-id="' + k.id + '">' + esc(label(x)) + '</button>'; }).join('') + '<button type="button" class="chip skip" data-id="">Skip</button></div>' : '') +
+              (p.cands.length ? '<div class="chips">' + p.cands.slice(0, 3).map(function (k) { var x = byId(k.id); return '<button type="button" class="chip' + (k.id === p.ep ? ' on' : '') + '" data-id="' + k.id + '">' + esc(label(x)) + '</button>'; }).join('') + '<button type="button" class="chip skip" data-id="">Skip</button></div>' : '') +
               '<input type="search" class="find" placeholder="Search episodes: a guest, a topic, SFV 12" aria-label="Search episodes for ' + esc(p.name) + '"><div class="hits"></div></div>';
           }).join('') + '</div><div class="toolbar" style="margin-top:14px"><button type="button" class="btn" id="save">Save transcripts</button><a class="btn btn-ghost" href="#">Cancel</a><span class="msg" id="r-msg" role="status"></span></div></section>';
+        // Picking an episode another file holds takes it (Sean, 2026-10-23: "I click the one and nothing happens"): the other
+        // file goes back to Skip with its own suggestions, so two files never sit on one episode and every click shows.
+        function cur(i) { var q = PENDING[i], e = byId(q.ep); return e ? esc(label(e)) + (has(e) ? ' <small>(already has one, this replaces it)</small>' : '') : 'Skip this file: pick its episode above or search'; }
         function setEp(box, id) {
-          var p = PENDING[+box.dataset.i], e = byId(id); p.ep = id; p.picked = true;
-          box.querySelector('[data-cur]').innerHTML = e ? esc(label(e)) + (has(e) ? ' <small>(already has one, this replaces it)</small>' : '') : 'Skip this file';
+          var i = +box.dataset.i, p = PENDING[i]; p.ep = id; p.picked = true;
+          if (id) PENDING.forEach(function (o, j) { if (j !== i && o.ep === id) { o.ep = ''; o.picked = false; o.bumped = p.name; } });
           box.querySelector('.hits').innerHTML = ''; box.querySelector('.find').value = '';
-          Array.prototype.forEach.call(V().querySelectorAll('.rvc'), function (b) { b.querySelector('[data-tag]').innerHTML = tagFor(PENDING[+b.dataset.i]); });
+          Array.prototype.forEach.call(V().querySelectorAll('.rvc'), function (b) {
+            var j = +b.dataset.i, o = PENDING[j];
+            b.querySelector('[data-cur]').innerHTML = cur(j) + (!o.ep && o.bumped ? ' <small>(its episode went to ' + esc(o.bumped) + ')</small>' : '');
+            b.querySelector('[data-tag]').innerHTML = tagFor(o);
+            Array.prototype.forEach.call(b.querySelectorAll('.chip'), function (c) { c.classList.toggle('on', c.dataset.id === o.ep && !!o.ep); });
+          });
         }
         Array.prototype.forEach.call(V().querySelectorAll('.rvc'), function (box) {
           Array.prototype.forEach.call(box.querySelectorAll('.chip'), function (c) { c.addEventListener('click', function () { setEp(box, c.dataset.id); }); });
@@ -249,7 +258,7 @@
           f.addEventListener('input', function () {
             var q = f.value.toLowerCase().trim(); if (!q) { hits.innerHTML = ''; return; }
             var terms = q.replace(/\bsfv\b/, 'soflo').replace(/\bvwl\b/, 'who lift').replace(/\bvep\b/, 'vegans explore').replace(/\bpv\b/, 'pre-vegans').split(/\s+/);
-            var m = EPS.filter(function (e) { var t = (e.podcast_show + ' ' + e.title).toLowerCase(); return terms.every(function (w) { return /^\d+$/.test(w) ? new RegExp('\\b(e|ep|ep |s\\d+e)0*' + w + '\\b').test(t) : t.indexOf(w) >= 0; }); }).slice(0, 8);
+            var m = EPS.filter(function (e) { var t = (e.podcast_show + ' ' + e.title).toLowerCase(); return terms.every(function (w) { return /^\d+$/.test(w) ? (e.episode_number === +w || new RegExp('\\b(e|ep|ep |s\\d+e)0*' + w + '\\b').test(t)) : t.indexOf(w) >= 0; }); }).slice(0, 8);
             hits.innerHTML = m.length ? m.map(function (e) { return '<button type="button" class="hit" data-id="' + e.id + '">' + esc(label(e)) + '</button>'; }).join('') : '<p class="sub" style="margin:6px 2px">Nothing matches.</p>';
             Array.prototype.forEach.call(hits.querySelectorAll('.hit'), function (h) { h.addEventListener('click', function () { setEp(box, h.dataset.id); }); });
           });
