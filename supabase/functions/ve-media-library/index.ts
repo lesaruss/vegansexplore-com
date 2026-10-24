@@ -171,8 +171,14 @@ Deno.serve(async (req) => {
   if (body.action === 'upload') {
     const sha = String(body.sha256 || '').toLowerCase();
     if (!/^[0-9a-f]{64}$/.test(sha)) return json({ error: 'bad_sha256' }, 400);
-    const ref = REF_RE.test(String(body.source_ref || '')) ? String(body.source_ref) : null;
+    let ref = REF_RE.test(String(body.source_ref || '')) ? String(body.source_ref) : null;
     const { data: existing } = await db.from('ve_media_library').select(COLS).eq('sha256', sha).maybeSingle();
+    if (!existing && ref) {
+      // source_ref is unique, and a listing's logo or logo card keeps its ref when it is replaced
+      // (Sean, 2026-10-24: a new logo for The Rabbit Hole failed), so a second file gets its own.
+      const { data: taken } = await db.from('ve_media_library').select('id').eq('source_ref', ref).maybeSingle();
+      if (taken) ref = `${ref.slice(0, 190)}:${sha.slice(0, 8)}`;
+    }
     if (existing) {
       // Same file already here: remember where it came from so the review counts it as kept.
       if (ref && !existing.source_ref) await db.from('ve_media_library').update({ source_ref: ref }).eq('id', existing.id);

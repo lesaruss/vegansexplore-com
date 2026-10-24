@@ -8,6 +8,10 @@
  * still linked from the business's own site into our storage, or remove it. A logo change saves
  * right away through ve-media-library (logo_set / logo_fetch), the same path as Depot > Logos.
  *
+ * Chapters (Sean, 2026-10-24): an organization that covers more than its own city (Florida Animal Rescue
+ * Alliance across Florida, PETA everywhere) also shows in the chapters picked here, or in every chapter.
+ * Its address stays its headquarters and its home chapter. Saved in listings.communities.
+ *
  * Nobody else sees it: the button only renders for a signed-in superadmin (not while
  * previewing the site as someone else), and ve-claims admin_listing checks is_superadmin again.
  *
@@ -30,6 +34,17 @@
     ['Community', ['Community Partner', 'Nonprofits', 'Events']]
   ];
   var SUB_LABEL = { 'Media': 'Other media' };
+  // The chapters, from /public/ve-hubs.js where the page loads it (same order and names).
+  var CHAPTERS_FALLBACK = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['atlanta', 'Atlanta'], ['dmv', 'DMV'], ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['london', 'London']];
+  function chapters() { return window.VE_HUBS ? VE_HUBS.map(function (h) { return [h.slug, h.name]; }) : CHAPTERS_FALLBACK; }
+  // The chapter an address puts a listing in (VE_HUBS match), if the page has the hubs.
+  function homeChapter(city, state) {
+    if (!window.VE_HUBS || !city) return '';
+    var h = VE_HUBS.filter(function (x) {
+      return (!x.match.cities || x.match.cities.indexOf(city) >= 0) && (!x.match.states || x.match.states.indexOf(String(state || '').toUpperCase()) >= 0);
+    })[0];
+    return h ? h.slug : '';
+  }
   // At a Glance belongs to places you sit down in.
   var DINING = ['Restaurants', 'Bakeries & Cafes'];
   var VEGAN = [['fully_vegan', '100% Vegan'], ['vegan_friendly', 'Vegan-friendly'], ['vegan_options', 'Vegan options']];
@@ -62,7 +77,7 @@
     '#vla .logo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}#vla .logo-img{width:72px;height:72px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;flex:0 0 auto}' +
     '#vla .logo-btns{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}#vla .logo-btns button{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25);padding:8px 12px;min-height:38px}#vla .logo-btns .rm{color:#8a1c12}' +
     '#vla .logo-msg{flex-basis:100%;font-size:12.5px;font-weight:700;color:#1f5f22;min-height:18px}#vla .logo-msg.bad{color:#8a1c12}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,communities,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -120,6 +135,11 @@
       '<div><label class="h" for="vla-zip">Zip</label><input type="text" id="vla-zip" maxlength="12" value="' + esc(l.address_zip) + '"></div></div></div>' +
       '<div class="note">The city decides which hub it shows on. The map pin follows the street address.</div></div>' +
 
+      '<h3>Chapters</h3>' +
+      '<label class="check"><input type="checkbox" id="vla-all"' + ((l.communities || []).indexOf('all') >= 0 ? ' checked' : '') + '> Every chapter (a national or global organization)</label>' +
+      '<div class="chips" id="vla-ch">' + chapters().map(function (c) { return chip('checkbox', 'vla-ch', c[0], c[1], (l.communities || []).indexOf(c[0]) >= 0); }).join('') + '</div>' +
+      '<div class="note" id="vla-ch-note"></div>' +
+
       '<h3>Section</h3>' +
       '<label class="h">Main section</label><div class="chips" id="vla-sec">' + SECTIONS.map(function (s) { return chip('radio', 'vla-sec', s[0], s[0], s[0] === sec); }).join('') + '</div>' +
       '<label class="h" for="vla-sub">Sub-section</label><select id="vla-sub"></select>' +
@@ -156,6 +176,24 @@
     $('#vla-sub').addEventListener('change', syncSub);
     $('#vla-extra').addEventListener('change', syncSub);
     drawSubs(l.category);
+    // Chapters: the address's own chapter is always on; Every chapter covers the rest.
+    function syncChapters() {
+      var all = $('#vla-all').checked, online = $('#vla-online').checked;
+      var home = online ? '' : homeChapter($('#vla-city').value.trim(), $('#vla-state').value.trim());
+      wrap.querySelectorAll('input[name=vla-ch]').forEach(function (i) {
+        var isHome = i.value === home;
+        i.disabled = all || isHome;
+        if (isHome) i.checked = true;
+      });
+      var name = (chapters().filter(function (c) { return c[0] === home; })[0] || [])[1];
+      $('#vla-ch-note').textContent = all ? 'Shows in every chapter, today and new ones. Its address shows as its headquarters.'
+        : online ? 'Online businesses already show in every chapter.'
+        : name ? 'Its address puts it in ' + name + '. Tick the other chapters it serves.'
+        : 'Its address is outside our chapters. Tick the chapters it serves.';
+    }
+    ['#vla-all', '#vla-online'].forEach(function (s) { $(s).addEventListener('change', syncChapters); });
+    ['#vla-city', '#vla-state'].forEach(function (s) { $(s).addEventListener('input', syncChapters); });
+    syncChapters();
     // ---- Logo: saves on its own, right away.
     var logoChanged = false;
     function drawLogo(msg, bad) {
@@ -227,6 +265,8 @@
         business_status: (wrap.querySelector('input[name=vla-bs]:checked') || {}).value || 'OPERATIONAL',
         address: isOnline ? { online: true } : { street: $('#vla-st').value, city: $('#vla-city').value, state: $('#vla-state').value, zip: $('#vla-zip').value } };
       var v = wrap.querySelector('input[name=vla-vs]:checked'); if (v) body.vegan_status = v.value;
+      // The home chapter comes from the address, so only the extra ones are saved.
+      body.communities = $('#vla-all').checked ? ['all'] : Array.prototype.filter.call(wrap.querySelectorAll('input[name=vla-ch]:checked'), function (i) { return !i.disabled; }).map(function (i) { return i.value; });
       if (!$('#vla-glance').hidden) {
         var flags = vals('vla-flag');
         body.details = { atmosphere: $('#vla-atm').value, accommodations: vals('vla-acc'), owned: vals('vla-own'),

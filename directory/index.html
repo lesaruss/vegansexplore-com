@@ -142,7 +142,7 @@
       hero.style.backgroundImage = "url('" + art(hub ? hub.slug : 'new-york') + "')";
       hubLink.hidden = !hub;
       if (hub) hubLink.href = '/communities/' + hub.slug;
-      if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', matchListing: matcher(hub) });
+      if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', matchListing: matcher(hub) });
       // ?tab=<section> opens that section (a listing's breadcrumb links back this way).
       var tab = new URLSearchParams(location.search).get('tab');
       var btn = tab && document.querySelector('#ve-region-directory [data-vrd-tab="' + tab.replace(/[^a-z]/g, '') + '"]');
