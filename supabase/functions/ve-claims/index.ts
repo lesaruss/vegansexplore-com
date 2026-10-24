@@ -78,7 +78,7 @@
 //     the details they sent written onto the listing.
 //   POST { action: 'admin_trust', enabled, min_voters }    the public directory rule
 //   POST { action: 'admin_listing', listing_id, category?, extra_categories?, vegan_status?, business_status?,
-//          name?, address?: { online, street, city, state, zip }, communities?: [hub slug, ...] | ['all'],
+//          name?, address?: { online, street, city, state, zip }, communities?: [hub slug, ...] | ['all'], product_kinds?: [...],
 //          details?: { atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, owned: [...] } }
 //     The quick editor on the city hubs and listing pages (Sean, 2026-09-27): rename it, move it,
 //     change its sub-section (or add more in the same section), set how Vegan it is, mark it
@@ -1291,6 +1291,10 @@ Deno.serve(async (req) => {
     if (body.vegan_status !== undefined) { if (!STATUSES.includes(String(body.vegan_status))) return json({ error: 'bad_vegan_status' }, 400); patch.vegan_status = String(body.vegan_status); }
     if (body.business_status !== undefined) { if (!BUSINESS.includes(String(body.business_status))) return json({ error: 'bad_business_status' }, 400); patch.business_status = String(body.business_status); }
     if (body.name !== undefined) { const n = plain(body.name, 160); if (!n) return json({ error: 'bad_name' }, 400); patch.name = n; }
+    if (body.product_kinds !== undefined) {
+      const KINDS = ['dairy', 'meat', 'egg', 'seafood', 'snacks', 'drinks', 'protein', 'pantry', 'baked', 'frozen'];
+      patch.product_kinds = [...new Set((Array.isArray(body.product_kinds) ? body.product_kinds : []).map(String))].filter((k) => KINDS.includes(k));
+    }
     if (body.communities !== undefined) {
       const c = [...new Set((Array.isArray(body.communities) ? body.communities : []).map(String))].filter((x) => x === 'all' || x in HUBS);
       patch.communities = c.includes('all') ? ['all'] : c;
@@ -1317,7 +1321,7 @@ Deno.serve(async (req) => {
       patch.lgbtq_friendly = owned.includes('is_lgbtq_owned'); // At a Glance reads this one for LGBTQ+-Owned
     }
     const { data, error } = await db.from('listings').update(patch).eq('id', id)
-      .select('id, slug, name, category, extra_categories, communities, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
+      .select('id, slug, name, category, extra_categories, communities, product_kinds, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, listing: data });
   }

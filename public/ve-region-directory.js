@@ -76,6 +76,7 @@
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}'
+    + '.vrd-root .sort-bar .vrd-geo,.vrd-root .sort-bar .vrd-sub{display:contents}.vrd-root .sort-bar [hidden]{display:none!important}'
     + '.vrd-root .geo-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-left:8px}'
     + '.vrd-root .sort-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa}'
     + '.vrd-root .sort-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:5px 26px 5px 12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}'
@@ -140,7 +141,12 @@
       '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="recent">Most Recent</option><option value="added">First Added</option>' +
       '</select>';
     var geoHtml = '';
-    if (config && config.counties) {
+    if (config && config.regions) {
+      // Every city (/directory): a region first, then its cities.
+      geoHtml = '<span class="geo-label">Filter by</span>' +
+        '<select aria-label="Filter by region" class="sort-select" data-vrd-region="' + cat.key + '"><option value="">All regions</option></select>' +
+        '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '" style="display:none"><option value="">All Cities</option></select>';
+    } else if (config && config.counties) {
       geoHtml = '<span class="geo-label">Filter by</span>' +
         '<select aria-label="Filter by county" class="sort-select" data-vrd-county="' + cat.key + '">' +
         '<option value="">All Counties</option></select>' +
@@ -163,7 +169,13 @@
     var perpageHtml = '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
       '<option value="24" selected>Show 24</option><option value="48">Show 48</option><option value="111">Show 111</option>' +
       '</select>';
-    return '<div class="sort-bar">' + sortHtml + geoHtml + typeHtml + perpageHtml + '</div>';
+    // A sub-section's own filters (SUB_FILTERS), shown while its pill is picked.
+    var subHtml = '<span class="vrd-sub" data-sub-for="kind" hidden><span class="geo-label">What they make</span>' +
+      '<select aria-label="Filter by what they make" class="sort-select" data-vrd-kind="' + cat.key + '"><option value="">All</option>' +
+      KINDS.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
+      '<span class="vrd-sub" data-sub-for="chain" hidden><span class="geo-label">Stores</span>' +
+      '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>';
+    return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + perpageHtml + '</div>';
   }
 
   // Per-category search (2026-09-07, Logan, Sean correction: he'd first
@@ -247,7 +259,7 @@
     var votes = (l.vote_count || 0);
     var subcat = sectionsOf(l).join('|');
     var temp = l.business_status === 'CLOSED_TEMPORARILY' ? ' <span class="vrd-temp">Temporarily closed</span>' : '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '"' + extraAttrs(l) + '>' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + vettingNote(l) + temp + '</div>' +
@@ -259,7 +271,7 @@
   function makeClosedCard(l, idx) {
     var votes = (l.vote_count || 0);
     var subcat = sectionsOf(l).join('|');
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed" style="opacity:.7">' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed"' + extraAttrs(l) + ' style="opacity:.7">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name" style="color:#888">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
@@ -274,6 +286,29 @@
   // 20261024_listing_communities.sql). config.hub is the chapter's slug; /directory's Every City has none.
   function serves(l, hub) { var c = l.communities || []; return c.indexOf('all') >= 0 || (!!hub && c.indexOf(hub) >= 0); }
   function inRegion(config, l) { return config.matchListing(l) || isOnline(l) || serves(l, config.hub); }
+
+  // Filters for one sub-section (Sean, 2026-10-24: "the sort menu should be custom to each one"). Food Brands are sold
+  // everywhere, so they filter by what they make, not where; Markets by national chain or local store. Anything not
+  // listed keeps the usual location filter. KINDS is listings.product_kinds; keep in step with ve-listing-admin.js.
+  var KINDS = [['dairy', 'Dairy alternatives'], ['meat', 'Meat alternatives'], ['egg', 'Egg alternatives'], ['seafood', 'Seafood alternatives'],
+    ['snacks', 'Snacks and sweets'], ['drinks', 'Drinks'], ['protein', 'Protein and supplements'], ['pantry', 'Pantry and sauces'], ['baked', 'Bread and baked goods'], ['frozen', 'Frozen meals']];
+  var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true }, 'Markets': { chain: true } };
+  // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
+  function hubsOf(l) {
+    var c = l.communities || [];
+    if (c.indexOf('all') >= 0 || isOnline(l)) return '*';
+    var out = c.slice();
+    (window.VE_HUBS || []).forEach(function (h) {
+      if (out.indexOf(h.slug) >= 0) return;
+      if (h.match.cities && h.match.cities.indexOf(l.address_city) < 0) return;
+      if (h.match.states && h.match.states.indexOf(l.address_state) < 0) return;
+      if (h.match.cities || h.match.states) out.push(h.slug);
+    });
+    return out.join('|');
+  }
+  function extraAttrs(l) {
+    return ' data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '"';
+  }
 
   // Optional in-frame open (2026-09-07, Logan, Sean direction): a caller
   // can pass config.onOpenListing(slug, name) to keep listing clicks inside
@@ -312,6 +347,22 @@
     if (!barEl) return;
     var countySel = barEl.querySelector('[data-vrd-county]');
     var citySel = barEl.querySelector('[data-vrd-city]');
+    var regionSel = barEl.querySelector('[data-vrd-region]');
+    if (regionSel) {
+      // Each region with listings here, and the cities in it.
+      var byHub = {};
+      listings.forEach(function (l) {
+        var h = hubsOf(l); if (h === '*' || !h) return;
+        h.split('|').forEach(function (slug) { byHub[slug] = byHub[slug] || {}; if (l.address_city) byHub[slug][l.address_city] = 1; });
+      });
+      var cities = {};
+      regionSel.innerHTML = '<option value="">All regions</option>' + (window.VE_HUBS || []).filter(function (h) { return byHub[h.slug]; }).map(function (h) {
+        cities[h.slug] = Object.keys(byHub[h.slug]).sort(); return '<option value="' + esc(h.slug) + '">' + esc(h.name) + '</option>';
+      }).join('');
+      regionSel.dataset.cities = JSON.stringify(cities); regionSel.value = '';
+      if (citySel) { citySel.innerHTML = '<option value="">All Cities</option>'; citySel.style.display = 'none'; citySel.value = ''; }
+      return;
+    }
     if (!countySel && !citySel) return;
     var seen = {};
     var distinctCities = [];
@@ -390,6 +441,17 @@
 
   var vrdPageState = {};
 
+  // Show the picked sub-section's own filters and hide (and clear) the rest; hide location where it does not apply.
+  function syncSubFilters(panel) {
+    var bar = panel && panel.querySelector('.sort-bar'); if (!bar) return;
+    var sf = SUB_FILTERS[currentSubcat(panel)] || {};
+    bar.querySelectorAll('.vrd-sub').forEach(function (w) {
+      var on = !!sf[w.dataset.subFor]; w.hidden = !on;
+      if (!on) { var s = w.querySelector('select'); if (s) s.value = ''; }
+    });
+    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = sf.geo === false;
+  }
+
   function applyPanelFilters(panel, state, resetPage) {
     var special = currentSubcat(panel);
     var catKey = panel.id.replace('board-', '');
@@ -408,6 +470,12 @@
     var perpage = perpageSel ? (parseInt(perpageSel.value, 10) || 24) : 24;
     var countyMap = {};
     if (countySel) { try { countyMap = JSON.parse(countySel.dataset.cities || '{}'); } catch (e) {} }
+    var regionSel = bar ? bar.querySelector('[data-vrd-region]') : null, region = regionSel ? regionSel.value : '';
+    // The picked sub-section's own filters; the others are hidden and cleared (syncSubFilters).
+    var sf = SUB_FILTERS[special] || {};
+    var kindSel = bar ? bar.querySelector('[data-vrd-kind]') : null, kind = sf.kind && kindSel ? kindSel.value : '';
+    var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
+    if (sf.geo === false) { city = ''; county = ''; region = ''; }
     // Search is scoped to this panel/category only (2026-09-07, Logan, Sean
     // correction) -- each panel has its own [data-vrd-search] input now.
     var searchInput = panel.querySelector('[data-vrd-search]');
@@ -420,6 +488,9 @@
       var geoOk = true;
       if (city) { geoOk = card.dataset.city === city; }
       else if (county && countyMap[county]) { geoOk = countyMap[county].indexOf(card.dataset.city) > -1; }
+      if (geoOk && region) { var hs = card.dataset.hubs || ''; geoOk = hs === '*' || hs.split('|').indexOf(region) > -1; }
+      if (kind && (card.dataset.kinds || '').split('|').indexOf(kind) < 0) geoOk = false;
+      if (chain && card.dataset.chain !== chain) geoOk = false;
       var typeOk = type ? (card.dataset.listingType === type) : (card.dataset.listingType !== 'closed');
       var searchOk = !searchTerm ||
         (card.dataset.name || '').toLowerCase().indexOf(searchTerm) > -1 ||
@@ -501,6 +572,7 @@
         var panel = btn.closest('.board-panel');
         panel.querySelectorAll('.subcat-pill').forEach(function (p) { p.classList.remove('sc-active'); });
         btn.classList.add('sc-active');
+        syncSubFilters(panel);
         applyPanelFilters(panel, state, true);
       });
     });
@@ -522,6 +594,21 @@
         var panel = sel.closest('.board-panel');
         applyPanelFilters(panel, state, true);
       });
+    });
+
+    root.querySelectorAll('[data-vrd-region]').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        var citySel = sel.closest('.sort-bar').querySelector('[data-vrd-city]'), map = {};
+        try { map = JSON.parse(sel.dataset.cities || '{}'); } catch (e) {}
+        if (citySel) {
+          citySel.innerHTML = '<option value="">All Cities</option>' + (map[sel.value] || []).map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+          citySel.value = ''; citySel.style.display = sel.value ? '' : 'none';
+        }
+        applyPanelFilters(sel.closest('.board-panel'), state, true);
+      });
+    });
+    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain]').forEach(function (sel) {
+      sel.addEventListener('change', function () { applyPanelFilters(sel.closest('.board-panel'), state, true); });
     });
 
     root.querySelectorAll('[data-vrd-city]').forEach(function (sel) {
@@ -572,7 +659,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -651,7 +738,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return inRegion(config, l); })); })
@@ -674,6 +761,6 @@
     css: injectStyleOnce,
     card: function (l, idx) { return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
     wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); },
-    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities'
+    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds'
   };
 })();
