@@ -267,8 +267,10 @@
       var G = '/guides/vegan-restaurant-survival-guide';
       var list = D.audits.length ? '<div class="vpd-list">' + D.audits.map(function (a) {
         var done = a.status === 'done';
-        return '<div class="vpd-row"><div><b>' + esc(a.tier === 'full' ? 'Full audit' : 'Free check') + '</b><small>' + esc(new Date(a.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) +
-          (a.source === 'checkup' ? ' &middot; our monthly check-up' : '') + (done && a.tier === 'full' && a.max_score ? ' &middot; ' + Math.round(a.score / a.max_score * 100) + '%' : '') + '</small></div>' +
+        // Our monthly check-up runs every check, but it is ours: the owner reads what to fix, not a score they paid for.
+        var mine = a.source !== 'checkup';
+        return '<div class="vpd-row"><div><b>' + esc(!mine ? 'Our monthly check-up' : a.tier === 'full' ? 'Full audit' : 'Free check') + '</b><small>' + esc(new Date(a.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) +
+          (mine && done && a.tier === 'full' && a.max_score ? ' &middot; ' + Math.round(a.score / a.max_score * 100) + '%' : '') + '</small></div>' +
           '<span class="vpd-tag' + (done ? '' : ' warn') + '">' + (done ? 'Ready' : 'Running') + '</span>' +
           (done ? '<a class="vpd-btn sm o" href="' + G + '#/audit/r/' + esc(a.id) + '">Open</a>' : '<span></span>') + '</div>';
       }).join('') + '</div>' : '<p class="vpd-empty">No audits yet.</p>';
@@ -280,8 +282,11 @@
 
     // ---- Guides
     function drawGuides() {
-      return '<div class="vpd-grid">' + D.guides.map(function (g) {
-        return '<div class="vpd-card">' + (g.cover_url ? '<div style="aspect-ratio:16/10;border-radius:8px;background:#eee center/cover no-repeat;background-image:url(\'' + esc(g.cover_url) + '\')"></div>' : '') +
+      var seen = {}, list = D.guides.filter(function (g) { if (seen[g.title]) return false; seen[g.title] = 1; return true; });
+      return '<div class="vpd-grid">' + list.map(function (g) {
+        // Every Guide's banner (LOCKED 2026-10-10) lives under media/guides/banners/<slug>.jpg.
+        var pic = g.cover_url || SB + '/storage/v1/object/public/vegan-media/media/guides/banners/' + g.slug + '.jpg';
+        return '<div class="vpd-card"><div style="aspect-ratio:16/10;border-radius:8px;background:#f3f3f3 center/cover no-repeat;background-image:url(\'' + esc(pic) + '\')"></div>' +
           '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : '$11 or 1 credit') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
           '<a class="vpd-btn sm' + (g.owned ? '' : ' o') + '" href="/guides/' + esc(g.slug) + '">' + (g.owned ? 'Open it' : 'See it') + '</a></div>';
       }).join('') + '</div>';

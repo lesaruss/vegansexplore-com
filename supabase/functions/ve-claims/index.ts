@@ -1052,8 +1052,7 @@ Deno.serve(async (req) => {
     const [menu, audit, cardsQ] = await Promise.all([
       db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', lid),
       db.from('ve_audits').select('id').eq('listing_id', lid).eq('status', 'done').limit(1),
-      db.from('ve_dashboard_cards').select('id, kind, title, body, cta_label, cta_url').in('audience', ['business', 'all']).lte('starts_at', new Date().toISOString())
-        .or('ends_at.is.null,ends_at.gt.' + new Date().toISOString()).order('sort'),
+      db.from('ve_dashboard_cards').select('id, kind, title, body, cta_label, cta_url, starts_at, ends_at').in('audience', ['business', 'all']).order('sort'),
     ]);
     const checklist = [
       { k: 'logo', done: !!l.logo_url }, { k: 'description', done: String(l.description || '').length >= 80 },
@@ -1062,7 +1061,7 @@ Deno.serve(async (req) => {
     ];
     const hub = hubOf(l);
     const base = { ok: true, listing: { id: l.id, name: l.name, slug: l.slug, category: l.category, food, hub, claim_status: l.claim_status },
-      open, owner, admin: !owner, member_active: memberActive, checklist, cards: cardsQ.data || [], menu_count: menu.count || 0 };
+      open, owner, admin: !owner, member_active: memberActive, checklist, cards: (cardsQ.data || []).filter((c: any) => Date.parse(c.starts_at) <= Date.now() && (!c.ends_at || Date.parse(c.ends_at) > Date.now())), menu_count: menu.count || 0 };
     if (!open) return json(base);
 
     const days = Math.min(365, Math.max(1, Math.round(Number(body.days) || 30)));
