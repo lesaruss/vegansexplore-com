@@ -1324,6 +1324,12 @@ Deno.serve(async (req) => {
     }
     const { data, error } = await db.from('listings').update(patch).eq('id', id)
       .select('id, slug, name, category, extra_categories, communities, product_kinds, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
+    // One live listing per name and place (listings_name_city_state_unique): say so, naming the other one.
+    if (error && error.code === '23505') {
+      const { data: other } = await db.from('listings').select('name, slug, status, address_city').ilike('name', String(patch.name ?? '') || '%').neq('id', id).neq('status', 'rejected').limit(5);
+      const same = (other || []).find((o: any) => (o.address_city || '') === String(patch.address_city ?? '')) || (other || [])[0];
+      return json({ error: 'duplicate_listing', other: same ? { name: same.name, slug: same.slug, status: same.status } : null }, 409);
+    }
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, listing: data });
   }
