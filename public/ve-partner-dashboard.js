@@ -77,7 +77,8 @@
     '.vpd-join{background:#0f1f10;color:#fff;border-radius:12px;padding:22px 22px;margin:0 0 20px}.vpd-join b{display:block;font-size:19px;font-weight:900;margin:0 0 6px}.vpd-join p{margin:0 0 14px;font-size:14px;line-height:1.55;color:rgba(255,255,255,.85)}' +
     '.vpd-join .vpd-btn{background:#5ec47a;color:#0f1f10}' +
     '.vpd-empty{font-size:14px;color:rgba(26,26,26,.7);padding:6px 0 18px;margin:0}' +
-    '@media(max-width:600px){.vpd-row{grid-template-columns:1fr auto}.vpd-row .vpd-tag{display:none}}';
+    '.vpd-scroll{max-height:70vh;overflow:auto}.vpd-done{font-size:13px;font-weight:700;color:#1f7a2a;margin:0 0 20px}' +
+    '@media(max-width:600px){.vpd-row{grid-template-columns:1fr auto}.vpd-row .vpd-tag{display:none}.vpd-tiles{grid-template-columns:1fr 1fr;gap:8px}.vpd-tiles b{font-size:22px}.vpd-tiles>div{padding:12px}}';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function n(x) { return Number(x || 0).toLocaleString(); }
@@ -155,15 +156,17 @@
           '<div><b>' + n(D.ads.reduce(function (a, x) { return a + x.impressions; }, 0)) + '</b><span>Ad impressions</span><em>' + (D.ads.length ? D.ads.length + ' campaign' + (D.ads.length > 1 ? 's' : '') : 'No ads yet') + '</em></div></div>' +
           '<a href="?tab=brand&pd=insights" data-vpd="insights" class="vpd-btn o sm">See every number</a>';
       }
-      var todo = D.checklist.filter(function (c) { return !c.done; });
+      // What is left, as cards; what is done, on one line.
+      var todo = D.checklist.filter(function (c) { return !c.done && CHECK[c.k]; }), done = D.checklist.filter(function (c) { return c.done && CHECK[c.k]; });
       out += '<h4>Get your page ready</h4>' + (todo.length ? '' : '<p class="vpd-empty">Everything is in. Your page is ready for visitors.</p>') +
-        '<div class="vpd-grid">' + D.checklist.map(function (c) {
-          var m = CHECK[c.k]; if (!m) return '';
-          var act = c.done ? '' : c.k === 'menu' ? '<a class="vpd-btn sm" href="?tab=brand&pd=menu" data-vpd="menu">Add it</a>'
+        (todo.length ? '<div class="vpd-grid">' + todo.map(function (c) {
+          var m = CHECK[c.k];
+          var act = c.k === 'menu' ? '<a class="vpd-btn sm" href="?tab=brand&pd=menu" data-vpd="menu">Add it</a>'
             : c.k === 'audit' ? '<a class="vpd-btn sm" href="/guides/vegan-restaurant-survival-guide#/audit">Run it</a>'
             : '<button type="button" class="vpd-btn sm" data-vpd-edit="' + m[2] + '">Add it</button>';
-          return '<div class="vpd-card' + (c.done ? ' done' : '') + '"><b>' + esc(m[0]) + '</b><p>' + esc(c.done ? 'Done.' : m[1]) + '</p>' + act + '</div>';
-        }).join('') + '</div>';
+          return '<div class="vpd-card"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p>' + act + '</div>';
+        }).join('') + '</div>' : '') +
+        (done.length && todo.length ? '<p class="vpd-done">&#10003; Done: ' + done.map(function (c) { return esc(CHECK[c.k][0].replace(/^Your /, '').replace(/^The /, '')); }).join(', ') + '</p>' : '');
       if (D.cards.length) out += '<h4>What\'s new</h4><div class="vpd-grid">' + D.cards.map(function (c) {
         return '<div class="vpd-card"><span class="vpd-tag' + (c.kind === 'offer' ? ' warn' : '') + '">' + esc({ new: 'New', wizard: 'Try it', offer: 'Offer', tip: 'Tip' }[c.kind] || 'New') + '</span>' +
           '<b>' + esc(c.title) + '</b><p>' + esc(c.body) + '</p>' +
@@ -207,7 +210,7 @@
       var cats = []; menu.forEach(function (m) { if (cats.indexOf(m.category) < 0) cats.push(m.category); });
       return '<div class="vpd-bar" style="border:0;padding:0;margin:0 0 14px"><span class="vpd-empty" style="padding:0">' + (menu.length ? 'Shows on your page under Menu. Changes are live right away.' : 'No menu yet. Add your first item and the Menu tab appears on your page.') + '</span>' +
         '<a class="vpd-btn" href="?tab=brand&pd=menu&item=new" data-vpd="menu" data-vpd-item="new">New item</a></div>' +
-        (menu.length ? '<div class="vpd-list">' + cats.map(function (c) {
+        (menu.length ? '<div class="vpd-list vpd-scroll">' + cats.map(function (c) {
           return '<div class="vpd-cat">' + esc(c) + '</div>' + menu.filter(function (m) { return m.category === c; }).map(function (m) {
             return '<div class="vpd-row"><div><b>' + esc(m.name) + (m.price_display ? ' &middot; ' + esc(m.price_display) : '') + '</b><small>' + esc(m.description || '') + '</small></div>' +
               '<span class="vpd-tag' + (m.is_available ? '' : ' off') + '">' + (m.is_available ? (m.is_featured ? 'Featured' : 'On the menu') : 'Hidden') + '</span>' +
