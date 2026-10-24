@@ -36,7 +36,7 @@ returns int language sql security definer set search_path to 'public' as $$
   select count(*)::int from ins;
 $$;
 
--- 3. The writer saves what it read. Refuses a listing whose menu someone entered; replaces an earlier import.
+-- 3. The writer saves what it read, once: it refuses a listing that already has a menu (entered, or imported before).
 --    p_items: [{category, name, description?, price_display?, is_gluten_free?}] in the order the menu shows them. An empty list
 --    with a note marks the listing as having no menu we can read (a PDF scan, a picture, no menu online).
 create or replace function public.ve_menu_import_save(p_listing uuid, p_items jsonb, p_menu_url text default null, p_note text default null)
@@ -44,7 +44,7 @@ returns jsonb language plpgsql security definer set search_path to 'public' as $
 declare n int := 0; it jsonb; i int := 0; nm text;
 begin
   if not exists (select 1 from listings where id = p_listing and status = 'approved') then return jsonb_build_object('ok', false, 'why', 'not_found'); end if;
-  if exists (select 1 from ve_menu_items where listing_id = p_listing and source <> 'import') then
+  if exists (select 1 from ve_menu_items where listing_id = p_listing) then
     update ve_menu_imports set status = 'done', note = 'has a menu already', done_at = now() where listing_id = p_listing;
     return jsonb_build_object('ok', false, 'why', 'has_menu');
   end if;
@@ -52,7 +52,6 @@ begin
   if jsonb_typeof(coalesce(p_items, '[]'::jsonb)) <> 'array' or jsonb_array_length(coalesce(p_items, '[]'::jsonb)) > 300 then
     return jsonb_build_object('ok', false, 'why', 'items must be a list of at most 300');
   end if;
-  delete from ve_menu_items where listing_id = p_listing and source = 'import';
   for it in select * from jsonb_array_elements(coalesce(p_items, '[]'::jsonb)) loop
     i := i + 1;
     nm := left(btrim(coalesce(it->>'name', '')), 120);
