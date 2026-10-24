@@ -460,6 +460,14 @@ Every chapter"), and the listing page adds "Serves every chapter" or "Also serve
 editor's Chapters section (`ve-listing-admin.js`, saved by `ve-claims` `admin_listing`). Passport Challenge and Tours stops
 still go by address.
 
+Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
+and folds it to one bar (city picker, Visit the community, Expand) after the first click into a section; Collapse/Expand is
+kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
+listing counts in a region by its address or the chapters it serves (`data-hubs`). A sub-section can have its own filters
+(`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make, never by city (`listings.product_kinds`:
+dairy, meat, egg, seafood, snacks, drinks, protein, pantry, baked, frozen; set in the listing editor; migration
+`20261024_listing_product_kinds.sql`), **Markets** by national chain (tag `ve-grocery-store`) or local market.
+
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
 `directory/logos/` files, or one an admin picked in the media library) or it is a podcast's own Apple Podcasts cover.
@@ -931,8 +939,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   last elsewhere. Locked for visitors (`partnerLocked`): claim this page (a brand's claim carries Front Row Start before
   January 1), or, for a business that is not listed, **Apply to be listed** (Join the Directory, below: `ve-claims` `listing_apply`, any
   Vegan business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
-  Application to be listed; approving lists it and makes the applicant its owner). A non-brand owner sees their numbers
-  (`loadPartnerHome`). A brand's partner gets the sub-menu (`.pd-subnav`, `PD_SUBS`): Getting started, **Insights** (the
+  Application to be listed; approving lists it and makes the applicant its owner). A non-brand owner and super admins get
+  the business dashboard (`loadPartnerHome`, see **The business dashboard** below). A brand's partner gets the sub-menu (`.pd-subnav`, `PD_SUBS`): Getting started, **Insights** (the
   numbers from `brand_stats` once the claim is approved, and Campaigns: clicks and each report within 7 days of an event,
   empty until the first campaign), **Your products** (swap a product's or a version's photo and its description in their own
   words; photos under 1000 px on the shorter side are refused in the page and again in `ve-claims` `product_update`, which
@@ -969,9 +977,10 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   January 1): the page claimed and theirs to update, the Partner Dashboard numbers, a front-row seat on every campaign, their
   Guide on the dashboard (Coming for businesses that are not brands), ads (Coming), Founding Member. **Become a member** ("Start
   with the basics", from $11 one time): the page claimed and theirs to update, Founding Member, and add the Partner side any
-  time. The numbers are Partner-only in the code too: `ve-claims` `brand_stats` answers `partner_only` to an owner without a live
-  plan (Partner, its Front Row Start trial, or Passport), and the page shows `partnerUpsell` (what they can add, never what
-  they lack).
+  time. Since 2026-10-24 the $11 opens the dashboard and its numbers (canon `canon-ve-business-dashboard`, replacing the
+  Partner-only rule): the member card lists the dashboard, the Partner card the front-row seat, ads placed for them and a
+  campaign manager. `brand_stats` answers `partner_only` only to an owner with neither the membership nor a plan, and the
+  page shows `partnerUpsell` (what they can add, never what they lack).
 - **The Partner plan for every business** (Sean, 2026-10-09: "I would rather give everybody the Oatly style offer... the way in...
   they can get access and take control knowing that it's going to activate come January... invested in the platform because of
   the platform, not because of 11 bucks"). `ve-claims` tier `brand` is the $111 quarterly Partner plan for any listing: **Brand
@@ -981,8 +990,32 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   (a contribution from $11, Founding Member) is the second choice, and Passport Stop and Anchor show only when the link asks
   (`?plan=verified|plus`). A brand returns to its page (Maya's Getting Started); any other Partner and every new business to
   `/claim?...&claim=submitted&joined=partner`. The $11 is the member offer; members join through the Guides.
-  Not built yet: the partner's home (Getting started, Opportunities, Media, Ask, Ad console) for businesses that are not brands;
-  today they get their numbers on the Partner Dashboard once approved.
+- **The business dashboard** (Sean, 2026-10-24, Love Life Cafe as the prototype: "there should be two versions of the partner
+  dashboard. One is the preview with Liz explaining, and then the other is the actual dashboard"; canon
+  `canon-ve-business-dashboard`). Visitors get Liz's tour (`mountPartnerLocked`; on a claimed listing it says whose dashboard
+  it is). The owner and super admins (labelled Viewing as admin; `?as=visitor` shows them the tour) get `/public/ve-partner-dashboard.js`,
+  one view at a time (`?tab=brand&pd=<view>`): **Home** (30 days against the period before, Get your page ready with what is
+  left as cards and what is done on one line, What's new), **Insights** (7, 30, 90 days or a year, a chart, what people did,
+  where they came from, a day-by-day table that sorts by any column), **Your page** (the four-step editor), **Menu** (by section,
+  one item per view, `&item=<id|new>`), **Ads** (their campaigns: `ad_businesses.listing_id` -> `ad_sponsor_campaigns` ->
+  `ad_campaigns` -> `ad_impressions`; each ad spot with its monthly views; Ask about this spot emails Sean and the account
+  manager and logs `ve_initiative_interest` `ad-placement`), **Opportunities** (our campaigns, the same slugs as the brand
+  `OPPS`, and open roles), **Audit** (restaurants and food places; our monthly check-up reads as ours, never a score they bought),
+  **Guides**, **Your plan**. The $11 Founding Membership (or a live plan) opens it; an owner who is not a member edits the page
+  and menu and is offered the $11. Server: `ve-claims` `owner_dashboard` (everything in one call), `menu_list` / `menu_save` /
+  `menu_delete` (each a `ve_listing_edits` row, field `menu_item`, undone from the Depot by `ve-outreach`), `ad_request`.
+  **What's new** is `ve_dashboard_cards` (audience business, member, coach, pre_vegan or all; kind new, wizard, offer, tip;
+  live between `starts_at` and `ends_at`): a new tool reaches every dashboard as a row, no code. Every listing counts what a
+  visitor does next (`trackActions` in `directory/listing.html`: call, directions, website, order, social, menu, photos;
+  `ve_listing_track`), and `ve_listing_stats` returns each day's views, visitors and actions plus the period before
+  (migration `20261024_partner_dashboard.sql`). A listing's Photos, Video and Pulse tabs show only once they have something
+  in them (Sean, 2026-10-24: "I'm not a big fan of the coming soon sections").
+- **Menus on every listing** (Sean, 2026-10-24: "I would love to see the menus on all the listings"; migration
+  `20261024_ve_menu_import.sql`). `ve_menu_items.source` is `manual` (the team), `owner` (their dashboard) or `import`. The
+  Background writer (dispatcher source `menu_import`, Station 2, batch 5) works through `ve_menu_imports` (food places with a
+  website and no menu; `ve_menu_import_queue()` adds new ones) and copies the menu each business publishes on its own site,
+  never a third-party listing and never guessed, through `ve_menu_import_save`, which saves once and refuses a listing that
+  already has a menu. The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
 - **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
   signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
   `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in
