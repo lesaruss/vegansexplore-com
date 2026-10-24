@@ -92,7 +92,7 @@ Vegans Explore Directory menus. Each listing below is a Vegan food place with a 
    It answers {ok, saved} or {ok: false, why}. has_menu means someone already entered their menu: leave it.
 Do not change the listings or any other table.
 $i$,
-'Menus on every listing (Sean, 2026-10-24). Fills ve_menu_items with source import; ve_menu_import_save refuses a menu an owner or the team entered.')
+'Menus on every listing (Sean, 2026-10-24). Fills ve_menu_items with source import; ve_menu_import_save refuses a listing that already has a menu.')
 on conflict (key) do nothing;
 
 create or replace function public.lesaruss_dispatch_pending()
