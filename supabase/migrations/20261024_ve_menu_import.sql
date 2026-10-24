@@ -11,7 +11,7 @@ alter table public.ve_menu_items add column if not exists source_url text;
 
 -- 2. The queue: one row per listing the writer has tried.
 create table if not exists public.ve_menu_imports (
-  listing_id uuid primary key references public.listings(id) on delete cascade,
+  listing_id uuid primary key references public.listings(id),
   status text not null default 'queued' check (status in ('queued', 'reading', 'done', 'none', 'failed')),
   menu_url text,
   items int not null default 0,
