@@ -333,15 +333,16 @@
         return planCard(name, 'brand', { lead: 'The full experience', title: (frontRow() ? 'Front Row Start: ' : '') + pName(),
           price: frontRow() ? '$0 today' : '$111', sub: frontRow() ? 'then $111 a quarter from January 2027' : 'a quarter',
           text: frontRow() ? 'Nothing is charged today. Your card is saved and first charged in January 2027, then every quarter. Cancel any time before.' : 'Billed every quarter. Cancel any time.',
-          ticks: ['Your page, claimed and yours to update: details, photos and story', 'Your Partner Dashboard: views, visitors and what people open',
+          ticks: ['Everything in the membership: your page, your dashboard and your numbers',
             'A front-row seat on every campaign before it opens: game days, the Plant-Based Showcase, community nights', guide,
-            'Ads on our pages when the ad console opens' + COMING, 'Founding Member of Vegans Explore'] }, true);
+            'Ads placed for you on our pages', 'A campaign manager who works with you', 'Founding Member of Vegans Explore'] }, true);
       }
       function memberCard() {
-        return planCard('plan', 'claim', { lead: 'Start with the basics', title: 'Become a member', price: 'From $11', sub: 'one time',
+        return planCard('plan', 'claim', { lead: 'Your page and your dashboard', title: 'Become a member', price: 'From $11', sub: 'one time',
           text: 'A one-time contribution, in any amount from $11, to the work of helping people find Vegan businesses.',
-          ticks: ['Your page, claimed and yours to update: details, photos and story', 'Founding Member of Vegans Explore',
-            'Add the Partner side whenever you are ready: your dashboard, your Guide and our campaigns'] }, false);
+          ticks: ['Your page, claimed and yours to update: details, photos, story and menu', 'Your dashboard: views, visitors, calls, directions and orders',
+            'Our campaigns, ad spots, the restaurant audit and the Guides, in one place', 'Founding Member of Vegans Explore',
+            'Add the Partner side whenever you are ready: the front-row seat and ads placed for you'] }, false);
       }
       function passportCards(name, f) {
         var price = function (c) { return '$' + c; }, sub = f ? 'a quarter, founding: reserve free' : 'a quarter';
