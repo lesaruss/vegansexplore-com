@@ -210,6 +210,8 @@
     // A grocery chain (tag ve-grocery-store, 2026-10-08) has no one address but is not an online business.
     if ((l.tags || []).indexOf('ve-grocery-store') >= 0) return 'Grocery store';
     if (!l.address_city && !l.address_state) return '<span class="online-badge">Online</span>';
+    // Every chapter: the address stays as its headquarters.
+    if ((l.communities || []).indexOf('all') >= 0) return esc(l.address_city || l.address_state || '') + ' &middot; Every chapter';
     return esc(l.address_city || l.address_state || '');
   }
 
@@ -267,6 +269,11 @@
   }
 
   function isOnline(l) { return !l.address_city && !l.address_state; }
+  // A listing shows in a chapter when its address puts it there, it is online, or it serves that chapter
+  // too (listings.communities: hub slugs, or 'all' for every chapter; Sean, 2026-10-24, migration
+  // 20261024_listing_communities.sql). config.hub is the chapter's slug; /directory's Every City has none.
+  function serves(l, hub) { var c = l.communities || []; return c.indexOf('all') >= 0 || (!!hub && c.indexOf(hub) >= 0); }
+  function inRegion(config, l) { return config.matchListing(l) || isOnline(l) || serves(l, config.hub); }
 
   // Optional in-frame open (2026-09-07, Logan, Sean direction): a caller
   // can pass config.onOpenListing(slug, name) to keep listing clicks inside
@@ -565,14 +572,14 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         acc = acc.concat(data || []);
         if (data && data.length === 1000) { fetchAll(root, config, offset + 1000, acc); }
         else {
-          var approved = acc.filter(function (l) { return (config.matchListing(l) || isOnline(l)) && (l.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0; });
+          var approved = acc.filter(function (l) { return inRegion(config, l) && (l.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0; });
           // The public directory rule (/public/ve-trust.js): unvetted vegan-friendly listings
           // are for members only until 10 different people vote for them or the business claims it.
           withTrust(function (T) {
@@ -644,10 +651,10 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
-      .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return config.matchListing(l) || isOnline(l); })); })
+      .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return inRegion(config, l); })); })
       .catch(function () { populateGrids(root, config, approved, []); });
   }
 
@@ -667,6 +674,6 @@
     css: injectStyleOnce,
     card: function (l, idx) { return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
     wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); },
-    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags'
+    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities'
   };
 })();

@@ -730,6 +730,7 @@
   // ---- Directory: the same component and city rule as /directory (VE_HUBS match)
   VERegionDirectory.init({
     mount: 've-region-directory',
+    hub: SLUG,
     matchListing: function (l) {
       if (HUB.match.cities && HUB.match.cities.indexOf(l.address_city) < 0) return false;
       if (HUB.match.states && HUB.match.states.indexOf(l.address_state) < 0) return false;

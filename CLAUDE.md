@@ -451,6 +451,15 @@ change the Directory there, not in the page. The page adds a city picker from `V
 (`/public/ve-hubs.js`), a hero with that city's art (New York for all cities), `?city=<hub slug>` and
 `?tab=<section>` in the address bar, and the Founding Membership box for non-members.
 
+Chapters a listing serves (Sean, 2026-10-24: Florida Animal Rescue Alliance "covers the entirety of Florida... PETA, that
+would be a global organization. It could have its headquarters notated, but it should show up in all the community
+sections"). The address puts a listing in its home chapter; `listings.communities` adds more (hub slugs from `VE_HUBS`, or
+`all` for every chapter, new ones included; migration `20261024_listing_communities.sql`). `ve-region-directory.js` shows a
+listing in a chapter when either says so (callers pass `hub: <slug>`), the card keeps the address as headquarters ("Jupiter ·
+Every chapter"), and the listing page adds "Serves every chapter" or "Also serves Central Florida". Set it in the listing
+editor's Chapters section (`ve-listing-admin.js`, saved by `ve-claims` `admin_listing`). Passport Challenge and Tours stops
+still go by address.
+
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
 `directory/logos/` files, or one an admin picked in the media library) or it is a podcast's own Apple Podcasts cover.

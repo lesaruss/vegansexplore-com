@@ -2507,7 +2507,21 @@ function getCommunityForListing(l){
   if(l.address_state === 'GA') return {slug:'atlanta', name:'Atlanta'};
   if(l.address_state === 'NY') return {slug:'new-york', name:'New York'};
   if(l.address_city === 'London') return {slug:'london', name:'London'};
-  return null;
+  // An address outside our chapters: the first chapter it serves (listings.communities, 2026-10-24).
+  var c = (l.communities || []).filter(function(x){ return x !== 'all'; })[0];
+  var h = c && window.VE_HUBS ? VE_HUBS.filter(function(x){ return x.slug === c; })[0] : null;
+  return h ? {slug:h.slug, name:h.name} : null;
+}
+// "Serves" for a listing that covers more than its own city (Sean, 2026-10-24).
+function servesLabel(l){
+  var c = l.communities || [];
+  if(c.indexOf('all') > -1) return 'Serves every chapter';
+  var home = getCommunityForListing(Object.assign({}, l, {communities: []}));
+  var names = c.filter(function(x){ return !home || x !== home.slug; }).map(function(x){
+    var h = window.VE_HUBS ? VE_HUBS.filter(function(y){ return y.slug === x; })[0] : null; return h ? h.name : '';
+  }).filter(Boolean);
+  if(!names.length) return '';
+  return 'Also serves ' + (names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0]);
 }
 
 
@@ -2810,6 +2824,7 @@ function renderListing(l){
   var priceDisplay = l.google_price_level || l.pricing_range || '';
   var infoChips = [];
   if(l.address_city) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>'+esc(l.address_city)+', '+esc(l.address_state)+'</span>');
+  if(servesLabel(l)) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>'+esc(servesLabel(l))+'</span>');
   if(todayHours) infoChips.push('<span class="info-chip open-now"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+esc(todayHours)+'</span>');
   if(priceDisplay) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(priceDisplay)+'</span>');
   if(l.website) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Website</a></span>');
