@@ -1394,25 +1394,6 @@ function renderSidebar(l){
     '</div>';
 }
 
-function lockedTab(tabName, l){
-  var lockSvg = '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
-  var msgs = {
-    menu: {title:'Menu Coming Soon', sub:'When this business unlocks their menu slot with Points, we\'ll post their full menu right here.'},
-    photos: {title:'Photos Coming Soon', sub:'Professional photos taken by the VEGANS EXPLORE team will appear here once this listing is activated.'},
-    video: {title:'Video Coming Soon', sub:'Unlock this slot with Points and we\'ll send a crew to film a professional video for your listing.'},
-    pulse: {title:'Pulse Not Yet Active', sub:'Community Partners can post updates, news, collabs, and announcements directly to their listing. Think of it as their channel inside VEGANS EXPLORE.'}
-  };
-  var m = msgs[tabName] || {title:'Content Coming Soon', sub:'This slot can be unlocked with Points.'};
-  return '<div class="tab-locked">'+
-    '<div class="tab-locked-icon">'+lockSvg+'</div>'+
-    '<div class="tab-locked-title">'+m.title+'</div>'+
-    '<div class="tab-locked-sub">'+m.sub+'</div>'+
-    // The way in is claiming the listing (2026-10-04 audit: this used to say "Learn About Points"
-    // and link to /directory, which no longer explains points). Claimed: the owner unlocks it.
-    ((l && !l.claimed_by_member_id) ? '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" class="tab-locked-cta">Claim This Listing</a>' : '')+
-  '</div>';
-}
-
 // A grocery store (tag ve-grocery-store, Sean 2026-10-08): its Vegan aisle is every Guide product mapped
 // to it (ve_product_stores, filled automatically from the Guides). Buy link, best first: an affiliate deal
 // (a /go/ tracked link), the product's own page at this store, the store's search for it (only where
@@ -2866,9 +2847,8 @@ function renderListing(l){
 
   // PHOTOS tab content — 2-col grid with lightbox
   var photoHtml = renderPhotos(ownPhotos, 'tab-photos', true);
-  var photosTabContent = photoHtml
-    ? '<div style="padding:32px 40px 40px">'+photoHtml+'</div>'
-    : lockedTab('photos', l);
+  // A section shows only when it has something in it (Sean, 2026-10-24: "I'm not a big fan of the coming soon sections").
+  var photosTabContent = photoHtml ? '<div style="padding:32px 40px 40px">'+photoHtml+'</div>' : '';
 
   // SEO: title, OG tags, schema.org
   var _ogTitle = esc(l.name) + ' — VEGANS EXPLORE';
@@ -2932,10 +2912,11 @@ function renderListing(l){
           (l._brandSite ? PD_BTN : '') +
           (l._brandSite ? ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<button class="tab-btn" data-tab="' + t + '" data-sub="1" role="tab" aria-selected="false" style="display:none">' + t + '</button>'; }).join('') : '')+
           '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
-          (l._brandSite ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
-          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false">Video</button>' : '')+
+          (l._brandSite || !photoHtml ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
+          // Video and Pulse show once they have something (renderVideoCarousel, renderPulse).
+          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false" id="tab-btn-video" style="display:none">Video</button>' : '')+
           (l._campaign && l._campaign.events ? '<button class="tab-btn" data-tab="events" role="tab" aria-selected="false">Events</button>' : '')+
-          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false">Pulse</button>' : '')+
+          (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false" id="tab-btn-pulse" style="display:none">Pulse</button>' : '')+
           (l._brandSite ? '' : PD_BTN)+
         '</nav>'+
         (l._brandSite ? '<nav class="pd-subnav" aria-label="Partner Dashboard" hidden></nav>' : '')+
@@ -2951,9 +2932,9 @@ function renderListing(l){
           : '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="pd-home"><div class="aisle-empty">Loading...</div></div></div>')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
-        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel">'+lockedTab('video', l)+'</div>' : '')+
+        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel"></div>' : '')+
         (l._campaign && l._campaign.events ? '<div class="tab-panel" id="tab-events" role="tabpanel">'+eventsTab(l._campaign)+'</div>' : '')+
-        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel">'+lockedTab('pulse', l)+'</div>' : '')+
+        (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel"></div>' : '')+
       '</div>'+
       renderSidebar(l)+
     '</div>';
@@ -3198,6 +3179,24 @@ function veTrack(l, kind, ref){
   }catch(e){}
 }
 
+// What a visitor does next, for the owner's Insights (Sean, 2026-10-24: "they should be able to sort through the
+// analytics"): a call, directions, the website, an order, a social link, the menu or the photos. One delegated listener
+// reads the link, so a new button is counted without its own code.
+function trackActions(l){
+  var site = String(l.website || '').replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').toLowerCase();
+  document.addEventListener('click', function(e){
+    var t = e.target.closest && e.target.closest('a[href], .tab-btn[data-tab]'); if(!t) return;
+    if(t.classList.contains('tab-btn')){ var tab = t.dataset.tab; if(tab === 'menu' || tab === 'photos') veTrack(l, tab); return; }
+    var h = t.getAttribute('href') || '', k = null;
+    if(/^tel:/i.test(h)) k = 'call';
+    else if(/google\.[a-z.]+\/maps|maps\.google\.|maps\.apple\.com/i.test(h)) k = 'directions';
+    else if(/ubereats\.com|doordash\.com|grubhub\.com|postmates\.com|seamless\.com|toasttab\.com|order\.online|chownow\.com/i.test(h)) k = 'order';
+    else if(/instagram\.com|facebook\.com|tiktok\.com|twitter\.com|x\.com\/|youtube\.com/i.test(h)) k = 'social';
+    else if(site && h.replace(/^https?:\/\/(www\.)?/, '').toLowerCase().indexOf(site) === 0) k = 'website';
+    if(k) veTrack(l, k);
+  }, true);
+}
+
 // A brand page's billboard carries our own ad, for the Guide its products are in (Sean, 2026-10-08: "on these pages
 // we put internal ads... and then we promote the guide on this page as well, the dairy guide"). VEProducts.GUIDES
 // holds each Guide's house ad: its Guide's picture, a line, and a /go/ tracked link.
@@ -3286,6 +3285,7 @@ function fetchListingVideos(listingId){
 function renderVideoCarousel(videos){
   var videoEl = document.getElementById('tab-video');
   if(!videoEl || !videos || !videos.length) return;
+  var vb = document.getElementById('tab-btn-video'); if(vb) vb.style.display = '';
 
   // Filter to valid YouTube IDs
   var items = [];
@@ -3467,10 +3467,8 @@ function closeArticle(){
 function renderPulse(posts, listingName){
   var panel = document.getElementById('tab-pulse');
   if(!panel) return;
-  if(!posts || !posts.length){
-    panel.innerHTML = '<div class="tab-locked"><div class="tab-locked-title">No posts yet</div><div class="tab-locked-sub">Updates, press, and stories will appear here.</div></div>';
-    return;
-  }
+  if(!posts || !posts.length) return;
+  var pb = document.getElementById('tab-btn-pulse'); if(pb) pb.style.display = '';
   var typeLabels = { article:'Article', update:'Update', press:'Press', event:'Event', collab:'Collab', announcement:'Announcement' };
   var html = '<div class="pulse-wrap">';
   posts.forEach(function(post, idx){
@@ -3559,6 +3557,7 @@ if(!slug || slug === 'listing'){
       }
       if(l._brandSite) houseAd(l); else loadBillboardAds();
       veTrack(l, 'view');
+      trackActions(l);
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       if(!l._brandSite) loadPartnerHome(l);
