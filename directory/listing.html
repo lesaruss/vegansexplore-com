@@ -190,6 +190,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .tab-panel.active{display:block}
 
 /* LOCKED TAB STATE */
+.menu-source{font-size:12.5px;color:var(--ve-text-50);margin-top:18px}.menu-source a{color:inherit}
 .tab-locked{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 24px;text-align:center;gap:12px}
 .tab-locked-icon{width:56px;height:56px;border-radius:50%;background:var(--ve-green-light);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
 .tab-locked-title{font-size:15px;font-weight:900;color:var(--ve-text);letter-spacing:-.01em}
@@ -2451,6 +2452,9 @@ function menuTabContent(items){
         '<span class="menu-item-count" id="menu-item-count">'+firstCount+' items</span>'+
       '</div>'+
       '<div id="menu-blocks">'+blocks+'</div>'+
+      // A menu the Background writer copied from their website says so (migration 20261024_ve_menu_import.sql).
+      (items.every(function(i){ return i.source === 'import'; }) && items[0].created_at ? '<p class="menu-source">From their '+(items[0].source_url ? '<a href="'+esc(items[0].source_url)+'" target="_blank" rel="noopener">website</a>' : 'website')+', checked '+
+        esc(new Date(items[0].created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))+'. Prices and dishes may have changed.</p>' : '')+
     '</div>';
   // Attach event after render (use setTimeout so DOM is ready)
   setTimeout(function(){

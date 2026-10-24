@@ -1000,7 +1000,7 @@ Deno.serve(async (req) => {
       return json({ ok: true, items: data || [] });
     }
     if (body.action === 'menu_save' || body.action === 'menu_delete') {
-      const COLS = 'id, listing_id, category, name, description, price_display, is_vegan, is_gluten_free, is_featured, is_available, sort_order';
+      const COLS = 'id, listing_id, category, name, description, price_display, is_vegan, is_gluten_free, is_featured, is_available, sort_order, source';
       const id = String(body.id || body.item?.id || '');
       const { data: before } = /^[0-9a-f-]{36}$/.test(id) ? await db.from('ve_menu_items').select(COLS).eq('id', id).eq('listing_id', lid).maybeSingle() : { data: null };
       if (id && !before) return json({ error: 'not_found' }, 404);
@@ -1014,6 +1014,8 @@ Deno.serve(async (req) => {
           listing_id: lid, category: plain(it.category, 60) || 'Menu', name: plain(it.name, 120), description: plain(it.description, 400) || null,
           price_display: plain(it.price_display, 30) || null, is_vegan: it.is_vegan !== false, is_gluten_free: !!it.is_gluten_free,
           is_featured: !!it.is_featured, is_available: it.is_available !== false, sort_order: Math.max(0, Math.min(9999, Math.round(Number(it.sort_order) || 0))),
+          // An item the owner touched is theirs; a later menu import never replaces it (ve_menu_import_save).
+          source: owner ? 'owner' : 'manual',
         };
         if (!row.name) return json({ error: 'bad_name' }, 400);
         if (!before) {

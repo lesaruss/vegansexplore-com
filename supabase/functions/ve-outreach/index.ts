@@ -635,7 +635,7 @@ Deno.serve(async (req) => {
       // A menu item (the owner's dashboard, 2026-10-24): put the row back as it was, or take an added one away.
       if (e.field === 'menu_item') {
         const was = e.old_value, now = e.new_value, id = (now || was)?.id;
-        const { data: cur } = id ? await db.from('ve_menu_items').select('id, listing_id, category, name, description, price_display, is_vegan, is_gluten_free, is_featured, is_available, sort_order').eq('id', id).maybeSingle() : { data: null };
+        const { data: cur } = id ? await db.from('ve_menu_items').select('id, listing_id, category, name, description, price_display, is_vegan, is_gluten_free, is_featured, is_available, sort_order, source').eq('id', id).maybeSingle() : { data: null };
         if (!same(cur, now)) return json({ error: 'changed_since' }, 409);
         const r = !was ? await db.from('ve_menu_items').delete().eq('id', id)
           : !now ? await db.from('ve_menu_items').insert(was) : await db.from('ve_menu_items').update(was).eq('id', id);
