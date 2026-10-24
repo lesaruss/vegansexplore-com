@@ -189,7 +189,9 @@
       wrap.querySelectorAll('input[name=vla-ch]').forEach(function (i) {
         var isHome = i.value === home;
         i.disabled = all || isHome;
-        if (isHome) i.checked = true;
+        // The address's chapter is ticked for it; when the address moves, that tick goes with it.
+        if (isHome) { if (!i.checked) i.dataset.auto = '1'; i.checked = true; }
+        else if (i.dataset.auto) { i.checked = false; delete i.dataset.auto; }
       });
       var name = (chapters().filter(function (c) { return c[0] === home; })[0] || [])[1];
       $('#vla-ch-note').textContent = all ? 'Shows in every chapter, today and new ones. Its address shows as its headquarters.'
@@ -282,7 +284,9 @@
       btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
       fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
         .then(function (r) { return r.json(); }).then(function (d) {
-          if (!d || !d.ok) { btn.disabled = false; bad(d && d.error === 'no_access' ? 'Admins only.' : d && d.error === 'bad_city' ? 'Add a city, or tick Online only.' : 'That did not save. Try again.'); return; }
+          if (!d || !d.ok) { btn.disabled = false; bad(d && d.error === 'no_access' ? 'Admins only.' : d && d.error === 'bad_city' ? 'Add a city, or tick Online only.'
+            : d && d.error === 'duplicate_listing' ? 'Another listing with this name is already ' + (isOnline ? 'online only' : 'in that city') + (d.other ? ': ' + d.other.name + ' (' + d.other.slug + (d.other.status === 'approved' ? '' : ', ' + d.other.status) + ')' : '') + '. Merge them or change one.'
+            : 'That did not save. Try again.' + (d && d.message ? ' (' + d.message + ')' : '')); return; }
           Object.assign(target, d.listing, { logo_url: l.logo_url }); close(true); if (onSaved) onSaved(d.listing);
         }).catch(function () { btn.disabled = false; bad('Could not connect. Try again.'); });
     };
