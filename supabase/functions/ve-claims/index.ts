@@ -21,6 +21,14 @@
 //   POST { action: 'commit_year', listing_id }  four quarters for the price of three, offered at renewal
 //   POST { action: 'results', id } / { action: 'results_list', listing_id }  quarterly results sheets
 //   POST { action: 'brand_stats', listing_id, days? }  -> { stats, plan, admin }  what visitors did on the listing
+// The business dashboard (Sean, 2026-10-24, Love Life Cafe as the prototype). Its owner or a super admin. The $11 Founding
+// Membership opens it (Sean, 2026-10-24: "that one $11 investment opens them up"); a live plan opens it too. An owner who is
+// not a member yet still edits the page and the menu, and is offered the membership.
+//   POST { action: 'owner_dashboard', listing_id, days? }  -> { listing, open, admin, checklist, cards, stats?, plan?, ads?,
+//          spots?, audits?, orders?, guides?, opportunities?, interests? }
+//   POST { action: 'menu_list', listing_id }  /  { action: 'menu_save', listing_id, item }  /  { action: 'menu_delete', listing_id, id }
+//     the menu (ve_menu_items), each change a ve_listing_edits row (field menu_item) that the Depot can undo
+//   POST { action: 'ad_request', listing_id, page_slug, note? }  an ad spot they want; the team sends the quote
 // Brand Partner home (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). A partner is the
 // member who holds the listing's live brand membership (trialing counts: Front Row Start), its owner, or a super admin.
 //   POST { action: 'partner_status', listing_id }                 -> { partner, confirmed, plan, interests, admin }
@@ -610,7 +618,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, email, name, is_superadmin').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, email, name, is_superadmin, membership_status, membership_tier').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_authenticated' }, 401);
 
   if (body.action === 'mine') {
@@ -974,6 +982,133 @@ Deno.serve(async (req) => {
     return r.url ? json({ url: r.url, slug: listing.slug, test_mode: test }) : json({ error: r.error }, 400);
   }
 
+  // ---- The business dashboard (Sean, 2026-10-24). See the header.
+  if (['owner_dashboard', 'menu_list', 'menu_save', 'menu_delete', 'ad_request'].includes(body.action)) {
+    const lid = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(lid)) return json({ error: 'bad_listing' }, 400);
+    const { data: l } = await db.from('listings').select('id, name, slug, category, status, owner_member_id, claimed_by_member_id, claim_status, tagline, description, logo_url, gallery_urls, google_hours_json, address_city, address_state, details')
+      .eq('id', lid).maybeSingle();
+    if (!l || l.status !== 'approved') return json({ error: 'not_found' }, 404);
+    const owner = l.owner_member_id === memberId || l.claimed_by_member_id === memberId;
+    if (!owner && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
+    const memberActive = member.membership_status === 'active' && member.membership_tier !== 'guest';
+    const plan = await liveMembership(lid);
+    const open = !!member.is_superadmin || memberActive || !!plan;
+
+    if (body.action === 'menu_list') {
+      const { data } = await db.from('ve_menu_items').select('*').eq('listing_id', lid).order('sort_order').order('created_at');
+      return json({ ok: true, items: data || [] });
+    }
+    if (body.action === 'menu_save' || body.action === 'menu_delete') {
+      const COLS = 'id, listing_id, category, name, description, price_display, is_vegan, is_gluten_free, is_featured, is_available, sort_order';
+      const id = String(body.id || body.item?.id || '');
+      const { data: before } = /^[0-9a-f-]{36}$/.test(id) ? await db.from('ve_menu_items').select(COLS).eq('id', id).eq('listing_id', lid).maybeSingle() : { data: null };
+      if (id && !before) return json({ error: 'not_found' }, 404);
+      let after: any = null;
+      if (body.action === 'menu_delete') {
+        if (!before) return json({ error: 'not_found' }, 404);
+        await db.from('ve_menu_items').delete().eq('id', before.id);
+      } else {
+        const it = body.item || {};
+        const row: Record<string, unknown> = {
+          listing_id: lid, category: plain(it.category, 60) || 'Menu', name: plain(it.name, 120), description: plain(it.description, 400) || null,
+          price_display: plain(it.price_display, 30) || null, is_vegan: it.is_vegan !== false, is_gluten_free: !!it.is_gluten_free,
+          is_featured: !!it.is_featured, is_available: it.is_available !== false, sort_order: Math.max(0, Math.min(9999, Math.round(Number(it.sort_order) || 0))),
+        };
+        if (!row.name) return json({ error: 'bad_name' }, 400);
+        if (!before) {
+          const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', lid);
+          if ((count || 0) >= 300) return json({ error: 'menu_full' }, 400);
+        }
+        const q = before ? db.from('ve_menu_items').update(row).eq('id', before.id) : db.from('ve_menu_items').insert(row);
+        const { data, error } = await q.select(COLS).single();
+        if (error) return json({ error: 'save_failed' }, 500);
+        after = data;
+      }
+      await db.from('ve_listing_edits').insert({ listing_id: lid, member_id: memberId, field: 'menu_item', old_value: before, new_value: after, meta: { by: owner ? 'owner' : 'admin' } });
+      if (owner) await mailTo([accountManager(l)], `${l.name} updated their menu`,
+        `<p><b>${esc(l.name)}</b> ${after && before ? 'changed' : after ? 'added' : 'removed'} <b>${esc((after || before).name)}</b> on their menu.</p>` +
+        `<p><a href="https://vegansexplore.com/directory/${encodeURIComponent(l.slug)}?tab=menu">See the menu</a>. Every change can be undone from Depot &gt; Business outreach &gt; New partners.</p>`, member.email || undefined);
+      return json({ ok: true, item: after });
+    }
+
+    if (body.action === 'ad_request') {
+      if (!open) return json({ error: 'members_only' }, 403);
+      const page = plain(body.page_slug, 120);
+      const { data: spot } = await db.from('ad_placements').select('page_slug, page_name').eq('brand_slug', 'vegans-explore').eq('page_slug', page).limit(1).maybeSingle();
+      if (!spot) return json({ error: 'bad_spot' }, 400);
+      const note = plain(body.note, 600);
+      await db.from('ve_initiative_interest').insert({ initiative_slug: 'ad-placement', member_id: memberId, action_type: 'sponsor_tier', tier_label: 'Ad request',
+        note: `${l.name}: ${spot.page_name || spot.page_slug}${note ? ' (' + note + ')' : ''}`, status: 'new', email: member.email, name: member.name, tags: ['ad-request', l.slug], source: 'form' });
+      await mailTo([accountManager(l), SEAN_EMAIL], `${l.name} wants an ad: ${spot.page_name || spot.page_slug}`,
+        `<p><b>${esc(l.name)}</b> asked about an ad on <b>${esc(spot.page_name || spot.page_slug)}</b>.</p>${note ? `<p>${esc(note)}</p>` : ''}` +
+        `<p>Reply with the quote. It shows on <a href="https://vegansexplore.com/dashboard/leads">Leads</a> under ad-placement.</p>`, member.email || undefined);
+      return json({ ok: true });
+    }
+
+    // owner_dashboard
+    const food = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep'].includes(l.category);
+    const hours = (() => { let h: any = l.google_hours_json; if (typeof h === 'string') { try { h = JSON.parse(h); } catch { h = null; } } return h && (Array.isArray(h) ? h.length : Object.keys(h).length); })();
+    const [menu, audit, cardsQ] = await Promise.all([
+      db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', lid),
+      db.from('ve_audits').select('id').eq('listing_id', lid).eq('status', 'done').limit(1),
+      db.from('ve_dashboard_cards').select('id, kind, title, body, cta_label, cta_url').in('audience', ['business', 'all']).lte('starts_at', new Date().toISOString())
+        .or('ends_at.is.null,ends_at.gt.' + new Date().toISOString()).order('sort'),
+    ]);
+    const checklist = [
+      { k: 'logo', done: !!l.logo_url }, { k: 'description', done: String(l.description || '').length >= 80 },
+      { k: 'photos', done: (l.gallery_urls || []).length > 0 }, { k: 'hours', done: !!hours },
+      ...(food ? [{ k: 'menu', done: (menu.count || 0) > 0 }, { k: 'audit', done: !!(audit.data || []).length }] : []),
+    ];
+    const hub = hubOf(l);
+    const base = { ok: true, listing: { id: l.id, name: l.name, slug: l.slug, category: l.category, food, hub, claim_status: l.claim_status },
+      open, owner, admin: !owner, member_active: memberActive, checklist, cards: cardsQ.data || [], menu_count: menu.count || 0 };
+    if (!open) return json(base);
+
+    const days = Math.min(365, Math.max(1, Math.round(Number(body.days) || 30)));
+    const now = new Date().toISOString();
+    const [statsQ, biz, spotsQ, auditsQ, ordersQ, guidesQ, ownedQ, oppsQ, intsQ] = await Promise.all([
+      db.rpc('ve_listing_stats', { p_listing: lid, p_days: days }),
+      db.from('ad_businesses').select('id').eq('listing_id', lid),
+      db.from('ad_placements').select('page_slug, page_name, slot_id, estimated_monthly_views').eq('brand_slug', 'vegans-explore').eq('status', 'active'),
+      db.from('ve_audits').select('id, tier, status, score, max_score, created_at, source').eq('listing_id', lid).neq('status', 'failed').order('created_at', { ascending: false }).limit(5),
+      db.from('ve_audit_orders').select('id, tier, status, paid_at, audit_id, recheck_audit_id, shopper_status').eq('listing_id', lid).eq('status', 'paid').order('paid_at', { ascending: false }).limit(5),
+      db.from('ve_guides').select('id, slug, title, description, cover_url, access_rule').eq('published', true).order('sort_order'),
+      db.from('ve_guide_purchases').select('guide_id').eq('member_id', memberId),
+      db.from('opportunities').select('id, title, description, opportunity_type, city_slug, compensation, commitment').eq('is_active', true)
+        .or(hub ? `city_slug.is.null,city_slug.eq.${hub}` : 'city_slug.is.null').order('created_at', { ascending: false }).limit(12),
+      db.from('ve_initiative_interest').select('initiative_slug, tags').eq('member_id', memberId).contains('tags', [l.slug]),
+    ]);
+    // Their ads: ad_businesses tied to this listing -> sponsor campaigns -> ad campaigns -> daily impressions and clicks.
+    let ads: any[] = [];
+    const bizIds = (biz.data || []).map((b: any) => b.id);
+    if (bizIds.length) {
+      const { data: sc } = await db.from('ad_sponsor_campaigns').select('id, name, status, start_date, end_date').in('business_id', bizIds).order('start_date', { ascending: false });
+      const scIds = (sc || []).map((x: any) => x.id);
+      const { data: ac } = scIds.length ? await db.from('ad_campaigns').select('id, sponsor_campaign_id, campaign_name, creative_url, status').in('sponsor_campaign_id', scIds) : { data: [] };
+      const acIds = (ac || []).map((x: any) => x.id);
+      const { data: imp } = acIds.length ? await db.from('ad_impressions').select('campaign_id, impressions, clicks').in('campaign_id', acIds) : { data: [] };
+      ads = (sc || []).map((x: any) => {
+        const mine = (ac || []).filter((a: any) => a.sponsor_campaign_id === x.id), ids = mine.map((a: any) => a.id);
+        const t = (imp || []).filter((i: any) => ids.includes(i.campaign_id)).reduce((s: any, i: any) => ({ v: s.v + (i.impressions || 0), c: s.c + (i.clicks || 0) }), { v: 0, c: 0 });
+        return { name: x.name, status: x.status, start_date: x.start_date, end_date: x.end_date, creative_url: mine[0]?.creative_url || null, impressions: t.v, clicks: t.c };
+      });
+    }
+    // Ad spots, one per page, with the page's monthly views.
+    const spots: Record<string, any> = {};
+    for (const p of spotsQ.data || []) {
+      const k = p.page_slug; spots[k] = spots[k] || { page_slug: k, page_name: p.page_name || k, views: 0, slots: 0 };
+      spots[k].slots++; spots[k].views = Math.max(spots[k].views, p.estimated_monthly_views || 0);
+    }
+    const owned = new Set((ownedQ.data || []).map((x: any) => x.guide_id));
+    return json({ ...base, days, stats: statsQ.data || null,
+      plan: plan ? { tier: plan.tier, name: TIERS[plan.tier]?.name, status: plan.status, renews_at: plan.renews_at } : null,
+      ads, spots: Object.values(spots).sort((a: any, b: any) => b.views - a.views),
+      audits: auditsQ.data || [], orders: ordersQ.data || [],
+      guides: (guidesQ.data || []).map((g: any) => ({ slug: g.slug, title: g.title, description: g.description, cover_url: g.cover_url, access_rule: g.access_rule, owned: member.is_superadmin || owned.has(g.id) || g.access_rule === 'free' })),
+      opportunities: oppsQ.data || [], interests: (intsQ.data || []).map((x: any) => x.initiative_slug) });
+  }
+
   // A brand's dashboard: what visitors did on its listing. Its owner, or a super admin showing it to the brand.
   if (body.action === 'brand_stats') {
     const id = String(body.listing_id || '');
@@ -982,10 +1117,12 @@ Deno.serve(async (req) => {
     if (!l) return json({ error: 'not_found' }, 404);
     const owner = l.owner_member_id === memberId || l.claimed_by_member_id === memberId;
     if (!owner && !member.is_superadmin) return json({ error: 'not_owner' }, 403);
-    // The numbers come with a plan (Sean, 2026-10-09: a member claims and updates the page; the analytics are the
-    // Partner side). An owner without a live plan (Partner, Front Row Start's trial included, or Passport) is told so.
+    // The numbers come with the Founding Membership or a plan (Sean, 2026-10-24, replacing the Partner-only rule of
+    // 2026-10-09). An owner with neither is told so.
+    // The $11 Founding Membership opens the numbers too (Sean, 2026-10-24).
     const v = await liveMembership(id);
-    if (!v && !member.is_superadmin) return json({ error: 'partner_only' }, 403);
+    const memberActive = member.membership_status === 'active' && member.membership_tier !== 'guest';
+    if (!v && !memberActive && !member.is_superadmin) return json({ error: 'partner_only' }, 403);
     const days = Math.min(365, Math.max(1, Math.round(Number(body.days) || 30)));
     const { data: stats, error } = await db.rpc('ve_listing_stats', { p_listing: id, p_days: days });
     if (error) return json({ error: 'stats_failed' }, 500);

@@ -59,7 +59,6 @@ create table if not exists public.ve_dashboard_cards (
   created_at timestamptz not null default now()
 );
 alter table public.ve_dashboard_cards enable row level security;
-drop policy if exists ve_dashboard_cards_read on public.ve_dashboard_cards;
 create policy ve_dashboard_cards_read on public.ve_dashboard_cards for select using (starts_at <= now() and (ends_at is null or ends_at > now()));
 
 insert into public.ve_dashboard_cards (audience, kind, title, body, cta_label, cta_url, sort)

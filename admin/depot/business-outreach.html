@@ -450,8 +450,8 @@
           $('lp').parentNode.appendChild(ed);
           var FIELD = { tagline: 'One line', description: 'Description', phone: 'Phone', website: 'Website', instagram: 'Instagram', booking_url: 'Booking link',
             uber_eats_url: 'Uber Eats link', doordash_url: 'DoorDash link', address_street: 'Street address', address_zip: 'ZIP code', hours: 'Hours',
-            logo: 'Logo', photo_add: 'Photo added', photo_remove: 'Photo removed' };
-          function shown(v) { if (v == null || v === '') return 'empty'; if (typeof v === 'object') return Object.keys(v).map(function (k) { return k.slice(0, 3) + ' ' + v[k]; }).join(', '); return String(v); }
+            logo: 'Logo', photo_add: 'Photo added', photo_remove: 'Photo removed', menu_item: 'Menu item' };
+          function shown(v) { if (v == null || v === '') return 'empty'; if (v && v.listing_id && v.name) return v.name + (v.price_display ? ' (' + v.price_display + ')' : '') + (v.category ? ', ' + v.category : ''); if (typeof v === 'object') return Object.keys(v).map(function (k) { return k.slice(0, 3) + ' ' + v[k]; }).join(', '); return String(v); }
           function drawEdits() {
             api({ action: 'listing_edits', listing_id: id }).then(function (x) {
               var list = x.edits || [];

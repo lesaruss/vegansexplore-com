@@ -862,6 +862,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-trust.js"></script>
 <script src="/public/ve-listing-admin.js"></script>
+<script src="/public/ve-partner-dashboard.js"></script>
 <script src="/public/nav.js"></script>
 
 <div id="listing-root">
@@ -2165,9 +2166,9 @@ function mountPartnerLocked(el, l){
   var CITY = function(slug, name){ return '<div style="background-image:url(\'/communities/' + slug + '/banner.jpg\')"><span>' + name + '</span></div>'; };
   el.innerHTML = '<div class="pd-tour"></div>';
   PD_TOUR = VEGuideTour.mount(el.firstChild, { guide: 'Liz', title: 'Your Guide to Vegans Explore', narr: host, wide: '(min-width:769px)', slides: [
-    { t: 'Partner Dashboard', h: claimed ? N + '\'s dashboard is open to its team' : 'Is ' + N + ' your ' + (brand ? 'brand' : 'business') + '?', clip: C.pt1,
+    { t: 'Partner Dashboard', h: claimed ? 'This is ' + N + '\'s dashboard' : 'Is ' + N + ' your ' + (brand ? 'brand' : 'business') + '?', clip: C.pt1,
       say: 'Hi, I\'m Liz, your Guide to Vegans Explore. If this is your business, this dashboard can be yours.',
-      body: '<p>' + (claimed ? 'This page has been claimed. If you are on the team, sign in with the account that claimed it.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
+      body: '<p>' + (claimed ? 'Only ' + N + '\'s team sees inside: their numbers, their menu, their ads and campaigns. Run a Vegan business? Take the tour to see what yours would hold.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
         '<div class="vgt-btns"><button type="button" class="vgt-btn" data-vgt-start>&#9654; Start the tour</button>' + claimBtn + signBtn + '</div>',
       pic: '<div class="vgt-snap vgt-page" aria-hidden="true"><div class="vgt-snap-h"><span>Your page on Vegans Explore</span><span>' + (claimed ? 'Claimed' : 'Not claimed yet') + '</span></div>' +
         '<div class="vgt-page-id"><i>' + esc(String(l.name || '?').trim().charAt(0)) + (l.logo_url ? '<em style="background-image:url(\'' + esc(l.logo_url) + '\')"></em>' : '') + '</i>' +
@@ -2208,33 +2209,24 @@ document.addEventListener('click', function(e){
   e.preventDefault();
   if(window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in with the account that claimed this page.', function(){ location.reload(); });
 });
-// A listing that is not a product brand: Partner Dashboard is locked, or, for its owner, its numbers (ve-claims brand_stats).
+// A listing that is not a product brand: two versions of the Partner Dashboard (Sean, 2026-10-24: "One is the preview with
+// Liz explaining, and then the other is the actual dashboard"). Its owner and super admins get the dashboard
+// (/public/ve-partner-dashboard.js, ?pd=<view>); everyone else gets Liz's preview. ?as=visitor shows a super admin the preview.
 function loadPartnerHome(l){
   var el = document.getElementById('pd-home'); if(!el) return;
   var m = null; try{ m = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){}
+  var qs = new URLSearchParams(location.search);
   var owner = !!(m && (m.id === l.owner_member_id || m.id === l.claimed_by_member_id));
+  var admin = !!(m && m.is_superadmin && window.VEAuth && VEAuth.getMember && VEAuth.getMember() && qs.get('as') !== 'visitor');
   // Depot > Preview journeys: what an owner who joined as a member (no plan) sees here.
-  if(new URLSearchParams(location.search).get('preview') === 'member-owner'){ el.innerHTML = partnerUpsell(l); return; }
-  if(!owner){ mountPartnerLocked(el, l); return; }
+  if(qs.get('preview') === 'member-owner'){ el.innerHTML = partnerUpsell(l); return; }
+  if(!owner && !admin){ mountPartnerLocked(el, l); return; }
   var lk = document.querySelector('.tab-btn[data-tab="brand"] .pd-lock'); if(lk) lk.remove();
   // Edit your page (Sean, 2026-10-10): its own view, one step at a time, ?edit=<step>.
-  var editStep = new URLSearchParams(location.search).get('edit');
+  var editStep = qs.get('edit');
   if(editStep){ mountOwnerEditor(el, l, editStep); return; }
-  el.innerHTML = '<div class="bp-head"><h3>Your dashboard</h3><span>How many people find ' + esc(l.name) + ' on Vegans Explore. <a href="/claim?listing=' + encodeURIComponent(l.slug || '') + '">Your plan and Passport</a></span></div>' +
-    '<div class="oe-cta"><div><b>Your page</b><span>Update your description, hours, links, logo and photos. Changes show on your page right away.</span></div><button type="button" class="bd-btn" data-oe-open>Edit your page</button></div>' +
-    '<div class="aisle-empty">Loading your numbers...</div>';
-  var ob = el.querySelector('[data-oe-open]'); if(ob) ob.addEventListener('click', function(){ ownerEditGo(el, l, 'about'); });
-  fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'brand_stats', listing_id: l.id, days: 30 }) })
-    .then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){
-      var box = el.querySelector('.aisle-empty'); if(!box) return;
-      // A member holds the page and keeps it current; the numbers, the Guide and the campaigns are the Partner side
-      // (Sean, 2026-10-09). Said as what they can add, not what they lack.
-      if(d && d.error === 'partner_only'){ box.outerHTML = partnerUpsell(l); return; }
-      if(!d || !d.stats){ box.textContent = 'We could not load the numbers just now. Try again in a moment.'; return; }
-      var T = d.stats.totals || {}, n = function(x){ return Number(x || 0).toLocaleString(); };
-      box.outerHTML = '<div class="bd-tiles"><div><b>' + n(T.view) + '</b><span>Page views, 30 days</span></div><div><b>' + n(d.stats.visitors) + '</b><span>Visitors</span></div></div>' +
-        '<p class="bd-small">' + (d.stats.since ? 'Counting since ' + new Date(d.stats.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. ' : '') + 'Each visitor counts once every 30 minutes; automated browsers are not counted.</p>';
-    });
+  if(!window.VEPartnerDash){ el.innerHTML = '<div class="aisle-empty">We could not open your dashboard just now. Refresh to try again.</div>'; return; }
+  VEPartnerDash.mount(el, l, { editPage: function(step){ ownerEditGo(el, l, step); } });
 }
 
 // ---- The owner edits their page (Sean, 2026-10-10). Four steps, one per view (?edit=about|hours|contact|photos), Back /
@@ -2244,6 +2236,7 @@ var OE_STEPS = [['about', 'About'], ['hours', 'Hours'], ['contact', 'Contact and
 var OE_DATA = null;
 function ownerEditGo(el, l, step){
   var u = new URL(location.href);
+  u.searchParams.delete('pd');
   if(step){ u.searchParams.set('tab', 'brand'); u.searchParams.set('edit', step); } else u.searchParams.delete('edit');
   history.pushState(null, '', u.pathname + u.search + u.hash);
   if(step) mountOwnerEditor(el, l, step); else { OE_DATA = null; loadPartnerHome(l); }
@@ -2381,12 +2374,15 @@ function mountOwnerEditor(el, l, step){
     });
   });
 }
+// An owner who is not a Founding Member yet (Sean, 2026-10-24: the $11 membership opens the numbers; the Partner plan is the
+// front-row seat on campaigns). Said as what they can add, not what they lack.
 function partnerUpsell(l){
   var front = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-  return '<div class="bd-locked"><p><b>' + esc(l.name) + ' is yours, and you are a Founding Member.</b> Keep your details, photos and story up to date from this page.</p>' +
-    '<p>When you are ready for more, add the Partner side: your numbers here (views, visitors and what people open), a front-row seat on every campaign before it opens, and your Guide on this dashboard.' +
-    (front ? ' Front Row Start: nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : ' $111 a quarter.') + '</p>' +
-    '<div class="bd-btns"><a class="bd-btn" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand">' + (front ? 'Take my front-row seat' : 'Become a Partner') + '</a></div></div>';
+  return '<div class="bd-locked"><p><b>' + esc(l.name) + ' is yours.</b> Keep your details, photos and story up to date from this page.</p>' +
+    '<p>Become a Founding Member, $11 one time, and your whole dashboard opens: your numbers (views, visitors and what people open), our campaigns and ads, the audit and the Guides.' +
+    ' The Partner plan adds a front-row seat on every campaign and ads placed for you' + (front ? ': nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : ', $111 a quarter.') + '</p>' +
+    '<div class="bd-btns"><button type="button" class="bd-btn" onclick="this.disabled=true;VEAuth.startEntryCheckout(1100).then(function(d){if(d&&d.url)location.href=d.url;})">Become a Founding Member, $11</button>' +
+    '<a class="bd-btn o" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand">' + (front ? 'Take my front-row seat' : 'Become a Partner') + '</a></div></div>';
 }
 // Is the signed-in visitor this brand's partner (ve-claims partner_status)? ?partner=preview shows the partner's view to
 // anyone, labelled; its buttons work only for a real partner or a super admin.
