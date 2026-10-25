@@ -24,7 +24,7 @@
 // The business dashboard (Sean, 2026-10-24, Love Life Cafe as the prototype). Its owner or a super admin. The $11 Founding
 // Membership opens it (Sean, 2026-10-24: "that one $11 investment opens them up"); a live plan opens it too. An owner who is
 // not a member yet still edits the page and the menu, and is offered the membership.
-//   POST { action: 'owner_dashboard', listing_id, days? }  -> { listing, open, admin, checklist, cards, stats?, plan?, ads?,
+//   POST { action: 'owner_dashboard', listing_id, days? }  -> { listing, open, admin, checklist, cards, stats?, plan?, ads?, checkins?,
 //          spots?, audits?, orders?, guides?, opportunities?, interests? }
 //   POST { action: 'menu_list', listing_id }  /  { action: 'menu_save', listing_id, item }  /  { action: 'menu_delete', listing_id, id }
 //     the menu (ve_menu_items), each change a ve_listing_edits row (field menu_item) that the Depot can undo
@@ -1102,12 +1102,24 @@ Deno.serve(async (req) => {
       spots[k].slots++; spots[k].views = Math.max(spots[k].views, p.estimated_monthly_views || 0);
     }
     const owned = new Set((ownedQ.data || []).map((x: any) => x.guide_id));
+    // Member check-ins (Sean, 2026-10-25: "Only registered member businesses who've claimed their listings can see that
+    // information"): who checked in and when, whatever the member's own setting, once the claim is approved.
+    async function ownerCheckins() {
+      if (l.claim_status !== 'verified' && !member.is_superadmin) return { verified: false };
+      const { data } = await db.from('ve_checkins').select('created_at, member_id, members(name)').eq('listing_id', lid)
+        .gte('created_at', new Date(Date.now() - 365 * 864e5).toISOString()).order('created_at', { ascending: false }).limit(500);
+      const short = (n: string) => { const p = String(n || '').trim().split(/\s+/); return p[0] ? p[0] + (p[1] ? ' ' + p[1][0] + '.' : '') : 'A member'; };
+      const rows = (data || []).map((c: any) => ({ at: c.created_at, member_id: c.member_id, name: short(c.members?.name) }));
+      const since30 = Date.now() - 30 * 864e5;
+      return { verified: true, rows, total: rows.length, last_30_days: rows.filter((r: any) => Date.parse(r.at) > since30).length,
+        people: new Set(rows.map((r: any) => r.member_id)).size };
+    }
     return json({ ...base, days, stats: statsQ.data || null,
       plan: plan ? { tier: plan.tier, name: TIERS[plan.tier]?.name, status: plan.status, renews_at: plan.renews_at } : null,
       ads, spots: Object.values(spots).sort((a: any, b: any) => b.views - a.views),
       audits: auditsQ.data || [], orders: ordersQ.data || [],
       guides: (guidesQ.data || []).map((g: any) => ({ slug: g.slug, title: g.title, description: g.description, cover_url: g.cover_url, access_rule: g.access_rule, owned: member.is_superadmin || owned.has(g.id) || g.access_rule === 'free' })),
-      opportunities: oppsQ.data || [], interests: (intsQ.data || []).map((x: any) => x.initiative_slug) });
+      opportunities: oppsQ.data || [], interests: (intsQ.data || []).map((x: any) => x.initiative_slug), checkins: await ownerCheckins() });
   }
 
   // A brand's dashboard: what visitors did on its listing. Its owner, or a super admin showing it to the brand.

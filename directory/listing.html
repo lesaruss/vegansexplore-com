@@ -3043,7 +3043,8 @@ function renderListing(l){
 
   // Check in (Sean, 2026-10-25): a member at the place checks in for 10 points (ve-checkin; the rules are in
   // ve_checkin_save: within 150 m, once a day per place, points on up to 5 places a day). Everyone sees when members last
-  // checked in, never who. Signed out or not a member: the same sign-in and membership offers as voting.
+  // checked in; members also see who (members who keep Show my check-ins on, Sean 2026-10-25), and the owner sees everyone
+  // on the business dashboard. Signed out or not a member: the same sign-in and membership offers as voting.
   (function(){
     var CK = SUPABASE_URL + '/functions/v1/ve-checkin';
     var btn = document.getElementById('checkin-btn'), msg = document.getElementById('checkin-msg'), label = document.getElementById('checkin-label');
@@ -3061,7 +3062,9 @@ function renderListing(l){
       // A recent check-in is the community's word that the place is open.
       if(d.last_at && Date.now() - new Date(d.last_at).getTime() < 90 * 86400000){
         var bar = document.querySelector('.info-bar');
-        if(bar) bar.insertAdjacentHTML('beforeend', '<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/></svg>Member check-in ' + ago(d.last_at) + (d.people_30_days > 1 ? ' &middot; ' + d.people_30_days + ' members this month' : '') + '</span>');
+        // Members see who (those who leave Show my check-ins on, in My Account); everyone else sees counts only.
+        var who = d.people && d.people.length ? ' &middot; Recently here: ' + d.people.map(esc).join(', ') + (d.more ? ' and ' + d.more + ' more' : '') : '';
+        if(bar) bar.insertAdjacentHTML('beforeend', '<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/></svg>Member check-in ' + ago(d.last_at) + (who || (d.people_30_days > 1 ? ' &middot; ' + d.people_30_days + ' members this month' : '')) + '</span>');
       }
     }).catch(function(){});
     if(!btn) return;

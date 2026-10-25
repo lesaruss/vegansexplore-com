@@ -572,6 +572,17 @@
         </div>
       </section>
 
+      <!-- Privacy (Sean, 2026-10-25): other members may see where you checked in, on each place's page, unless you turn it off.
+           The owner of a place you check in at always sees it. Saved through ve-checkin privacy (members.show_checkins). -->
+      <section class="ve-section" aria-labelledby="ve-privacy-title">
+        <h2 class="ve-section-title" id="ve-privacy-title">Privacy</h2>
+        <label style="display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.5;cursor:pointer">
+          <input type="checkbox" id="ve-show-checkins" checked style="width:20px;height:20px;margin-top:2px;accent-color:#15803D;flex:0 0 auto">
+          <span><strong>Show my check-ins to other members.</strong><br>Members see who has checked in at a place on its page. Turn this off and only the place's owner and our team see your check-ins.</span>
+        </label>
+        <p id="ve-privacy-msg" role="status" style="font-size:13px;font-weight:700;color:#15803D;margin-top:8px"></p>
+      </section>
+
       <section class="ve-section" aria-labelledby="ve-activity-title">
         <h2 class="ve-section-title" id="ve-activity-title">Recent Activity</h2>
         <div id="ve-activity-content">
@@ -586,6 +597,24 @@
 
   </main>
 
+  <script>
+  // Privacy: whether other members see where you checked in.
+  (function () {
+    var box = document.getElementById('ve-show-checkins'), msg = document.getElementById('ve-privacy-msg');
+    var t = localStorage.getItem('ve_token'); if (!box || !t) return;
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-checkin';
+    function call(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+    call({ action: 'privacy' }).then(function (d) { if (d && d.ok) box.checked = !!d.show_checkins; }).catch(function () {});
+    box.addEventListener('change', function () {
+      box.disabled = true; msg.textContent = 'Saving...';
+      call({ action: 'privacy', show_checkins: box.checked }).then(function (d) {
+        box.disabled = false;
+        if (!d || !d.ok) { box.checked = !box.checked; msg.textContent = 'That did not save. Try again.'; return; }
+        msg.textContent = box.checked ? 'Saved. Members can see where you checked in.' : 'Saved. Only the place\'s owner and our team see your check-ins.';
+      }).catch(function () { box.disabled = false; box.checked = !box.checked; msg.textContent = 'Could not connect. Try again.'; });
+    });
+  })();
+  </script>
   <script>
   (function () {
     var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
