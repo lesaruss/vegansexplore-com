@@ -465,7 +465,7 @@ it's just... in its own section that only shows up for members... I can overrule
 place (Restaurants, Bakeries & Cafes, Food Trucks & Vendors, Catering, Meal Prep; brands and markets never) is public only once
 10 different members vote for it (`listings.voter_count`), its business claims it, or a super admin ticks **Vetted by us** in
 the listing editor (`listings.vetted_at`, `ve-claims` `admin_listing` `vetted`). Until then it sits in the members-only **Being
-vetted** section of the Directory and every hub (`vetting` in `CAT_CONFIG`, closest to 10 first, each card with "N of 10 members have voted" on its own line under the details) and its page asks visitors to
+vetted** section of the Directory and every hub (`vetting` in `CAT_CONFIG`, closest to 10 first, each card with "N of 10 member votes" on its own line under the details) and its page asks visitors to
 join. The rule is `/public/ve-trust.js`, switched on and its number set in `ve_site_settings` `directory_trust` (Depot > Claims);
 migration `20261025_directory_vetting.sql`.
 
