@@ -78,7 +78,7 @@
 //     the details they sent written onto the listing.
 //   POST { action: 'admin_trust', enabled, min_voters }    the public directory rule
 //   POST { action: 'admin_listing', listing_id, category?, extra_categories?, vegan_status?, business_status?,
-//          name?, address?: { online, street, city, state, zip }, communities?: [hub slug, ...] | ['all'], product_kinds?: [...], cuisines?: [...],
+//          name?, address?: { online, street, city, state, zip }, communities?: [hub slug, ...] | ['all'], product_kinds?: [...], cuisines?: [...], vetted?: bool,
 //          details?: { atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, owned: [...] } }
 //     The quick editor on the city hubs and listing pages (Sean, 2026-09-27): rename it, move it,
 //     change its sub-section (or add more in the same section), set how Vegan it is, mark it
@@ -1297,6 +1297,13 @@ Deno.serve(async (req) => {
       const KINDS = ['dairy', 'meat', 'egg', 'seafood', 'snacks', 'drinks', 'protein', 'pantry', 'baked', 'frozen'];
       patch.product_kinds = [...new Set((Array.isArray(body.product_kinds) ? body.product_kinds : []).map(String))].filter((k) => KINDS.includes(k));
     }
+    // Vetted by us (Sean, 2026-10-25: "I can overrule that, especially if I know the reputation of it"): a Vegan-friendly
+    // or Vegan-options place shows to everyone without waiting for 10 members (/public/ve-trust.js).
+    if (body.vetted !== undefined) {
+      const { data: cur } = await db.from('listings').select('vetted_at').eq('id', id).maybeSingle();
+      if (body.vetted && !cur?.vetted_at) { patch.vetted_at = new Date().toISOString(); patch.vetted_by = memberId; }
+      if (!body.vetted && cur?.vetted_at) { patch.vetted_at = null; patch.vetted_by = null; }
+    }
     if (body.cuisines !== undefined) {
       // What kind of food (Sean, 2026-10-25); keep in step with CUISINES in /public/ve-listing-admin.js and the table check.
       const CUISINES = ['american', 'soul', 'caribbean', 'latin', 'mexican', 'cuban', 'italian', 'mediterranean', 'middle_eastern', 'ethiopian', 'african',
@@ -1329,7 +1336,7 @@ Deno.serve(async (req) => {
       patch.lgbtq_friendly = owned.includes('is_lgbtq_owned'); // At a Glance reads this one for LGBTQ+-Owned
     }
     const { data, error } = await db.from('listings').update(patch).eq('id', id)
-      .select('id, slug, name, category, extra_categories, communities, product_kinds, cuisines, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
+      .select('id, slug, name, category, extra_categories, communities, product_kinds, cuisines, vetted_at, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
     // One live listing per name and place (listings_name_city_state_unique): say so, naming the other one.
     if (error && error.code === '23505') {
       const { data: other } = await db.from('listings').select('name, slug, status, address_city').ilike('name', String(patch.name ?? '') || '%').neq('id', id).neq('status', 'rejected').limit(5);

@@ -460,6 +460,18 @@ Every chapter"), and the listing page adds "Serves every chapter" or "Also serve
 editor's Chapters section (`ve-listing-admin.js`, saved by `ve-claims` `admin_listing`). Passport Challenge and Tours stops
 still go by address.
 
+Vetting (Sean, 2026-10-25: "they're not all vetted... it requires 10 different people, not one person 10 times... Otherwise,
+it's just... in its own section that only shows up for members... I can overrule that"). A Vegan-friendly or Vegan-options food
+place (Restaurants, Bakeries & Cafes, Food Trucks & Vendors, Catering, Meal Prep; brands and markets never) is public only once
+10 different members vote for it (`listings.voter_count`), its business claims it, or a super admin ticks **Vetted by us** in
+the listing editor (`listings.vetted_at`, `ve-claims` `admin_listing` `vetted`). Until then it sits in the members-only **Being
+vetted** section of the Directory and every hub (`vetting` in `CAT_CONFIG`, closest to 10 first) and its page asks visitors to
+join. The rule is `/public/ve-trust.js`, switched on and its number set in `ve_site_settings` `directory_trust` (Depot > Claims);
+migration `20261025_directory_vetting.sql`.
+
+On a city hub the banner bar's crumb is a community picker (All cities, then each `VE_HUBS` city; Sean, 2026-10-25): a city
+keeps the section you are on, All cities opens `/directory` from the Directory section, else `/communities`.
+
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
 and folds it to one bar (city picker, Visit the community, Expand) after the first click into a section; Collapse/Expand is
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
