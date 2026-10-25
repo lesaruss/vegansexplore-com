@@ -2,7 +2,7 @@
  * 24 hours, counted from their last vote for it, and the vote sticks. Before this, the
  * + Vote buttons on /directory and the city hubs only bumped the number on screen.
  *
- *   Signed out            -> the sign-in box (a new account then meets the $11 box).
+ *   Signed out            -> /passport, the Passport Guide (Sean locked 2026-10-25), with Sign in for members.
  *   Signed in, not paid   -> ve-votes answers payment_required and the "Founding Member,
  *                            $11 one time" box opens (VEAuth.showActivateModal).
  *   Member                -> ve-votes saves it (listing_daily_votes; the trigger keeps
@@ -84,7 +84,8 @@
     if (btn.dataset.busy || !window.VEAuth) return;
     if (btn.dataset.voted && tooSoon(btn.dataset.next)) { notice(onceMessage(btn.dataset.next)); return; }
     if (!VEAuth.isLoggedIn()) {
-      VEAuth.showAuthModal('Sign in to vote. Members vote once a day for every business they love.', function () { window.location.reload(); });
+      // Signed out goes to the Passport Guide (Sean locked 2026-10-25), which has Sign in for members; back= returns here.
+      window.location.href = '/passport?from=vote&back=' + encodeURIComponent(location.pathname + location.search + location.hash);
       return;
     }
     var id = btn.getAttribute('data-listing-id'), label = btn.textContent;

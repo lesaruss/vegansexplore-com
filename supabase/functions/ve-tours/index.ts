@@ -145,6 +145,19 @@ async function confirm(sessionId: string): Promise<Response> {
       (t.pickup ? `<p>Pickup: ${esc(t.pickup)}</p>` : '') + (t.dropoff ? `<p>Drop-off: ${esc(t.dropoff)}</p>` : '') +
       (t.rain_plan ? `<p>If it rains: ${esc(t.rain_plan)}</p>` : '') +
       `<p>Tour details: <a href="${back}">${back}</a>. Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
+    // $11 is the price of admission (Sean, 2026-10-25): a ticket of $11 or more makes the buyer a member, and every purchase
+    // earns the 25-point thank-you. The buyer is the signed-in member, else the member with the buyer's email, if any.
+    try {
+      let buyerId = r0.member_id || null;
+      if (!buyerId && r0.buyer_email) {
+        const { data: m } = await db.from('members').select('id').ilike('email', r0.buyer_email).is('merged_into_member_id', null).limit(1).maybeSingle();
+        buyerId = m?.id || null;
+      }
+      if (buyerId) {
+        if ((t.price_cents || 0) >= 1100) await db.rpc('ve_member_admit', { p_member: buyerId });
+        await db.rpc('ve_purchase_thanks', { p_member: buyerId, p_ref: `tour:${r0.order_id}` });
+      }
+    } catch (e) { console.error('tour admission or thanks failed', e); }
     const { count } = await db.from('ve_tour_tickets').select('id', { count: 'exact', head: true }).eq('tour_id', tourId).eq('status', 'paid');
     await send([SEAN_EMAIL], `${r0.test ? '[TEST] ' : ''}Tour booking: ${t.title}, ${rows.length} guest${rows.length > 1 ? 's' : ''} (${count}/${t.capacity} booked)`,
       `<p>${esc(r0.buyer_name)} (${esc(r0.buyer_email)}${r0.buyer_phone ? ', ' + esc(r0.buyer_phone) : ''}) booked ${rows.length} for <b>${esc(t.title)}</b>.</p>` +
