@@ -4,7 +4,7 @@
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegans Explore - Entrepreneur Path (Mock)</title>
+  <title>Vegans Explore - Entrepreneur Path</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,12 +20,6 @@
     html { scroll-behavior: smooth; }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
 
-    .vp-switcher { position: fixed; bottom: 220px; right: 0; z-index: 9000; display: flex; flex-direction: column; align-items: flex-end; }
-    .vp-handle { background: var(--ve-orange); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; writing-mode: vertical-rl; padding: 12px 7px; border-radius: 6px 0 0 6px; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; box-shadow: -2px 0 8px rgba(0,0,0,0.12); }
-    .vp-panel { display: none; background: #fff; border: 1px solid var(--ve-border); border-right: none; border-radius: 8px 0 0 8px; padding: 10px 12px; gap: 8px; flex-direction: column; }
-    .vp-panel.open { display: flex; }
-    .vp-btn { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ve-surface); border: 1px solid var(--ve-border); border-radius: 4px; padding: 6px 10px; cursor: pointer; color: var(--ve-text-75); transition: all 0.15s; }
-    .vp-btn:hover, .vp-btn.active { background: var(--path-light); color: var(--path-color); border-color: var(--path-color); }
 
     #mockFrame { width: 100%; max-width:none; margin: 0 auto; min-height: 100vh; background: #fff; transition: max-width 0.25s ease; }
     #mockFrame.tablet { max-width: 768px; }
@@ -195,14 +189,6 @@
 </head>
 <body>
 
-<div class="vp-switcher">
-  <div class="vp-panel" id="vpPanel">
-    <button class="vp-btn active" onclick="setVP('desktop', this)">Desktop</button>
-    <button class="vp-btn" onclick="setVP('tablet', this)">Tablet</button>
-    <button class="vp-btn" onclick="setVP('mobile', this)">Mobile</button>
-  </div>
-  <button class="vp-handle" onclick="document.getElementById('vpPanel').classList.toggle('open')">View</button>
-</div>
 
 <div id="mockFrame">
   <script src="/public/nav.js"></script>
@@ -221,7 +207,7 @@
     </div>
     <div class="path-hero-visual">
       <div class="hero-portrait-card" style="background:#fff;border:1px solid var(--ve-border);border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);width:260px;flex-shrink:0;">
-        <div class="hero-portrait-img" style="width:260px;height:320px;overflow:hidden;border-bottom:3px solid var(--path-color);"><img src="../public/guides/nori.png" alt="Nori, Entrepreneur Guide" style="width:100%;height:100%;object-fit:cover;object-position:top center;"></div>
+        <div class="hero-portrait-img" style="width:260px;height:320px;overflow:hidden;border-bottom:3px solid var(--path-color);"><img data-guide-art="nori" src="../public/guides/nori.png" alt="Nori, Entrepreneur Guide" style="width:100%;height:100%;object-fit:cover;object-position:top center;"></div>
         <div style="padding:14px 18px;">
           <div style="font-size:16px;font-weight:900;color:#1A1A1A;margin-bottom:3px;">Nori</div>
           <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--path-color);">Entrepreneur Guide</div>
@@ -302,11 +288,7 @@
       <p style="font-size:15px;font-weight:400;color:var(--ve-text-75);line-height:1.65;margin-bottom:28px;">We are fully committed to delivering more than your money's worth, every step of the way. Your support also helps us keep building the platform, improve every guide we ship, and continue providing real services to this community.</p>
       <a href="/welcome#join" class="btn-path">Get your Passport - $11</a>
     </div>
-    <div style="border-radius:14px;overflow:hidden;aspect-ratio:16/10;background:#d4edda;border:2px solid var(--path-mid);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
-      <div style="font-size:40px;" aria-hidden="true">🥗</div>
-      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--path-color);">Placeholder</div>
-      <div style="font-size:12px;font-weight:500;color:var(--ve-text-50);text-align:center;max-width:200px;line-height:1.5;">Maya in the kitchen<br>cooking a Vegan meal</div>
-    </div>
+    <div style="border-radius:14px;overflow:hidden;aspect-ratio:1/1;width:100%;max-width:420px;justify-self:center;background:#fff;border:2px solid var(--path-mid);"><img data-guide-art="nori" src="../public/guides/nori.png" alt="Nori, Entrepreneur Guide" style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;"></div>
   </section>
 
   <!-- PASSPORT BENEFITS -->
@@ -374,12 +356,9 @@
 </div>
 
 <script>
-  function setVP(size, btn) {
-    document.getElementById('mockFrame').className = size === 'desktop' ? '' : size;
-    document.querySelectorAll('.vp-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  // A real phone gets the Mobile layout (2026-10-04); the preview buttons still switch it by hand.
+  // Guide pictures come from VEGuideArt in footer.js (the mid shot for square spots); the old file stays as the fallback.
+  document.querySelectorAll('img[data-guide-art]').forEach(function (i) { if (window.VEGuideArt) i.src = window.VEGuideArt(i.getAttribute('data-guide-art'), 'square'); });
+  // A real phone gets the Mobile layout (2026-10-04).
   (function () {
     var mq = window.matchMedia('(max-width: 760px)'), frame = document.getElementById('mockFrame');
     function fit() { if (frame && (frame.className === '' || frame.className === 'mobile')) frame.className = mq.matches ? 'mobile' : ''; }
