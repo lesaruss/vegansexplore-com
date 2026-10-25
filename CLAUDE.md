@@ -895,7 +895,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   `ve-votes` `points`, `ve_listing_points`; the Give box on every listing page).
 - **Levels 1 to 3 on lifetime points** (`member_points.total_points`, which never goes down): Level 2 from 2,500, Level 3 from
   10,000 (`ve_member_level`; the dashboard's `VE_LEVEL_AT`; change both together). Spending or giving points never lowers a level.
-  Sean can change the thresholds.
+  Sean confirmed the thresholds on 2026-10-25: "go with 2,500 and 10,000 for the levels." The perks of each level come later.
 - **Credits are retired.** `trg_ve_founding_credit` is dropped, `ve-guide-unlock` `buy_credits` answers 410, the dashboard's Buy
   Guide credits is gone. The credit tables and functions stay so history reads; no member held a credit on 2026-10-25.
 - Points live in two places (`members.lesars_balance` and `member_points.available_points`); every points function moves both
