@@ -469,6 +469,20 @@ vetted** section of the Directory and every hub (`vetting` in `CAT_CONFIG`, clos
 join. The rule is `/public/ve-trust.js`, switched on and its number set in `ve_site_settings` `directory_trust` (Depot > Claims);
 migration `20261025_directory_vetting.sql`.
 
+Directory review (Sean, 2026-10-25: "have these businesses quarantined in a place where I can go through them manually... I
+just wanted to remove and not even mark as permanently closed... the idea of permanently closed is I would like people to be
+able to look at those from a nostalgic point of view"; migration `20261025_directory_review.sql`). Every listing has four
+outcomes, all through `ve_listing_set_state` (Depot > **Directory review**, `/admin/depot/directory-review`, `ve-outreach`
+`listing_state`; the listing editor's Hold for review and Remove buttons): **on the Directory** (status approved), **On hold for
+review** (status `pending`, `details.review` with the reasons), **Removed** (status `rejected` with `details.removed_*`: off
+everywhere, not under Closed, never deleted, put back from the Removed list) and **Permanently closed** (kept under Type > Closed,
+for memory). Never use Permanently closed just to take a listing down. Red flags (`ve_directory_review_flags()`): Google says it
+is closed, the monthly check-up's closed or quiet flag, no socials, no hours, no street, no website, a website that does not
+open (a site that only blocks our scanner does not count). The strong ones (Google says permanently closed, the check-up flag, or
+no socials with no hours or no working website) are held every night by `ve_directory_auto_hold()` (cron
+`ve-directory-auto-hold`, 08:30 UTC), never a claimed or owned listing; one Sean puts back stays off the list for 90 days
+(`details.review_ok_until`). Off the Directory also takes it off the email list (`trg_ve_outreach_listing_hidden`).
+
 On a city hub the banner bar's crumb is a community picker (All cities, then each `VE_HUBS` city; Sean, 2026-10-25): a city
 keeps the section you are on, All cities opens `/directory` from the Directory section, else `/communities`.
 

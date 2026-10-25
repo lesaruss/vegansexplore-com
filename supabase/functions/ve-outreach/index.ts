@@ -29,6 +29,11 @@
 //                                         under the Directory's Closed filter, never in All) and the business leaves
 //                                         the email list
 //   listing_logo_letter { contact_id }    the logo is set aside (details.logo_unverified) and the letter shows instead
+//   Directory review (Sean, 2026-10-25; migration 20261025_directory_review.sql, Depot > Directory review):
+//   review_list                        held (On hold for review), flagged (red flags, still live), removed and recently closed
+//   review_get     { listing_id }      one listing: what it shows, its red flags, the latest check-up, its notes
+//   listing_state  { listing_id, state: live|hold|removed|closed, note? }  ve_listing_set_state: back on the Directory, on
+//                                      hold, removed (never deleted, not under Closed) or permanently closed (kept under Closed)
 //
 // Cron (x-cron-secret, ve-outreach-send every 10 minutes), or the admin token:
 //   tick   reads what businesses did (ve_outreach_sync), then sends what ve_outreach_due() returns: approved send days
@@ -401,7 +406,7 @@ Deno.serve(async (req) => {
       }
     }
     if (!me) {
-      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner', 'listing_edits', 'add_people', 'templates'];
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner', 'listing_edits', 'add_people', 'templates', 'review_list', 'review_get'];
       const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
@@ -616,6 +621,46 @@ Deno.serve(async (req) => {
         await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'status', detail: { status: 'held', why: 'closed', by: me } });
       }
       return json({ ok: true, notes });
+    }
+
+    // ---- Directory review ----
+    if (action === 'review_list') {
+      const COLS = 'id,slug,name,category,address_city,address_state,logo_url,website,instagram,status,business_status,claim_status,details,updated_at';
+      const pick = (l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city, state: l.address_state,
+        logo_url: l.logo_url, website: l.website, instagram: l.instagram, review: l.details?.review || null,
+        removed: l.details?.removed_at ? { at: l.details.removed_at, by: l.details.removed_by, reason: l.details.removed_reason } : null,
+        closed: l.details?.closed_at ? { at: l.details.closed_at, by: l.details.closed_by } : null, updated_at: l.updated_at });
+      const [held, removed, closed, flags] = await Promise.all([
+        db.from('listings').select(COLS).eq('status', 'pending').not('details->review', 'is', null).order('updated_at', { ascending: false }).limit(500),
+        db.from('listings').select(COLS).eq('status', 'rejected').not('details->removed_at', 'is', null).order('updated_at', { ascending: false }).limit(300),
+        db.from('listings').select(COLS).eq('status', 'approved').eq('business_status', 'CLOSED_PERMANENTLY').order('updated_at', { ascending: false }).limit(300),
+        db.rpc('ve_directory_review_flags'),
+      ]);
+      return json({ ok: true, held: (held.data || []).map(pick), removed: (removed.data || []).map(pick), closed: (closed.data || []).map(pick),
+        flagged: flags.data || [] });
+    }
+    if (action === 'review_get') {
+      if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
+      const { data: l } = await db.from('listings').select('id,slug,name,category,tagline,description,address_street,address_city,address_state,address_zip,phone,website,instagram,facebook,tiktok,google_hours_json,google_place_id,logo_url,status,business_status,claim_status,vegan_status,vote_count,voter_count,details,updated_at').eq('id', body.listing_id).maybeSingle();
+      if (!l) return json({ error: 'not_found' }, 404);
+      const [{ data: a }, { data: flags }, { count: menu }] = await Promise.all([
+        db.from('ve_audits').select('id,created_at,closure_level,closure_signals,facts').eq('listing_id', l.id).eq('status', 'done').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        db.rpc('ve_directory_review_flags'),
+        db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id),
+      ]);
+      const f = (flags || []).find((x: any) => x.listing_id === l.id);
+      const g = a?.facts?.google || {};
+      return json({ ok: true, listing: l, flags: f?.flags || l.details?.review?.reasons || [], menu_items: menu || 0,
+        checkup: a ? { id: a.id, at: a.created_at, level: a.closure_level, signals: a.closure_signals || [], google: { status: g.status || null, maps: g.maps || null,
+          address: g.address || null, rating: g.rating || null, reviews: g.reviews || null, hours: g.hours || null }, website_error: a.facts?.website?.error || null } : null });
+    }
+    if (action === 'listing_state') {
+      if (!me || !isId(body.listing_id) || !['live', 'hold', 'removed', 'closed'].includes(body.state)) return json({ error: 'admins_only' }, 403);
+      const { data, error } = await db.rpc('ve_listing_set_state', { p_listing: body.listing_id, p_state: body.state, p_by: me,
+        p_note: clean(body.note, 1000) || null, p_reasons: body.state === 'hold' ? ['Held by hand'] : null });
+      if (error) return json({ error: error.message }, 400);
+      if (!data?.ok) return json({ error: data?.why || 'failed' }, 400);
+      return json({ ok: true, state: body.state });
     }
 
     if (action === 'listing_edits') {
