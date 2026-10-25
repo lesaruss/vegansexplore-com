@@ -149,6 +149,31 @@ function buildPointsReceiptEmail(points: number, balance: number): string {
 </html>`
 }
 
+// Thank-you for a contribution from a member who already holds the Passport (the dashboard's Contribute).
+// It adds no points (Sean, 2026-10-25), so the email names the amount and what it helps build.
+function buildContributionThanksEmail(amountCents: number): string {
+  const dollars = (amountCents / 100).toLocaleString('en-US', { minimumFractionDigits: amountCents % 100 ? 2 : 0 })
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f5f7f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:32px 16px;">
+  <tr><td align="center">
+    <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">
+      <tr><td style="background:#1a1a1a;padding:28px 32px;"><span style="color:#3A9B3E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span></td></tr>
+      <tr><td style="padding:32px;">
+        <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">Thank you for your contribution</h1>
+        <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#444;">Your $${dollars} helps us build faster: Community Nights, events, and support for local Vegan businesses and organizations. It is a contribution to our community, not a tax-deductible donation.</p>
+        <a href="https://vegansexplore.com/dashboard" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Back to your dashboard</a>
+      </td></tr>
+      <tr><td style="background:#f9f9f9;padding:14px 32px;border-top:1px solid #eee;"><p style="margin:0;font-size:11px;color:#aaa;">VEGANS EXPLORE &nbsp;|&nbsp; vegansexplore.com</p></td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`
+}
+
 // Branded receipt for the Passport, used by the $11 one-time join (entry_contribution) and the
 // legacy monthly subscription's signup and renewals. Sean, 2026-10-25: the Passport comes with a
 // Guide credit, not points; points come from Bounties, competitions and what members do on the site.
@@ -534,9 +559,9 @@ Deno.serve(async (req: Request) => {
     // --- VE Passport $11/month subscription branch (ve-passport-checkout sessions carry this metadata) ---
     // Added 2026-08-17 (Logan) per the locked exploration-universal-points-ladder
     // ($11/month Passport tier) and V's request to surface it on Vegans Explore.
-    // Mirrors GeekFon's $11/mo = 1,100 Points pattern. Marks the member as an
-    // active Passport subscriber and credits the first month's Points immediately;
-    // renewals are credited by the invoice.payment_succeeded branch below.
+    // Marks the member as an active Passport subscriber. Since 2026-10-25 (Sean) it adds no
+    // points; renewals are handled by the invoice.payment_succeeded branch below. No monthly
+    // Passport is offered any more; this stays for a legacy subscription.
     if (session.metadata?.type === 'passport_subscription') {
       const memberId = session.metadata.member_id
       const customerId = session.customer as string
@@ -579,8 +604,7 @@ Deno.serve(async (req: Request) => {
       }
 
       // Sean, 2026-10-25: no points with the Passport. Its Guide credit comes from ve_passport_credit.
-      const result = null
-      console.log('Passport subscription activated:', memberId, subscriptionId, result)
+      console.log('Passport subscription activated:', memberId, subscriptionId)
 
       try {
         const { data: member } = await supabase.from('members').select('email').eq('id', memberId).maybeSingle()
@@ -906,13 +930,8 @@ Deno.serve(async (req: Request) => {
 
     // --- VE entry contribution branch (ve-entry-checkout sessions carry this metadata) ---
     // Added 2026-09-17 (Logan) for the pay-or-pledge gate: the one-time,
-    // any-amount path to the same 'active' membership_status the $11/month
-    // Passport subscription grants above. Credits points at the locked
-    // Founders-pledge rate ($1 = 100 points, canon-ve-founders-pledge-points-
-    // 2026-08-29) so a $5 contribution behaves identically to a $5 Founders
-    // pledge -- amount_cents and points happen to be numerically equal at
-    // that rate (500 cents = 500 points), which is why no separate
-    // dollars-to-points conversion is done here.
+    // any-amount path to an 'active' membership_status (the $11 Passport).
+    // It credited points at $1 = 100 until Sean, 2026-10-25; it now adds none.
     if (session.metadata?.type === 'entry_contribution') {
       const memberId = session.metadata.member_id
       const points = parseInt(session.metadata.amount_cents || '0', 10)
@@ -942,26 +961,14 @@ Deno.serve(async (req: Request) => {
       }
 
       // Sean, 2026-10-25: joining (the $11, one time) is the Passport and comes with 1 Guide credit
-      // (trg_ve_founding_credit grants it as membership_status turns active), never points. Points come
-      // from Bounties, competitions and community activity. A later contribution by an active member
-      // (the dashboard's Contribute, the Guide chat's Add points) still becomes points at $1 = 100.
-      let result: { balance?: number } | null = null
-      if (repeat) {
-        const { data, error: creditError } = await supabase.rpc('credit_points_purchase', {
-          p_member_id: memberId,
-          p_amount: points,
-          p_stripe_session_id: session.id,
-          p_package: 'entry_contribution',
-        })
-        if (creditError) console.error('credit_points_purchase (entry_contribution) error:', creditError)
-        result = data
-      }
-
-      console.log('Entry contribution activated membership:', memberId, points, result)
+      // (trg_ve_founding_credit grants it as membership_status turns active). Money never becomes points,
+      // on joining or on a later contribution: points are earned (Bounties, competitions, community
+      // activity), and extra Guide credits are $11 each (ve-guide-unlock buy_credits).
+      console.log('Entry contribution activated membership:', memberId, points)
 
       try {
         const { data: member } = await supabase.from('members').select('email').eq('id', memberId).maybeSingle()
-        if (member?.email && (!repeat || result?.balance != null)) {
+        if (member?.email) {
           await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -972,7 +979,7 @@ Deno.serve(async (req: Request) => {
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
               subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Passport is active - your first Guide is on us',
-              html: repeat ? buildPointsReceiptEmail(points, result!.balance!) : buildPassportReceiptEmail({ renewal: false })
+              html: repeat ? buildContributionThanksEmail(points) : buildPassportReceiptEmail({ renewal: false })
             })
           })
         }
@@ -1387,9 +1394,8 @@ Deno.serve(async (req: Request) => {
   // Added 2026-08-17 (Logan). Only the recurring renewal invoices matter here --
   // the very first invoice on a new subscription is already covered by the
   // checkout.session.completed branch above, so billing_reason is checked to
-  // avoid double-crediting month 1. credit_points_purchase is idempotent on
-  // (ref_id, reason), so even a duplicate webhook delivery for the same invoice
-  // is safe to replay.
+  // avoid double-handling month 1. Since 2026-10-25 a renewal adds no points:
+  // it only sends the receipt.
   if (event.type === 'invoice.payment_succeeded') {
     const invoice = event.data.object as Stripe.Invoice
     if (invoice.billing_reason === 'subscription_cycle' && invoice.subscription) {

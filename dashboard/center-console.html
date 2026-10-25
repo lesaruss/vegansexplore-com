@@ -162,6 +162,7 @@
   .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
   .dash-contribute{margin-top:8px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;border-radius:999px;border:1.5px solid #2d7d31;background:#fff;color:#1f5f22;cursor:pointer;}
   .dash-contribute:hover{background:#EAF7EA;}
+  #dash-credits{margin-right:6px;}
   .dash-contribute-note{font-size:13px;font-weight:700;color:#1f5f22;margin-top:6px;}
   .dash-cm-back{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;}
   .dash-cm-back[hidden]{display:none;}
@@ -672,7 +673,9 @@
         <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
         <!-- Contribute any time (Sean, 2026-10-04, playbook record 499aaebc): every active member,
              paid or on us, can give again whenever they want. Same open contribution as /welcome
-             (ve-entry-checkout, $11 suggested, $1 = 100 points). A contribution, never a donation. -->
+             (ve-entry-checkout, $11 suggested). A contribution, never a donation, and since 2026-10-25 it
+             adds no points. Guide credits are $11 each (Sean, 2026-10-25), ve-guide-unlock buy_credits. -->
+        <button type="button" class="dash-contribute" id="dash-credits" hidden>Buy Guide credits</button>
         <button type="button" class="dash-contribute" id="dash-contribute" hidden>Contribute</button>
         <!-- Your City pill (2026-09-07, Logan, Sean direction): opens a
              plain city switcher, not a join/leave picker -- Sean,
@@ -3751,13 +3754,21 @@
     if (!btn) return;
     var real = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : member;
     btn.hidden = !(member && member.membership_status === 'active' && real && !window.VE_PREVIEW);
+    var cb = document.getElementById('dash-credits');
+    if (cb) cb.hidden = btn.hidden;
     if (btn._wired) return;
     btn._wired = true;
     btn.addEventListener('click', openContribute);
+    if (cb) cb.addEventListener('click', openCredits);
     var q = new URLSearchParams(location.search);
+    if (q.get('credits') === 'bought' || q.get('credits') === 'cancelled' || q.get('credits') === 'unpaid') {
+      showContributeNote(q.get('credits') === 'bought' ? 'Thank you. Your Guide credits are in: open any Guide to use one.' : 'No charge was made. You can buy Guide credits any time.');
+      q.delete('credits');
+      history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash);
+    }
     if (q.get('activate') === 'success' || q.get('activate') === 'cancelled') {
       var ok = q.get('activate') === 'success';
-      showContributeNote(ok ? 'Thank you. Your contribution came through, and your points land in a minute.' : 'No charge was made. You can contribute any time.');
+      showContributeNote(ok ? 'Thank you. Your contribution came through.' : 'No charge was made. You can contribute any time.');
       q.delete('activate');
       history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash);
     }
@@ -3776,7 +3787,7 @@
       m.id = 'dash-contribute-modal'; m.className = 'dash-cm-back'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'dash-cm-title');
       m.innerHTML = '<div class="dash-cm-box"><button type="button" class="dash-cm-x" aria-label="Close">&times;</button>' +
         '<h2 id="dash-cm-title">Contribute</h2>' +
-        '<p class="dash-cm-text">Help us build faster, any time. Every dollar becomes 100 points. It&rsquo;s a contribution to our community, not a tax-deductible donation.</p>' +
+        '<p class="dash-cm-text">Help us build faster, any time. It&rsquo;s a contribution to our community, not a tax-deductible donation. Points come from taking part, and Guide credits are $11 each.</p>' +
         '<div class="dash-cm-amounts" role="group" aria-label="Choose an amount">' +
         [11, 25, 50, 100].map(function (a, i) { return '<button type="button" data-amt="' + a + '" aria-pressed="' + (i === 0) + '">$' + a + '</button>'; }).join('') + '</div>' +
         '<label class="dash-cm-label" for="dash-cm-other">Or another amount ($11 or more)</label><input id="dash-cm-other" type="number" min="11" max="1000" step="1" inputmode="numeric" placeholder="11">' +
@@ -3812,6 +3823,47 @@
     }
     m.hidden = false; document.body.style.overflow = 'hidden';
     var first = m.querySelector('[data-amt]'); if (first) first.focus();
+  }
+
+  // Guide credits, $11 each (Sean, 2026-10-25: "easier than remember something costs 10,000 points"). One to three
+  // at a time; a paid credit is never lost to the cap of 3 (ve_credit_purchase_paid). Back here with ?credits=bought.
+  function openCredits() {
+    var m = document.getElementById('dash-credits-modal');
+    if (!m) {
+      m = document.createElement('div');
+      m.id = 'dash-credits-modal'; m.className = 'dash-cm-back'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'dash-cr-title');
+      m.innerHTML = '<div class="dash-cm-box"><button type="button" class="dash-cm-x" aria-label="Close">&times;</button>' +
+        '<h2 id="dash-cr-title">Guide credits</h2>' +
+        '<p class="dash-cm-text">One credit unlocks any Guide, and it is yours to keep. $11 each.</p>' +
+        '<div class="dash-cm-amounts" role="group" aria-label="How many credits" style="grid-template-columns:repeat(3,1fr)">' +
+        [1, 2, 3].map(function (n, i) { return '<button type="button" data-qty="' + n + '" aria-pressed="' + (i === 0) + '">' + n + '</button>'; }).join('') + '</div>' +
+        '<button type="button" class="dash-cm-go" id="dash-cr-go">Buy 1 credit, $11</button><p class="dash-cm-err" id="dash-cr-err" role="alert"></p></div>';
+      document.body.appendChild(m);
+      var qty = 1, go = m.querySelector('#dash-cr-go'), err = m.querySelector('#dash-cr-err');
+      function setQty(n) { qty = n; go.textContent = 'Buy ' + n + ' credit' + (n > 1 ? 's' : '') + ', $' + (n * 11); }
+      m.querySelectorAll('[data-qty]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          m.querySelectorAll('[data-qty]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+          setQty(Number(b.getAttribute('data-qty')));
+        });
+      });
+      function close() { m.hidden = true; document.body.style.overflow = ''; }
+      m.querySelector('.dash-cm-x').addEventListener('click', close);
+      m.addEventListener('click', function (e) { if (e.target === m) close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !m.hidden) close(); });
+      go.addEventListener('click', function () {
+        err.textContent = ''; go.disabled = true; go.textContent = 'Opening checkout...';
+        fetch(SUPABASE_URL + '/functions/v1/ve-guide-unlock?action=buy_credits', { method: 'POST', headers: { apikey: ANON_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: VEAuth.getToken(), quantity: qty, return_url: 'https://vegansexplore.com/dashboard' }) })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d && d.url) { (window.top || window).location.href = d.url; return; }
+            go.disabled = false; setQty(qty); err.textContent = (d && d.message) || 'That did not open. Try again in a minute.';
+          }).catch(function () { go.disabled = false; setQty(qty); err.textContent = 'That did not open. Check your connection and try again.'; });
+      });
+    }
+    m.hidden = false; document.body.style.overflow = 'hidden';
+    var first = m.querySelector('[data-qty]'); if (first) first.focus();
   }
 
   // "Have a Question" dock item (2026-09-09, Sean, Fieldy 08:53 UTC). Drives

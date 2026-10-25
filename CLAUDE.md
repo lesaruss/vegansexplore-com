@@ -822,10 +822,15 @@ are earned (Bounties, competitions and campaigns, community and site activity), 
 members buy what they want: Guides, merchandise, event tickets. Businesses come in at the same $11 and get advertising,
 sponsorships and marketing services only for members. No monthly Passport is offered (the old $11 a month / $111 a year
 subscription had no subscribers on 2026-10-25; if one ever renews, `ve-stripe-webhook` grants no points and
-`ve_passport_credit` still gives its monthly credit). `ve-stripe-webhook` `entry_contribution` adds no points on the joining
-payment (`trg_ve_founding_credit` grants the credit); a later contribution by an active member (dashboard Contribute, the
-Guide chat's Add points) still becomes points at $1 = 100.
-Credits roll over up to **3**. **Points** are for talking to the Guides (text chat 4 points a message; voice by the minute
+`ve_passport_credit` still gives its monthly credit). **Money buys credits, never points** (Sean, 2026-10-25: "they can
+purchase credits at $11 each. This will make it easier than remember something costs 10,000 points. Points can come from a
+growing list of activities designed to keep the community active"): **Guide credits are $11 each** (dashboard > Buy Guide
+credits, 1 to 3 at a time; `ve-guide-unlock` `buy_credits`, Stripe metadata type `ve_credit_purchase`, confirmed by
+`ve_credit_purchase_paid`, which is never held back by the cap: a paid credit is never lost; migration
+`20261025_ve_credit_purchase.sql`). `ve-stripe-webhook` `entry_contribution` adds no points, on joining
+(`trg_ve_founding_credit` grants the credit) or on a later Contribute, which is support only. The Guide chat, low on points,
+points to Bounties and the Board instead of a top-up.
+Credits we give (Founding, Passport month) roll over up to **3**. **Points** are for talking to the Guides (text chat 4 points a message; voice by the minute
 once voice exists) and about **2,500 points become 1 credit**. **Free Guides** (the Welcome Guide, the Partner Guide) are
 open to everyone: they are the enrollment tool.
 
@@ -1148,10 +1153,9 @@ pocket for anything." Most questions repeat, so most answers cost nothing.
   remembers the latest 20 messages of a conversation. `guide_chat_send` returns `memory {used, max}`;
   from 16 the chat warns and offers Start a new conversation (a new `conversation` id, its own room).
   Under 3 messages of allowance left, it says so; quick answers and Ask a person stay free.
-- Add points in the chat (Sean, 2026-10-06): when the allowance is low or used up, the chat offers
-  $11 / $25 / $50 (every dollar becomes 100 points) through `ve-entry-checkout`, the same contribution as
-  the dashboard's Contribute. Checkout opens in the whole window (Stripe cannot run in a frame) and comes
-  back to `/dashboard/guide?topup=success`, where the Guide says thank you.
+- Low on points (Sean, 2026-10-25, replacing the 2026-10-06 Add points top-up): money no longer buys points, so
+  when points run low the chat offers See the Bounties and the Board (`topUpBox` in `guide.html`), opened in the
+  whole window. Guide credits ($11 each) are bought from the dashboard.
 - Migration `20261006_guide_kb.sql`. Brand-ready (`brand_slug`), so other brands can reuse it.
 
 ## Guide art: mid shot in squares, full body only at 9:16 (Sean, 2026-10-05)
