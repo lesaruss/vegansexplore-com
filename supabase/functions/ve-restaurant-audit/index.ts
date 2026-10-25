@@ -34,7 +34,8 @@
 // POST { action: 'sweep', limit? }                 cron or ops -> { started: [slugs] }   the monthly check-up, a few at a time,
 //      and the 90-day re-checks of paid audits
 // POST { action: 'essentials', limit? }            cron or ops -> { checked, results: [{slug, filled, notes}] }  fills a food place's
-//      empty hours, street, Google place, website and socials from Google and its own home page (20261025_restaurant_essentials.sql)
+//      empty hours, street, Google place, website, map coordinates and socials from Google and its own home page
+//      (20261025_restaurant_essentials.sql; coordinates for member check-ins, 20261025_ve_checkins.sql)
 // POST { action: 'flags', city? }                  super admin -> { flags: [...] }       open closure flags, Google-closed first
 // POST { action: 'flag_review', audit_id, decision: still_open|closed, note? }  super admin  (closing goes through
 //      ve-outreach listing_closed; this records the decision so the flag comes down)
@@ -171,7 +172,7 @@ const realSocial = (u: string, kind: 'ig' | 'fb' | 'tt') => {
 // ---- Google Places (New) ----
 const PLACE_FIELDS = ['id', 'displayName', 'formattedAddress', 'addressComponents', 'nationalPhoneNumber', 'websiteUri', 'businessStatus',
   'primaryType', 'primaryTypeDisplayName', 'types', 'rating', 'userRatingCount', 'regularOpeningHours.weekdayDescriptions', 'photos.name',
-  'reviews.publishTime', 'editorialSummary', 'googleMapsUri'];
+  'reviews.publishTime', 'editorialSummary', 'googleMapsUri', 'location'];
 async function google(placeId: string, name: string, city: string, street = '') {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key) return { error: 'no key' };
@@ -996,7 +997,7 @@ Deno.serve(async (req) => {
     const { data: due } = await db.rpc('ve_listing_essentials_due', { p_limit: Math.max(1, Math.min(+body.limit || 15, 40)) });
     const out: any[] = [];
     const run = async (d: any) => {
-      const { data: l } = await db.from('listings').select('id, name, google_place_id, google_hours_json, address_street, address_city, address_state, address_zip, website, instagram, facebook, tiktok').eq('id', d.id).single();
+      const { data: l } = await db.from('listings').select('id, name, google_place_id, google_hours_json, address_street, address_city, address_state, address_zip, website, instagram, facebook, tiktok, latitude, longitude').eq('id', d.id).single();
       const patch: Record<string, unknown> = {}, edits: any[] = [], notes: string[] = [];
       const set = (col: string, field: string, v: unknown, by: string) => { patch[col] = v; edits.push({ listing_id: l.id, field, old_value: (l as any)[col] ?? null, new_value: v, meta: { by } }); };
       const g = await google(l.google_place_id || '', l.name, l.address_city || '', l.address_street || '');
@@ -1023,6 +1024,10 @@ Deno.serve(async (req) => {
           const street = [comp('street_number'), comp('route', true)].filter(Boolean).join(' ');
           if (!l.address_street && street && sameCity) { set('address_street', 'address_street', street, 'google'); if (!l.address_zip && comp('postal_code')) set('address_zip', 'address_zip', comp('postal_code'), 'google'); }
           if (!l.website && p.websiteUri) set('website', 'website', normUrl(p.websiteUri), 'google');
+          // Where it is on the map, for member check-ins (migration 20261025_ve_checkins.sql).
+          if ((l.latitude == null || l.longitude == null) && typeof p.location?.latitude === 'number' && typeof p.location?.longitude === 'number') {
+            set('latitude', 'latitude', p.location.latitude, 'google'); set('longitude', 'longitude', p.location.longitude, 'google');
+          }
           if (p.businessStatus && p.businessStatus !== 'OPERATIONAL') notes.push('Google says ' + p.businessStatus);
         } else notes.push(`Google's match is elsewhere: ${p.formattedAddress || ''}`);
       } else notes.push((g as any).error ? 'Google: ' + (g as any).error : 'Not found on Google');

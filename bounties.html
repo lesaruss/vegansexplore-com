@@ -118,6 +118,7 @@
     .filters button[aria-pressed="true"] { background: var(--ve-green-deep); border-color: var(--ve-green-deep); color: #fff; }
     /* Jobs: one row per job, the same columns and the same View button on every row. */
     .jrows { display: grid; margin-top: 14px; border: 1.5px solid var(--ve-border); border-radius: 14px; padding: 4px 18px; background: #fff; }
+    .jrow.ck-row { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) 90px; }
     .jrow { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr) 90px; gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--ve-border); font-size: 14px; color: inherit; text-decoration: none; }
     .jrow.jhead { border-top: none; padding: 12px 0 6px; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-60); }
     a.jrow:hover .btn { border-color: var(--ve-text-60); }
@@ -218,6 +219,7 @@
       <div class="empty gate" id="gate" hidden><strong>Bounties are for members.</strong>Sign in to see the campaigns in your city, take on a job and earn points. New here? Join Vegans Explore first; claiming a job takes a Passport.<br><button type="button" class="btn btn-primary" id="gate-signin">Sign in or join</button></div>
       <nav class="crumbs" id="crumbs" aria-label="Breadcrumb" hidden></nav>
       <div id="list"></div>
+      <div id="checkins" hidden></div>
       <div id="campaign" hidden>
         <div class="cintro">
           <div class="ctext"><span class="ckind-tag" id="c-kind"></span><h2 id="c-title"></h2><p class="cwhen" id="c-meta"></p><p class="cstory" id="c-story"></p><div id="c-note"></div></div>
@@ -405,9 +407,10 @@
     // one campaign, one job.
     function setView(v) {
       state.view = v;
-      $('list').hidden = v !== 'list'; $('campaign').hidden = v !== 'campaign'; $('job').hidden = v !== 'job'; $('how').hidden = v !== 'list';
+      $('list').hidden = v !== 'list'; $('campaign').hidden = v !== 'campaign'; $('job').hidden = v !== 'job'; $('how').hidden = v !== 'list'; $('checkins').hidden = v !== 'checkins';
       document.body.classList.toggle('sub-view', v !== 'list');
       var c = campOf(state.cslug), items = [['Bounties', href('', '')]];
+      if (v === 'checkins') items.push([CHECKINS.title, '']);
       if (v !== 'list' && c) items.push([c.title, href(c.slug, '')]);
       if (v === 'job' && state.current) items.push([short(state.current.title), '']);
       $('crumbs').hidden = v === 'list';
@@ -416,19 +419,48 @@
       }).join('<span class="sep" aria-hidden="true">&rsaquo;</span>');
     }
     function route() {
+      if (state.cslug === CHECKINS.slug) { renderCheckins(); return; }
       if (state.jobId) { open(state.jobId); return; }
       var c = state.cslug && campOf(state.cslug);
       if (c) renderCampaign(c); else { state.cslug = ''; renderList(); }
       tick();
     }
+    // The always-open bounty (Sean, 2026-10-25: "an ongoing bounty that stays there that people can claim"): check in at the
+    // places you visit, 10 points each. It sits first in every city and opens its own view; the check-in itself happens on the
+    // place's Directory page (ve-checkin).
+    var CHECKINS = { slug: 'check-ins', title: 'Check in where you go' };
+    function checkinCard() {
+      return '<a class="ccard" href="' + esc(href(CHECKINS.slug, '')) + '" data-slug="' + CHECKINS.slug + '"><span class="ccover k-ongoing"><span class="ckind">Always open</span></span>' +
+        '<span class="cbody"><span class="ctitle">' + CHECKINS.title + '</span><span class="cmeta">Anytime, at any listed place</span>' +
+        '<span class="cjobs">10 points a visit &middot; up to 50 a day</span></span></a>';
+    }
+    function renderCheckins() {
+      setView('checkins');
+      var dir = '/directory?city=' + encodeURIComponent(state.city || '');
+      $('checkins').innerHTML = '<div style="margin-top:16px"><p class="ckind" style="position:static;display:inline-block;margin-bottom:8px">Always open</p><h2 style="font-size:24px;font-weight:900;margin:0 0 8px">' + CHECKINS.title + '</h2>' +
+        '<p style="max-width:860px">Every time you visit a place in the Directory, check in from its page and earn <strong>10 points</strong>. Your check-in tells everyone the place is open and busy, and it shows us who really visits, so when a business runs a deal or a giveaway with us, the members who go there hear about it first.</p>' +
+        '<ol style="margin:14px 0 14px 20px;max-width:860px;line-height:1.7"><li>When you are there, open the place in the Directory.</li><li>Tap <strong>Check in</strong> and let your phone share your location. We only use it to confirm you are at the place.</li><li>That is it: 10 points, once a day for each place, on up to 5 places a day.</li></ol>' +
+        '<p><a class="btn btn-primary" href="' + esc(dir) + '">Open the Directory</a></p></div>' +
+        '<section style="margin-top:22px"><h3 style="font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px">Your check-ins</h3><div id="ck-mine"><p class="empty">Loading...</p></div></section>';
+      var t = token();
+      if (!t) { $('ck-mine').innerHTML = '<p class="empty">Sign in to see your check-ins.</p>'; return; }
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-checkin', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify({ action: 'mine' }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          var rows = (d && d.checkins) || [];
+          $('ck-mine').innerHTML = rows.length
+            ? '<p style="margin:0 0 8px"><strong>' + rows.length + '</strong> ' + (rows.length === 1 ? 'check-in' : 'check-ins') + ', <strong>' + (d.points || 0).toLocaleString() + '</strong> points so far.</p><div class="jlist">' +
+              rows.slice(0, 50).map(function (r) { return '<a class="jrow ck-row" href="/directory/' + encodeURIComponent(r.slug || '') + '"><span class="jname"><b>' + esc(r.name || 'A place') + '</b><small>' + esc(r.city || '') + '</small></span><span data-l="When">' + esc(new Date(r.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</span><span data-l="Points">' + (r.points ? '+' + r.points : '0') + '</span></a>'; }).join('') + '</div>'
+            : '<p class="empty">No check-ins yet. Your first one is 10 points.</p>';
+        }).catch(function () { $('ck-mine').innerHTML = '<p class="empty">Could not load your check-ins.</p>'; });
+    }
     function renderList() {
       setView('list');
-      if (!state.campaigns.length) { $('list').innerHTML = '<div class="empty"><strong>No campaigns here right now.</strong>New ones go up when your city needs creators: big events, restaurant nights and more. Check the Daily Pulse for what is coming.</div>'; return; }
+      if (!state.campaigns.length) { $('list').innerHTML = '<div class="cgrid">' + checkinCard() + '</div><div class="empty"><strong>No campaigns here right now.</strong>New ones go up when your city needs creators: big events, restaurant nights and more. Check the Daily Pulse for what is coming.</div>'; return; }
       var mineN = state.campaigns.filter(function (c) { return c.mine; }).length;
       if (!mineN) state.cfilter = 'all';
       var list = state.cfilter === 'mine' ? state.campaigns.filter(function (c) { return c.mine; }) : state.campaigns;
       $('list').innerHTML = (mineN ? '<div class="filters" role="group" aria-label="Show"><button type="button" data-cf="all" aria-pressed="' + (state.cfilter !== 'mine') + '">All campaigns (' + state.campaigns.length + ')</button><button type="button" data-cf="mine" aria-pressed="' + (state.cfilter === 'mine') + '">You are in (' + mineN + ')</button></div>' : '') +
-        '<div class="cgrid">' + list.map(function (c) {
+        '<div class="cgrid">' + (state.cfilter === 'mine' ? '' : checkinCard()) + list.map(function (c) {
         var cover = c.cover_url ? ' style="background-image:linear-gradient(to top,rgba(0,0,0,0.25),rgba(0,0,0,0)),url(\'' + esc(c.cover_url).replace(/'/g, '%27') + '\')"' : '';
         return '<a class="ccard" href="' + esc(href(c.slug, '')) + '" data-slug="' + esc(c.slug) + '"><span class="ccover k-' + esc(c.kind) + '"' + cover + '><span class="ckind">' + esc(KIND[c.kind] || 'Campaign') + '</span></span>' +
           '<span class="cbody"><span class="ctitle">' + esc(c.title) + '</span>' +

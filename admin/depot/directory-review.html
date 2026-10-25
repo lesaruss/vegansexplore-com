@@ -191,6 +191,8 @@
             '</dl>' +
             (ck ? '<h2 style="margin-top:16px">Last check-up, ' + esc(pdate(ck.at)) + '</h2><p class="hint">Google: ' + esc(g.address || 'no match') + (g.status && g.status !== 'OPERATIONAL' ? ' &middot; <strong>' + esc(g.status.replace(/_/g, ' ').toLowerCase()) + '</strong>' : '') + (g.rating ? ' &middot; ' + g.rating + ' stars, ' + (g.reviews || 0) + ' reviews' : '') + '</p>' +
               (ck.signals.length ? '<ul class="notes">' + ck.signals.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') : '<p class="hint" style="margin-top:12px">No monthly check-up yet.</p>') +
+            // Members who checked in there (ve_checkins): proof it is open, and who visits.
+            '<h2 style="margin-top:16px">Member check-ins</h2>' + ((d.checkins || []).length ? '<ul class="notes">' + d.checkins.map(function (c) { return '<li><strong>' + esc(pdate(c.at)) + '</strong>, ' + esc(c.name) + '</li>'; }).join('') + '</ul>' : '<p class="hint">Nobody has checked in yet.</p>') +
             (notes.length ? '<h2 style="margin-top:16px">Notes</h2><ul class="notes">' + notes.slice().reverse().slice(0, 12).map(function (n) { return '<li><strong>' + esc(pdate(n.at)) + ', ' + esc(n.by || '') + ':</strong> ' + esc(n.text) + '</li>'; }).join('') + '</ul>' : '') +
             '</section></div>';
           Array.prototype.forEach.call(V().querySelectorAll('[data-state]'), function (b) {
