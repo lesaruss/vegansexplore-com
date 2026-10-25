@@ -525,7 +525,10 @@ keeps the section you are on, All cities opens `/directory` from the Directory s
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
 and folds it to one bar (city picker, Visit the community, Expand) after the first click into a section; Collapse/Expand is
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
-listing counts in a region by its address or the chapters it serves (`data-hubs`). A sub-section can have its own filters
+listing counts in a region by its address or the chapters it serves (`data-hubs`). **Food Brands sit under Products**, beside
+Brands (Sean, 2026-10-25: "we're showing all brands versus mixing them, the national with the local"), so Food, which opens on
+All, is only the local places (`CAT_MAP`, `CAT_CONFIG`, the listing editor's `SECTIONS` and Directory review's `KINDS`; a Food
+Brand's breadcrumb goes to `?tab=products`). A sub-section can have its own filters
 (`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make, never by city (`listings.product_kinds`:
 dairy, meat, egg, seafood, snacks, drinks, protein, pantry, baked, frozen; set in the listing editor; migration
 `20261024_listing_product_kinds.sql`), **Markets** by national chain (tag `ve-grocery-store`) or local market.
