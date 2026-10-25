@@ -440,8 +440,8 @@ Directory, Communities and Community Board cards, the $11 Founding Membership, a
 Log In stays in the nav. Explore cards use our illustrations, never photos.
 
 `/directory` is open to everyone again (it was locked to super admins and redirected to
-`/communities`). Anyone can browse, search and see vote counts; voting asks a signed-out visitor to
-sign in and then offers the $11 Founding Membership (`/public/ve-votes.js`).
+`/communities`). Anyone can browse, search and see vote counts; a signed-out Vote goes to the Passport Guide at `/passport`
+(`/public/ve-votes.js`; since 2026-10-25 `/passport` is that page, no longer a redirect to `/welcome`).
 
 The Directory runs on `/public/ve-region-directory.js`, the same component as the city hubs (rebuilt
 2026-10-04 after an audit; the old page had its own out-of-date sections, region list and copy). One
