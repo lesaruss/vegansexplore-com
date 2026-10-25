@@ -1352,11 +1352,12 @@ function renderSidebar(l){
         '</div>'+
       '</div>'+
       '<div style="display:flex;gap:6px;margin-bottom:8px">'+
-        '<input class="donate-input" id="donate-amount" type="number" min="1" placeholder="Donate Points" style="font-size:11px;padding:8px 10px"/>'+
-        '<button class="donate-btn" id="donate-btn" style="font-size:9px;padding:8px 10px;white-space:nowrap">Send</button>'+
+        '<input class="donate-input" id="donate-amount" type="number" min="1" max="10000" step="1" placeholder="Give points" aria-label="Points to give" style="font-size:11px;padding:8px 10px"/>'+
+        '<button class="donate-btn" id="donate-btn" style="font-size:9px;padding:8px 10px;white-space:nowrap">Give</button>'+
       '</div>'+
-      '<div class="donate-confirm" id="donate-confirm">Points sent!</div>'+
-      '<p class="member-note">Every vote earns +1 Point. <a href="/welcome#join">Get your Passport, $11 one time</a>, to donate.</p>'+
+      '<div class="donate-confirm" id="donate-confirm" role="status"></div>'+
+      // Points are a boost, never money (Sean locked 2026-10-25, playbook ve-pricing-points-passport): ve-votes contribute.
+      '<p class="member-note">Members give points to the places they love as a boost. It never lowers your level. <a href="/passport">Get your Passport, $11 one time</a>.</p>'+
     '</div>';
 
   // Unlock card — only for unclaimed listings; claimed listings use real tabs
@@ -2998,8 +2999,8 @@ function renderListing(l){
   // was previously purely decorative, a local DOM increment with nothing
   // persisted). Once per day per member (listing_daily_votes, unique on
   // member_id+vote_date); requireActiveMembership so Guest Passport holders
-  // can vote too, this is their one interaction. Not logged in -> sign-in
-  // modal; not yet past the pay-or-pledge gate -> VEAuth.call() auto-shows
+  // can vote too, this is their one interaction. Not logged in -> /passport (since
+  // 2026-10-25, the Passport Guide); not yet past the pay-or-pledge gate -> VEAuth.call() auto-shows
   // the activate modal on the payment_required response.
   (function(){
     var voteBtn = document.getElementById('vote-btn');
@@ -3028,7 +3029,7 @@ function renderListing(l){
     voteBtn.addEventListener('click', function(){
       if(voteBtn.dataset.voted && VEVotes.tooSoon(voteBtn.dataset.next)){ VEVotes.notice(VEVotes.onceMessage(voteBtn.dataset.next)); return; }
       if(!VEAuth.isLoggedIn()){
-        VEAuth.showAuthModal('Sign in to vote for this business.', function(){ window.location.reload(); });
+        window.location.href = '/passport?from=vote&back=' + encodeURIComponent(location.pathname + location.search + location.hash);
         return;
       }
       voteBtn.disabled = true;
@@ -3132,28 +3133,39 @@ function renderListing(l){
     });
   })();
 
-  // Donate Points button
+  // Give points (Sean locked 2026-10-25, playbook ve-pricing-points-passport): a member gives spendable points to a
+  // business or nonprofit as a boost, never money (ve-votes contribute; ve_listing_contribute moves both balances and
+  // leaves lifetime points, and so the level, alone). The total shown is what the community gave (ve-votes points).
+  var VOTES_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
   var donateBtn = document.getElementById('donate-btn');
+  var cPoints = document.getElementById('community-lesars');
+  if(cPoints && l.id && !DEMO){
+    fetch(VOTES_FN, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'points', listing_id: l.id }) })
+      .then(function(r){ return r.json(); }).then(function(d){ if(d && typeof d.points === 'number') cPoints.textContent = d.points.toLocaleString(); }).catch(function(){});
+  }
   if(donateBtn){
     donateBtn.addEventListener('click', function(){
       var input = document.getElementById('donate-amount');
-      var amt = parseInt(input ? input.value : 0) || 0;
-      if(amt < 1){ input && (input.style.borderColor='#c62828'); return; }
-      input.style.borderColor = '';
-      var cl = document.getElementById('community-lesars');
-      if(cl){ cl.textContent = (parseInt(cl.textContent)||0) + amt; }
       var confirm = document.getElementById('donate-confirm');
-      if(confirm){ confirm.style.display = 'block'; }
-      input.value = '';
-      donateBtn.disabled = true;
-      donateBtn.textContent = 'Sent!';
-      donateBtn.style.background = '#2d7d31';
-      setTimeout(function(){
-        donateBtn.disabled = false;
-        donateBtn.textContent = 'Donate Points';
-        donateBtn.style.background = '';
-        if(confirm) confirm.style.display = 'none';
-      }, 3000);
+      function say(t, bad){ if(!confirm) return; confirm.textContent = t; confirm.style.color = bad ? '#c62828' : ''; confirm.style.display = 'block'; }
+      if(!window.VEAuth || !VEAuth.isLoggedIn()){ location.href = '/passport'; return; }
+      var amt = parseInt(input ? input.value : 0, 10) || 0;
+      if(amt < 1 || amt > 10000){ if(input) input.style.borderColor = '#c62828'; say('Give from 1 to 10,000 points.', true); return; }
+      input.style.borderColor = '';
+      donateBtn.disabled = true; donateBtn.textContent = 'Giving...';
+      fetch(VOTES_FN, { method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + VEAuth.getToken()}, body: JSON.stringify({ action:'contribute', listing_id: l.id, points: amt }) })
+        .then(function(r){ return r.json(); }).then(function(d){
+          donateBtn.disabled = false; donateBtn.textContent = 'Give';
+          if(d && d.ok){
+            input.value = '';
+            if(cPoints && typeof d.listing_total === 'number') cPoints.textContent = d.listing_total.toLocaleString();
+            say('Thank you. You gave ' + amt.toLocaleString() + ' points' + (typeof d.balance === 'number' ? '; you have ' + d.balance.toLocaleString() + ' left.' : '.'));
+            return;
+          }
+          if(d && d.error === 'payment_required'){ say('Get your Passport, $11 one time, to give points.', true); if(VEAuth.showActivateModal) VEAuth.showActivateModal(d.message); return; }
+          if(d && d.error === 'not_enough_points'){ say('You have ' + Number(d.balance || 0).toLocaleString() + ' points to give.', true); return; }
+          say('That did not go through, and no points were given. Try again in a minute.', true);
+        }).catch(function(){ donateBtn.disabled = false; donateBtn.textContent = 'Give'; say('That did not go through, and no points were given. Try again in a minute.', true); });
     });
   }
 }

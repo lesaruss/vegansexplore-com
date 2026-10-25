@@ -17,7 +17,7 @@
  *   ads       their ads with impressions and clicks, and the spots they can ask about (ad_request)
  *   opps      our campaigns (I'm interested: partner_interest) and the open roles in their city
  *   audit     their audits and the $49 / $149 audit, through the Restaurant Guide (restaurants and other food places)
- *   guides    the Guides: theirs, free, or $11 or 1 credit
+ *   guides    the Guides: theirs, free, or $11 or 1,100 points
  *   plan      Founding Member and the Partner plan
  *
  *   VEPartnerDash.mount(el, listing, { editPage: function (step) {} })
@@ -306,7 +306,7 @@
         // Every Guide's banner (LOCKED 2026-10-10) lives under media/guides/banners/<slug>.jpg.
         var pic = g.cover_url || SB + '/storage/v1/object/public/vegan-media/media/guides/banners/' + g.slug + '.jpg';
         return '<div class="vpd-card"><div style="aspect-ratio:16/10;border-radius:8px;background:#f3f3f3 center/cover no-repeat;background-image:url(\'' + esc(pic) + '\')"></div>' +
-          '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : '$11 or 1 credit') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
+          '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : '$11 or 1,100 points') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
           '<a class="vpd-btn sm' + (g.owned ? '' : ' o') + '" href="/guides/' + esc(g.slug) + '">' + (g.owned ? 'Open it' : 'See it') + '</a></div>';
       }).join('') + '</div>';
     }
