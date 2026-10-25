@@ -99,11 +99,11 @@ function showActivateModal(message){
   if(typeof global.VE_ACTIVATE_HANDLER==='function'){global.VE_ACTIVATE_HANDLER(message);return;}
   if(!_amInited){_buildActivateModal();_amInited=true;}
   var msg=document.getElementById('ve-pm-msg');
-  if(msg)msg.textContent=message||'One $11 contribution, one time. It supports what we are building and unlocks the full community.';
+  if(msg)msg.textContent=message||'$11, one time. Your Passport and the full community.';
   var e=document.getElementById('ve-pm-error');if(e){e.textContent='';e.style.display='none';}
-  // A page can set window.VE_FOUNDING_ONLY (the Community Manager page does, Sean
-  // 2026-09-26: "keep it simple, $11 one time"): benefits shown, Passport hidden.
-  var fo=!!window.VE_FOUNDING_ONLY;
+  // Sean, 2026-10-25: the $11, one time, is the way in everywhere, and it is the Passport. No monthly
+  // Passport upsell here; members buy Guides, merchandise and event tickets after. Benefits always shown.
+  var fo=true;
   var pp=document.getElementById('ve-pm-passport');if(pp)pp.style.display=fo?'none':'';
   var bl=document.getElementById('ve-pm-benefits');if(bl)bl.style.display=fo?'':'none';
   var modal=document.getElementById('ve-pledge-modal');
@@ -149,13 +149,14 @@ el.innerHTML=
 '<div id="ve-pm-box">'+
 '<button id="ve-pm-close" aria-label="Close">x</button>'+
 '<h2 id="ve-pm-title">Become a Founding Member</h2>'+
-'<p id="ve-pm-msg">One $11 contribution, one time. It supports what we are building and unlocks the full community.</p>'+
+'<p id="ve-pm-msg">$11, one time. Your Passport and the full community.</p>'+
 '<div id="ve-pm-error" role="alert"></div>'+
 '<ul id="ve-pm-benefits" style="display:none;">'+
-'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Support your local Vegan community</span></li>'+
-'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Help us provide marketing and operational support to local Vegan businesses, nonprofits and community organizations</span></li>'+
-'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Invest in the growth of Community Nights, events and the platform</span></li>'+
-'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlock the full community and your member dashboard</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your Passport, yours to keep</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Vote for your favorite listings in the Directory</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your dashboard, to build your Vegan world with our tools</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Guides, merchandise and event tickets, for members</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>For businesses: advertising, sponsorships and marketing services, only for members</span></li>'+
 '</ul>'+
 '<button type="button" id="ve-pm-founding-btn">Founding Membership - $11 one time</button>'+
 '<p id="ve-pm-hint">One time. It never renews.</p>'+
