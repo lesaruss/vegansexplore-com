@@ -123,3 +123,7 @@ language sql stable security definer set search_path to 'public' as $$
   order by 12 desc, cardinality(f.fl) desc, f.name;
 $$;
 revoke all on function public.ve_directory_review_flags() from public, anon, authenticated;
+
+-- The points ledger takes a fixed list of reasons; check-ins are one now (found by a rolled-back test of ve_checkin_save).
+alter table public.points_ledger drop constraint points_ledger_reason_check;
+alter table public.points_ledger add constraint points_ledger_reason_check check (reason = any (array['signup', 'referral', 'daily_login', 'listing_like', 'listing_create', 'discussion_post', 'discussion_reply', 'discussion_vote', 'event_attend', 'profile_complete', 'profile_field', 'admin_adjust', 'purchase', 'redemption', 'vote_given', 'vote_received', 'vote_refunded', 'featured_purchase', 'transfer_sent', 'transfer_received', 'store_purchase', 'store_refund', 'points_purchase', 'bartering', 'boost_purchase', 'seed_initial', 'Welcome bonus + early activity', 'campaign_back', 'questionnaire', 'wizard_redeem', 've_hunt_complete', 've_hunt_anchor', 'guide_redeem', 'cycle_grant', 'bounty', 'comp_membership', 'recipe_approved', 'guide_chat_spend', 'credit_exchange', 'checkin']::text[])) not valid;
