@@ -4,537 +4,372 @@
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegans Explore Passport</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Passport — Vegans Explore</title>
+  <meta name="description" content="The Vegans Explore Passport: $11 one time, with 1,100 welcome points. Vote for the places you love, join your city's community, unlock Guides and build your Vegan world.">
+  <link rel="canonical" href="https://vegansexplore.com/passport">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Vegans Explore">
+  <meta property="og:title" content="The Vegans Explore Passport">
+  <meta property="og:description" content="$11 one time, with 1,100 welcome points: enough for your first Guide.">
+  <meta property="og:url" content="https://vegansexplore.com/passport">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #b8ddb9;
-      --ve-orange: #F69820; --ve-orange-dark: #d4800f; --ve-border: rgba(0,0,0,0.09);
-      --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
-    }
-    html { scroll-behavior: smooth; }
-    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-    .page { width: 100%;  margin: 0 auto; background: #fff; }
-    .nav-cta { background: var(--ve-orange); color: #fff !important; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 4px; text-decoration: none; transition: background 0.15s; white-space: nowrap; }
-    .nav-cta:hover { background: var(--ve-orange-dark) !important; }
-    .passport-hero {
-    position: relative;
-    min-height: 580px;
-    display: flex;
-    align-items: center;
-    background-image: url('/passport/banner.jpg');
-    background-size: cover;
-    background-position: center 30%;
-    background-repeat: no-repeat;
-    overflow: hidden;
-    }
-    .passport-hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(0,0,0,0.98) 0%,
-      rgba(0,0,0,0.92) 28%,
-      rgba(0,0,0,0.58) 48%,
-      rgba(0,0,0,0.18) 62%,
-      transparent 78%
-    );
-    }
-    .passport-hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%);
-    }
-    .hero-inner {
-    position: relative;
-    z-index: 2;
-    padding: 88px 56px 72px;
-    
-    
-    max-width: 520px;
-    }
-    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-    .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
-    .passport-hero h1 { font-size: clamp(26px, 3.8vw, 46px); font-weight: 900; line-height: 1.04; letter-spacing: -0.02em; text-transform: uppercase; color: #fff; margin-bottom: 18px; }
-    .passport-hero h1 em { color: var(--ve-green); font-style: normal; }
-    .hero-sub { font-size: 14px;  font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.65); max-width: 520px; }
-    .pricing-section { padding: 72px 56px; background: #fff; }
-    .section-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-    .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
-    .pricing-section h2 { font-size: clamp(26px, 3.5vw, 42px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.08; margin-bottom: 10px; }
-    .pricing-section .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65;  margin-bottom: 48px; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 64px; }
-    .pricing-card { border-radius: 12px; padding: 32px 28px; display: flex; flex-direction: column; border: 2px solid var(--ve-border); background: #fff; position: relative; }
-    .pricing-card.featured { background: #1A1A1A; border-color: #1A1A1A; }
-    .pricing-badge { position: absolute; top: -12px; left: 24px; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 3px 14px; border-radius: 20px; background: var(--ve-orange); color: #fff; }
-    .pricing-tier-label { font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 20px; }
-    .pricing-card.featured .pricing-tier-label { color: rgba(255,255,255,0.45); }
-    .pricing-price-row { display: flex; align-items: baseline; gap: 5px; margin-bottom: 4px; }
-    .pricing-amount { font-size: 52px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; color: var(--ve-text); }
-    .pricing-card.featured .pricing-amount { color: #fff; }
-    .pricing-period { font-size: 14px; font-weight: 500; color: var(--ve-text-50); }
-    .pricing-card.featured .pricing-period { color: rgba(255,255,255,0.4); }
-    .pricing-note { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 24px; }
-    .pricing-card.featured .pricing-note { color: var(--ve-orange); }
-    .pricing-divider { height: 1px; background: var(--ve-border); margin-bottom: 24px; }
-    .pricing-card.featured .pricing-divider { background: rgba(255,255,255,0.1); }
-    .pricing-title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; color: var(--ve-text); }
-    .pricing-card.featured .pricing-title { color: #fff; }
-    .pricing-desc { font-size: 13px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; margin-bottom: 24px; }
-    .pricing-card.featured .pricing-desc { color: rgba(255,255,255,0.65);  }
-    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; flex: 1; }
-    .pricing-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; font-weight: 500; color: var(--ve-text-75); line-height: 1.45; }
-    .pricing-features li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ve-green); flex-shrink: 0; margin-top: 5px; }
-    .pricing-card.featured .pricing-features li { color: rgba(255,255,255,0.8); }
-    .btn-pricing { display: block; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 20px; border-radius: 4px; text-decoration: none; transition: all 0.15s; border: 2px solid var(--ve-green); color: var(--ve-green); background: transparent; }
-    .btn-pricing:hover { background: var(--ve-green); color: #fff; }
-    .btn-pricing.primary { background: var(--ve-orange); border-color: var(--ve-orange); color: #fff; }
-    .btn-pricing.primary:hover { background: var(--ve-orange-dark); border-color: var(--ve-orange-dark); }
-    .compare-label { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 16px; }
-    .compare-table { width: 100%; border-collapse: collapse; border: 1px solid var(--ve-border); border-radius: 10px; overflow: hidden; }
-    .compare-table th { padding: 14px 20px; text-align: left; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; background: #f9f9f9; border-bottom: 1px solid var(--ve-border); }
-    .compare-table th:not(:first-child) { text-align: center; }
-    .compare-table td { padding: 13px 20px; font-size: 12px; font-weight: 500; color: var(--ve-text-75); border-bottom: 1px solid var(--ve-border); }
-    .compare-table tr:last-child td { border-bottom: none; }
-    .compare-table td:not(:first-child) { text-align: center; }
-    .compare-table td:first-child { font-weight: 600; color: var(--ve-text); }
-    .compare-table tr:nth-child(even) td { background: #fafafa; }
-    .check { color: var(--ve-green); font-size: 16px; font-weight: 900; }
-    .dash { color: var(--ve-text-30); font-size: 14px; }
-    .compare-table .col-featured { background: rgba(246,152,32,0.06) !important; }
-    th.col-featured { background: rgba(246,152,32,0.1) !important; }
-    .benefits-section { padding: 72px 56px; background: var(--ve-green-light); border-top: 1px solid var(--ve-green-mid); border-bottom: 1px solid var(--ve-green-mid); }
-    .benefits-section h2 { font-size: clamp(26px, 3.5vw, 42px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 10px; }
-    .benefits-section .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65;  margin-bottom: 48px; }
-    .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .benefit-card { background: #fff; border: 1px solid var(--ve-green-mid); border-radius: 12px; padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; }
-    .benefit-icon { width: 40px; height: 40px; border-radius: 9px; background: var(--ve-green-light); border: 1px solid var(--ve-green-mid); display: flex; align-items: center; justify-content: center; }
-    .benefit-icon svg { width: 18px; height: 18px; fill: var(--ve-green); }
-    .benefit-title { font-size: 13px; font-weight: 800; color: var(--ve-text); }
-    .benefit-desc { font-size: 12px; font-weight: 400; color: var(--ve-text-75); line-height: 1.6; }
-    .guides-section { padding: 72px 56px; background: #fff; }
-    .guides-section h2 { font-size: clamp(26px, 3.5vw, 42px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 10px; }
-    .guides-section .section-sub { font-size: 15px; font-weight: 400; color: var(--ve-text-75); line-height: 1.65;  margin-bottom: 52px; }
-    .guides-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
-    .flip-card { perspective: 1000px; height: 360px; cursor: pointer; }
-    .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; }
-    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; overflow: hidden; }
-    .flip-card-front { background: #fff; border: 1px solid var(--ve-border); box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
-    .flip-front-img { flex: 1; overflow: hidden; }
-    .flip-front-img img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
-    .flip-front-body { padding: 14px 18px; background: #fff; flex-shrink: 0; }
-    .flip-front-name { font-size: 16px; font-weight: 900; color: #1A1A1A; margin-bottom: 3px; }
-    .flip-front-role { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
-    .flip-card-back { transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px 20px; }
-    .flip-back-overlay { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.55) 100%); }
-    .flip-back-content { position: relative; z-index: 1; }
-    .flip-back-path-label { font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.65);  }
-    .flip-back-path-name { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #fff; line-height: 1.15; margin-bottom: 10px; }
-    .flip-back-guide { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
-    .flip-back-btn { display: block; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px; text-decoration: none; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); color: #fff; transition: all 0.15s; }
-    .flip-back-btn:hover { background: rgba(255,255,255,0.3); }
-    .flip-hint { text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-30); margin-top: 20px; }
-    .cta-section { background: #1A1A1A; }
-    .cta-inner {  margin: 0 auto; padding: 80px 56px; text-align: center; }
-    .cta-section .section-eyebrow { justify-content: center; color: var(--ve-green); }
-    .cta-section .section-eyebrow::before { display: none; }
-    .cta-section h2 { font-size: clamp(30px, 5vw, 56px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 16px; }
-    .cta-section h2 em { color: var(--ve-green); font-style: normal; }
-    .cta-section p { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.6); line-height: 1.65;  margin: 0 auto 36px; }
-    .btn-orange-lg { background: var(--ve-orange); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 16px 36px; border-radius: 4px; text-decoration: none; transition: background 0.15s; display: inline-block; }
-    .btn-orange-lg:hover { background: var(--ve-orange-dark); }
-    .cta-section .cta-fine { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin: 25px auto 0; }
-    @media (max-width: 768px) {
-      .passport-hero { background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; min-height: 480px; align-items: flex-end; }
-      .passport-hero::before { background: rgba(0,0,0,0.32); }
-      .passport-hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px;  border: 1px solid rgba(255,255,255,0.09); 
-    max-width: 520px;
-    }
-      .pricing-section { padding: 52px 32px; 
-    }
-      .pricing-grid { grid-template-columns: 1fr; gap: 16px; 
-    }
-      .benefits-section { padding: 52px 32px; 
-    }
-      .benefits-grid { grid-template-columns: 1fr 1fr; 
-    }
-      .guides-section { padding: 52px 32px; 
-    }
-      .guides-grid { grid-template-columns: repeat(3, 1fr); 
-    }
-      .cta-inner { padding: 56px 32px; 
-    }
-    
-    }
-    @media (max-width: 480px) {
-      .passport-hero { min-height: 480px; align-items: flex-end; background-image: url('/passport/ve-passport-mobile.png'); background-position: center center; }
-      .passport-hero::before { background: rgba(0,0,0,0.32); }
-      .passport-hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px;  border: 1px solid rgba(255,255,255,0.10); 
-    max-width: 520px;
-    }
-      .pricing-section { padding: 44px 20px; 
-    }
-      .pricing-grid { grid-template-columns: 1fr; gap: 14px; 
-    }
-      .benefits-section { padding: 44px 20px; 
-    }
-      .benefits-grid { grid-template-columns: 1fr; 
-    }
-      .guides-section { padding: 44px 20px; 
-    }
-      .guides-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; 
-    }
-      .flip-card { height: 300px; 
-    }
-      .cta-inner { padding: 52px 20px; 
-    }
-    
-    }
+    /* The Passport Guide (Sean locked 2026-10-25, playbook ve-pricing-points-passport): "a Passport squeeze page built
+       like the Dairy Guide with Guide pictures and no talking avatars". The Dairy Guide's layout: the tabs are the tour,
+       a Guide stays on the right of every tab with their words in a bubble, the content sits to the left on a clean white
+       page, Back / N of M / Next, and on desktop the nav, the Guide and the footer share one screen. No clips: each tab
+       shows a Guide's picture (VEGuideArt square). A signed-out Vote anywhere on the site lands here (?from=vote&back=).
+       $11, one time: the Founding Membership checkout (VEAuth.showActivateModal), which comes with 1,100 welcome points. */
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    *,*::before,*::after{box-sizing:border-box;}
 
-    /* Founder section */
-    .founder-section { background: #111; border-top: 1px solid rgba(255,255,255,0.06); }
-    .founder-inner {  margin: 0 auto; padding: 80px 56px; display: flex; gap: 48px; align-items: center; }
-    .founder-img-col { flex: 0 0 280px; }
-    @keyframes founder-pulse { 0%, 100% { box-shadow: 0 0 0 0px rgba(246,152,32,0); } 50% { box-shadow: 0 0 22px 6px rgba(246,152,32,0.45); } }
-    .founder-img-wrap { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid var(--ve-orange); animation: founder-pulse 2.8s ease-in-out infinite; }
-    .founder-img-wrap img { width: 100%; height: 440px; object-fit: cover; object-position: center top; display: block; }
-    .founder-img-badge { position: absolute; bottom: 16px; left: 16px; background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 10px 14px; }
-    .founder-img-badge-name { font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 0.04em; }
-    .founder-img-badge-role { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ve-green); margin-top: 2px; }
-    .founder-copy { flex: 1; }
-    .founder-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-    .founder-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
-    .founder-copy h2 { font-size: clamp(26px, 3.5vw, 44px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.06; color: #fff; margin-bottom: 20px; }
-    .founder-copy h2 em { color: var(--ve-green); font-style: normal; }
-    .founder-copy p { font-size: 15px; font-weight: 400; color: rgba(255,255,255,0.65); line-height: 1.75; margin-bottom: 14px;  }
-    @media (max-width: 768px) {
-      .founder-inner { flex-direction: column; padding: 52px 32px; gap: 36px; }
-      .founder-img-col { flex: none; width: 100%; }
-      .founder-img-wrap img { height: 320px; }
+    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/new-york/banner.jpg') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
+    .dg-top-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .dg-brand-mark{flex:1 1 280px;min-width:0;}
+    .dg-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
+    .dg-title{font-size:clamp(22px,2.6vw,32px);font-weight:900;line-height:1.05;letter-spacing:-0.01em;margin:4px 0 0;text-transform:uppercase;}
+    .dg-joinbox{flex:0 0 auto;display:flex;align-items:center;gap:14px;background:rgba(6,14,8,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(197,242,199,0.28);border-radius:12px;padding:9px 10px 9px 16px;}
+    .dg-jb-price{display:flex;align-items:center;gap:8px;white-space:nowrap;height:42px;}
+    .dg-jb-price b{font-size:38px;font-weight:900;line-height:42px;letter-spacing:-0.01em;}
+    .dg-jb-price small{display:block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;line-height:16px;}
+    .dg-jb-in{font-size:12px;line-height:1.35;color:#e6f4e7;}
+    .dg-jb-in a{color:#c5f2c7;font-weight:800;white-space:nowrap;}
+    .dg-menu{display:flex;gap:2px;margin-top:12px;overflow:hidden;}
+    .dg-menu a{display:flex;align-items:center;gap:6px;padding:11px 14px 12px;color:#e6f4e7;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border-radius:6px 6px 0 0;white-space:nowrap;}
+    .dg-menu a:hover{background:rgba(255,255,255,0.08);color:#fff;}
+    .dg-menu a[aria-current="page"]{background:#fff;color:var(--g);}
+    .dg-menu .dg-join-tab{margin-left:auto;color:#c5f2c7;}
+    .dg-menu-select{display:none;}
+
+    .dg-app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;padding:20px 40px 20px;align-items:stretch;}
+    .dg-main{min-width:0;}
+    .dg-rail{display:flex;flex-direction:column;gap:10px;min-height:0;}
+    .dg-guide{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:1/1;}
+    .dg-guide.dg-shift{animation:dgShift .55s ease-out;}
+    @keyframes dgShift{from{transform:scale(1.03) translateX(6px);opacity:.75}to{transform:none;opacity:1}}
+    @media (prefers-reduced-motion:reduce){.dg-guide.dg-shift{animation:none;}}
+    .dg-guide-name{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink55);}
+    .dg-guide-name b{color:var(--ink);}
+    .dg-bubble{background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55;color:#123d18;}
+    .dg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;color:var(--ink55);}
+    .dg-tour.dg-tour-m{display:none;}
+    .dg-tnav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
+    .dg-tnav.next{border-color:var(--g);background:var(--g);color:#fff;}
+    .dg-tnav[aria-disabled="true"]{opacity:0.35;pointer-events:none;}
+
+    .dg-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
+    .dg-h1{font-size:clamp(22px,2.2vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-0.01em;line-height:1.15;}
+    .dg-lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 16px;max-width:860px;}
+    .dg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:11px 20px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;background:#22C55E;color:#03170a;white-space:nowrap;}
+    .dg-btn:hover{background:#4ade80;}
+    .dg-btn[disabled]{opacity:.6;cursor:default;}
+    .dg-btn.dg-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px;}
+    .dg-note{border:1px solid var(--warmline);background:var(--warm);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.5;margin:0 0 16px;}
+    .dg-note b{font-weight:900;}
+    .dg-status{display:block;font-size:13px;font-weight:700;color:#8a5a00;margin-top:10px;}
+    .dg-status:empty{display:none;}
+
+    .dg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;}
+    .dg-tile{display:flex;gap:14px;align-items:center;padding:16px;border-radius:14px;text-decoration:none;color:var(--ink);background:var(--gl);border:1px solid var(--gm);transition:transform .12s,box-shadow .12s;}
+    .dg-tile:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.08);}
+    .dg-tile .dg-ic{flex:0 0 48px;height:48px;border-radius:12px;background:#fff center/cover no-repeat;}
+    .dg-tile b{display:block;font-size:14.5px;font-weight:900;}
+    .dg-tile span{display:block;font-size:12.5px;color:var(--ink75);line-height:1.45;margin-top:2px;}
+    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
+    .dg-card b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
+    .dg-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0;}
+    .dg-card .dg-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);margin-bottom:8px;}
+    .dg-card .dg-tag.soon{background:#f2f4f2;color:var(--ink55);}
+    .dg-card a{color:var(--g);font-weight:800;}
+    .dg-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px;}
+    .dg-level{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:16px;text-align:center;}
+    .dg-level b{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
+    .dg-level strong{display:block;font-size:28px;font-weight:900;margin:4px 0 2px;}
+    .dg-level span{font-size:12.5px;color:var(--ink75);}
+
+    .dg-access{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start;}
+    .dg-access ul{margin:0 0 6px;padding:0;list-style:none;}
+    .dg-access li{font-size:14.5px;line-height:1.5;color:var(--ink75);padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);}
+    .dg-access li::before{content:'';position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:#22C55E;}
+    .dg-access li b{color:var(--ink);}
+    .dg-pricebox{border:1px solid var(--gm);background:var(--gl);border-radius:16px;padding:24px;text-align:center;}
+    .dg-pricebox .dg-big{font-size:52px;font-weight:900;line-height:1;}
+    .dg-pricebox .dg-big small{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
+    .dg-pricebox p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:10px 0 16px;}
+    .dg-pricebox .dg-btn{width:100%;}
+    .dg-pricebox a{color:var(--g);font-weight:800;}
+
+    @media (min-width:901px) and (min-height:600px){
+      html.dg-fit,html.dg-fit body{overflow:hidden;height:100%;}
+      html.dg-fit .page-frame{display:flex;flex-direction:column;height:100vh;}
+      html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
+      html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
+      html.dg-fit .dg-rail{overflow:hidden;}
+      html.dg-fit .dg-guide{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
+      html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
-    @media (max-width: 480px) {
-      .founder-inner { padding: 44px 20px; }
-      .founder-img-wrap img { height: 260px; }
+    @media (max-width:1280px){.dg-menu a{padding:10px 10px 11px;font-size:10.5px;letter-spacing:.05em;}}
+    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-access{grid-template-columns:minmax(0,1fr);}.dg-menu{display:none;}
+      .dg-menu-select{display:block;margin:12px 0 14px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}}
+    @media (max-width:900px){
+      .dg-top{padding:16px 16px 2px;}
+      .dg-joinbox{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px 14px;padding:12px 12px 12px 14px;}
+      .dg-joinbox .dg-btn{width:100%;}
+      .dg-joinbox .dg-jb-in{grid-column:1 / -1;text-align:center;border-top:1px solid rgba(197,242,199,0.2);padding-top:9px;}
+      .dg-joinbox .dg-jb-in br{display:none;}
+      .dg-joinbox .dg-jb-in a{margin-left:4px;}
+      .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
+      .dg-rail{order:-1;}
+      .dg-guide{aspect-ratio:1/1;width:100%;max-width:280px;margin:0 auto;}
+      .dg-rail .dg-tour{display:none;}
+      .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
+      .dg-levels{grid-template-columns:minmax(0,1fr);}
     }
-  
+    @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
   </style>
 </head>
 <body>
-<div class="page">
-  <script src="/public/nav.js"></script>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
 
+<header class="dg-top">
+  <div class="dg-top-row">
+    <div class="dg-brand-mark">
+      <div class="dg-eyebrow">Vegans Explore Guides</div>
+      <h1 class="dg-title">The Passport</h1>
+    </div>
+    <div class="dg-joinbox" id="pgJoinbox">
+      <div class="dg-jb-price"><b>$11</b><small>one time<br>purchase</small></div>
+      <button type="button" class="dg-btn" data-join>Get your Passport</button>
+      <div class="dg-jb-in" id="pgSignin">Already a member?<br><a href="#" data-signin>Sign in</a></div>
+    </div>
+  </div>
+  <nav class="dg-menu" id="dgMenu" aria-label="Passport Guide tabs"></nav>
+  <select class="dg-menu-select" id="dgMenuSelect" aria-label="Passport Guide tabs"></select>
+</header>
 
-  <section class="passport-hero" aria-labelledby="hero-heading">
-    <div class="hero-inner">
-    <div class="hero-eyebrow" aria-hidden="true">Vegans Explore Passport</div>
-    <h1 id="hero-heading">Join Once.<br>Points To <em>Unlock</em>.</h1>
-    <p class="hero-sub">The $11 Founding Membership, one time, plants your permanent seat in the most connected Vegan network on the planet. Earn points by being active, or contribute any time to unlock a guide instantly.</p>
-    </div>
-  </section>
-
-  <section class="pricing-section" aria-labelledby="pricing-heading">
-    <div class="section-eyebrow" aria-hidden="true">Pricing</div>
-    <h2 id="pricing-heading">$11 Once.<br>Your Passport.</h2>
-    <p class="section-sub">Looking around is free for everyone. $11, one time, gets you your Passport and your first Guide. Points come from what you do in the community, and after that you buy only what you want.</p>
-    <div class="pricing-grid" role="list">
-      <div class="pricing-card featured" role="listitem" style="background: #1A1A1A; border-color: #1A1A1A;">
-        <div class="pricing-badge" style="background: var(--ve-green);">The way in</div>
-        <div class="pricing-tier-label">Passport</div>
-        <div class="pricing-price-row"><span class="pricing-amount">$11</span><span class="pricing-period"> one time</span></div>
-        <div class="pricing-note" style="color: var(--ve-orange);">Your first Guide comes with it</div>
-        <div class="pricing-divider"></div>
-        <div class="pricing-title">Join the Network</div>
-        <p class="pricing-desc">Your Passport, yours to keep. Vote for your favorite listings in the Directory and build your Vegan world from your dashboard with our tools. It never renews.</p>
-        <ul class="pricing-features" aria-label="Features included">
-          <li>Your Passport, one time</li>
-          <li>One Guide credit: your first Guide, on us</li>
-          <li>Vote for your favorite listings</li>
-          <li>Your dashboard and our tools</li>
-          <li>Community posts and replies</li>
-        </ul>
-        <a href="/welcome#join" class="btn-pricing primary" aria-label="Get your Passport for 11 dollars, one time">Get your Passport</a>
-      </div>
-      <div class="pricing-card" role="listitem">
-        <div class="pricing-tier-label">Earn Points</div>
-        <div class="pricing-price-row"><span class="pricing-amount">Free</span><span class="pricing-period"> + activity</span></div>
-        <div class="pricing-note">Take part, earn more.</div>
-        <div class="pricing-divider"></div>
-        <div class="pricing-title">Points Come From What You Do</div>
-        <p class="pricing-desc">Points come from a growing list of activities: Bounties, competitions and taking part in the community and on the site. Spend them talking with your Guide and supporting businesses, or turn 2,500 into a Guide credit.</p>
-        <ul class="pricing-features" aria-label="Ways to earn">
-          <li>Bounties</li>
-          <li>Competitions and campaigns</li>
-          <li>Voting and community activity</li>
-          <li>Referring new members</li>
-          <li>No limit on how much you can earn</li>
-        </ul>
-        <a href="/dashboard/bounties" class="btn-pricing" aria-label="See the Bounties">See the Bounties</a>
-      </div>
-      <div class="pricing-card" role="listitem">
-        <div class="pricing-tier-label">Then, What You Want</div>
-        <div class="pricing-price-row"><span class="pricing-amount">Shop</span></div>
-        <div class="pricing-note">Only what you choose</div>
-        <div class="pricing-divider"></div>
-        <div class="pricing-title">Guides, Merchandise, Tickets</div>
-        <p class="pricing-desc">Every paid Guide is one Guide credit, and it is yours to keep. Credits are $11 each. Add merchandise and event tickets whenever you like.</p>
-        <ul class="pricing-features" aria-label="What you can buy">
-          <li>Guide credits, $11 each</li>
-          <li>Guides: one credit each, yours to keep</li>
-          <li>Vegans Explore merchandise</li>
-          <li>Event tickets</li>
-        </ul>
-        <a href="/guides" class="btn-pricing" aria-label="Browse the Guides">Browse the Guides</a>
-      </div>
-      <div class="pricing-card" role="listitem">
-        <div class="pricing-tier-label">For Businesses</div>
-        <div class="pricing-price-row"><span class="pricing-amount">$11</span><span class="pricing-period"> one time</span></div>
-        <div class="pricing-note">The same way in</div>
-        <div class="pricing-divider"></div>
-        <div class="pricing-title">Grow With the Community</div>
-        <p class="pricing-desc">Businesses come in at the same $11 and get the advertising, sponsorships and marketing services we offer only to members.</p>
-        <ul class="pricing-features" aria-label="For businesses">
-          <li>Your business dashboard</li>
-          <li>Advertising</li>
-          <li>Sponsorships</li>
-          <li>Marketing services</li>
-        </ul>
-        <a href="/claim" class="btn-pricing" aria-label="Join the Directory">Join the Directory</a>
-      </div>
-    </div>
-    </section>
-
-  <section class="benefits-section" aria-labelledby="benefits-heading">
-    <div class="section-eyebrow" aria-hidden="true">Passport Benefits</div>
-    <h2 id="benefits-heading">What Your Passport Opens.</h2>
-    <p class="section-sub">Passport is your permanent identity in the Vegans Explore network. Your $11, one time, activates it the moment you join.</p>
-    <div class="benefits-grid" role="list">
-      <article class="benefit-card" role="listitem">
-        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
-        <h3 class="benefit-title">Posts and Discussions</h3>
-        <p class="benefit-desc">Join the conversation. Post, reply, and engage with members across your path's community every day.</p>
-      </article>
-      <article class="benefit-card" role="listitem">
-        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
-        <h3 class="benefit-title">Connect Worldwide</h3>
-        <p class="benefit-desc">Find Vegan members, businesses, and communities in cities around the world through the global directory.</p>
-      </article>
-      <article class="benefit-card" role="listitem">
-        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 100 10A5 5 0 0012 2zm0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg></div>
-        <h3 class="benefit-title">Your Member Profile</h3>
-        <p class="benefit-desc">A permanent profile in the network. Your path, your story, your connections, your history, all in one place.</p>
-      </article>
-      <article class="benefit-card" role="listitem">
-        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg></div>
-        <h3 class="benefit-title">Early Access</h3>
-        <p class="benefit-desc">New Guides, new features, new communities. Passport holders are always first in line.</p>
-      </article>
-      <article class="benefit-card" role="listitem">
-        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg></div>
-        <h3 class="benefit-title">Permanent Membership</h3>
-        <p class="benefit-desc">Your Passport does not expire. Once activated, your seat is yours no matter what plan you're on.</p>
-      </article>
-      <article class="benefit-card" role="listitem">
-        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
-        <h3 class="benefit-title">Daily Guide Discuss</h3>
-        <p class="benefit-desc">Your Guide runs a live daily discussion. Passport unlocks your voice. Post replies, ask questions, share your progress.</p>
-      </article>
-    </div>
-  </section>
-
-  <section class="guides-section" aria-labelledby="guides-heading">
-    <div class="section-eyebrow" aria-hidden="true">Your Guide</div>
-    <h2 id="guides-heading">Five Paths.<br>Five Experts.</h2>
-    <p class="section-sub">Each path has a dedicated Guide. Click a card to see the path, then explore.</p>
-    <div class="guides-grid" role="list" aria-label="Guide paths">
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Maya, Pre-Vegan Path Guide. Click to explore." onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom: 3px solid #2d7d31;"><img src="/public/guides/maya.png" alt="Maya, Pre-Vegan Path Guide" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Maya</div><div class="flip-front-role" style="color:#2d7d31;">Pre-Vegan Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#2d7d31;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 01</div>
-              <div class="flip-back-path-name">Pre-Vegan Path</div>
-              <div class="flip-back-guide">Guide: Maya</div>
-              <a href="/guides/ve-path-prevegan" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Explore Path</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Theo, Seasoned Vegan Path Guide. Click to explore." onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom: 3px solid #8B6914;"><img src="/public/guides/theo.png" alt="Theo, Seasoned Vegan Path Guide" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Theo</div><div class="flip-front-role" style="color:#8B6914;">Seasoned Vegan Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#8B6914;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 02</div>
-              <div class="flip-back-path-name">Seasoned Vegan</div>
-              <div class="flip-back-guide">Guide: Theo</div>
-              <a href="/guides/ve-path-seasonedvegan" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Explore Path</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Nori, Entrepreneur Path Guide. Click to explore." onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom: 3px solid #2D5F8A;"><img src="/public/guides/nori.png" alt="Nori, Entrepreneur Path Guide" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Nori</div><div class="flip-front-role" style="color:#2D5F8A;">Entrepreneur Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#2D5F8A;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 03</div>
-              <div class="flip-back-path-name">Entrepreneur</div>
-              <div class="flip-back-guide">Guide: Nori</div>
-              <a href="/guides/ve-path-entrepreneur" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Explore Path</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="Dani, Nonprofit Path Guide. Click to explore." onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom: 3px solid #C4522A;"><img src="/public/guides/dani.png" alt="Dani, Nonprofit Path Guide" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">Dani</div><div class="flip-front-role" style="color:#C4522A;">Nonprofit Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#C4522A;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 04</div>
-              <div class="flip-back-path-name">Nonprofit</div>
-              <div class="flip-back-guide">Guide: Dani</div>
-              <a href="/guides/ve-path-nonprofit" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Explore Path</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flip-card" role="listitem" tabindex="0" aria-label="River, Creator Path Guide. Click to explore." onclick="this.classList.toggle('flipped')" onkeydown="if(event.key==='Enter'||event.key===' ')this.classList.toggle('flipped')">
-        <div class="flip-card-inner">
-          <div class="flip-card-front" aria-hidden="true">
-            <div class="flip-front-img" style="border-bottom: 3px solid #6B35A8;"><img src="/public/guides/river.jpg" alt="River, Creator Path Guide" loading="lazy"></div>
-            <div class="flip-front-body"><div class="flip-front-name">River</div><div class="flip-front-role" style="color:#6B35A8;">Creator Guide</div></div>
-          </div>
-          <div class="flip-card-back" style="background:#6B35A8;" aria-hidden="true">
-            <div class="flip-back-overlay"></div>
-            <div class="flip-back-content">
-              <div class="flip-back-path-label">Path 05</div>
-              <div class="flip-back-path-name">Creator</div>
-              <div class="flip-back-guide">Guide: River</div>
-              <a href="/guides/ve-path-creator" class="flip-back-btn" onclick="event.stopPropagation()" tabindex="0">Explore Path</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <p class="flip-hint" aria-hidden="true">Click a card to flip</p>
-  </section>
-
-  <section class="founder-section" aria-labelledby="founder-heading">
-    <div class="founder-inner">
-    <div class="founder-img-col">
-      <div class="founder-img-wrap">
-        <a href="https://seanarussell.com" target="_blank" rel="noopener" aria-label="Sean A. Russell" tabindex="-1" style="display:block;line-height:0;cursor:pointer;"><img src="/public/founder/sean-hero.jpg" alt="Sean A. Russell, Founder of Vegans Explore" loading="lazy"></a>
-        <div class="founder-img-badge">
-          <div class="founder-img-badge-name">Sean A. Russell</div>
-          <div class="founder-img-badge-role">Founder, Vegans Explore</div>
-        </div>
-      </div>
-    </div>
-    <div class="founder-copy">
-      <div class="founder-eyebrow" aria-hidden="true">From the Founder</div>
-      <h2 id="founder-heading">This World<br>Is <em>Built</em> for You.</h2>
-      <p>Over 10 years building vegan communities. More than 500 events across cities on multiple continents. Thousands of businesses supported. Vegans Explore is the direct result of that work: years of research and real conversations with activists, nonprofit founders, local business owners, content creators, and everyday people making the shift.</p>
-      <p>Each Guide in this platform pulls from Sean's expertise and thousands of hours of interviews and conversations from his long-running podcast network. This is not AI content scraped from a search engine. Every path, every framework, every piece of guidance here is grounded in lived human experience.</p>
-      <p>We built Vegans Explore to drive human-to-human connection. Your Guide is a framework built from real people. The community you are joining is made of real people. The goal is simple: get you connected to the right people faster than you could find them on your own.</p>
-      </div>
-    </div>
-    </div>
-  </section>
-
-  <section class="cta-section" aria-labelledby="cta-heading">
-    <div class="cta-inner">
-    <div class="section-eyebrow">Ready</div>
-    <h2 id="cta-heading">Join Once.<br><em>Take Part.</em></h2>
-    <p>The $11 Founding Membership is one time and never renews. Earn points by being active, or contribute any time to unlock a guide instantly. Every member has a Guide in their corner from day one.</p>
-    <a href="/welcome" class="btn-orange-lg" aria-label="Become a Founding Member">Become a Founding Member - $11</a>
-    <p class="cta-fine">Earn points by taking part. Guide credits are $11 each.</p>
-    </div>
-  </section>
-
-  <script src="/public/footer.js"></script>
+<div class="dg-app">
+  <main class="dg-main" id="dgMain" aria-live="polite"></main>
+  <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
+  <aside class="dg-rail" aria-label="Your Guide">
+    <div class="dg-guide" id="dgGuide" role="img"></div>
+    <div class="dg-guide-name" id="dgGuideName"></div>
+    <div class="dg-bubble" id="dgBubble"></div>
+    <div class="dg-tour" id="dgTour"></div>
+  </aside>
 </div>
 
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-auth.js"></script>
 <script>
 (function () {
-  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  // Each tab: who shows it (a Guide from VE_GUIDE_ART, footer.js), what they say, and what the page holds. Every fact here
+  // is the live site's (CLAUDE.md): prices, points and levels are Sean's lock of 2026-10-25; change them only with canon.
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var GUIDES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani' };
+  var TABS = [
+    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. Your Passport is how you take part in Vegans Explore. Let me show you what it opens, one tab at a time.' },
+    { k: 'places', label: 'Find your places', g: 'river', say: 'The Directory is every Vegan place we know, city by city. With your Passport you vote for the ones you love, once a day each.' },
+    { k: 'community', label: 'Your community', g: 'nori', say: 'Every city has its own hub: the Daily Pulse, events, the Community Board and the members who make it happen.' },
+    { k: 'guides', label: 'Guides', g: 'maya', say: 'Guides are small apps that put our tools together around one topic. Each one is eleven dollars, or 1,100 points, and yours to keep.' },
+    { k: 'points', label: 'Points and levels', g: 'theo', say: 'Points come from taking part. Spend them on Guides or give them to the places you love. Your level comes from everything you have earned.' },
+    { k: 'supports', label: 'What your $11 supports', g: 'dani', say: 'Your eleven dollars is a contribution, not a donation. It keeps the community growing, city by city.' },
+    { k: 'bring', label: 'Bring people in', g: 'river', say: 'The more people who join, the more there is to find. Bring a friend in and you earn points when they join.' },
+    { k: 'business', label: 'For businesses', g: 'liz', say: 'Businesses come in the same way, for the same eleven dollars, and then get what we offer only to members.' },
+    { k: 'join', label: 'Get your Passport', g: 'liz', say: 'Eleven dollars, one time, and it comes with 1,100 welcome points: enough for your first Guide. Come join us!' }
+  ];
+  var main = document.getElementById('dgMain'), menu = document.getElementById('dgMenu'), sel = document.getElementById('dgMenuSelect');
+  var guideEl = document.getElementById('dgGuide'), nameEl = document.getElementById('dgGuideName'), bubble = document.getElementById('dgBubble');
+  var tourEl = document.getElementById('dgTour'), tourM = document.getElementById('dgTourM');
+  var params = new URLSearchParams(location.search);
+  var fromVote = params.get('from') === 'vote';
+  var back = params.get('back') || '';
+  if (!/^\/(?!\/)/.test(back)) back = ''; // only a path on this site
+  var activated = params.get('activate');
+  var cur = 'overview', lastGuide = null;
 
-  var btn = document.getElementById('ve-passport-subscribe-btn');
-  if (!btn) return;
-
-  function startCheckout() {
-    var token = localStorage.getItem('ve_token');
-    var member = null;
-    try { member = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) {}
-
-    if (!token || !member) {
-      if (window.VEAuth && typeof window.VEAuth.showAuthModal === 'function') {
-        window.VEAuth.showAuthModal('Sign in to your Passport to subscribe.', startCheckout);
-      } else {
-        window.location.href = '/join';
-      }
-      return;
-    }
-
-    btn.disabled = true;
-    var originalText = btn.textContent;
-    btn.textContent = 'Redirecting to checkout...';
-
-    fetch(SUPABASE_URL + '/functions/v1/ve-passport-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({
-        success_url: window.location.origin + '/passport?subscribe=success',
-        cancel_url: window.location.origin + '/passport?subscribe=cancelled'
-      })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.url) {
-        window.location.href = d.url;
-      } else {
-        alert('Something went wrong starting checkout. Please try again.');
-        btn.disabled = false;
-        btn.textContent = originalText;
-      }
-    }).catch(function () {
-      alert('Something went wrong starting checkout. Please try again.');
-      btn.disabled = false;
-      btn.textContent = originalText;
-    });
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function art(slug) { return window.VEGuideArt ? VEGuideArt(slug, 'square') : null; }
+  function auth() { return window.VEAuth || null; }
+  function me() { var a = auth(); return a && a.isLoggedIn() ? a.getMember() : null; }
+  function isMember() { var m = me(); return !!(m && m.membership_status === 'active'); }
+  function href(k) { return '#/' + k; }
+  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
+  function head(kicker, h, lede) { return '<div class="dg-k">' + esc(kicker) + '</div><h2 class="dg-h1">' + esc(h) + '</h2>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
+  function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
+  function joinBtns() {
+    if (isMember()) return '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>';
+    return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>Get your Passport, $11</button>' +
+      (me() ? '' : '<a href="#" data-signin style="font-size:13px;font-weight:800;color:var(--g)">Already a member? Sign in</a>') + '</div>';
   }
 
-  btn.addEventListener('click', startCheckout);
+  var VIEWS = {
+    overview: function () {
+      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
+        return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
+      }).join('');
+      return (fromVote ? '<p class="dg-note"><b>Voting is for members.</b> Get your Passport, $11 one time, and vote every day for the places you love. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : '') +
+        head('Vegans Explore Passport', 'Your way into the Vegan world', 'Looking around is free for everyone. The Passport, <b>$11 one time</b>, is how you take part: vote, post, join your city, unlock Guides and build your Vegan world from your dashboard. It comes with <b>1,100 welcome points</b>, enough for your first Guide.') +
+        '<div class="dg-tiles">' + tiles + '</div>' + joinBtns();
+    },
+    places: function () {
+      return head('Find your places', 'The Directory, voted on by members', 'Restaurants, bakeries, markets, food brands, coaches, nonprofits and more, in every city we cover. Anyone can browse and search it. Members decide what rises to the top.') +
+        '<div class="dg-grid">' +
+        card('Vote every day', 'Vote for each place you love once every 24 hours. The votes are real, and every Directory sorts by them.', 'Members') +
+        card('Save your favorites', 'Keep the places you want to try, and come back to them from your dashboard.', 'Members') +
+        card('Give a boost', 'Give some of your points to a business or nonprofit you believe in. It shows on their page, and it never lowers your level.', 'Members') +
+        card('Browse for free', 'Search, filter by city and section, and open any listing. <a href="/directory">Open the Directory</a>.', 'Everyone') +
+        '</div>' + joinBtns();
+    },
+    community: function () {
+      return head('Your community', 'A hub for your city', 'South Florida, Central Florida, Atlanta, the DMV, New York, Philadelphia, Los Angeles and London each have their own community hub.') +
+        '<div class="dg-grid">' +
+        card('The Daily Pulse', 'A topic every morning for your city and one for the country, to read and talk about.', 'Every day') +
+        card('The Community Board', 'Requests and offers, jobs, classifieds, fosters and rescues. Members post and reply.', 'Members post') +
+        card('Events', 'What is happening near you, from community nights to the places opening up.', 'Your city') +
+        card('Bounties', 'Jobs from the campaigns in your city, paid in points.', 'Earn points') +
+        '</div>' + '<p class="dg-lede" style="margin-top:16px">See yours: <a href="/communities" style="color:var(--g);font-weight:800">the communities</a>.</p>' + joinBtns();
+    },
+    guides: function () {
+      return head('Guides', 'Mini apps, one topic each', 'A Guide brings our tools together around one topic, walked through by one of our Guides. Every Guide is <b>$11 or 1,100 points</b>, and yours to keep. Buying one also makes you a member.') +
+        '<div class="dg-grid">' +
+        card('The Vegan Dairy Guide', 'The brands to buy, swaps for every kind of dairy, recipes and cookbooks, with Maya. <a href="/guides/vegan-dairy-guide">Take a look</a>.', 'Live') +
+        card('The Vegan Restaurant Survival Guide', 'A free check of a restaurant\'s Google listing, website and social, then the fixes in order, with Liz. <a href="/guides/vegan-restaurant-survival-guide">Take a look</a>.', 'Live') +
+        card('More on the way', 'New Guides join the catalog as they are ready. <a href="/guides">See every Guide</a>.', 'Coming', true) +
+        '</div>' + joinBtns();
+    },
+    points: function () {
+      return head('Points and levels', 'Points come from what you do', 'Points are never bought. You earn them by taking part: Bounties, competitions and campaigns, the Daily Pulse and the Community Board. Every purchase, a Guide, a ticket or merchandise, earns a <b>25-point thank-you</b>.') +
+        '<div class="dg-levels">' +
+        '<div class="dg-level"><b>Level 1</b><strong>Start</strong><span>Every member</span></div>' +
+        '<div class="dg-level"><b>Level 2</b><strong>2,500</strong><span>points earned</span></div>' +
+        '<div class="dg-level"><b>Level 3</b><strong>10,000</strong><span>points earned</span></div></div>' +
+        '<div class="dg-grid">' +
+        card('Unlock Guides', 'Any Guide for 1,100 points. Your 1,100 welcome points cover the first one.', 'Spend') +
+        card('Boost the places you love', 'Give points to a business or nonprofit. Points are a boost, never money.', 'Give') +
+        card('Talk with your Guide', 'Ask your Guide anything Vegan, a few points a message.', 'Spend') +
+        card('Your level never drops', 'Your level comes from every point you have ever earned, so spending or giving points never lowers it.', 'Levels') +
+        '</div>' + joinBtns();
+    },
+    supports: function () {
+      return head('What your $11 supports', 'A contribution to the community', 'Your $11 is a membership contribution to Vegans Explore, one time, never a tax-deductible donation. It is how we grow and keep this running.') +
+        '<div class="dg-grid">' +
+        card('Events', 'Community nights and gatherings in our cities, where members meet in person.', 'In person') +
+        card('Community Managers', 'Volunteers in each city who welcome members and businesses and keep the hub alive.', 'People') +
+        card('The tools', 'The Directory, the hubs, the Guides and your dashboard, built and kept up for members.', 'Apps') +
+        '</div>' + joinBtns();
+    },
+    bring: function () {
+      return head('Bring people in', 'More people, more to find', 'Every member makes the Directory sharper and the hubs busier. Bring in the people who would love it.') +
+        '<div class="dg-grid">' +
+        card('Invite a friend', 'When a friend joins with your invite code, you earn points.', 'Earn points') +
+        card('Vote together', 'Every vote moves a place up the list for the whole city. The more members vote, the truer the list.', 'Your city') +
+        card('Share what you love', 'Send a friend a listing, a Daily Pulse topic or a Guide.', 'Share') +
+        '</div>' + joinBtns();
+    },
+    business: function () {
+      return head('For businesses', 'The same way in', 'Businesses come in at the same <b>$11</b>, one time. Then they get the advertising, sponsorships and marketing services we offer only to members.') +
+        '<div class="dg-grid">' +
+        card('Your page, yours to update', 'Find your business in the Directory and claim it, or add it. <a href="/claim">Join the Directory</a>.', 'Claim it') +
+        card('Your business dashboard', 'Your numbers, your page and menu, ads and the campaigns open to you, on your own page.', 'Members') +
+        card('Advertising and sponsorships', 'Ad spots across the site, and sponsorships of our campaigns and events, only for members.', 'Members') +
+        card('Marketing services', 'Help with your Google listing, website and social, starting with a free check in the Restaurant Guide.', 'Members') +
+        '</div>' + joinBtns();
+    },
+    join: function () {
+      var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
+      var box;
+      if (isMember()) {
+        box = '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Thank you for being here.</p><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a>' + status;
+      } else {
+        box = '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet. Get your Passport, $11 one time, with 1,100 welcome points.'
+          : 'Create a free account, then get your Passport: $11 one time, with 1,100 welcome points. Already a member? <a href="#" data-signin>Sign in</a>.') +
+          '</p><button type="button" class="dg-btn" data-join>Get your Passport</button>' + status;
+      }
+      return head('Get your Passport', 'One time, yours to keep', 'It never renews. After that, you buy only what you want: Guides, merchandise and event tickets.') +
+        '<div class="dg-access"><ul>' +
+        '<li><b>1,100 welcome points</b>, enough for your first Guide.</li>' +
+        '<li><b>Vote</b> every day for the places you love in the Directory.</li>' +
+        '<li><b>Your community:</b> post and reply on the Community Board, and join your city.</li>' +
+        '<li><b>Your dashboard</b>, to build your Vegan world with our tools.</li>' +
+        '<li><b>Points and levels</b>: earn by taking part, give them to the places you love.</li>' +
+        '<li><b>For businesses:</b> advertising, sponsorships and marketing services, only for members.</li></ul>' +
+        '<div class="dg-pricebox">' + box + '</div></div>';
+    }
+  };
+  var BLURB = {
+    places: 'Vote for the places you love, every day.', community: 'Your city\'s hub, its Daily Pulse and its Board.',
+    guides: 'Mini apps, $11 or 1,100 points each.', points: 'Earn them, spend them, give them. Levels 1 to 3.',
+    supports: 'Where your contribution goes.', bring: 'More members, more to find.', business: 'The same $11, then services for members.',
+    join: '$11 one time, with 1,100 welcome points.'
+  };
 
-  var params = new URLSearchParams(window.location.search);
-  var subscribe = params.get('subscribe');
-  if (subscribe === 'success') {
-    btn.textContent = 'Passport Active - Points Added';
-    btn.disabled = true;
-  } else if (subscribe === 'cancelled') {
-    // no-op, button remains as-is
+  function draw() {
+    var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    cur = VIEWS[k] ? k : 'overview';
+    var t = tab(cur), i = TABS.indexOf(t);
+    main.innerHTML = VIEWS[cur]();
+    main.scrollTop = 0;
+    menu.innerHTML = TABS.map(function (x) { return '<a href="' + href(x.k) + '"' + (x.k === 'join' ? ' class="dg-join-tab"' : '') + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
+    sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
+    var pic = art(t.g);
+    guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
+    guideEl.setAttribute('aria-label', GUIDES[t.g] + ', one of our Guides');
+    if (lastGuide !== t.g) { guideEl.classList.remove('dg-shift'); void guideEl.offsetWidth; guideEl.classList.add('dg-shift'); lastGuide = t.g; }
+    nameEl.innerHTML = '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
+    bubble.textContent = t.say;
+    var nav = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
+      '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
+    tourEl.innerHTML = tourM.innerHTML = nav;
+    document.getElementById('pgJoinbox').style.display = isMember() ? 'none' : '';
+    document.getElementById('pgSignin').style.display = me() ? 'none' : '';
+    if (activated === 'success' && cur === 'join') setStatus(isMember() ? '' : 'Your payment went through. It can take a minute to show here: refresh this page shortly.');
+  }
+  function setStatus(t) { var s = document.getElementById('pgStatus'); if (s) s.textContent = t; }
+
+  sel.addEventListener('change', function () { location.hash = href(sel.value); });
+  // On a phone, Next goes back up to the Guide.
+  tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { var r = document.querySelector('.dg-rail'); if (r) r.scrollIntoView({ block: 'start' }); }, 0); });
+  document.addEventListener('click', function (e) {
+    var a = auth();
+    if (e.target.closest('[data-signin]')) {
+      e.preventDefault(); if (!a) return;
+      a.showAuthModal('Sign in to your Passport.', function () { if (back) location.href = back; else location.reload(); }, 'login');
+      return;
+    }
+    var jb = e.target.closest('[data-join]');
+    if (!jb || !a) return;
+    if (isMember()) { location.href = back || '/dashboard'; return; }
+    // A new account meets the $11 window on its own after signup (ve-auth); a signed-in non-member gets it now.
+    if (!a.isLoggedIn()) a.showAuthModal('Create your free account, then get your Passport: $11 one time, with 1,100 welcome points.', function () { draw(); }, 'signup');
+    else a.showActivateModal('Your Passport: $11, one time, with 1,100 welcome points, enough for your first Guide.');
+  });
+  window.addEventListener('hashchange', draw);
+  if (activated === 'success') { if (!location.hash) location.hash = '#/join'; }
+  if (activated) { params.delete('activate'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+  document.documentElement.classList.add('dg-fit');
+  draw();
+  if (activated === 'success') {
+    // The webhook marks the member active; ve-auth's me refreshes the stored member.
+    setStatus('Welcome in! Your Passport is being confirmed, and your 1,100 welcome points come with it.');
+    var tries = 0, a0 = auth();
+    (function poll() {
+      if (!a0 || !a0.getToken()) return;
+      // The same refresh as partner-guide.js: ve-auth ?action=me with the token in the body.
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'me', token: a0.getToken() }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.member) { try { var old = JSON.parse(localStorage.getItem('ve_member') || '{}') || {}; localStorage.setItem('ve_member', JSON.stringify(Object.assign(old, d.member))); } catch (e) {} }
+          if (d && d.member && d.member.membership_status === 'active') { draw(); setStatus('Welcome in! Your Passport is active, and your 1,100 welcome points are in.'); return; }
+          if (++tries < 6) setTimeout(poll, 2500);
+        }).catch(function () { if (++tries < 6) setTimeout(poll, 2500); });
+    })();
   }
 })();
 </script>
-
 </body>
 </html>
