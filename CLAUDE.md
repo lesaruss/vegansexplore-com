@@ -528,6 +528,15 @@ Passport in the bar. The hub passes an axe-core WCAG 2 AA check at phone and des
 `--ve-text-50` is 0.68 black, `.btn-join` is the dark green, the hero's words carry a soft shadow over the photo, and the
 nav's Join button has dark text on its bright green (`public/nav.js`).
 
+Listing pages (Sean, 2026-10-25: "every listing needs to have a background... we need to make sure that their contrast is ADA"):
+every listing's header wears city art (`heroArt` in `directory/listing.html`): the city its address is in by `VE_HUBS[].match`
+(`page.banner`), else South Florida's art, under a dark overlay never lighter than 0.8, so every header line holds WCAG AA on the
+brightest pixel of any picture (checked 2026-10-25 on South Florida, New York, Atlanta, DMV and a listing with no city; the
+tagline is the tightest at 4.7:1). A new city's banner must pass the same check. Anyone who is not a member also sees the
+Directory's **Your votes rank them** box at the foot of the page (`.lv-vote`), opening the Passport Guide
+(`/passport?from=vote&back=...#/join`). Signed out, `nav.js`'s members-only gate sends a gated click to `/passport` (back here
+after sign-in), never the old sign-in pop-up, and lets any link that already goes to `/passport` through.
+
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
 and folds it to one bar (city picker, Visit the community, Expand) after the first click into a section; Collapse/Expand is
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a

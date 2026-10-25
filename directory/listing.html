@@ -64,7 +64,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 
 /* SOUTH FLORIDA REGION HERO — city-background treatment, scoped so other regions keep the flat #111 hero */
 .listing-hero.city-bg{position:relative;background-color:#111;background-size:cover;background-position:center center}
-.listing-hero.city-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(6,14,10,0.82) 0%, rgba(6,14,10,0.68) 45%, rgba(6,14,10,0.88) 100%)}
+.listing-hero.city-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(6,14,10,0.86) 0%, rgba(6,14,10,0.8) 45%, rgba(6,14,10,0.9) 100%)}
 .listing-hero.city-bg .listing-hero-avatar,.listing-hero.city-bg .listing-hero-content{position:relative}
 .listing-hero.city-bg .listing-breadcrumb{color:rgba(255,255,255,0.72)}
 .listing-hero.city-bg .badge-verified{background:rgba(6,14,10,0.55);color:#8ff0ac;border-color:rgba(143,240,172,0.6)}
@@ -80,6 +80,16 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 
 /* CONTENT AREA */
 .listing-body{display:grid;grid-template-columns:1fr 320px;gap:28px;padding:32px 40px;max-width:100%}
+/* Your votes rank them (Sean, 2026-10-25: "I would love to see it at the bottom of every directory listing, if they're not logged in"):
+   the Directory's own Passport box, shown to anyone without an active membership; it opens the Passport Guide. */
+.lv-vote{margin:8px 40px 40px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;background:#1a1a1a;color:#fff;border-radius:14px;padding:28px 32px}
+.lv-vote-copy{flex:1;min-width:240px}
+.lv-vote-copy strong{display:block;font-size:20px;font-weight:900;margin-bottom:6px}
+.lv-vote-copy strong span{color:#5EC47A}
+.lv-vote-copy p{font-size:14px;line-height:1.6;color:rgba(255,255,255,0.78);max-width:860px;margin:0}
+.lv-vote-btn{display:inline-flex;align-items:center;background:var(--ve-orange);color:#1a1a1a;font-size:12px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:16px 30px;border-radius:6px;text-decoration:none}
+.lv-vote-btn:hover{background:#e08a14}
+@media(max-width:768px){.lv-vote{margin:8px 16px 32px;padding:24px 20px}}
 .listing-main{}
 
 /* PERSISTENT TWO-COLUMN PAGE LAYOUT */
@@ -2570,6 +2580,16 @@ function getCommunityForListing(l){
   var h = c && window.VE_HUBS ? VE_HUBS.filter(function(x){ return x.slug === c; })[0] : null;
   return h ? {slug:h.slug, name:h.name} : null;
 }
+// The header's city art: the listing's own city banner from VE_HUBS, else South Florida's (Sean, 2026-10-25).
+var SF_HERO_ART = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_144549_57bc2592-c910-4189-94d7-828e4af569a5_min.webp';
+function heroArt(l, community){
+  if(!window.VE_HUBS) return SF_HERO_ART;
+  // The city the address is in, by VE_HUBS[].match (every city, the DMV and Philadelphia included), else the chapter it serves.
+  var h = VE_HUBS.filter(function(x){ var m = x.match || {};
+    return (l.address_city || l.address_state) && (!m.cities || m.cities.indexOf(l.address_city) > -1) && (!m.states || m.states.indexOf(l.address_state) > -1);
+  })[0] || (community ? VE_HUBS.filter(function(x){ return x.slug === community.slug; })[0] : null);
+  return !h || h.slug === 'south-florida' || !h.page || !h.page.banner ? SF_HERO_ART : h.page.banner;
+}
 // "Serves" for a listing that covers more than its own city (Sean, 2026-10-24).
 // The address opens Google Maps (Sean, 2026-10-25: "the address that you can click and go to Google Maps"): their own Google
 // place when we hold its id, else a search for the address.
@@ -2846,7 +2866,10 @@ function setDemoView(v, l){ CST.view = v; refreshCampaign(l); }
 window.veDemoView = function(v){ if(window._veDemoListing) setDemoView(v, window._veDemoListing); };
 
 function renderListing(l){
-  var isSoFlo = !!(l.address_city && SF_CITIES.indexOf(l.address_city) > -1);
+  // Every listing wears city art behind its header (Sean, 2026-10-25: "every listing needs to have a background... the ones that
+  // aren't specific to a city, you can just put South Florida in there for now"): its own city's banner (VE_HUBS), else South
+  // Florida's. isSoFlo now means "the header has city art", which is every listing; the dark overlay keeps text at AA contrast.
+  var isSoFlo = true;
   // A brand with products in our Guides is a brand page (see .bsite in the styles). It wears our city art too.
   l._brandSite = isProductBrand(l);
   l._featured = l._brandSite && isFeaturedBrand(l);
@@ -2967,7 +2990,7 @@ function renderListing(l){
 
   // Build page
   document.getElementById('listing-root').innerHTML =
-    '<div class="listing-hero'+(isSoFlo?' city-bg':'')+'"'+(isSoFlo?' style="background-image:url(\'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_144549_57bc2592-c910-4189-94d7-828e4af569a5_min.webp\')"':'')+'>'+
+    '<div class="listing-hero city-bg" style="background-image:url(\''+esc(heroArt(l, community))+'\')">'+
       '<div class="listing-hero-avatar" style="background:'+esc(avBg)+'">'+av+'</div>'+
       '<div class="listing-hero-content">'+
         '<div class="listing-hero-body">'+
@@ -2986,7 +3009,7 @@ function renderListing(l){
           '<button class="save-hero-btn" id="save-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg><span id="save-btn-label">Save</span></button>'+
           // Check in shows where we know the place on the map (coordinates from Google).
           (l.latitude != null && l.longitude != null && l.business_status !== 'CLOSED_PERMANENTLY' ? '<button class="checkin-hero-btn" id="checkin-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/></svg><span id="checkin-label">Check in &middot; +10</span></button><div class="checkin-msg" id="checkin-msg" role="status"></div>' : '')+
-          (l.claim_status !== 'verified' ? '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="display:block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.04em;color:inherit;opacity:.85;text-decoration:underline">Is this your business? Claim it</a>' : '')+
+          (l.claim_status !== 'verified' ? '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="display:block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;opacity:.9;text-decoration:underline">Is this your business? Claim it</a>' : '')+
         '</div>'+
       '</div>'+
     '</div>'+
@@ -3063,6 +3086,18 @@ function renderListing(l){
 
   // Wire overview carousel on load; Photos tab carousel on first click
   wireCarousel('ov');
+
+  // Your votes rank them, at the foot of the page for anyone who is not a member yet (the Directory's box, 2026-10-25).
+  (function(){
+    if(DEMO) return;
+    var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+    if(m && m.membership_status === 'active') return;
+    var back = encodeURIComponent(location.pathname + location.search);
+    document.getElementById('listing-root').insertAdjacentHTML('beforeend',
+      '<section class="lv-vote" aria-label="Your Passport"><div class="lv-vote-copy"><strong>Your votes <span>rank them.</span></strong>'+
+      '<p>$11, one time, gets you your Passport: vote once a day for every business you love (the votes decide who leads each list), 1,100 welcome points and your own dashboard to build your Vegan world. Businesses come in at the same $11 and get the advertising, sponsorships and marketing services we offer only to members.</p></div>'+
+      '<a class="lv-vote-btn" href="/passport?from=vote&back='+back+'#/join">Get your Passport, $11</a></section>');
+  })();
 
   // Vote button (2026-09-17, Logan: wired to the real vote_listing backend --
   // was previously purely decorative, a local DOM increment with nothing
