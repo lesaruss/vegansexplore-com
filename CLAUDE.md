@@ -488,6 +488,10 @@ street, ZIP, menu link, each day's hours; missing ones marked), saved by `ve-out
 `ve_listing_edits` row, `details.fixed`), with **Save and put it back on the Directory** for a held one. A new website clears "The
 website did not open" (the flag counts only for the site the check-up read); a menu link goes to `listings.menu_crawl_url` and
 queues `ve_menu_imports` with that `menu_url`, where the Background writer starts (migration `20261025_directory_review_fix.sql`).
+The form also sets the **Kind** (any Directory sub-section) and **Online only, no storefront** (Sean, 2026-10-25, Axiology: "an
+online beauty and personal care brand... they wouldn't necessarily be a listing with hours of operation"): the street, city, state,
+ZIP and map pin come off (`location` Online, the same as the listing editor's Online only), it shows in every chapter, and with no
+city it is never flagged or held again; a held one drops No hours and No street address. The menu link shows for food places only.
 **Being vetted** is a list there too (the food places waiting on member votes) with **Vetted by us** (`listing_vetted`). On the
 Directory, every card shows admins **Edit** and **Review** (opens it in Directory review, in Being vetted when it is waiting on
 votes), and the listing editor has Open in Directory review.

@@ -33,7 +33,7 @@
 //   review_list                        held (On hold for review), flagged (red flags, still live), removed and recently closed
 //   review_get     { listing_id }      one listing: what it shows, its red flags, the latest check-up, its notes
 //   listing_fix    { listing_id, fields: {website, instagram, facebook, tiktok, phone, address_street, address_zip, description,
-//                    hours {Day: text}, menu_url}, live?, note? }  fix what is missing (each change a ve_listing_edits row),
+//                    hours {Day: text}, menu_url, category, online: true}, live?, note? }  fix what is missing (each change a ve_listing_edits row),
 //                    optionally back on the Directory in the same press (super admin)
 //   listing_vetted { listing_id, vetted }  Vetted by us: a Being vetted food place shows to everyone (super admin)
 //   listing_state  { listing_id, state: live|hold|removed|closed, note? }  ve_listing_set_state: back on the Directory, on
@@ -100,6 +100,14 @@ async function adminId(req: Request): Promise<string | null> {
 }
 
 const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/\u0000/g, '').trim().slice(0, max) : '');
+// Every Directory sub-section (CATEGORIES in ve-claims, CAT_CONFIG in /public/ve-region-directory.js).
+const LISTING_CATEGORIES = [
+  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Catering', 'Meal Prep',
+  'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
+  'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
+  'Web & Development', 'AI & Automation', 'Business Operations',
+  'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
+  'Community Partner', 'Nonprofits', 'Events'];
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v);
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
@@ -632,6 +640,9 @@ Deno.serve(async (req) => {
     // flags (those cover live ones), so its reasons are checked against what it holds now.
     const stillTrue = (l: any) => (l.details?.review?.reasons || []).filter((r: string) => {
       if (r === 'No socials') return !(l.instagram || l.facebook || l.tiktok);
+      // An online-only business (no city or state: it sells online) has no hours or street to give.
+      const online = !l.address_city && !l.address_state;
+      if (online && (r === 'No hours' || r === 'No street address')) return false;
       if (r === 'No hours') { const h = l.google_hours_json; return !h || (typeof h === 'object' && !Object.keys(h).length); }
       if (r === 'No street address') return !l.address_street;
       if (r === 'No website') return !l.website;
@@ -695,7 +706,7 @@ Deno.serve(async (req) => {
     // Then, optionally, back on the Directory (live) in the same press.
     if (action === 'listing_fix') {
       if (!me || !isId(body.listing_id)) return json({ error: 'admins_only' }, 403);
-      const { data: l } = await db.from('listings').select('id,status,website,instagram,facebook,tiktok,phone,address_street,address_zip,description,google_hours_json,menu_crawl_url,details').eq('id', body.listing_id).maybeSingle();
+      const { data: l } = await db.from('listings').select('id,status,category,website,instagram,facebook,tiktok,phone,address_street,address_city,address_state,address_zip,location,latitude,longitude,description,google_hours_json,menu_crawl_url,details').eq('id', body.listing_id).maybeSingle();
       if (!l) return json({ error: 'not_found' }, 404);
       const f = body.fields || {};
       const url = (v: string) => (v && !/^https?:\/\//i.test(v) ? 'https://' + v : v);
@@ -708,7 +719,12 @@ Deno.serve(async (req) => {
       for (const k of ['website', 'facebook', 'menu_crawl_url']) {
         if (next[k]) { try { const u = new URL(String(next[k])); if (!/^https?:$/.test(u.protocol)) throw 0; } catch { return json({ error: 'bad_link', field: k }, 400); } }
       }
-      if (f.hours && typeof f.hours === 'object') {
+      // The kind of business (Sean, 2026-10-25, Axiology: "an online beauty and personal care brand... they sell items online...
+      // they wouldn't necessarily be a listing with hours of operation") and Online only: no storefront, so no street, city,
+      // hours or map pin, and it shows in every chapter (the listing editor's Online only does the same).
+      if (typeof f.category === 'string') { if (!LISTING_CATEGORIES.includes(f.category)) return json({ error: 'bad_category' }, 400); next.category = f.category; }
+      if (f.online === true) Object.assign(next, { address_street: null, address_city: null, address_state: null, address_zip: null, location: 'Online', latitude: null, longitude: null });
+      if (f.hours && typeof f.hours === 'object' && f.online !== true) {
         const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], h: Record<string, string> = {};
         for (const d of DAYS) { const v = clean(f.hours[d], 80); if (v) h[d] = v; }
         next.google_hours_json = Object.keys(h).length ? h : null;
@@ -737,7 +753,8 @@ Deno.serve(async (req) => {
         const { data, error } = await db.rpc('ve_listing_set_state', { p_listing: l.id, p_state: 'live', p_by: me, p_note: clean(body.note, 1000) || (changed.length ? 'Fixed in Directory review' : null), p_reasons: null });
         if (error || !data?.ok) return json({ error: error?.message || data?.why || 'failed', saved: changed }, 400);
       }
-      return json({ ok: true, saved: changed.map((k) => (k === 'google_hours_json' ? 'hours' : k === 'menu_crawl_url' ? 'menu_url' : k)) });
+      return json({ ok: true, saved: changed.filter((k) => !['address_city', 'address_state', 'location', 'latitude', 'longitude'].includes(k) || k === 'location')
+        .map((k) => (k === 'google_hours_json' ? 'hours' : k === 'menu_crawl_url' ? 'menu_url' : k === 'location' ? 'online only' : k)) });
     }
     // Vetted by us (the same switch as the listing editor's): a Vegan-friendly or Vegan-options food place shows to everyone now.
     if (action === 'listing_vetted') {
