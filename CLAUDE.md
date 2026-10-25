@@ -1277,6 +1277,18 @@ Mobile (Option B): flat scrim + frosted glass card.
 /passport/            passport sub-pages
 ```
 
+## Database writes the connector holds (Sean, 2026-10-25)
+
+"We've been through this before, and you did something that allowed it to work... build into our instructions so we do
+it moving forward." Canon `ops-supabase-write-once-function`, error registry `SUPABASE-MCP-APPROVAL-HOLD-USE-ONCE-FUNCTION`.
+When the Supabase connector's `execute_sql` or `apply_migration` holds a write for an approval box that never shows (it
+times out at 60 s, "the server asked the user a question"), do not retry it and do not hand Sean SQL to paste. Run it through
+a one-time edge function instead: copy `scripts/supabase-once/once.template.ts`, put the SQL in named steps (each one safe to
+run twice), give it a fresh random key kept only in the session scratchpad, deploy it as `ve-once-<task>` with verify_jwt
+off, run each step with `curl -X POST .../functions/v1/ve-once-<task>?step=<name> -H "x-run-key: <key>"`, check the result
+with a plain SELECT (reads and deploys never prompt), then redeploy it as the 410 stub. The SQL still goes in a migration
+file in the repo. A step runs in one transaction, so a failed step changes nothing.
+
 ## Deploy
 
 Push to `main` on `lesaruss/vegansexplore-com`. Vercel auto-deploys.
