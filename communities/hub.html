@@ -46,14 +46,14 @@
     .hero-photo { position: absolute; inset: 0; }
     .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.08) 65%, transparent 82%); }
-    .hero-content { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 600px; }
+    .hero-content { position: relative; z-index: 2; padding: 80px 56px 64px; width: 100%; max-width: 600px; }
     .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: #7fe0a0; text-shadow: 0 1px 6px rgba(0,0,0,0.85); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(36px, 5.5vw, 72px); font-weight: 900; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 16px; }
     .hero h1 em { color: #6fd98c; font-style: normal; }
     .hero h1 { text-shadow: 0 2px 14px rgba(0,0,0,0.6); }
     .hero-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
-    .hero-region { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
+    .hero-region { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); text-shadow: 0 1px 6px rgba(0,0,0,0.8); transition: opacity 0.5s ease; }
     .hero-divider-v { width: 1px; height: 14px; background: rgba(255,255,255,0.2); }
     .hero-access { display: flex; align-items: center; gap: 10px; }
     .access-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 5px 10px; border-radius: 100px; }
@@ -272,9 +272,9 @@
       /* Phones (Sean, 2026-10-25): the hero's words and buttons centered on the page; the bar is Collapse and the city
          picker on one row, the picker reaching the same right edge as the Section dropdown, then Page tour and Get
          Passport centered under them. */
-      .hero-content { width: 100%; }
       .hero-eyebrow::after { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
       .hero-meta { gap: 12px 16px; }
+      .hero-divider-v { display: none; }
       .member-bar { flex-direction: column; align-items: stretch; gap: 12px; }
       .member-bar-left { flex-wrap: nowrap; gap: 12px; width: 100%; }
       .mb-breadcrumb { flex: 1; }
@@ -643,6 +643,54 @@
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   var signedIn = !!(window.VEAuth && VEAuth.isLoggedIn());
+
+  // The hero's cities (Sean, 2026-10-25: "show the cities that we currently have with listings... by threes in a rotation...
+  // fade in, fade out... loop once it hits all of them... as new ones are added, it will update"). Every city with an open
+  // Directory listing at an address in this hub, most listings first, three at a time; the last three wrap round to the
+  // start. Three or fewer cities keep the hub's written areas (P.regions). Reduced motion shows the first three, still.
+  (function heroCities() {
+    var el = document.getElementById('hub-regions'); if (!el || !HUB.filter) return;
+    fetch(SUPABASE_URL + '/rest/v1/listings?select=address_city&status=eq.approved&or=(business_status.is.null,business_status.neq.CLOSED_PERMANENTLY)&' + HUB.filter + '&limit=2000',
+      { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (rows) {
+        var n = {}, name = {};
+        (rows || []).forEach(function (r) {
+          var c = String(r.address_city || '').trim(); if (!c) return;
+          var k = c.toLowerCase(); n[k] = (n[k] || 0) + 1; if (!name[k]) name[k] = c;
+        });
+        var cities = Object.keys(n).sort(function (a, b) { return n[b] - n[a] || (a < b ? -1 : 1); }).map(function (k) { return name[k]; });
+        if (cities.length <= 3) return;
+        var groups = [];
+        for (var i = 0; i < cities.length; i += 3) groups.push([0, 1, 2].map(function (j) { return cities[(i + j) % cities.length]; }));
+        var text = function (g) { return g.map(esc).join(' &middot; '); };
+        // Screen readers get the whole list once; the rotating line is for the eye.
+        el.setAttribute('aria-hidden', 'true');
+        var sr = document.createElement('span'); sr.className = 'visually-hidden';
+        sr.textContent = 'Cities with listings: ' + cities.join(', ');
+        el.parentNode.insertBefore(sr, el);
+        // Hold the line at its widest group so the badge beside it never jumps.
+        // Measured once the fonts are in, so the widths are Montserrat's.
+        return (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
+          var w = 0; el.style.whiteSpace = 'nowrap'; el.style.display = 'inline-block';
+          groups.forEach(function (g) { el.innerHTML = text(g); w = Math.max(w, el.getBoundingClientRect().width); });
+          el.style.whiteSpace = ''; el.style.display = '';
+          el.style.minWidth = 'min(' + Math.ceil(w + 2) + 'px, 100%)';
+          el.innerHTML = text(groups[0]);
+          rotate(el, groups, text);
+        });
+      })
+      .catch(function () {});
+    function rotate(el, groups, text) {
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var at = 0;
+      setInterval(function () {
+        if (document.hidden) return;
+        el.style.opacity = '0';
+        setTimeout(function () { at = (at + 1) % groups.length; el.innerHTML = text(groups[at]); el.style.opacity = '1'; }, 500);
+      }, 4000);
+    }
+  })();
 
   // City words in the copy: {name}, {brand}, {area}.
   // The crumb picks the community (Sean, 2026-10-25: "make it similar to how the directory is, where you can see the all
