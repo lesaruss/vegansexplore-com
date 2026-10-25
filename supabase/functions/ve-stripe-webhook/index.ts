@@ -149,10 +149,11 @@ function buildPointsReceiptEmail(points: number, balance: number): string {
 </html>`
 }
 
-// Branded receipt for the VE Passport $11/month subscription - both the first
-// signup charge and every subsequent monthly renewal reuse this same email.
-function buildPassportReceiptEmail(opts: { points: number; balance: number; renewal: boolean }): string {
-  const { points, balance, renewal } = opts
+// Branded receipt for the Passport, used by the $11 one-time join (entry_contribution) and the
+// legacy monthly subscription's signup and renewals. Sean, 2026-10-25: the Passport comes with a
+// Guide credit, not points; points come from Bounties, competitions and what members do on the site.
+function buildPassportReceiptEmail(opts: { renewal: boolean }): string {
+  const { renewal } = opts
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"></head>
@@ -163,13 +164,14 @@ function buildPassportReceiptEmail(opts: { points: number; balance: number; rene
       <tr><td style="background:#1a1a1a;padding:28px 32px;"><span style="color:#3A9B3E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span></td></tr>
       <tr><td style="padding:32px;">
         <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">${renewal ? 'Your Passport renewed' : 'Your Passport is active'}</h1>
-        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your $11/month Passport subscription renewed and your monthly Points just landed.' : 'Thanks for subscribing to the $11/month Passport. Your Points are in and your subscription is active.'}</p>
+        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your Passport renewed and a new Guide credit is in your account.' : 'Thank you for joining Vegans Explore. Your Passport is active: vote for your favorite listings in the Directory and build your Vegan world from your dashboard.'}</p>
         <div style="background:#e8f5e9;border:1px solid #b8ddb9;border-radius:8px;padding:18px 22px;margin:0 0 24px;">
-          <p style="margin:0 0 4px;font-size:12px;color:#2d7d31;font-weight:700;letter-spacing:.05em;">POINTS ADDED</p>
-          <p style="margin:0;font-size:26px;font-weight:800;color:#2d7d31;">+${points.toLocaleString()} Points</p>
-          <p style="margin:6px 0 0;font-size:13px;color:#2d7d31;">New balance: ${balance.toLocaleString()} Points</p>
+          <p style="margin:0 0 4px;font-size:12px;color:#2d7d31;font-weight:700;letter-spacing:.05em;">GUIDE CREDIT</p>
+          <p style="margin:0;font-size:26px;font-weight:800;color:#2d7d31;">1 Guide, on us</p>
+          <p style="margin:6px 0 0;font-size:13px;color:#2d7d31;">Use it to unlock any Guide. It is yours to keep.</p>
         </div>
-        <a href="https://vegansexplore.com/guides" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Unlock a Guide</a>
+        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#444;">Points come from what you do in the community: Bounties, competitions and taking part on the site.</p>
+        <a href="https://vegansexplore.com/guides" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Pick your Guide</a>
       </td></tr>
       <tr><td style="background:#f9f9f9;padding:14px 32px;border-top:1px solid #eee;"><p style="margin:0;font-size:11px;color:#aaa;">VEGANS EXPLORE &nbsp;|&nbsp; vegansexplore.com</p></td></tr>
     </table>
@@ -576,26 +578,13 @@ Deno.serve(async (req: Request) => {
         return new Response(`Update error: ${memberUpdateError.message}`, { status: 500 })
       }
 
-      // Points per payment (Sean, 2026-10-10, canon-ve-guide-pricing): 1,100 for a month, 13,200
-      // (twelve months) for a year paid up front. Passport gives points, never Guide access itself,
-      // so Guides a member unlocks stay theirs if they stop Passport.
-      const passportPoints = subscriptionPeriod === 'annual' ? 13200 : 1100
-      const { data: result, error: creditError } = await supabase.rpc('credit_points_purchase', {
-        p_member_id: memberId,
-        p_amount: passportPoints,
-        p_stripe_session_id: session.id,
-        p_package: subscriptionPeriod === 'annual' ? 'passport_annual' : 'passport_monthly',
-      })
-
-      if (creditError) {
-        console.error('credit_points_purchase (passport signup) error:', creditError)
-      }
-
+      // Sean, 2026-10-25: no points with the Passport. Its Guide credit comes from ve_passport_credit.
+      const result = null
       console.log('Passport subscription activated:', memberId, subscriptionId, result)
 
       try {
         const { data: member } = await supabase.from('members').select('email').eq('id', memberId).maybeSingle()
-        if (member?.email && result?.balance != null) {
+        if (member?.email) {
           await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -605,8 +594,8 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: `Your Passport is active - +${passportPoints.toLocaleString()} Points added`,
-              html: buildPassportReceiptEmail({ points: passportPoints, balance: result.balance, renewal: false })
+              subject: 'Your Passport is active - your first Guide is on us',
+              html: buildPassportReceiptEmail({ renewal: false })
             })
           })
         }
@@ -952,22 +941,27 @@ Deno.serve(async (req: Request) => {
         return new Response(`Update error: ${memberUpdateError.message}`, { status: 500 })
       }
 
-      const { data: result, error: creditError } = await supabase.rpc('credit_points_purchase', {
-        p_member_id: memberId,
-        p_amount: points,
-        p_stripe_session_id: session.id,
-        p_package: 'entry_contribution',
-      })
-
-      if (creditError) {
-        console.error('credit_points_purchase (entry_contribution) error:', creditError)
+      // Sean, 2026-10-25: joining (the $11, one time) is the Passport and comes with 1 Guide credit
+      // (trg_ve_founding_credit grants it as membership_status turns active), never points. Points come
+      // from Bounties, competitions and community activity. A later contribution by an active member
+      // (the dashboard's Contribute, the Guide chat's Add points) still becomes points at $1 = 100.
+      let result: { balance?: number } | null = null
+      if (repeat) {
+        const { data, error: creditError } = await supabase.rpc('credit_points_purchase', {
+          p_member_id: memberId,
+          p_amount: points,
+          p_stripe_session_id: session.id,
+          p_package: 'entry_contribution',
+        })
+        if (creditError) console.error('credit_points_purchase (entry_contribution) error:', creditError)
+        result = data
       }
 
       console.log('Entry contribution activated membership:', memberId, points, result)
 
       try {
         const { data: member } = await supabase.from('members').select('email').eq('id', memberId).maybeSingle()
-        if (member?.email && result?.balance != null) {
+        if (member?.email && (!repeat || result?.balance != null)) {
           await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -977,8 +971,8 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Passport is active - thank you for supporting the community',
-              html: buildPointsReceiptEmail(points, result.balance)
+              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Passport is active - your first Guide is on us',
+              html: repeat ? buildPointsReceiptEmail(points, result!.balance!) : buildPassportReceiptEmail({ renewal: false })
             })
           })
         }
@@ -1414,38 +1408,27 @@ Deno.serve(async (req: Request) => {
       }
 
       if (member) {
-        const annual = member.subscription_period === 'annual'
-        const renewalPoints = annual ? 13200 : 1100
-        const { data: result, error: creditError } = await supabase.rpc('credit_points_purchase', {
-          p_member_id: member.id,
-          p_amount: renewalPoints,
-          p_stripe_session_id: invoice.id,
-          p_package: annual ? 'passport_annual_renewal' : 'passport_monthly_renewal',
-        })
-
-        if (creditError) {
-          console.error('credit_points_purchase (passport renewal) error:', creditError)
-        } else {
-          console.log('Passport renewal credited:', member.id, subscriptionId, result)
-          try {
-            if (member.email && result?.balance != null) {
-              await fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
-                  to: member.email,
-                  subject: `Your Passport renewed - +${renewalPoints.toLocaleString()} Points added`,
-                  html: buildPassportReceiptEmail({ points: renewalPoints, balance: result.balance, renewal: true })
-                })
+        // Sean, 2026-10-25: no points with the Passport; the month's Guide credit comes from
+        // ve_passport_credit (cron ve-passport-credits). The renewal only sends the receipt.
+        console.log('Passport renewal:', member.id, subscriptionId)
+        try {
+          if (member.email) {
+            await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
+                to: member.email,
+                subject: 'Your Passport renewed - a new Guide credit is in',
+                html: buildPassportReceiptEmail({ renewal: true })
               })
-            }
-          } catch (e) {
-            console.error('Passport renewal receipt email failed:', e)
+            })
           }
+        } catch (e) {
+          console.error('Passport renewal receipt email failed:', e)
         }
       } else {
         console.log('invoice.payment_succeeded subscription_cycle with no matching active Passport member (likely a different subscription type):', subscriptionId)

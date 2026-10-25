@@ -815,8 +815,16 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
 "Instead of you buying guides with points, because it does feel weird... almost like Audible... you have credits to
 unlock guides... if you want the guide now, you just pay the 11 bucks... with the points, they can also speak to the
 guides." Every paid Guide is **$11 or 1 Guide credit**, never a points price, and a Guide a member unlocks is theirs to
-keep. The **$11 Founding Membership** comes with 1 credit. **Passport** ($11 a month or $111 a year) gives 1 credit a month
-(annual too, one a month) and still 1,100 points a month (13,200 for a year) until the voice cost per minute is known.
+keep. **The Passport is the $11 Founding Membership, one time** (Sean, 2026-10-25: "It's $11 one time to access the
+Passport... Instead of the 1,100 points, they get one credit to get a Guide. Points will come from different activities they
+do in the community and the site. The Bounties and different competitions"). It comes with 1 credit and **no points**: points
+are earned (Bounties, competitions and campaigns, community and site activity), never granted for joining. After joining,
+members buy what they want: Guides, merchandise, event tickets. Businesses come in at the same $11 and get advertising,
+sponsorships and marketing services only for members. No monthly Passport is offered (the old $11 a month / $111 a year
+subscription had no subscribers on 2026-10-25; if one ever renews, `ve-stripe-webhook` grants no points and
+`ve_passport_credit` still gives its monthly credit). `ve-stripe-webhook` `entry_contribution` adds no points on the joining
+payment (`trg_ve_founding_credit` grants the credit); a later contribution by an active member (dashboard Contribute, the
+Guide chat's Add points) still becomes points at $1 = 100.
 Credits roll over up to **3**. **Points** are for talking to the Guides (text chat 4 points a message; voice by the minute
 once voice exists) and about **2,500 points become 1 credit**. **Free Guides** (the Welcome Guide, the Partner Guide) are
 open to everyone: they are the enrollment tool.
