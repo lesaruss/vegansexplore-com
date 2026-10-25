@@ -1044,7 +1044,9 @@ Deno.serve(async (req) => {
         if (error) { notes.push('Save failed: ' + error.message); edits.length = 0; }
         else await db.from('ve_listing_edits').insert(edits);
       }
-      await db.from('ve_listing_essentials').upsert({ listing_id: l.id, google_checked_at: new Date().toISOString(), google_note: notes.join('; ').slice(0, 300) || null }, { onConflict: 'listing_id' });
+      // When Google itself failed (a key or quota problem, not a miss), look again tomorrow rather than in 30 days.
+      const checked = (g as any).error ? new Date(Date.now() - 29 * DAY_MS) : new Date();
+      await db.from('ve_listing_essentials').upsert({ listing_id: l.id, google_checked_at: checked.toISOString(), google_note: notes.join('; ').slice(0, 300) || null }, { onConflict: 'listing_id' });
       out.push({ slug: d.slug, filled: edits.map((e) => e.field), notes });
     };
     // Four at a time, so a batch fits well inside the request.
