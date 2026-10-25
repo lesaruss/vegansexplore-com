@@ -375,7 +375,7 @@
         <div class="hero-access" aria-label="Membership access"><span class="access-badge passport">Free Passport</span></div>
       </div>
       <div class="hero-actions">
-        <a href="/join" class="btn-join" id="hub-join">Join This Community</a>
+        <a href="/passport#/join" class="btn-join" id="hub-join">Join This Community</a>
         <a href="?tab=events" class="btn-outline-light" onclick="switchTab('events');return false;">Browse Events</a>
       </div>
     </div>
@@ -386,7 +386,7 @@
       var img = document.getElementById('hub-banner'); img.src = h.page.banner; img.alt = h.page.alt;
       document.getElementById('hub-heading').innerHTML = h.page.short + '<br><em>Vegans</em>';
       document.getElementById('hub-regions').innerHTML = h.page.regions;
-      document.getElementById('hub-join').href = '/join?community=' + h.slug;
+      document.getElementById('hub-join').href = '/passport?community=' + h.slug + '#/join';
     })();
   </script>
 

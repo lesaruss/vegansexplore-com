@@ -241,11 +241,11 @@
     // but not the headline.
     desktopRight =
       '<a href="/login" class="ve-nav-login"' + cur('/login') + '>Log In</a>' +
-      '<a href="/welcome" class="ve-nav-cta">Join</a>';
+      '<a href="/passport" class="ve-nav-cta">Join</a>';
     mobileBottom =
       '<div class="ve-mob-cta-wrap">' +
         '<a href="/login" class="ve-mob-login"' + cur('/login') + '>Log In</a>' +
-        '<a href="/welcome" class="ve-mob-cta">Join</a>' +
+        '<a href="/passport" class="ve-mob-cta">Join</a>' +
       '</div>';
   }
 
@@ -485,7 +485,7 @@
       var _t = 0, _iv = setInterval(function() {
         _t++;
         if (window.VEAuth && typeof VEAuth.showAuthModal === 'function') { clearInterval(_iv); _tryShow(); }
-        else if (_t > 50) { clearInterval(_iv); window.location.href = '/join'; }
+        else if (_t > 50) { clearInterval(_iv); window.location.href = '/passport#/join'; }
       }, 100);
     }
   }

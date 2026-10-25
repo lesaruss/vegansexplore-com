@@ -3,6 +3,10 @@
 var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 var SUPABASE_URL='https://fwbhwfxpncrsfhttimna.supabase.co';
 var FN_URL=SUPABASE_URL+'/functions/v1/ve-auth';
+// An invite code (?ref=) or a city (?community=) in the link is kept for the visit, so the sign-up window counts it the way
+// the old /join page did (Sean, 2026-10-25: the Passport Guide at /passport is the one Passport; /join forwards there).
+(function(){try{var q=new URLSearchParams(location.search),r=(q.get('ref')||'').trim().toUpperCase(),c=(q.get('community')||'').trim().toLowerCase();if(/^[A-Z0-9-]{3,24}$/.test(r))sessionStorage.setItem('ve_join_ref',r);if(/^[a-z0-9-]{2,40}$/.test(c))sessionStorage.setItem('ve_join_community',c);}catch(e){}})();
+function joinCarry(k){try{return sessionStorage.getItem(k)||null;}catch(e){return null;}}
 var GOOGLE_ID='554053879127-o0vp4rrjp5qgeoq4fbje3qtbrvlupt59.apps.googleusercontent.com';
 function getToken(){try{return localStorage.getItem('ve_token')||null;}catch(e){return null;}}
 function getRealMember(){try{return JSON.parse(localStorage.getItem('ve_member')||'null');}catch(e){return null;}}
@@ -315,7 +319,7 @@ var name=document.getElementById('ve-am-name').value.trim();
 if(!name){_showErr('Please enter your name.');return;}
 if(pw.length<8){_showErr('Password must be at least 8 characters.');return;}
 btn.disabled=true;btn.textContent='Creating your Passport...';
-signup(email,pw,name,null,null,(document.getElementById('ve-am-website')||{}).value).then(function(d){
+signup(email,pw,name,joinCarry('ve_join_ref'),joinCarry('ve_join_community'),(document.getElementById('ve-am-website')||{}).value).then(function(d){
 btn.disabled=false;btn.textContent='Create Account';
 if(d.error){_showErr(d.error);return;}
 hideAuthModal();

@@ -264,7 +264,7 @@
     function renderGate(){
       app.innerHTML = '<div class="g-eyebrow">Members</div><h1 class="g-title">Your Guide is for members.</h1>' +
         '<p class="g-sub">Every member gets a Guide: someone to ask where to eat, what to do in your city, and where to find what you need. Sign in to meet yours.</p>' +
-        '<div class="row-btns"><button type="button" class="btn primary" id="gateIn">Sign in</button><a class="btn ghost" href="/welcome">Join Vegans Explore</a></div>';
+        '<div class="row-btns"><button type="button" class="btn primary" id="gateIn">Sign in</button><a class="btn ghost" href="/passport">Join Vegans Explore</a></div>';
       document.getElementById('gateIn').onclick = function(){
         if (PREVIEW) return;
         if (window.VEAuth) VEAuth.showAuthModal('Sign in to meet your Guide.', function(){ location.replace('/dashboard/guide'); });
