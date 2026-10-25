@@ -643,14 +643,17 @@ Deno.serve(async (req) => {
       if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
       const { data: l } = await db.from('listings').select('id,slug,name,category,tagline,description,address_street,address_city,address_state,address_zip,phone,website,instagram,facebook,tiktok,google_hours_json,google_place_id,logo_url,status,business_status,claim_status,vegan_status,vote_count,voter_count,details,updated_at').eq('id', body.listing_id).maybeSingle();
       if (!l) return json({ error: 'not_found' }, 404);
-      const [{ data: a }, { data: flags }, { count: menu }] = await Promise.all([
+      const [{ data: a }, { data: flags }, { count: menu }, { data: cis }] = await Promise.all([
         db.from('ve_audits').select('id,created_at,closure_level,closure_signals,facts').eq('listing_id', l.id).eq('status', 'done').order('created_at', { ascending: false }).limit(1).maybeSingle(),
         db.rpc('ve_directory_review_flags'),
         db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id),
+        // Members who checked in there (the team sees who; the public only counts).
+        db.from('ve_checkins').select('created_at, points, distance_m, members(name)').eq('listing_id', l.id).order('created_at', { ascending: false }).limit(20),
       ]);
       const f = (flags || []).find((x: any) => x.listing_id === l.id);
       const g = a?.facts?.google || {};
       return json({ ok: true, listing: l, flags: f?.flags || l.details?.review?.reasons || [], menu_items: menu || 0,
+        checkins: (cis || []).map((c: any) => ({ at: c.created_at, name: c.members?.name || 'A member', distance_m: c.distance_m })),
         checkup: a ? { id: a.id, at: a.created_at, level: a.closure_level, signals: a.closure_signals || [], google: { status: g.status || null, maps: g.maps || null,
           address: g.address || null, rating: g.rating || null, reviews: g.reviews || null, hours: g.hours || null }, website_error: a.facts?.website?.error || null } : null });
     }

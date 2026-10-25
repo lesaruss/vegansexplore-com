@@ -53,6 +53,14 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .save-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
 .save-hero-btn.saved{background:#5EC47A;color:#000;border-color:#5EC47A}
 .save-hero-btn.saved svg{fill:#000}
+/* Check in (Sean, 2026-10-25): members check in at the place, 10 points; the team sees who, everyone sees when. */
+.checkin-hero-btn{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:12px 20px;border-radius:6px;background:transparent;color:#fff;border:1.5px solid #5EC47A;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.checkin-hero-btn:hover{background:rgba(94,196,122,.15)}
+.checkin-hero-btn:focus-visible{outline:3px solid #5EC47A;outline-offset:2px}
+.checkin-hero-btn.done{background:#5EC47A;color:#000}
+.checkin-hero-btn:disabled{opacity:.6;cursor:wait}
+.checkin-msg{font-size:11px;font-weight:700;color:#cfe9d6;max-width:240px;text-align:right;line-height:1.35}
+.checkin-msg:empty{display:none}
 
 /* SOUTH FLORIDA REGION HERO — city-background treatment, scoped so other regions keep the flat #111 hero */
 .listing-hero.city-bg{position:relative;background-color:#111;background-size:cover;background-position:center center}
@@ -223,6 +231,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
   .listing-hero-right{flex-direction:column;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
   .vote-hero-btn{padding:10px 14px;font-size:10px}
   .save-hero-btn{padding:10px 14px;font-size:10px}
+  .checkin-hero-btn{padding:10px 14px;font-size:10px}
+  .checkin-msg{text-align:center}
   .photos-grid{display:none}
   .photos-carousel-wrap{display:block}
   .donate-row{flex-direction:column}
@@ -2904,6 +2914,8 @@ function renderListing(l){
         '<div class="listing-hero-right">'+
           '<button class="vote-hero-btn" id="vote-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote<span class="vote-badge" id="vote-badge">'+votes+'</span></button>'+
           '<button class="save-hero-btn" id="save-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg><span id="save-btn-label">Save</span></button>'+
+          // Check in shows where we know the place on the map (coordinates from Google).
+          (l.latitude != null && l.longitude != null && l.business_status !== 'CLOSED_PERMANENTLY' ? '<button class="checkin-hero-btn" id="checkin-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/></svg><span id="checkin-label">Check in &middot; +10</span></button><div class="checkin-msg" id="checkin-msg" role="status"></div>' : '')+
           (l.claim_status !== 'verified' ? '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="display:block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.04em;color:inherit;opacity:.85;text-decoration:underline">Is this your business? Claim it</a>' : '')+
         '</div>'+
       '</div>'+
@@ -3026,6 +3038,57 @@ function renderListing(l){
         if(d && d.error){ return; }
         paintVoted(d && d.vote_count != null ? d.vote_count : null, true, d && d.next_vote_at);
       }).catch(function(){ voteBtn.disabled = false; });
+    });
+  })();
+
+  // Check in (Sean, 2026-10-25): a member at the place checks in for 10 points (ve-checkin; the rules are in
+  // ve_checkin_save: within 150 m, once a day per place, points on up to 5 places a day). Everyone sees when members last
+  // checked in, never who. Signed out or not a member: the same sign-in and membership offers as voting.
+  (function(){
+    var CK = SUPABASE_URL + '/functions/v1/ve-checkin';
+    var btn = document.getElementById('checkin-btn'), msg = document.getElementById('checkin-msg'), label = document.getElementById('checkin-label');
+    function call(body){
+      var h = { 'Content-Type': 'application/json' };
+      if(window.VEAuth && VEAuth.isLoggedIn()) h.Authorization = 'Bearer ' + VEAuth.getToken();
+      return fetch(CK, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function(r){ return r.json(); });
+    }
+    function ago(d){ var days = Math.floor((Date.now() - new Date(d).getTime()) / 86400000); return days <= 0 ? 'today' : days === 1 ? 'yesterday' : days + ' days ago'; }
+    function done(){ if(btn){ btn.classList.add('done'); label.textContent = 'Checked in today'; } }
+    if(DEMO) return;
+    call({ action: 'listing', listing_id: l.id }).then(function(d){
+      if(!d || !d.ok) return;
+      if(d.mine_today) done();
+      // A recent check-in is the community's word that the place is open.
+      if(d.last_at && Date.now() - new Date(d.last_at).getTime() < 90 * 86400000){
+        var bar = document.querySelector('.info-bar');
+        if(bar) bar.insertAdjacentHTML('beforeend', '<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/></svg>Member check-in ' + ago(d.last_at) + (d.people_30_days > 1 ? ' &middot; ' + d.people_30_days + ' members this month' : '') + '</span>');
+      }
+    }).catch(function(){});
+    if(!btn) return;
+    function say(t){ msg.textContent = t; }
+    btn.addEventListener('click', function(){
+      if(btn.classList.contains('done')){ say('You already checked in here today. Come back tomorrow.'); return; }
+      if(!window.VEAuth || !VEAuth.isLoggedIn()){ if(window.VEAuth) VEAuth.showAuthModal('Sign in to check in here. Members earn 10 points a visit.', function(){ window.location.reload(); }); return; }
+      var m = VEAuth.getMember ? VEAuth.getMember() : null;
+      if(!(m && m.membership_status === 'active')){ if(VEAuth.showActivateModal) VEAuth.showActivateModal('Check-ins are for members: 10 points every time you visit a place. Join for $11, one time.'); return; }
+      if(!navigator.geolocation){ say('Your browser cannot share your location, so we cannot check you in.'); return; }
+      btn.disabled = true; say('Finding where you are...');
+      navigator.geolocation.getCurrentPosition(function(pos){
+        call({ action: 'checkin', listing_id: l.id, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }).then(function(d){
+          btn.disabled = false;
+          if(d && d.ok){ done(); say(d.points ? 'Checked in. +' + d.points + ' points.' : 'Checked in. You have had today\'s points (5 places a day); this visit still counts.'); return; }
+          var w = d && d.why;
+          say(w === 'too_far' ? 'You look to be about ' + (d.distance_m >= 1000 ? (d.distance_m / 1609).toFixed(1) + ' miles' : d.distance_m + ' m') + ' away. Check in once you are there.'
+            : w === 'already_today' ? (done(), 'You already checked in here today. Come back tomorrow.')
+            : w === 'not_precise' ? 'Your location is not precise enough yet. Step outside or turn on precise location, then try again.'
+            : w === 'members_only' ? 'Check-ins are for members.'
+            : w === 'no_location' ? 'We do not have this place on the map yet.'
+            : 'That did not work. Try again.');
+        }).catch(function(){ btn.disabled = false; say('Could not connect. Try again.'); });
+      }, function(err){
+        btn.disabled = false;
+        say(err && err.code === 1 ? 'Allow location for this site to check in. We only use it to confirm you are here.' : 'We could not find your location. Try again.');
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
     });
   })();
 

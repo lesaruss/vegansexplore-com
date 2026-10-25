@@ -483,6 +483,19 @@ no socials with no hours or no working website) are held every night by `ve_dire
 `ve-directory-auto-hold`, 08:30 UTC), never a claimed or owned listing; one Sean puts back stays off the list for 90 days
 (`details.review_ok_until`). Off the Directory also takes it off the email list (`trg_ve_outreach_listing_hidden`).
 
+Member check-ins (Sean, 2026-10-25: "making a way that members can verify listings... every time they check in, they can get
+like 10 points... We can see a record of how many people are actually visiting, which members are visiting... if a business
+wants to run a campaign with us, we can target those people first... an ongoing bounty that stays there"; migration
+`20261025_ve_checkins.sql`, edge function `ve-checkin`). A member taps **Check in** on a listing's page while there
+(`directory/listing.html`, shown where the listing has `latitude`/`longitude`, which `ve-restaurant-audit` `essentials` fills from
+the Google place): the phone's location must be within 150 m (plus up to 100 m of its own uncertainty; a fix worse than 500 m
+is refused), once per place a day (Eastern), 10 points for up to 5 places a day, more recorded at 0 (`ve_checkin_save`, rows in
+`ve_checkins`; points move both balances, `points_ledger` reason `checkin`). Everyone sees "Member check-in N days ago · N
+members this month" (`ve_listing_checkins`, counts only); the team sees who in Depot > Directory review (`review_get`
+`checkins`), and the rows are the list for targeting a business's promotions. A check-in in the last 30 days keeps a place from
+being held automatically. On `/bounties` it is the always-open first card in every city (**Check in where you go**,
+`?campaign=check-ins`): how it works, Open the Directory, and the member's own check-ins (`ve-checkin` `mine`).
+
 On a city hub the banner bar's crumb is a community picker (All cities, then each `VE_HUBS` city; Sean, 2026-10-25): a city
 keeps the section you are on, All cities opens `/directory` from the Directory section, else `/communities`.
 
