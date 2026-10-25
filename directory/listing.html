@@ -87,6 +87,12 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .listing-page-main{min-width:0}
 .listing-sidebar{padding:28px 40px 40px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column}
 .listing-sidebar::-webkit-scrollbar{display:none}
+.loc-row{display:block;padding:9px 0;border-top:1px solid rgba(0,0,0,.07);text-decoration:none;color:inherit;font-size:13px;line-height:1.4}
+.loc-row:first-of-type{border-top:0}
+.loc-row strong{color:#1f5f22}
+.loc-row:hover strong{text-decoration:underline}
+.loc-row span:not(.loc-closed){display:block;color:rgba(26,26,26,.7);font-size:12.5px}
+.loc-closed{display:inline-block;font-size:10.5px;font-weight:800;color:#8a1c12;background:#FDE7E7;border-radius:6px;padding:1px 7px;margin-left:4px}
 
 /* SECTION */
 .section{margin-bottom:28px}
@@ -993,6 +999,42 @@ function fetchListing(slug){
   var url = SUPABASE_URL + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=*&limit=1';
   return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.json(); });
+}
+
+// One business, many locations (Sean, 2026-10-25; migration 20261025_listing_locations.sql). A location (parent_id set) fills
+// what it leaves empty from its main listing, which holds what they share; the page lists the group's other locations.
+var SHARED_FIELDS = ['description','tagline','logo_url','logo_alt_text','website','instagram','facebook','tiktok','youtube','booking_url','uber_eats_url','doordash_url'];
+function withMain(l){
+  if(!l || !l.parent_id) return Promise.resolve(l);
+  var url = SUPABASE_URL + '/rest/v1/listings?id=eq.' + encodeURIComponent(l.parent_id) + '&status=eq.approved&select=*&limit=1';
+  return fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).then(function(rows){
+    var m = rows && rows[0]; if(!m) return l;
+    SHARED_FIELDS.forEach(function(k){ if(!l[k] && m[k]) l[k] = m[k]; });
+    if(!(l.cuisines || []).length && (m.cuisines || []).length) l.cuisines = m.cuisines;
+    l._main = m;
+    return l;
+  }, function(){ return l; });
+}
+function loadLocations(l){
+  var mainId = l.parent_id || l.id;
+  var url = SUPABASE_URL + '/rest/v1/listings?or=(id.eq.' + mainId + ',parent_id.eq.' + mainId + ')&status=eq.approved&select=id,slug,name,location_label,address_street,address_city,address_state,business_status&order=address_state.asc,address_city.asc';
+  fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).then(function(rows){
+    rows = (rows || []).filter(function(x){ return x.id !== l.id; });
+    if(!rows.length) return;
+    // Open ones first, closed ones last (kept for memory).
+    rows.sort(function(a, b){ return (a.business_status === 'CLOSED_PERMANENTLY') - (b.business_status === 'CLOSED_PERMANENTLY'); });
+    var side = document.querySelector('.listing-page-grid .listing-sidebar'); if(!side) return;
+    var card = document.createElement('div'); card.className = 'side-card'; card.id = 've-locations';
+    card.innerHTML = '<div class="side-card-title">' + (rows.length === 1 ? 'Another location' : 'More locations (' + rows.length + ')') + '</div>' +
+      rows.map(function(x){
+        var closed = x.business_status === 'CLOSED_PERMANENTLY';
+        var title = x.location_label || x.address_city || x.name;
+        var where = [x.address_street, x.address_city, x.address_state].filter(Boolean).join(', ');
+        return '<a class="loc-row" href="/directory/' + encodeURIComponent(x.slug) + '"><strong>' + esc(title) + '</strong>' + (closed ? ' <span class="loc-closed">Closed</span>' : '') + (where ? '<span>' + esc(where) + '</span>' : '') + '</a>';
+      }).join('');
+    var first = side.querySelector('.side-card');
+    if(first && first.nextSibling) side.insertBefore(card, first.nextSibling); else side.appendChild(card);
+  }).catch(function(){});
 }
 
 function initials(name){
@@ -3635,7 +3677,7 @@ if(!slug || slug === 'listing'){
       var l = data[0];
       // The public directory rule (/public/ve-trust.js): a vegan-friendly listing the community
       // has not vetted yet (10 different voters, or a claim Sean approved) is for members only.
-      (window.VETrust ? VETrust.load() : Promise.resolve(null)).then(function(T){
+      Promise.all([window.VETrust ? VETrust.load() : Promise.resolve(null), withMain(l)]).then(function(res){ var T = res[0];
       if(T && !VETrust.visible(l, T)){ showMembersOnly(l, T); return; }
       renderListing(l);
       // Superadmins get the quick editor (section, how Vegan, open or closed).
@@ -3656,7 +3698,9 @@ if(!slug || slug === 'listing'){
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
-      fetchMenuItems(l.id).then(function(items){
+      loadLocations(l);
+      // A location with no menu of its own shows its main listing's.
+      fetchMenuItems(l.id).then(function(items){ return (items && items.length) || !l.parent_id ? items : fetchMenuItems(l.parent_id); }).then(function(items){
         if(items && items.length){
           var panel = document.getElementById('tab-menu');
           if(panel) panel.innerHTML = menuTabContent(items);

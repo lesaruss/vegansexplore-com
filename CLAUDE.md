@@ -540,6 +540,19 @@ Logos linked from elsewhere (Instagram pictures, whose links expire; website sha
 into `listings.details.logo_unverified` (143 listings) and show the letter. Restore one after checking it with the line in
 `20261010_listing_logos_letter_unless_ours.sql`; a new logo is copied into our storage, never hot-linked.
 
+Locations (Sean, 2026-10-25: "how are we accounting for restaurants that have multiple locations. Should they extend from the
+same listing and show a section for additional locations so they are all tied together. Also creating additional locations can
+be done from within the listing so it copies the majority of the content"; migration `20261025_listing_locations.sql`). A group
+is one main listing (`parent_id` null) and its locations (`listings.parent_id` = the main one, `location_label` "West Village").
+Each location stays its own listing (street, city, hours, phone, Google place, map pin, votes, check-ins, review state, its own
+city hub); the main listing holds what they share. A location page fills what it leaves empty (about, logo, socials, website,
+order links, cuisines, menu) from the main listing (`withMain`, `SHARED_FIELDS` in `directory/listing.html`), and every page in a
+group shows **More locations** in the sidebar (`loadLocations`; closed ones last, tagged Closed). In the listing editor's
+**Locations** section: Part of (the main listing's address), this location's name, and **Add a location** (`ve-claims`
+`admin_location_add`, `ve_listing_add_location()`: copies the shared content into a new live listing named "<Business> -
+<Location>"; the nightly essentials pass fills its hours, Google place and pin). One level only. Branches are locations, never
+duplicates to merge.
+
 Duplicates (Sean, 2026-10-10: "merge the duplicates"): a listing is never deleted. A duplicate gets status `rejected` with
 `details.merged_into` (the listing that stays), `merged_at` and `status_before_merge`, and what pointed at it (outreach,
 votes, saves) moves to the listing that stays; a second queued outreach for the same business is `skipped`. 168 were
