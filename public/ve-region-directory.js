@@ -75,14 +75,14 @@
   var CSS = ''
     + '.vrd-root{font-family:Montserrat,sans-serif}'
     + '.vrd-root .cat-tabs{display:flex;gap:0;border-bottom:2px solid #e8e8e8;flex-wrap:wrap}'
-    + '.vrd-root .cat-tab{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;border:none;background:transparent;color:#888;cursor:pointer;font-family:Montserrat,sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}'
+    + /* Muted text is #666 (5.7:1 on white, WCAG AA); #888 and #aaa failed. */ '.vrd-root .cat-tab{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;border:none;background:transparent;color:#666;cursor:pointer;font-family:Montserrat,sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}'
     + '.vrd-root .cat-tab.active{color:#1a1a1a;border-bottom-color:#5EC47A}'
     + '.vrd-root .cat-tab:hover:not(.active){color:#555}'
     + '.vrd-root .board-panel{display:none;padding-top:16px}'
     + '.vrd-root .board-panel.active{display:block}'
     + '.vrd-root .vrd-frame{display:block;width:100%;min-height:600px;border:1px solid rgba(0,0,0,.09);border-radius:14px;background:#f7f8f7}'
     + '.vrd-root .subcat-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #eee}'
-    + '.vrd-root .subcat-pill{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#888;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s}'
+    + '.vrd-root .subcat-pill{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s}'
     + '.vrd-root .subcat-pill.sc-active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}'
     + '.vrd-root .subcat-pill:hover:not(.sc-active){border-color:#5EC47A;color:#2d7a4f}'
     + '.vrd-root .subcat-pills .vrd-search-wrap{position:relative;margin-left:auto;flex:0 1 240px;min-width:160px;max-width:260px}'
@@ -93,9 +93,15 @@
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}'
+    + '.vrd-root .sb-f{display:contents}.vrd-root .sb-phone{display:none}'
     + '.vrd-root .sort-bar .vrd-geo,.vrd-root .sort-bar .vrd-sub{display:contents}.vrd-root .sort-bar [hidden]{display:none!important}'
-    + '.vrd-root .geo-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-left:8px}'
-    + '.vrd-root .sort-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa}'
+    // Phones: each filter is a small label over its dropdown, two across (Sean, 2026-10-25: "check the directory page on mobile").
+    + '@media(max-width:600px){.vrd-root .sort-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px;align-items:end}'
+    + '.vrd-root .sort-bar .sb-f,.vrd-root .sort-bar .vrd-geo,.vrd-root .sort-bar .vrd-sub{display:flex;flex-direction:column;align-items:stretch;gap:5px;min-width:0}'
+    + '.vrd-root .sort-bar .sb-phone{display:block}.vrd-root .sort-bar .geo-label,.vrd-root .sort-bar .sort-label{margin-left:0;font-size:10px}'
+    + '.vrd-root .sort-bar select{width:100%;max-width:100%;min-width:0}}'
+    + '.vrd-root .geo-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666;margin-left:8px}'
+    + '.vrd-root .sort-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666}'
     + '.vrd-root .sort-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:5px 26px 5px 12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}'
     + '.vrd-root .sort-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .rank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}'
@@ -114,13 +120,15 @@
     + '.vrd-root .rank-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}'
     + '.vrd-root .rank-name{font-size:14px;font-weight:800;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}'
     + '.vrd-root .rank-meta{font-size:12px;font-weight:600;color:#555;line-height:1}'
-    + '.vrd-root .rank-subcat{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#aaa;margin-top:2px}'
+    + '.vrd-root .rank-subcat{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#666;margin-top:2px}'
     + '.vrd-root .rank-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:6px;flex-shrink:0;height:60px}'
     + '.vrd-root .vote-count{font-size:16px;font-weight:900;color:#1a1a1a;line-height:1}'
-    + '.vrd-root .vote-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#aaa}'
+    + '.vrd-root .vote-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#666}'
     + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:4px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
     + '.vrd-root .vote-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A}'
-    + '.vrd-root .vrd-vegan{display:inline-block;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;vertical-align:1px}'
+    // The category and its badges wrap together, so a badge on a second line starts at the edge (2026-10-25).
+    + '.vrd-root .rank-subcat{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px}'
+    + '.vrd-root .vrd-vegan{display:inline-block;margin-left:0;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;vertical-align:1px}'
     + '.vrd-root .vrd-vegan-fully{background:#e3f6e7;color:#1f6b33}'
     + '.vrd-root .vrd-vegan-friendly{background:#f0f0f0;color:#555}'
     + '.vrd-root .vrd-vegan-options{background:#f5f1e8;color:#6b5a2e}'
@@ -131,12 +139,12 @@
     + '.vrd-root .av{border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}'
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
     + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5EC47A}'
-    + '.vrd-root .vrd-empty{grid-column:1/-1;padding:48px 24px;text-align:center;color:#aaa;font-size:13px;font-weight:600}'
+    + '.vrd-root .vrd-empty{grid-column:1/-1;padding:48px 24px;text-align:center;color:#666;font-size:13px;font-weight:600}'
     + '.vrd-root .vrd-pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:20px;padding-top:16px}'
     + '.vrd-root .vrd-page-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 18px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer;transition:border-color .15s}'
     + '.vrd-root .vrd-page-btn:hover:not(:disabled){border-color:#5EC47A;color:#2d7a4f}'
     + '.vrd-root .vrd-page-btn:disabled{opacity:.35;cursor:default}'
-    + '.vrd-root .vrd-page-indicator{font-size:11px;font-weight:700;color:#888;letter-spacing:.04em}'
+    + '.vrd-root .vrd-page-indicator{font-size:11px;font-weight:700;color:#666;letter-spacing:.04em}'
     + '@media(max-width:768px){.vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}.vrd-root .cat-tab{font-size:10px;padding:10px 12px}.vrd-root .perpage-select{margin-left:0}}';
 
   function injectStyleOnce() {
@@ -153,10 +161,11 @@
   }
 
   function buildBar(cat, config) {
-    var sortHtml = '<span class="sort-label">Sort by</span>' +
+    // Each label and its dropdown are one field (.sb-f): a row on desktop, two across on phones (Sean, 2026-10-25).
+    var sortHtml = '<span class="sb-f"><span class="sort-label">Sort by</span>' +
       '<select aria-label="Sort listings" class="sort-select" data-vrd-sort="' + cat.key + '">' +
       '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="recent">Most Recent</option><option value="added">First Added</option>' +
-      '</select>';
+      '</select></span>';
     var geoHtml = '';
     if (config && config.regions) {
       // Every city (/directory): a region first, then its cities.
@@ -175,17 +184,17 @@
         '<option value="">All Cities</option></select>';
     }
     // How Vegan (Sean, 2026-09-27): let people keep to 100% Vegan places without asking anyone.
-    var veganHtml = '<span class="geo-label">Vegan</span>' +
+    var veganHtml = '<span class="sb-f"><span class="geo-label">Vegan</span>' +
       '<select aria-label="Filter by how Vegan" class="sort-select" data-vrd-vegan="' + cat.key + '">' +
-      '<option value="">All</option><option value="fully">100% Vegan only</option><option value="friendly">Vegan-friendly</option><option value="options">Vegan options</option></select>';
+      '<option value="">All</option><option value="fully">100% Vegan only</option><option value="friendly">Vegan-friendly</option><option value="options">Vegan options</option></select></span>';
     var typeOptions = '<option value="">All</option>' +
       '<option value="online">Online</option>' +
       '<option value="closed">Closed</option>';
-    var typeHtml = veganHtml + '<span class="geo-label">Type</span>' +
-      '<select aria-label="Filter by type" class="sort-select" data-vrd-type="' + cat.key + '">' + typeOptions + '</select>';
-    var perpageHtml = '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
+    var typeHtml = veganHtml + '<span class="sb-f"><span class="geo-label">Type</span>' +
+      '<select aria-label="Filter by type" class="sort-select" data-vrd-type="' + cat.key + '">' + typeOptions + '</select></span>';
+    var perpageHtml = '<span class="sb-f"><span class="geo-label sb-phone">Show</span><select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
       '<option value="24" selected>Show 24</option><option value="48">Show 48</option><option value="111">Show 111</option>' +
-      '</select>';
+      '</select></span>';
     // A sub-section's own filters (SUB_FILTERS), shown while its pill is picked.
     var subHtml = '<span class="vrd-sub" data-sub-for="kind" hidden><span class="geo-label">What they make</span>' +
       '<select aria-label="Filter by what they make" class="sort-select" data-vrd-kind="' + cat.key + '"><option value="">All</option>' +
@@ -331,7 +340,7 @@
     var subcat = sectionsOf(l).join('|');
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed"' + extraAttrs(l) + ' style="opacity:.7">' +
       makeAvatar(l) +
-      '<div class="rank-info"><div class="rank-name" style="color:#888">' + esc(l.name) + '</div>' +
+      '<div class="rank-info"><div class="rank-name" style="color:#555">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
       '<div class="rank-subcat"><span style="font-size:9px;font-weight:700;letter-spacing:.08em;color:#c00;border:1px solid #c00;border-radius:20px;padding:2px 8px;text-transform:uppercase">Permanently Closed</span></div></div>' +
       '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span>' + adminBtn(l) + '</div>' +

@@ -30,7 +30,8 @@
     .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
     .eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(36px, 5.5vw, 68px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 18px; }
-    .hero h1 em { display: block; color: var(--ve-green); font-style: normal; }
+    .hero h1 em { display: block; color: #6fd98c; font-style: normal; }
+    .hero h1 { text-shadow: 0 2px 14px rgba(0,0,0,0.6); }
     .hero-sub { font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.9); max-width: 520px; }
     .city-pick { display: flex; align-items: center; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
     .city-pick label { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
@@ -60,7 +61,7 @@
     .vote-box-copy strong { display: block; font-size: 20px; font-weight: 900; margin-bottom: 6px; }
     .vote-box-copy strong span { color: #5EC47A; }
     .vote-box-copy p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.78); max-width: 860px; }
-    .btn-join { display: inline-flex; align-items: center; background: var(--ve-orange); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 16px 30px; border-radius: 6px; text-decoration: none; transition: background 0.15s; }
+    .btn-join { display: inline-flex; align-items: center; background: var(--ve-orange); color: #1a1a1a; /* dark on orange, 8:1 (white was 2.2:1) */ font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 16px 30px; border-radius: 6px; text-decoration: none; transition: background 0.15s; }
     .btn-join:hover { background: var(--ve-orange-dark); }
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
 
@@ -75,7 +76,8 @@
       .city-pick select { min-width: 0; width: 100%; }
       .hero.is-collapsed .hero-inner { padding: 12px 16px; }
       .hero.is-collapsed .city-pick { width: 100%; }
-      .hero.is-collapsed .city-pick label { display: none; }
+      /* Folded: the label leaves the screen but stays for screen readers. */
+      .hero.is-collapsed .city-pick label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
       .hero.is-collapsed .city-pick select { flex: 1; width: auto; }
     }
     @media (max-width: 700px) {
