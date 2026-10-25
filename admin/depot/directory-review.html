@@ -105,6 +105,19 @@
       <div id="view"></div>
     </div>
   </div>
+  <script>
+    // In the Directory's Review tab (Sean, 2026-10-25: "just so I'm doing it from one place"): no nav, footer or Depot header,
+    // the Directory around it has them. depot-tabs.js tells the Directory how tall the page is.
+    (function () {
+      var framed = false;
+      try { framed = window.self !== window.top && window.parent.location.origin === location.origin && /^\/(directory|communities)(\/|$)/.test(window.parent.location.pathname); } catch (e) {}
+      if (!framed) return;
+      document.documentElement.classList.add('ve-embedded', 'dr-framed');
+      var st = document.createElement('style');
+      st.textContent = '.ve-embedded .ve-nav,.ve-embedded .ve-footer,.ve-embedded .ve-mob-menu,.ve-embedded .ve-mob-overlay,.dr-framed .eyebrow,.dr-framed h1,.dr-framed .depot-head,.dr-framed #depot-tabs{display:none !important}.dr-framed body{background:transparent}.dr-framed .wrap{padding:16px 16px 24px}';
+      document.head.appendChild(st);
+    })();
+  </script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script>
