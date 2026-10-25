@@ -228,10 +228,10 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
      (two rows at most) beside it, then Vote, Save and Check in in one row across the bottom of the header. */
   /* Then (Sean, 2026-10-25): the breadcrumbs across the full width on top, the logo with the title and pills under them,
      the buttons at the base, all the same width. */
-  .listing-hero{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto 1fr auto;column-gap:14px;row-gap:0;padding:14px 16px 16px;align-items:start}
+  .listing-hero{display:grid;grid-template-columns:var(--av,76px) minmax(0,1fr);grid-template-rows:auto auto 1fr auto;column-gap:14px;row-gap:0;padding:14px 16px 16px;align-items:start}
   .listing-hero-content,.listing-hero-body{display:contents}
   .listing-breadcrumb{grid-column:1 / -1;grid-row:1;position:relative;font-size:9px;letter-spacing:0.1em;line-height:1.5;margin:0 0 12px}
-  .listing-hero-avatar{width:76px;min-width:76px;height:76px;border-radius:10px;font-size:20px;grid-column:1;grid-row:2 / 4}
+  .listing-hero-avatar{width:var(--av,76px);min-width:var(--av,76px);height:var(--av,76px);border-radius:10px;font-size:20px;grid-column:1;grid-row:2 / 4}
   .listing-hero .listing-name{grid-column:2;grid-row:2;position:relative;min-width:0}
   .listing-hero .listing-badges{grid-column:2;grid-row:3;position:relative;min-width:0}
   .listing-breadcrumb .crumb-here{display:none}
@@ -1043,6 +1043,23 @@ function loadLocations(l){
     if(first && first.nextSibling) side.insertBefore(card, first.nextSibling); else side.appendChild(card);
   }).catch(function(){});
 }
+
+// Phones (Sean, 2026-10-25): the logo is as tall as the title and pills beside it, so when the pills wrap to a second row the
+// logo grows with them and sits flush. A bigger logo narrows the text, which can wrap again, so measure until it settles.
+function fitHeroAvatar(){
+  var hero = document.querySelector('.listing-hero'); if(!hero) return;
+  if(!window.matchMedia('(max-width:768px)').matches){ hero.style.removeProperty('--av'); return; }
+  var name = hero.querySelector('.listing-name'), badges = hero.querySelector('.listing-badges'); if(!name || !badges) return;
+  hero.style.removeProperty('--av');
+  for(var i = 0, last = 0; i < 4; i++){
+    var h = Math.round(badges.getBoundingClientRect().bottom - name.getBoundingClientRect().top);
+    var size = Math.max(76, Math.min(124, h));
+    if(Math.abs(size - last) < 2) break;
+    hero.style.setProperty('--av', size + 'px'); last = size;
+  }
+}
+window.addEventListener('resize', function(){ clearTimeout(fitHeroAvatar._t); fitHeroAvatar._t = setTimeout(fitHeroAvatar, 120); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitHeroAvatar(); });
 
 function initials(name){
   var words = (name||'').trim().split(/\s+/);
@@ -3686,7 +3703,7 @@ if(!slug || slug === 'listing'){
       // has not vetted yet (10 different voters, or a claim Sean approved) is for members only.
       Promise.all([window.VETrust ? VETrust.load() : Promise.resolve(null), withMain(l)]).then(function(res){ var T = res[0];
       if(T && !VETrust.visible(l, T)){ showMembersOnly(l, T); return; }
-      renderListing(l);
+      renderListing(l); fitHeroAvatar();
       // Superadmins get the quick editor (section, how Vegan, open or closed).
       if(window.VEListingAdmin && VEListingAdmin.isAdmin()){
         var hr = document.querySelector('.listing-hero-right');
@@ -3745,7 +3762,7 @@ function renderDemo(){
   CST.week = DEMO.startWeek || 6;
   l._campaign = DEMO.campaignAt ? DEMO.campaignAt(CST.week) : (DEMO.campaign || null);
   window._veDemoListing = l;
-  renderListing(l);
+  renderListing(l); fitHeroAvatar();
   document.title = l.name + ' (Illustrative) — VEGANS EXPLORE';
   var rb = document.createElement('meta'); rb.name = 'robots'; rb.content = 'noindex, nofollow'; document.head.appendChild(rb);
   document.getElementById('listing-root').insertAdjacentHTML('afterbegin', demoBar());
