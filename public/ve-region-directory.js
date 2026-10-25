@@ -118,7 +118,7 @@
     + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#1f5f22;color:#fff;vertical-align:2px;white-space:nowrap}'
     + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
     + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
-    + '.vrd-root .vrd-vetting{margin-top:4px;font-size:11px;font-weight:700;color:#8a5a00;line-height:1.35}'
+    + '.vrd-root .vrd-vetting{margin-top:3px;font-size:11px;font-weight:700;color:#8a5a00;line-height:1.3;white-space:nowrap}'
     + '.vrd-root .av{border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}'
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
     + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5EC47A}'
@@ -759,7 +759,7 @@
   // details so it never runs into the vote button (Sean, 2026-10-25).
   function vettingNote(l) {
     if (!TRUST || !window.VETrust || !window.VETrust.pending(l, TRUST)) return '';
-    return '<div class="vrd-vetting" title="Shows to the public once ' + TRUST.min_voters + ' different members vote for it, or the business claims it.">' + (l.voter_count || 0) + ' of ' + TRUST.min_voters + ' members have voted</div>';
+    return '<div class="vrd-vetting" title="Shows to the public once ' + TRUST.min_voters + ' different members vote for it, or the business claims it.">' + (l.voter_count || 0) + ' of ' + TRUST.min_voters + ' member votes</div>';
   }
 
   function fetchClosed(root, config, approved) {
