@@ -14,9 +14,10 @@
  *   Promotions    what we run that brings members through the door, each marked Live or Coming
  *   Test yourself the quiz; 80% or better earns the Entrepreneur Track badge
  *   My list       members: saved fixes, interviews and promotions (ve_guide_saves through ve-cookbook)
- *   Get access    visitors: $11 or 1 Guide credit
+ *   Get access    visitors: $11 or 1,100 points
  *
- * Access is the Dairy Guide's (canon-ve-guide-pricing v3): ve-guide-unlock for this slug decides; the members-only text (the
+ * Access is the Dairy Guide's (Sean locked 2026-10-25, playbook ve-pricing-points-passport: $11 or 1,100 points, and buying
+ * it makes the buyer a member; 'credit' is retired but still renders): ve-guide-unlock for this slug decides; the members-only text (the
  * other fixes, two facts, the quiz) is ve_guides.content_html, handed out only to its owners. Never add it to this repo.
  * The full audit is its own add-on, never part of the Guide (Sean, 2026-10-10): it is bought here, but anyone can buy it.
  */
@@ -66,7 +67,9 @@
       sayMember: 'Ready? Take the quiz. Score eighty percent or better and the Entrepreneur Track badge is yours.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved lives here: fixes, interviews and promotions, so you can pick up where you left off.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'Get the whole Guide for eleven dollars, or one Guide credit. It\'s yours to keep, and it keeps growing.',
-      sayCredit: 'You have a Guide credit. Use it here and the whole Guide is yours to keep.' }
+      sayCredit: 'You have a Guide credit. Use it here and the whole Guide is yours to keep.',
+      // On points (Sean locked 2026-10-25). Not recorded yet, so this tab shows her picture and the bubble carries the words.
+      sayPoints: 'The Restaurant Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
   ];
   // Liz on camera (recorded 2026-10-10): el-media voice, Wan 2.7 from one pose per tab, cut by hand where her mouth closes.
   var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/liz/restaurant-guide/';
@@ -173,20 +176,29 @@
       (o.acts ? '<div class="dg-acts">' + o.acts + '</div>' : '') + '</div>';
   }
 
-  // ---------- the offer (the Guide: $11 or 1 Guide credit) ----------
-  function priced() { return ST.rule === 'credit'; }
+  // ---------- the offer (the Guide: $11 or 1,100 points) ----------
+  function priced() { return ST.rule === 'credit' || ST.rule === 'points'; }
+  function onPoints() { return ST.rule === 'points'; }
   function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
   function credits(n) { return n + ' Guide credit' + (n === 1 ? '' : 's'); }
   function mode() {
     if (access === 'guest' || access === 'checking') return 'join';
     if (!priced()) return 'activate';
+    if (onPoints()) return ST.balance >= ST.cost ? 'points' : 'buy';
     if (ST.credits >= 1) return 'unlock';
     return ST.active ? 'buy' : 'activate';
   }
   function canExchange() { return ST.balance >= ST.rate && ST.credits < ST.cap; }
-  function ctaLabel() { return { join: 'Join for $11', activate: 'Become a Founding Member', unlock: 'Unlock with 1 credit', buy: 'Get it now for $11' }[mode()]; }
+  function ctaLabel() {
+    return { join: onPoints() ? 'Get it for $11' : 'Join for $11', activate: 'Become a Founding Member', unlock: 'Unlock with 1 credit',
+      points: 'Unlock with ' + pts(ST.cost) + ' points', buy: onPoints() ? 'Get it for $11' : 'Get it now for $11' }[mode()];
+  }
   function offerLine() {
     var m = mode();
+    if (onPoints()) {
+      if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
+      return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+    }
     if (m === 'unlock') return 'Unlock it with 1 Guide credit. You have ' + ST.credits + '.';
     if (m === 'buy') return 'Get it now for $11, or use a Guide credit: Passport gives you one every month.';
     return 'Joining is $11, one time, and comes with a Guide credit: unlock this Guide or any other.';
@@ -195,19 +207,22 @@
     var m = mode();
     return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
       (m === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') +
-      (m === 'buy' ? (canExchange() ? '<a href="#" data-exchange>Use ' + pts(ST.rate) + ' points for a credit</a>' : '<a href="/passport">Passport: a credit every month</a>') : '') + '</div>';
+      (m === 'points' ? '<a href="#" data-buy>Or get it for $11</a>' : '') +
+      (m === 'buy' && onPoints() ? '<a href="/passport">Or get your Passport: $11 with 1,100 points</a>' : '') +
+      (m === 'buy' && !onPoints() ? (canExchange() ? '<a href="#" data-exchange>Use ' + pts(ST.rate) + ' points for a credit</a>' : '<a href="/passport">Passport: a credit every month</a>') : '') + '</div>';
   }
   function take(d) {
     if (!d || d.error) return;
     if (d.access_rule && d.access_rule !== ST.rule) { ST.rule = d.access_rule; if (TOUR.shown === 'join') TOUR.shown = null; }
     if (d.points_per_credit) ST.rate = d.points_per_credit;
+    if (d.cost) ST.cost = d.cost;
     if (d.credit_cap) ST.cap = d.credit_cap;
     ST.balance = d.balance || 0; ST.credits = d.credits || 0; ST.active = d.membership_status === 'active'; ST.via = d.via || null;
   }
   function drawJoinbox() {
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
     var m = mode(), price = box.querySelector('.dg-jb-price'), btn = box.querySelector('[data-join]'), signin = box.querySelector('.dg-jb-in');
-    price.innerHTML = m === 'unlock' || m === 'buy' ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
+    price.innerHTML = !onPoints() && (m === 'unlock' || m === 'buy') ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
       : '<b>$11</b><small>one time<br>purchase</small>';
     btn.textContent = ctaLabel();
     signin.style.display = m === 'join' ? '' : 'none';
@@ -692,6 +707,18 @@
       '<li><b>The Restaurant Pulse:</b> our interviews with business owners, and the research, every fact sourced.</li>' +
       '<li><b>Get featured and Promotions:</b> how to get to the top of the Directory, and what we run that brings members in.</li>' +
       '<li><b>The quiz</b> and the Entrepreneur Track badge, and My list to keep your place.</li></ul></div>';
+    if (onPoints()) {
+      var box2 = m === 'points'
+        ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
+          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
+        : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create a free account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
+            : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
+          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
+          '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
+      main.innerHTML = head('Get access', 'Open the whole Restaurant Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Buying one makes you a member. The free check in Your audit stays free for everyone.') + list;
+      main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box2 + '</div>');
+      return;
+    }
     var passport = '<p class="dg-pp">Or get <a href="/passport">Passport</a>: a new Guide credit every month.</p>';
     if (m === 'unlock') box = '<div class="dg-big">1<small>credit</small></div><p>You have ' + credits(ST.credits) + '. Unlock the Guide and it is yours to keep.</p><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status;
     else if (m === 'buy') box = '<div class="dg-big">$11<small>yours to keep</small></div><p>You have no Guide credits right now. Get it now for $11, one time.</p><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
@@ -719,7 +746,7 @@
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[0] === 'audit' ? '<span class="dg-mlock" style="color:#1f5f22 !important">Free</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start">' + (TOUR.started ? '' : '<button type="button" class="dg-btn" data-tour-start>&#9654; Start the tour</button>') + '<a class="dg-btn dg-ghost" href="#/audit">Run my free check</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Liz walk you through it.</p>' : '<p>The full Guide is $11 or 1 Guide credit. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Liz walk you through it.</p>' : '<p>' + (onPoints() ? 'The full Guide is $11 or 1,100 points.' : 'The full Guide is $11 or 1 Guide credit.') + ' <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
   }
 
   // ---------- search (members) ----------
@@ -775,7 +802,7 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Liz, your Guide');
-  function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
+  function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
   function cueLiz(k) {
     var c = clip(k), key = k + (member() ? ':m' : '') + (k === 'join' && mode() === 'unlock' ? ':c' : '');
     if (TOUR.shown === key) return;
@@ -804,7 +831,7 @@
   function drawLiz() {
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = member() && t.sayMember ? t.sayMember : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
+    bubble.textContent = member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
     var has = !!clip(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
@@ -908,14 +935,24 @@
       return;
     }
     if ((el = e.target.closest('[data-exchange]'))) { e.preventDefault(); exchange(el); return; }
+    if ((el = e.target.closest('[data-buy]'))) { e.preventDefault(); if (token()) buyNow(el); return; }
     var jb = e.target.closest('[data-join]');
     if (jb) {
       if (!a || access === 'checking' || jb.disabled) return;
       stopLiz(); drawLiz();
       var m = mode();
+      // On points, a new account goes straight on to the Guide's own $11 checkout (VE_ACTIVATE_HANDLER takes over the
+      // $11 membership window), since buying the Guide is what makes them a member.
+      if (m === 'join' && onPoints()) {
+        var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
+        window.VE_ACTIVATE_HANDLER = go;
+        a.showAuthModal('Create your free account, then get the Restaurant Guide for $11. Buying it makes you a member.', go, 'signup');
+        return;
+      }
       if (m === 'join') a.showAuthModal('Create your account. Then become a Founding Member: $11, and your first Guide credit comes with it.', function () { location.reload(); }, 'signup');
       else if (m === 'activate') a.showActivateModal('Become a Founding Member: $11, one time. Your first Guide credit comes with it, and the full community.');
       else if (m === 'unlock') unlock(jb);
+      else if (m === 'points') unlockPoints(jb);
       else buyNow(jb);
     }
   });
@@ -927,6 +964,16 @@
       if (d && d.error === 'no_credit') { ST.credits = 0; route(); return; }
       throw 0;
     }).catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('That did not go through, and no credit was used. Try again in a minute.'); });
+  }
+  // Spend 1,100 points on the Guide (ve-guide-unlock unlock), then open it.
+  function unlockPoints(btn) {
+    var tok = token(); if (!tok) return;
+    btn.disabled = true; btn.textContent = 'Unlocking...';
+    api('unlock', tok).then(function (d) {
+      if (d && d.unlocked) return api('open', tok).then(function (o) { take(o); if (o && o.unlocked && o.html) becomeMember(o.html); else throw 0; });
+      if (d && d.error === 'insufficient_points') { ST.balance = d.balance || 0; route(); return; }
+      throw 0;
+    }).catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('That did not go through, and no points were spent. Try again in a minute.'); });
   }
   function exchange(el) {
     var tok = token(); if (!tok || el.getAttribute('aria-busy')) return;
@@ -951,6 +998,7 @@
     api('open', tok).then(function (d) {
       take(d);
       if (d && d.unlocked && d.html) { setStatus(''); becomeMember(d.html); return; }
+      if (onPoints() && what === 'activate' && ST.active && ST.balance >= ST.cost) { location.hash = '#/join'; route(); setStatus('Welcome in! Your 1,100 welcome points are here. Unlock the Guide with them.'); return; }
       if (what === 'activate' && ST.active && ST.credits >= 1) { location.hash = '#/join'; route(); setStatus('Welcome in! Your Guide credit is here. Unlock the Guide with it.'); return; }
       if (tries > 0) { setTimeout(function () { confirmAfterCheckout(tok, tries - 1, what); }, 2500); return; }
       route(); setStatus('Your payment went through. It can take a minute to show here: refresh this page shortly.');

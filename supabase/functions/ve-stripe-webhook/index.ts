@@ -150,7 +150,7 @@ function buildPointsReceiptEmail(points: number, balance: number): string {
 }
 
 // Thank-you for a contribution from a member who already holds the Passport (the dashboard's Contribute).
-// It adds no points (Sean, 2026-10-25), so the email names the amount and what it helps build.
+// It earns the flat 25-point thank-you, never points by the dollar (Sean, 2026-10-25).
 function buildContributionThanksEmail(amountCents: number): string {
   const dollars = (amountCents / 100).toLocaleString('en-US', { minimumFractionDigits: amountCents % 100 ? 2 : 0 })
   return `<!DOCTYPE html>
@@ -163,7 +163,7 @@ function buildContributionThanksEmail(amountCents: number): string {
       <tr><td style="background:#1a1a1a;padding:28px 32px;"><span style="color:#3A9B3E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span></td></tr>
       <tr><td style="padding:32px;">
         <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">Thank you for your contribution</h1>
-        <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#444;">Your $${dollars} helps us build faster: Community Nights, events, and support for local Vegan businesses and organizations. It is a contribution to our community, not a tax-deductible donation.</p>
+        <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#444;">Your $${dollars} helps us build faster: Community Nights, events, and support for local Vegan businesses and organizations. It is a contribution to our community, not a tax-deductible donation. A 25-point thank-you is in your account.</p>
         <a href="https://vegansexplore.com/dashboard" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Back to your dashboard</a>
       </td></tr>
       <tr><td style="background:#f9f9f9;padding:14px 32px;border-top:1px solid #eee;"><p style="margin:0;font-size:11px;color:#aaa;">VEGANS EXPLORE &nbsp;|&nbsp; vegansexplore.com</p></td></tr>
@@ -175,8 +175,8 @@ function buildContributionThanksEmail(amountCents: number): string {
 }
 
 // Branded receipt for the Passport, used by the $11 one-time join (entry_contribution) and the
-// legacy monthly subscription's signup and renewals. Sean, 2026-10-25: the Passport comes with a
-// Guide credit, not points; points come from Bounties, competitions and what members do on the site.
+// legacy monthly subscription's signup and renewals. Sean locked 2026-10-25: the Passport comes with
+// 1,100 welcome points (one Guide's worth); more points come from taking part.
 function buildPassportReceiptEmail(opts: { renewal: boolean }): string {
   const { renewal } = opts
   return `<!DOCTYPE html>
@@ -189,13 +189,13 @@ function buildPassportReceiptEmail(opts: { renewal: boolean }): string {
       <tr><td style="background:#1a1a1a;padding:28px 32px;"><span style="color:#3A9B3E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span></td></tr>
       <tr><td style="padding:32px;">
         <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">${renewal ? 'Your Passport renewed' : 'Your Passport is active'}</h1>
-        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your Passport renewed and a new Guide credit is in your account.' : 'Thank you for joining Vegans Explore. Your Passport is active: vote for your favorite listings in the Directory and build your Vegan world from your dashboard.'}</p>
-        <div style="background:#e8f5e9;border:1px solid #b8ddb9;border-radius:8px;padding:18px 22px;margin:0 0 24px;">
-          <p style="margin:0 0 4px;font-size:12px;color:#2d7d31;font-weight:700;letter-spacing:.05em;">GUIDE CREDIT</p>
-          <p style="margin:0;font-size:26px;font-weight:800;color:#2d7d31;">1 Guide, on us</p>
-          <p style="margin:6px 0 0;font-size:13px;color:#2d7d31;">Use it to unlock any Guide. It is yours to keep.</p>
-        </div>
-        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#444;">Points come from what you do in the community: Bounties, competitions and taking part on the site.</p>
+        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your Passport renewed. Thank you for being part of the community.' : 'Thank you for joining Vegans Explore. Your Passport is active: vote for your favorite listings in the Directory and build your Vegan world from your dashboard.'}</p>
+        ${renewal ? '' : `<div style="background:#e8f5e9;border:1px solid #b8ddb9;border-radius:8px;padding:18px 22px;margin:0 0 24px;">
+          <p style="margin:0 0 4px;font-size:12px;color:#2d7d31;font-weight:700;letter-spacing:.05em;">WELCOME POINTS</p>
+          <p style="margin:0;font-size:26px;font-weight:800;color:#2d7d31;">+1,100 points</p>
+          <p style="margin:6px 0 0;font-size:13px;color:#2d7d31;">One Guide's worth: unlock a Guide, or use them any way points work.</p>
+        </div>`}
+        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#444;">More points come from what you do in the community: Bounties, competitions and taking part on the site. Your lifetime points move you up through Level 1, 2 and 3.</p>
         <a href="https://vegansexplore.com/guides" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Pick your Guide</a>
       </td></tr>
       <tr><td style="background:#f9f9f9;padding:14px 32px;border-top:1px solid #eee;"><p style="margin:0;font-size:11px;color:#aaa;">VEGANS EXPLORE &nbsp;|&nbsp; vegansexplore.com</p></td></tr>
@@ -618,7 +618,7 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: 'Your Passport is active - your first Guide is on us',
+              subject: 'Your Passport is active',
               html: buildPassportReceiptEmail({ renewal: false })
             })
           })
@@ -931,7 +931,8 @@ Deno.serve(async (req: Request) => {
     // --- VE entry contribution branch (ve-entry-checkout sessions carry this metadata) ---
     // Added 2026-09-17 (Logan) for the pay-or-pledge gate: the one-time,
     // any-amount path to an 'active' membership_status (the $11 Passport).
-    // It credited points at $1 = 100 until Sean, 2026-10-25; it now adds none.
+    // It credited points at $1 = 100 until Sean, 2026-10-25; now the join gives 1,100 welcome points and every
+    // payment the 25-point thank-you.
     if (session.metadata?.type === 'entry_contribution') {
       const memberId = session.metadata.member_id
       const points = parseInt(session.metadata.amount_cents || '0', 10)
@@ -960,11 +961,16 @@ Deno.serve(async (req: Request) => {
         return new Response(`Update error: ${memberUpdateError.message}`, { status: 500 })
       }
 
-      // Sean, 2026-10-25: joining (the $11, one time) is the Passport and comes with 1 Guide credit
-      // (trg_ve_founding_credit grants it as membership_status turns active). Money never becomes points,
-      // on joining or on a later contribution: points are earned (Bounties, competitions, community
-      // activity), and extra Guide credits are $11 each (ve-guide-unlock buy_credits).
-      console.log('Entry contribution activated membership:', memberId, points)
+      // Sean locked 2026-10-25 (playbook ve-pricing-points-passport): joining, $11 one time, is the Passport and comes with
+      // 1,100 welcome points, once per member (ref 'welcome'). Every payment also earns the flat 25-point thank-you. Points
+      // are never bought: neither amount follows the dollars paid.
+      if (!repeat) {
+        const { error: wErr } = await supabase.rpc('ve_points_grant', { p_member: memberId, p_amount: 1100, p_reason: 'welcome', p_ref: 'welcome' })
+        if (wErr) console.error('welcome points error:', wErr)
+      }
+      const { error: tErr } = await supabase.rpc('ve_purchase_thanks', { p_member: memberId, p_ref: `stripe:${session.id}` })
+      if (tErr) console.error('purchase thanks error:', tErr)
+      console.log('Entry contribution activated membership:', memberId, points, repeat ? 'contribution' : 'join')
 
       try {
         const { data: member } = await supabase.from('members').select('email').eq('id', memberId).maybeSingle()
@@ -978,7 +984,7 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Passport is active - your first Guide is on us',
+              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Passport is active - 1,100 welcome points are in',
               html: repeat ? buildContributionThanksEmail(points) : buildPassportReceiptEmail({ renewal: false })
             })
           })
@@ -1428,7 +1434,7 @@ Deno.serve(async (req: Request) => {
               body: JSON.stringify({
                 from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
                 to: member.email,
-                subject: 'Your Passport renewed - a new Guide credit is in',
+                subject: 'Your Passport renewed',
                 html: buildPassportReceiptEmail({ renewal: true })
               })
             })

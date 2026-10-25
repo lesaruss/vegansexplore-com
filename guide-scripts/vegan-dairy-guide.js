@@ -16,10 +16,10 @@
  * Visitors see every locked tab as the real section, blurred, with a membership note on top, while Maya explains it
  * (Sean, 2026-10-09). Nothing plays until Start the tour; from then every tab plays its clip unless she was paused.
  *
- * Access (Sean, 2026-10-10, canon-ve-guide-pricing v3): every paid Guide is $11 or 1 Guide credit. ve_guides.access_rule
- * decides the offer: 'membership' (the old rule) comes with the $11 Founding Membership; 'credit' means a member unlocks it
- * with a credit (ve-guide-unlock unlock), or with none buys it for $11 (checkout, back with ?guide=bought), turns about
- * 2,500 points into a credit (exchange), or gets Passport (a credit a month). Joining for $11 comes with a credit.
+ * Access (Sean locked 2026-10-25, playbook ve-pricing-points-passport): every paid Guide is $11 or 1,100 points.
+ * ve_guides.access_rule decides the offer: 'points' means anyone with an account buys it for $11 (checkout, back with
+ * ?guide=bought; buying makes them a member) or unlocks it with 1,100 points (ve-guide-unlock unlock); the Passport's
+ * 1,100 welcome points cover it. 'credit' (retired) and 'membership' (older) are kept so an old row still renders.
  * ST holds what the server says. The members-only text (research 4-6, See for yourself,
  * swaps, recipes, resources) is ve_guides.content_html for slug vegan-dairy-guide-site, handed out by
  * ve-guide-unlock ?action=open only to active members. Never add it to this repo: Vercel serves it, so anything here
@@ -79,7 +79,10 @@
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you save lands here: swaps, recipes, brands, cookbooks and episodes, plus the recipes you shared.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Guide comes with the eleven dollar Founding Membership, one time. Already a member? Sign in and it opens. Come join us!',
       // On credits (canon-ve-guide-pricing v3), played from CLIPS.join_credit (Sean approved the line, 2026-10-10).
-      sayCredit: 'Every Guide is eleven dollars, or one Guide credit. Join for eleven dollars and your first credit comes with it, so this Guide can be yours. Come join us!' }
+      sayCredit: 'Every Guide is eleven dollars, or one Guide credit. Join for eleven dollars and your first credit comes with it, so this Guide can be yours. Come join us!',
+      // On points (Sean locked 2026-10-25, playbook ve-pricing-points-passport). Not recorded yet, so this tab shows her
+      // picture and the bubble carries the words; the credit and membership clips no longer match the offer.
+      sayPoints: 'The Dairy Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore. Come join us!' }
   ];
   // Maya on camera. Overview is her welcome; every other tab gets a clip under 10 seconds (el-media voice, Wan 2.7,
   // scripts/brand-door/assemble_r5.py), stored in vegan-media/media/maya/dairy-guide/. Until a tab has one, she shows
@@ -147,9 +150,9 @@
 
   var access = 'checking';       // checking | guest | pending | member
   var MEM = null;                // members-only payload
-  // What ve-guide-unlock says about this visitor and this Guide. Once access_rule is 'credit' the Guide is $11 or 1 Guide
-  // credit (canon-ve-guide-pricing v3); while it says anything else the page keeps the old membership offer, so flipping the
-  // row switches the whole page at once.
+  // What ve-guide-unlock says about this visitor and this Guide. access_rule 'points' (Sean locked 2026-10-25): the Guide is
+  // $11 or 1,100 points, and buying it makes the buyer a member. 'credit' (retired) was $11 or 1 Guide credit; anything else
+  // keeps the old membership offer. Flipping the row switches the whole page at once.
   var ST = { rule: 'membership', cost: 1100, balance: 0, credits: 0, rate: 2500, cap: 3, active: false, via: null };
   var BRANDS = null, BOOKS = null, PODS = null, PRODUCTS = {}, PRODUCT_BY_SLUG = {}, STORES = {};
   var lookOpen = false, curTab = 'overview';
@@ -201,24 +204,32 @@
   // ---------- the offer ----------
   // Pricing (Sean, 2026-10-10, canon-ve-guide-pricing v3): a Guide is $11 or 1 Guide credit, never a points price. The
   // Founding Membership comes with 1 credit, Passport gives 1 a month, about 2,500 points become 1 credit.
-  function priced() { return ST.rule === 'credit'; }
+  function priced() { return ST.rule === 'credit' || ST.rule === 'points'; }
+  function onPoints() { return ST.rule === 'points'; }
   function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
   function credits(n) { return n + ' Guide credit' + (n === 1 ? '' : 's'); }
   // The next step for someone without the Guide: join (signed out), activate (an account that is not a Founding
   // Member yet), unlock (has a credit), buy (an active member with no credit: $11 now, points, or Passport).
+  // On points: anyone with an account can buy it for $11 (that makes them a member), or unlock it with 1,100 points.
   function mode() {
     if (access === 'guest' || access === 'checking') return 'join';
     if (!priced()) return 'activate';
+    if (onPoints()) return ST.balance >= ST.cost ? 'points' : 'buy';
     if (ST.credits >= 1) return 'unlock';
     return ST.active ? 'buy' : 'activate';
   }
   function canExchange() { return ST.balance >= ST.rate && ST.credits < ST.cap; }
   function ctaLabel() {
-    return { join: 'Join for $11', activate: 'Become a Founding Member', unlock: 'Unlock with 1 credit', buy: 'Get it now for $11' }[mode()];
+    return { join: onPoints() ? 'Get it for $11' : 'Join for $11', activate: 'Become a Founding Member', unlock: 'Unlock with 1 credit',
+      points: 'Unlock with ' + pts(ST.cost) + ' points', buy: onPoints() ? 'Get it for $11' : 'Get it now for $11' }[mode()];
   }
   function offerLine() {
     if (!priced()) return 'It comes with the $11 Founding Membership, one time.';
     var m = mode();
+    if (onPoints()) {
+      if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
+      return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+    }
     if (m === 'unlock') return 'Unlock it with 1 Guide credit. You have ' + ST.credits + '.';
     if (m === 'buy') return 'Get it now for $11, or use a Guide credit: Passport gives you one every month.';
     return 'Joining is $11, one time, and comes with a Guide credit: unlock this Guide or any other.';
@@ -227,12 +238,15 @@
     var m = mode(), link = small ? ' style="font-size:12.5px;font-weight:800;color:var(--g)"' : '';
     return '<div class="dg-btns"' + (small ? ' style="margin-top:6px"' : '') + '><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
       (m === 'join' ? '<a href="#" data-signin' + link + '>Already a member? Sign in</a>' : '') +
-      (m === 'buy' ? (canExchange() ? '<a href="#" data-exchange' + link + '>Use ' + pts(ST.rate) + ' points for a credit</a>' : '<a href="/passport"' + link + '>Passport: a credit every month</a>') : '') + '</div>';
+      (m === 'points' ? '<a href="#" data-buy' + link + '>Or get it for $11</a>' : '') +
+      (m === 'buy' && onPoints() ? '<a href="/passport"' + link + '>Or get your Passport: $11 with 1,100 points</a>' : '') +
+      (m === 'buy' && !onPoints() ? (canExchange() ? '<a href="#" data-exchange' + link + '>Use ' + pts(ST.rate) + ' points for a credit</a>' : '<a href="/passport"' + link + '>Passport: a credit every month</a>') : '') + '</div>';
   }
   function take(d) {
     if (!d || d.error) return;
     if (d.access_rule && d.access_rule !== ST.rule) { ST.rule = d.access_rule; if (TOUR.shown === 'join') TOUR.shown = null; }
     if (d.points_per_credit) ST.rate = d.points_per_credit;
+    if (d.cost) ST.cost = d.cost;
     if (d.credit_cap) ST.cap = d.credit_cap;
     ST.balance = d.balance || 0; ST.credits = d.credits || 0; ST.active = d.membership_status === 'active'; ST.via = d.via || null;
   }
@@ -240,7 +254,7 @@
   function drawJoinbox() {
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
     var m = mode(), price = box.querySelector('.dg-jb-price'), btn = box.querySelector('[data-join]'), signin = box.querySelector('.dg-jb-in');
-    price.innerHTML = priced() && (m === 'unlock' || m === 'buy') ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
+    price.innerHTML = !onPoints() && priced() && (m === 'unlock' || m === 'buy') ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
       : '<b>$11</b><small>one time<br>purchase</small>'; // Sean, 2026-10-10: "$11 one time purchase", two rows
     btn.textContent = ctaLabel();
     signin.style.display = m === 'join' ? '' : 'none';
@@ -344,7 +358,7 @@
           (!member() ? '<span class="dg-mlock">' + LOCK_SVG + (priced() ? ' In the full Guide' : ' With membership') + '</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start">' + (TOUR.started ? '' : '<button type="button" class="dg-btn" data-tour-start>&#9654; Start the tour</button>') +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Maya walk you through it.</p>' : '<p>' + esc(priced() ? 'The full Guide is $11 or 1 Guide credit.' : 'The Guide comes with the $11 Founding Membership.') + ' <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Maya walk you through it.</p>' : '<p>' + esc(onPoints() ? 'The full Guide is $11 or 1,100 points.' : priced() ? 'The full Guide is $11 or 1 Guide credit.' : 'The Guide comes with the $11 Founding Membership.') + ' <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
   }
 
   // The research is one fact at a time: the titles down the left, the chosen fact on the right (#/pulse/fact/<n>),
@@ -885,6 +899,18 @@
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status + '</div>');
       return;
     }
+    if (onPoints()) {
+      var box2 = m === 'points'
+        ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
+          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
+        : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create a free account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
+            : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
+          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
+          '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
+      main.innerHTML = head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11, or 1,100 points. $11 is the price of admission: buying a Guide makes you a member, and the Passport comes with 1,100 welcome points.') + list;
+      main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box2 + '</div>');
+      return;
+    }
     var passport = '<p class="dg-pp">Or get <a href="/passport">Passport</a>: a new Guide credit every month.</p>', box;
     if (m === 'unlock') {
       box = '<div class="dg-big">1<small>credit</small></div><p>You have ' + credits(ST.credits) + '. Unlock the Guide and it is yours to keep.</p>' +
@@ -1033,7 +1059,7 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Maya, your Guide');
-  function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; return k === 'join' && priced() ? CLIPS.join_credit || null : CLIPS[k] || null; }
+  function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && priced() ? CLIPS.join_credit || null : CLIPS[k] || null; }
   function cueMaya(k) {
     var c = clip(k);
     if (TOUR.shown === k && TOUR.asMember === member()) return; // a visitor who unlocks the Guide gets the member clip
@@ -1069,7 +1095,7 @@
   function drawMaya() {
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = member() && t.sayMember ? t.sayMember : TOUR.started && t.playing ? t.playing : priced() && t.sayCredit ? t.sayCredit : t.say; // the welcome carries its own captions
+    bubble.textContent = member() && t.sayMember ? t.sayMember : TOUR.started && t.playing ? t.playing : onPoints() && t.sayPoints ? t.sayPoints : priced() && t.sayCredit ? t.sayCredit : t.say; // the welcome carries its own captions
     var has = !!clip(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
@@ -1153,16 +1179,27 @@
     }
     var ex = e.target.closest('[data-exchange]');
     if (ex) { e.preventDefault(); exchange(ex); return; }
+    var by = e.target.closest('[data-buy]');
+    if (by) { e.preventDefault(); if (a && a.getToken()) buyNow(by); return; }
     var jb = e.target.closest('[data-join]');
     if (jb) {
       if (!a || access === 'checking' || jb.disabled) return;
       stopMaya(); drawMaya();
       var m = mode();
+      // On points, a new account goes straight on to the Guide's own $11 checkout: the page takes over the moment the
+      // $11 membership window would open (VE_ACTIVATE_HANDLER), since buying the Guide is what makes them a member.
+      if (m === 'join' && onPoints()) {
+        var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
+        window.VE_ACTIVATE_HANDLER = go;
+        a.showAuthModal('Create your free account, then get the Dairy Guide for $11. Buying it makes you a member.', go, 'signup');
+        return;
+      }
       if (m === 'join') a.showAuthModal(priced() ? 'Create your account. Then become a Founding Member: $11, and your first Guide credit comes with it.'
         : 'Create your account. Then become a Founding Member and the Dairy Guide opens.', function () { location.reload(); }, 'signup');
       else if (m === 'activate') a.showActivateModal(priced() ? 'Become a Founding Member: $11, one time. Your first Guide credit comes with it, and the full community.'
         : 'The Dairy Guide comes with the $11 Founding Membership, one time. It also opens the full community.');
       else if (m === 'unlock') unlock(jb);
+      else if (m === 'points') unlockPoints(jb);
       else buyNow(jb);
     }
   });
@@ -1177,6 +1214,17 @@
       if (d && d.error === 'no_credit') { ST.credits = 0; route(); return; }
       throw 0;
     }).catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('That did not go through, and no credit was used. Try again in a minute.'); });
+  }
+  // Spend 1,100 points on the Guide (ve-guide-unlock unlock, spend_points_for_guide), then open it.
+  function unlockPoints(btn) {
+    var tok = auth() && auth().getToken();
+    if (!tok) return;
+    btn.disabled = true; btn.textContent = 'Unlocking...';
+    api('unlock', tok).then(function (d) {
+      if (d && d.unlocked) return api('open', tok).then(function (o) { take(o); if (o && o.unlocked && o.html) becomeMember(o.html); else throw 0; });
+      if (d && d.error === 'insufficient_points') { ST.balance = d.balance || 0; route(); return; }
+      throw 0;
+    }).catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('That did not go through, and no points were spent. Try again in a minute.'); });
   }
   // About 2,500 points become a credit (ve_credit_from_points); then the unlock button shows.
   function exchange(el) {
@@ -1212,6 +1260,10 @@
     api('open', tok).then(function (d) {
       take(d);
       if (d && d.unlocked && d.html) { setStatus(''); becomeMember(d.html); return; }
+      if (onPoints() && what === 'activate' && ST.active && ST.balance >= ST.cost) {
+        location.hash = '#/join'; route();
+        setStatus('Welcome in! Your 1,100 welcome points are here. Unlock the Guide with them.'); return;
+      }
       if (priced() && what === 'activate' && ST.active && ST.credits >= 1) {
         location.hash = '#/join'; route();
         setStatus('Welcome in! Your Guide credit is here. Unlock the Guide with it.'); return;

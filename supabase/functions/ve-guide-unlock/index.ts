@@ -3,31 +3,30 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ve-guide-unlock: access to a Vegans Explore Guide.
 //
-// Pricing (Sean, 2026-10-10, canon-ve-guide-pricing v3; 2026-10-25): every paid Guide is $11 or 1 Guide credit, never a
-// points price. The $11 Passport (the Founding Membership, one time) comes with 1 credit, more credits are $11 each,
-// credits we give roll over up to 3, and about 2,500 earned points become 1 credit. A Guide a member unlocks is theirs
-// to keep. Free Guides open for everyone.
+// Pricing (Sean locked 2026-10-25, playbook ve-pricing-points-passport, canon-ve-guide-pricing v5): every paid Guide is $11
+// or 1,100 points, and a Guide a member unlocks is theirs to keep. $11 is the price of admission: buying a Guide makes a
+// non-member a member (ve_guide_purchase_paid), with the 25-point thank-you. The Passport's 1,100 welcome points cover a
+// first Guide. Credits are retired. Free Guides open for everyone.
 //
 // Access rules, per ve_guides.access_rule:
-//   credit      a member unlocks it with a credit (ve_credit_unlock) or buys it for $11 (checkout).
+//   points      unlock spends the Guide's cost_lesars (1,100) in points (spend_points_for_guide), or checkout buys it for $11.
+//   credit      (retired 2026-10-25) a credit unlock (ve_credit_unlock) or the $11 checkout.
 //   free        (the Welcome Guide, the Partner Guide): open to everyone.
-//   points      (v2, until a Guide moves to credit): spend_points_for_guide.
 //   membership  (legacy): any active member has it.
 //   Anyone with a ve_guide_purchases row has the Guide, whatever the rule.
 //
 // Actions (POST ?action=):
 //   status   {slug, token?}  -> {loggedIn, unlocked, via, balance, credits, cost, access_rule, membership_status, passport,
-//                               credit_cap, points_per_credit}; a Passport member's credit for this month lands here too
+//                               level}; level is ve_member_level (Levels 1 to 3 on lifetime points)
 //   open     {slug, token}   -> status fields, plus {html} with the Guide's members-only screens (ve_guides.content_html)
 //                               when unlocked. This is the only way the members-only content leaves the server.
 //   unlock   {slug, token}   -> credit Guides: spend 1 credit; points Guides: spend points
 //   exchange {slug, token}   -> about 2,500 points become 1 credit (ve_credit_from_points)
-//   checkout {slug, token, return_url} -> {url}: a Stripe checkout for this one Guide, $11
-//   buy_credits {token, quantity?, return_url} -> {url}: Guide credits, $11 each, 1 to 10 (Sean, 2026-10-25: money buys
-//                               credits, points are only earned). No slug. A paid credit is never lost to the cap of 3.
-//   GET ?confirm=<session id>  marks it bought (the Stripe webhook calls this too: metadata type ve_guide_purchase or
-//                               ve_credit_purchase, confirm_fn ve-guide-unlock) and goes back with ?guide=bought or
-//                               ?credits=bought
+//   checkout {slug, token, return_url} -> {url}: a Stripe checkout for this one Guide, $11 (any signed-in account)
+//   buy_credits                -> 410 retired (credits ended 2026-10-25)
+//   GET ?confirm=<session id>  marks it bought (the Stripe webhook calls this too: metadata type ve_guide_purchase,
+//                               confirm_fn ve-guide-unlock) and goes back with ?guide=bought. A ve_credit_purchase session
+//                               from before the change still confirms, so nothing anyone paid for is lost.
 //
 // verify_jwt stays OFF: the site sends the anon key as apikey and the VE app token
 // (minted by ve-auth signJWT) in body.token; verifyToken() checks the HMAC itself.
@@ -37,7 +36,7 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 const FN_URL = `${SUPABASE_URL}/functions/v1/ve-guide-unlock`;
 const STRIPE_SECRET = Deno.env.get('STRIPE_SECRET_KEY') ?? ''; // Vegans Explore's own Stripe account
-const GUIDE_PRICE_CENTS = 1100, CREDIT_PRICE_CENTS = 1100;
+const GUIDE_PRICE_CENTS = 1100;
 const CREDIT_CAP = 3, POINTS_PER_CREDIT = 2500;
 
 // Test accounts (ve_test_checkout_allowlist) check out on the test Stripe key, the way ve-tours does.
@@ -151,34 +150,8 @@ serve(async (req: Request) => {
   try {
     const body = await req.json().catch(() => ({}));
 
-    // Guide credits, $11 each. Not tied to one Guide, so it runs before the slug check.
-    if (action === 'buy_credits') {
-      const auth = body.token ? await verifyToken(body.token) : null;
-      if (!auth) return json({ error: 'not_authenticated' }, 401);
-      const { data: m } = await supabase.from('members').select('email, membership_status').eq('id', auth.sub).maybeSingle();
-      if (!m) return json({ error: 'not_authenticated' }, 401);
-      if (m.membership_status !== 'active') return json({ error: 'payment_required', message: 'Get your Passport first: $11, one time, and your first Guide credit comes with it.' }, 402);
-      const qty = Math.min(10, Math.max(1, Math.round(Number(body.quantity) || 1)));
-      const test = await isTestAccount(m.email || '');
-      const back = backTo(body.return_url, 'https://vegansexplore.com/dashboard');
-      const params = new URLSearchParams({
-        mode: 'payment',
-        'line_items[0][price_data][currency]': 'usd',
-        'line_items[0][price_data][product_data][name]': (test ? '[TEST] ' : '') + 'Vegans Explore Guide credit',
-        'line_items[0][price_data][unit_amount]': String(CREDIT_PRICE_CENTS),
-        'line_items[0][quantity]': String(qty),
-        success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
-        cancel_url: withParam(back, 'credits', 'cancelled'),
-        'metadata[type]': 've_credit_purchase', 'metadata[confirm_fn]': 've-guide-unlock',
-        'metadata[member_id]': auth.sub, 'metadata[quantity]': String(qty), 'metadata[return_url]': back,
-      });
-      if (m.email) { params.set('customer_email', m.email); params.set('payment_intent_data[receipt_email]', m.email); }
-      if (test) params.set('metadata[test]', 'true');
-      const sres = await fetch('https://api.stripe.com/v1/checkout/sessions', { method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() });
-      const s = await sres.json();
-      if (!sres.ok) { console.error('stripe error', s); return json({ error: s.error?.message ?? 'stripe_error' }, 400); }
-      return json({ url: s.url, test_mode: test, quantity: qty });
-    }
+    // Guide credits ended 2026-10-25 (Sean: Guides are $11 or 1,100 points).
+    if (action === 'buy_credits') return json({ error: 'retired', message: 'Guide credits have ended. Every Guide is $11, or 1,100 points.' }, 410);
 
     const slug = body.slug;
     if (!slug) return json({ error: 'slug_required' }, 400);
@@ -214,6 +187,7 @@ serve(async (req: Request) => {
     if (action === 'status' || action === 'open') {
       const { email: _email, ...a } = await access();
       const out: Record<string, unknown> = { ...a, cost: guide.cost_lesars, access_rule: guide.access_rule, credit_cap: CREDIT_CAP, points_per_credit: POINTS_PER_CREDIT };
+      if (auth && a.loggedIn) { const { data: lv } = await supabase.rpc('ve_member_level', { p_member: auth.sub }); out.level = lv || null; }
       if (action === 'open' && a.unlocked) {
         const { data: full } = await supabase.from('ve_guides').select('content_html').eq('id', guide.id).maybeSingle();
         out.html = full?.content_html ?? '';
@@ -238,7 +212,7 @@ serve(async (req: Request) => {
     // Buy this one Guide now, $11.
     if (action === 'checkout') {
       if (!auth) return json({ error: 'not_authenticated' }, 401);
-      if (guide.access_rule !== 'credit') return json({ error: 'not_for_sale' }, 400);
+      if (guide.access_rule !== 'credit' && guide.access_rule !== 'points') return json({ error: 'not_for_sale' }, 400);
       const a = await access();
       if (!a.loggedIn) return json({ error: 'not_authenticated' }, 401);
       if (a.unlocked) return json({ unlocked: true, already: true });

@@ -9,6 +9,11 @@
 //   |  402 payment_required (not a member yet)
 // POST { action: 'today' }              Authorization: Bearer <ve_token>
 //   -> { listing_ids, next: { listing_id: next_vote_at } }  votes still inside their 24 hours
+// POST { action: 'contribute', listing_id, points }   Authorization: Bearer <ve_token>
+//   -> { ok, balance, listing_total }   a member gives spendable points to a business or nonprofit as a boost
+//   (Sean, 2026-10-25, playbook ve-pricing-points-passport); lifetime points, and so the level, never go down
+//   |  402 payment_required  |  400 not_enough_points { balance }
+// POST { action: 'points', listing_id }  no sign-in needed  -> { points, members }  what the community gave a listing
 //
 // next_vote_at is an ISO time; the browser shows it in the visitor's own time zone. A vote is
 // a row in listing_daily_votes; its unique (member, listing, vote_date) index stays as a
@@ -57,9 +62,28 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
 
+  if (body.action === 'points') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { data, error } = await db.rpc('ve_listing_points', { p_listing: id });
+    if (error) return json({ error: 'points_failed' }, 500);
+    return json(data);
+  }
+
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
+
+  if (body.action === 'contribute') {
+    const id = String(body.listing_id || '');
+    const points = Math.round(Number(body.points));
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { data, error } = await db.rpc('ve_listing_contribute', { p_member: memberId, p_listing: id, p_points: points });
+    if (error) return json({ error: 'contribute_failed' }, 500);
+    if (data?.error === 'payment_required') return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to contribute points to the places you love.' }, 402);
+    if (data?.error) return json(data, data.error === 'listing_not_found' ? 404 : 400);
+    return json(data);
+  }
 
   if (body.action === 'today') {
     const since = new Date(Date.now() - DAY_MS).toISOString();
