@@ -520,7 +520,13 @@ being held automatically. On `/bounties` it is the always-open first card in eve
 `?campaign=check-ins`): how it works, Open the Directory, and the member's own check-ins (`ve-checkin` `mine`).
 
 On a city hub the banner bar's crumb is a community picker (All cities, then each `VE_HUBS` city; Sean, 2026-10-25): a city
-keeps the section you are on, All cities opens `/directory` from the Directory section, else `/communities`.
+keeps the section you are on, All cities opens `/directory` from the Directory section, else `/communities`. No "Communities /"
+before it, so it fits a phone (Sean, 2026-10-25). The hub's hero buttons (Sean, 2026-10-25: "anybody can be a part of any
+community"): signed out, **Get Passport** (`/passport?community=<slug>#/join`) and **Take the Tour** (`/welcome`), with a
+Preview badge; signed in, **Explore Directory** and **Explore Dashboard**, the badge Member for an active member, and no Get
+Passport in the bar. The hub passes an axe-core WCAG 2 AA check at phone and desktop width (2026-10-25): muted text
+`--ve-text-50` is 0.68 black, `.btn-join` is the dark green, the hero's words carry a soft shadow over the photo, and the
+nav's Join button has dark text on its bright green (`public/nav.js`).
 
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
 and folds it to one bar (city picker, Visit the community, Expand) after the first click into a section; Collapse/Expand is
@@ -918,7 +924,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   in, For businesses, Get your Passport), a Guide's picture on each tab (`VEGuideArt` square), no clips, sign-up at the end.
   `?from=vote&back=<path>` shows the voting note and returns there after sign-in.
 - **`/passport` is the one Passport** (Sean, 2026-10-25: "make sure that that version is the default version for passport... it does
-  a better job than what we had before"). The nav's Join button, every Get your Passport button, the city hubs' Join This Community
+  a better job than what we had before"). The nav's Join button, every Get your Passport button, the city hubs' Get Passport
   (`/passport?community=<slug>#/join`), the Directory, Explore, the path pages, login and the Guide gate all go there; `/join` (the
   old Get Your Passport page) and `/passport/join` forward to it. An invite code (`?ref=`) or a city (`?community=`) in the link is
   kept for the visit (`sessionStorage` `ve_join_ref`, `ve_join_community`) and sent with the sign-up window's signup

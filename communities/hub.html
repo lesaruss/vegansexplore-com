@@ -33,7 +33,7 @@
       --ve-border: rgba(0,0,0,0.09);
       --ve-text: #1a1a1a;
       --ve-text-75: rgba(26,26,26,0.75);
-      --ve-text-50: rgba(26,26,26,0.50);
+      --ve-text-50: rgba(26,26,26,0.68); /* 5:1 on white (WCAG AA); was 0.50 (3.3:1) */
       --ve-text-30: rgba(26,26,26,0.30);
     }
     html { scroll-behavior: smooth; }
@@ -47,21 +47,22 @@
     .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 18%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.08) 65%, transparent 82%); }
     .hero-content { position: relative; z-index: 2; padding: 80px 56px 64px; max-width: 600px; }
-    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .hero-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: #7fe0a0; text-shadow: 0 1px 6px rgba(0,0,0,0.85); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
     .hero h1 { font-size: clamp(36px, 5.5vw, 72px); font-weight: 900; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 16px; }
-    .hero h1 em { color: var(--ve-green); font-style: normal; }
+    .hero h1 em { color: #6fd98c; font-style: normal; }
+    .hero h1 { text-shadow: 0 2px 14px rgba(0,0,0,0.6); }
     .hero-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
-    .hero-region { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.55); }
+    .hero-region { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
     .hero-divider-v { width: 1px; height: 14px; background: rgba(255,255,255,0.2); }
     .hero-access { display: flex; align-items: center; gap: 10px; }
     .access-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 5px 10px; border-radius: 100px; }
     .access-badge.passport { background: var(--ve-green); color: #1a1a1a; }
     .access-badge.standard { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
     .hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .btn-join { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-green); color: #fff; transition: background 0.15s; border: none; cursor: pointer; }
-    .btn-join:hover { background: var(--ve-green-dark); }
-    .btn-outline-light { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; text-decoration: none; background: transparent; color: rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.25); transition: all 0.15s; }
+    .btn-join { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: 4px; text-decoration: none; background: var(--ve-green-dark); color: #fff; transition: background 0.15s; border: none; cursor: pointer; }
+    .btn-join:hover { background: #1f5f22; }
+    .btn-outline-light { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; text-decoration: none; background: transparent; color: rgba(255,255,255,0.92); border: 2px solid rgba(255,255,255,0.45); background: rgba(0,0,0,0.25); transition: all 0.15s; }
     .btn-outline-light:hover { border-color: rgba(255,255,255,0.55); color: #fff; }
 
     /* SECTION BODY */
@@ -228,8 +229,9 @@
     .mb-toggle-caret { flex-shrink: 0; transition: transform 0.2s ease; }
     .member-bar.mb-collapsed .mb-toggle-caret { transform: rotate(180deg); }
     .mb-toggle-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
-    .member-bar-left { display: flex; align-items: center; gap: 16px; }
-    .mb-breadcrumb { display: flex; align-items: center; gap: 8px; }
+    .member-bar-left { display: flex; align-items: center; gap: 16px; min-width: 0; flex-wrap: wrap; }
+    .mb-breadcrumb { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
+    .mb-breadcrumb .mb-city { max-width: 100%; min-width: 0; }
     .mb-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
     .mb-breadcrumb a:hover { color: rgba(255,255,255,0.85); }
     .mb-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.25); }
@@ -257,7 +259,7 @@
     }
     @media (max-width: 700px) {
       .hero { min-height: 480px; align-items: flex-end; }
-      .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 40%, rgba(0,0,0,0.35) 65%, transparent 85%); }
+      .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.9) 45%, rgba(0,0,0,0.62) 68%, rgba(0,0,0,0.15) 92%); }
       .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
       .hero-eyebrow { justify-content: center; }
       .hero-meta { justify-content: center; }
@@ -307,8 +309,8 @@
     .bb-stacked{display:flex;flex-direction:column;gap:10px}
     .bb-stacked .bb-placeholder{aspect-ratio:6/5;padding:16px}
     .bb-ph-icon{color:#ccc}
-    .bb-ph-text{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#ccc}
-    .bb-ph-dim{font-size:9px;font-weight:600;color:#ddd}
+    .bb-ph-text{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#666}
+    .bb-ph-dim{font-size:9px;font-weight:600;color:#666}
     .bb-ad-img{width:100%;height:100%;display:block;border-radius:8px;object-fit:cover}
     .bb-ad-link{display:block;width:100%;height:100%}
     .bb-placeholder.bb-filled{border:none;background:none;padding:0;overflow:hidden;display:block}
@@ -372,11 +374,11 @@
       <div class="hero-meta" aria-label="Community details">
         <span class="hero-region" id="hub-regions"></span>
         <div class="hero-divider-v" aria-hidden="true"></div>
-        <div class="hero-access" aria-label="Membership access"><span class="access-badge passport">Free Passport</span></div>
+        <div class="hero-access" aria-label="Membership access"><span class="access-badge passport" id="hub-access">Preview</span></div>
       </div>
       <div class="hero-actions">
-        <a href="/passport#/join" class="btn-join" id="hub-join">Join This Community</a>
-        <a href="?tab=events" class="btn-outline-light" onclick="switchTab('events');return false;">Browse Events</a>
+        <a href="/passport#/join" class="btn-join" id="hub-join">Get Passport</a>
+        <a href="/welcome" class="btn-outline-light" id="hub-second">Take the Tour</a>
       </div>
     </div>
   </section>
@@ -386,7 +388,22 @@
       var img = document.getElementById('hub-banner'); img.src = h.page.banner; img.alt = h.page.alt;
       document.getElementById('hub-heading').innerHTML = h.page.short + '<br><em>Vegans</em>';
       document.getElementById('hub-regions').innerHTML = h.page.regions;
-      document.getElementById('hub-join').href = '/passport?community=' + h.slug + '#/join';
+      // Who is looking (Sean, 2026-10-25: "anybody can be a part of any community"): signed out, Get Passport and Take the
+      // Tour; signed in, Explore Directory and Explore Dashboard. The badge reads Preview until they are a member.
+      var join = document.getElementById('hub-join'), second = document.getElementById('hub-second');
+      var me = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? (VEAuth.getMember && VEAuth.getMember()) || {} : null;
+      if (me) {
+        join.textContent = 'Explore Directory'; join.href = '?tab=directory';
+        join.onclick = function () { if (window.switchTab) { switchTab('directory'); return false; } };
+        second.textContent = 'Explore Dashboard'; second.href = '/dashboard';
+        if (me.membership_status === 'active') {
+          document.getElementById('hub-access').textContent = 'Member';
+          // Members already hold the Passport: the bar's Get Passport goes once the bar is on the page.
+          document.addEventListener('DOMContentLoaded', function () { var mp = document.getElementById('mb-passport'); if (mp) mp.style.display = 'none'; });
+        }
+      } else {
+        join.href = '/passport?community=' + h.slug + '#/join';
+      }
     })();
   </script>
 
@@ -398,14 +415,12 @@
         <span class="mb-toggle-label" id="member-bar-toggle-label">Collapse</span>
       </button>
       <nav class="mb-breadcrumb" aria-label="Breadcrumb">
-        <a href="/communities">Communities</a>
-        <span aria-hidden="true">/</span>
         <label class="visually-hidden" for="hub-crumb">Community</label>
         <select class="mb-city" id="hub-crumb" aria-current="page"></select>
       </nav>
     </div>
     <div class="member-bar-actions">
-      <a href="/passport" class="btn-join" style="font-size:10px;padding:9px 18px;">Get Passport</a>
+      <a href="/passport" class="btn-join" id="mb-passport" style="font-size:10px;padding:9px 18px;">Get Passport</a>
     </div>
   </div>
 

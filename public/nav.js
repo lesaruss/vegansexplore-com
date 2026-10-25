@@ -83,7 +83,8 @@
     '.ve-wordmark-logo{height:34px;width:auto;flex-shrink:0;}',
     '.ve-nav-spacer{flex:1;}',
     '.ve-nav-links{display:none;}',
-    '.ve-nav-cta{background:#22C55E;color:#fff !important;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:9px 18px;border-radius:4px;text-decoration:none;transition:background 0.15s;white-space:nowrap;}',
+    // Dark text on the bright green (WCAG AA, 9:1; white on it was 2.3:1). Sean, 2026-10-25: "make sure this page is ADA".
+    '.ve-nav-cta{background:#22C55E;color:#06210f !important;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:9px 18px;border-radius:4px;text-decoration:none;transition:background 0.15s;white-space:nowrap;}',
     '.ve-nav-cta:hover{background:#16A34A !important;}',
     '.ve-nav-login{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#1a1a1a;text-decoration:none;padding:9px 12px;white-space:nowrap;}',
     '.ve-nav-login:hover{color:#22C55E;}',
