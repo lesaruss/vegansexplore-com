@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
     // Members only: the same gate as ve-auth's requireActiveMembership (Guest Passport included).
     const { data: member } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
     if (!member || member.membership_status !== 'active') {
-      return json({ error: 'payment_required', message: 'Become a Founding Member for $11, one time, to vote for the places you love every day.' }, 402);
+      return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to vote for the places you love every day.' }, 402);
     }
     const { data: listing } = await db.from('listings').select('id').eq('id', id).eq('status', 'approved').maybeSingle();
     if (!listing) return json({ error: 'not_found' }, 404);
