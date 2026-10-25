@@ -273,7 +273,7 @@
   <!-- Member entry point (Sean, 2026-09-30): the main front door, on the Community Manager and
        Partners slide engine. Script from the 2026-09-30 panel (playbook_records 1a1bcedd) with
        Sean's changes: the Community Board is live, and joining is an open contribution with $11
-       suggested, points to match ($1 = 100). No exact counts in the copy or narration, because
+       suggested; since 2026-10-25 it comes with 1,100 welcome points, whatever the amount. No exact counts in the copy or narration, because
        they go stale and the narration is recorded once. -->
   <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Join Vegans Explore">
     <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
@@ -370,7 +370,7 @@
           <h2>Take your founding seat.</h2>
           <div class="member-box" style="margin-top:0;margin-bottom:10px;">
             <p class="member-price"><b>Founding Membership</b> $11 suggested, one time</p>
-            <p class="member-copy">Give $11, or more if you want to help us build faster. It gets you your Passport and your first Guide. Points come from what you do: Bounties, competitions and taking part in the community. It never renews.</p>
+            <p class="member-copy">Give $11, or more if you want to help us build faster. It gets you your Passport and 1,100 welcome points, enough for your first Guide. Points come from what you do: Bounties, competitions and taking part in the community. It never renews.</p>
           </div>
           <div class="amounts" role="group" aria-label="Choose your contribution">
             <button type="button" class="amt" data-amt="11" aria-pressed="true">$11<small>Suggested</small></button>
@@ -383,7 +383,7 @@
             <label for="amt-input">Amount in dollars</label>
             <input id="amt-input" type="number" inputmode="numeric" min="11" max="1000" step="1" placeholder="11">
           </div>
-          <p class="pts-line" id="pts-line" aria-live="polite">Your Passport and <b>your first Guide</b> come with it.</p>
+          <p class="pts-line" id="pts-line" aria-live="polite">Your Passport and <b>1,100 welcome points</b> come with it.</p>
           <ul class="steps3"><li><b>1</b>Create your account</li><li><b>2</b>Contribute</li><li><b>3</b>Land on your dashboard</li></ul>
           <div class="cta-row">
             <div class="cta-main">
@@ -521,7 +521,7 @@
       function setAmount(d) {
         amount = d;
         document.getElementById('pts-line').innerHTML = d >= 11 && d <= 1000
-          ? 'Your Passport and <b>your first Guide</b> come with it.'
+          ? 'Your Passport and <b>1,100 welcome points</b> come with it.'
           : 'Choose an amount from $11 to $1,000.';
       }
       Array.prototype.forEach.call(document.querySelectorAll('.amt'), function (b) {
@@ -556,7 +556,7 @@
       if (params.get('activate') === 'success') {
         var gave = 0; try { gave = +localStorage.getItem('ve_join_amount') || 0; localStorage.removeItem('ve_join_amount'); } catch (e) {}
         joinMsg.className = 'join-msg ok';
-        joinMsg.innerHTML = 'Welcome in. ' + (gave ? 'Your ' + pts(gave) + ' points are on the way. ' : '') + '<a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
+        joinMsg.innerHTML = 'Welcome in. ' + (gave ? 'Your 1,100 welcome points are on the way. ' : '') + '<a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
         setTimeout(function () { location.href = '/dashboard'; }, 5000);
       } else if (params.get('activate') === 'cancelled') {
         joinMsg.textContent = 'No charge was made. Your seat is here whenever you are ready.';
@@ -565,7 +565,7 @@
       // and the account pop-up a new visitor sees. Finishing that pop-up does create a real account.
       if (PREVIEW === 'welcome-in') {
         joinMsg.className = 'join-msg ok';
-        joinMsg.innerHTML = 'Welcome in. Your ' + pts(11) + ' points are on the way. <a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
+        joinMsg.innerHTML = 'Welcome in. Your 1,100 welcome points are on the way. <a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
       } else if (PREVIEW === 'signup') {
         window.addEventListener('load', function () { if (window.VEAuth) VEAuth.showAuthModal('Create your account to take your founding seat.', function () {}, 'signup'); });
       }

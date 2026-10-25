@@ -1666,11 +1666,6 @@
       "destination": "/board?lane=pulse",
       "permanent": false
     },
-    {
-      "source": "/passport",
-      "destination": "/welcome",
-      "permanent": false
-    },
     {"source": "/community-managers", "destination": "/community-managers/onboarding", "permanent": false},
     {"source": "/opportunities/community-managers", "destination": "/community-managers/onboarding", "permanent": false},
     {"source": "/hunt/scan", "destination": "/passport/challenge/scan", "permanent": false},
