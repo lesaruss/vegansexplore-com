@@ -40,6 +40,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .badge-verified{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:rgba(94,196,122,0.15);color:#5EC47A;border:1px solid rgba(94,196,122,0.3);display:inline-flex;align-items:center;gap:4px}
 .listing-tagline{font-size:13px;color:#aaa;line-height:1.5;max-width:560px}
 .listing-hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px;flex-shrink:0}
+/* Desktop: Vote and Save side by side on one row, everything else under them (Sean, 2026-10-25). Phones keep their own row below. */
+@media(min-width:769px){.listing-hero-right{display:grid;grid-template-columns:auto auto;justify-content:end;align-content:start;align-items:stretch;gap:10px}.listing-hero-right>#vote-btn,.listing-hero-right>#save-btn{height:100%}.listing-hero-right>:not(#vote-btn):not(#save-btn){grid-column:1 / -1}.listing-hero-right>#vote-btn,.listing-hero-right>#save-btn,.listing-hero-right>#checkin-btn{justify-content:center}.listing-hero-right>a,.listing-hero-right>.checkin-msg{justify-self:end;text-align:right;margin-top:2px !important}.listing-hero-right>.vla-edit{justify-self:end;margin-top:0 !important}}
 .listing-rating{text-align:center}
 .rating-num{font-size:28px;font-weight:900;color:#fff;line-height:1}
 .rating-stars{font-size:12px;color:#F69820;letter-spacing:1px}
