@@ -1346,7 +1346,7 @@ function renderSidebar(l){
         '<button class="donate-btn" id="donate-btn" style="font-size:9px;padding:8px 10px;white-space:nowrap">Send</button>'+
       '</div>'+
       '<div class="donate-confirm" id="donate-confirm">Points sent!</div>'+
-      '<p class="member-note">Every vote earns +1 Point. <a href="#">Join $11/mo</a> to donate.</p>'+
+      '<p class="member-note">Every vote earns +1 Point. <a href="/welcome#join">Get your Passport, $11 one time</a>, to donate.</p>'+
     '</div>';
 
   // Unlock card — only for unclaimed listings; claimed listings use real tabs
@@ -3278,7 +3278,7 @@ function showMembersOnly(l, T){
   if(b) b.onclick = function(){
     if(!window.VEAuth) return;
     if(!VEAuth.isLoggedIn()) VEAuth.showAuthModal('Sign in or create your Passport to see every listing.', function(){ window.location.reload(); });
-    else if(VEAuth.showActivateModal) VEAuth.showActivateModal('Become a Founding Member for $11, one time, to see every listing and vote for the places you love.');
+    else if(VEAuth.showActivateModal) VEAuth.showActivateModal('Get your Passport for $11, one time, to see every listing and vote for the places you love.');
   };
 }
 

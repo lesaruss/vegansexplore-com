@@ -3,9 +3,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ve-guide-unlock: access to a Vegans Explore Guide.
 //
-// Pricing (Sean, 2026-10-10, canon-ve-guide-pricing v3): every paid Guide is $11 or 1 Guide credit, never a points
-// price. The Founding Membership comes with 1 credit, Passport gives 1 a month, credits roll over up to 3, and about
-// 2,500 points become 1 credit. A Guide a member unlocks is theirs to keep. Free Guides open for everyone.
+// Pricing (Sean, 2026-10-10, canon-ve-guide-pricing v3; 2026-10-25): every paid Guide is $11 or 1 Guide credit, never a
+// points price. The $11 Passport (the Founding Membership, one time) comes with 1 credit, more credits are $11 each,
+// credits we give roll over up to 3, and about 2,500 earned points become 1 credit. A Guide a member unlocks is theirs
+// to keep. Free Guides open for everyone.
 //
 // Access rules, per ve_guides.access_rule:
 //   credit      a member unlocks it with a credit (ve_credit_unlock) or buys it for $11 (checkout).
@@ -22,8 +23,11 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 //   unlock   {slug, token}   -> credit Guides: spend 1 credit; points Guides: spend points
 //   exchange {slug, token}   -> about 2,500 points become 1 credit (ve_credit_from_points)
 //   checkout {slug, token, return_url} -> {url}: a Stripe checkout for this one Guide, $11
-//   GET ?confirm=<session id>  marks it bought (the Stripe webhook calls this too: metadata type ve_guide_purchase,
-//                               confirm_fn ve-guide-unlock) and goes back to the Guide with ?guide=bought
+//   buy_credits {token, quantity?, return_url} -> {url}: Guide credits, $11 each, 1 to 10 (Sean, 2026-10-25: money buys
+//                               credits, points are only earned). No slug. A paid credit is never lost to the cap of 3.
+//   GET ?confirm=<session id>  marks it bought (the Stripe webhook calls this too: metadata type ve_guide_purchase or
+//                               ve_credit_purchase, confirm_fn ve-guide-unlock) and goes back with ?guide=bought or
+//                               ?credits=bought
 //
 // verify_jwt stays OFF: the site sends the anon key as apikey and the VE app token
 // (minted by ve-auth signJWT) in body.token; verifyToken() checks the HMAC itself.
@@ -33,7 +37,7 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 const FN_URL = `${SUPABASE_URL}/functions/v1/ve-guide-unlock`;
 const STRIPE_SECRET = Deno.env.get('STRIPE_SECRET_KEY') ?? ''; // Vegans Explore's own Stripe account
-const GUIDE_PRICE_CENTS = 1100;
+const GUIDE_PRICE_CENTS = 1100, CREDIT_PRICE_CENTS = 1100;
 const CREDIT_CAP = 3, POINTS_PER_CREDIT = 2500;
 
 // Test accounts (ve_test_checkout_allowlist) check out on the test Stripe key, the way ve-tours does.
@@ -66,6 +70,12 @@ async function confirm(sessionId: string): Promise<Response> {
     if (!res.ok) continue;
     const s = await res.json();
     const back = backTo(s.metadata?.return_url, fallback);
+    if (s.metadata?.type === 've_credit_purchase' && s.metadata?.member_id) {
+      if (s.payment_status !== 'paid') return go(withParam(back, 'credits', 'unpaid'));
+      const { error } = await supabase.rpc('ve_credit_purchase_paid', { p_member: s.metadata.member_id, p_ref: 'stripe:' + s.id, p_qty: Number(s.metadata.quantity) || 1 });
+      if (error) { console.error('ve_credit_purchase_paid error:', error); return go(withParam(back, 'credits', 'unpaid')); }
+      return go(withParam(back, 'credits', 'bought'));
+    }
     if (s.metadata?.type !== 've_guide_purchase' || !s.metadata?.member_id || !s.metadata?.guide_slug) return go(fallback);
     if (s.payment_status !== 'paid') return go(withParam(back, 'guide', 'unpaid'));
     const { error } = await supabase.rpc('ve_guide_purchase_paid', { p_member: s.metadata.member_id, p_slug: s.metadata.guide_slug });
@@ -140,6 +150,36 @@ serve(async (req: Request) => {
 
   try {
     const body = await req.json().catch(() => ({}));
+
+    // Guide credits, $11 each. Not tied to one Guide, so it runs before the slug check.
+    if (action === 'buy_credits') {
+      const auth = body.token ? await verifyToken(body.token) : null;
+      if (!auth) return json({ error: 'not_authenticated' }, 401);
+      const { data: m } = await supabase.from('members').select('email, membership_status').eq('id', auth.sub).maybeSingle();
+      if (!m) return json({ error: 'not_authenticated' }, 401);
+      if (m.membership_status !== 'active') return json({ error: 'payment_required', message: 'Get your Passport first: $11, one time, and your first Guide credit comes with it.' }, 402);
+      const qty = Math.min(10, Math.max(1, Math.round(Number(body.quantity) || 1)));
+      const test = await isTestAccount(m.email || '');
+      const back = backTo(body.return_url, 'https://vegansexplore.com/dashboard');
+      const params = new URLSearchParams({
+        mode: 'payment',
+        'line_items[0][price_data][currency]': 'usd',
+        'line_items[0][price_data][product_data][name]': (test ? '[TEST] ' : '') + 'Vegans Explore Guide credit',
+        'line_items[0][price_data][unit_amount]': String(CREDIT_PRICE_CENTS),
+        'line_items[0][quantity]': String(qty),
+        success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
+        cancel_url: withParam(back, 'credits', 'cancelled'),
+        'metadata[type]': 've_credit_purchase', 'metadata[confirm_fn]': 've-guide-unlock',
+        'metadata[member_id]': auth.sub, 'metadata[quantity]': String(qty), 'metadata[return_url]': back,
+      });
+      if (m.email) { params.set('customer_email', m.email); params.set('payment_intent_data[receipt_email]', m.email); }
+      if (test) params.set('metadata[test]', 'true');
+      const sres = await fetch('https://api.stripe.com/v1/checkout/sessions', { method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() });
+      const s = await sres.json();
+      if (!sres.ok) { console.error('stripe error', s); return json({ error: s.error?.message ?? 'stripe_error' }, 400); }
+      return json({ url: s.url, test_mode: test, quantity: qty });
+    }
+
     const slug = body.slug;
     if (!slug) return json({ error: 'slug_required' }, 400);
 
