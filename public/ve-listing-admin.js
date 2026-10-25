@@ -90,7 +90,7 @@
     '#vla .logo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}#vla .logo-img{width:72px;height:72px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;flex:0 0 auto}' +
     '#vla .logo-btns{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}#vla .logo-btns button{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25);padding:8px 12px;min-height:38px}#vla .logo-btns .rm{color:#8a1c12}' +
     '#vla .logo-msg{flex-basis:100%;font-size:12.5px;font-weight:700;color:#1f5f22;min-height:18px}#vla .logo-msg.bad{color:#8a1c12}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,communities,product_kinds,cuisines,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -161,6 +161,9 @@
       '<div id="vla-kinds-wrap"><label class="h">What they make</label><div class="chips">' + KINDS.map(function (k) { return chip('checkbox', 'vla-kind', k[0], k[1], (l.product_kinds || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
 
       '<h3>How Vegan</h3><div class="chips">' + VEGAN.map(function (o) { return chip('radio', 'vla-vs', o[0], o[1], o[0] === vs); }).join('') + '</div>' +
+      // Vetted by us (Sean, 2026-10-25): skips the 10 member votes a Vegan-friendly or Vegan-options place needs.
+      '<div id="vla-vet-wrap"><label class="check"><input type="checkbox" id="vla-vet"' + (l.vetted_at ? ' checked' : '') + '> Vetted by us: show it to everyone now</label>' +
+      '<div class="note">Otherwise it stays in the members\' Being vetted section until 10 different members vote for it (' + (l.voter_count || 0) + ' so far) or the business claims it.</div></div>' +
       '<h3>Open or closed</h3><div class="chips">' + OPEN.map(function (o) { return chip('radio', 'vla-bs', o[0], o[1], o[0] === bs); }).join('') + '</div>' +
 
       '<div id="vla-glance"><h3>At a Glance <span style="font-weight:700;letter-spacing:0;text-transform:none;color:#666">(restaurants and cafes)</span></h3>' +
@@ -188,8 +191,15 @@
       $('#vla-glance').hidden = !dining;
       $('#vla-cuis-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; }))
         .every(function (c) { return FOOD_PLACES.indexOf(c) < 0; });
+      syncVet();
       $('#vla-kinds-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; })).indexOf('Food Brands') < 0;
     }
+    // The vetted switch only matters for a Vegan-friendly or Vegan-options food place (the rule in /public/ve-trust.js).
+    function syncVet() {
+      var v = (wrap.querySelector('input[name=vla-vs]:checked') || {}).value;
+      $('#vla-vet-wrap').hidden = !(v === 'vegan_friendly' || v === 'vegan_options') || FOOD_PLACES.indexOf($('#vla-sub').value) < 0;
+    }
+    wrap.querySelectorAll('input[name=vla-vs]').forEach(function (r) { r.addEventListener('change', syncVet); });
     wrap.querySelectorAll('input[name=vla-sec]').forEach(function (r) { r.addEventListener('change', function () { drawSubs(null); }); });
     $('#vla-sub').addEventListener('change', syncSub);
     $('#vla-extra').addEventListener('change', syncSub);
@@ -289,6 +299,7 @@
       body.communities = $('#vla-all').checked ? ['all'] : Array.prototype.filter.call(wrap.querySelectorAll('input[name=vla-ch]:checked'), function (i) { return !i.disabled; }).map(function (i) { return i.value; });
       if (!$('#vla-kinds-wrap').hidden) body.product_kinds = vals('vla-kind');
       if (!$('#vla-cuis-wrap').hidden) body.cuisines = vals('vla-cuis');
+      if (!$('#vla-vet-wrap').hidden) body.vetted = $('#vla-vet').checked;
       if (!$('#vla-glance').hidden) {
         var flags = vals('vla-flag');
         body.details = { atmosphere: $('#vla-atm').value, accommodations: vals('vla-acc'), owned: vals('vla-own'),

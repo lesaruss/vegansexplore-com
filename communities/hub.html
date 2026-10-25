@@ -234,6 +234,10 @@
     .mb-breadcrumb a:hover { color: rgba(255,255,255,0.85); }
     .mb-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.25); }
     .mb-breadcrumb .current { color: rgba(255,255,255,0.85); }
+    /* Every community from the hub (Sean, 2026-10-25): the crumb is a city picker, the way the Directory's is. */
+    .mb-city { appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: rgba(255,255,255,0.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center; border: 1px solid rgba(255,255,255,0.35); border-radius: 6px; padding: 8px 44px 8px 12px; cursor: pointer; }
+    .mb-city:hover { border-color: rgba(255,255,255,0.6); }
+    .mb-city option { color: #1a1a1a; text-transform: none; }
     .hero { transition: max-height 0.32s ease, min-height 0.32s ease, opacity 0.25s ease; }
     .hero.hero-collapsed { min-height: 0; max-height: 0; opacity: 0; }
 
@@ -396,7 +400,8 @@
       <nav class="mb-breadcrumb" aria-label="Breadcrumb">
         <a href="/communities">Communities</a>
         <span aria-hidden="true">/</span>
-        <span class="current" aria-current="page" id="hub-crumb"></span>
+        <label class="visually-hidden" for="hub-crumb">Community</label>
+        <select class="mb-city" id="hub-crumb" aria-current="page"></select>
       </nav>
     </div>
     <div class="member-bar-actions">
@@ -613,7 +618,18 @@
   var signedIn = !!(window.VEAuth && VEAuth.isLoggedIn());
 
   // City words in the copy: {name}, {brand}, {area}.
-  document.getElementById('hub-crumb').textContent = HUB.name;
+  // The crumb picks the community (Sean, 2026-10-25: "make it similar to how the directory is, where you can see the all
+  // cities option... so you can navigate between the communities"). A city keeps the section you are on; All cities
+  // opens the whole Directory from the Directory section, else the list of communities.
+  var crumb = document.getElementById('hub-crumb');
+  crumb.innerHTML = '<option value="">All cities</option>' + (window.VE_HUBS || []).map(function (h) {
+    return '<option value="' + esc(h.slug) + '"' + (h.slug === SLUG ? ' selected' : '') + '>' + esc(h.name) + '</option>';
+  }).join('');
+  crumb.addEventListener('change', function () {
+    var tab = new URLSearchParams(location.search).get('tab');
+    if (!crumb.value) { location.href = tab === 'directory' ? '/directory' : '/communities'; return; }
+    location.href = '/communities/' + encodeURIComponent(crumb.value) + (tab ? '?tab=' + encodeURIComponent(tab) : '');
+  });
   document.querySelectorAll('[data-hub-text]').forEach(function (el) {
     el.textContent = el.getAttribute('data-hub-text').replace(/\{name\}/g, HUB.name).replace(/\{brand\}/g, P.brand).replace(/\{area\}/g, P.area);
   });
