@@ -118,7 +118,7 @@
     + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#1f5f22;color:#fff;vertical-align:2px;white-space:nowrap}'
     + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
     + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
-    + '.vrd-root .vrd-vetting{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fff4e2;color:#6b3f00;white-space:nowrap}'
+    + '.vrd-root .vrd-vetting{margin-top:4px;font-size:11px;font-weight:700;color:#8a5a00;line-height:1.35}'
     + '.vrd-root .av{border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}'
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
     + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5EC47A}'
@@ -273,8 +273,8 @@
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '"' + extraAttrs(l) + '>' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
-      '<div class="rank-meta">' + cardMeta(l) + vettingNote(l) + temp + '</div>' +
-      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + '</div></div>' +
+      '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
+      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + '</div>' + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
@@ -755,10 +755,11 @@
     }).then(function () { return window.VETrust ? window.VETrust.load() : null; });
     trustLoading.then(cb, function () { cb(null); });
   }
-  // Members see listings still being vetted, marked so they know their vote counts.
+  // Members see listings still being vetted, with how far each is from going public, on its own line under the card's
+  // details so it never runs into the vote button (Sean, 2026-10-25).
   function vettingNote(l) {
     if (!TRUST || !window.VETrust || !window.VETrust.pending(l, TRUST)) return '';
-    return '<span class="vrd-vetting" title="Shows to the public once ' + TRUST.min_voters + ' different people vote for it, or the business claims it.">Members only &middot; ' + (l.voter_count || 0) + ' of ' + TRUST.min_voters + ' people</span>';
+    return '<div class="vrd-vetting" title="Shows to the public once ' + TRUST.min_voters + ' different members vote for it, or the business claims it.">' + (l.voter_count || 0) + ' of ' + TRUST.min_voters + ' members have voted</div>';
   }
 
   function fetchClosed(root, config, approved) {
