@@ -628,10 +628,20 @@ Deno.serve(async (req) => {
     }
 
     // ---- Directory review ----
+    // Why a listing was held, less what has been fixed since (Directory review's form): a held listing is not in the nightly
+    // flags (those cover live ones), so its reasons are checked against what it holds now.
+    const stillTrue = (l: any) => (l.details?.review?.reasons || []).filter((r: string) => {
+      if (r === 'No socials') return !(l.instagram || l.facebook || l.tiktok);
+      if (r === 'No hours') { const h = l.google_hours_json; return !h || (typeof h === 'object' && !Object.keys(h).length); }
+      if (r === 'No street address') return !l.address_street;
+      if (r === 'No website') return !l.website;
+      if (r === 'The website did not open') return !(l.details?.fixed?.website && l.details.fixed.website > (l.details?.review?.at || ''));
+      return true;
+    });
     if (action === 'review_list') {
-      const COLS = 'id,slug,name,category,address_city,address_state,logo_url,website,instagram,status,business_status,claim_status,details,updated_at';
+      const COLS = 'id,slug,name,category,address_city,address_state,address_street,logo_url,website,instagram,facebook,tiktok,google_hours_json,status,business_status,claim_status,details,updated_at';
       const pick = (l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city, state: l.address_state,
-        logo_url: l.logo_url, website: l.website, instagram: l.instagram, review: l.details?.review || null,
+        logo_url: l.logo_url, website: l.website, instagram: l.instagram, review: l.details?.review ? { ...l.details.review, reasons: stillTrue(l) } : null,
         removed: l.details?.removed_at ? { at: l.details.removed_at, by: l.details.removed_by, reason: l.details.removed_reason } : null,
         closed: l.details?.closed_at ? { at: l.details.closed_at, by: l.details.closed_by } : null, updated_at: l.updated_at });
       // Being vetted (Sean, 2026-10-25: "these will be manual checks on my end"): Vegan-friendly and Vegan-options food places
@@ -665,7 +675,7 @@ Deno.serve(async (req) => {
       ]);
       const f = (flags || []).find((x: any) => x.listing_id === l.id);
       const g = a?.facts?.google || {};
-      return json({ ok: true, listing: l, flags: f?.flags || l.details?.review?.reasons || [], menu_items: menu || 0, menu_import: mi || null,
+      return json({ ok: true, listing: l, flags: f?.flags || (l.status === 'pending' ? stillTrue(l) : []), menu_items: menu || 0, menu_import: mi || null,
         checkins: (cis || []).map((c: any) => ({ at: c.created_at, name: c.members?.name || 'A member', distance_m: c.distance_m })),
         checkup: a ? { id: a.id, at: a.created_at, level: a.closure_level, signals: a.closure_signals || [], google: { status: g.status || null, maps: g.maps || null,
           address: g.address || null, rating: g.rating || null, reviews: g.reviews || null, hours: g.hours || null }, website_error: a.facts?.website?.error || null } : null });
