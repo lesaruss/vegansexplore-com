@@ -224,20 +224,24 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .ownership-tag{font-size:9px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:var(--ve-green-light);color:#2d7d31;border:1px solid #c8e6c9}
 
 @media(max-width:768px){
-  .listing-hero{flex-direction:row;padding:14px 16px;gap:12px;align-items:stretch}
-  .listing-hero-avatar{width:100px;min-width:100px;height:100px;align-self:flex-start;border-radius:8px;font-size:20px;flex-shrink:0}
-  .listing-hero-content{display:flex;flex-direction:row;flex:1;min-width:0;align-items:center;gap:10px}
-  .listing-hero-body{flex:1;min-width:0}
-  .listing-breadcrumb{font-size:9px;letter-spacing:0.15em}
+  /* Phones (Sean, 2026-10-25: "everything's kind of squished up"): the logo with the breadcrumbs, the title and the pills
+     (two rows at most) beside it, then Vote, Save and Check in in one row across the bottom of the header. */
+  .listing-hero{display:grid;grid-template-columns:76px minmax(0,1fr);column-gap:14px;row-gap:14px;padding:16px;align-items:start}
+  .listing-hero-avatar{width:76px;min-width:76px;height:76px;border-radius:10px;font-size:20px;grid-column:1;grid-row:1}
+  .listing-hero-content{display:contents}
+  .listing-hero-body{grid-column:2;grid-row:1;min-width:0;position:relative}
+  .listing-breadcrumb{font-size:9px;letter-spacing:0.12em;line-height:1.5;margin-bottom:6px}
+  .listing-breadcrumb .crumb-here{display:none}
   .listing-tagline{display:none}
-  .listing-name{font-size:15px;margin-bottom:5px}
-  .listing-badges{gap:5px;margin-bottom:0}
-  .badge-cat{font-size:9px;padding:3px 8px}
-  .badge-subcat{font-size:9px;padding:3px 8px}
-  .listing-hero-right{flex-direction:column;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
-  .vote-hero-btn{padding:10px 14px;font-size:10px}
-  .save-hero-btn{padding:10px 14px;font-size:10px}
-  .checkin-hero-btn{padding:10px 14px;font-size:10px}
+  .listing-name{font-size:21px;line-height:1.15;margin-bottom:8px;overflow-wrap:anywhere}
+  .listing-badges{gap:5px;margin-bottom:0;max-height:48px;overflow:hidden}
+  .badge-cat,.badge-subcat,.badge-verified{font-size:9px;padding:3px 9px;white-space:nowrap}
+  .listing-hero-right{grid-column:1 / -1;grid-row:2;flex-direction:row;flex-wrap:wrap;align-items:stretch;justify-content:stretch;gap:8px;position:relative}
+  .vote-hero-btn,.save-hero-btn,.checkin-hero-btn{flex:1 1 0;min-width:0;justify-content:center;padding:11px 8px;font-size:10px;letter-spacing:.08em}
+  .vote-hero-btn svg,.save-hero-btn svg,.checkin-hero-btn svg{flex-shrink:0}
+  .listing-hero-right .checkin-msg,.listing-hero-right > a{flex-basis:100%;text-align:center;margin-top:0 !important}
+  .listing-hero-right > a{color:rgba(255,255,255,.78) !important}
+  @media(max-width:380px){.listing-hero-right{gap:6px}.vote-hero-btn,.save-hero-btn,.checkin-hero-btn{padding:11px 4px;font-size:9px;letter-spacing:.04em;gap:4px}}
   .checkin-msg{text-align:center}
   .photos-grid{display:none}
   .photos-carousel-wrap{display:block}
@@ -2839,8 +2843,8 @@ function renderListing(l){
   var PD_BTN = '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">' + '<svg class="pd-lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>' + 'Partner Dashboard</button>';
   // Breadcrumb
   var breadcrumb = community
-    ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a> / '+esc(l.name)+'</div>'
-    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+dirTab+'">'+esc(dirLabel)+'</a> / '+esc(l.name)+'</div>';
+    ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>'
+    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+dirTab+'">'+esc(dirLabel)+'</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>';
 
   // Avatar
   var av = l.logo_url
