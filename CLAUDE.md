@@ -922,7 +922,10 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   (`/passport?community=<slug>#/join`), the Directory, Explore, the path pages, login and the Guide gate all go there; `/join` (the
   old Get Your Passport page) and `/passport/join` forward to it. An invite code (`?ref=`) or a city (`?community=`) in the link is
   kept for the visit (`sessionStorage` `ve_join_ref`, `ve_join_community`) and sent with the sign-up window's signup
-  (`public/ve-auth.js`), as `/join` used to. `/welcome` stays the guided tour (Start Your Journey).
+  (`public/ve-auth.js`), as `/join` used to. `/welcome` stays the guided tour (Start Your Journey); its last slide, Take your
+  founding seat, now opens the Passport Guide instead of its own open contribution (Sean, 2026-10-25), members give more from the
+  dashboard's Contribute, and the nav's announcement (`ve_nav_announcements`) reads "Your Passport: $11 one time, with 1,100 welcome
+  points" and links to `/passport`.
 - Migration `20261025_ve_points_levels_admission.sql` (functions, contributions table) and `20261025_ve_guides_points_rule.sql`
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
