@@ -27,8 +27,10 @@
   // tools tagged 'lesaruss-ai-directory-candidate' (2026-09-07) stay off the VE hubs.
   var CAT_MAP = {
     'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food',
-    'Food Brands': 'food', 'Catering': 'food', 'Meal Prep': 'food',
-    'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
+    'Catering': 'food', 'Meal Prep': 'food',
+    // Food Brands sit with the other brands under Products (Sean, 2026-10-25: "we're showing all brands versus mixing them,
+    // the national with the local"), so Food, opening on All, is the local places.
+    'Food Brands': 'products', 'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
     'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
     'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services',
     'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services',
@@ -41,10 +43,10 @@
   var CAT_CONFIG = [
     { key: 'food', label: 'Food', hasVF: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Catering', 'Meal Prep'] },
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Catering', 'Meal Prep'] },
     { key: 'products', label: 'Products', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
-      subcats: ['Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces'] },
+      subcats: ['Brands', 'Food Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces'] },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
       subcats: ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations'] },

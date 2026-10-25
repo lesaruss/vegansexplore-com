@@ -2789,13 +2789,16 @@ function renderListing(l){
   var community = getCommunityForListing(l);
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
+  // Food Brands are listed under Products in the Directory (2026-10-25); the page itself stays a food page.
+  var dirTab = l.category === 'Food Brands' ? 'products' : catType;
+  if(l.category === 'Food Brands') dirLabel = 'Products';
 
   // Partner Dashboard's tab: after Products on a brand page, last everywhere else.
   var PD_BTN = '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">' + '<svg class="pd-lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>' + 'Partner Dashboard</button>';
   // Breadcrumb
   var breadcrumb = community
     ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a> / '+esc(l.name)+'</div>'
-    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+catType+'">'+esc(dirLabel)+'</a> / '+esc(l.name)+'</div>';
+    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+dirTab+'">'+esc(dirLabel)+'</a> / '+esc(l.name)+'</div>';
 
   // Avatar
   var av = l.logo_url
