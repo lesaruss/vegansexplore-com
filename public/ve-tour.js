@@ -25,7 +25,7 @@
 // starts and skipped when that part is not on the page (a tab hidden on Depot > Dashboard
 // checklist, a Community Manager prompt for a member), so a tour only points at real things.
 //
-// Each tour also puts its own "Take the tour" button on its pages (the dashboard prompts are
+// Each tour also puts its own "Take the tour" button (or its own `button` label) on its pages (the dashboard prompts are
 // written into center-console.html). Pages that load this file without a tour do nothing.
 
 (function (global) {
@@ -139,6 +139,8 @@
 
     hub: {
       label: 'Community tour',
+      // Its button reads Page tour, so it is not mistaken for the hero's Take the Tour (the site tour, /welcome; Sean, 2026-10-25).
+      button: 'Page tour',
       ready: onHub,
       prepare: function () { hubTab('news'); },
       finish: function () { hubTab('news'); try { global.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { global.scrollTo(0, 0); } },
@@ -146,8 +148,8 @@
       steps: [
         { sel: ['section.hero .hero-content', 'section.hero'], title: 'Your city, all in one place',
           body: "Every city has a community hub like this one. Here's what you'll find." },
-        { sel: ['section.hero .hero-actions .btn-join'], title: 'Join this community',
-          body: 'New here? Join to make this city part of your Vegans Explore account.' },
+        { sel: ['section.hero .hero-actions .btn-join'], title: 'Start here',
+          body: 'New here? Get your Passport to join Vegans Explore. Already a member? Jump straight to the Directory or your dashboard.' },
         { sel: ['.hub-menu'], title: 'Everything for this city',
           body: 'News, events, the Directory, ways to get involved, bounties and the Community Board. Pick one here.' },
         { hubTab: 'news', sel: ['#tab-news .section-hdr', '.hub-menu'], title: 'Local news',
@@ -526,7 +528,7 @@
         btn.type = 'button';
         btn.id = 've-tour-launch-' + name;
         btn.className = 've-tour-launch';
-        btn.innerHTML = '<span aria-hidden="true">&#128075;</span> Take the tour';
+        btn.innerHTML = '<span aria-hidden="true">&#128075;</span> ' + (t.button || 'Take the tour');
         btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); start(name); });
         if (!t.launcher(btn) && ++tries < 20) setTimeout(attempt, 250);
       })();
