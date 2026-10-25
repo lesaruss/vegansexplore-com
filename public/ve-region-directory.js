@@ -58,11 +58,17 @@
     // (/public/ve-trust.js). Members only; each one moves to Food once 10 different members vote for it.
     { key: 'vetting', label: 'Being vetted', hasVF: false, membersOnly: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep'] }
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep'] },
+    // Review (Sean, 2026-10-25: "could we have a review tab that has all of those features in there, just so I'm doing it
+    // from one place? Because I rarely go into the depot"). Super admins only: Depot > Directory review, framed in the tab.
+    { key: 'review', label: 'Review', hasVF: false, adminOnly: true, frame: '/admin/depot/directory-review',
+      icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
+      subcats: [] }
   ];
   // Members (an active membership) see the Being vetted section.
   function memberNow() { var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; return !!(m && m.membership_status === 'active'); }
-  function catsFor() { return CAT_CONFIG.filter(function (c) { return !c.membersOnly || memberNow(); }); }
+  function adminNow() { var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; return !!(m && m.is_superadmin); }
+  function catsFor() { return CAT_CONFIG.filter(function (c) { return (!c.membersOnly || memberNow()) && (!c.adminOnly || adminNow()); }); }
 
   var CSS = ''
     + '.vrd-root{font-family:Montserrat,sans-serif}'
@@ -72,6 +78,7 @@
     + '.vrd-root .cat-tab:hover:not(.active){color:#555}'
     + '.vrd-root .board-panel{display:none;padding-top:16px}'
     + '.vrd-root .board-panel.active{display:block}'
+    + '.vrd-root .vrd-frame{display:block;width:100%;min-height:600px;border:1px solid rgba(0,0,0,.09);border-radius:14px;background:#f7f8f7}'
     + '.vrd-root .subcat-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #eee}'
     + '.vrd-root .subcat-pill{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#888;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s}'
     + '.vrd-root .subcat-pill.sc-active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}'
@@ -195,6 +202,8 @@
   // category -- so it lives on that category's own subcat-pills row,
   // shifted to the right, "flush underneath the actual tab."
   function skeletonForCat(cat, config) {
+    // A framed tool (Review): the page loads the first time the tab opens.
+    if (cat.frame) return '<div class="board-panel" id="board-' + cat.key + '"><div class="vrd-frame-wrap" data-vrd-frame="' + esc(cat.frame) + '"></div></div>';
     var subcatBtns = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>' +
       cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('');
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
@@ -264,13 +273,42 @@
     return ' <span class="vrd-verified"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>VE Verified</span>';
   }
   function byPriority(a, b) { return (isPlus(b) ? 1 : 0) - (isPlus(a) ? 1 : 0); }
+  // The Review tab's frame. The page inside says how tall it is (ve-frame-height, from depot-tabs.js) so the Directory
+  // scrolls as one page, and asks to scroll (ve-frame-scroll) when it moves to the next listing.
+  function openToolFrame(root, key, hash) {
+    var wrap = root.querySelector('#board-' + key + ' [data-vrd-frame]'); if (!wrap) return;
+    var f = wrap.querySelector('iframe');
+    if (!f) {
+      f = document.createElement('iframe'); f.className = 'vrd-frame'; f.title = 'Directory review';
+      f.src = wrap.getAttribute('data-vrd-frame') + (hash || '');
+      wrap.appendChild(f); return;
+    }
+    if (hash) { try { f.contentWindow.location.hash = hash.replace(/^#/, ''); } catch (e) { f.src = wrap.getAttribute('data-vrd-frame') + hash; } }
+  }
+  function openReview(root, hash) {
+    var btn = root.querySelector('[data-vrd-tab="review"]'); if (!btn) return false;
+    var wrap = root.querySelector('#board-review [data-vrd-frame]');
+    var fresh = wrap && !wrap.querySelector('iframe');
+    if (fresh) openToolFrame(root, 'review', hash); // first open: load straight on the listing
+    btn.click();
+    if (!fresh) openToolFrame(root, 'review', hash);
+    var panel = root.querySelector('#board-review'); if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return true;
+  }
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data) return;
+    var f = null; document.querySelectorAll('.vrd-frame').forEach(function (x) { if (x.contentWindow === e.source) f = x; });
+    if (!f) return;
+    if (e.data.type === 've-frame-height') { f.style.height = Math.max(600, Math.min(40000, Math.round(+e.data.h || 0))) + 'px'; f.setAttribute('scrolling', 'no'); }
+    else if (e.data.type === 've-frame-scroll') window.scrollBy({ top: f.getBoundingClientRect().top + (+e.data.top || 0) - 80, behavior: e.data.smooth ? 'smooth' : 'auto' });
+  });
   // Admins: Edit opens the listing editor; Review opens it in Depot > Directory review to fix what is missing (Sean, 2026-10-25),
   // in the Being vetted list when it is still waiting on member votes.
   function adminBtn(l) {
     if (!ADMIN) return '';
     var list = TRUST && window.VETrust && window.VETrust.pending(l, TRUST) ? 'vetting' : 'flagged';
     return '<span class="vla-btns"><button type="button" class="vla-edit" data-vla="' + esc(l.id) + '" title="Admin only">Edit</button>' +
-      '<a class="vla-edit" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/' + list + '" target="_blank" rel="noopener" title="Admin only: fix it in Directory review">Review</a></span>';
+      '<a class="vla-edit" data-vrd-review="#l/' + encodeURIComponent(l.id) + '/' + list + '" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/' + list + '" target="_blank" rel="noopener" title="Admin only: fix it in the Review tab">Review</a></span>';
   }
 
   function makeBrowseCard(l, idx, type) {
@@ -586,6 +624,7 @@
         root.querySelectorAll('.board-panel').forEach(function (p) { p.classList.remove('active'); });
         btn.classList.add('active');
         root.querySelector('#board-' + btn.getAttribute('data-vrd-tab')).classList.add('active');
+        openToolFrame(root, btn.getAttribute('data-vrd-tab'));
       });
     });
 
@@ -726,6 +765,11 @@
   function bindAdmin(root) {
     if (!ADMIN) return;
     window.VEListingAdmin.css();
+    // Review on a card opens that listing in the Review tab, when this Directory has one.
+    root.querySelectorAll('a.vla-edit[data-vrd-review]').forEach(function (a) {
+      if (a.dataset.bound) return; a.dataset.bound = '1';
+      a.addEventListener('click', function (e) { if (openReview(root, a.getAttribute('data-vrd-review'))) { e.preventDefault(); e.stopPropagation(); } });
+    });
     root.querySelectorAll('.vla-edit[data-vla]').forEach(function (b) {
       if (b.dataset.bound) return; b.dataset.bound = '1';
       b.addEventListener('click', function (e) {

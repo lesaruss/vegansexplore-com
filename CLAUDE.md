@@ -492,9 +492,13 @@ The form also sets the **Kind** (any Directory sub-section) and **Online only, n
 online beauty and personal care brand... they wouldn't necessarily be a listing with hours of operation"): the street, city, state,
 ZIP and map pin come off (`location` Online, the same as the listing editor's Online only), it shows in every chapter, and with no
 city it is never flagged or held again; a held one drops No hours and No street address. The menu link shows for food places only.
-**Being vetted** is a list there too (the food places waiting on member votes) with **Vetted by us** (`listing_vetted`). On the
-Directory, every card shows admins **Edit** and **Review** (opens it in Directory review, in Being vetted when it is waiting on
-votes), and the listing editor has Open in Directory review.
+**Being vetted** is a list there too (the food places waiting on member votes) with **Vetted by us** (`listing_vetted`). The
+Directory and every hub also have a **Review** tab for super admins (Sean, 2026-10-25: "could we have a review tab that has all of
+those features in there, just so I'm doing it from one place? Because I rarely go into the depot"): `review` in `CAT_CONFIG`
+(`adminOnly`, `frame`), which frames Directory review without its nav, footer or Depot header (the page hides them when its
+parent is `/directory` or a hub) and grows to fit (depot-tabs.js `ve-frame-height`). Every card shows admins **Edit** and
+**Review**; Review opens that listing in the Review tab (in Being vetted when it is waiting on votes), and the listing editor has
+Open in Directory review.
 
 Member check-ins (Sean, 2026-10-25: "making a way that members can verify listings... every time they check in, they can get
 like 10 points... We can see a record of how many people are actually visiting, which members are visiting... if a business
