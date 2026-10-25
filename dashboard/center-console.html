@@ -227,6 +227,21 @@
   .dash-tour-prompt-arrow{font-size:16px;color:var(--ve-green-dark);flex-shrink:0;}
   /* Dashboard preview hub (Sean, 2026-09-22) */
   .dash-preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:8px;}
+  /* Your dashboard's version (Sean, 2026-10-24; renderVersion, ve-dashboard): its block on the home view. */
+  #dash-version{margin:8px 0 28px;}
+  #dash-version .dv-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin-bottom:12px;}
+  #dash-version .dv-head .dash-section-title{margin:0;}
+  #dash-version .dv-pick{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);}
+  #dash-version select{appearance:none;-webkit-appearance:none;font:inherit;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);border:1px solid var(--ve-border);border-radius:6px;padding:8px 44px 8px 12px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;cursor:pointer;}
+  .dv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+  .dv-card{border:1.5px solid var(--ve-border);border-radius:14px;padding:16px 18px;background:#fff;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--ve-text);}
+  .dv-card b{font-size:14.5px;font-weight:800;}
+  .dv-card p{margin:0;font-size:12.5px;line-height:1.55;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .dv-card .dv-go{margin-top:auto;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-dark);}
+  .dv-card.dv-biz{background:#0f1f10;color:#fff;border-color:#0f1f10;}.dv-card.dv-biz p{color:rgba(255,255,255,.8);}.dv-card.dv-biz .dv-go{color:#5EC47A;}
+  .dv-tag{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .dv-step{display:flex;gap:12px;align-items:flex-start;}.dv-step i{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--ve-green-dark);color:#fff;font-style:normal;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
+  #dash-version h4{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);margin:22px 0 10px;}
   /* Home (Sean, 2026-10-04): Action items and the Leaderboard side by side. */
   .dash-home-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:4px;}
   .dash-action-list{display:flex;flex-direction:column;gap:0;position:relative;}
@@ -838,6 +853,13 @@
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
       </div>
+
+      <!-- The version's own block (Sean, 2026-10-24: one dashboard, a version for each kind of member). renderVersion(). -->
+      <section id="dash-version" hidden aria-labelledby="dv-title">
+        <div class="dv-head"><p class="dash-section-title" id="dv-title"></p>
+          <label class="dv-pick" for="dv-select">Your dashboard <select id="dv-select"></select></label></div>
+        <div id="dv-body"></div>
+      </section>
 
       <!-- Everything else, three across (Sean, 2026-10-04). renderDashboardPreviews(). -->
       <div class="dash-home-overview">
@@ -3260,6 +3282,56 @@
     }
   })();
 
+  // ---- Your dashboard's version (Sean, 2026-10-24; docs/proposals/member-dashboards.md). ve-dashboard home gives the
+  // version (the member's choice, else worked out from the listings they own and their Mission Survey answers), their
+  // listings and the What's new cards for it (ve_dashboard_cards). The block sits after Action items; the switch saves.
+  var DASH_VERSION = 'member';
+  var DASH_TOOLS_FIRST = { business: ['Opportunities', 'Campaigns', 'Community Board'], pre_vegan: ['Guides', 'Community Board', 'Communities'],
+    coach: ['Bounties', 'Opportunities', 'Community Board'], member: [] };
+  var DV_TITLE = { business: 'Your business', pre_vegan: 'Start here', coach: 'For coaches and pros', member: 'For you' };
+  function dvEsc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function dvCall(body) {
+    return fetch(SUPABASE_URL + '/functions/v1/ve-dashboard', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return null; });
+  }
+  function dvCard(c, cls) {
+    return '<a class="dv-card' + (cls ? ' ' + cls : '') + '" href="' + dvEsc(c.cta_url || '#') + '">' + (c.tag ? '<span class="dv-tag">' + dvEsc(c.tag) + '</span>' : '') +
+      '<b>' + dvEsc(c.title) + '</b><p>' + dvEsc(c.body) + '</p><span class="dv-go">' + dvEsc(c.cta_label || 'Open') + ' &rarr;</span></a>';
+  }
+  function renderVersion(member) {
+    var box = document.getElementById('dash-version'); if (!box) return;
+    dvCall({ action: 'home' }).then(function (d) {
+      if (!d || !d.ok) { box.hidden = true; return; }
+      DASH_VERSION = d.version;
+      var sel = document.getElementById('dv-select');
+      sel.innerHTML = d.versions.map(function (v) { return '<option value="' + v.k + '"' + (v.k === d.version ? ' selected' : '') + '>' + dvEsc(v.label) + (v.k === d.auto ? ' (suggested)' : '') + '</option>'; }).join('');
+      sel.onchange = function () {
+        sel.disabled = true;
+        // Picking the worked-out one again clears the choice, so it follows them if their listings or answers change.
+        dvCall({ action: 'set_version', version: sel.value === d.auto ? null : sel.value }).then(function () { sel.disabled = false; renderVersion(member); });
+      };
+      document.getElementById('dv-title').textContent = DV_TITLE[d.version] || 'For you';
+      var wiz = d.cards.filter(function (c) { return c.kind === 'wizard'; }), news = d.cards.filter(function (c) { return c.kind !== 'wizard'; });
+      var out = '';
+      if (d.version === 'business') {
+        // Each listing they own opens its business dashboard (/directory/<slug>?tab=brand, /public/ve-partner-dashboard.js).
+        out += '<div class="dv-grid">' + (d.listings.length ? d.listings.map(function (l) {
+          return dvCard({ title: l.name, body: 'Your numbers, your page and menu, ads, campaigns and the audit, on your page.', cta_label: 'Open your business dashboard', cta_url: '/directory/' + encodeURIComponent(l.slug) + '?tab=brand', tag: l.claim_status === 'verified' ? 'Yours' : 'Waiting for approval' }, 'dv-biz');
+        }).join('') : dvCard({ title: 'Is your business in the Directory?', body: 'Find it and claim it, or add it. Your business dashboard opens on your page.', cta_label: 'Join the Directory', cta_url: '/claim' }, 'dv-biz')) + '</div>';
+      }
+      if (wiz.length) {
+        // Start here: steps in order.
+        out += (out ? '<h4>' + (d.version === 'pre_vegan' ? 'Your first steps' : 'Try it') + '</h4>' : '') + '<div class="dv-grid">' + wiz.map(function (c, i) {
+          return '<a class="dv-card" href="' + dvEsc(c.cta_url || '#') + '"><div class="dv-step"><i>' + (i + 1) + '</i><div><b>' + dvEsc(c.title) + '</b><p>' + dvEsc(c.body) + '</p></div></div><span class="dv-go">' + dvEsc(c.cta_label || 'Open') + ' &rarr;</span></a>';
+        }).join('') + '</div>';
+      }
+      if (news.length) out += '<h4>What\'s new</h4><div class="dv-grid">' + news.map(function (c) { return dvCard(Object.assign({ tag: { offer: 'Offer', tip: 'Tip' }[c.kind] || 'New' }, c)); }).join('') + '</div>';
+      document.getElementById('dv-body').innerHTML = out;
+      box.hidden = false;
+      if (!member.is_superadmin) renderDashboardPreviews(member);
+    });
+  }
+
   function renderDashboardPreviews(member) {
     var host = document.getElementById('dash-previews');
     if (!host) return;
@@ -3321,7 +3393,9 @@
     }
     if (member.ve_role === 'community_manager') access.push({ icon: '🕵️', bg: '#F1EBFE', title: 'Secret Shopper', desc: 'Restaurant visits in your city: set the day, then write the report.', fn: function () { openShopper(''); } });
     access.push({ icon: '🌆', bg: '#F1EBFE', title: 'Communities', desc: 'Explore and join Vegans Explore communities.', fn: function () { if (window.activateDashTab) activateDashTab('communities'); } });
-    access.forEach(function (c) { grid.appendChild(dpAccessCard(c)); });
+    // The version's tools come first (renderVersion sets DASH_VERSION and draws this again).
+    var first = DASH_TOOLS_FIRST[DASH_VERSION] || [], rank = function (c) { var i = first.indexOf(c.title); return i < 0 ? 99 : i; };
+    access.map(function (c, i) { return [rank(c), i, c]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).forEach(function (x) { grid.appendChild(dpAccessCard(x[2])); });
   }
 
   function renderDirectory(member) {
@@ -3622,6 +3696,7 @@
     initToolsConsolidation();
     renderToolSectionTiles();
     renderDashboardPreviews(member);
+    renderVersion(member);
     initDashTabs();
     initBountyTopics();
     var firstName = member.name ? member.name.split(' ')[0] : 'there';

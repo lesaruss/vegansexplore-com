@@ -1,0 +1,83 @@
+// ve-dashboard: which version of /dashboard a member sees (Sean, 2026-10-24: "the dashboard could actually be the main
+// dashboard, and then we have different versions of it. So if they're a coach... if they're a pre-vegan, the dashboard set up a
+// certain way"; docs/proposals/member-dashboards.md, migration 20261025_dashboard_versions.sql).
+//
+// POST { action: 'home' }                   Authorization: Bearer <ve_token>
+//   -> { version, auto, chosen, versions, listings: [{name, slug, claim_status}], cards: [{kind, title, body, cta_label, cta_url}] }
+//   version is the member's choice (members.dashboard_version) or ve_dashboard_version(); cards are ve_dashboard_cards for that
+//   version and 'all', live now, in order. A business card's link that starts with ? opens on their first listing's dashboard.
+// POST { action: 'set_version', version }   'business' | 'coach' | 'pre_vegan' | 'member', or null to go back to the worked-out one
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
+
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const db = createClient(SUPABASE_URL, SERVICE_KEY);
+const VERSIONS = [['business', 'Business'], ['pre_vegan', 'Just starting'], ['coach', 'Coach or pro'], ['member', 'Member']];
+
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
+
+function b64urlDecodeToBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+// Same key derivation as ve-auth's signJWT / decodeToken.
+async function verifyToken(token: string): Promise<string | null> {
+  try {
+    const [header, payload, sig] = token.split('.');
+    if (!header || !payload || !sig) return null;
+    const secret = new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0'));
+    const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    if (!(await crypto.subtle.verify('HMAC', key, b64urlDecodeToBytes(sig), new TextEncoder().encode(`${header}.${payload}`)))) return null;
+    const d = JSON.parse(new TextDecoder().decode(b64urlDecodeToBytes(payload)));
+    return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
+  } catch { return null; }
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+  if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+  let body: any = {};
+  try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
+  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  const memberId = token ? await verifyToken(token) : null;
+  if (!memberId) return json({ error: 'not_authenticated' }, 401);
+  const { data: member } = await db.from('members').select('id, dashboard_version').eq('id', memberId).maybeSingle();
+  if (!member) return json({ error: 'not_found' }, 404);
+
+  if (body.action === 'set_version') {
+    const v = body.version == null ? null : String(body.version);
+    if (v !== null && !VERSIONS.some((x) => x[0] === v)) return json({ error: 'bad_version' }, 400);
+    const { error } = await db.from('members').update({ dashboard_version: v }).eq('id', memberId);
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true, version: v });
+  }
+
+  if (body.action === 'home') {
+    const [{ data: auto }, { data: listings }] = await Promise.all([
+      db.rpc('ve_dashboard_version', { p_member: memberId }),
+      db.from('listings').select('name, slug, claim_status').eq('status', 'approved').or(`owner_member_id.eq.${memberId},claimed_by_member_id.eq.${memberId}`).order('name').limit(20),
+    ]);
+    const version = member.dashboard_version || auto || 'member';
+    const now = Date.now();
+    const { data: rows } = await db.from('ve_dashboard_cards').select('kind, title, body, cta_label, cta_url, starts_at, ends_at').in('audience', [version, 'all']).order('sort');
+    const first = (listings || [])[0];
+    const cards = (rows || []).filter((c: any) => Date.parse(c.starts_at) <= now && (!c.ends_at || Date.parse(c.ends_at) > now))
+      .map((c: any) => {
+        let url = c.cta_url;
+        if (url && url.charAt(0) === '?') url = first ? `/directory/${encodeURIComponent(first.slug)}?tab=brand&${url.slice(1)}` : null;
+        return { kind: c.kind, title: c.title, body: c.body, cta_label: c.cta_label, cta_url: url };
+      });
+    return json({ ok: true, version, auto: auto || 'member', chosen: member.dashboard_version, versions: VERSIONS.map(([k, label]) => ({ k, label })),
+      listings: listings || [], cards });
+  }
+
+  return json({ error: 'unknown_action' }, 400);
+});
