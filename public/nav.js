@@ -466,7 +466,11 @@
 
   /* ---- Passport gate (event delegation - runs on every page nav.js is included) ---- */
   var _gated = ['.vote-hero-btn', '.donate-btn', '#donate-btn', '.btn-join', '.star-btn', '.mobile-sticky-btn-vote', '.mobile-sticky-btn-save'];
+  // Signed out, a members-only button opens the Passport Guide (Sean, 2026-10-25: /passport is the one Passport), which has
+  // Sign in for members and returns them here (back=). The old sign-in pop-up stays only as the fallback below.
   function _showGateModal(msg) {
+    var _here = location.pathname + location.search + location.hash;
+    if (location.pathname !== '/passport') { location.href = '/passport?back=' + encodeURIComponent(_here); return; }
     var _msg = msg || 'You need a free Passport to do that.';
     if (window.VEAuth && typeof VEAuth.showAuthModal === 'function') {
       VEAuth.showAuthModal(_msg);
@@ -494,6 +498,8 @@
     if (localStorage.getItem('ve_token')) return;
     var t = e.target;
     while (t && t !== document.body) {
+      // A link that already goes to the Passport needs no gate.
+      if (t.tagName === 'A' && /^\/passport(?:$|[?#/])/.test(t.getAttribute('href') || '')) return;
       for (var _gi = 0; _gi < _gated.length; _gi++) {
         try {
           if (t.matches && t.matches(_gated[_gi])) {
