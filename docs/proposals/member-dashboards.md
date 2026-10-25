@@ -1,4 +1,7 @@
-# One dashboard, a version for each kind of member (proposal, 2026-10-24)
+# One dashboard, a version for each kind of member (proposal 2026-10-24, built 2026-10-25)
+
+Built: steps 1 to 3 below (see Dashboard versions in CLAUDE.md). Not yet: the Depot What's new editor (step 4); cards are rows
+in `ve_dashboard_cards` until then.
 
 Sean, 2026-10-24: "the dashboard could actually be the main dashboard, and then we have different versions of it. So if
 they're a coach... if they're a pre-Vegan, the dashboard set up a certain way. I want us to look into that."

@@ -1052,6 +1052,23 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
 - Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once
   Amazon Associates is settled.
 
+## Dashboard versions (Sean, 2026-10-24; built 2026-10-25)
+
+"The dashboard could actually be the main dashboard, and then we have different versions of it. So if they're a coach...
+if they're a pre-vegan, the dashboard set up a certain way." One `/dashboard` with four versions: **Business**, **Just
+starting** (`pre_vegan`), **Coach or pro** (`coach`) and **Member**. A version decides only the block after Action items
+(`#dash-version`, `renderVersion` in `dashboard/center-console.html`), which What's new cards show, and the order of Your
+tools (`DASH_TOOLS_FIRST`); everything else is shared.
+
+- Which one: the member's choice (`members.dashboard_version`, the switch on the block; picking the suggested one clears it),
+  else `ve_dashboard_version()`: owns a listing or Business owner in the Mission Survey (q3), business; q6 Curious / pre-Vegan,
+  Flexitarian or Vegetarian, pre_vegan; Service provider, coach; else member (migration `20261025_dashboard_versions.sql`).
+- The block: Business shows each listing they own, opening its business dashboard (`/directory/<slug>?tab=brand`), or Join the
+  Directory; Just starting shows its `wizard` cards as numbered first steps; every version shows its What's new. Cards are
+  `ve_dashboard_cards` rows by `audience` (business, pre_vegan, coach, member, all): change what a version shows with a row,
+  no code. A business card's link that starts with `?` opens on their first listing's dashboard.
+- Edge function `ve-dashboard` (`home`, `set_version`; verify_jwt off, the member token checked inside).
+
 ## Your Guide (Sean, 2026-10-04)
 
 Your Guide is for registered members, inside the dashboard window: `/dashboard/guide` opens `/guide`

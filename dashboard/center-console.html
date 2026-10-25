@@ -3312,20 +3312,20 @@
       };
       document.getElementById('dv-title').textContent = DV_TITLE[d.version] || 'For you';
       var wiz = d.cards.filter(function (c) { return c.kind === 'wizard'; }), news = d.cards.filter(function (c) { return c.kind !== 'wizard'; });
-      var out = '';
-      if (d.version === 'business') {
-        // Each listing they own opens its business dashboard (/directory/<slug>?tab=brand, /public/ve-partner-dashboard.js).
-        out += '<div class="dv-grid">' + (d.listings.length ? d.listings.map(function (l) {
+      var TAG = { wizard: 'Try it', offer: 'Offer', tip: 'Tip', new: 'New' }, out = '';
+      // Each listing they own opens its business dashboard (/directory/<slug>?tab=brand, /public/ve-partner-dashboard.js).
+      var biz = d.version !== 'business' ? '' : d.listings.length ? d.listings.map(function (l) {
           return dvCard({ title: l.name, body: 'Your numbers, your page and menu, ads, campaigns and the audit, on your page.', cta_label: 'Open your business dashboard', cta_url: '/directory/' + encodeURIComponent(l.slug) + '?tab=brand', tag: l.claim_status === 'verified' ? 'Yours' : 'Waiting for approval' }, 'dv-biz');
-        }).join('') : dvCard({ title: 'Is your business in the Directory?', body: 'Find it and claim it, or add it. Your business dashboard opens on your page.', cta_label: 'Join the Directory', cta_url: '/claim' }, 'dv-biz')) + '</div>';
-      }
-      if (wiz.length) {
-        // Start here: steps in order.
-        out += (out ? '<h4>' + (d.version === 'pre_vegan' ? 'Your first steps' : 'Try it') + '</h4>' : '') + '<div class="dv-grid">' + wiz.map(function (c, i) {
+        }).join('') : dvCard({ title: 'Is your business in the Directory?', body: 'Find it and claim it, or add it. Your business dashboard opens on your page.', cta_label: 'Join the Directory', cta_url: '/claim' }, 'dv-biz');
+      if (d.version === 'pre_vegan' && wiz.length) {
+        // Start here: the steps in order, then anything new.
+        out = '<div class="dv-grid">' + wiz.map(function (c, i) {
           return '<a class="dv-card" href="' + dvEsc(c.cta_url || '#') + '"><div class="dv-step"><i>' + (i + 1) + '</i><div><b>' + dvEsc(c.title) + '</b><p>' + dvEsc(c.body) + '</p></div></div><span class="dv-go">' + dvEsc(c.cta_label || 'Open') + ' &rarr;</span></a>';
-        }).join('') + '</div>';
+        }).join('') + '</div>' + (news.length ? '<h4>What\'s new</h4><div class="dv-grid">' + news.map(function (c) { return dvCard(Object.assign({ tag: TAG[c.kind] || 'New' }, c)); }).join('') + '</div>' : '');
+      } else {
+        // Everything in one grid, cards across: their listings, then what to try, then what is new.
+        out = '<div class="dv-grid">' + biz + wiz.concat(news).map(function (c) { return dvCard(Object.assign({ tag: TAG[c.kind] || 'New' }, c)); }).join('') + '</div>';
       }
-      if (news.length) out += '<h4>What\'s new</h4><div class="dv-grid">' + news.map(function (c) { return dvCard(Object.assign({ tag: { offer: 'Offer', tip: 'Tip' }[c.kind] || 'New' }, c)); }).join('') + '</div>';
       document.getElementById('dv-body').innerHTML = out;
       box.hidden = false;
       if (!member.is_superadmin) renderDashboardPreviews(member);
