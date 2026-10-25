@@ -269,6 +269,18 @@
       .dir-grid { grid-template-columns: 1fr; }
       .partners-grid { grid-template-columns: 1fr; }
       .member-bar { padding: 14px 24px; }
+      /* Phones (Sean, 2026-10-25): the hero's words and buttons centered on the page; the bar is Collapse and the city
+         picker on one row, the picker reaching the same right edge as the Section dropdown, then Page tour and Get
+         Passport centered under them. */
+      .hero-content { width: 100%; }
+      .hero-eyebrow::after { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+      .hero-meta { gap: 12px 16px; }
+      .member-bar { flex-direction: column; align-items: stretch; gap: 12px; }
+      .member-bar-left { flex-wrap: nowrap; gap: 12px; width: 100%; }
+      .mb-breadcrumb { flex: 1; }
+      .mb-breadcrumb .mb-city { width: 100%; }
+      .member-bar-actions { justify-content: center; flex-wrap: wrap; gap: 12px; }
+      .member-bar-actions > * { min-height: 44px; display: inline-flex; align-items: center; box-sizing: border-box; }
     }
 
     /* ── Locked panel ── */
