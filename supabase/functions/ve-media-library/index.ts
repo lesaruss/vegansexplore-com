@@ -38,7 +38,7 @@
 //   shows in that hub's Local News feed (public/hub-news.js reads ve_pulse_city_tags). This
 //   replaces /admin/pulse-city-tags, which wrote the table with the anon key and was refused.
 // POST { action: 'logo_list', region }            a region's directory listings and their logos
-// POST { action: 'logo_set', listing_id, url }    url: a library picture, or null for the initials (any approved listing)
+// POST { action: 'logo_set', listing_id, url }    url: a library picture, or null for the initials (any approved or held listing)
 // POST { action: 'logo_fetch', listing_id }       the listing's current logo from its own website, as base64
 //   The Depot's Logos tab (Sean, 2026-09-27: update directory logos "similar to how we are
 //   updating the Onboarding pages in the Depot"). A logo is a library picture tagged 'logo';
@@ -351,8 +351,9 @@ Deno.serve(async (req) => {
   if (body.action === 'logo_set' || body.action === 'logo_fetch') {
     const id = String(body.listing_id || '');
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
-    const { data: listing } = await db.from('listings').select(LISTING_COLS).eq('id', id).eq('status', 'approved').maybeSingle();
-    // Any approved listing, in any city: the listing editor sets logos everywhere (Sean, 2026-09-29).
+    const { data: listing } = await db.from('listings').select(LISTING_COLS).eq('id', id).in('status', ['approved', 'pending']).maybeSingle();
+    // Any approved listing, in any city: the listing editor sets logos everywhere (Sean, 2026-09-29). A listing on hold for
+    // review (status pending, Directory review) takes a logo too, so it is ready when it goes back (Sean, 2026-10-25: Earthy Picks).
     if (!listing) return json({ error: 'not_found' }, 404);
 
     if (body.action === 'logo_fetch') {
