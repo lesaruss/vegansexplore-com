@@ -79,6 +79,8 @@
 //   POST { action: 'admin_trust', enabled, min_voters }    the public directory rule
 //   POST { action: 'admin_listing', listing_id, category?, extra_categories?, vegan_status?, business_status?,
 //          name?, address?: { online, street, city, state, zip }, communities?: [hub slug, ...] | ['all'], product_kinds?: [...], cuisines?: [...], vetted?: bool,
+//          parent_slug? (the main listing of its group, '' to stand alone), location_label?,
+//   POST { action: 'admin_location_add', listing_id, label, street, city, state, zip, phone }  a new location of the listing's group
 //          details?: { atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, owned: [...] } }
 //     The quick editor on the city hubs and listing pages (Sean, 2026-09-27): rename it, move it,
 //     change its sub-section (or add more in the same section), set how Vegan it is, mark it
@@ -1347,8 +1349,24 @@ Deno.serve(async (req) => {
       for (const k of OWNED) patch[k] = owned.includes(k);
       patch.lgbtq_friendly = owned.includes('is_lgbtq_owned'); // At a Glance reads this one for LGBTQ+-Owned
     }
+    // Locations (Sean, 2026-10-25): part of another listing's group (parent_slug, '' to stand alone) and the location's short
+    // name. One level only: the main listing of a group cannot itself be a location.
+    if (body.location_label !== undefined) patch.location_label = plain(body.location_label, 60) || null;
+    if (body.parent_slug !== undefined) {
+      const ps = plain(body.parent_slug, 160).replace(/^.*\/directory\//, '').replace(/[?#].*$/, '');
+      if (!ps) patch.parent_id = null;
+      else {
+        const { data: par } = await db.from('listings').select('id, parent_id').eq('slug', ps).neq('status', 'rejected').order('status').limit(1).maybeSingle();
+        if (!par) return json({ error: 'parent_not_found' }, 400);
+        const mainId = par.parent_id || par.id;
+        if (mainId === id) return json({ error: 'parent_is_self' }, 400);
+        const { count } = await db.from('listings').select('id', { count: 'exact', head: true }).eq('parent_id', id);
+        if (count) return json({ error: 'has_locations' }, 400);
+        patch.parent_id = mainId;
+      }
+    }
     const { data, error } = await db.from('listings').update(patch).eq('id', id)
-      .select('id, slug, name, category, extra_categories, communities, product_kinds, cuisines, vetted_at, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
+      .select('id, slug, name, category, extra_categories, communities, product_kinds, cuisines, vetted_at, vegan_status, business_status, address_street, address_city, address_state, address_zip, location, parent_id, location_label, atmosphere, accommodations, indoor_seating, late_hours, high_speed_wifi, ' + OWNED.join(', ')).single();
     // One live listing per name and place (listings_name_city_state_unique): say so, naming the other one.
     if (error && error.code === '23505') {
       const { data: other } = await db.from('listings').select('name, slug, status, address_city').ilike('name', String(patch.name ?? '') || '%').neq('id', id).neq('status', 'rejected').limit(5);
@@ -1357,6 +1375,20 @@ Deno.serve(async (req) => {
     }
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     return json({ ok: true, listing: data });
+  }
+
+  // Add a location (Sean, 2026-10-25: "creating additional locations can be done from within the listing so it copies the
+  // majority of the content that doesn't need to be custom"): ve_listing_add_location copies the shared content from the main
+  // listing; the location's own Google place, hours and map pin are filled by the nightly essentials pass.
+  if (body.action === 'admin_location_add') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { data, error } = await db.rpc('ve_listing_add_location', { p_main: id, p_label: plain(body.label, 60), p_street: plain(body.street, 160),
+      p_city: plain(body.city, 80), p_state: plain(body.state, 40), p_zip: plain(body.zip, 12), p_phone: plain(body.phone, 40), p_by: memberId });
+    if (error && error.code === '23505') return json({ error: 'duplicate_listing' }, 409);
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    if (!data?.ok) return json({ error: data?.why || 'failed' }, 400);
+    return json({ ok: true, location: data });
   }
 
   if (body.action === 'admin_verified_list') {

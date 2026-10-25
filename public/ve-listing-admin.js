@@ -92,7 +92,7 @@
     '#vla .logo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}#vla .logo-img{width:72px;height:72px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;flex:0 0 auto}' +
     '#vla .logo-btns{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}#vla .logo-btns button{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25);padding:8px 12px;min-height:38px}#vla .logo-btns .rm{color:#8a1c12}' +
     '#vla .logo-msg{flex-basis:100%;font-size:12.5px;font-weight:700;color:#1f5f22;min-height:18px}#vla .logo-msg.bad{color:#8a1c12}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -149,6 +149,22 @@
       '<div class="row2"><div><label class="h" for="vla-state">State</label><input type="text" id="vla-state" maxlength="40" value="' + esc(l.address_state) + '"></div>' +
       '<div><label class="h" for="vla-zip">Zip</label><input type="text" id="vla-zip" maxlength="12" value="' + esc(l.address_zip) + '"></div></div></div>' +
       '<div class="note">The city decides which hub it shows on. The map pin follows the street address.</div></div>' +
+
+      // Locations (Sean, 2026-10-25): one business, many places. Each location is its own listing tied to a main listing,
+      // which holds what they share; Add a location copies it (ve-claims admin_location_add).
+      '<h3>Locations</h3>' +
+      '<div class="row2"><div><label class="h" for="vla-parent">Part of (the main listing)</label><input type="text" id="vla-parent" placeholder="Its address, like jajaja-mexicana" value=""></div>' +
+      '<div><label class="h" for="vla-loclabel">This location\'s name</label><input type="text" id="vla-loclabel" maxlength="60" placeholder="West Village" value="' + esc(l.location_label) + '"></div></div>' +
+      '<div class="note">Leave Part of empty for the main listing or a business with one place. A location fills anything it leaves empty (about, logo, socials, menu) from the main listing.</div>' +
+      '<div id="vla-locs" class="note"></div>' +
+      '<button type="button" class="cancel" id="vla-addloc" style="margin-top:6px">Add a location</button>' +
+      '<div id="vla-locform" hidden style="margin-top:8px"><div class="row"><div class="street"><label class="h" for="vla-nl-label">Location name</label><input type="text" id="vla-nl-label" maxlength="60" placeholder="West Village"></div>' +
+        '<div><label class="h" for="vla-nl-st">Street</label><input type="text" id="vla-nl-st"></div></div>' +
+        '<div class="row"><div class="street"><label class="h" for="vla-nl-city">City</label><input type="text" id="vla-nl-city"></div>' +
+        '<div class="row2"><div><label class="h" for="vla-nl-state">State</label><input type="text" id="vla-nl-state" maxlength="40"></div><div><label class="h" for="vla-nl-zip">Zip</label><input type="text" id="vla-nl-zip" maxlength="12"></div></div></div>' +
+        '<label class="h" for="vla-nl-phone">Phone</label><input type="text" id="vla-nl-phone" maxlength="40">' +
+        '<div class="chips" style="margin-top:8px"><button type="button" class="save" id="vla-nl-go">Add this location</button></div>' +
+        '<div class="note">It copies the name, logo, about, socials, website, section and how Vegan. Its hours, Google place and map pin fill in overnight.</div></div>' +
 
       '<h3>Chapters</h3>' +
       '<label class="check"><input type="checkbox" id="vla-all"' + ((l.communities || []).indexOf('all') >= 0 ? ' checked' : '') + '> Every chapter (a national or global organization)</label>' +
@@ -305,6 +321,39 @@
     $('#vla-remove').onclick = function () { offDirectory('removed', 'Remove ' + l.name + ' from the Directory? It is not marked closed, and you can put it back from Depot > Directory review.'); };
     $('#vla-name').focus();
 
+    // Locations: the main listing's address in Part of, and the group's other places.
+    var mainId = l.parent_id || l.id, H = { apikey: ANON, Authorization: 'Bearer ' + ANON }, parentSlug = '';
+    function drawLocs() {
+      fetch(SB + '/rest/v1/listings?or=(id.eq.' + mainId + ',parent_id.eq.' + mainId + ')&status=neq.rejected&select=id,slug,name,location_label,address_city,address_state,status,business_status', { headers: H })
+        .then(function (r) { return r.json(); }).then(function (rows) {
+          rows = rows || [];
+          var main = rows.filter(function (x) { return x.id === mainId; })[0];
+          if (l.parent_id && main) { parentSlug = main.slug; $('#vla-parent').value = main.slug; }
+          var others = rows.filter(function (x) { return x.id !== l.id; });
+          $('#vla-locs').innerHTML = others.length ? 'In this group: ' + others.map(function (x) {
+            var tag = x.business_status === 'CLOSED_PERMANENTLY' ? ' (closed)' : x.status === 'pending' ? ' (on hold)' : '';
+            return '<a href="/directory/' + encodeURIComponent(x.slug) + '" target="_blank" rel="noopener">' + esc(x.id === mainId ? x.name + ' (main)' : (x.location_label || x.address_city || x.name)) + '</a>' + tag;
+          }).join(', ') + '.' : '';
+        }).catch(function () {});
+    }
+    drawLocs();
+    $('#vla-addloc').onclick = function () { $('#vla-locform').hidden = !$('#vla-locform').hidden; if (!$('#vla-locform').hidden) $('#vla-nl-label').focus(); };
+    $('#vla-nl-go').onclick = function () {
+      var btn = this, msg = $('#vla-msg');
+      var b = { action: 'admin_location_add', listing_id: l.id, label: $('#vla-nl-label').value.trim(), street: $('#vla-nl-st').value, city: $('#vla-nl-city').value.trim(),
+        state: $('#vla-nl-state').value, zip: $('#vla-nl-zip').value, phone: $('#vla-nl-phone').value };
+      if (!b.label || !b.city) { msg.className = 'msg bad'; msg.textContent = 'A new location needs its name and city.'; return; }
+      btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Adding...';
+      fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(b) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          btn.disabled = false;
+          if (!d || !d.ok) { msg.className = 'msg bad'; msg.textContent = d && d.error === 'duplicate_listing' ? 'That location is already listed in that city.' : 'That did not save. ' + ((d && (d.message || d.error)) || ''); return; }
+          msg.className = 'msg'; msg.innerHTML = 'Added: <a href="/directory/' + encodeURIComponent(d.location.slug) + '" target="_blank" rel="noopener">' + esc(d.location.name) + '</a>.';
+          ['#vla-nl-label', '#vla-nl-st', '#vla-nl-city', '#vla-nl-state', '#vla-nl-zip', '#vla-nl-phone'].forEach(function (k) { $(k).value = ''; });
+          $('#vla-locform').hidden = true; drawLocs();
+        }).catch(function () { btn.disabled = false; msg.className = 'msg bad'; msg.textContent = 'Could not connect. Try again.'; });
+    };
+
     $('#vla-s').onclick = function () {
       var btn = this, msg = $('#vla-msg');
       function bad(t) { msg.className = 'msg bad'; msg.textContent = t; }
@@ -322,6 +371,9 @@
       if (!$('#vla-kinds-wrap').hidden) body.product_kinds = vals('vla-kind');
       if (!$('#vla-cuis-wrap').hidden) body.cuisines = vals('vla-cuis');
       if (!$('#vla-vet-wrap').hidden) body.vetted = $('#vla-vet').checked;
+      var ps = $('#vla-parent').value.trim();
+      if (ps !== parentSlug) body.parent_slug = ps;
+      if ($('#vla-loclabel').value.trim() !== (l.location_label || '')) body.location_label = $('#vla-loclabel').value.trim();
       if (!$('#vla-glance').hidden) {
         var flags = vals('vla-flag');
         body.details = { atmosphere: $('#vla-atm').value, accommodations: vals('vla-acc'), owned: vals('vla-own'),
@@ -332,6 +384,8 @@
         .then(function (r) { return r.json(); }).then(function (d) {
           if (!d || !d.ok) { btn.disabled = false; bad(d && d.error === 'no_access' ? 'Admins only.' : d && d.error === 'bad_city' ? 'Add a city, or tick Online only.'
             : d && d.error === 'duplicate_listing' ? 'Another listing with this name is already ' + (isOnline ? 'online only' : 'in that city') + (d.other ? ': ' + d.other.name + ' (' + d.other.slug + (d.other.status === 'approved' ? '' : ', ' + d.other.status) + ')' : '') + '. Merge them or change one.'
+            : d && d.error === 'parent_not_found' ? 'Part of: no listing has that address.' : d && d.error === 'parent_is_self' ? 'Part of: a listing cannot be part of itself.'
+            : d && d.error === 'has_locations' ? 'Part of: this listing is the main listing of its own locations. Move those first.'
             : 'That did not save. Try again.' + (d && d.message ? ' (' + d.message + ')' : '')); return; }
           Object.assign(target, d.listing, { logo_url: l.logo_url }); close(true); if (onSaved) onSaved(d.listing);
         }).catch(function () { btn.disabled = false; bad('Could not connect. Try again.'); });
