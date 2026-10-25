@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Directory review | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Directory review (Sean, 2026-10-25): "have these businesses quarantined in a place where I can go through them
+       manually and see what might be happening... I just wanted to remove and not even mark as permanently closed...
+       the idea of permanently closed is I would like people to be able to look at those from a nostalgic point of view."
+       One thing per view: the lists (On hold, Flagged, Removed, Closed), then one business with its red flags and the
+       four choices. Data: ve-outreach review_list, review_get, listing_state (migration 20261025_directory_review.sql). */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    [hidden]{display:none !important;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .crumbs{font-size:13px;font-weight:700;margin:0 0 14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;color:var(--ve-text-75);}
+    .crumbs a{color:var(--ve-green-deep);text-decoration:none;}
+    .crumbs a:hover{text-decoration:underline;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+    .tabs button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;color:var(--ve-text);cursor:pointer;}
+    .tabs button[aria-selected="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px;}
+    .tools input,.tools select{font:inherit;font-size:13px;padding:9px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;min-height:42px;}
+    .tools input{flex:1 1 240px;}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;background:#eee;color:#444;white-space:nowrap;}
+    .tag.on{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .tag.wait{background:#FFF1DC;color:#8a4b00;}
+    .tag.bad{background:#FDE7E7;color:#8a1c12;}
+    .tag.off{background:#eee;color:#555;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-warn{background:#fff;color:#a61b1b;border:1px solid #a61b1b;}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:36px;}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .row-btns{display:flex;flex-wrap:wrap;gap:8px;}
+    .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:#a61b1b;}
+    .empty{font-size:14px;color:var(--ve-text-75);}
+    .hint{font-size:12.5px;color:var(--ve-text-75);}
+    .list{display:flex;flex-direction:column;max-height:70vh;overflow:auto;}
+    .item{display:grid;grid-template-columns:44px minmax(0,2fr) minmax(0,2.4fr) minmax(0,1fr) 110px;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--ve-border);font-size:13px;}
+    .item.head{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);padding-top:0;position:sticky;top:0;background:#fff;z-index:1;}
+    .item small{display:block;color:var(--ve-text-75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .item .act{text-align:right;}
+    .flags{display:flex;flex-wrap:wrap;gap:4px;}
+    .logo{width:40px;height:40px;border-radius:8px;background:var(--ve-green-light) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--ve-green-deep);}
+    @media (max-width:760px){.item{grid-template-columns:40px 1fr;}.item>div:nth-child(3),.item>div:nth-child(4){grid-column:2;}.item .act{grid-column:1/-1;text-align:left;}.item.head{display:none;}}
+    .two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start;}
+    @media (max-width:900px){.two{grid-template-columns:1fr;}}
+    .facts{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:13px;}
+    .facts dt{font-weight:800;color:var(--ve-text-75);}
+    .facts dd{overflow-wrap:anywhere;}
+    .missing{color:#a61b1b;font-weight:700;}
+    ul.notes{margin:0 0 12px 18px;font-size:13px;}
+    textarea{width:100%;font:inherit;font-size:13px;padding:10px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;min-height:70px;}
+    .choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin-top:10px;}
+    .choice{border:1px solid var(--ve-border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;}
+    .choice p{font-size:12.5px;color:var(--ve-text-75);flex:1;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Directory review</h1>
+    <div id="depot-tabs"></div>
+    <div id="dr-gate" class="gate" hidden></div>
+    <div id="dr-app" hidden>
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+      <div id="view"></div>
+    </div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-outreach';
+      var $ = function (id) { return document.getElementById(id); };
+      var V = function () { return $('view'); };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function crumbs(parts) {
+        $('crumbs').innerHTML = parts.map(function (p, i) { return i < parts.length - 1 ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a> <span aria-hidden="true">&rsaquo;</span>' : '<span aria-current="page">' + esc(p[0]) + '</span>'; }).join(' ');
+      }
+      function pdate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function logo(l) { return l && l.logo_url ? '<div class="logo" style="background-image:url(\'' + esc(l.logo_url) + '\')" aria-hidden="true"></div>' : '<div class="logo" aria-hidden="true">' + esc(((l && l.name) || '?').charAt(0)) + '</div>'; }
+      // The four lists, in the order Sean works them.
+      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
+      var data = null, filt = { q: '', city: '' };
+      function load() { return api({ action: 'review_list' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); data = d; }); }
+      function rowsOf(tab) {
+        var rows = (data[tab] || []).map(function (r) { return r.listing_id ? { id: r.listing_id, name: r.name, city: r.city, state: r.state, category: r.category, logo_url: r.logo_url, flags: r.flags, strong: r.strong } : r; });
+        // Flagged shows only the ones still live (the strong ones are held each night).
+        return rows.filter(function (r) {
+          var q = filt.q.toLowerCase();
+          return (!q || (r.name + ' ' + (r.city || '') + ' ' + (r.category || '')).toLowerCase().indexOf(q) >= 0) && (!filt.city || r.city === filt.city);
+        });
+      }
+      function why(r, tab) {
+        if (tab === 'held') { var rv = r.review || {}; return '<div class="flags">' + (rv.reasons || []).map(function (x) { return '<span class="tag wait">' + esc(x) + '</span>'; }).join('') + '</div><small>' + (rv.auto ? 'Held by the nightly check' : 'Held by ' + esc(rv.by || '')) + ' &middot; ' + esc(pdate(rv.at)) + '</small>'; }
+        if (tab === 'flagged') return '<div class="flags">' + (r.flags || []).map(function (x) { return '<span class="tag ' + (r.strong ? 'wait' : 'off') + '">' + esc(x) + '</span>'; }).join('') + '</div>';
+        if (tab === 'removed') return '<small>Removed by ' + esc((r.removed || {}).by || '') + ' &middot; ' + esc(pdate((r.removed || {}).at)) + '</small>' + ((r.removed || {}).reason ? '<small>' + esc(r.removed.reason) + '</small>' : '');
+        return '<small>' + (r.closed ? 'Closed by ' + esc(r.closed.by || '') + ' &middot; ' + esc(pdate(r.closed.at)) : 'Closed') + '</small>';
+      }
+
+      function viewHome(tab) {
+        tab = tab || 'held';
+        crumbs([['Directory review']]);
+        var rows = rowsOf(tab);
+        var cities = []; (data[tab] || []).forEach(function (r) { if (r.city && cities.indexOf(r.city) < 0) cities.push(r.city); }); cities.sort();
+        V().innerHTML = '<p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, look, and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory).</p>' +
+          '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === tab) + '" data-tab="' + t[0] + '">' + t[1] + ' &middot; ' + (data[t[0]] || []).length + '</button>'; }).join('') + '</div>' +
+          '<div class="tools"><input type="search" id="dr-q" placeholder="Search a name, city or kind" value="' + esc(filt.q) + '" aria-label="Search">' +
+          '<select id="dr-city" aria-label="City"><option value="">Every city</option>' + cities.map(function (c) { return '<option' + (c === filt.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
+          '<section class="card">' + (rows.length
+            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>' + (tab === 'held' || tab === 'flagged' ? 'Red flags' : 'What happened') + '</div><div>Kind</div><div></div></div>' +
+              rows.map(function (r) { return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + '</small></div><div>' + why(r, tab) + '</div><div><small>' + esc(r.category || '') + '</small></div><div class="act"><a class="btn btn-sm" href="#l/' + r.id + '/' + tab + '">Review</a></div></div>'; }).join('') + '</div>'
+            : '<p class="empty">' + (tab === 'held' ? 'Nothing on hold.' : 'Nothing here.') + '</p>') + '</section>';
+        Array.prototype.forEach.call(V().querySelectorAll('[data-tab]'), function (b) { b.addEventListener('click', function () { location.hash = '#' + b.dataset.tab; }); });
+        $('dr-q').addEventListener('input', function () { filt.q = this.value; var p = this.selectionStart; viewHome(tab); var i = $('dr-q'); i.focus(); i.setSelectionRange(p, p); });
+        $('dr-city').addEventListener('change', function () { filt.city = this.value; viewHome(tab); });
+      }
+
+      var STATE_TAG = { live: ['On the Directory', 'on'], hold: ['On hold', 'wait'], removed: ['Removed', 'bad'], closed: ['Permanently closed', 'off'] };
+      function stateOf(l) {
+        if (l.status === 'pending') return 'hold';
+        if (l.status === 'rejected') return 'removed';
+        if (l.business_status === 'CLOSED_PERMANENTLY') return 'closed';
+        return 'live';
+      }
+      function hoursText(h) {
+        if (typeof h === 'string') { try { h = JSON.parse(h); } catch (e) { return ''; } }
+        if (!h) return '';
+        if (Array.isArray(h)) return h.map(function (x) { return (x.day || '').slice(0, 3) + ' ' + (x.hours || ''); }).join(', ');
+        return Object.keys(h).map(function (k) { return k.slice(0, 3) + ' ' + h[k]; }).join(', ');
+      }
+      function viewListing(id, from) {
+        from = from || 'held';
+        var back = TABS.filter(function (t) { return t[0] === from; })[0] || TABS[0];
+        crumbs([['Directory review', '#'], [back[1], '#' + back[0]], ['...']]);
+        V().innerHTML = '<p class="empty">Loading...</p>';
+        api({ action: 'review_get', listing_id: id }).then(function (d) {
+          if (!d.ok) { V().innerHTML = '<p class="msg err">' + esc(d.error || 'Not found') + '</p>'; return; }
+          var l = d.listing, st = stateOf(l), t = STATE_TAG[st], ck = d.checkup, g = ck ? ck.google : {};
+          crumbs([['Directory review', '#'], [back[1], '#' + back[0]], [l.name]]);
+          function fact(label, val, miss) { return '<dt>' + label + '</dt><dd>' + (val ? val : '<span class="missing">' + (miss || 'Missing') + '</span>') + '</dd>'; }
+          var socials = [l.instagram && '<a href="https://www.instagram.com/' + encodeURIComponent(String(l.instagram).replace(/^@/, '')) + '/" target="_blank" rel="noopener">Instagram</a>',
+            l.facebook && '<a href="' + esc(l.facebook) + '" target="_blank" rel="noopener">Facebook</a>',
+            l.tiktok && '<a href="https://www.tiktok.com/@' + encodeURIComponent(String(l.tiktok).replace(/^@/, '')) + '" target="_blank" rel="noopener">TikTok</a>'].filter(Boolean).join(' &middot; ');
+          var maps = g.maps || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address_street, l.address_city, l.address_state].filter(Boolean).join(', ')) + (l.google_place_id ? '&query_place_id=' + encodeURIComponent(l.google_place_id) : ''));
+          var notes = (l.details && l.details.admin_notes) || [];
+          var CH = [
+            ['live', 'Put it back on the Directory', 'btn', 'It shows to everyone again, and stays off this list for 90 days.'],
+            ['hold', 'Hold for review', 'btn btn-ghost', 'Takes it off the Directory until you decide. Nothing is lost.'],
+            ['removed', 'Remove from the Directory', 'btn btn-warn', 'Gone from the Directory and from Closed. Never deleted: you can put it back from Removed.'],
+            ['closed', 'Permanently closed', 'btn btn-ghost', 'It closed for good. It stays under Closed in the Directory, for memory.']
+          ].filter(function (c) { return c[0] !== st; });
+          V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + ' <span class="tag ' + t[1] + '">' + t[0] + '</span></h2>' +
+            '<p class="hint" style="margin:0 0 10px">' + esc(l.category || '') + ' &middot; ' + esc((l.vegan_status || '').replace(/_/g, ' ')) + ' &middot; ' + (l.vote_count || 0) + ' votes from ' + (l.voter_count || 0) + ' people' + (l.claim_status === 'verified' ? ' &middot; <strong>claimed by the business</strong>' : '') + '</p>' +
+            (d.flags.length ? '<h2>Red flags</h2><ul class="notes">' + d.flags.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' : '<p class="hint" style="margin:0 0 12px">No red flags right now.</p>') +
+            '<div class="row-btns" style="margin:0 0 14px"><a class="btn btn-ghost btn-sm" href="' + esc(maps) + '" target="_blank" rel="noopener">Google Maps</a>' +
+              (l.website ? '<a class="btn btn-ghost btn-sm" href="' + esc(l.website) + '" target="_blank" rel="noopener">Website</a>' : '') +
+              (st === 'live' || st === 'closed' ? '<a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(l.slug) + '" target="_blank" rel="noopener">Their page</a>' : '') + '</div>' +
+            '<h2>Your call</h2><textarea id="dr-note" placeholder="Why, for the record (optional): Called them, closed since August."></textarea>' +
+            '<div class="choices">' + CH.map(function (c) { return '<div class="choice"><button type="button" class="' + c[2] + '" data-state="' + c[0] + '">' + c[1] + '</button><p>' + c[3] + '</p></div>'; }).join('') + '</div>' +
+            '<p class="msg" id="dr-msg" role="status" style="margin-top:10px"></p></section>' +
+            '<section class="card"><h2>What it shows</h2><dl class="facts">' +
+              fact('About', l.description ? esc(l.description) : '', 'No about') +
+              fact('Address', l.address_street ? esc([l.address_street, l.address_city, l.address_state, l.address_zip].filter(Boolean).join(', ')) : esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + (l.address_street ? '' : ' <span class="missing">(no street)</span>')) +
+              fact('Hours', esc(hoursText(l.google_hours_json)), 'No hours') +
+              fact('Phone', esc(l.phone || ''), 'No phone') +
+              fact('Website', l.website ? '<a href="' + esc(l.website) + '" target="_blank" rel="noopener">' + esc(l.website) + '</a>' + (ck && ck.website_error ? ' <span class="missing">(' + esc(ck.website_error === 'TypeError' ? 'did not open' : ck.website_error) + ')</span>' : '') : '', 'No website') +
+              fact('Socials', socials, 'No socials') +
+              fact('Menu', d.menu_items ? d.menu_items + ' items' : '', 'No menu') +
+            '</dl>' +
+            (ck ? '<h2 style="margin-top:16px">Last check-up, ' + esc(pdate(ck.at)) + '</h2><p class="hint">Google: ' + esc(g.address || 'no match') + (g.status && g.status !== 'OPERATIONAL' ? ' &middot; <strong>' + esc(g.status.replace(/_/g, ' ').toLowerCase()) + '</strong>' : '') + (g.rating ? ' &middot; ' + g.rating + ' stars, ' + (g.reviews || 0) + ' reviews' : '') + '</p>' +
+              (ck.signals.length ? '<ul class="notes">' + ck.signals.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') : '<p class="hint" style="margin-top:12px">No monthly check-up yet.</p>') +
+            (notes.length ? '<h2 style="margin-top:16px">Notes</h2><ul class="notes">' + notes.slice().reverse().slice(0, 12).map(function (n) { return '<li><strong>' + esc(pdate(n.at)) + ', ' + esc(n.by || '') + ':</strong> ' + esc(n.text) + '</li>'; }).join('') + '</ul>' : '') +
+            '</section></div>';
+          Array.prototype.forEach.call(V().querySelectorAll('[data-state]'), function (b) {
+            b.addEventListener('click', function () {
+              var s = b.dataset.state, msg = $('dr-msg'), label = b.textContent;
+              if ((s === 'removed' || s === 'closed') && !confirm(label + ': ' + l.name + '?')) return;
+              Array.prototype.forEach.call(V().querySelectorAll('[data-state]'), function (x) { x.disabled = true; });
+              api({ action: 'listing_state', listing_id: l.id, state: s, note: $('dr-note').value }).then(function (r) {
+                if (!r.ok) throw new Error(r.error || 'That did not work.');
+                msg.className = 'msg'; msg.textContent = 'Done.';
+                // Straight on to the next one in the same list.
+                var list = rowsOf(from), i = list.map(function (x) { return x.id; }).indexOf(l.id), nxt = list[i + 1] || list[i - 1];
+                return load().then(function () { setTimeout(function () { location.hash = nxt && nxt.id !== l.id ? '#l/' + nxt.id + '/' + from : '#' + from; }, 500); });
+              }).catch(function (e) {
+                msg.className = 'msg err'; msg.textContent = e.message;
+                Array.prototype.forEach.call(V().querySelectorAll('[data-state]'), function (x) { x.disabled = false; });
+              });
+            });
+          });
+        });
+      }
+
+      function route() {
+        var h = location.hash.replace(/^#/, '').split('/');
+        if (h[0] === 'l' && h[1]) return viewListing(h[1], h[2]);
+        viewHome(TABS.some(function (t) { return t[0] === h[0]; }) ? h[0] : 'held');
+      }
+      window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !m || !m.is_superadmin) { $('dr-gate').hidden = false; $('dr-gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        $('dr-app').hidden = false;
+        load().then(route).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

@@ -165,6 +165,10 @@
       '<div id="vla-vet-wrap"><label class="check"><input type="checkbox" id="vla-vet"' + (l.vetted_at ? ' checked' : '') + '> Vetted by us: show it to everyone now</label>' +
       '<div class="note">Otherwise it stays in the members\' Being vetted section until 10 different members vote for it (' + (l.voter_count || 0) + ' so far) or the business claims it.</div></div>' +
       '<h3>Open or closed</h3><div class="chips">' + OPEN.map(function (o) { return chip('radio', 'vla-bs', o[0], o[1], o[0] === bs); }).join('') + '</div>' +
+      // Off the Directory without calling it closed (Sean, 2026-10-25: "I just wanted to remove and not even mark as permanently
+      // closed"). Both save at once through ve-outreach listing_state; Depot > Directory review lists them and can put them back.
+      '<div class="note">Permanently closed keeps it under Closed in the Directory, for memory. To take it off without that:</div>' +
+      '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-hold">Hold for review</button><button type="button" class="cancel" id="vla-remove" style="color:#8a1c12;border-color:#8a1c12">Remove from the Directory</button></div>' +
 
       '<div id="vla-glance"><h3>At a Glance <span style="font-weight:700;letter-spacing:0;text-transform:none;color:#666">(restaurants and cafes)</span></h3>' +
       '<label class="h" for="vla-atm">Atmosphere</label><select id="vla-atm">' + ATMOS.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === (l.atmosphere || '') ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
@@ -281,6 +285,21 @@
     document.addEventListener('keydown', onKey);
     wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
     $('#vla-x').onclick = function () { close(); };
+    // Hold for review / Remove: off the Directory now (Depot > Directory review holds the list and puts them back).
+    function offDirectory(state, ask) {
+      var note = state === 'removed' ? prompt(ask + '\n\nWhy, for the record (optional):', '') : (confirm(ask) ? '' : null);
+      if (note === null) return;
+      var msg = $('#vla-msg'); msg.className = 'msg'; msg.textContent = 'Saving...';
+      fetch(SB + '/functions/v1/ve-outreach', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+        body: JSON.stringify({ action: 'listing_state', listing_id: l.id, state: state, note: note }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          if (!d || !d.ok) { msg.className = 'msg bad'; msg.textContent = 'That did not save. ' + ((d && d.error) || ''); return; }
+          msg.textContent = state === 'removed' ? 'Removed. Find it in Depot > Directory review.' : 'On hold. Find it in Depot > Directory review.';
+          setTimeout(function () { location.href = '/admin/depot/directory-review#' + (state === 'removed' ? 'removed' : 'held'); }, 900);
+        }).catch(function () { msg.className = 'msg bad'; msg.textContent = 'Could not connect. Try again.'; });
+    }
+    $('#vla-hold').onclick = function () { offDirectory('hold', 'Hold ' + l.name + ' for review? It comes off the Directory until you decide.'); };
+    $('#vla-remove').onclick = function () { offDirectory('removed', 'Remove ' + l.name + ' from the Directory? It is not marked closed, and you can put it back from Depot > Directory review.'); };
     $('#vla-name').focus();
 
     $('#vla-s').onclick = function () {
