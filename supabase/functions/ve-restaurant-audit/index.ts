@@ -33,6 +33,8 @@
 // POST { action: 'get', id }                       -> the audit; the full detail only for its member, a super admin or ops
 // POST { action: 'sweep', limit? }                 cron or ops -> { started: [slugs] }   the monthly check-up, a few at a time,
 //      and the 90-day re-checks of paid audits
+// POST { action: 'essentials', limit? }            cron or ops -> { checked, results: [{slug, filled, notes}] }  fills a food place's
+//      empty hours, street, Google place, website and socials from Google and its own home page (20261025_restaurant_essentials.sql)
 // POST { action: 'flags', city? }                  super admin -> { flags: [...] }       open closure flags, Google-closed first
 // POST { action: 'flag_review', audit_id, decision: still_open|closed, note? }  super admin  (closing goes through
 //      ve-outreach listing_closed; this records the decision so the flag comes down)
@@ -982,6 +984,75 @@ Deno.serve(async (req) => {
       orders: (orders || []).map((o: any) => ({ ...o, business: o.inputs?.name || null, inputs: undefined })),
       audits: (audits || []).map((a: any) => ({ id: a.id, tier: a.tier, status: a.status, business: a.inputs?.name || null, created_at: a.created_at })),
     });
+  }
+
+  // ---- Restaurant essentials (Sean, 2026-10-25; migration 20261025_restaurant_essentials.sql) ----
+  // For the next open food places missing hours, a street, their Google place or socials: Google's own profile fills the hours,
+  // street, ZIP, place and website, and the business's own home page fills the Instagram, Facebook and TikTok it links to. Only
+  // empty fields are filled, and only from a Google match in the same state and city (or at the same street number); each change
+  // is a ve_listing_edits row (meta.by google | website) so the Depot can undo it.
+  if (action === 'essentials') {
+    if (!who.ops) return json({ error: 'ops_only' }, 403);
+    const { data: due } = await db.rpc('ve_listing_essentials_due', { p_limit: Math.max(1, Math.min(+body.limit || 15, 40)) });
+    const out: any[] = [];
+    const run = async (d: any) => {
+      const { data: l } = await db.from('listings').select('id, name, google_place_id, google_hours_json, address_street, address_city, address_state, address_zip, website, instagram, facebook, tiktok').eq('id', d.id).single();
+      const patch: Record<string, unknown> = {}, edits: any[] = [], notes: string[] = [];
+      const set = (col: string, field: string, v: unknown, by: string) => { patch[col] = v; edits.push({ listing_id: l.id, field, old_value: (l as any)[col] ?? null, new_value: v, meta: { by } }); };
+      const g = await google(l.google_place_id || '', l.name, l.address_city || '', l.address_street || '');
+      const p: any = (g as any).place;
+      if (p) {
+        const comp = (t: string, short = false) => { const c = (p.addressComponents || []).find((x: any) => (x.types || []).includes(t)); return c ? (short ? c.shortText : c.longText) || '' : ''; };
+        const sameState = !l.address_state || comp('administrative_area_level_1', true).toUpperCase() === String(l.address_state).toUpperCase();
+        const num = (s: string) => (String(s || '').match(/^\s*(\d+)/) || [])[1] || '';
+        const sameCity = !l.address_city || [comp('locality'), comp('sublocality'), comp('neighborhood')].some((c) => c && c.toLowerCase() === String(l.address_city).toLowerCase())
+          || String(p.formattedAddress || '').toLowerCase().includes(String(l.address_city).toLowerCase() + ',');
+        const sameStreet = !!l.address_street && num(l.address_street) !== '' && num(l.address_street) === comp('street_number');
+        if (l.google_place_id || (sameState && (sameCity || sameStreet))) {
+          if (!l.google_place_id && p.id) set('google_place_id', 'google_place_id', p.id, 'google');
+          const hrs = (p.regularOpeningHours?.weekdayDescriptions || []) as string[];
+          const hasHours = (() => { let h: any = l.google_hours_json; if (typeof h === 'string') { try { h = JSON.parse(h); } catch { h = null; } } return h && (Array.isArray(h) ? h.length : Object.keys(h).length); })();
+          if (!hasHours && hrs.length) {
+            const map: Record<string, string> = {};
+            for (const line of hrs) {
+              const i = line.indexOf(':'); if (i < 0) continue;
+              map[line.slice(0, i).trim()] = line.slice(i + 1).replace(/[   ]/g, ' ').replace(/\s*[–—-]\s*/g, ' to ').replace(/:00\b/g, '').replace(/\s+/g, ' ').trim();
+            }
+            if (Object.keys(map).length) set('google_hours_json', 'hours', map, 'google');
+          }
+          const street = [comp('street_number'), comp('route', true)].filter(Boolean).join(' ');
+          if (!l.address_street && street && sameCity) { set('address_street', 'address_street', street, 'google'); if (!l.address_zip && comp('postal_code')) set('address_zip', 'address_zip', comp('postal_code'), 'google'); }
+          if (!l.website && p.websiteUri) set('website', 'website', normUrl(p.websiteUri), 'google');
+          if (p.businessStatus && p.businessStatus !== 'OPERATIONAL') notes.push('Google says ' + p.businessStatus);
+        } else notes.push(`Google's match is elsewhere: ${p.formattedAddress || ''}`);
+      } else notes.push((g as any).error ? 'Google: ' + (g as any).error : 'Not found on Google');
+      // Socials their own home page links to.
+      const site = normUrl(String(patch.website || l.website || ''));
+      if (site && (!l.instagram || !l.facebook || !l.tiktok)) {
+        const home = await get(site, 10000);
+        if (home.ok && home.text) {
+          const hrefs = [...home.text.matchAll(/href=["']([^"']+)["']/gi)].map((m) => decode(m[1]).trim());
+          const find = (re: RegExp, kind: 'ig' | 'fb' | 'tt') => { const h = hrefs.find((x) => re.test(x) && realSocial(x, kind)); return h ? realSocial(h, kind) : ''; };
+          const ig = find(/instagram\.com\//i, 'ig'), fb = find(/facebook\.com\//i, 'fb'), tt = find(/tiktok\.com\/@/i, 'tt');
+          if (!l.instagram && ig) set('instagram', 'instagram', '@' + ig, 'website');
+          if (!l.facebook && fb) set('facebook', 'facebook', 'https://www.facebook.com/' + fb, 'website');
+          if (!l.tiktok && tt) set('tiktok', 'tiktok', '@' + tt, 'website');
+        } else notes.push(`Website did not open (${home.status || home.type})`);
+      }
+      if (Object.keys(patch).length) {
+        const { error } = await db.from('listings').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', l.id);
+        if (error) { notes.push('Save failed: ' + error.message); edits.length = 0; }
+        else await db.from('ve_listing_edits').insert(edits);
+      }
+      // When Google itself failed (a key or quota problem, not a miss), look again tomorrow rather than in 30 days.
+      const checked = (g as any).error ? new Date(Date.now() - 29 * DAY_MS) : new Date();
+      await db.from('ve_listing_essentials').upsert({ listing_id: l.id, google_checked_at: checked.toISOString(), google_note: notes.join('; ').slice(0, 300) || null }, { onConflict: 'listing_id' });
+      out.push({ slug: d.slug, filled: edits.map((e) => e.field), notes });
+    };
+    // Four at a time, so a batch fits well inside the request.
+    const list = (due || []) as any[];
+    for (let i = 0; i < list.length; i += 4) await Promise.all(list.slice(i, i + 4).map((d) => run(d).catch((e) => out.push({ slug: d.slug, error: String(e?.message || e) }))));
+    return json({ ok: true, checked: out.length, results: out });
   }
 
   // ---- Monthly check-ups ----
