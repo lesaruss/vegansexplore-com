@@ -917,6 +917,12 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   layout, nine tabs (Overview, Find your places, Your community, Guides, Points and levels, What your $11 supports, Bring people
   in, For businesses, Get your Passport), a Guide's picture on each tab (`VEGuideArt` square), no clips, sign-up at the end.
   `?from=vote&back=<path>` shows the voting note and returns there after sign-in.
+- **`/passport` is the one Passport** (Sean, 2026-10-25: "make sure that that version is the default version for passport... it does
+  a better job than what we had before"). The nav's Join button, every Get your Passport button, the city hubs' Join This Community
+  (`/passport?community=<slug>#/join`), the Directory, Explore, the path pages, login and the Guide gate all go there; `/join` (the
+  old Get Your Passport page) and `/passport/join` forward to it. An invite code (`?ref=`) or a city (`?community=`) in the link is
+  kept for the visit (`sessionStorage` `ve_join_ref`, `ve_join_community`) and sent with the sign-up window's signup
+  (`public/ve-auth.js`), as `/join` used to. `/welcome` stays the guided tour (Start Your Journey).
 - Migration `20261025_ve_points_levels_admission.sql` (functions, contributions table) and `20261025_ve_guides_points_rule.sql`
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.

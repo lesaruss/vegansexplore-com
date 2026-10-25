@@ -1724,8 +1724,13 @@
       "permanent": true
     },
     {
+      "source": "/join",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
       "source": "/passport/join",
-      "destination": "/join",
+      "destination": "/passport",
       "permanent": true
     },
     {
