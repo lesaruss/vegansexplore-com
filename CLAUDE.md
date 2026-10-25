@@ -1016,6 +1016,19 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   website and no menu; `ve_menu_import_queue()` adds new ones) and copies the menu each business publishes on its own site,
   never a third-party listing and never guessed, through `ve_menu_import_save`, which saves once and refuses a listing that
   already has a menu. The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
+- **Restaurant essentials** (Sean, 2026-10-25: "just because it's vegan doesn't tell the whole story... all the restaurant listings
+  have, 250 character about us... the hours... the socials... the address that you can click and go to Google Maps... and then
+  the menus... media... can come later once they become members"; migration `20261025_restaurant_essentials.sql`). Food places
+  carry **what kind of food** (`listings.cuisines`, up to four: American & comfort food, Soul food, Caribbean... Global mix for a
+  place that is not one thing; the list is `CUISINES` in `ve-listing-admin.js`, `ve-region-directory.js`, `ve-claims` and the
+  table check, change all four), set in the listing editor, shown as badges beside how Vegan it is, and a Food filter on
+  Restaurants, Food Trucks and Catering in the Directory. The address on every listing opens Google Maps (`mapsUrl`: their
+  Google place when we hold `google_place_id`). `ve_restaurant_essentials` lists every open food place and what it lacks (about
+  of 150 characters or more, hours, socials, street, menu, cuisine). Filled from what the business publishes, never invented,
+  only into empty fields and never over an owner's own words, each change a `ve_listing_edits` row the Depot can undo:
+  `ve-restaurant-audit` `essentials` (cron `ve-listing-essentials`, 8 AM UTC) takes hours, street, place and website from Google
+  and the socials their home page links to; the Background writer (dispatcher source `listing_essentials`) writes the about (up
+  to 250 characters) and the cuisines from their own site through `ve_listing_essentials_save`; menus come from `menu_import`.
 - **The partner's home** (Sean, 2026-10-09: "once they're in... their dashboard is essentially their page"). When the
   signed-in visitor holds the listing's Brand Partner membership (Front Row Start's trial counts) or owns it (`ve-claims`
   `partner_status`), For <Brand> becomes **Getting Started**: Maya's onboarding tour, six slides with clips in
