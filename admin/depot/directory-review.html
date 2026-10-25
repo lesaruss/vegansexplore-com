@@ -13,7 +13,11 @@
        manually and see what might be happening... I just wanted to remove and not even mark as permanently closed...
        the idea of permanently closed is I would like people to be able to look at those from a nostalgic point of view."
        One thing per view: the lists (On hold, Flagged, Removed, Closed), then one business with its red flags and the
-       four choices. Data: ve-outreach review_list, review_get, listing_state (migration 20261025_directory_review.sql). */
+       four choices. Data: ve-outreach review_list, review_get, listing_state (migration 20261025_directory_review.sql).
+       Fix it here (Sean, 2026-10-25: "right now it's allowing me to review but not fix... if I were able to find the websites,
+       find social, find the menu, I want to be able to input it here so it updates the listing and unflags it"): What it shows
+       is a form (ve-outreach listing_fix), and Being vetted lists the food places waiting on member votes, with Vetted by us
+       (listing_vetted). Directory cards and the listing editor link here for admins (#l/<id>/<list>). */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -71,6 +75,21 @@
     .choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin-top:10px;}
     .choice{border:1px solid var(--ve-border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;}
     .choice p{font-size:12.5px;color:var(--ve-text-75);flex:1;}
+    .fix{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:10px 14px;}
+    .fix .wide{grid-column:1/-1;}
+    .fix label{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:4px;}
+    .fix label .missing{letter-spacing:0;text-transform:none;font-size:11.5px;margin-left:4px;}
+    .fix input,.fix textarea{width:100%;font:inherit;font-size:13px;padding:9px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;min-height:40px;}
+    .fix select{width:100%;font:inherit;font-size:13px;padding:9px 44px 9px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;min-height:40px;appearance:none;-webkit-appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .fix label.check{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);min-height:40px;margin:0;}
+    .fix label.check input{width:16px;height:16px;min-height:0;accent-color:var(--ve-green-deep);}
+    .fix .need input,.fix .need textarea{border-color:#d9a3a3;background:#fffafa;}
+    .fix .hint{margin-top:3px;}
+    .hours{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:8px 12px;}
+    .hours div{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:center;font-size:12.5px;font-weight:800;}
+    .hours input{font-weight:500;}
+    .fix input::placeholder,.fix textarea::placeholder{color:#a3a3a3;font-weight:500;}
+    .fix-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;}
   </style>
 </head>
 <body>
@@ -101,7 +120,7 @@
       function pdate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function logo(l) { return l && l.logo_url ? '<div class="logo" style="background-image:url(\'' + esc(l.logo_url) + '\')" aria-hidden="true"></div>' : '<div class="logo" aria-hidden="true">' + esc(((l && l.name) || '?').charAt(0)) + '</div>'; }
       // The four lists, in the order Sean works them.
-      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
+      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['vetting', 'Being vetted'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
       var data = null, filt = { q: '', city: '' };
       function load() { return api({ action: 'review_list' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); data = d; }); }
       function rowsOf(tab) {
@@ -114,6 +133,7 @@
       }
       function why(r, tab) {
         if (tab === 'held') { var rv = r.review || {}; return '<div class="flags">' + (rv.reasons || []).map(function (x) { return '<span class="tag wait">' + esc(x) + '</span>'; }).join('') + '</div><small>' + (rv.auto ? 'Held by the nightly check' : 'Held by ' + esc(rv.by || '')) + ' &middot; ' + esc(pdate(rv.at)) + '</small>'; }
+        if (tab === 'vetting') return '<span class="tag wait">' + (r.voter_count || 0) + ' of ' + (data.min_voters || 10) + ' member votes</span><small>Members only until then, or until you vet it</small>';
         if (tab === 'flagged') return '<div class="flags">' + (r.flags || []).map(function (x) { return '<span class="tag ' + (r.strong ? 'wait' : 'off') + '">' + esc(x) + '</span>'; }).join('') + '</div>';
         if (tab === 'removed') return '<small>Removed by ' + esc((r.removed || {}).by || '') + ' &middot; ' + esc(pdate((r.removed || {}).at)) + '</small>' + ((r.removed || {}).reason ? '<small>' + esc(r.removed.reason) + '</small>' : '');
         return '<small>' + (r.closed ? 'Closed by ' + esc(r.closed.by || '') + ' &middot; ' + esc(pdate(r.closed.at)) : 'Closed') + '</small>';
@@ -124,12 +144,12 @@
         crumbs([['Directory review']]);
         var rows = rowsOf(tab);
         var cities = []; (data[tab] || []).forEach(function (r) { if (r.city && cities.indexOf(r.city) < 0) cities.push(r.city); }); cities.sort();
-        V().innerHTML = '<p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, look, and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory).</p>' +
+        V().innerHTML = '<p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone.</p>' +
           '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === tab) + '" data-tab="' + t[0] + '">' + t[1] + ' &middot; ' + (data[t[0]] || []).length + '</button>'; }).join('') + '</div>' +
           '<div class="tools"><input type="search" id="dr-q" placeholder="Search a name, city or kind" value="' + esc(filt.q) + '" aria-label="Search">' +
           '<select id="dr-city" aria-label="City"><option value="">Every city</option>' + cities.map(function (c) { return '<option' + (c === filt.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
           '<section class="card">' + (rows.length
-            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>' + (tab === 'held' || tab === 'flagged' ? 'Red flags' : 'What happened') + '</div><div>Kind</div><div></div></div>' +
+            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>' + (tab === 'held' || tab === 'flagged' ? 'Red flags' : tab === 'vetting' ? 'Votes' : 'What happened') + '</div><div>Kind</div><div></div></div>' +
               rows.map(function (r) { return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + '</small></div><div>' + why(r, tab) + '</div><div><small>' + esc(r.category || '') + '</small></div><div class="act"><a class="btn btn-sm" href="#l/' + r.id + '/' + tab + '">Review</a></div></div>'; }).join('') + '</div>'
             : '<p class="empty">' + (tab === 'held' ? 'Nothing on hold.' : 'Nothing here.') + '</p>') + '</section>';
         Array.prototype.forEach.call(V().querySelectorAll('[data-tab]'), function (b) { b.addEventListener('click', function () { location.hash = '#' + b.dataset.tab; }); });
@@ -137,6 +157,13 @@
         $('dr-city').addEventListener('change', function () { filt.city = this.value; viewHome(tab); });
       }
 
+      // The Directory's sections and their kinds (CAT_CONFIG in /public/ve-region-directory.js).
+      var KINDS = [['Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Catering', 'Meal Prep']],
+        ['Products', ['Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces']],
+        ['Services', ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations']],
+        ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
+        ['Community', ['Community Partner', 'Nonprofits', 'Events']]];
+      var PLACES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep'];
       var STATE_TAG = { live: ['On the Directory', 'on'], hold: ['On hold', 'wait'], removed: ['Removed', 'bad'], closed: ['Permanently closed', 'off'] };
       function stateOf(l) {
         if (l.status === 'pending') return 'hold';
@@ -144,11 +171,11 @@
         if (l.business_status === 'CLOSED_PERMANENTLY') return 'closed';
         return 'live';
       }
-      function hoursText(h) {
-        if (typeof h === 'string') { try { h = JSON.parse(h); } catch (e) { return ''; } }
-        if (!h) return '';
-        if (Array.isArray(h)) return h.map(function (x) { return (x.day || '').slice(0, 3) + ' ' + (x.hours || ''); }).join(', ');
-        return Object.keys(h).map(function (k) { return k.slice(0, 3) + ' ' + h[k]; }).join(', ');
+      function hoursObj(h) {
+        if (typeof h === 'string') { try { h = JSON.parse(h); } catch (e) { return {}; } }
+        if (!h) return {};
+        if (Array.isArray(h)) { var o = {}; h.forEach(function (x) { if (x && x.day) o[x.day] = x.hours || ''; }); return o; }
+        return h;
       }
       function viewListing(id, from) {
         from = from || 'held';
@@ -159,7 +186,15 @@
           if (!d.ok) { V().innerHTML = '<p class="msg err">' + esc(d.error || 'Not found') + '</p>'; return; }
           var l = d.listing, st = stateOf(l), t = STATE_TAG[st], ck = d.checkup, g = ck ? ck.google : {};
           crumbs([['Directory review', '#'], [back[1], '#' + back[0]], [l.name]]);
-          function fact(label, val, miss) { return '<dt>' + label + '</dt><dd>' + (val ? val : '<span class="missing">' + (miss || 'Missing') + '</span>') + '</dd>'; }
+          var DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], hrs = hoursObj(l.google_hours_json);
+          var hasSocial = !!(l.instagram || l.facebook || l.tiktok), mi = d.menu_import, online = !l.address_city && !l.address_state;
+          var menuNote = d.menu_items ? d.menu_items + ' items on their page' : mi && mi.status === 'queued' ? 'Waiting to be copied' + (mi.menu_url ? ' from this link' : '') : mi && mi.status === 'reading' ? 'Being copied now' : mi && mi.status === 'none' ? 'Could not copy: ' + (mi.note || 'no menu found') : '';
+          // One input; marked Missing when empty (or when `need` says so), a note under it when there is one.
+          function field(key, label, val, cls, kind, ph, note, need, optional) {
+            var miss = need === undefined ? !val && !optional : need;
+            var input = kind === 'textarea' ? '<textarea data-f="' + key + '" placeholder="' + esc(ph) + '">' + esc(val || '') + '</textarea>' : '<input type="text" data-f="' + key + '" value="' + esc(val || '') + '" placeholder="' + esc(ph) + '">';
+            return '<div class="' + (cls || '') + (miss ? ' need' : '') + '"><label>' + label + (miss ? '<span class="missing">Missing</span>' : '') + '</label>' + input + (note ? '<p class="hint">' + esc(note) + '</p>' : '') + '</div>';
+          }
           var socials = [l.instagram && '<a href="https://www.instagram.com/' + encodeURIComponent(String(l.instagram).replace(/^@/, '')) + '/" target="_blank" rel="noopener">Instagram</a>',
             l.facebook && '<a href="' + esc(l.facebook) + '" target="_blank" rel="noopener">Facebook</a>',
             l.tiktok && '<a href="https://www.tiktok.com/@' + encodeURIComponent(String(l.tiktok).replace(/^@/, '')) + '" target="_blank" rel="noopener">TikTok</a>'].filter(Boolean).join(' &middot; ');
@@ -171,7 +206,12 @@
             ['removed', 'Remove from the Directory', 'btn btn-warn', 'Gone from the Directory and from Closed. Never deleted: you can put it back from Removed.'],
             ['closed', 'Permanently closed', 'btn btn-ghost', 'It closed for good. It stays under Closed in the Directory, for memory.']
           ].filter(function (c) { return c[0] !== st; });
-          V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + ' <span class="tag ' + t[1] + '">' + t[0] + '</span></h2>' +
+          // Being vetted: a Vegan-friendly or Vegan-options food place members see until enough members vote (public/ve-trust.js).
+          var minV = (data && data.min_voters) || 10;
+          var vetting = st === 'live' && /^(vegan_friendly|vegan_options)$/.test(l.vegan_status || '') && PLACES.indexOf(l.category) >= 0
+            && !l.vetted_at && l.claim_status !== 'verified' && (l.voter_count || 0) < minV;
+          if (vetting) CH.unshift(['vet', 'Vetted by us', 'btn', 'You know the place: it shows to everyone now, without waiting for ' + minV + ' member votes.']);
+          V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + ' <span class="tag ' + t[1] + '">' + t[0] + '</span>' + (vetting ? ' <span class="tag wait">Being vetted, ' + (l.voter_count || 0) + ' of ' + minV + '</span>' : l.vetted_at ? ' <span class="tag on">Vetted by us</span>' : '') + '</h2>' +
             '<p class="hint" style="margin:0 0 10px">' + esc(l.category || '') + ' &middot; ' + esc((l.vegan_status || '').replace(/_/g, ' ')) + ' &middot; ' + (l.vote_count || 0) + ' votes from ' + (l.voter_count || 0) + ' people' + (l.claim_status === 'verified' ? ' &middot; <strong>claimed by the business</strong>' : '') + '</p>' +
             (d.flags.length ? '<h2>Red flags</h2><ul class="notes">' + d.flags.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' : '<p class="hint" style="margin:0 0 12px">No red flags right now.</p>') +
             '<div class="row-btns" style="margin:0 0 14px"><a class="btn btn-ghost btn-sm" href="' + esc(maps) + '" target="_blank" rel="noopener">Google Maps</a>' +
@@ -180,27 +220,76 @@
             '<h2>Your call</h2><textarea id="dr-note" placeholder="Why, for the record (optional): Called them, closed since August."></textarea>' +
             '<div class="choices">' + CH.map(function (c) { return '<div class="choice"><button type="button" class="' + c[2] + '" data-state="' + c[0] + '">' + c[1] + '</button><p>' + c[3] + '</p></div>'; }).join('') + '</div>' +
             '<p class="msg" id="dr-msg" role="status" style="margin-top:10px"></p></section>' +
-            '<section class="card"><h2>What it shows</h2><dl class="facts">' +
-              fact('About', l.description ? esc(l.description) : '', 'No about') +
-              fact('Address', l.address_street ? esc([l.address_street, l.address_city, l.address_state, l.address_zip].filter(Boolean).join(', ')) : esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + (l.address_street ? '' : ' <span class="missing">(no street)</span>')) +
-              fact('Hours', esc(hoursText(l.google_hours_json)), 'No hours') +
-              fact('Phone', esc(l.phone || ''), 'No phone') +
-              fact('Website', l.website ? '<a href="' + esc(l.website) + '" target="_blank" rel="noopener">' + esc(l.website) + '</a>' + (ck && ck.website_error ? ' <span class="missing">(' + esc(ck.website_error === 'TypeError' ? 'did not open' : ck.website_error) + ')</span>' : '') : '', 'No website') +
-              fact('Socials', socials, 'No socials') +
-              fact('Menu', d.menu_items ? d.menu_items + ' items' : '', 'No menu') +
-            '</dl>' +
+            // What it shows, as a form: fill in what you found and Save. Missing ones are marked; only what changed is saved.
+            '<section class="card"><h2>What it shows</h2><p class="hint" style="margin:0 0 12px">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + '. Fill in what you found and save: the listing updates now, and the flags it fixes go away.</p>' +
+            '<div class="fix" id="dr-fix">' +
+              // What kind of business, and Online only (Sean, 2026-10-25, Axiology: an online beauty brand has no hours or street).
+              '<div><label for="dr-kind">Kind</label><select id="dr-kind">' + KINDS.map(function (g) { return '<optgroup label="' + g[0] + '">' + g[1].map(function (c) { return '<option' + (c === l.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</optgroup>'; }).join('') +
+                (KINDS.some(function (g) { return g[1].indexOf(l.category) >= 0; }) ? '' : '<option selected value="">' + esc(l.category || 'Pick one') + '</option>') + '</select></div>' +
+              '<div><label>Where</label><label class="check"><input type="checkbox" id="dr-online"' + (online ? ' checked disabled' : '') + '> Online only, no storefront</label>' +
+                '<p class="hint">' + (online ? 'Sells online: no hours or street, and it shows in every chapter.' : 'Sells online only? Tick this: the street, city, hours and map pin come off, and it shows in every chapter.') + '</p></div>' +
+              field('description', 'About', l.description, 'wide', 'textarea', 'What they do, in a line or two.') +
+              field('website', 'Website', l.website, '', '', 'https://...', ck && ck.website_error && ck.website_error !== 'no website' ? 'Did not open at the check-up' : '') +
+              field('instagram', 'Instagram', l.instagram, '', '', '@handle or link', '', !hasSocial) +
+              field('facebook', 'Facebook', l.facebook, '', '', 'facebook.com/...', '', !hasSocial) +
+              field('tiktok', 'TikTok', l.tiktok, '', '', '@handle or link', '', !hasSocial) +
+              field('phone', 'Phone', l.phone, '', '', '(305) 555-0100', '', online ? false : undefined) +
+              field('address_street', 'Street', l.address_street, 'store', '', '123 Main St') +
+              field('address_zip', 'ZIP', l.address_zip, 'store', '', '33139', '', false, true) +
+              // A menu is for food places only.
+              (PLACES.indexOf(l.category) >= 0 ? field('menu_url', 'Menu link', l.menu_crawl_url, '', '', 'Their menu page or ordering page', menuNote, !d.menu_items) : '') +
+              '<div class="wide store' + (Object.keys(hrs).length ? '' : ' need') + '"><label>Hours' + (Object.keys(hrs).length ? '' : '<span class="missing">Missing</span>') + '</label><div class="hours">' +
+                DAYS.map(function (dy) { return '<div><span>' + dy.slice(0, 3) + '</span><input type="text" data-day="' + dy + '" value="' + esc(hrs[dy] || '') + '" placeholder="11 AM to 9 PM" aria-label="' + dy + '"></div>'; }).join('') +
+              '</div><p class="hint">Write each day the way they do: 11 AM to 9 PM, or Closed. A day left empty is not shown.</p></div>' +
+            '</div>' +
+            '<div class="fix-bar"><button type="button" class="btn" id="dr-save">Save</button>' +
+              (st === 'hold' ? '<button type="button" class="btn btn-ghost" id="dr-save-live">Save and put it back on the Directory</button>' : '') +
+              '<span class="msg" id="dr-fix-msg" role="status"></span></div>' +
             (ck ? '<h2 style="margin-top:16px">Last check-up, ' + esc(pdate(ck.at)) + '</h2><p class="hint">Google: ' + esc(g.address || 'no match') + (g.status && g.status !== 'OPERATIONAL' ? ' &middot; <strong>' + esc(g.status.replace(/_/g, ' ').toLowerCase()) + '</strong>' : '') + (g.rating ? ' &middot; ' + g.rating + ' stars, ' + (g.reviews || 0) + ' reviews' : '') + '</p>' +
               (ck.signals.length ? '<ul class="notes">' + ck.signals.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') : '<p class="hint" style="margin-top:12px">No monthly check-up yet.</p>') +
             // Members who checked in there (ve_checkins): proof it is open, and who visits.
             '<h2 style="margin-top:16px">Member check-ins</h2>' + ((d.checkins || []).length ? '<ul class="notes">' + d.checkins.map(function (c) { return '<li><strong>' + esc(pdate(c.at)) + '</strong>, ' + esc(c.name) + '</li>'; }).join('') + '</ul>' : '<p class="hint">Nobody has checked in yet.</p>') +
             (notes.length ? '<h2 style="margin-top:16px">Notes</h2><ul class="notes">' + notes.slice().reverse().slice(0, 12).map(function (n) { return '<li><strong>' + esc(pdate(n.at)) + ', ' + esc(n.by || '') + ':</strong> ' + esc(n.text) + '</li>'; }).join('') + '</ul>' : '') +
             '</section></div>';
+          // Save what was fixed (only the fields that changed are sent), then show the listing again with its flags now.
+          function saveFix(live) {
+            var fields = {}, msg = $('dr-fix-msg'), btns = [$('dr-save'), $('dr-save-live')].filter(Boolean), before = rowsOf(from);
+            Array.prototype.forEach.call(V().querySelectorAll('#dr-fix [data-f]'), function (x) {
+              var k = x.dataset.f, was = k === 'menu_url' ? l.menu_crawl_url : l[k];
+              if (x.value.trim() !== String(was || '').trim()) fields[k] = x.value;
+            });
+            var h = {}, hChanged = false;
+            Array.prototype.forEach.call(V().querySelectorAll('#dr-fix [data-day]'), function (x) {
+              if (x.value.trim()) h[x.dataset.day] = x.value.trim();
+              if (x.value.trim() !== String(hrs[x.dataset.day] || '').trim()) hChanged = true;
+            });
+            if (hChanged && !$('dr-online').checked) fields.hours = h;
+            if ($('dr-kind').value && $('dr-kind').value !== l.category) fields.category = $('dr-kind').value;
+            if ($('dr-online').checked && !online) { fields.online = true; delete fields.address_street; delete fields.address_zip; }
+            if (!Object.keys(fields).length && !live) { msg.className = 'msg'; msg.textContent = 'Nothing changed.'; return; }
+            btns.forEach(function (b) { b.disabled = true; });
+            msg.className = 'msg'; msg.textContent = 'Saving...';
+            api({ action: 'listing_fix', listing_id: l.id, fields: fields, live: !!live, note: $('dr-note').value }).then(function (r) {
+              if (!r.ok) throw new Error(r.error === 'bad_link' ? 'That ' + (r.field === 'menu_crawl_url' ? 'menu link' : r.field) + ' is not a link.' : r.error || 'That did not save.');
+              var said = r.saved.length ? 'Saved: ' + r.saved.join(', ').replace(/_/g, ' ') + '.' : 'Saved.';
+              return load().then(function () {
+                if (!live) { viewListing(l.id, from); setTimeout(function () { var m = $('dr-fix-msg'); if (m) { m.className = 'msg'; m.textContent = said; } }, 400); return; }
+                msg.textContent = said + ' Back on the Directory.';
+                var i = before.map(function (x) { return x.id; }).indexOf(l.id), nxt = before[i + 1] || before[i - 1];
+                setTimeout(function () { location.hash = nxt && nxt.id !== l.id ? '#l/' + nxt.id + '/' + from : '#' + from; }, 700);
+              });
+            }).catch(function (e) { msg.className = 'msg err'; msg.textContent = e.message; btns.forEach(function (b) { b.disabled = false; }); });
+          }
+          function syncOnline() { Array.prototype.forEach.call(V().querySelectorAll('#dr-fix .store'), function (x) { x.hidden = $('dr-online').checked; }); }
+          $('dr-online').addEventListener('change', syncOnline); syncOnline();
+          $('dr-save').addEventListener('click', function () { saveFix(false); });
+          if ($('dr-save-live')) $('dr-save-live').addEventListener('click', function () { saveFix(true); });
           Array.prototype.forEach.call(V().querySelectorAll('[data-state]'), function (b) {
             b.addEventListener('click', function () {
               var s = b.dataset.state, msg = $('dr-msg'), label = b.textContent;
               if ((s === 'removed' || s === 'closed') && !confirm(label + ': ' + l.name + '?')) return;
               Array.prototype.forEach.call(V().querySelectorAll('[data-state]'), function (x) { x.disabled = true; });
-              api({ action: 'listing_state', listing_id: l.id, state: s, note: $('dr-note').value }).then(function (r) {
+              (s === 'vet' ? api({ action: 'listing_vetted', listing_id: l.id, vetted: true }) : api({ action: 'listing_state', listing_id: l.id, state: s, note: $('dr-note').value })).then(function (r) {
                 if (!r.ok) throw new Error(r.error || 'That did not work.');
                 msg.className = 'msg'; msg.textContent = 'Done.';
                 // Straight on to the next one in the same list.
