@@ -482,6 +482,15 @@ open (a site that only blocks our scanner does not count). The strong ones (Goog
 no socials with no hours or no working website) are held every night by `ve_directory_auto_hold()` (cron
 `ve-directory-auto-hold`, 08:30 UTC), never a claimed or owned listing; one Sean puts back stays off the list for 90 days
 (`details.review_ok_until`). Off the Directory also takes it off the email list (`trg_ve_outreach_listing_hidden`).
+Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
+updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
+street, ZIP, menu link, each day's hours; missing ones marked), saved by `ve-outreach` `listing_fix` (only what changed, each a
+`ve_listing_edits` row, `details.fixed`), with **Save and put it back on the Directory** for a held one. A new website clears "The
+website did not open" (the flag counts only for the site the check-up read); a menu link goes to `listings.menu_crawl_url` and
+queues `ve_menu_imports` with that `menu_url`, where the Background writer starts (migration `20261025_directory_review_fix.sql`).
+**Being vetted** is a list there too (the food places waiting on member votes) with **Vetted by us** (`listing_vetted`). On the
+Directory, every card shows admins **Edit** and **Review** (opens it in Directory review, in Being vetted when it is waiting on
+votes), and the listing editor has Open in Directory review.
 
 Member check-ins (Sean, 2026-10-25: "making a way that members can verify listings... every time they check in, they can get
 like 10 points... We can see a record of how many people are actually visiting, which members are visiting... if a business

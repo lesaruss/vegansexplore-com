@@ -32,6 +32,10 @@
 //   Directory review (Sean, 2026-10-25; migration 20261025_directory_review.sql, Depot > Directory review):
 //   review_list                        held (On hold for review), flagged (red flags, still live), removed and recently closed
 //   review_get     { listing_id }      one listing: what it shows, its red flags, the latest check-up, its notes
+//   listing_fix    { listing_id, fields: {website, instagram, facebook, tiktok, phone, address_street, address_zip, description,
+//                    hours {Day: text}, menu_url}, live?, note? }  fix what is missing (each change a ve_listing_edits row),
+//                    optionally back on the Directory in the same press (super admin)
+//   listing_vetted { listing_id, vetted }  Vetted by us: a Being vetted food place shows to everyone (super admin)
 //   listing_state  { listing_id, state: live|hold|removed|closed, note? }  ve_listing_set_state: back on the Directory, on
 //                                      hold, removed (never deleted, not under Closed) or permanently closed (kept under Closed)
 //
@@ -624,35 +628,54 @@ Deno.serve(async (req) => {
     }
 
     // ---- Directory review ----
+    // Why a listing was held, less what has been fixed since (Directory review's form): a held listing is not in the nightly
+    // flags (those cover live ones), so its reasons are checked against what it holds now.
+    const stillTrue = (l: any) => (l.details?.review?.reasons || []).filter((r: string) => {
+      if (r === 'No socials') return !(l.instagram || l.facebook || l.tiktok);
+      if (r === 'No hours') { const h = l.google_hours_json; return !h || (typeof h === 'object' && !Object.keys(h).length); }
+      if (r === 'No street address') return !l.address_street;
+      if (r === 'No website') return !l.website;
+      if (r === 'The website did not open') return !(l.details?.fixed?.website && l.details.fixed.website > (l.details?.review?.at || ''));
+      return true;
+    });
     if (action === 'review_list') {
-      const COLS = 'id,slug,name,category,address_city,address_state,logo_url,website,instagram,status,business_status,claim_status,details,updated_at';
+      const COLS = 'id,slug,name,category,address_city,address_state,address_street,logo_url,website,instagram,facebook,tiktok,google_hours_json,status,business_status,claim_status,details,updated_at';
       const pick = (l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city, state: l.address_state,
-        logo_url: l.logo_url, website: l.website, instagram: l.instagram, review: l.details?.review || null,
+        logo_url: l.logo_url, website: l.website, instagram: l.instagram, review: l.details?.review ? { ...l.details.review, reasons: stillTrue(l) } : null,
         removed: l.details?.removed_at ? { at: l.details.removed_at, by: l.details.removed_by, reason: l.details.removed_reason } : null,
         closed: l.details?.closed_at ? { at: l.details.closed_at, by: l.details.closed_by } : null, updated_at: l.updated_at });
-      const [held, removed, closed, flags] = await Promise.all([
+      // Being vetted (Sean, 2026-10-25: "these will be manual checks on my end"): Vegan-friendly and Vegan-options food places
+      // that are live but shown to members only until 10 different members vote, the business claims it, or we vet it.
+      const { data: trust } = await db.from('ve_site_settings').select('value').eq('key', 'directory_trust').maybeSingle();
+      const minVoters = +(trust?.value?.min_voters) || 10;
+      const [held, removed, closed, flags, vetting] = await Promise.all([
         db.from('listings').select(COLS).eq('status', 'pending').not('details->review', 'is', null).order('updated_at', { ascending: false }).limit(500),
         db.from('listings').select(COLS).eq('status', 'rejected').not('details->removed_at', 'is', null).order('updated_at', { ascending: false }).limit(300),
         db.from('listings').select(COLS).eq('status', 'approved').eq('business_status', 'CLOSED_PERMANENTLY').order('updated_at', { ascending: false }).limit(300),
         db.rpc('ve_directory_review_flags'),
+        trust?.value?.enabled ? db.from('listings').select(COLS + ',voter_count').eq('status', 'approved').in('vegan_status', ['vegan_friendly', 'vegan_options'])
+          .in('category', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep']).is('vetted_at', null)
+          .neq('claim_status', 'verified').lt('voter_count', minVoters).neq('business_status', 'CLOSED_PERMANENTLY')
+          .order('voter_count', { ascending: false }).order('name').limit(500) : Promise.resolve({ data: [] }),
       ]);
       return json({ ok: true, held: (held.data || []).map(pick), removed: (removed.data || []).map(pick), closed: (closed.data || []).map(pick),
-        flagged: flags.data || [] });
+        flagged: flags.data || [], vetting: ((vetting as any).data || []).map((l: any) => ({ ...pick(l), voter_count: l.voter_count || 0 })), min_voters: minVoters });
     }
     if (action === 'review_get') {
       if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
-      const { data: l } = await db.from('listings').select('id,slug,name,category,tagline,description,address_street,address_city,address_state,address_zip,phone,website,instagram,facebook,tiktok,google_hours_json,google_place_id,logo_url,status,business_status,claim_status,vegan_status,vote_count,voter_count,details,updated_at').eq('id', body.listing_id).maybeSingle();
+      const { data: l } = await db.from('listings').select('id,slug,name,category,tagline,description,address_street,address_city,address_state,address_zip,phone,website,instagram,facebook,tiktok,google_hours_json,google_place_id,logo_url,status,business_status,claim_status,vegan_status,vote_count,voter_count,vetted_at,menu_crawl_url,details,updated_at').eq('id', body.listing_id).maybeSingle();
       if (!l) return json({ error: 'not_found' }, 404);
-      const [{ data: a }, { data: flags }, { count: menu }, { data: cis }] = await Promise.all([
+      const [{ data: a }, { data: flags }, { count: menu }, { data: cis }, { data: mi }] = await Promise.all([
         db.from('ve_audits').select('id,created_at,closure_level,closure_signals,facts').eq('listing_id', l.id).eq('status', 'done').order('created_at', { ascending: false }).limit(1).maybeSingle(),
         db.rpc('ve_directory_review_flags'),
         db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id),
         // Members who checked in there (the team sees who; the public only counts).
         db.from('ve_checkins').select('created_at, points, distance_m, members(name)').eq('listing_id', l.id).order('created_at', { ascending: false }).limit(20),
+        db.from('ve_menu_imports').select('status, menu_url, note, done_at').eq('listing_id', l.id).maybeSingle(),
       ]);
       const f = (flags || []).find((x: any) => x.listing_id === l.id);
       const g = a?.facts?.google || {};
-      return json({ ok: true, listing: l, flags: f?.flags || l.details?.review?.reasons || [], menu_items: menu || 0,
+      return json({ ok: true, listing: l, flags: f?.flags || (l.status === 'pending' ? stillTrue(l) : []), menu_items: menu || 0, menu_import: mi || null,
         checkins: (cis || []).map((c: any) => ({ at: c.created_at, name: c.members?.name || 'A member', distance_m: c.distance_m })),
         checkup: a ? { id: a.id, at: a.created_at, level: a.closure_level, signals: a.closure_signals || [], google: { status: g.status || null, maps: g.maps || null,
           address: g.address || null, rating: g.rating || null, reviews: g.reviews || null, hours: g.hours || null }, website_error: a.facts?.website?.error || null } : null });
@@ -664,6 +687,65 @@ Deno.serve(async (req) => {
       if (error) return json({ error: error.message }, 400);
       if (!data?.ok) return json({ error: data?.why || 'failed' }, 400);
       return json({ ok: true, state: body.state });
+    }
+    // Fix it here (Sean, 2026-10-25: "right now it's allowing me to review but not fix... if I were able to find the websites,
+    // find social, find the menu, I want to be able to input it here so it updates the listing and unflags it"). Only the
+    // fields sent change; each change is a ve_listing_edits row the Depot can undo. A new website clears "did not open" (the
+    // flag reads the check-up only for the site it checked). A menu link is copied by the Background writer (menu_import).
+    // Then, optionally, back on the Directory (live) in the same press.
+    if (action === 'listing_fix') {
+      if (!me || !isId(body.listing_id)) return json({ error: 'admins_only' }, 403);
+      const { data: l } = await db.from('listings').select('id,status,website,instagram,facebook,tiktok,phone,address_street,address_zip,description,google_hours_json,menu_crawl_url,details').eq('id', body.listing_id).maybeSingle();
+      if (!l) return json({ error: 'not_found' }, 404);
+      const f = body.fields || {};
+      const url = (v: string) => (v && !/^https?:\/\//i.test(v) ? 'https://' + v : v);
+      const handle = (v: string) => v.replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\//i, '').replace(/^@/, '').replace(/[/?#].*$/, '');
+      const next: Record<string, unknown> = {};
+      const S = (k: string, max: number, fn?: (v: string) => string) => { if (typeof f[k] === 'string') { const v = clean(f[k], max); next[k] = v ? (fn ? fn(v) : v) : null; } };
+      S('website', 300, url); S('facebook', 300, url); S('instagram', 80, handle); S('tiktok', 80, handle);
+      S('phone', 40); S('address_street', 200); S('address_zip', 12); S('description', 2000);
+      if (typeof f.menu_url === 'string') { const v = clean(f.menu_url, 500); next.menu_crawl_url = v ? url(v) : null; }
+      for (const k of ['website', 'facebook', 'menu_crawl_url']) {
+        if (next[k]) { try { const u = new URL(String(next[k])); if (!/^https?:$/.test(u.protocol)) throw 0; } catch { return json({ error: 'bad_link', field: k }, 400); } }
+      }
+      if (f.hours && typeof f.hours === 'object') {
+        const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], h: Record<string, string> = {};
+        for (const d of DAYS) { const v = clean(f.hours[d], 80); if (v) h[d] = v; }
+        next.google_hours_json = Object.keys(h).length ? h : null;
+      }
+      let curH = l.google_hours_json; if (typeof curH === 'string') { try { curH = JSON.parse(curH); } catch { /* keep */ } }
+      const cur: Record<string, unknown> = { ...l, google_hours_json: curH };
+      const same = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+      const changed = Object.keys(next).filter((k) => !same(cur[k] || null, next[k]));
+      const at = new Date().toISOString();
+      if (changed.length) {
+        const details = { ...(l.details || {}) };
+        details.fixed = { ...(details.fixed || {}), ...Object.fromEntries(changed.map((k) => [k, at])) };
+        const patch: Record<string, unknown> = { updated_at: at, details };
+        for (const k of changed) patch[k] = next[k];
+        const { error } = await db.from('listings').update(patch).eq('id', l.id);
+        if (error) return json({ error: error.message }, 400);
+        await db.from('ve_listing_edits').insert(changed.map((k) => ({ listing_id: l.id, member_id: me, field: k === 'google_hours_json' ? 'hours' : k,
+          old_value: cur[k] ?? null, new_value: next[k] ?? null, meta: { by: 'admin', where: 'directory_review' } })));
+        // A menu link: the Background writer copies the menu from it, unless the listing has a menu already.
+        if (changed.includes('menu_crawl_url') && next.menu_crawl_url) {
+          const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id);
+          if (!count) await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'queued', menu_url: next.menu_crawl_url, note: 'Menu link from Directory review', marked_at: null, done_at: null }, { onConflict: 'listing_id' });
+        }
+      }
+      if (body.live && l.status !== 'approved') {
+        const { data, error } = await db.rpc('ve_listing_set_state', { p_listing: l.id, p_state: 'live', p_by: me, p_note: clean(body.note, 1000) || (changed.length ? 'Fixed in Directory review' : null), p_reasons: null });
+        if (error || !data?.ok) return json({ error: error?.message || data?.why || 'failed', saved: changed }, 400);
+      }
+      return json({ ok: true, saved: changed.map((k) => (k === 'google_hours_json' ? 'hours' : k === 'menu_crawl_url' ? 'menu_url' : k)) });
+    }
+    // Vetted by us (the same switch as the listing editor's): a Vegan-friendly or Vegan-options food place shows to everyone now.
+    if (action === 'listing_vetted') {
+      if (!me || !isId(body.listing_id)) return json({ error: 'admins_only' }, 403);
+      const on = body.vetted !== false;
+      const { error } = await db.from('listings').update({ vetted_at: on ? new Date().toISOString() : null, vetted_by: on ? me : null, updated_at: new Date().toISOString() }).eq('id', body.listing_id);
+      if (error) return json({ error: error.message }, 400);
+      return json({ ok: true, vetted: on });
     }
 
     if (action === 'listing_edits') {

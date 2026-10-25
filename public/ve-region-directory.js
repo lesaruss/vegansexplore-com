@@ -264,7 +264,14 @@
     return ' <span class="vrd-verified"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>VE Verified</span>';
   }
   function byPriority(a, b) { return (isPlus(b) ? 1 : 0) - (isPlus(a) ? 1 : 0); }
-  function adminBtn(l) { return ADMIN ? '<button type="button" class="vla-edit" data-vla="' + esc(l.id) + '" title="Admin only">Edit</button>' : ''; }
+  // Admins: Edit opens the listing editor; Review opens it in Depot > Directory review to fix what is missing (Sean, 2026-10-25),
+  // in the Being vetted list when it is still waiting on member votes.
+  function adminBtn(l) {
+    if (!ADMIN) return '';
+    var list = TRUST && window.VETrust && window.VETrust.pending(l, TRUST) ? 'vetting' : 'flagged';
+    return '<span class="vla-btns"><button type="button" class="vla-edit" data-vla="' + esc(l.id) + '" title="Admin only">Edit</button>' +
+      '<a class="vla-edit" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/' + list + '" target="_blank" rel="noopener" title="Admin only: fix it in Directory review">Review</a></span>';
+  }
 
   function makeBrowseCard(l, idx, type) {
     var votes = (l.vote_count || 0);

@@ -82,11 +82,13 @@
     '#vla .check{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700;margin:8px 0 4px;cursor:pointer}#vla .check input{width:17px;height:17px;accent-color:#1f5f22}' +
     '#vla .note{font-size:12px;color:#666;margin-top:4px}' +
     '#vla .acts{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:18px;position:sticky;bottom:-18px;background:#fff;padding:12px 0 4px}#vla .msg{flex:1;font-size:13px;font-weight:700;color:#1f5f22}#vla .msg.bad{color:#8a1c12}' +
-    '#vla button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:8px;padding:10px 16px;cursor:pointer;min-height:40px}' +
+    '#vla button,#vla a.cancel{font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:8px;padding:10px 16px;cursor:pointer;min-height:40px}#vla a.cancel{display:inline-flex;align-items:center}' +
     '#vla .save{background:#1f5f22;color:#fff;border:0}#vla .save:disabled{opacity:.5}#vla .cancel{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25)}' +
     '@media(max-width:520px){#vla .row{grid-template-columns:1fr 1fr}#vla .row .street{grid-column:1/-1}}' +
     '.vla-edit{font-family:Montserrat,sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:4px;border:1px dashed #b7791f;background:#fffaf0;color:#7a4b00;cursor:pointer}' +
     '.vla-edit:hover{background:#fff1d6}' +
+    'a.vla-edit{text-decoration:none;display:inline-block}' +
+    '.vla-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}' +
     '#vla .logo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}#vla .logo-img{width:72px;height:72px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;flex:0 0 auto}' +
     '#vla .logo-btns{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}#vla .logo-btns button{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25);padding:8px 12px;min-height:38px}#vla .logo-btns .rm{color:#8a1c12}' +
     '#vla .logo-msg{flex-basis:100%;font-size:12.5px;font-weight:700;color:#1f5f22;min-height:18px}#vla .logo-msg.bad{color:#8a1c12}';
@@ -168,7 +170,8 @@
       // Off the Directory without calling it closed (Sean, 2026-10-25: "I just wanted to remove and not even mark as permanently
       // closed"). Both save at once through ve-outreach listing_state; Depot > Directory review lists them and can put them back.
       '<div class="note">Permanently closed keeps it under Closed in the Directory, for memory. To take it off without that:</div>' +
-      '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-hold">Hold for review</button><button type="button" class="cancel" id="vla-remove" style="color:#8a1c12;border-color:#8a1c12">Remove from the Directory</button></div>' +
+      '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-hold">Hold for review</button><button type="button" class="cancel" id="vla-remove" style="color:#8a1c12;border-color:#8a1c12">Remove from the Directory</button>' +
+        '<a class="cancel" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/flagged" target="_blank" rel="noopener" style="text-decoration:none">Open in Directory review</a></div>' +
 
       '<div id="vla-glance"><h3>At a Glance <span style="font-weight:700;letter-spacing:0;text-transform:none;color:#666">(restaurants and cafes)</span></h3>' +
       '<label class="h" for="vla-atm">Atmosphere</label><select id="vla-atm">' + ATMOS.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === (l.atmosphere || '') ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
