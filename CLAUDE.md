@@ -490,9 +490,15 @@ wants to run a campaign with us, we can target those people first... an ongoing 
 (`directory/listing.html`, shown where the listing has `latitude`/`longitude`, which `ve-restaurant-audit` `essentials` fills from
 the Google place): the phone's location must be within 150 m (plus up to 100 m of its own uncertainty; a fix worse than 500 m
 is refused), once per place a day (Eastern), 10 points for up to 5 places a day, more recorded at 0 (`ve_checkin_save`, rows in
-`ve_checkins`; points move both balances, `points_ledger` reason `checkin`). Everyone sees "Member check-in N days ago · N
-members this month" (`ve_listing_checkins`, counts only); the team sees who in Depot > Directory review (`review_get`
-`checkins`), and the rows are the list for targeting a business's promotions. A check-in in the last 30 days keeps a place from
+`ve_checkins`; points move both balances, `points_ledger` reason `checkin`). Who sees what (Sean, 2026-10-25: "Only registered member
+businesses who've claimed their listings can see that information... You can choose... in your settings, whether you want
+people to see where you've checked in. So we can leave it on by default"): the public sees counts only ("Member check-in N
+days ago · N members this month", `ve_listing_checkins`); members also see "Recently here: Sam R., Maria L. and 3 more", only
+members who leave **Show my check-ins to other members** on (My Account > Privacy, `members.show_checkins`, on by default,
+`ve-checkin` `privacy`); the owner of a claimed listing (claim approved, member or plan) sees everyone, whatever the setting,
+on the business dashboard's **Check-ins** view (`ve-claims` `owner_dashboard` `checkins`: last 30 days, members, who comes
+back, every check-in); the team sees who in Depot > Directory review (`review_get` `checkins`). The rows are the list for
+targeting a business's promotions. A check-in in the last 30 days keeps a place from
 being held automatically. On `/bounties` it is the always-open first card in every city (**Check in where you go**,
 `?campaign=check-ins`): how it works, Open the Directory, and the member's own check-ins (`ve-checkin` `mine`).
 

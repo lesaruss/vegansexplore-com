@@ -4,7 +4,12 @@
 // (at the place within 150 m, once per place a day, 10 points for up to 5 places a day).
 //
 // POST { action: 'listing', listing_id }                 anyone: { total, last_30_days, people_30_days, last_at, mine_today }
-//                                                         (never who; mine_today only for a signed-in member)
+//                                                         counts only for the public; an active member also gets people: the
+//                                                         members who checked in in the last 90 days and leave show_checkins on
+//                                                         (Sean, 2026-10-25), newest first, first name and initial
+// POST { action: 'privacy', show_checkins? }             a signed-in member: reads, or sets, whether other members see their
+//                                                         check-ins (members.show_checkins, on by default; the owner of a claimed
+//                                                         place always sees them, through ve-claims owner_dashboard)
 // POST { action: 'checkin', listing_id, lat, lng, accuracy }  an active member: { ok, points, distance_m } or { ok: false, why }
 // POST { action: 'mine' }                                a signed-in member: their check-ins, newest first, and the points
 //
@@ -55,19 +60,41 @@ Deno.serve(async (req) => {
   if (body.action === 'listing') {
     if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
     const { data } = await db.rpc('ve_listing_checkins', { p_listing: body.listing_id });
-    let mine_today = false;
+    let mine_today = false, people: string[] | undefined, more = 0;
     if (memberId) {
+      const { data: me } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
+      if (me?.membership_status === 'active') {
+        const { data: rows } = await db.from('ve_checkins').select('member_id, created_at, members!inner(name, show_checkins)')
+          .eq('listing_id', body.listing_id).eq('members.show_checkins', true).neq('member_id', memberId)
+          .gte('created_at', new Date(Date.now() - 90 * 864e5).toISOString()).order('created_at', { ascending: false }).limit(200);
+        const seen = new Set<string>(), names: string[] = [];
+        for (const r of (rows || []) as any[]) {
+          if (seen.has(r.member_id)) continue; seen.add(r.member_id);
+          const p = String(r.members?.name || '').trim().split(/\s+/);
+          if (p[0]) names.push(p[0] + (p[1] ? ' ' + p[1][0] + '.' : ''));
+        }
+        people = names.slice(0, 6); more = Math.max(0, names.length - 6);
+      }
       const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
       const { count } = await db.from('ve_checkins').select('id', { count: 'exact', head: true })
         .eq('listing_id', body.listing_id).eq('member_id', memberId).eq('local_day', today);
       mine_today = (count || 0) > 0;
     }
-    return json({ ok: true, ...(data || {}), mine_today });
+    return json({ ok: true, ...(data || {}), mine_today, ...(people ? { people, more } : {}) });
   }
 
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
   const { data: m } = await db.from('members').select('id, membership_status').eq('id', memberId).maybeSingle();
   if (!m) return json({ error: 'not_found' }, 404);
+
+  if (body.action === 'privacy') {
+    if (typeof body.show_checkins === 'boolean') {
+      const { error } = await db.from('members').update({ show_checkins: body.show_checkins }).eq('id', memberId);
+      if (error) return json({ error: 'save_failed' }, 500);
+    }
+    const { data: p } = await db.from('members').select('show_checkins').eq('id', memberId).maybeSingle();
+    return json({ ok: true, show_checkins: p?.show_checkins !== false });
+  }
 
   if (body.action === 'checkin') {
     // Check-ins are a member benefit, like votes.

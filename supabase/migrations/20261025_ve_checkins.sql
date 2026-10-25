@@ -127,3 +127,9 @@ revoke all on function public.ve_directory_review_flags() from public, anon, aut
 -- The points ledger takes a fixed list of reasons; check-ins are one now (found by a rolled-back test of ve_checkin_save).
 alter table public.points_ledger drop constraint points_ledger_reason_check;
 alter table public.points_ledger add constraint points_ledger_reason_check check (reason = any (array['signup', 'referral', 'daily_login', 'listing_like', 'listing_create', 'discussion_post', 'discussion_reply', 'discussion_vote', 'event_attend', 'profile_complete', 'profile_field', 'admin_adjust', 'purchase', 'redemption', 'vote_given', 'vote_received', 'vote_refunded', 'featured_purchase', 'transfer_sent', 'transfer_received', 'store_purchase', 'store_refund', 'points_purchase', 'bartering', 'boost_purchase', 'seed_initial', 'Welcome bonus + early activity', 'campaign_back', 'questionnaire', 'wizard_redeem', 've_hunt_complete', 've_hunt_anchor', 'guide_redeem', 'cycle_grant', 'bounty', 'comp_membership', 'recipe_approved', 'guide_chat_spend', 'credit_exchange', 'checkin']::text[])) not valid;
+
+-- Who sees a check-in (Sean, 2026-10-25: "Only registered member businesses who've claimed their listings can see that
+-- information... You can choose whether or not in your settings, whether you want people to see where you've checked in. So
+-- we can leave it on by default"). The public sees counts only; members see the names of members who leave this on; the
+-- owner of a claimed listing (ve-claims owner_dashboard checkins) and the team see everyone.
+alter table public.members add column if not exists show_checkins boolean not null default true;

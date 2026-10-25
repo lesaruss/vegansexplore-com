@@ -10,6 +10,8 @@
  *   home      the numbers at a glance, Get your page ready, What's new (ve_dashboard_cards, audience business)
  *   insights  7, 30, 90 days or a year: totals against the period before, a chart, what people did, where they came
  *             from, and every day in a table that sorts by any column
+ *   checkins  members who checked in at the place, and when (Sean, 2026-10-25: only a member owner whose claim we
+ *             approved sees who; ve-claims owner_dashboard checkins)
  *   page      Edit your page (the four-step editor in directory/listing.html, opts.editPage)
  *   menu      the menu, by category; an item opens on its own (ve-claims menu_save / menu_delete)
  *   ads       their ads with impressions and clicks, and the spots they can ask about (ad_request)
@@ -23,9 +25,9 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-  var VIEWS = [['home', 'Home'], ['insights', 'Insights'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['insights', 'Insights'], ['checkins', 'Check-ins'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
-  var MEMBERS = ['insights', 'ads', 'opps', 'audit', 'guides'];
+  var MEMBERS = ['insights', 'checkins', 'ads', 'opps', 'audit', 'guides'];
   var ACTS = [['call', 'Calls'], ['directions', 'Directions'], ['website', 'Website visits'], ['order', 'Orders'], ['menu', 'Menu opened'], ['photos', 'Photos opened'], ['social', 'Social links']];
   var VIA = { page: 'The Directory and search', guide: 'Inside a Guide', link: 'A tracked link' };
   var CHECK = { logo: ['Your logo', 'A clear, official logo instead of your first letter.', 'photos'], description: ['Your story', 'A few lines on what you serve and what to try first.', 'about'],
@@ -236,6 +238,20 @@
     }
 
     // ---- Ads
+    // ---- Check-ins: the members who came in, newest first, with who comes back most.
+    function drawCheckins() {
+      var c = D.checkins || {};
+      if (!c.verified) return '<p class="vpd-empty">Once we approve your claim on this page, you will see every member who checks in here, and when.</p>';
+      var rows = c.rows || [];
+      var out = '<div class="vpd-tiles"><div><b>' + n(c.last_30_days) + '</b><span>Check-ins, last 30 days</span></div><div><b>' + n(c.people) + '</b><span>Members who have checked in</span></div><div><b>' + n(c.total) + '</b><span>Check-ins, last 12 months</span></div></div>' +
+        '<p class="vpd-empty" style="margin:0 0 12px">Members check in from your page when they are here, and earn points for it. These are your regulars: when you run a deal or a giveaway with us, they can hear about it first.</p>';
+      if (!rows.length) return out + '<p class="vpd-empty">No check-ins yet.</p>';
+      var by = {}; rows.forEach(function (r) { var k = r.member_id; by[k] = by[k] || { name: r.name, n: 0, last: r.at }; by[k].n++; });
+      var reg = Object.keys(by).map(function (k) { return by[k]; }).filter(function (x) { return x.n > 1; }).sort(function (a, b) { return b.n - a.n; });
+      if (reg.length) out += '<h4>Coming back</h4><div class="vpd-grid">' + reg.slice(0, 8).map(function (x) { return '<div class="vpd-card"><b>' + esc(x.name) + '</b><p>' + x.n + ' visits, last ' + esc(new Date(x.last).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</p></div>'; }).join('') + '</div>';
+      return out + '<h4>Every check-in</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Member</th></tr></thead><tbody>' +
+        rows.slice(0, 200).map(function (r) { return '<tr><td>' + esc(new Date(r.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td><td>' + esc(r.name) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    }
     function drawAds() {
       var mine = D.ads.length ? '<div class="vpd-list">' + D.ads.map(function (a) {
         return '<div class="vpd-row"><div><b>' + esc(a.name) + '</b><small>' + esc([a.start_date, a.end_date].filter(Boolean).join(' to ')) + ' &middot; ' + n(a.impressions) + ' impressions &middot; ' + n(a.clicks) + ' clicks</small></div>' +
@@ -305,7 +321,7 @@
           : 'A front-row seat on every campaign, ads placed for you and a campaign manager. ' + (FRONT_ROW ? 'Front Row Start: nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : '$111 a quarter.')) + '</p>' +
         (D.plan ? '' : '<a class="vpd-btn sm o" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand' + (FRONT_ROW ? '&offer=front-row' : '') + '">' + (FRONT_ROW ? 'Take my front-row seat' : 'Become a Partner') + '</a>') + '</div></div>';
     }
-    var VIEW_FN = { home: drawHome, insights: drawInsights, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    var VIEW_FN = { home: drawHome, insights: drawInsights, checkins: drawCheckins, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {
