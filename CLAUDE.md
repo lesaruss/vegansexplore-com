@@ -552,7 +552,7 @@ Directory's **Your votes rank them** box at the foot of the page (`.lv-vote`), o
 after sign-in), never the old sign-in pop-up, and lets any link that already goes to `/passport` through.
 
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
-and folds it to one bar (city picker, Visit the community, Expand) after the first click into a section; Collapse/Expand is
+and folds it to one bar (city picker, View community, Expand) after the first click into a section; Collapse/Expand is
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
 listing counts in a region by its address or the chapters it serves (`data-hubs`). **Every section opens on its first
 sub-section and All comes last** (Sean, 2026-10-26: "all now goes to the back of the line"), which let **Food Brands come back
@@ -662,8 +662,12 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   Classifieds, Fosters, Rescues, Suggest a Topic, `/board?lane=`). Lead Your City left it too (`/lead` still exists).
 - **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
   and collapse as well. That should be a feature for all the banners"): `/public/ve-city-banner.js`
-  (`VECityBanner.mount(el, {key, title, sub, onChange})`, after `ve-hubs.js`): the city's art, the city picker, Visit the
-  community, Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit). The
+  (`VECityBanner.mount(el, {key, title, sub, onChange, action})`, after `ve-hubs.js`): the city's art, the city picker, and
+  buttons (Sean, 2026-10-26: "my goal was to have it be a button"): **View community** (the picked city's hub, or View
+  communities for All cities), the page's own `action` (Events: **Submit an event**, `VEEvents` `submit()`, on `/events` and
+  the dashboard), and Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit).
+  Folded, it is three rows and two columns, the right one about a quarter, at every width: the title, the chapter under it,
+  then City and its picker on the left; the buttons stacked to the same height on the right. The
   Directory, Events and Communities wear it; on `/communities` the pick narrows the city cards under it. A new browse page
   with a banner uses it, never its own copy. The dashboard's Directory and Events tabs wear it too (Sean: "I want a similar
   look and feel for both"; `param: false`, `initial`): a city picked there is the dashboard's active city, All

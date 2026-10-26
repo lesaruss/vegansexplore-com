@@ -597,6 +597,7 @@
 
     return {
       setCity: function (slug) { st.city = slug || ''; st.shown = 40; if (!/^#(submit|mine)/.test(location.hash)) drawRows(); },
+      submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       reload: function () { return load().then(drawRows); }
     };
   }

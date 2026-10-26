@@ -2691,7 +2691,8 @@
       dashEvBanner = VECityBanner.mount('dash-ev-hero', {
         key: 'dash-events', param: false, initial: slug, title: 'Vegan Events', allTitle: 'Every City', allLabel: 'All cities',
         sub: 'Festivals, meetups, markets and gatherings near you and around the world. Know of one? Submit it.',
-        onChange: function (s) { if (dashEvBanner) dashBannerPick('events', s, member); }
+        onChange: function (s) { if (dashEvBanner) dashBannerPick('events', s, member); },
+        action: { label: 'Submit an event', onClick: function () { if (dashEvCal) dashEvCal.submit(); } }
       });
       dashEvCal = VEEvents.mount(mount, { key: 'dash-events', urlState: false, city: slug, onInteract: function () { dashEvBanner.autoFold(); } });
       return;
