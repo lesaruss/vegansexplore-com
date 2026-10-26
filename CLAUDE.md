@@ -440,8 +440,13 @@ Directory, Communities and Community Board cards, the $11 Founding Membership, a
 Log In stays in the nav. Explore cards use our illustrations, never photos.
 
 `/directory` is open to everyone again (it was locked to super admins and redirected to
-`/communities`). Anyone can browse, search and see vote counts; a signed-out Vote goes to the Passport Guide at `/passport`
-(`/public/ve-votes.js`; since 2026-10-25 `/passport` is that page, no longer a redirect to `/welcome`).
+`/communities`). Anyone can browse, search and see vote counts. A signed-out Vote first opens a small window (Sean, 2026-10-26: "a prompt
+that explains why they're going to the passport page"): Members only, Voting is for Passport holders, why it matters, **Explore
+the Passport** (`/passport?from=vote&back=...`), Not now, and Sign in for members (`/login?next=...`). Voting again too soon opens
+the same window: You've voted for this one today, with when the next vote opens in the visitor's time zone, and Got it. Both are
+`VEVotes.passportPrompt()` and `VEVotes.votedPrompt(next)` in `/public/ve-votes.js`, styled like the $11 window in `ve-auth.js`;
+the Directory cards, the listing page and `nav.js`'s members-only gate (for `.vote-hero-btn` and the phone's sticky vote) all
+use them. Since 2026-10-25 `/passport` is the Passport Guide, no longer a redirect to `/welcome`.
 
 The Directory runs on `/public/ve-region-directory.js`, the same component as the city hubs (rebuilt
 2026-10-04 after an audit; the old page had its own out-of-date sections, region list and copy). One

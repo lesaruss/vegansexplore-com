@@ -3133,15 +3133,13 @@ function renderListing(l){
       VEVotes.today().then(function(d){ var n = d && d.next && d.next[listingId]; if(VEVotes.tooSoon(n)) paintVoted(null, false, n); }).catch(function(){});
     }
     voteBtn.addEventListener('click', function(){
-      if(voteBtn.dataset.voted && VEVotes.tooSoon(voteBtn.dataset.next)){ VEVotes.notice(VEVotes.onceMessage(voteBtn.dataset.next)); return; }
-      if(!VEAuth.isLoggedIn()){
-        window.location.href = '/passport?from=vote&back=' + encodeURIComponent(location.pathname + location.search + location.hash);
-        return;
-      }
+      if(voteBtn.dataset.voted && VEVotes.tooSoon(voteBtn.dataset.next)){ VEVotes.votedPrompt(voteBtn.dataset.next); return; }
+      // Signed out: the window that says voting is for Passport holders, then Explore the Passport (Sean, 2026-10-26).
+      if(!VEAuth.isLoggedIn()){ VEVotes.passportPrompt(); return; }
       voteBtn.disabled = true;
       VEVotes.cast(listingId).then(function(d){
         voteBtn.disabled = false;
-        if(d && (d.error === 'already_voted' || d.error === 'already_voted_today')){ paintVoted(null, false, d.next_vote_at); VEVotes.notice(VEVotes.onceMessage(d.next_vote_at)); return; }
+        if(d && (d.error === 'already_voted' || d.error === 'already_voted_today')){ paintVoted(null, false, d.next_vote_at); VEVotes.votedPrompt(d.next_vote_at); return; }
         if(d && d.error){ return; }
         paintVoted(d && d.vote_count != null ? d.vote_count : null, true, d && d.next_vote_at);
       }).catch(function(){ voteBtn.disabled = false; });

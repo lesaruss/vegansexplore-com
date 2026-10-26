@@ -505,6 +505,8 @@
           if (t.matches && t.matches(_gated[_gi])) {
             e.preventDefault();
             e.stopImmediatePropagation();
+            // A vote first says why (Sean, 2026-10-26): the window from ve-votes.js, Explore the Passport from there.
+            if (/vote/.test(_gated[_gi]) && window.VEVotes && VEVotes.passportPrompt) { VEVotes.passportPrompt(); return; }
             _showGateModal();
             return;
           }
