@@ -434,8 +434,8 @@ Invites sends them from Sean (or copies the link). From then they work once, for
 
 ## Explore and the Directory (Sean, 2026-10-04)
 
-The homepage hero offers two ways in: Start Your Journey (the guided tour, `/welcome`) and Explore
-Now (`/explore`), a one-screen overview for visitors who want to look around first: Guides,
+The homepage hero offers two ways in: Start Your Journey (the Passport Guide, `/passport`, since Sean 2026-10-26;
+the guided tour stays at `/welcome`, which the footer's About opens) and Explore Now (`/explore`), a one-screen overview for visitors who want to look around first: Guides,
 Directory, Communities and Community Board cards, the $11 Founding Membership, and a link to the tour.
 Log In stays in the nav. Explore cards use our illustrations, never photos.
 
@@ -1263,6 +1263,24 @@ and a tee reference, both shapes for each Guide. Dani uses a manual wheelchair a
 (say so in every prompt; a reference picture alone is not enough). The square mid shots follow Liz's:
 a warm wave, head to waist, white background. Pascal (the Cultural Bridge) is in the map too, though
 not in the member Guide picker.
+
+## Footer, Policies and Contact (Sean, 2026-10-26)
+
+The footer (`public/footer.js`) reads ABOUT (`/welcome`), JOIN US (`/passport`), POLICIES (`/policies`), CONTACT (`/contact`),
+our socials and "A LESARUSS brand" (lesaruss.com). Socials, checked 2026-10-26: Instagram and TikTok `@vegansexplore`, YouTube
+`@VegansExplore` (the channel our episodes are on, by YouTube oEmbed). No Vegans Explore Facebook page was found, so Facebook
+is off the footer until Sean gives its address. Never link a social we have not checked.
+
+- `/policies` (`policies.html`): one policy per view (`#overview`, `#privacy`, `#ai`, `#terms`, `#membership`, `#community`,
+  `#business`, `#cookies`, `#accessibility`, `#contact`), menu on the left, a dropdown on phones. **How we use AI** says the
+  Guides are AI characters, AI replies can be wrong and are not advice, and where else AI runs (the Pulse, listing text and
+  menus, illustrative photos, audits and check-ups, transcripts). The operator is LESARUSS Inc., 300 SW 1st Ave, Suite 155,
+  Fort Lauderdale, FL 33301 (Vegans Explore is its brand since the 2026-10-08 board consent). When a feature changes what we
+  collect, what AI does, or the price and points rules, change the policy with it and its Last updated date.
+- `/privacy-policy`, `/privacy`, `/terms-of-use` and `/terms` redirect to `/policies?p=privacy|terms`; `/about` to `/welcome`.
+  They, and `/contact`, used to proxy to archive.vegansexplore.com, which no longer exists (no DNS, checked 2026-10-26).
+- `/contact` (`contact.html`): one mail link per reason to contact@lesaruss.com with the subject filled in (no form yet), the
+  address, the socials and the LESARUSS card.
 
 ## Image conventions
 

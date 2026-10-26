@@ -76,10 +76,6 @@
       "destination": "https://archive.vegansexplore.com/9-vegan-meat-alternatives-you-should-try/"
     },
     {
-      "source": "/about",
-      "destination": "https://archive.vegansexplore.com/about/"
-    },
-    {
       "source": "/advisor",
       "destination": "https://archive.vegansexplore.com/advisor/"
     },
@@ -266,10 +262,6 @@
     {
       "source": "/confidence-and-conditioning-secrets-to-winning-your-first-show-and-going-pro",
       "destination": "https://archive.vegansexplore.com/confidence-and-conditioning-secrets-to-winning-your-first-show-and-going-pro/"
-    },
-    {
-      "source": "/contact",
-      "destination": "https://archive.vegansexplore.com/contact/"
     },
     {
       "source": "/content",
@@ -872,10 +864,6 @@
       "destination": "https://archive.vegansexplore.com/premium-access/dashboard/"
     },
     {
-      "source": "/privacy-policy",
-      "destination": "https://archive.vegansexplore.com/privacy-policy/"
-    },
-    {
       "source": "/prize",
       "destination": "https://archive.vegansexplore.com/prize/"
     },
@@ -1312,10 +1300,6 @@
       "destination": "https://archive.vegansexplore.com/taking-the-leap-leaving-9-to-5-for-9-to-9/"
     },
     {
-      "source": "/terms-of-use",
-      "destination": "https://archive.vegansexplore.com/terms-of-use/"
-    },
-    {
       "source": "/test-register-form",
       "destination": "https://archive.vegansexplore.com/test-register-form/"
     },
@@ -1661,6 +1645,31 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/about",
+      "destination": "/welcome",
+      "permanent": false
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/policies?p=privacy",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/policies?p=privacy",
+      "permanent": true
+    },
+    {
+      "source": "/terms-of-use",
+      "destination": "/policies?p=terms",
+      "permanent": true
+    },
+    {
+      "source": "/terms",
+      "destination": "/policies?p=terms",
+      "permanent": true
+    },
     {
       "source": "/pulse",
       "destination": "/board?lane=pulse",
