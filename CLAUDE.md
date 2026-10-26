@@ -47,7 +47,7 @@ this list follows the rule above. A new exception goes on this list first.
 - **Redirect stubs**, pages whose only job is to send the visitor elsewhere
   (a meta refresh or `location.replace`, or a `vercel.json` redirect that
   catches the URL before the file is served): `partner.html` (`/partner` goes to
-  `/partners`), `tour.html` (`/tour` goes to the archive site),
+  `/partners`), `tour.html` (`/tour` starts the tour on the dashboard),
   `guides/ve-discuss.html`, `onboarding.html`, `apply.html` (`/apply` goes to `/claim?add=1`, Join the Directory).
 - **Partner pitch decks**, standalone sales documents with their own footer,
   some marked Confidential: `partners/community-partner.html` and everything
@@ -1279,6 +1279,13 @@ our socials and "A LESARUSS brand" (lesaruss.com). Socials, checked 2026-10-26: 
   collect, what AI does, or the price and points rules, change the policy with it and its Last updated date.
 - `/privacy-policy`, `/privacy`, `/terms-of-use` and `/terms` redirect to `/policies?p=privacy|terms`; `/about` to `/welcome`.
   They, and `/contact`, used to proxy to archive.vegansexplore.com, which no longer exists (no DNS, checked 2026-10-26).
+- **The old WordPress addresses** (Sean, 2026-10-26): 327 more paths used to proxy to archive.vegansexplore.com. They are
+  redirects now. Old episodes and articles whose slug a published `ve_pulse_content` row has go to `/pulse/<slug>` (74), and
+  showcase and article posts about a listed business go to its listing (43); these are permanent. Old sections go to what does
+  their job today (club, register and premium-access to `/passport`, `/dashboard` or `/login`; partners pages to `/partners` or
+  `/claim?add=1`; directory pages to the matching `/directory?tab=`; events and festivals to `/communities`; other showcases to
+  `/directory`; other articles to `/pulse`); these are not permanent, so they can be pointed somewhere better later. Never add
+  a rewrite to an outside host for an old path; redirect it to a page we serve.
 - `/contact` (`contact.html`): one mail link per reason to contact@lesaruss.com with the subject filled in (no form yet), the
   address, the socials and the LESARUSS card.
 
