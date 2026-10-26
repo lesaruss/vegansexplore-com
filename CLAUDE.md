@@ -553,10 +553,15 @@ after sign-in), never the old sign-in pop-up, and lets any link that already goe
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
 and folds it to one bar (city picker, Visit the community, Expand) after the first click into a section; Collapse/Expand is
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
-listing counts in a region by its address or the chapters it serves (`data-hubs`). **Food Brands sit under Products**, beside
-Brands (Sean, 2026-10-25: "we're showing all brands versus mixing them, the national with the local"), so Food, which opens on
-All, is only the local places (`CAT_MAP`, `CAT_CONFIG`, the listing editor's `SECTIONS` and Directory review's `KINDS`; a Food
-Brand's breadcrumb goes to `?tab=products`). A sub-section can have its own filters
+listing counts in a region by its address or the chapters it serves (`data-hubs`). **Every section opens on its first
+sub-section and All comes last** (Sean, 2026-10-26: "all now goes to the back of the line"), which let **Food Brands come back
+to Food**: Restaurants, Bakeries & Cafes, Food Trucks & Vendors, Food Brands, **Nutrition & Supplements** (new: supplement and
+nutrition brands, sold everywhere, so no location filter; Brand Partner like a Food Brand), Markets, Catering, Meal Prep.
+Products is Fitness and Athletics, Clothing and Fashion, Beauty and Personal Care, E-Commerce & Marketplaces; **Brands is
+retired** (its three listings were re-filed the same day; an old `Brands` row still shows under Products > All). Change these
+together: `CAT_MAP` and `CAT_CONFIG` in `ve-region-directory.js`, `SECTIONS` in `ve-listing-admin.js`, `KINDS` in Directory
+review, `CATEGORIES` in `ve-claims`, `LISTING_CATEGORIES` in `ve-outreach`, `CATEGORIES` in `ve-discover`, `FOOD_CATS` in
+`directory/listing.html` and `CATS` in `claim.html`. A sub-section can have its own filters
 (`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make, never by city (`listings.product_kinds`:
 dairy, meat, egg, seafood, snacks, drinks, protein, pantry, baked, frozen; set in the listing editor; migration
 `20261024_listing_product_kinds.sql`), **Markets** by national chain (tag `ve-grocery-store`) or local market.

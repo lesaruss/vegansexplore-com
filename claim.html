@@ -308,7 +308,7 @@
       // everyone else. The Passport Stop and Anchor plans show only when the link asks for them (the business page).
       PERKS.partner = ['Your page, your way: your details, photos and story', 'Your Partner Dashboard on your page: views, visitors and what people open',
         'Front-row access to every campaign before it opens: game days, the Plant-Based Showcase, community nights', 'Ads on our pages once the ad console opens', 'Liz, your Guide, and our team for anything'];
-      function isBrand() { return !!L && /^(Food Brands|Brands)$/.test(L.category || ''); }
+      function isBrand() { return !!L && /^(Food Brands|Nutrition & Supplements|Brands)$/.test(L.category || ''); }
       function pName() { return isBrand() ? 'Brand Partner' : 'Partner'; }
       // Front Row Start (Sean, 2026-10-09): before January 1, 2027 the rest of 2026 is on us. The card is saved today and the
       // first quarter is charged in January (ve-claims checks the date), for every business now, not only brands.
@@ -549,7 +549,7 @@
       document.addEventListener('click', function (e) { if (e.target.closest('[data-search-again]')) { e.preventDefault(); findMode(); } });
 
       // ---- Add it: the business is not in the Directory yet, so the same form asks for its name, kind and city.
-      var CATS = ['Restaurants', 'Bakeries & Cafes', 'Food Brands', 'Brands', 'Markets', 'Meal Prep', 'Clothing and Fashion', 'Beauty and Personal Care',
+      var CATS = ['Restaurants', 'Bakeries & Cafes', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Meal Prep', 'Clothing and Fashion', 'Beauty and Personal Care',
         'Health and Wellness', 'Fitness and Athletics', 'Coaches and Consultants', 'Events', 'Nonprofits', 'Podcasts', 'Books', 'Content Creation & Media',
         'E-Commerce & Marketplaces', 'Marketing & Growth', 'Web & Development', 'Business Operations'];
       $('n-cat').innerHTML = '<option value="">Choose one</option>' + CATS.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');

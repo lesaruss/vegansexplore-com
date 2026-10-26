@@ -28,9 +28,11 @@
   var CAT_MAP = {
     'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food',
     'Catering': 'food', 'Meal Prep': 'food',
-    // Food Brands sit with the other brands under Products (Sean, 2026-10-25: "we're showing all brands versus mixing them,
-    // the national with the local"), so Food, opening on All, is the local places.
-    'Food Brands': 'products', 'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
+    // Food Brands are back under Food (Sean, 2026-10-26): sections open on their first sub-section, not All, so Food opens
+    // on Restaurants and the national brands no longer mix with the local places. Nutrition & Supplements follows them.
+    'Food Brands': 'food', 'Nutrition & Supplements': 'food',
+    // Brands left the menu (Sean, 2026-10-26); an old 'Brands' row still shows under Products > All.
+    'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
     'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
     'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services',
     'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services',
@@ -43,10 +45,10 @@
   var CAT_CONFIG = [
     { key: 'food', label: 'Food', hasVF: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Catering', 'Meal Prep'] },
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep'] },
     { key: 'products', label: 'Products', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
-      subcats: ['Brands', 'Food Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces'] },
+      subcats: ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'] },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
       subcats: ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations'] },
@@ -215,8 +217,9 @@
   function skeletonForCat(cat, config) {
     // A framed tool (Review): the page loads the first time the tab opens.
     if (cat.frame) return '<div class="board-panel" id="board-' + cat.key + '"><div class="vrd-frame-wrap" data-vrd-frame="' + esc(cat.frame) + '"></div></div>';
-    var subcatBtns = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>' +
-      cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('');
+    // A section opens on its first sub-section; All comes last (Sean, 2026-10-26).
+    var subcatBtns = cat.subcats.map(function (s, i) { return '<button class="subcat-pill' + (i ? '' : ' sc-active') + '" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
+      '<button class="subcat-pill' + (cat.subcats.length ? '' : ' sc-active') + '" data-vrd-subcat="All">All</button>';
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
       '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(cat.label) + '&hellip;" aria-label="Search ' + esc(cat.label) + ' listings">' +
@@ -365,7 +368,7 @@
     ['ethiopian', 'Ethiopian'], ['african', 'African'], ['indian', 'Indian'], ['thai', 'Thai'], ['chinese', 'Chinese'], ['japanese', 'Japanese & sushi'],
     ['korean', 'Korean'], ['vietnamese', 'Vietnamese'], ['asian', 'Pan-Asian'], ['burgers', 'Burgers & fast food'], ['bowls', 'Bowls & salads'],
     ['raw', 'Raw & juice bar'], ['brunch', 'Breakfast & brunch'], ['desserts', 'Desserts & sweets'], ['global', 'Global mix']];
-  var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
+  var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true }, 'Nutrition & Supplements': { geo: false }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
     'Food Trucks & Vendors': { cuisine: true }, 'Catering': { cuisine: true } };
   // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
   function hubsOf(l) {
@@ -509,7 +512,7 @@
     bindCardClicks(root, config);
     bindAdmin(root);
 
-    root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, config, true); });
+    root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); applyPanelFilters(panel, config, true); });
   }
 
   function currentSubcat(panel) {

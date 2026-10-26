@@ -983,7 +983,7 @@ var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
 var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
 // Sections (Sean, 2026-09-27); keep in step with /public/ve-region-directory.js.
-var FOOD_CATS = ['Restaurants','Bakeries & Cafes','Food Trucks & Vendors','Markets','Food Brands','Catering','Meal Prep'];
+var FOOD_CATS = ['Restaurants','Bakeries & Cafes','Food Trucks & Vendors','Markets','Food Brands','Nutrition & Supplements','Catering','Meal Prep'];
 var MEDIA_CATS = ['Podcasts','YouTube','News Outlets','Documentaries & Films','Books','Media'];
 // At a Glance (atmosphere, seating, amenities, accessibility, ownership) is for places you sit down in.
 var DINING_CATS = ['Restaurants','Bakeries & Cafes'];
@@ -2880,9 +2880,8 @@ function renderListing(l){
   var community = getCommunityForListing(l);
   var catType = getCategoryType(l.category);
   var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
-  // Food Brands are listed under Products in the Directory (2026-10-25); the page itself stays a food page.
-  var dirTab = l.category === 'Food Brands' ? 'products' : catType;
-  if(l.category === 'Food Brands') dirLabel = 'Products';
+  // Food Brands and Nutrition & Supplements are back under Food in the Directory (Sean, 2026-10-26).
+  var dirTab = catType;
 
   // Partner Dashboard's tab: after Products on a brand page, last everywhere else.
   var PD_BTN = '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">' + '<svg class="pd-lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>' + 'Partner Dashboard</button>';
@@ -3031,7 +3030,7 @@ function renderListing(l){
           // the business's home once it is theirs. A brand partner's sub views sit under it (the sub-menu, .pd-subnav).
           (l._brandSite ? PD_BTN : '') +
           (l._brandSite ? ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<button class="tab-btn" data-tab="' + t + '" data-sub="1" role="tab" aria-selected="false" style="display:none">' + t + '</button>'; }).join('') : '')+
-          '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : l.category === 'Food Brands' ? 'Products' : 'Menu')+'</button>'+
+          '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : /^(Food Brands|Nutrition & Supplements)$/.test(l.category) ? 'Products' : 'Menu')+'</button>'+
           (l._brandSite || !photoHtml ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           // Video and Pulse show once they have something (renderVideoCarousel, renderPulse).
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false" id="tab-btn-video" style="display:none">Video</button>' : '')+

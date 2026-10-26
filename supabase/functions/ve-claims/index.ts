@@ -107,11 +107,11 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const FN_URL = `${SUPABASE_URL}/functions/v1/ve-claims`;
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const MIN_CENTS = 1100, MAX_CENTS = 1000000; // $11 minimum (Sean), $10,000 sanity ceiling
-const BRAND_CATS = /^(Food Brands|Brands)$/; // product brands: no restaurant questions
+const BRAND_CATS = /^(Food Brands|Nutrition & Supplements|Brands)$/; // product brands: no restaurant questions
 const STATUSES = ['fully_vegan', 'vegan_friendly', 'vegan_options'];
 // Every sub-section the city hubs know (CAT_MAP in /public/ve-region-directory.js), by section.
 const CATEGORIES = [
-  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Catering', 'Meal Prep',
+  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
   'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
   'Web & Development', 'AI & Automation', 'Business Operations',
