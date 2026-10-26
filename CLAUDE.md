@@ -573,12 +573,16 @@ review, `CATEGORIES` in `ve-claims`, `LISTING_CATEGORIES` in `ve-outreach`, `CAT
 they still show up at... farmers markets and special events, festivals... a tool for promoters who are looking to find vendors"):
 a Food Brands or Nutrition & Supplements listing with Food Trucks & Vendors in its extra categories (the listing editor's Also show
 it under, with a note saying so) stays in its brand section, also shows under Food Trucks & Vendors with the location filter, and
-its card reads **Markets & events** (`vendsAt` in `ve-region-directory.js`). In the brand sections, **Where they sell**
-(Everywhere, At markets and events, Online and in stores only) filters them, and At markets and events brings the location
-filter back. Vetting goes by the main category only, so a vending brand never lands in Being vetted. A sub-section can have its own filters
-(`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make, never by city (`listings.product_kinds`:
+its card reads **Markets & events** (`vendsAt` in `ve-region-directory.js`). In the brand sections, **Sells at**
+(Anywhere, Markets & events, Online & stores) filters them, and Markets & events brings the location filter back. Vetting goes by the main category only, so a vending brand never lands in Being vetted. A sub-section can have its own filters
+(`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make (**Makes**), never by city (`listings.product_kinds`:
 dairy, meat, egg, seafood, snacks, drinks, protein, pantry, baked, frozen; set in the listing editor; migration
 `20261024_listing_product_kinds.sql`), **Markets** by national chain (tag `ve-grocery-store`) or local market.
+Layout (Sean, 2026-10-26): on desktop the section pills fill three-fourths in two rows (the fuller one on top) and the search has
+the last fourth to itself; phones keep the pills with the search under them. The filters (Sort by, Area, the sub-section's own,
+Vegan, Type) share one row, each the same width, wrapping evenly only when they no longer fit. Under the cards, the page
+numbers (first, last and two either side of the current one) sit in the middle and Show 24 / 48 / 111 at the far right (shown
+only when there is more than a page of 24).
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated

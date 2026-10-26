@@ -92,15 +92,25 @@
     + '.vrd-root .vrd-search-input{width:100%;padding:8px 14px 8px 32px;border:1.5px solid #ddd;border-radius:20px;font-size:12px;font-family:Montserrat,sans-serif;color:#1a1a1a;background:#fff;transition:border-color .15s}'
     + '.vrd-root .vrd-search-input:focus{outline:none;border-color:#5EC47A}'
     + '@media(max-width:640px){.vrd-root .subcat-pills .vrd-search-wrap{flex:1 1 100%;margin-left:0;max-width:none;order:99}}'
+    // Desktop: the sections take three-fourths in two rows (the fuller one on top), the search the last fourth on its own
+    // (Sean, 2026-10-26). Phones keep the pills, then the search under them with room between.
+    + '.vrd-root .subcat-pills.vrd-split{flex-wrap:nowrap;align-items:flex-start;gap:20px}'
+    + '.vrd-root .subcat-list{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;gap:8px 6px}'
+    + '.vrd-root .subcat-pills.vrd-split .vrd-search-wrap{flex:0 0 calc(25% - 15px);max-width:none;min-width:0;margin-left:0}'
+    + '@media(max-width:640px){.vrd-root .subcat-pills.vrd-split{flex-wrap:wrap;gap:0}.vrd-root .subcat-list{flex:1 1 100%}.vrd-root .subcat-pills.vrd-split .vrd-search-wrap{flex:1 1 100%;margin-top:14px}}'
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
-    + '.vrd-root .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}'
-    + '.vrd-root .sb-f{display:contents}.vrd-root .sb-phone{display:none}'
-    + '.vrd-root .sort-bar .vrd-geo,.vrd-root .sort-bar .vrd-sub{display:contents}.vrd-root .sort-bar [hidden]{display:none!important}'
+    + '.vrd-root .sort-bar{display:flex;align-items:center;gap:10px 18px;margin-bottom:16px;flex-wrap:wrap}'
+    // One row on desktop, every field the same share; it wraps to a second row only when they no longer fit (Sean, 2026-10-26).
+    + '.vrd-root .sb-f,.vrd-root .sort-bar .vrd-geo,.vrd-root .sort-bar .vrd-sub{display:flex;align-items:center;gap:8px;flex:1 1 0;min-width:170px}'
+    + '.vrd-root .sort-bar .vrd-geo:has(select[data-vrd-city]:not([style*="none"])):has(select[data-vrd-region],select[data-vrd-county]){min-width:300px;flex-grow:1.6}'
+    + '.vrd-root .sb-f select,.vrd-root .vrd-geo select,.vrd-root .vrd-sub select{flex:1 1 0;min-width:0;width:100%;text-overflow:ellipsis}'
+    + '.vrd-root .sort-bar .sort-label,.vrd-root .sort-bar .geo-label{flex-shrink:0;white-space:nowrap;margin-left:0}'
+    + '.vrd-root .sort-bar [hidden]{display:none!important}'
     // Phones: each filter is a small label over its dropdown, two across (Sean, 2026-10-25: "check the directory page on mobile").
     + '@media(max-width:600px){.vrd-root .sort-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px;align-items:end}'
     + '.vrd-root .sort-bar .sb-f,.vrd-root .sort-bar .vrd-geo,.vrd-root .sort-bar .vrd-sub{display:flex;flex-direction:column;align-items:stretch;gap:5px;min-width:0}'
-    + '.vrd-root .sort-bar .sb-phone{display:block}.vrd-root .sort-bar .geo-label,.vrd-root .sort-bar .sort-label{margin-left:0;font-size:10px}'
+    + '.vrd-root .sort-bar .geo-label,.vrd-root .sort-bar .sort-label{margin-left:0;font-size:10px}'
     + '.vrd-root .sort-bar select{width:100%;max-width:100%;min-width:0}}'
     + '.vrd-root .geo-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666;margin-left:8px}'
     + '.vrd-root .sort-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666}'
@@ -144,8 +154,15 @@
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
     + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5EC47A}'
     + '.vrd-root .vrd-empty{grid-column:1/-1;padding:48px 24px;text-align:center;color:#666;font-size:13px;font-weight:600}'
-    + '.vrd-root .vrd-pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:20px;padding-top:16px}'
-    + '.vrd-root .vrd-page-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 18px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer;transition:border-color .15s}'
+    + '.vrd-root .vrd-foot{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:20px;padding-top:16px}'
+    + '.vrd-root .vrd-foot .perpage-select{grid-column:3;justify-self:end;margin-left:0}.vrd-root .vrd-foot .perpage-select[hidden]{display:none}'
+    + '.vrd-root .vrd-pagination{grid-column:2;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px}'
+    + '.vrd-root .vrd-page-num{font-family:Montserrat,sans-serif;font-size:12px;font-weight:800;min-width:34px;height:34px;padding:0 8px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer}'
+    + '.vrd-root .vrd-page-num:hover:not(.on){border-color:#5EC47A;color:#2d7a4f}'
+    + '.vrd-root .vrd-page-num.on{background:#1a1a1a;border-color:#1a1a1a;color:#fff;cursor:default}'
+    + '.vrd-root .vrd-page-gap{font-size:12px;font-weight:800;color:#999;padding:0 2px}'
+    + '@media(max-width:640px){.vrd-root .vrd-foot{grid-template-columns:minmax(0,1fr);justify-items:center}.vrd-root .vrd-pagination,.vrd-root .vrd-foot .perpage-select{grid-column:1;justify-self:center}}'
+    + '.vrd-root .vrd-page-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 18px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer;transition:border-color .15s}'
     + '.vrd-root .vrd-page-btn:hover:not(:disabled){border-color:#5EC47A;color:#2d7a4f}'
     + '.vrd-root .vrd-page-btn:disabled{opacity:.35;cursor:default}'
     + '.vrd-root .vrd-page-indicator{font-size:11px;font-weight:700;color:#666;letter-spacing:.04em}'
@@ -176,17 +193,17 @@
     var geoHtml = '';
     if (config && config.regions) {
       // Every city (/directory): a region first, then its cities.
-      geoHtml = '<span class="geo-label">Filter by</span>' +
+      geoHtml = '<span class="geo-label">Area</span>' +
         '<select aria-label="Filter by region" class="sort-select" data-vrd-region="' + cat.key + '"><option value="">All regions</option></select>' +
         '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '" style="display:none"><option value="">All Cities</option></select>';
     } else if (config && config.counties) {
-      geoHtml = '<span class="geo-label">Filter by</span>' +
+      geoHtml = '<span class="geo-label">Area</span>' +
         '<select aria-label="Filter by county" class="sort-select" data-vrd-county="' + cat.key + '">' +
         '<option value="">All Counties</option></select>' +
         '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '" style="display:none">' +
         '<option value="">All Cities</option></select>';
     } else {
-      geoHtml = '<span class="geo-label">Filter by</span>' +
+      geoHtml = '<span class="geo-label">Area</span>' +
         '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '">' +
         '<option value="">All Cities</option></select>';
     }
@@ -199,11 +216,8 @@
       '<option value="closed">Closed</option>';
     var typeHtml = veganHtml + '<span class="sb-f"><span class="geo-label">Type</span>' +
       '<select aria-label="Filter by type" class="sort-select" data-vrd-type="' + cat.key + '">' + typeOptions + '</select></span>';
-    var perpageHtml = '<span class="sb-f"><span class="geo-label sb-phone">Show</span><select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
-      '<option value="24" selected>Show 24</option><option value="48">Show 48</option><option value="111">Show 111</option>' +
-      '</select></span>';
     // A sub-section's own filters (SUB_FILTERS), shown while its pill is picked.
-    var subHtml = '<span class="vrd-sub" data-sub-for="kind" hidden><span class="geo-label">What they make</span>' +
+    var subHtml = '<span class="vrd-sub" data-sub-for="kind" hidden><span class="geo-label">Makes</span>' +
       '<select aria-label="Filter by what they make" class="sort-select" data-vrd-kind="' + cat.key + '"><option value="">All</option>' +
       KINDS.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
       '<span class="vrd-sub" data-sub-for="cuisine" hidden><span class="geo-label">Food</span>' +
@@ -211,9 +225,9 @@
       CUISINES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
       '<span class="vrd-sub" data-sub-for="chain" hidden><span class="geo-label">Stores</span>' +
       '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>' +
-      '<span class="vrd-sub" data-sub-for="sells" hidden><span class="geo-label">Where they sell</span>' +
-      '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Everywhere</option><option value="1">At markets and events</option><option value="0">Online and in stores only</option></select></span>';
-    return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + perpageHtml + '</div>';
+      '<span class="vrd-sub" data-sub-for="sells" hidden><span class="geo-label">Sells at</span>' +
+      '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Anywhere</option><option value="1">Markets &amp; events</option><option value="0">Online &amp; stores</option></select></span>';
+    return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + '</div>';
   }
 
   // Per-category search (2026-09-07, Logan, Sean correction: he'd first
@@ -233,10 +247,13 @@
       '</div>';
 
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
-      '<div class="subcat-pills">' + subcatBtns + searchHtml + '</div>' +
+      '<div class="subcat-pills vrd-split"><div class="subcat-list">' + subcatBtns + '</div>' + searchHtml + '</div>' +
       buildBar(cat, config) +
       '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
-      '<div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
+      // The pages in the middle, how many to show at the far right (Sean, 2026-10-26).
+      '<div class="vrd-foot"><div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
+      '<select aria-label="Results per page" class="perpage-select" data-vrd-perpage="' + cat.key + '">' +
+      '<option value="24" selected>Show 24</option><option value="48">Show 48</option><option value="111">Show 111</option></select></div>' +
       '</div>';
   }
 
@@ -557,7 +574,7 @@
     var countySel = bar ? bar.querySelector('[data-vrd-county]') : null;
     var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
     var typeSel = bar ? bar.querySelector('[data-vrd-type]') : null;
-    var perpageSel = bar ? bar.querySelector('[data-vrd-perpage]') : null;
+    var perpageSel = panel.querySelector('[data-vrd-perpage]');
     var county = countySel ? countySel.value : '';
     var city = citySel ? citySel.value : '';
     var type = typeSel ? typeSel.value : '';
@@ -624,16 +641,33 @@
     }
 
     renderVrdPagination(panel, catKey, page, totalPages);
+    // Show 24 / 48 / 111 matters only when there is more than one page of the smallest.
+    if (perpageSel) perpageSel.hidden = matched.length <= 24;
   }
 
   function renderVrdPagination(panel, catKey, page, totalPages) {
     var el = panel.querySelector('#' + catKey + '-pagination');
     if (!el) return;
     if (totalPages <= 1) { el.innerHTML = ''; return; }
+    // Every page number near this one, plus the first and last, so page 7 is one click from page 2 (Sean, 2026-10-26).
+    var nums = [], last = 0;
+    for (var n = 1; n <= totalPages; n++) {
+      if (n !== 1 && n !== totalPages && Math.abs(n - page) > 2) continue;
+      if (last && n - last > 1) nums.push(n - last === 2 ? '<button type="button" class="vrd-page-num" data-vrd-page="' + (n - 1) + '">' + (n - 1) + '</button>' : '<span class="vrd-page-gap" aria-hidden="true">&hellip;</span>');
+      nums.push(n === page ? '<button type="button" class="vrd-page-num on" aria-current="page">' + n + '</button>' : '<button type="button" class="vrd-page-num" data-vrd-page="' + n + '" aria-label="Page ' + n + '">' + n + '</button>');
+      last = n;
+    }
     el.innerHTML =
       '<button type="button" class="vrd-page-btn" data-vrd-page-prev' + (page <= 1 ? ' disabled' : '') + '>Prev</button>' +
-      '<span class="vrd-page-indicator">Page ' + page + ' of ' + totalPages + '</span>' +
+      nums.join('') +
       '<button type="button" class="vrd-page-btn" data-vrd-page-next' + (page >= totalPages ? ' disabled' : '') + '>Next</button>';
+    el.querySelectorAll('[data-vrd-page]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        vrdPageState[catKey] = parseInt(b.getAttribute('data-vrd-page'), 10) || 1;
+        applyPanelFilters(panel, null, false);
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
     var prevBtn = el.querySelector('[data-vrd-page-prev]');
     var nextBtn = el.querySelector('[data-vrd-page-next]');
     if (prevBtn) prevBtn.addEventListener('click', function () {
@@ -817,14 +851,14 @@
     var root = LAST.root, keep = {};
     root.querySelectorAll('.board-panel').forEach(function (panel) {
       var k = { sub: currentSubcat(panel) };
-      panel.querySelectorAll('.sort-bar select').forEach(function (sel) { k[sel.className + '|' + Object.keys(sel.dataset).join()] = sel.value; });
+      panel.querySelectorAll('.sort-bar select, [data-vrd-perpage]').forEach(function (sel) { k[sel.className + '|' + Object.keys(sel.dataset).join()] = sel.value; });
       keep[panel.id] = k;
     });
     populateGrids(root, LAST.config, LAST.approved, LAST.closed);
     root.querySelectorAll('.board-panel').forEach(function (panel) {
       var k = keep[panel.id]; if (!k) return;
       panel.querySelectorAll('.subcat-pill').forEach(function (p) { p.classList.toggle('sc-active', p.getAttribute('data-vrd-subcat') === k.sub); });
-      panel.querySelectorAll('.sort-bar select').forEach(function (sel) { var v = k[sel.className + '|' + Object.keys(sel.dataset).join()]; if (v != null) sel.value = v; });
+      panel.querySelectorAll('.sort-bar select, [data-vrd-perpage]').forEach(function (sel) { var v = k[sel.className + '|' + Object.keys(sel.dataset).join()]; if (v != null) sel.value = v; });
       applyPanelFilters(panel, null, false);
     });
   }
