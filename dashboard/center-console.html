@@ -225,6 +225,20 @@
   .dash-tour-prompt{display:flex;align-items:center;gap:14px;border:1.5px solid var(--ve-border);border-radius:14px;padding:14px 18px;background:linear-gradient(180deg,#fff,#fafdfa);text-decoration:none;color:var(--ve-text);margin-bottom:20px;transition:border-color 0.15s;}
   .dash-tour-prompt:hover{border-color:var(--ve-green);}
   .dash-tour-prompt-icon{font-size:22px;flex-shrink:0;}
+  /* Flat icons (Sean, 2026-10-26: "make sure the icons are flat. I don't like the colorful ones"): one line icon in the
+     dark green on a plain light square, for the For you tiles and Your tools. FICON() in the script draws them. */
+  .ve-ficon{width:40px;height:40px;border-radius:10px;background:#F2F5F2;color:var(--ve-green-dark);display:flex;align-items:center;justify-content:center;font-size:0;flex-shrink:0;}
+  .ve-ficon svg{width:20px;height:20px;}
+  .ve-ficon b{font-size:15px;font-weight:900;}
+  .dash-preview-icon.ve-ficon{width:38px;height:38px;margin-bottom:10px;}
+  .dv-tile .dv-tag{display:inline-block;margin-left:6px;vertical-align:1px;}
+  .dash-foryou-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:12px;min-height:32px;}
+  .dash-foryou-head .dash-section-title{margin:0;}
+  .dash-foryou-head .dv-pick{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);}
+  .dash-foryou-head .dv-pick[hidden]{display:none;}
+  .dash-foryou-head select{appearance:none;-webkit-appearance:none;font:inherit;font-size:12px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);border:1px solid var(--ve-border);border-radius:6px;padding:6px 44px 6px 10px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;cursor:pointer;}
+  .dash-lb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;min-height:32px;}
+  .dash-lb-head .dash-section-title{margin:0;}
   .dash-tour-prompt-body{flex:1;}
   .dash-tour-prompt-title{font-size:13.5px;font-weight:800;}
   .dash-tour-prompt-desc{font-size:12px;color:var(--ve-text-50);margin-top:2px;}
@@ -246,17 +260,18 @@
   .dv-tag{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--ve-green-light);color:var(--ve-green-dark);}
   .dv-step{display:flex;gap:12px;align-items:flex-start;}.dv-step i{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--ve-green-dark);color:#fff;font-style:normal;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
   #dash-version h4{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);margin:22px 0 10px;}
-  /* Home (Sean, 2026-10-04): Action items and the Leaderboard side by side. */
+  /* Home (Sean, 2026-10-04; renamed For you 2026-10-26): For you and the Leaderboard side by side. */
   .dash-home-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:4px;}
   .dash-action-list{display:flex;flex-direction:column;gap:0;position:relative;}
-  /* Three Action items show; the rest scroll inside the box (Sean, 2026-10-04). The height is set
-     by sizeActionList() from the third card, since card heights vary. */
+  /* Five For you tiles show; the rest scroll inside the box (Sean, 2026-10-26; three until then). The height is set
+     from the fifth tile, since tile heights vary, and the Leaderboard beside it is made the same height. */
   .dash-action-list.is-capped{overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
   .dash-action-more{font-size:11px;font-weight:700;color:var(--ve-text-50);margin:8px 0 0;}
   /* The Leaderboard shows five and scrolls the rest inside its column, up to 100 (Sean, 2026-10-04).
      renderLeaderboard() sets the height from the fifth row; 265px is about five rows until then. */
   #dash-leaderboard-list{position:relative;max-height:265px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
-  .dash-action-list .dash-tour-prompt{width:100%;}
+  .dash-action-list .dash-tour-prompt{width:100%;margin-bottom:12px;}
+  #dash-tools-sections,#dash-tiles-flat,#dash-tiles-sectioned{display:none !important;}
   .dash-action-empty{font-size:13px;color:var(--ve-text-50);border:1.5px dashed var(--ve-border);border-radius:14px;padding:16px 18px;margin:0;}
   .dash-home-overview{margin-top:24px;}
   .dash-home-overview .dash-preview-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
@@ -761,7 +776,11 @@
            home tab; the Daily Pulse tab has it. -->
       <div class="dash-home-split">
       <div class="dash-home-actions">
-      <p class="dash-section-title" style="margin-top:0;">Action items</p>
+      <!-- For you (Sean, 2026-10-26: "I want the action items to change to for you, and then I want those to be listed as
+           tiles"): the checklist tiles, then the dashboard version's cards (ve_dashboard_cards) as the same tiles, from
+           renderVersion(). Five show, the rest scroll; the version switch sits beside the title. -->
+      <div class="dash-foryou-head"><p class="dash-section-title">For you</p>
+        <label class="dv-pick" for="dv-select" id="dv-pick" hidden>Your dashboard <select id="dv-select"></select></label></div>
       <div class="dash-action-list" id="dash-action-list">
       <!-- Set up your Guide (Sean, 2026-10-04): the first action item until it is done. The Guide gets
            to know the member (the Mission Survey, when they have not taken it; this replaced the survey's
@@ -779,7 +798,7 @@
            Community Manager sees. renderCmCertPrompt() shows it for community
            managers and superadmins and fills in their progress from ve-learn. -->
       <a href="/dashboard/certification" class="dash-tour-prompt" id="dash-cm-cert-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;">
-        <div class="dash-tour-prompt-icon">&#127891;</div>
+        <div class="dash-tour-prompt-icon ve-ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5L2 9zM6 11v5c3 2 9 2 12 0v-5"/></svg></div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title" id="dash-cm-cert-title">Start your Community Manager certification</div>
           <div class="dash-tour-prompt-desc" id="dash-cm-cert-desc">Your handbook as a course: nine short modules, each with a quick quiz. Pass them all to be certified.</div>
@@ -790,7 +809,7 @@
            happening in their city and review the stories it drafts. Shown with the
            certification card, by renderCmCertPrompt(). -->
       <a href="/dashboard/pulse-desk" class="dash-tour-prompt" id="dash-cm-pulse-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;">
-        <div class="dash-tour-prompt-icon">&#128240;</div>
+        <div class="dash-tour-prompt-icon ve-ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg></div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">Pulse Desk: what&rsquo;s happening in your city?</div>
           <div class="dash-tour-prompt-desc">Tell our assistant, typed or out loud. It drafts the story, you give it a final look and publish.</div>
@@ -800,7 +819,7 @@
       <!-- Community Manager tour (Sean 2026-10-03: "the tour format for other things"):
            dashboard, Certification and the Pulse Desk. public/ve-tour.js, tour 'cm'. -->
       <a href="/dashboard?tour=cm" class="dash-tour-prompt" id="dash-cm-tour-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;" onclick="if (window.VETour) { VETour.start('cm'); return false; }">
-        <div class="dash-tour-prompt-icon">&#129517;</div>
+        <div class="dash-tour-prompt-icon ve-ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4V8z"/></svg></div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">Take the Community Manager tour</div>
           <div class="dash-tour-prompt-desc">Your city, your certification, the Pulse Desk and your tools, in about a minute.</div>
@@ -811,7 +830,7 @@
            the status of my application?"). renderCmApplication() shows it to
            anyone who has applied. -->
       <a href="/community-managers/onboarding#join" class="dash-tour-prompt" id="dash-cm-app-prompt" style="display:none;border-color:#b8ddb9;background:#f4fbf4;">
-        <div class="dash-tour-prompt-icon">&#128203;</div>
+        <div class="dash-tour-prompt-icon ve-ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></svg></div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title" id="dash-cm-app-title">Your Community Manager application</div>
           <div class="dash-tour-prompt-desc" id="dash-cm-app-desc"></div>
@@ -819,7 +838,7 @@
         <div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>
       </a>
       <a href="/tour" class="dash-tour-prompt" id="dash-tour-prompt" onclick="openTour(); return false;">
-        <div class="dash-tour-prompt-icon">&#128075;</div>
+        <div class="dash-tour-prompt-icon ve-ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4V8z"/></svg></div>
         <div class="dash-tour-prompt-body">
           <div class="dash-tour-prompt-title">New here? Take the 60-second tour</div>
           <div class="dash-tour-prompt-desc">A quick look around your dashboard: your city, points, tabs, the Daily Pulse and your tools.</div>
@@ -842,23 +861,13 @@
            on this board yet -- a real data-quality gap in the existing
            location field, not something this tile can fabricate around. -->
       <div id="dash-leaderboard-block">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <p class="dash-section-title" style="margin-top:0;">Leaderboard</p>
-        <div class="dash-leaderboard-scope" id="dash-leaderboard-scope" role="tablist" aria-label="Leaderboard scope">
-          <button type="button" class="dash-lb-scope-btn" data-scope="city">This City</button>
-          <button type="button" class="dash-lb-scope-btn active" data-scope="global">Global</button>
-        </div>
-      </div>
+      <!-- One leaderboard for everyone (Sean, 2026-10-26: "take off this city and global, because people aren't really
+           locked to any particular community anymore"). On desktop it is as tall as For you and scrolls inside. -->
+      <div class="dash-lb-head"><p class="dash-section-title">Leaderboard</p></div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
       </div>
 
-      <!-- The version's own block (Sean, 2026-10-24: one dashboard, a version for each kind of member). renderVersion(). -->
-      <section id="dash-version" hidden aria-labelledby="dv-title">
-        <div class="dv-head"><p class="dash-section-title" id="dv-title"></p>
-          <label class="dv-pick" for="dv-select">Your dashboard <select id="dv-select"></select></label></div>
-        <div id="dv-body"></div>
-      </section>
 
       <!-- Everything else, three across (Sean, 2026-10-04). renderDashboardPreviews(). -->
       <div class="dash-home-overview">
@@ -941,7 +950,8 @@
       <div class="vear-layout"><div class="vear-main"><div class="dash-grid" id="dash-pulse-grid"></div></div><aside class="vear-rail" data-ad-page="pulse"></aside></div>
     </div>
 
-    <div id="dash-guides-section" style="display:none;margin-bottom:28px;">
+    <!-- Guides in the top menu (Sean, 2026-10-26: "that's going to be one of the big things that we're selling"), and in Your tools. -->
+    <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="0.5" data-tab-label="Guides">
       <p class="dash-eyebrow" style="margin-bottom:2px;">Guides</p>
       <p class="dash-section-title">Step-By-Step Guides</p>
       <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Practical guides for wherever you are on the journey. Unlock guides with Points as they publish.</p>
@@ -982,7 +992,9 @@
       </div>
     </div>
 
-    <div id="dash-tools-section" style="display:none;margin-bottom:28px;" data-tab-key="tools" data-tab-order="9" data-tab-label="Tools">
+    <!-- Tools left the menu (Sean, 2026-10-26): every tool is in Your tools on the Dashboard tab. The section stays as the
+         place a tool opens (Bounties, Campaigns, My List...), with "Dashboard" as the way back; its old picture tiles are hidden. -->
+    <div id="dash-tools-section" style="display:none;margin-bottom:28px;" data-tab-key="tools" data-tab-order="9" data-tab-label="Tools" data-tab-hidden="1">
     <!-- Section entry tiles (Sean, 2026-09-22): Bounties, Campaigns,
          Opportunities and Guides now live under Tools. These open the relocated
          sections in place via openToolSection(). Rendered by
@@ -2648,10 +2660,11 @@
       var tries = 0;
       function fitFive() {
         var r = list.querySelectorAll('.dash-leaderboard-row');
-        if (r.length > 5 && r[4].offsetHeight) list.style.maxHeight = (r[4].offsetTop + r[4].offsetHeight) + 'px';
+        if (r.length > 5 && r[4].offsetHeight) { list.dataset.five = (r[4].offsetTop + r[4].offsetHeight) + 'px'; if (!list.style.height) list.style.maxHeight = list.dataset.five; if (window.veSyncHome) window.veSyncHome(); }
         else if (r.length > 5 && ++tries < 30) setTimeout(fitFive, 500);
       }
       fitFive();
+      if (window.veSyncHome) setTimeout(window.veSyncHome, 0);
     }).catch(function () {
       list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Could not load the leaderboard right now.</p>';
     });
@@ -2853,8 +2866,8 @@
     var back = document.createElement('button');
     back.type = 'button';
     back.className = 'dash-crumb-back';
-    back.innerHTML = '&larr; Your Tools';
-    back.addEventListener('click', closeMyList);
+    back.innerHTML = '&larr; Dashboard';
+    back.addEventListener('click', closeMyList); back.addEventListener('click', toolsBackHome);
     var sep = document.createElement('span');
     sep.className = 'dash-crumb-sep';
     sep.textContent = '/';
@@ -2872,6 +2885,16 @@
     detail.innerHTML = '';
     detail.appendChild(iframe);
     detail.style.display = 'block';
+  }
+
+  // Tools has no page of its own (Sean, 2026-10-26): leaving a tool that opened there goes back to the Dashboard tab.
+  function toolsBackHome() {
+    if (document.body.getAttribute('data-dash-tab') === 'tools' && window.activateDashTab) window.activateDashTab('profile');
+  }
+  // Flat line icons (Sean, 2026-10-26), one colour, for For you and Your tools.
+  var FICONS = {'trophy': '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0V4zM17 5h3v2a3 3 0 01-3 3M7 5H4v2a3 3 0 003 3"/>', 'megaphone': '<path d="M3 11v3a1 1 0 001 1h2l5 4V6L6 10H4a1 1 0 00-1 1zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/>', 'target': '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>', 'book': '<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM4 19a2 2 0 012-2h13"/>', 'list': '<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>', 'pin': '<path d="M12 17v5M9 3h6l-1 6 3 3H7l3-3-1-6z"/>', 'compass': '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/>', 'eye': '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', 'link': '<path d="M10 14a4 4 0 005.66 0l3-3a4 4 0 00-5.66-5.66l-1 1M14 10a4 4 0 00-5.66 0l-3 3a4 4 0 005.66 5.66l1-1"/>', 'chart': '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>', 'sprout': '<path d="M12 20v-8M12 12c0-4 3-6 7-6 0 4-3 6-7 6zM12 14c0-3-2-5-6-5 0 3 2 5 6 5z"/>', 'box': '<path d="M3 7l9-4 9 4v10l-9 4-9-4V7zM3 7l9 4 9-4M12 11v10"/>', 'cap': '<path d="M2 9l10-5 10 5-10 5L2 9zM6 11v5c3 2 9 2 12 0v-5"/>', 'map': '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/>', 'bus': '<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 21v-4M16 21v-4"/>', 'play': '<circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4V8z"/>', 'news': '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/>', 'clipboard': '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>', 'heart': '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>', 'store': '<path d="M4 9l1-5h14l1 5M4 9h16v11H4V9zM9 20v-6h6v6"/>', 'star': '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/>'};
+  function FICON(name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (FICONS[name] || FICONS.star) + '</svg>';
   }
 
   function openMyList() {
@@ -2919,8 +2942,8 @@
     var back = document.createElement('button');
     back.type = 'button';
     back.className = 'dash-crumb-back';
-    back.innerHTML = '&larr; Your Tools';
-    back.addEventListener('click', closeChooseGuide);
+    back.innerHTML = '&larr; Dashboard';
+    back.addEventListener('click', closeChooseGuide); back.addEventListener('click', toolsBackHome);
     var sep = document.createElement('span');
     sep.className = 'dash-crumb-sep';
     sep.textContent = '/';
@@ -2971,8 +2994,8 @@
   var TOOL_SECTIONS = [
     { id: 'dash-bounties-section', key: 'bounties', label: 'Bounties', img: '/public/dashboard/tools/tools-bounties.jpg', icon: '🏆', bg: 'linear-gradient(135deg,#F69820,#e07b00)', desc: 'Campaigns in your city: take on a job and earn points.' },
     { id: 'dash-campaigns-section', key: 'campaigns', label: 'Your Campaigns', img: '/public/dashboard/tools/tools-campaigns.jpg', icon: '📣', bg: 'linear-gradient(135deg,#8B5CF6,#6D28D9)', desc: 'Campaigns you can attend, sponsor, or volunteer for.' },
-    { id: 'dash-opportunities-section', key: 'opportunities', label: 'Your Opportunities', img: '/public/dashboard/tools/tools-opportunities.jpg', icon: '🎯', bg: 'linear-gradient(135deg,#0EA5E9,#0369A1)', desc: 'Ways to get involved and lead in your city.' },
-    { id: 'dash-guides-section', key: 'guides', label: 'Guides', img: '/public/dashboard/tools/tools-guides.jpg', icon: '📚', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', desc: 'Step-by-step guides for wherever you are on the journey.' }
+    { id: 'dash-opportunities-section', key: 'opportunities', label: 'Your Opportunities', img: '/public/dashboard/tools/tools-opportunities.jpg', icon: '🎯', bg: 'linear-gradient(135deg,#0EA5E9,#0369A1)', desc: 'Ways to get involved and lead in your city.' }
+    // Guides became a tab of its own in the top menu (Sean, 2026-10-26).
   ];
   var dashToolSectionPrevLayout = null;
 
@@ -3017,8 +3040,8 @@
     target.style.display = 'block';
     crumb.innerHTML = '';
     var back = document.createElement('button');
-    back.type = 'button'; back.className = 'dash-crumb-back'; back.innerHTML = '&larr; Tools';
-    back.addEventListener('click', closeToolSection);
+    back.type = 'button'; back.className = 'dash-crumb-back'; back.innerHTML = '&larr; Dashboard';
+    back.addEventListener('click', closeToolSection); back.addEventListener('click', toolsBackHome);
     var sep = document.createElement('span'); sep.className = 'dash-crumb-sep'; sep.textContent = '/';
     var cur = document.createElement('span'); cur.className = 'dash-crumb-current'; cur.textContent = label || 'Section';
     crumb.appendChild(back); crumb.appendChild(sep); crumb.appendChild(cur);
@@ -3081,7 +3104,7 @@
     crumb.innerHTML = '';
     var back = document.createElement('button');
     back.type = 'button'; back.className = 'dash-crumb-back'; back.innerHTML = '&larr; Dashboard';
-    back.addEventListener('click', closeConsoleFrame);
+    back.addEventListener('click', closeConsoleFrame); back.addEventListener('click', toolsBackHome);
     var sep = document.createElement('span'); sep.className = 'dash-crumb-sep'; sep.textContent = '/';
     var cur = document.createElement('span'); cur.className = 'dash-crumb-current'; cur.textContent = label || '';
     crumb.appendChild(back); crumb.appendChild(sep); crumb.appendChild(cur);
@@ -3177,7 +3200,7 @@
     if (detail) detail.style.display = 'none';
     var wasBounties = !!(host && host.querySelector('iframe[src^="/bounties"]'));
     if (host) host.innerHTML = '';
-    if (wasBounties && /^\/dashboard\/bounties/.test(location.pathname)) history.replaceState({ tabKey: 'tools' }, '', '/dashboard/tools');
+    if (wasBounties && /^\/dashboard\/bounties/.test(location.pathname)) history.replaceState({ tabKey: 'profile' }, '', '/dashboard');
   }
   window.closeConsoleFrame = closeConsoleFrame;
   // Every internal link opens in the window (Sean, 2026-10-04: newer sections still opened the
@@ -3267,7 +3290,7 @@
   }
   function dpAccessCard(c) {
     var card = document.createElement('a'); card.className = 'dash-preview-card'; card.href = '#';
-    card.innerHTML = '<div class="dash-preview-icon" style="background:' + c.bg + ';">' + c.icon + '</div>' +
+    card.innerHTML = '<div class="dash-preview-icon ve-ficon">' + FICON(c.icon) + '</div>' +
       '<div class="dash-preview-head" style="margin-bottom:6px;"><span class="dash-preview-title">' + c.title + '</span><span class="dash-preview-viewall">Open →</span></div>' +
       '<div class="dash-preview-desc">' + c.desc + '</div>';
     card.addEventListener('click', function (e) { e.preventDefault(); c.fn(); });
@@ -3279,12 +3302,12 @@
     var list = document.getElementById('dash-action-list'), empty = document.getElementById('dash-action-empty');
     var more = document.getElementById('dash-action-more');
     if (!list || !empty) return;
-    var SHOW = 3; // Three show; the rest scroll inside the box (Sean, 2026-10-04).
+    var SHOW = 5; // Five show; the rest scroll inside the box (Sean, 2026-10-26; three since 2026-10-04).
     function check() {
       var cards = Array.prototype.filter.call(list.children, function (c) { return c !== empty && getComputedStyle(c).display !== 'none'; });
       var any = cards.length > 0;
       if (empty.hidden !== any) empty.hidden = any; // only on a real change, or the observer would loop
-      // Cap the height at the bottom of the third card. Every write is guarded the same way.
+      // Cap the height at the bottom of the fifth card. Every write is guarded the same way.
       var capped = cards.length > SHOW && cards[SHOW - 1].offsetHeight > 0;
       var h = capped ? (cards[SHOW - 1].offsetTop + cards[SHOW - 1].offsetHeight) + 'px' : '';
       if (list.classList.contains('is-capped') !== capped) list.classList.toggle('is-capped', capped);
@@ -3294,7 +3317,33 @@
         if (more.textContent !== txt) more.textContent = txt;
         if (more.hidden !== !capped) more.hidden = !capped;
       }
+      syncHome(cards, capped ? cards[SHOW - 1].offsetTop + cards[SHOW - 1].offsetHeight : 0);
     }
+    // For you and the Leaderboard are the same height on desktop (Sean, 2026-10-26: "so both of them are equal in
+    // height, and they could be a scroll if they go past"): the taller of five tiles and five leaderboard rows, and
+    // each scrolls inside past that. Stacked on a phone, each keeps its own five.
+    var lastCards = [], lastCap = 0;
+    function syncHome(cards, capH) {
+      if (cards) { lastCards = cards; lastCap = capH; } else { cards = lastCards; capH = lastCap; }
+      var lb = document.getElementById('dash-leaderboard-list'); if (!lb) return;
+      var wide = window.innerWidth > 900 && list.offsetHeight > 0 && lb.offsetHeight > 0;
+      if (!wide) {
+        if (list.style.minHeight) list.style.minHeight = '';
+        if (lb.style.height) lb.style.height = '';
+        var five = lb.dataset.five || '';
+        if (lb.style.maxHeight !== five) lb.style.maxHeight = five;
+        return;
+      }
+      var own = capH;
+      if (!own) cards.concat(empty.hidden ? [] : [empty]).forEach(function (c) { own = Math.max(own, c.offsetTop + c.offsetHeight + (parseFloat(getComputedStyle(c).marginBottom) || 0)); });
+      var H = Math.max(own, parseFloat(lb.dataset.five) || 265);
+      var minH = Math.round(H) + 'px';
+      if (list.style.minHeight !== minH) list.style.minHeight = minH;
+      var lbH = Math.round(list.getBoundingClientRect().top + H - lb.getBoundingClientRect().top) + 'px';
+      if (lb.style.maxHeight !== 'none') lb.style.maxHeight = 'none';
+      if (lb.style.height !== lbH) lb.style.height = lbH;
+    }
+    window.veSyncHome = function () { syncHome(); };
     if (window.MutationObserver) new MutationObserver(function (records) {
       if (records.some(function (r) { return r.target !== empty && r.target !== list; })) check();
     }).observe(list, { attributes: true, subtree: true, attributeFilter: ['style', 'hidden', 'class'] });
@@ -3303,6 +3352,7 @@
     // check() only writes on a real change, so its own max-height write settles after one pass.
     if (window.ResizeObserver) {
       var ro = new ResizeObserver(function () { check(); });
+      list._ro = ro;
       ro.observe(list);
       Array.prototype.forEach.call(list.children, function (c) { ro.observe(c); });
     }
@@ -3310,7 +3360,7 @@
 
   // ---- Your dashboard's version (Sean, 2026-10-24; docs/proposals/member-dashboards.md). ve-dashboard home gives the
   // version (the member's choice, else worked out from the listings they own and their Mission Survey answers), their
-  // listings and the What's new cards for it (ve_dashboard_cards). The block sits after Action items; the switch saves.
+  // listings and the What's new cards for it (ve_dashboard_cards). They are For you tiles (2026-10-26); the switch sits beside the For you title and saves.
   var DASH_VERSION = 'member';
   var DASH_TOOLS_FIRST = { business: ['Opportunities', 'Campaigns', 'Community Board'], pre_vegan: ['Guides', 'Community Board', 'Communities'],
     coach: ['Bounties', 'Opportunities', 'Community Board'], member: [] };
@@ -3320,14 +3370,24 @@
     return fetch(SUPABASE_URL + '/functions/v1/ve-dashboard', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); }).catch(function () { return null; });
   }
-  function dvCard(c, cls) {
-    return '<a class="dv-card' + (cls ? ' ' + cls : '') + '" href="' + dvEsc(c.cta_url || '#') + '">' + (c.tag ? '<span class="dv-tag">' + dvEsc(c.tag) + '</span>' : '') +
-      '<b>' + dvEsc(c.title) + '</b><p>' + dvEsc(c.body) + '</p><span class="dv-go">' + dvEsc(c.cta_label || 'Open') + ' &rarr;</span></a>';
+  // A version's cards are For you tiles (Sean, 2026-10-26), the same tile as Set up your Guide, with a flat icon.
+  function dvIcon(c) {
+    var u = String(c.cta_url || '');
+    return /bount/.test(u) ? 'trophy' : /\?tab=brand|claim/.test(u) ? 'store' : /pd=menu/.test(u) ? 'list' : /audit/.test(u) ? 'chart'
+      : /\/dashboard\/guide\b/.test(u) ? 'compass' : /guides/.test(u) ? 'book' : /directory/.test(u) ? 'heart' : /board/.test(u) ? 'pin'
+      : /pulse/.test(u) ? 'news' : 'star';
+  }
+  function dvTile(c, iconHtml, tag) {
+    return '<a class="dash-tour-prompt dv-tile" href="' + dvEsc(c.cta_url || '#') + '"><div class="dash-tour-prompt-icon ve-ficon">' + iconHtml + '</div>' +
+      '<div class="dash-tour-prompt-body"><div class="dash-tour-prompt-title">' + dvEsc(c.title) + (tag ? ' <span class="dv-tag">' + dvEsc(tag) + '</span>' : '') + '</div>' +
+      '<div class="dash-tour-prompt-desc">' + dvEsc(c.body) + '</div></div><div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div></a>';
   }
   function renderVersion(member) {
-    var box = document.getElementById('dash-version'); if (!box) return;
+    var list = document.getElementById('dash-action-list'); if (!list) return;
     dvCall({ action: 'home' }).then(function (d) {
-      if (!d || !d.ok) { box.hidden = true; return; }
+      Array.prototype.forEach.call(list.querySelectorAll('.dv-tile'), function (t) { t.remove(); });
+      var pick = document.getElementById('dv-pick');
+      if (!d || !d.ok) { if (pick) pick.hidden = true; return; }
       DASH_VERSION = d.version;
       var sel = document.getElementById('dv-select');
       sel.innerHTML = d.versions.map(function (v) { return '<option value="' + v.k + '"' + (v.k === d.version ? ' selected' : '') + '>' + dvEsc(v.label) + (v.k === d.auto ? ' (suggested)' : '') + '</option>'; }).join('');
@@ -3336,26 +3396,48 @@
         // Picking the worked-out one again clears the choice, so it follows them if their listings or answers change.
         dvCall({ action: 'set_version', version: sel.value === d.auto ? null : sel.value }).then(function () { sel.disabled = false; renderVersion(member); });
       };
-      document.getElementById('dv-title').textContent = DV_TITLE[d.version] || 'For you';
+      if (pick) pick.hidden = false;
       var wiz = d.cards.filter(function (c) { return c.kind === 'wizard'; }), news = d.cards.filter(function (c) { return c.kind !== 'wizard'; });
-      var TAG = { wizard: 'Try it', offer: 'Offer', tip: 'Tip', new: 'New' }, out = '';
-      // Each listing they own opens its business dashboard (/directory/<slug>?tab=brand, /public/ve-partner-dashboard.js).
-      var biz = d.version !== 'business' ? '' : d.listings.length ? d.listings.map(function (l) {
-          return dvCard({ title: l.name, body: 'Your numbers, your page and menu, ads, campaigns and the audit, on your page.', cta_label: 'Open your business dashboard', cta_url: '/directory/' + encodeURIComponent(l.slug) + '?tab=brand', tag: l.claim_status === 'verified' ? 'Yours' : 'Waiting for approval' }, 'dv-biz');
-        }).join('') : dvCard({ title: 'Is your business in the Directory?', body: 'Find it and claim it, or add it. Your business dashboard opens on your page.', cta_label: 'Join the Directory', cta_url: '/claim' }, 'dv-biz');
-      if (d.version === 'pre_vegan' && wiz.length) {
-        // Start here: the steps in order, then anything new.
-        out = '<div class="dv-grid">' + wiz.map(function (c, i) {
-          return '<a class="dv-card" href="' + dvEsc(c.cta_url || '#') + '"><div class="dv-step"><i>' + (i + 1) + '</i><div><b>' + dvEsc(c.title) + '</b><p>' + dvEsc(c.body) + '</p></div></div><span class="dv-go">' + dvEsc(c.cta_label || 'Open') + ' &rarr;</span></a>';
-        }).join('') + '</div>' + (news.length ? '<h4>What\'s new</h4><div class="dv-grid">' + news.map(function (c) { return dvCard(Object.assign({ tag: TAG[c.kind] || 'New' }, c)); }).join('') + '</div>' : '');
-      } else {
-        // Everything in one grid, cards across: their listings, then what to try, then what is new.
-        out = '<div class="dv-grid">' + biz + wiz.concat(news).map(function (c) { return dvCard(Object.assign({ tag: TAG[c.kind] || 'New' }, c)); }).join('') + '</div>';
-      }
-      document.getElementById('dv-body').innerHTML = out;
-      box.hidden = false;
+      var TAG = { offer: 'Offer' }, out = '';
+      // Business: each listing they own opens its business dashboard (/directory/<slug>?tab=brand), else Join the Directory.
+      if (d.version === 'business') out += d.listings.length ? d.listings.map(function (l) {
+          return dvTile({ title: l.name, body: 'Your numbers, your page and menu, ads, campaigns and the audit.', cta_url: '/directory/' + encodeURIComponent(l.slug) + '?tab=brand' }, FICON('store'), l.claim_status === 'verified' ? 'Yours' : 'Waiting for approval');
+        }).join('') : dvTile({ title: 'Is your business in the Directory?', body: 'Find it and claim it, or add it. Your business dashboard opens on your page.', cta_url: '/claim' }, FICON('store'));
+      // Just starting: the steps in order, numbered; everyone else gets an icon.
+      out += wiz.map(function (c, i) { return dvTile(c, d.version === 'pre_vegan' ? '<b>' + (i + 1) + '</b>' : FICON(dvIcon(c)), TAG[c.kind]); }).join('');
+      out += news.map(function (c) { return dvTile(c, FICON(dvIcon(c)), TAG[c.kind]); }).join('');
+      var tmp = document.createElement('div'); tmp.innerHTML = out;
+      var empty = document.getElementById('dash-action-empty');
+      while (tmp.firstChild) list.insertBefore(tmp.firstChild, empty);
+      if (window.ResizeObserver && list._ro) Array.prototype.forEach.call(list.querySelectorAll('.dv-tile'), function (t) { list._ro.observe(t); });
       if (!member.is_superadmin) renderDashboardPreviews(member);
     });
+  }
+
+  // Every tool a member has, as Your tools cards with flat icons (Sean, 2026-10-26: the Tools tab's tools moved here and
+  // the tab left the menu; Guides is also a tab of its own). Staff also get the Community Manager tools.
+  function memberTools(member, admin) {
+    var staff = admin || member.ve_role === 'community_manager';
+    var t = [
+      { icon: 'trophy', title: 'Bounties', desc: 'Campaigns in your city: take on a job and earn points.', fn: function () { openBounties(''); } },
+      { icon: 'book', title: 'Guides', desc: 'Step-by-step Guides for your journey, $11 or 1,100 points each.', fn: function () { if (window.activateDashTab) activateDashTab('guides'); } },
+      { icon: 'megaphone', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
+      { icon: 'target', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
+      { icon: 'list', title: 'My List', desc: "Every listing you've saved from the Directory.", fn: function () { if (window.activateDashTab) activateDashTab('tools'); openMyList(); } },
+      { icon: 'pin', title: 'Community Board', desc: 'Ask your city and find who can help.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }
+    ];
+    if (admin || (member.ve_tier && member.ve_tier !== 'free')) {
+      t.push({ icon: 'compass', title: 'Choose Your Guide', desc: 'Pick a dedicated guide to walk with you. A Passport benefit.', fn: function () { if (window.activateDashTab) activateDashTab('tools'); openChooseGuide(); } });
+    }
+    if (!admin && member.ve_role === 'community_manager') t.push({ icon: 'eye', title: 'Secret Shopper', desc: 'Restaurant visits in your city: set the day, then write the report.', fn: function () { openShopper(''); } });
+    if (staff) {
+      t.push({ icon: 'cap', title: 'Certification', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', fn: function () { openConsoleFrame('/dashboard/certification', 'Certification'); } });
+      t.push({ icon: 'map', title: 'Passport Challenge', desc: 'Coming 2027. Preview the monthly stamp challenge: local Vegan spots, a stamp at each.', fn: function () { openConsoleFrame('/passport/challenge', 'Passport Challenge'); } });
+      t.push({ icon: 'bus', title: 'Vegans Explore Tours', desc: 'Coming 2027. Preview the monthly tasting tour: three restaurants and an attraction.', fn: function () { openConsoleFrame('/tours', 'Vegans Explore Tours'); } });
+    }
+    t.push({ icon: 'map', title: 'Communities', desc: 'Explore and join Vegans Explore communities.', fn: function () { if (window.activateDashTab) activateDashTab('communities'); } });
+    if (member.membership_status === 'active' && !window.VE_PREVIEW) t.push({ icon: 'sprout', title: 'Contribute', desc: 'Give again any time, from $11. A contribution to the community, never a donation.', fn: function () { openContribute(); } });
+    return t;
   }
 
   function renderDashboardPreviews(member) {
@@ -3398,27 +3480,18 @@
           dpRows(body, rows, function (a) { return { name: a.name || a.email || 'Applicant', meta: a.email && a.name ? a.email : dpDate(a.created_at) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
-      grid.appendChild(dpAccessCard({ icon: '📌', bg: '#EAF7EA', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }));
-      grid.appendChild(dpAccessCard({ icon: '🕵️', bg: '#F1EBFE', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } }));
-      grid.appendChild(dpAccessCard({ icon: '🔗', bg: '#FEF0DD', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } }));
-      grid.appendChild(dpAccessCard({ icon: '📊', bg: '#EAF7EA', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
+      grid.appendChild(dpAccessCard({ icon: 'box', title: 'The Depot', desc: 'Media, onboarding, the Pulse desk and every admin tool.', fn: function () { openConsoleFrame('/admin/depot', 'The Depot'); } }));
+      grid.appendChild(dpAccessCard({ icon: 'pin', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }));
+      grid.appendChild(dpAccessCard({ icon: 'eye', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } }));
+      grid.appendChild(dpAccessCard({ icon: 'link', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } }));
+      grid.appendChild(dpAccessCard({ icon: 'chart', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
+      // Everything that was on the Tools tab is here too (Sean, 2026-10-26).
+      memberTools(member, true).forEach(function (c) { if (c.title !== 'Community Board') grid.appendChild(dpAccessCard(c)); });
       return;
     }
 
-    // Non-superadmin: access/preview cards for their tools.
-    var access = [
-      { icon: '🏆', bg: '#FEF0DD', title: 'Bounties', desc: 'Campaigns in your city: take on a job and earn points.', fn: function () { openBounties(''); } },
-      { icon: '📣', bg: '#F1EBFE', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
-      { icon: '🎯', bg: '#E0F2FE', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
-      { icon: '📚', bg: '#E8F8EF', title: 'Guides', desc: 'Step-by-step guides for your journey.', fn: function () { gotoToolSection('dash-guides-section', 'Guides'); } },
-      { icon: '📋', bg: '#E0F7FA', title: 'My List', desc: "Every listing you've saved from the Directory.", fn: function () { if (window.activateDashTab) activateDashTab('tools'); openMyList(); } },
-      { icon: '📌', bg: '#EAF7EA', title: 'Community Board', desc: 'Ask your city and find who can help.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }
-    ];
-    if (member.ve_tier && member.ve_tier !== 'free') {
-      access.push({ icon: '🧭', bg: '#E8F8EF', title: 'Choose Your Guide', desc: 'Pick a dedicated guide to walk with you. A Passport benefit.', fn: function () { if (window.activateDashTab) activateDashTab('tools'); openChooseGuide(); } });
-    }
-    if (member.ve_role === 'community_manager') access.push({ icon: '🕵️', bg: '#F1EBFE', title: 'Secret Shopper', desc: 'Restaurant visits in your city: set the day, then write the report.', fn: function () { openShopper(''); } });
-    access.push({ icon: '🌆', bg: '#F1EBFE', title: 'Communities', desc: 'Explore and join Vegans Explore communities.', fn: function () { if (window.activateDashTab) activateDashTab('communities'); } });
+    // Everyone else: their tools, the version's first (renderVersion sets DASH_VERSION and draws this again).
+    var access = memberTools(member, false);
     // The version's tools come first (renderVersion sets DASH_VERSION and draws this again).
     var first = DASH_TOOLS_FIRST[DASH_VERSION] || [], rank = function (c) { var i = first.indexOf(c.title); return i < 0 ? 99 : i; };
     access.map(function (c, i) { return [rank(c), i, c]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).forEach(function (x) { grid.appendChild(dpAccessCard(x[2])); });
@@ -3478,7 +3551,7 @@
     // DOM order (stable sort, index as tiebreaker) for any future section
     // that doesn't carry the attribute yet, so this never silently drops one.
     sections = sections
-      .map(function (s, i) { return { el: s, order: parseInt(s.getAttribute('data-tab-order'), 10), i: i }; })
+      .map(function (s, i) { return { el: s, order: parseFloat(s.getAttribute('data-tab-order')), i: i }; })
       .sort(function (a, b) { return (isNaN(a.order) ? a.i + 1000 : a.order) - (isNaN(b.order) ? b.i + 1000 : b.order); })
       .map(function (x) { return x.el; });
     var tabBar = document.getElementById('dash-tabs');
@@ -3558,6 +3631,7 @@
       if (/^\/dashboard\/guide\/?$/.test(location.pathname)) { openGuide(location.search, true); return; }
       if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) { openShopper(location.hash, true); return; }
       var key = (e.state && e.state.tabKey) || tabKeyFromPath() || sections[0].getAttribute('data-tab-key');
+      if (key === 'tools' && !(e.state && e.state.frame)) key = 'profile'; // Tools is no longer a page of its own
       activate(key, { skipHistory: true });
     });
 
@@ -3566,7 +3640,9 @@
     // first tab, same as before. skipHistory avoids stacking a duplicate
     // history entry on top of the page the visitor actually landed on.
     var landedOnBounties = /^\/dashboard\/bounties\/?$/.test(location.pathname) ? location.search : null;
-    activate(tabKeyFromPath() || sections[0].getAttribute('data-tab-key'), { skipHistory: true });
+    var landKey = tabKeyFromPath();
+    if (landKey === 'tools') landKey = 'profile'; // /dashboard/tools: the tools are on the Dashboard tab now (2026-10-26)
+    activate(landKey || sections[0].getAttribute('data-tab-key'), { skipHistory: true });
     if (landedOnBounties !== null) openBounties(landedOnBounties, true);
     if (/^\/dashboard\/guide\/?$/.test(location.pathname)) openGuide(location.search, true);
     if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) openShopper(location.hash, true);
@@ -3722,7 +3798,6 @@
     renderCityPill(member);
     initViewAsControl();
     renderLeaderboard(member);
-    initLeaderboardScope(member);
     renderDirectory(member);
     renderEventsTab(member);
     renderDailyPulse(member);
