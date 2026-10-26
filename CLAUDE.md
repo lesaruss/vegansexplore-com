@@ -561,7 +561,13 @@ Products is Fitness and Athletics, Clothing and Fashion, Beauty and Personal Car
 retired** (its three listings were re-filed the same day; an old `Brands` row still shows under Products > All). Change these
 together: `CAT_MAP` and `CAT_CONFIG` in `ve-region-directory.js`, `SECTIONS` in `ve-listing-admin.js`, `KINDS` in Directory
 review, `CATEGORIES` in `ve-claims`, `LISTING_CATEGORIES` in `ve-outreach`, `CATEGORIES` in `ve-discover`, `FOOD_CATS` in
-`directory/listing.html` and `CATS` in `claim.html`. A sub-section can have its own filters
+`directory/listing.html` and `CATS` in `claim.html`. **Brands that vend** (Sean, 2026-10-26: many sell nationally online "but
+they still show up at... farmers markets and special events, festivals... a tool for promoters who are looking to find vendors"):
+a Food Brands or Nutrition & Supplements listing with Food Trucks & Vendors in its extra categories (the listing editor's Also show
+it under, with a note saying so) stays in its brand section, also shows under Food Trucks & Vendors with the location filter, and
+its card reads **Markets & events** (`vendsAt` in `ve-region-directory.js`). In the brand sections, **Where they sell**
+(Everywhere, At markets and events, Online and in stores only) filters them, and At markets and events brings the location
+filter back. Vetting goes by the main category only, so a vending brand never lands in Being vetted. A sub-section can have its own filters
 (`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make, never by city (`listings.product_kinds`:
 dairy, meat, egg, seafood, snacks, drinks, protein, pantry, baked, frozen; set in the listing editor; migration
 `20261024_listing_product_kinds.sql`), **Markets** by national chain (tag `ve-grocery-store`) or local market.

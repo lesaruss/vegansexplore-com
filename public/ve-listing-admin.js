@@ -175,6 +175,7 @@
       '<label class="h">Main section</label><div class="chips" id="vla-sec">' + SECTIONS.map(function (s) { return chip('radio', 'vla-sec', s[0], s[0], s[0] === sec); }).join('') + '</div>' +
       '<label class="h" for="vla-sub">Sub-section</label><select id="vla-sub"></select>' +
       '<label class="h">Also show it under</label><div class="chips" id="vla-extra"></div>' +
+      '<div class="note" id="vla-vends-note" hidden>Sells at markets, festivals or events too? Tick Food Trucks &amp; Vendors: it stays in its brand section, shows with the vendors, and its card reads Markets &amp; events.</div>' +
       '<div id="vla-cuis-wrap"><label class="h">What kind of food (up to four)</label><div class="chips">' + CUISINES.map(function (k) { return chip('checkbox', 'vla-cuis', k[0], k[1], (l.cuisines || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
       '<div id="vla-kinds-wrap"><label class="h">What they make</label><div class="chips">' + KINDS.map(function (k) { return chip('checkbox', 'vla-kind', k[0], k[1], (l.product_kinds || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
 
@@ -215,6 +216,7 @@
       $('#vla-cuis-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; }))
         .every(function (c) { return FOOD_PLACES.indexOf(c) < 0; });
       syncVet();
+      $('#vla-vends-note').hidden = ['Food Brands', 'Nutrition & Supplements'].indexOf(cur) < 0;
       $('#vla-kinds-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; })).indexOf('Food Brands') < 0;
     }
     // The vetted switch only matters for a Vegan-friendly or Vegan-options food place (the rule in /public/ve-trust.js).

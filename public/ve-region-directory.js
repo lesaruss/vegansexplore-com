@@ -134,6 +134,7 @@
     + '.vrd-root .vrd-vegan-fully{background:#e3f6e7;color:#1f6b33}'
     + '.vrd-root .vrd-vegan-friendly{background:#f0f0f0;color:#555}'
     + '.vrd-root .vrd-vegan-options{background:#f5f1e8;color:#6b5a2e}'
+    + '.vrd-root .vrd-vends{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;background:#e8eefb;color:#23408e;white-space:nowrap}'
     + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#1f5f22;color:#fff;vertical-align:2px;white-space:nowrap}'
     + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
     + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
@@ -205,7 +206,9 @@
       '<select aria-label="Filter by kind of food" class="sort-select" data-vrd-cuisine="' + cat.key + '"><option value="">All</option>' +
       CUISINES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
       '<span class="vrd-sub" data-sub-for="chain" hidden><span class="geo-label">Stores</span>' +
-      '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>';
+      '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>' +
+      '<span class="vrd-sub" data-sub-for="sells" hidden><span class="geo-label">Where they sell</span>' +
+      '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Everywhere</option><option value="1">At markets and events</option><option value="0">Online and in stores only</option></select></span>';
     return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + perpageHtml + '</div>';
   }
 
@@ -267,6 +270,12 @@
     (l.extra_categories || []).forEach(function (c) { if (c && out.indexOf(c) < 0) out.push(c); });
     return out;
   }
+  // A brand that also sells in person (Sean, 2026-10-26: "they still show up at vendor... farmers markets and special events,
+  // festivals... a tool for promoters who are looking to find vendors"): a Food Brand or Nutrition & Supplements listing that
+  // is also under Food Trucks & Vendors (extra_categories). It stays in its brand section and shows with the vendors too.
+  var BRAND_SUBS = ['Food Brands', 'Nutrition & Supplements'];
+  function vendsAt(l) { return BRAND_SUBS.indexOf(l.category) >= 0 && sectionsOf(l).indexOf('Food Trucks & Vendors') >= 0; }
+  function vendsTag(l) { return vendsAt(l) ? ' <span class="vrd-vends" title="Also sells at markets, festivals and events">Markets &amp; events</span>' : ''; }
   // How Vegan, as a filter key and a label on the card (fully Vegan also covers the older 'vegan').
   var VEGAN_KEY = { fully_vegan: 'fully', vegan: 'fully', vegan_friendly: 'friendly', vegan_options: 'options' };
   var VEGAN_LABEL = { fully: '100% Vegan', friendly: 'Vegan-friendly', options: 'Vegan options' };
@@ -333,7 +342,7 @@
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
-      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + '</div>' + vettingNote(l) + '</div>' +
+      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + vendsTag(l) + '</div>' + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
@@ -368,7 +377,7 @@
     ['ethiopian', 'Ethiopian'], ['african', 'African'], ['indian', 'Indian'], ['thai', 'Thai'], ['chinese', 'Chinese'], ['japanese', 'Japanese & sushi'],
     ['korean', 'Korean'], ['vietnamese', 'Vietnamese'], ['asian', 'Pan-Asian'], ['burgers', 'Burgers & fast food'], ['bowls', 'Bowls & salads'],
     ['raw', 'Raw & juice bar'], ['brunch', 'Breakfast & brunch'], ['desserts', 'Desserts & sweets'], ['global', 'Global mix']];
-  var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true }, 'Nutrition & Supplements': { geo: false }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
+  var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
     'Food Trucks & Vendors': { cuisine: true }, 'Catering': { cuisine: true } };
   // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
   function hubsOf(l) {
@@ -384,7 +393,7 @@
     return out.join('|');
   }
   function extraAttrs(l) {
-    return ' data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '"';
+    return ' data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '" data-vends="' + (vendsAt(l) ? 1 : 0) + '"';
   }
 
   // Optional in-frame open (2026-09-07, Logan, Sean direction): a caller
@@ -530,7 +539,9 @@
       var on = !!sf[w.dataset.subFor]; w.hidden = !on;
       if (!on) { var s = w.querySelector('select'); if (s) s.value = ''; }
     });
-    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = sf.geo === false;
+    // Brands sell everywhere, so no location filter, until a promoter looks for the ones at markets and events.
+    var sells = bar.querySelector('[data-vrd-sells]');
+    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = sf.geo === false && !(sf.sells && sells && sells.value === '1');
   }
 
   function applyPanelFilters(panel, state, resetPage) {
@@ -557,7 +568,8 @@
     var kindSel = bar ? bar.querySelector('[data-vrd-kind]') : null, kind = sf.kind && kindSel ? kindSel.value : '';
     var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
     var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
-    if (sf.geo === false) { city = ''; county = ''; region = ''; }
+    var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells && sellsSel ? sellsSel.value : '';
+    if (sf.geo === false && sells !== '1') { city = ''; county = ''; region = ''; }
     // Search is scoped to this panel/category only (2026-09-07, Logan, Sean
     // correction) -- each panel has its own [data-vrd-search] input now.
     var searchInput = panel.querySelector('[data-vrd-search]');
@@ -574,6 +586,7 @@
       if (kind && (card.dataset.kinds || '').split('|').indexOf(kind) < 0) geoOk = false;
       if (chain && card.dataset.chain !== chain) geoOk = false;
       if (cuisine && (card.dataset.cuisines || '').split('|').indexOf(cuisine) < 0) geoOk = false;
+      if (sells && card.dataset.vends !== sells) geoOk = false;
       var typeOk = type ? (card.dataset.listingType === type) : (card.dataset.listingType !== 'closed');
       var searchOk = !searchTerm ||
         (card.dataset.name || '').toLowerCase().indexOf(searchTerm) > -1 ||
@@ -691,8 +704,8 @@
         applyPanelFilters(sel.closest('.board-panel'), state, true);
       });
     });
-    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine]').forEach(function (sel) {
-      sel.addEventListener('change', function () { applyPanelFilters(sel.closest('.board-panel'), state, true); });
+    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells]').forEach(function (sel) {
+      sel.addEventListener('change', function () { var panel = sel.closest('.board-panel'); if (sel.hasAttribute('data-vrd-sells')) syncSubFilters(panel); applyPanelFilters(panel, state, true); });
     });
 
     root.querySelectorAll('[data-vrd-city]').forEach(function (sel) {
