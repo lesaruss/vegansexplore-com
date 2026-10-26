@@ -834,6 +834,14 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   Guide is about (Maya: a glass of oat milk and a carton reading only OAT), every finger in frame, no other words. Made in
   Higgsfield (nano_banana_pro, 16:9, cropped to 16:10) from the Guide's current art, stored as
   `vegan-media/media/guides/banners/<guide-slug>.jpg`. The other Guides follow this look, each with its own Guide.
+- **The Guide list is one file** (Sean, 2026-10-26: the dashboard should mimic "what we currently have on the main guides
+  page"): `/public/ve-guide-catalog.js` (`VEGuideCatalog.render(el, {member, source, open})`) draws the cards on `/guides` and
+  the dashboard's Guides tab. In order: the **Welcome Guide** (free, opens the Passport Guide at `/passport`; its banner is Liz's
+  waving mid shot on white, `/public/guides/welcome-guide.jpg`, made from her square art with no new Higgsfield credits), the
+  Vegan Dairy Guide, the Vegan Restaurant Survival Guide, then the Guides still being made: the **Vegan Meat Alternatives
+  Guide** (added 2026-10-26), Entrepreneur, Creator, Nonprofit, Pre-Vegan and Seasoned Vegan. Live Guides wear their banner;
+  the ones being made wear a flat line icon, say Coming soon with Notify me (`member_interest`, `guide-waitlist-<slug>`), and
+  show to signed-in members only. Choose Your Topics (mini-guides) was taken off. Add or change a Guide card there.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
