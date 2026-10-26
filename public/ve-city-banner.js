@@ -11,7 +11,8 @@
        title: 'Vegan Events',         // the big line; the city name (or allLabel) goes under it
        sub: 'One line about the page.',
        allTitle: 'Every City', allLabel: 'All cities',
-       onChange: function (slug, hub) {}   // runs at mount and on every pick ('' is all cities)
+       onChange: function (slug, hub) {},  // runs at mount and on every pick ('' is all cities)
+       action: { label: 'Submit an event', onClick: function () {} }   // optional: the page's own button, beside View community
      });
      banner.autoFold();   // call on the first click into the page's content: folds unless the visitor chose
      banner.set('atlanta'); banner.setQuiet('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
@@ -42,23 +43,31 @@
     '.vcb-pick select{appearance:none;-webkit-appearance:none;-moz-appearance:none;font-family:inherit;font-size:13px;font-weight:800;color:#fff;background:rgba(0,0,0,.55) ' + CHEVRON + ' no-repeat right 16px center;border:1.5px solid rgba(255,255,255,.5);border-radius:6px;padding:11px 44px 11px 16px;cursor:pointer;min-width:220px;}',
     '.vcb-pick select::-ms-expand{display:none;}',
     '.vcb-pick select option{color:#1a1a1a;}',
-    '.vcb-link{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-decoration:none;border-bottom:2px solid #3A9B3E;padding-bottom:2px;}',
-    '.vcb-link[hidden]{display:none;}',
-    '.vcb-toggle{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:transparent;border:1.5px solid rgba(255,255,255,.5);border-radius:6px;padding:9px 14px;cursor:pointer;}',
-    '.vcb-toggle:hover{border-color:#fff;}',
+    // The buttons (Sean, 2026-10-26: View community was a text link; "my goal was to have it be a button"): View community
+    // (the picked city's hub, or every community), the page's own action (Submit an event) and Expand / Collapse.
+    '.vcb-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}',
+    '.vcb-btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.5);border-radius:6px;padding:10px 16px;cursor:pointer;text-decoration:none;white-space:nowrap;}',
+    '.vcb-btn:hover{border-color:#fff;background:rgba(0,0,0,.55);}',
+    '.vcb-btn-go{background:#2d7d31;border-color:#2d7d31;}',
+    '.vcb-btn-go:hover{background:#1f5f22;border-color:#1f5f22;}',
     '.vcb :focus-visible{outline:3px solid #F69820;outline-offset:3px;}',
     '.vcb.is-collapsed{min-height:0;}',
     '.vcb.is-collapsed::before{background:rgba(0,0,0,.78);}',
     '.vcb.is-collapsed::after{display:none;}',
-    '.vcb.is-collapsed .vcb-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;max-width:none;width:100%;padding:14px 40px;margin:0;background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:0;}',
+    // Folded (Sean, 2026-10-26): three rows and two columns, the right one about a quarter. Left: the title, the chapter
+    // under it, then City and its picker. Right, the same height: View community, the page's action, Expand.
+    '.vcb.is-collapsed .vcb-inner{display:grid;grid-template-columns:minmax(0,3fr) minmax(150px,1fr);gap:16px 24px;align-items:stretch;max-width:none;width:100%;padding:18px 40px;margin:0;background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:0;}',
+    '.vcb.is-collapsed .vcb-main{display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-width:0;}',
     '.vcb.is-collapsed .vcb-eyebrow,.vcb.is-collapsed .vcb-sub{display:none;}',
-    '.vcb.is-collapsed h1{font-size:20px;line-height:1.2;margin:0;letter-spacing:-.01em;}',
-    '.vcb.is-collapsed h1 em{display:inline;margin-left:8px;}',
-    '.vcb.is-collapsed .vcb-pick{margin-top:0;}',
+    '.vcb.is-collapsed h1{font-size:22px;line-height:1.15;margin:0;letter-spacing:-.01em;}',
+    '.vcb.is-collapsed h1 em{display:block;font-size:17px;margin-top:4px;}',
+    '.vcb.is-collapsed .vcb-pick{margin-top:0;flex-wrap:nowrap;}',
     '.vcb.is-collapsed .vcb-pick select{padding:9px 44px 9px 14px;}',
+    '.vcb.is-collapsed .vcb-actions{display:grid;grid-auto-rows:1fr;gap:8px;margin:0;}',
+    '.vcb.is-collapsed .vcb-btn{width:100%;padding:8px 10px;}',
     // Option B on phones: flat scrim and a frosted card.
     '@media (max-width:900px){.vcb{align-items:flex-end;min-height:520px;background-position:center center;}.vcb::before{background:rgba(0,0,0,.32);}.vcb::after{display:none;}.vcb-inner{background:rgba(0,0,0,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,.09);}}',
-    '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,.10);}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:12px 16px;}.vcb.is-collapsed .vcb-pick{width:100%;}.vcb.is-collapsed .vcb-pick label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}}'
+    '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,.10);}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
   ].join('');
 
   function injectCss() {
@@ -91,7 +100,7 @@
     el.classList.add('vcb');
     el.setAttribute('aria-labelledby', id + '-h');
     el.innerHTML =
-      '<div class="vcb-inner">' +
+      '<div class="vcb-inner"><div class="vcb-main">' +
         '<div class="vcb-eyebrow">' + esc(opts.eyebrow || 'Vegans Explore') + '</div>' +
         '<h1 id="' + id + '-h">' + esc(opts.title || '') + ' <em data-vcb-city>' + esc(opts.allTitle || 'Every City') + '</em></h1>' +
         (opts.sub ? '<p class="vcb-sub">' + esc(opts.sub) + '</p>' : '') +
@@ -100,8 +109,11 @@
           '<select id="' + id + '-city"><option value="">' + esc(opts.allLabel || 'All cities') + '</option>' +
             hubs().map(function (h) { return '<option value="' + esc(h.slug) + '">' + esc(h.name) + '</option>'; }).join('') +
           '</select>' +
-          (opts.hubLink === false ? '' : '<a class="vcb-link" data-vcb-link href="/communities" hidden>Visit the community</a>') +
-          '<button type="button" class="vcb-toggle" aria-controls="' + id + '" aria-expanded="true">Collapse</button>' +
+        '</div></div>' +
+        '<div class="vcb-actions">' +
+          (opts.hubLink === false ? '' : '<a class="vcb-btn" data-vcb-link href="/communities">View communities</a>') +
+          (opts.action ? '<button type="button" class="vcb-btn vcb-btn-go" data-vcb-action>' + esc(opts.action.label) + '</button>' : '') +
+          '<button type="button" class="vcb-btn vcb-toggle" aria-controls="' + id + '" aria-expanded="true">Collapse</button>' +
         '</div>' +
       '</div>';
 
@@ -122,7 +134,8 @@
       select.value = current;
       cityEl.textContent = hub ? hub.name : (opts.allTitle || 'Every City');
       paint();
-      if (link) { link.hidden = !hub; if (hub) link.href = '/communities/' + hub.slug; }
+      // A city opens its hub; All cities opens every community.
+      if (link) { link.href = hub ? '/communities/' + hub.slug : '/communities'; link.textContent = hub ? 'View community' : 'View communities'; }
       if (opts.onChange && !quiet) opts.onChange(current, hub);
     }
     function fromUrl() { return param ? new URLSearchParams(location.search).get(param) || '' : current; }
@@ -146,6 +159,8 @@
       chosen = on ? 'collapsed' : 'expanded'; try { sessionStorage.setItem(storeKey, chosen); } catch (e) {}
     });
     if (chosen) fold(chosen === 'collapsed');
+    var actionBtn = el.querySelector('[data-vcb-action]');
+    if (actionBtn) actionBtn.addEventListener('click', function () { if (!chosen) fold(true); opts.action.onClick(); });
 
     var api = {
       el: el,
