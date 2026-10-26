@@ -286,6 +286,8 @@
       '</a>' +
     '</div>';
 
+  // Menu (Sean, 2026-10-26): Events is open to everyone; the Community Board left the menu (its jobs,
+  // classifieds, fosters and rescues are reached through the Pulse) and so did Lead Your City.
   var html =
     '<nav class="ve-nav" role="navigation" aria-label="Main navigation">' +
       '<div class="ve-nav-inner">' +
@@ -307,8 +309,7 @@
         '<a href="/podcast"' + (isCurrent('/podcast') || p.indexOf('/podcast/') === 0 ? ' aria-current="page"' : '') + '>Podcasts</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
-        '<a href="/board"' + cur('/board') + '>Community Board</a>' +
-        '<a href="/lead"' + cur('/lead') + '>Lead Your City</a>' +
+        '<a href="/events"' + cur('/events') + '>Events</a>' +
       '</div>' +
       mobileBottom +
       adminPanel +

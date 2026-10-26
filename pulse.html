@@ -89,6 +89,11 @@
     .pulse-sticky-bar { position: sticky; top: 60px; z-index: 300; background: rgba(255,255,255,0.98); border-bottom: 1px solid var(--ve-border); padding: 16px 40px 14px; }
     .pulse-top-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
     .pulse-board-title { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ve-text); }
+    /* The Community Board lives in the Pulse (Sean, 2026-10-26: "I want people to know the pulse to be that place where they
+       get the classifieds, the job postings... the rescues, the fosters"); it left the menu, so its sections open from here. */
+    .pulse-lanes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .pulse-lanes a { font-size: 12px; font-weight: 700; color: var(--ve-text); text-decoration: none; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 6px; padding: 7px 12px; background: #fff; }
+    .pulse-lanes a:hover { border-color: #3A9B3E; color: #2d7d31; }
     .pulse-board-count { font-size: 11px; font-weight: 600; color: var(--ve-text-50); margin-top: 2px; }
     .pulse-search { flex: 1; min-width: 160px; border: 1px solid var(--ve-border); border-radius: 6px; padding: 8px 14px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 500; color: var(--ve-text); background: #fff; outline: none; transition: border-color 0.15s; }
     .pulse-search:focus { border-color: var(--ve-green-dark); }
@@ -292,6 +297,15 @@
         </div>
         <input class="pulse-search" id="pulseSearch" type="search" placeholder="Search the Pulse..." aria-label="Search posts" oninput="onPulseFilterInput()">
       </div>
+      <nav class="pulse-lanes" aria-label="Community Board">
+        <a href="/board?lane=pulse">Daily Pulse topics</a>
+        <a href="/board">Requests &amp; Offers</a>
+        <a href="/board?lane=jobs">Jobs</a>
+        <a href="/board?lane=classifieds">Classifieds</a>
+        <a href="/board?lane=fosters">Fosters</a>
+        <a href="/board?lane=rescues">Rescues</a>
+        <a href="/board?lane=suggest">Suggest a Topic</a>
+      </nav>
       <div class="pulse-filters" role="group" aria-label="Filter and sort posts">
         <select class="pulse-select" id="categorySelect" aria-label="Filter by category" onchange="onPulseFilterInput()">
           <option value="all">All Categories</option>

@@ -12,8 +12,9 @@
     /* The main Directory (rebuilt 2026-10-04, Sean: "do an audit on the directory page and make
        sure it's up to code"). Every city's listings through /public/ve-region-directory.js, the
        same component the city hubs use, so the sections, badges, vegan filters, search, the
-       public vetting rule (/public/ve-trust.js) and votes match everywhere. The hero shows the
-       chosen city's art (New York for all cities); ?city=<hub slug> carries the choice. */
+       public vetting rule (/public/ve-trust.js) and votes match everywhere. The banner is the shared
+       city banner (/public/ve-city-banner.js, 2026-10-26), the same one Events and Communities wear:
+       the chosen city's art (New York for all cities), ?city=<hub slug>, Collapse / Expand. */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
@@ -22,36 +23,6 @@
     }
     body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
     .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
-
-    .hero { position: relative; min-height: 440px; display: flex; align-items: center; background: #0d0d0d center / cover no-repeat; transition: background-image 0.4s; }
-    .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.99) 0%, rgba(0,0,0,0.95) 28%, rgba(0,0,0,0.72) 52%, rgba(0,0,0,0.28) 68%, transparent 84%); }
-    .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 32%); }
-    .hero-inner { position: relative; z-index: 1; padding: 56px 40px; max-width: 680px; }
-    .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-    .eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
-    .hero h1 { font-size: clamp(36px, 5.5vw, 68px); font-weight: 900; line-height: 0.96; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; margin-bottom: 18px; }
-    .hero h1 em { display: block; color: #6fd98c; font-style: normal; }
-    .hero h1 { text-shadow: 0 2px 14px rgba(0,0,0,0.6); }
-    .hero-sub { font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.9); max-width: 520px; }
-    .city-pick { display: flex; align-items: center; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
-    .city-pick label { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
-    .city-pick select { appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 13px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 6px; padding: 11px 40px 11px 16px; cursor: pointer; min-width: 220px; }
-    .city-pick select option { color: #1a1a1a; }
-    .hub-link { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; text-decoration: none; border-bottom: 2px solid var(--ve-green); padding-bottom: 2px; }
-    .hub-link[hidden] { display: none; }
-    /* The banner shows on landing; after the first click into a section it folds to one bar that keeps the city
-       picker, Visit the community and Expand (Sean, 2026-10-24: "an option to collapse and still see the city selector"). */
-    .hero-toggle { font-family: inherit; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: transparent; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 6px; padding: 9px 14px; cursor: pointer; }
-    .hero-toggle:hover { border-color: #fff; }
-    .hero.is-collapsed { min-height: 0; align-items: center; }
-    .hero.is-collapsed::before { background: rgba(0,0,0,0.78); }
-    .hero.is-collapsed::after { display: none; }
-    .hero.is-collapsed .hero-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; max-width: none; width: 100%; padding: 14px 40px; margin: 0; background: none; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; border-radius: 0; }
-    .hero.is-collapsed .eyebrow, .hero.is-collapsed .hero-sub { display: none; }
-    .hero.is-collapsed h1 { font-size: 20px; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
-    .hero.is-collapsed h1 em { display: inline; margin-left: 8px; }
-    .hero.is-collapsed .city-pick { margin-top: 0; }
-    .hero.is-collapsed .city-pick select { padding: 9px 40px 9px 14px; }
 
     main { flex: 1; max-width: none; margin: 0; padding: 36px 40px 80px; }
 
@@ -65,21 +36,6 @@
     .btn-join:hover { background: var(--ve-orange-dark); }
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
 
-    @media (max-width: 900px) {
-      .hero { align-items: flex-end; min-height: 520px; background-position: center center; }
-      .hero::before { background: rgba(0,0,0,0.32); }
-      .hero::after { display: none; }
-      .hero-inner { background: rgba(0,0,0,0.58); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 24px 32px; padding: 32px 28px; max-width: calc(100% - 48px); border: 1px solid rgba(255,255,255,0.09); }
-    }
-    @media (max-width: 480px) {
-      .hero-inner { background: rgba(0,0,0,0.62); margin: 0 16px 24px; padding: 28px 24px; max-width: calc(100% - 32px); border: 1px solid rgba(255,255,255,0.10); }
-      .city-pick select { min-width: 0; width: 100%; }
-      .hero.is-collapsed .hero-inner { padding: 12px 16px; }
-      .hero.is-collapsed .city-pick { width: 100%; }
-      /* Folded: the label leaves the screen but stays for screen readers. */
-      .hero.is-collapsed .city-pick label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-      .hero.is-collapsed .city-pick select { flex: 1; width: auto; }
-    }
     @media (max-width: 700px) {
       main { padding: 28px 16px 64px; }
       .vote-box { padding: 24px 20px; }
@@ -95,19 +51,8 @@
   <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-region-directory.js"></script>
 
-  <section class="hero" id="dir-hero" aria-labelledby="dir-heading">
-    <div class="hero-inner">
-      <div class="eyebrow">Vegans Explore</div>
-      <h1 id="dir-heading">Vegan Directory <em id="dir-city-name">Every City</em></h1>
-      <p class="hero-sub">Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.</p>
-      <div class="city-pick">
-        <label for="dir-city">City</label>
-        <select id="dir-city"><option value="">All cities</option></select>
-        <a class="hub-link" id="dir-hub-link" href="/communities" hidden>Visit the community</a>
-        <button type="button" class="hero-toggle" id="dir-hero-toggle" aria-controls="dir-hero" aria-expanded="true">Collapse</button>
-      </div>
-    </div>
-  </section>
+  <script src="/public/ve-city-banner.js"></script>
+  <section id="dir-hero"></section>
 
   <main id="main-content">
     <div id="ve-region-directory"></div>
@@ -123,22 +68,6 @@
 
   <script>
   (function () {
-    var HUBS = window.VE_HUBS || [];
-    var ART = { philadelphia: 'banner.png', dmv: 'banner.png' };
-    var MOBILE_ART = { 'new-york': 'hero-mobile.jpg', london: 'hero-mobile.jpg' };
-    var mobile = window.matchMedia('(max-width: 900px)');
-    var select = document.getElementById('dir-city');
-    var hero = document.getElementById('dir-hero');
-    var cityName = document.getElementById('dir-city-name');
-    var hubLink = document.getElementById('dir-hub-link');
-
-    HUBS.forEach(function (h) {
-      var o = document.createElement('option');
-      o.value = h.slug; o.textContent = h.name;
-      select.appendChild(o);
-    });
-
-    function hubBySlug(slug) { return HUBS.filter(function (h) { return h.slug === slug; })[0] || null; }
     // Same rule as each hub page: the city must be in `cities` and the state in `states`, whichever are given.
     function matcher(hub) {
       if (!hub) return function () { return true; };
@@ -148,51 +77,25 @@
         return true;
       };
     }
-    function art(slug) {
-      if (mobile.matches && MOBILE_ART[slug]) return '/communities/' + slug + '/' + MOBILE_ART[slug];
-      return '/communities/' + slug + '/' + (ART[slug] || 'banner.jpg');
-    }
-
-    var current = null;
-    function show(slug) {
-      var hub = hubBySlug(slug);
-      current = hub ? hub.slug : '';
-      select.value = current;
-      cityName.textContent = hub ? hub.name : 'Every City';
-      hero.style.backgroundImage = "url('" + art(hub ? hub.slug : 'new-york') + "')";
-      hubLink.hidden = !hub;
-      if (hub) hubLink.href = '/communities/' + hub.slug;
+    function show(slug, hub) {
       if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub) });
       // ?tab=<section> opens that section (a listing's breadcrumb links back this way).
       var tab = new URLSearchParams(location.search).get('tab');
       var btn = tab && document.querySelector('#ve-region-directory [data-vrd-tab="' + tab.replace(/[^a-z]/g, '') + '"]');
       if (btn) btn.click();
     }
-
-    function fromUrl() { return new URLSearchParams(location.search).get('city') || ''; }
-    select.addEventListener('change', function () {
-      var slug = select.value;
-      var url = slug ? '?city=' + encodeURIComponent(slug) : location.pathname;
-      history.pushState({ city: slug }, '', url);
-      show(slug);
-    });
-    window.addEventListener('popstate', function () { show(fromUrl()); });
-    if (mobile.addEventListener) mobile.addEventListener('change', function () { hero.style.backgroundImage = "url('" + art(current || 'new-york') + "')"; });
-    // Expanded on landing; the first click into a section folds it, unless the visitor chose a state with the button.
-    var toggle = document.getElementById('dir-hero-toggle'), chosen = null;
-    try { chosen = sessionStorage.getItem('ve_dir_hero'); } catch (e) {}
-    function fold(on) { hero.classList.toggle('is-collapsed', on); toggle.textContent = on ? 'Expand' : 'Collapse'; toggle.setAttribute('aria-expanded', on ? 'false' : 'true'); }
-    toggle.addEventListener('click', function () {
-      var on = !hero.classList.contains('is-collapsed'); fold(on);
-      chosen = on ? 'collapsed' : 'expanded'; try { sessionStorage.setItem('ve_dir_hero', chosen); } catch (e) {}
+    // Expanded on landing; the first click into a section folds it, unless the visitor chose with the button
+    // (Sean, 2026-10-24: "an option to collapse and still see the city selector"). The key keeps earlier visits' choice.
+    var banner = VECityBanner.mount('dir-hero', {
+      key: 'dir', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities',
+      sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
+      onChange: show
     });
     document.getElementById('ve-region-directory').addEventListener('click', function (e) {
-      if (!chosen && e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) fold(true);
+      if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) banner.autoFold();
     });
-    if (chosen) fold(chosen === 'collapsed');
-    show(fromUrl());
     // Arriving on a section (?tab=, a listing's breadcrumb) is not the landing: start folded.
-    if (!chosen && new URLSearchParams(location.search).get('tab')) fold(true);
+    if (new URLSearchParams(location.search).get('tab')) banner.autoFold();
 
     // Members already vote; the box is for everyone else.
     var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
