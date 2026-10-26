@@ -3175,7 +3175,8 @@ function renderListing(l){
     if(!btn) return;
     function say(t){ msg.textContent = t; }
     btn.addEventListener('click', function(){
-      if(btn.classList.contains('done')){ say('You already checked in here today. Come back tomorrow.'); return; }
+      // Already in today: the window that says when the next check-in opens (Sean, 2026-10-26).
+      if(btn.classList.contains('done')){ if(window.VEVotes && VEVotes.checkedInPrompt) VEVotes.checkedInPrompt(); else say('You already checked in here today. Come back tomorrow.'); return; }
       // Signed out: the window that says check-ins are for Passport holders, then Explore the Passport (Sean, 2026-10-26).
       if(!window.VEAuth || !VEAuth.isLoggedIn()){
         if(window.VEVotes && VEVotes.checkinPrompt) VEVotes.checkinPrompt();
@@ -3192,7 +3193,7 @@ function renderListing(l){
           if(d && d.ok){ done(); say(d.points ? 'Checked in. +' + d.points + ' points.' : 'Checked in. You have had today\'s points (5 places a day); this visit still counts.'); return; }
           var w = d && d.why;
           say(w === 'too_far' ? 'You look to be about ' + (d.distance_m >= 1000 ? (d.distance_m / 1609).toFixed(1) + ' miles' : d.distance_m + ' m') + ' away. Check in once you are there.'
-            : w === 'already_today' ? (done(), 'You already checked in here today. Come back tomorrow.')
+            : w === 'already_today' ? (done(), window.VEVotes && VEVotes.checkedInPrompt ? (VEVotes.checkedInPrompt(), '') : 'You already checked in here today. Come back tomorrow.')
             : w === 'not_precise' ? 'Your location is not precise enough yet. Step outside or turn on precise location, then try again.'
             : w === 'members_only' ? 'Check-ins are for members.'
             : w === 'no_location' ? 'We do not have this place on the map yet.'
