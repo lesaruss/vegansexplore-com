@@ -177,6 +177,7 @@
         f('description', 'About it', '<textarea id="f-description">' + esc(e.description || '') + '</textarea>', true) +
         f('start', 'Starts', i('start', VEEvents.isoToLocal(e.starts_at, tz), 'datetime-local')) +
         f('end', 'Ends', i('end', VEEvents.isoToLocal(e.ends_at, tz), 'datetime-local')) +
+        '<div class="f"><label class="chk" style="margin-top:24px"><input type="checkbox" id="f-tba"' + (e.time_set === false ? ' checked' : '') + '> Time not announced yet</label></div>' +
         f('timezone', 'Time zone', '<select id="f-timezone">' + tzs.map(function (z) { return '<option' + (z === tz ? ' selected' : '') + '>' + esc(z) + '</option>'; }).join('') + '</select>') +
         '<div class="f wide"><label class="chk"><input type="checkbox" id="f-online"' + (online ? ' checked' : '') + '> Online only</label></div>' +
         f('location_name', 'Venue', i('location_name', e.location_name)) +
@@ -190,7 +191,7 @@
     function readFields() {
       var v = function (id) { var x = $('f-' + id); return x ? x.value.trim() : ''; };
       var tz = v('timezone'), online = $('f-online').checked, cc = v('country');
-      var e = { title: v('title'), category: v('category'), description: v('description'), timezone: tz, event_type: online ? 'virtual' : 'in_person',
+      var e = { title: v('title'), category: v('category'), description: v('description'), timezone: tz, event_type: online ? 'virtual' : 'in_person', time_set: !$('f-tba').checked,
         starts_at: VEEvents.zonedToISO(v('start'), tz), ends_at: v('end') ? VEEvents.zonedToISO(v('end'), tz) : '', ticket_url: v('ticket_url') };
       if (!online) Object.assign(e, { location_name: v('location_name'), address: v('address'), city: v('city'), state: v('state'), country: cc, continent: (COUNTRIES[cc] || [])[1] || '' });
       return e;

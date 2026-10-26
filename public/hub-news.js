@@ -142,7 +142,8 @@
     var dt = new Date(e.starts_at);
     var day = dt.getDate();
     var mon = dt.toLocaleString('en-US', { month: 'short' });
-    var time = dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    // A time not announced yet (events.time_set false) is never shown as noon.
+    var time = e.time_set === false ? 'Time to be announced' : dt.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
     return '<article class="event-row" aria-label="' + esc(e.title) + '">' +
       '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + esc(mon) + '</span></div>' +
       '<div class="event-body">' +
@@ -200,7 +201,7 @@
         });
       });
     }
-    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count&status=eq.approved&order=starts_at.asc&limit=200', { headers: headers() })
+    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count,time_set&status=eq.approved&order=starts_at.asc&limit=200', { headers: headers() })
       .then(function (r) { return r.json(); })
       .then(function (rows) {
         var matches = (rows || []).filter(function (e) { return !e.city || cityNames.indexOf(e.city) > -1; });

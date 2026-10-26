@@ -34,7 +34,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const LIMITS = { submit: 10, read: 5, upload: 15 };
 const CATEGORIES = ['festival', 'food', 'social', 'market', 'meetup', 'workshop', 'health', 'activism', 'fundraiser', 'film', 'general', 'other'];
 const TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'application/pdf': 'pdf' };
-const EDITABLE = ['title', 'description', 'starts_at', 'ends_at', 'timezone', 'location_name', 'address', 'city', 'state', 'country', 'continent', 'category', 'event_type', 'ticket_url', 'price_cents'];
+const EDITABLE = ['title', 'description', 'starts_at', 'ends_at', 'time_set', 'timezone', 'location_name', 'address', 'city', 'state', 'country', 'continent', 'category', 'event_type', 'ticket_url', 'price_cents'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -115,6 +115,8 @@ function shapeEvent(e: any) {
   set('ticket_url', isUrl(e.ticket_url) ? String(e.ticket_url).trim().slice(0, 1000) : '');
   const cents = Number(e.price_cents);
   if (Number.isFinite(cents) && cents > 0) out.price_cents = Math.round(cents);
+  // A day with no announced time (the tile shows the date only).
+  if (typeof e.time_set === 'boolean') out.time_set = e.time_set;
   return out;
 }
 
@@ -287,7 +289,7 @@ Deno.serve(async (req) => {
     case 'queue': {
       const gate = needAdmin(); if (gate) return gate;
       const status = ['pending', 'approved', 'rejected'].includes(body.status) ? body.status : 'pending';
-      let q = db.from('events').select('id, title, description, starts_at, ends_at, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id')
+      let q = db.from('events').select('id, title, description, starts_at, ends_at, time_set, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id')
         .eq('status', status);
       // Waiting: soonest first, so nothing passes before it is seen. Approved: the upcoming ones. Turned down: newest.
       if (status === 'pending') q = q.order('starts_at', { ascending: true });

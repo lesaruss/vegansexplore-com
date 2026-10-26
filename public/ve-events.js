@@ -196,9 +196,11 @@
   }
 
   /* ---------- the tile ---------- */
+  // A time not announced yet (events.time_set false) shows the day only.
   function when(e) {
-    var tz = e.timezone || undefined, d = new Date(e.starts_at), o = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
-    try { o.timeZone = tz; return d.toLocaleString('en-US', o); } catch (x) { delete o.timeZone; return d.toLocaleString('en-US', o); }
+    var tz = e.timezone || undefined, d = new Date(e.starts_at), o = e.time_set === false ? { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' } : { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
+    var tba = e.time_set === false ? ' \u00b7 Time to be announced' : '';
+    try { o.timeZone = tz; return d.toLocaleString('en-US', o) + tba; } catch (x) { delete o.timeZone; return d.toLocaleString('en-US', o) + tba; }
   }
   function dayMon(e) {
     var d = new Date(e.starts_at), tz = e.timezone || undefined;
@@ -370,7 +372,7 @@
     }
 
     function load() {
-      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url&status=eq.approved&order=starts_at.asc&limit=2000', {
+      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url,time_set&status=eq.approved&order=starts_at.asc&limit=2000', {
         headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
       }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
         all = (rows || []).filter(function (e) { return e.starts_at; });

@@ -636,6 +636,12 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   and link from there, keeps only events that are Vegan by their own description, and saves a weekly series as its next
   three dates. Each source has its own cadence (`every_days`: Eventbrite and HappyCow every 3 days). Add a source in Depot >
   Events > Crawl sources. This session cannot reach outside sites; the Background writer does the reading.
+- **Time to be announced** (`events.time_set` false): an event with a date and no published time is saved at noon local
+  and every tile (the calendar, the city hubs) shows the date with "Time to be announced", never a made-up time; the Depot's
+  event view has the checkbox. `events.description` is required in the table, so an event saved without one gets an empty
+  one (`ve_event_intake`, migration `20261026_ve_events_sean_list.sql`). Sean's list of 2026-10-26 went in the same day: 27 live
+  (San Francisco VegFest and 26 Vegan Events UK festivals), the two Holistic Holiday at Sea cruises waiting for their port,
+  and his sources (Connect For Animals, VeganFests, VegCF's Meetup, VegFest Expos) added to the crawl.
 - **Vetting, in order**: `ve_event_intake` refuses no official link, no date, an event that is over, and a duplicate (same
   name, same day); the writer keeps only Vegan events confirmed on their official page; the team approves each one in Depot >
   Events. Nothing goes live on its own.
