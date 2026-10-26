@@ -38,7 +38,9 @@
     '.vcb h1 em{display:block;color:#6fd98c;font-style:normal;}',
     '.vcb-sub{font-size:16px;line-height:1.6;color:rgba(255,255,255,.9);max-width:520px;margin:0;}',
     '.vcb-pick{display:flex;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap;}',
-    '.vcb-pick label{font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);}',
+    // No City label beside the picker (Sean, 2026-10-26: it pushed the picker out on phones); the picker sits flush left
+    // under the title. Screen readers still hear "City".
+    '.vcb-pick label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}',
     // Dropdowns never show the browser's arrow (canon rule 15): our chevron, 16px from the edge.
     '.vcb-pick select{appearance:none;-webkit-appearance:none;-moz-appearance:none;font-family:inherit;font-size:13px;font-weight:800;color:#fff;background:rgba(0,0,0,.55) ' + CHEVRON + ' no-repeat right 16px center;border:1.5px solid rgba(255,255,255,.5);border-radius:6px;padding:11px 44px 11px 16px;cursor:pointer;min-width:220px;}',
     '.vcb-pick select::-ms-expand{display:none;}',
@@ -67,7 +69,7 @@
     '.vcb.is-collapsed .vcb-btn{width:100%;padding:8px 10px;}',
     // Option B on phones: flat scrim and a frosted card.
     '@media (max-width:900px){.vcb{align-items:flex-end;min-height:520px;background-position:center center;}.vcb::before{background:rgba(0,0,0,.32);}.vcb::after{display:none;}.vcb-inner{background:rgba(0,0,0,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,.09);}}',
-    '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,.10);}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
+    '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,.10);}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px 22px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
   ].join('');
 
   function injectCss() {
