@@ -240,6 +240,17 @@
     .gc-waitlist input { padding: 9px 12px; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 12px; }
     .gc-waitlist input:focus { outline: none; border-color: var(--ve-green-dark); }
     .gc-waitlist-success { display: none; font-size: 11px; font-weight: 700; color: var(--ve-green-dark); text-align: center; }
+    /* The Passport box, the same as the Directory's (directory/index.html). */
+    .gc-join-wrap { padding-top: 0; }
+    .vote-box { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #1a1a1a; color: #fff; border-radius: 14px; padding: 28px 32px; }
+    .vote-box[hidden] { display: none; }
+    .vote-box-copy { flex: 1; min-width: 240px; }
+    .vote-box-copy strong { display: block; font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+    .vote-box-copy strong span { color: #5EC47A; }
+    .vote-box-copy p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.78); max-width: 860px; }
+    .btn-join { display: inline-flex; align-items: center; background: var(--ve-orange); color: #1a1a1a; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 16px 30px; border-radius: 6px; text-decoration: none; transition: background 0.15s; }
+    .btn-join:hover { background: var(--ve-orange-dark); }
+    @media (max-width: 600px) { .vote-box { padding: 24px 20px; } }
     .gc-note { text-align: center; font-size: 11px; color: #999; margin-top: 32px; line-height: 1.6; }
 
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
@@ -329,63 +340,23 @@
     })();
   </script>
 
-  <!-- PASSPORT (unchanged) -->
-  <section class="passport-section" aria-labelledby="passport-heading">
-    <div class="section-eyebrow">Passport</div>
-    <h2 class="section-h2" id="passport-heading">$11 Gets You In.<br>Points Keep You Going.</h2>
-    <p class="section-sub">$11 is the price of admission: the Passport, a Guide, an event ticket or merchandise of $11 or more makes you a member. Every Guide is $11 or 1,100 points, and yours to keep. Every purchase earns a 25-point thank-you, and points are never bought: you earn them by taking part.</p>
-    <div class="passport-tiers" role="list">
-      <div class="tier-card featured" role="listitem">
-        <div class="tier-badge">Start Here</div>
-        <div class="tier-label">Passport</div>
-        <div><span class="tier-price">$11</span></div>
-        <div class="tier-note">One time. It never renews.</div>
-        <div class="tier-divider"></div>
-        <div class="tier-desc">Your profile, your community, votes for local Vegan businesses and your dashboard, with 1,100 welcome points: enough for your first Guide.</div>
-        <a href="/passport" class="tier-btn featured-btn">Get Your Passport</a>
+  <!-- The Passport box from the bottom of the Directory (Sean, 2026-10-26), in place of the Passport, Vision and Ready
+       sections. Hidden for active members. -->
+  <div class="gc-section gc-join-wrap">
+    <section class="vote-box" id="gc-vote-box" aria-label="Founding Membership">
+      <div class="vote-box-copy">
+        <strong>Your first Guide <span>is on us.</span></strong>
+        <p>$11, one time, gets you your Passport with 1,100 welcome points: enough for your first Guide, yours to keep. You also vote once a day for every business you love and get your own dashboard to build your Vegan world. Points are never bought; you earn more by taking part.</p>
       </div>
-      <div class="tier-card" role="listitem">
-        <div class="tier-label">Any Guide</div>
-        <div><span class="tier-price">$11</span><span class="tier-period"> or 1,100 points</span></div>
-        <div class="tier-note">Yours to keep.</div>
-        <div class="tier-divider"></div>
-        <div class="tier-desc">Buying a Guide also makes you a member. Every purchase earns a 25-point thank-you.</div>
-        <a href="#gc-heading" class="tier-btn">See the Guides</a>
-      </div>
-      <div class="tier-card" role="listitem">
-        <div class="tier-badge green">Earn It</div>
-        <div class="tier-label">Points and Levels</div>
-        <div><span class="tier-price">Levels 1 to 3</span></div>
-        <div class="tier-note">On the points you have earned.</div>
-        <div class="tier-divider"></div>
-        <div class="tier-desc">Bounties, competitions, the Daily Pulse and the Community Board earn points. Spend them on Guides, talk with your Guide, or give them to the places you love as a boost.</div>
-        <a href="/bounties" class="tier-btn">Ways to Earn</a>
-      </div>
-    </div>
-    <div class="passport-all-cta"><a href="/passport">Get Your Passport, $11 one time</a></div>
-  </section>
-
-  <!-- VISION (unchanged) -->
-  <section class="vision-section" aria-labelledby="vision-heading">
-    <div class="section-eyebrow" aria-hidden="true">The Vision</div>
-    <h2 class="section-h2" id="vision-heading">1,000 Communities<br>by 2030.</h2>
-    <p class="section-sub">Building the most connected Vegan network on the planet, one community at a time. From Miami to Accra, from London to Tokyo.</p>
-    <div class="vision-timeline" role="list" aria-label="Community growth timeline">
-      <div class="vision-year now" role="listitem"><div class="vision-yr">Now</div><div class="vision-count">4</div><div class="vision-unit">Active Communities</div></div>
-      <div class="vision-year" role="listitem"><div class="vision-yr">2026</div><div class="vision-count">50</div><div class="vision-unit">Communities</div></div>
-      <div class="vision-year" role="listitem"><div class="vision-yr">2028</div><div class="vision-count">300</div><div class="vision-unit">Communities</div></div>
-      <div class="vision-year" role="listitem"><div class="vision-yr">2030</div><div class="vision-count">1,000</div><div class="vision-unit">Communities</div></div>
-    </div>
-  </section>
-
-  <!-- BOTTOM CTA (unchanged) -->
-  <section class="cta-section" aria-labelledby="cta-heading">
-    <div class="section-eyebrow">Ready</div>
-    <h2 class="section-h2" id="cta-heading">The Vegan World<br>is <em>Waiting for You.</em></h2>
-    <p>Find your path, get your Passport, and connect with a community that is building something real. $11 one time. No subscription required.</p>
-    <a href="/passport" class="btn-cta-lg">Get Your Passport</a>
-    <span class="cta-fine">$11 one time, with 1,100 welcome points: enough for your first Guide.</span>
-  </section>
+      <a class="btn-join" href="/passport#/join">Get your Passport, $11</a>
+    </section>
+  </div>
+  <script>
+    (function () {
+      function hide() { var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (m && m.membership_status === 'active') document.getElementById('gc-vote-box').hidden = true; }
+      if (window.VEAuth) hide(); else window.addEventListener('load', hide);
+    })();
+  </script>
 
   <script src="/public/ve-tour.js"></script>
 <script src="/public/footer.js"></script>
