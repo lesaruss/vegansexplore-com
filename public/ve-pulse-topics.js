@@ -2,12 +2,12 @@
    The Pulse is a lane of the Community Board: one topic a day per city plus one national topic,
    each a short intro, one question and a link to the source. This file is the one way the rest of
    the site shows topics (dashboard, city hubs), so a topic card looks the same everywhere. The
-   Board itself (/board?lane=pulse) is where the conversation happens.
+   Board itself (/pulse, the Daily Pulse tab) is where the conversation happens.
 
      VEPulse.fetch(community, limit)  -> Promise<topics>   newest first, city + national
      VEPulse.card(topic, community)   -> HTML for one card (links to the conversation)
      VEPulse.isToday(topic)           -> published in the last 24 hours
-     VEPulse.link(topic, community)   -> /board?lane=pulse&community=...&post=...
+     VEPulse.link(topic, community)   -> /pulse?city=...&post=...
      VEPulse.briefing(topic)          -> HTML for the full briefing (stories, heads up, today's move)
      VEPulse.summary(topic)           -> one line: "5 stories · 2 events · Today's move: ..."
 
@@ -59,7 +59,7 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function isToday(t) { return !!t.published_at && Date.now() - new Date(t.published_at).getTime() < DAY; }
   function link(t, community) {
-    return '/board?lane=pulse&community=' + encodeURIComponent(community || (t.community !== 'national' ? t.community : 'south-florida')) + '&post=' + encodeURIComponent(t.id);
+    return '/pulse?city=' + encodeURIComponent(community || (t.community !== 'national' ? t.community : 'south-florida')) + '&post=' + encodeURIComponent(t.id);
   }
   function when(t) {
     if (isToday(t)) return 'Today';

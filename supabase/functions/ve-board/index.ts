@@ -9,6 +9,8 @@
 // rescues share phone numbers and addresses here.
 //
 // POST { action: 'list', community, lane?, q?, kind?, category?, area?, status?: 'open'|'resolved'|'all', before? }
+//   community 'all' (the Daily Pulse banner's All cities, Sean 2026-10-26) lists every chapter at once. The viewer comes
+//   back with business: true when they own a listing in the Directory, which is what a Hiring job post needs.
 //   -> { posts, viewer }                         public; token optional
 //
 // Sections (Sean, 2026-10-10): every city's Board has Requests & Offers, Jobs, Classifieds, Fosters
@@ -282,6 +284,12 @@ async function reportRecipients(community: string): Promise<string[]> {
   return data?.manager_email ? [data.manager_email, SEAN_EMAIL] : [SEAN_EMAIL];
 }
 
+// A business in the Directory (the approved claim makes its member owner_member_id). Hiring posts are its perk.
+async function ownsListing(memberId: string): Promise<boolean> {
+  const { data } = await db.from('listings').select('id').eq('owner_member_id', memberId).limit(1);
+  return !!(data && data.length);
+}
+
 const needMember = (viewer: Viewer) => {
   if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to join the conversation.' }, 401);
   if (!viewer.active) return json({ error: 'payment_required', message: 'Become a Founding Member to post, reply and help your community on the Board.' }, 402);
@@ -294,16 +302,18 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const viewer = await loadViewer(req);
-  const viewerOut = viewer ? { signed_in: true, member: viewer.active, moderator: viewer.moderator } : { signed_in: false, member: false, moderator: false };
+  const business = viewer ? await ownsListing(viewer.id) : false;
+  const viewerOut = viewer ? { signed_in: true, member: viewer.active, moderator: viewer.moderator, business } : { signed_in: false, member: false, moderator: false, business: false };
 
   switch (body.action) {
     case 'list': {
       const community = clean(body.community, 40);
-      if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
+      const all = community === 'all';
+      if (!all && !COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
       if (body.lane === 'pulse') {
         let t = db.from('ve_board_posts')
           .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, briefing')
-          .eq('kind', 'topic').in('community_slug', [community, NATIONAL]).in('status', ['open', 'resolved'])
+          .eq('kind', 'topic').in('community_slug', all ? TOPIC_SCOPES : [community, NATIONAL]).in('status', ['open', 'resolved'])
           .order('published_at', { ascending: false }).limit(PAGE);
         const before = clean(body.before, 40);
         if (before && !isNaN(Date.parse(before))) t = t.lt('published_at', before);
@@ -316,8 +326,10 @@ Deno.serve(async (req) => {
       const lane = LANES[body.lane] || LANES.board;
       let q = db.from('ve_board_posts')
         .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, pinned')
-        .eq('community_slug', community).in('kind', lane.kinds)
+        .in('community_slug', all ? COMMUNITIES : [community]).in('kind', lane.kinds)
         .order('pinned', { ascending: false }).order('created_at', { ascending: false }).limit(PAGE);
+      // Every chapter at once: one How it works post, not eight.
+      if (all) q = q.eq('pinned', false);
       const status = clean(body.status, 10) || 'open';
       if (status === 'open' || status === 'resolved') q = q.eq('status', status);
       else q = q.in('status', ['open', 'resolved']);
@@ -360,6 +372,10 @@ Deno.serve(async (req) => {
       if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
       if (!KINDS.includes(body.kind)) return json({ error: 'bad_kind', message: 'Choose what kind of post this is.' }, 400);
       if (!LANES[LANE_OF[body.kind]].categories.includes(body.category)) return json({ error: 'bad_category', message: 'Choose a type for your post.' }, 400);
+      // Hiring is a perk of a business in the Directory (Sean, 2026-10-26); any member can post Looking for work.
+      if (body.kind === 'job' && body.category === 'hiring' && !business && !viewer!.moderator && !viewer!.admin) {
+        return json({ error: 'business_only', message: 'Hiring posts are for businesses in the Directory. Claim your business or add it, then post your openings here.' }, 403);
+      }
       const title = clean(body.title, 140), text = clean(body.body, 4000);
       if (title.length < 3) return json({ error: 'bad_title', message: 'Give your post a short title.' }, 400);
       if (!text) return json({ error: 'bad_body', message: 'Tell people what you need or what you can offer.' }, 400);
@@ -438,7 +454,7 @@ Deno.serve(async (req) => {
         ? { report_count: reports, ...(hide ? { status: 'hidden' } : {}) }
         : { report_count: reports, ...(hide ? { status: 'hidden', hidden_reason: `Hidden after ${reports} reports, awaiting review` } : {}) }).eq('id', reply ? reply.id : post.id);
       const hub = post.community_slug;
-      const link = `${SITE}/board?community=${hub}&post=${post.id}`;
+      const link = `${SITE}/pulse?city=${hub}&post=${post.id}`;
       await sendEmail(await reportRecipients(hub), `[Community Board] Report: ${REASON_LABEL[body.reason]}${hide ? ' (now hidden)' : ''}`,
         `<p style="font-family:sans-serif;font-size:15px;line-height:1.6">A member reported ${reply ? 'a reply on' : 'a post on'} the ${esc(hub)} Community Board.</p>
 <p style="font-family:sans-serif;font-size:14px;line-height:1.6"><b>Reason:</b> ${esc(REASON_LABEL[body.reason])}<br><b>Post:</b> ${esc(post.title || '')}<br>

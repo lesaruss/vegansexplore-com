@@ -132,7 +132,7 @@
       // Live topics.
       html += '<div class="vpd-card"><h3>Live topics</h3>' +
         (d.live.length ? '<ul class="vpd-list">' + d.live.map(function (t) {
-          var link = '/board?lane=pulse&community=' + (t.community === 'national' ? 'south-florida' : t.community) + '&post=' + t.id;
+          var link = '/pulse?city=' + (t.community === 'national' ? 'south-florida' : t.community) + '&post=' + t.id;
           return '<li class="vpd-item"><div><b>' + esc(t.title) + '</b><small>' + day(t.published_at) + ' &middot; ' + t.reply_count + (t.reply_count === 1 ? ' reply' : ' replies') +
             (t.status === 'hidden' ? ' &middot; Hidden' : '') + '</small></div><a class="vpd-btn ghost" href="' + link + '" data-frame-label="Daily Pulse">Open</a></li>';
         }).join('') + '</ul>' : '<p class="vpd-empty">Nothing published yet.</p>') + '</div>';
@@ -185,7 +185,7 @@
         '<div class="vpd-two"><label class="vpd-f">Action <span class="vpd-hint">Leave empty for none</span><input name="action_title" maxlength="80" value="' + esc(a.title || '') + '"></label>' +
         '<label class="vpd-f">Button<input name="action_label" maxlength="40" value="' + esc(a.label || '') + '" placeholder="Apply to help"></label></div>' +
         '<label class="vpd-f">What to do and why<input name="action_text" maxlength="300" value="' + esc(a.text || '') + '"></label>' +
-        '<label class="vpd-f">Link <span class="vpd-hint">A page on our site (/dashboard/opportunities, /board?...) or a full https link</span><input name="action_url" maxlength="1000" value="' + esc(a.url || '') + '"></label></div>';
+        '<label class="vpd-f">Link <span class="vpd-hint">A page on our site (/dashboard/opportunities, /pulse?...) or a full https link</span><input name="action_url" maxlength="1000" value="' + esc(a.url || '') + '"></label></div>';
       return html;
     }
     function fields(form) {

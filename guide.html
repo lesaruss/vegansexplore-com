@@ -528,7 +528,7 @@
       var p = document.createElement('p'); p.className = 'note'; p.style.margin = '0 0 6px'; p.style.width = '100%';
       p.textContent = 'Earn more points by taking part: Bounties, competitions and what you do in the community.';
       box.appendChild(p);
-      [['See the Bounties', '/dashboard/bounties'], ['Join the conversation on the Board', '/board']].forEach(function(l){
+      [['See the Bounties', '/dashboard/bounties'], ['Join the conversation on the Daily Pulse', '/pulse']].forEach(function(l){
         var b = document.createElement('button'); b.type = 'button'; b.className = 'chip-btn'; b.textContent = l[0];
         b.onclick = function(){ if (PREVIEW) return addMsg('guide', 'This is a preview, so links stay here.'); (window.top || window).location.href = l[1]; };
         box.appendChild(b);
