@@ -1268,8 +1268,8 @@ not in the member Guide picker.
 
 The footer (`public/footer.js`) reads ABOUT (`/welcome`), JOIN US (`/passport`), POLICIES (`/policies`), CONTACT (`/contact`),
 our socials and "A LESARUSS brand" (lesaruss.com). Socials, checked 2026-10-26: Instagram and TikTok `@vegansexplore`, YouTube
-`@VegansExplore` (the channel our episodes are on, by YouTube oEmbed). No Vegans Explore Facebook page was found, so Facebook
-is off the footer until Sean gives its address. Never link a social we have not checked.
+`@VegansExplore` (the channel our episodes are on, by YouTube oEmbed), Facebook `facebook.com/vegansexplore` (Sean gave it,
+2026-10-26). Never link a social we have not checked.
 
 - `/policies` (`policies.html`): one policy per view (`#overview`, `#privacy`, `#ai`, `#terms`, `#membership`, `#community`,
   `#business`, `#cookies`, `#accessibility`, `#contact`), menu on the left, a dropdown on phones. **How we use AI** says the
