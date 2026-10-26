@@ -228,6 +228,9 @@
     .member-bar-toggle:focus-visible { outline: 2px solid var(--ve-green); outline-offset: 2px; }
     .mb-toggle-caret { flex-shrink: 0; transition: transform 0.2s ease; }
     .member-bar.mb-collapsed .mb-toggle-caret { transform: rotate(180deg); }
+    .mb-dash { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.55); border-radius: 6px; padding: 9px 16px; white-space: nowrap; }
+    .mb-dash:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+    .mb-dash[hidden] { display: none; }
     .mb-toggle-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
     .member-bar-left { display: flex; align-items: center; gap: 16px; min-width: 0; flex-wrap: wrap; }
     .mb-breadcrumb { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
@@ -269,18 +272,27 @@
       .dir-grid { grid-template-columns: 1fr; }
       .partners-grid { grid-template-columns: 1fr; }
       .member-bar { padding: 14px 24px; }
-      /* Phones (Sean, 2026-10-25): the hero's words and buttons centered on the page; the bar is Collapse and the city
-         picker on one row, the picker reaching the same right edge as the Section dropdown, then Page tour and Get
-         Passport centered under them. */
+      /* Phones (Sean, 2026-10-25): the hero's words and buttons centered on the page. The bar is one row (Sean,
+         2026-10-26): Collapse, the city picker, and Dashboard when signed in; Get Passport and Page tour are in the hero. */
       .hero-eyebrow::after { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
       .hero-meta { gap: 12px 16px; }
       .hero-divider-v { display: none; }
-      .member-bar { flex-direction: column; align-items: stretch; gap: 12px; }
-      .member-bar-left { flex-wrap: nowrap; gap: 12px; width: 100%; }
+      .member-bar { flex-wrap: nowrap; align-items: stretch; gap: 10px; }
+      .member-bar-left { flex: 1 1 auto; flex-wrap: nowrap; gap: 10px; min-width: 0; }
       .mb-breadcrumb { flex: 1; }
       .mb-breadcrumb .mb-city { width: 100%; }
-      .member-bar-actions { justify-content: center; flex-wrap: wrap; gap: 12px; }
-      .member-bar-actions > * { min-height: 44px; display: inline-flex; align-items: center; box-sizing: border-box; }
+      .member-bar-actions { flex: 0 0 auto; gap: 10px; }
+      .member-bar-actions #mb-passport { display: none !important; }
+      .member-bar-toggle, .mb-city, .mb-dash { min-height: 44px; box-sizing: border-box; }
+      .mb-dash { display: inline-flex; align-items: center; padding: 0 12px; }
+    }
+    /* Small phones, signed in: Collapse shows its arrow only (the words stay for screen readers), so the city's name fits
+       beside Dashboard (Sean, 2026-10-26). */
+    @media (max-width: 480px) {
+      .member-bar { padding: 12px 16px; gap: 8px; }
+      .member-bar-left { gap: 8px; }
+      .member-bar.mb-has-dash .member-bar-toggle { padding: 0 13px; }
+      .member-bar.mb-has-dash .mb-toggle-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     }
 
     /* ── Locked panel ── */
@@ -390,7 +402,7 @@
       </div>
       <div class="hero-actions">
         <a href="/passport#/join" class="btn-join" id="hub-join">Get Passport</a>
-        <a href="/welcome" class="btn-outline-light" id="hub-second">Take the Tour</a>
+        <a href="/welcome" class="btn-outline-light" id="hub-second">Page tour</a>
       </div>
     </div>
   </section>
@@ -400,14 +412,15 @@
       var img = document.getElementById('hub-banner'); img.src = h.page.banner; img.alt = h.page.alt;
       document.getElementById('hub-heading').innerHTML = h.page.short + '<br><em>Vegans</em>';
       document.getElementById('hub-regions').innerHTML = h.page.regions;
-      // Who is looking (Sean, 2026-10-25: "anybody can be a part of any community"): signed out, Get Passport and Take the
-      // Tour; signed in, Explore Directory and Explore Dashboard. The badge reads Preview until they are a member.
+      // Who is looking (Sean, 2026-10-25: "anybody can be a part of any community"): signed out, Get Passport; signed in,
+      // Explore Directory, with Dashboard in the bar under the hero. Page tour is the second button for both (ve-tour.js
+      // puts it there; Sean, 2026-10-26). The badge reads Preview until they are a member.
       var join = document.getElementById('hub-join'), second = document.getElementById('hub-second');
       var me = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? (VEAuth.getMember && VEAuth.getMember()) || {} : null;
       if (me) {
         join.textContent = 'Explore Directory'; join.href = '?tab=directory';
         join.onclick = function () { if (window.switchTab) { switchTab('directory'); return false; } };
-        second.textContent = 'Explore Dashboard'; second.href = '/dashboard';
+        document.addEventListener('DOMContentLoaded', function () { var d = document.getElementById('mb-dashboard'); if (d) { d.hidden = false; document.getElementById('member-bar').classList.add('mb-has-dash'); } });
         if (me.membership_status === 'active') {
           document.getElementById('hub-access').textContent = 'Member';
           // Members already hold the Passport: the bar's Get Passport goes once the bar is on the page.
@@ -432,6 +445,7 @@
       </nav>
     </div>
     <div class="member-bar-actions">
+      <a href="/dashboard" class="mb-dash" id="mb-dashboard" hidden>Dashboard</a>
       <a href="/passport" class="btn-join" id="mb-passport" style="font-size:10px;padding:9px 18px;">Get Passport</a>
     </div>
   </div>
