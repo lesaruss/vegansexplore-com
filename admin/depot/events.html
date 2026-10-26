@@ -292,11 +292,11 @@
     }
 
     /* ---------- crawl sources ---------- */
-    var KINDS = { website: 'Website', instagram: 'Instagram', calendar: 'Calendar', search: 'Web search' };
+    var KINDS = { list: 'List of events', website: 'Website', instagram: 'Instagram', calendar: 'Calendar', search: 'Web search' };
     function loadSources() { return api({ action: 'sources' }).then(function (d) { sources = d.sources || []; }); }
     function drawSources() {
       app.innerHTML = '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Crawl sources</span></nav>' +
-        '<p class="sub">The places the Background writer reads for upcoming Vegan events, each about once a week. What it finds lands in Waiting for approval. Add the calendars, Instagram accounts and sites you know.</p>' +
+        '<p class="sub">The places the Background writer reads for upcoming Vegan events, anywhere in the world, each on its own schedule. What it finds lands in Waiting for approval. Add the calendars, Instagram accounts and sites you know.</p>' +
         '<div class="bar"><a class="btn" href="#source/new">New source</a></div><div class="rows" id="src-rows"><p class="msg">Loading…</p></div>';
       (sources ? Promise.resolve() : loadSources()).then(function () {
         var hubs = {}; (window.VE_HUBS || []).forEach(function (h) { hubs[h.slug] = h.name; });
@@ -312,7 +312,7 @@
     }
     function drawSource(id) {
       if (!sources) { loadSources().then(function () { drawSource(id); }); return; }
-      var s = id === 'new' ? { kind: 'website', active: true } : sources.filter(function (x) { return x.id === id; })[0];
+      var s = id === 'new' ? { kind: 'list', active: true, every_days: 7 } : sources.filter(function (x) { return x.id === id; })[0];
       if (!s) { app.innerHTML = '<p class="empty">That source is not here. <a href="#sources">Back</a></p>'; return; }
       var hubs = (window.VE_HUBS || []);
       app.innerHTML = '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><a href="#sources">Crawl sources</a><span>/</span><span>' + esc(s.name || 'New source') + '</span></nav>' +
@@ -322,7 +322,8 @@
         '<div class="f wide" id="s-url-f"><label for="s-url">Link</label><input id="s-url" type="url" value="' + esc(s.url || '') + '" placeholder="https://"></div>' +
         '<div class="f wide" id="s-query-f"><label for="s-query">Search for</label><input id="s-query" value="' + esc(s.query || '') + '" placeholder="Vegan events festivals meetups Atlanta upcoming"></div>' +
         '<div class="f"><label for="s-city">City</label><select id="s-city"><option value="">Anywhere</option>' + hubs.map(function (h) { return '<option value="' + h.slug + '"' + (h.slug === s.city_slug ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('') + '</select></div>' +
-        '<div class="f"><label class="chk" style="margin-top:24px"><input type="checkbox" id="s-active"' + (s.active !== false ? ' checked' : '') + '> Read it every week</label></div>' +
+        '<div class="f"><label for="s-every">Read it every</label><select id="s-every">' + [1, 3, 7, 14, 30].map(function (n) { return '<option value="' + n + '"' + (n === (s.every_days || 7) ? ' selected' : '') + '>' + (n === 1 ? 'day' : n + ' days') + '</option>'; }).join('') + '</select></div>' +
+        '<div class="f"><label class="chk" style="margin-top:24px"><input type="checkbox" id="s-active"' + (s.active !== false ? ' checked' : '') + '> On</label></div>' +
         '<div class="f wide"><label for="s-notes">Notes for the reader</label><textarea id="s-notes" placeholder="Their events are under the Calendar tab. Skip the cooking classes.">' + esc(s.notes || '') + '</textarea></div>' +
         '</div>' + (s.last_note ? '<p class="sub" style="margin-top:12px">Last read: ' + esc(s.last_note) + '</p>' : '') +
         '<div class="acts"><button class="btn" id="s-save">Save</button>' + (id !== 'new' ? '<button class="btn btn-ghost" id="s-now">Read it on the next run</button>' : '') + '<span class="msg" id="s-msg" role="status"></span></div></div>';
@@ -330,7 +331,7 @@
       kind.onchange = t; t();
       var m = function (x, bad) { $('s-msg').textContent = x; $('s-msg').className = 'msg' + (bad ? ' bad' : ''); };
       $('s-save').onclick = function () {
-        api({ action: 'source_save', source: { id: id === 'new' ? null : id, name: $('s-name').value, kind: kind.value, url: $('s-url').value, query: $('s-query').value, city_slug: $('s-city').value, notes: $('s-notes').value, active: $('s-active').checked } }).then(function (d) {
+        api({ action: 'source_save', source: { id: id === 'new' ? null : id, name: $('s-name').value, kind: kind.value, url: $('s-url').value, query: $('s-query').value, city_slug: $('s-city').value, notes: $('s-notes').value, every_days: +$('s-every').value, active: $('s-active').checked } }).then(function (d) {
           if (!d.ok) { m(d.message || 'That did not save.', true); return; }
           sources = null; go('#sources');
         });

@@ -366,10 +366,11 @@ Deno.serve(async (req) => {
     case 'source_save': {
       const gate = needAdmin(); if (gate) return gate;
       const s = body.source || {};
-      const kind = ['website', 'instagram', 'calendar', 'search'].includes(s.kind) ? s.kind : 'website';
+      const kind = ['list', 'website', 'instagram', 'calendar', 'search'].includes(s.kind) ? s.kind : 'website';
       const row: Record<string, unknown> = {
         name: clean(s.name, 120), kind, url: isUrl(s.url) ? String(s.url).trim() : null, query: clean(s.query, 300) || null,
         city_slug: clean(s.city_slug, 60) || null, notes: clean(s.notes, 1000) || null, active: s.active !== false,
+        every_days: Math.min(60, Math.max(1, Math.round(Number(s.every_days) || 7))),
       };
       if (!row.name) return json({ error: 'missing', message: 'Give the source a name.' }, 400);
       if (kind === 'search' ? !row.query : !row.url) return json({ error: 'missing', message: kind === 'search' ? 'Add what to search for.' : 'Add the link.' }, 400);

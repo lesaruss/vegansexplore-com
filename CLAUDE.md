@@ -627,6 +627,18 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   the calendar that day, and saves it pending. Sources come back every 7 days (cron `ve-event-sources-requeue`). Nothing the
   crawl finds goes live until approved. Migration `20261026_ve_events_intake.sql` (`events.source` member | crawl | flyer |
   admin | import, `source_url`, `source_id`, `flyer_path`, `continent`).
+- **Every Vegan event in the world** (Sean, same day: "I want every event, possible vegan event, to be in this event
+  directory... it doesn't even matter if they're in regions where we are"). The first pass searched "Vegan events <city>" and
+  saved nothing (past events, undated listings), so the crawl reads **lists** first (`kind` `list`; migration
+  `20261026_ve_event_sources_lists.sql`): the American Vegan Society VegFest directory, HappyCow's events calendar, Eventbrite
+  searches for Vegan and plant-based (US, UK, Canada, Australia), Meetup's Vegan groups, vegconomist, Vegan Events UK,
+  VegfestUK, Veggies Abroad and the SoFlo Vegans calendar. It opens each listed event's own page and takes the date, place
+  and link from there, keeps only events that are Vegan by their own description, and saves a weekly series as its next
+  three dates. Each source has its own cadence (`every_days`: Eventbrite and HappyCow every 3 days). Add a source in Depot >
+  Events > Crawl sources. This session cannot reach outside sites; the Background writer does the reading.
+- **Vetting, in order**: `ve_event_intake` refuses no official link, no date, an event that is over, and a duplicate (same
+  name, same day); the writer keeps only Vegan events confirmed on their official page; the team approves each one in Depot >
+  Events. Nothing goes live on its own.
 - The menu (`public/nav.js`): Guides, Pulse, Podcasts, Communities, Directory, Events. The Community Board left it ("the
   community board is in the pulse"): `/pulse` opens the Board's sections (Daily Pulse topics, Requests & Offers, Jobs,
   Classifieds, Fosters, Rescues, Suggest a Topic, `/board?lane=`). Lead Your City left it too (`/lead` still exists).
