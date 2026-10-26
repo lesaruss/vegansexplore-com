@@ -136,7 +136,7 @@ The cap applies to the card only. Full article and detail views
 ## Ad rail (Sean, 2026-10-04)
 
 Three-fourths content, one-fourth ads on the right, on: the Daily Pulse (`/board` Pulse list and
-Pulse posts, the dashboard Daily Pulse tab) and the dashboard Events tab. Not on Communities,
+Pulse posts, the dashboard Daily Pulse tab), the dashboard Events tab and `/events`. Not on Communities,
 Tools, Shows or the Directory (the Directory listing has its own billboard).
 
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
@@ -590,6 +590,26 @@ listed business. Branches in different cities are not duplicates. Hidden import 
 listing, so look a listing up by slug and `status = 'approved'`. An old link to a merged copy forwards to the listing that
 stays: `directory/listing.html` asks `ve_listing_merged_to(slug)` (migration `20261010_listing_merged_redirect.sql`)
 when a slug has no approved listing, keeping the address's tab and hash.
+
+## Events, the menu and the city banner (Sean, 2026-10-26)
+
+"When you're not logged in... the events page needs to be there... select by city... search... It operates almost like our
+directory, but for events... the goal is to have every event in the world that's happening in this tool. And then that could
+feed into the cities." `/events` (`events/index.html`) is open to everyone: approved `events` rows, a city from the banner
+(an event counts in a city by `VE_HUBS[].page.eventCities` or the hub's Directory rule, `VECityBanner.matches`), search over
+title, description, place and city, Where (every country an event is in), Upcoming / Past, and kinds of event as pills; the
+address bar carries `?city=`, `?q=`, `?where=`, `?cat=`, `?when=past`. Cards in a grid with the ad rail (`/events` slots);
+`is_free` defaults to true in the table, so the card shows a price only when `price_cents` is set.
+
+- The menu (`public/nav.js`): Guides, Pulse, Podcasts, Communities, Directory, Events. The Community Board left it ("the
+  community board is in the pulse"): `/pulse` opens the Board's sections (Daily Pulse topics, Requests & Offers, Jobs,
+  Classifieds, Fosters, Rescues, Suggest a Topic, `/board?lane=`). Lead Your City left it too (`/lead` still exists).
+- **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
+  and collapse as well. That should be a feature for all the banners"): `/public/ve-city-banner.js`
+  (`VECityBanner.mount(el, {key, title, sub, onChange})`, after `ve-hubs.js`): the city's art, the city picker, Visit the
+  community, Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit). The
+  Directory, Events and Communities wear it; on `/communities` the pick narrows the city cards under it. A new browse page
+  with a banner uses it, never its own copy.
 
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
