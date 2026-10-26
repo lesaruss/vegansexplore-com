@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policies — Vegans Explore</title>
+  <meta name="description" content="How Vegans Explore works and how we handle your information: privacy, how we use AI, terms of use, membership and points, community guidelines, businesses, cookies and accessibility.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Policies (Sean, 2026-10-26: "do we have a policy page? If not, we need to create one that covers all of the
+       things that we should be covering, especially anything that might deal with AI"). One page, one policy per
+       view: the menu on the left (a dropdown on phones), the policy on the right, #<policy> in the address bar.
+       Full width; the copy keeps its own reading width (see CLAUDE.md, Full width). */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
+      --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75); --ve-text-60: rgba(26,26,26,0.68);
+    }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 44px 40px 80px; }
+    .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
+    h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 0.98; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 14px; }
+    h1 em { color: var(--ve-green); font-style: normal; }
+    .sub { font-size: 16px; line-height: 1.6; color: var(--ve-text-75); max-width: 860px; }
+    .updated { margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--ve-text-60); }
+
+    .pol { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 40px; margin-top: 36px; align-items: start; }
+    .pol-menu { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--ve-border); border-radius: 14px; padding: 12px; }
+    .pol-menu a { display: block; padding: 11px 14px; border-radius: 6px; font-size: 13px; font-weight: 700; color: var(--ve-text-75); text-decoration: none; }
+    .pol-menu a:hover { background: #f4f4f4; color: var(--ve-text); }
+    .pol-menu a[aria-current="page"] { background: var(--ve-green-light); color: var(--ve-green-dark); font-weight: 800; }
+    .pol-pick { display: none; }
+    .pol-pick select { width: 100%; appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 14px; font-weight: 700; color: var(--ve-text); padding: 14px 48px 14px 16px; border: 1px solid rgba(0,0,0,0.2); border-radius: 6px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center; }
+
+    .pol-doc { min-width: 0; }
+    .pol-sec { display: none; }
+    .pol-sec.on { display: block; }
+    .pol-sec h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .pol-sec .lede { font-size: 16px; line-height: 1.6; color: var(--ve-text-75); max-width: 860px; margin-bottom: 24px; }
+    .pol-sec h3 { font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin: 28px 0 10px; }
+    .pol-sec p, .pol-sec li { font-size: 15px; line-height: 1.7; color: var(--ve-text-75); max-width: 860px; }
+    .pol-sec p + p { margin-top: 10px; }
+    .pol-sec ul { padding-left: 20px; display: flex; flex-direction: column; gap: 8px; max-width: 860px; }
+    .pol-sec strong { color: var(--ve-text); }
+    .pol-sec a { color: var(--ve-green-dark); font-weight: 700; }
+    .pol-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 16px; margin-top: 8px; }
+    .pol-card { display: block; border: 1px solid var(--ve-border); border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; }
+    .pol-card:hover { border-color: var(--ve-green); }
+    .pol-card b { display: block; font-size: 15px; font-weight: 900; margin-bottom: 4px; color: var(--ve-text); }
+    .pol-card span { font-size: 13.5px; line-height: 1.55; color: var(--ve-text-75); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pol-note { margin-top: 28px; padding: 16px 20px; border-radius: 10px; background: var(--ve-green-light); font-size: 14px; line-height: 1.6; color: var(--ve-text); max-width: 860px; }
+    .pol-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--ve-border); max-width: 860px; }
+    .pol-nav a { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); text-decoration: none; }
+    .pol-nav a:hover { text-decoration: underline; }
+    :focus-visible { outline: 3px solid #F69820; outline-offset: 3px; }
+
+    @media (max-width: 900px) {
+      .pol { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+      .pol-menu { display: none; }
+      .pol-pick { display: block; }
+    }
+    @media (max-width: 700px) { main { padding: 32px 16px 64px; } }
+    @media print { .pol-menu, .pol-pick, .pol-nav { display: none !important; } .pol { grid-template-columns: 1fr; } .pol-sec { display: block !important; page-break-after: always; } }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main>
+    <div class="eyebrow">Policies</div>
+    <h1>How we <em>work</em></h1>
+    <p class="sub">Plain words on how Vegans Explore runs: what we collect and why, how we use AI, the rules of the road, and how to reach a person.</p>
+    <p class="updated">Last updated October 26, 2026</p>
+
+    <div class="pol">
+      <nav class="pol-menu" aria-label="Policies" id="polMenu"></nav>
+      <div class="pol-pick"><label for="polPick" class="eyebrow" style="margin-bottom:8px">Choose a policy</label><select id="polPick"></select></div>
+
+      <div class="pol-doc" id="polDoc">
+
+        <section class="pol-sec" id="overview" data-title="Overview">
+          <h2>Overview</h2>
+          <p class="lede">Vegans Explore is a Vegan community: a Directory of Vegan places and brands, city communities, the Community Board, the Daily Pulse, Guides, events and the Passport membership.</p>
+          <h3>Who we are</h3>
+          <p>Vegans Explore is a brand of <strong>LESARUSS Inc.</strong>, 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301, United States. When these policies say "we" or "us," they mean LESARUSS Inc. and the Vegans Explore team. You can learn about the company at <a href="https://lesaruss.com" target="_blank" rel="noopener">lesaruss.com</a>.</p>
+          <h3>The short version</h3>
+          <ul>
+            <li>We collect what we need to run your account, your membership and the features you use, and nothing we sell. <strong>We never sell your personal information.</strong></li>
+            <li>We use AI to help run the site, and we tell you where. Our Guides are AI characters, not people.</li>
+            <li>Points are given for taking part. They can't be bought, and they have no cash value.</li>
+            <li>Be kind, be honest, and keep it Vegan-friendly. That's most of the community rules.</li>
+            <li>A real person reads every email to <a href="mailto:contact@lesaruss.com">contact@lesaruss.com</a>.</li>
+          </ul>
+          <h3>Every policy</h3>
+          <div class="pol-cards" id="polCards"></div>
+        </section>
+
+        <section class="pol-sec" id="privacy" data-title="Privacy">
+          <h2>Privacy</h2>
+          <p class="lede">What we collect, why, who helps us, and the choices you have.</p>
+          <h3>What we collect</h3>
+          <ul>
+            <li><strong>Your account:</strong> your name, email address, password (stored scrambled, never readable by us), your city or community, and the Guide you choose.</li>
+            <li><strong>What you tell us:</strong> your answers to the Mission Survey, posts and replies on the Community Board, recipes and photos you share, votes, saves, reviews of a place you claim, and messages you send us or ask a Guide.</li>
+            <li><strong>Purchases:</strong> what you bought and when. Card payments are handled by Stripe. We never see or store your full card number.</li>
+            <li><strong>Check-ins:</strong> only when you tap Check in on a listing, your phone shares its location once so we can confirm you are at that place. We keep that location, how precise it was and the time with the check-in.</li>
+            <li><strong>How the site is used:</strong> pages viewed, links clicked, and actions on a listing (like calling or getting directions), counted with a random visitor code kept in your browser. We use Google Analytics for site-wide traffic.</li>
+            <li><strong>Email activity:</strong> whether an email we sent was delivered, opened or clicked, and whether you unsubscribed.</li>
+          </ul>
+          <h3>Why we use it</h3>
+          <ul>
+            <li>To run your account, membership, Guides, points and levels.</li>
+            <li>To show the Directory, the Board and your city's community, and to keep them honest (for example, a place needs 10 different members' votes to be vetted).</li>
+            <li>To send the emails you asked for, receipts and important account notices.</li>
+            <li>To show businesses how their page is doing (counts, not who you are, unless you check in, below).</li>
+            <li>To keep the site safe, stop spam and abuse, and fix problems.</li>
+          </ul>
+          <h3>Who can see what</h3>
+          <ul>
+            <li>Your public posts, recipes and approved photos show with your first name and last initial.</li>
+            <li><strong>Check-ins:</strong> the public sees counts only. Other members see the names of members who leave "Show my check-ins to other members" on (My Account, Privacy; it is on by default). The owner of a claimed listing can see who checked in at their place, whatever that setting says, so they can thank and reward regulars.</li>
+            <li>Your city's Community Manager and our team can see what they need to help you and to keep the community safe.</li>
+          </ul>
+          <h3>Who helps us run the site</h3>
+          <p>We use trusted services to host the site and database, take payments (Stripe), send email, measure traffic (Google Analytics), look up public business details (such as Google's business listings and businesses' public social profiles), and power our AI features (see How we use AI). They get only what they need to do that job for us.</p>
+          <h3>How long we keep it</h3>
+          <p>We keep your account information while your account is open. Purchase records are kept as long as the law requires. If you ask us to delete your account, we delete or anonymize your personal information, except what we must keep for legal, tax or safety reasons.</p>
+          <h3>Your choices</h3>
+          <ul>
+            <li>Unsubscribe from any email with the link at the bottom of it.</li>
+            <li>Turn off "Show my check-ins to other members" in My Account.</li>
+            <li>Ask us for a copy of your information, to correct it, or to delete your account: email <a href="mailto:contact@lesaruss.com?subject=Privacy%20request">contact@lesaruss.com</a> from the address on your account. We answer within 30 days.</li>
+          </ul>
+          <h3>Children</h3>
+          <p>Vegans Explore is not meant for children under 13, and we don't knowingly collect information from them. If you believe a child under 13 made an account, tell us and we will remove it.</p>
+          <h3>Security</h3>
+          <p>We use encrypted connections, scrambled passwords and access limits for our team. No system is perfect; if something goes wrong that affects you, we will tell you.</p>
+        </section>
+
+        <section class="pol-sec" id="ai" data-title="How we use AI">
+          <h2>How we use AI</h2>
+          <p class="lede">We use AI to keep a large community running with a small team. Here is where, what it means for you, and the lines we don't cross.</p>
+          <h3>Our Guides are AI characters</h3>
+          <p>Liz, Maya, River, Nori, Theo, Dani and the other Guides are characters we created. <strong>They are not real people.</strong> Their pictures are illustrations, and their voices and video clips are made with AI tools.</p>
+          <p>When you ask a Guide a question, we first look for an answer our team has already written and checked. If there isn't one and you choose to ask the Guide directly, an AI writes the reply. Those replies are saved as drafts, and a draft becomes a saved answer only after it is checked. You can always choose Ask a person instead.</p>
+          <h3>AI can be wrong</h3>
+          <p>AI replies can contain mistakes. <strong>Nothing a Guide says is medical, nutrition, legal or financial advice.</strong> Talk to a qualified professional about your health, diet, or any big decision. If a Guide says something wrong, tell us and we will fix the saved answer.</p>
+          <h3>Where else we use AI</h3>
+          <ul>
+            <li><strong>The Daily Pulse:</strong> each day's topics are drafted with AI from real, linked sources and can be reviewed or pulled by our team.</li>
+            <li><strong>The Directory:</strong> AI helps write short descriptions and copy menus and hours from a business's own website and public profiles. We never invent details, and an owner can edit their page at any time.</li>
+            <li><strong>Pictures:</strong> some pictures are made with AI. Pictures of food or products made this way are labeled "Illustrative photo" until real ones replace them.</li>
+            <li><strong>Business audits and check-ups:</strong> automated checks read a business's public website, Google listing and social profiles to suggest fixes and to flag places that may have closed. A person reviews a flag before a listing is marked closed.</li>
+            <li><strong>Podcast transcripts:</strong> our episodes are transcribed and tagged by topic with AI so you can search them.</li>
+          </ul>
+          <h3>The lines we don't cross</h3>
+          <ul>
+            <li>We don't sell your information, and we don't train AI models on it.</li>
+            <li>We don't present an AI character as a real person, and we don't make AI pictures of real people without their permission.</li>
+            <li>A person makes the calls that matter: approving claims, vetting listings, removing posts and paying out prizes.</li>
+          </ul>
+        </section>
+
+        <section class="pol-sec" id="terms" data-title="Terms of use">
+          <h2>Terms of use</h2>
+          <p class="lede">By using vegansexplore.com you agree to these terms. If you don't agree, please don't use the site.</p>
+          <h3>Your account</h3>
+          <ul>
+            <li>You must be at least 13 to make an account. If you are under 18, you need a parent or guardian's permission.</li>
+            <li>Give us true information, keep your password to yourself, and tell us if someone else gets into your account.</li>
+            <li>One account per person. Points, votes and check-ins are personal and can't be shared or sold.</li>
+          </ul>
+          <h3>What you share</h3>
+          <p>You own what you post: Board posts, recipes, photos and reviews. By posting it, you give us permission to show it on Vegans Explore and in our own promotion of the community, with your first name and last initial. Only post what you have the right to share.</p>
+          <h3>What's ours</h3>
+          <p>The Vegans Explore name, logo, Guides, illustrations, podcasts, Guides' content and the site itself belong to LESARUSS Inc. Please don't copy them for your own use without asking.</p>
+          <h3>Not allowed</h3>
+          <ul>
+            <li>Breaking the community guidelines, or the law.</li>
+            <li>Gaming votes, check-ins or points (fake accounts, faking your location, automated clicking).</li>
+            <li>Scraping the site, or using it to build a competing directory.</li>
+            <li>Trying to break into, overload or interfere with the site.</li>
+          </ul>
+          <p>We can remove content, take back points earned unfairly, or close an account that breaks these terms.</p>
+          <h3>Information on the site</h3>
+          <p>Listings, hours, menus and prices come from businesses and public sources and can change. Check with the business before you go, especially about ingredients and allergies. Links to other sites are for your convenience; we are not responsible for them.</p>
+          <h3>Limits</h3>
+          <p>Vegans Explore is provided as it is. To the extent the law allows, LESARUSS Inc. is not liable for indirect or unexpected losses from using the site, and our total liability to you is limited to what you paid us in the last 12 months.</p>
+          <h3>Changes and law</h3>
+          <p>We may update these terms. When we make a big change, we will tell members by email or on the site before it takes effect. These terms are governed by the laws of the State of Florida.</p>
+        </section>
+
+        <section class="pol-sec" id="membership" data-title="Membership, points and payments">
+          <h2>Membership, points and payments</h2>
+          <p class="lede">How the Passport, Guides, points and levels work.</p>
+          <h3>The Passport</h3>
+          <ul>
+            <li>The Passport is <strong>$11, one time</strong>. It makes you a member and comes with 1,100 welcome points. There is no monthly fee.</li>
+            <li>Any purchase of $11 or more (a Guide, an event ticket, merchandise) also makes you a member.</li>
+            <li>Founding Membership "member since" dates never move while your membership is active.</li>
+          </ul>
+          <h3>Guides</h3>
+          <p>Each Guide is $11 or 1,100 points, and it's yours to keep. Free Guides stay free for everyone.</p>
+          <h3>Points</h3>
+          <ul>
+            <li>Points are given for taking part: Bounties, campaigns, the Daily Pulse, the Community Board, check-ins and referrals. Every purchase also earns a 25-point thank-you.</li>
+            <li><strong>Points can't be bought, sold, transferred or cashed out, and they have no cash value.</strong> You can spend them on Guides and Guide chat, or give them to a business or nonprofit on the Directory as a boost, never as money.</li>
+            <li>Levels go by lifetime points: Level 2 from 2,500, Level 3 from 10,000. Spending or giving points never lowers your level.</li>
+            <li>We may change how points are earned or spent, and we can take back points earned by breaking the terms.</li>
+          </ul>
+          <h3>Contributions</h3>
+          <p>Contributions to Vegans Explore support the community: events, Community Managers and the apps. They go to LESARUSS Inc., a company, so <strong>they are not tax-deductible donations.</strong></p>
+          <h3>Payments and questions about a charge</h3>
+          <p>Payments are processed by Stripe. If a charge looks wrong or something you bought didn't work, email <a href="mailto:contact@lesaruss.com?subject=Question%20about%20a%20charge">contact@lesaruss.com</a> with your receipt and we will sort it out.</p>
+        </section>
+
+        <section class="pol-sec" id="community" data-title="Community guidelines">
+          <h2>Community guidelines</h2>
+          <p class="lede">The Community Board, the Daily Pulse, recipes and photos work because people are kind and honest. These rules keep it that way.</p>
+          <h3>Do</h3>
+          <ul>
+            <li>Be welcoming, especially to people who are just starting out. Everyone's journey is different.</li>
+            <li>Share what you know, with a source when it's a fact.</li>
+            <li>Keep posts in the right section: Requests and Offers, Jobs, Classifieds, Fosters, Rescues, or Suggest a Topic.</li>
+          </ul>
+          <h3>Don't</h3>
+          <ul>
+            <li>Harass, threaten, shame or bully anyone, or attack people for who they are.</li>
+            <li>Post spam, scams, false information, or anything illegal.</li>
+            <li>Share someone else's private information, or photos you don't have the right to share.</li>
+            <li>Sell or rehome animals for profit. The Fosters and Rescues boards are for placing animals in care, never selling them.</li>
+            <li>Post graphic content without a warning, or anything sexual.</li>
+          </ul>
+          <h3>Reporting</h3>
+          <p>If you see something that breaks these rules, email <a href="mailto:contact@lesaruss.com?subject=Report%20a%20post">contact@lesaruss.com</a> with a link to it. Our team and your city's Community Manager review reports and can remove posts or close accounts.</p>
+        </section>
+
+        <section class="pol-sec" id="business" data-title="Businesses and listings">
+          <h2>Businesses and listings</h2>
+          <p class="lede">How places get on the Directory, and what owners can do.</p>
+          <ul>
+            <li><strong>How listings are made:</strong> from public information (the business's own website, Google's business listing and public social profiles), from members' suggestions, and from owners who apply. We never invent details.</li>
+            <li><strong>Vetting:</strong> a Vegan-friendly or Vegan-options food place shows publicly once 10 different members vote for it, its owner claims it, or our team vets it.</li>
+            <li><strong>Claiming:</strong> owners claim their page with the $11 Founding Membership or the Partner plan. Once our team approves the claim, the owner can edit the page, menu, hours and photos.</li>
+            <li><strong>Votes and points can't be bought.</strong> Rankings come from members.</li>
+            <li><strong>Closed or wrong?</strong> Tell us and we will check. Places that close for good are kept under Closed, for memory.</li>
+            <li><strong>Emails to businesses:</strong> we may email a business at the address it publishes on its own website, about its page. Every email has a one-click unsubscribe, and we stop for good when asked.</li>
+            <li><strong>Remove a listing:</strong> owners can ask us to take a page down by emailing <a href="mailto:contact@lesaruss.com?subject=About%20my%20listing">contact@lesaruss.com</a>.</li>
+          </ul>
+        </section>
+
+        <section class="pol-sec" id="cookies" data-title="Cookies and analytics">
+          <h2>Cookies and analytics</h2>
+          <p class="lede">What we store in your browser and why.</p>
+          <ul>
+            <li><strong>Keeping you signed in:</strong> your sign-in is kept in your browser's storage so you don't have to sign in on every page.</li>
+            <li><strong>Remembering your choices:</strong> things like your city, a folded banner, a shopping list or a quiz in progress.</li>
+            <li><strong>Counting visits:</strong> a random visitor code so a listing's numbers count people, not page refreshes.</li>
+            <li><strong>Google Analytics:</strong> Google's cookies measure site-wide traffic for us. You can block them with your browser settings or Google's opt-out add-on.</li>
+            <li><strong>Tracked links:</strong> links we send look like vegansexplore.com/go/... so we know which ones work. Link previews and scanners are not counted.</li>
+          </ul>
+          <p>We don't put ad-network trackers (like Facebook or TikTok pixels) on the site. Clearing your browser's site data signs you out and resets these choices.</p>
+        </section>
+
+        <section class="pol-sec" id="accessibility" data-title="Accessibility">
+          <h2>Accessibility</h2>
+          <p class="lede">Vegans Explore should work for everyone.</p>
+          <p>We aim to meet the Web Content Accessibility Guidelines (WCAG) 2 at level AA: readable contrast, pages that work with a keyboard and a screen reader, captions or words alongside our Guide clips, and layouts that work on a phone. We check new pages against those guidelines, and we fix what we find.</p>
+          <p>If something on the site doesn't work for you, email <a href="mailto:contact@lesaruss.com?subject=Accessibility">contact@lesaruss.com</a> with the page and what happened. We will fix it, or get you what you need another way.</p>
+        </section>
+
+        <section class="pol-sec" id="contact" data-title="Contact us">
+          <h2>Contact us</h2>
+          <p class="lede">Questions about these policies, your information, or anything else.</p>
+          <p><strong>Email:</strong> <a href="mailto:contact@lesaruss.com">contact@lesaruss.com</a></p>
+          <p><strong>Mail:</strong> LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301</p>
+          <p>More ways to reach us are on the <a href="/contact">Contact page</a>.</p>
+        </section>
+
+        <div class="pol-nav" id="polNav"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var secs = [].slice.call(document.querySelectorAll('.pol-sec'));
+      var menu = document.getElementById('polMenu'), pick = document.getElementById('polPick');
+      var cards = document.getElementById('polCards'), nav = document.getElementById('polNav');
+      var blurbs = {
+        privacy: 'What we collect, why, who helps us, and your choices.',
+        ai: 'Our Guides are AI characters. Where else we use AI, and the lines we don’t cross.',
+        terms: 'The rules for using Vegans Explore.',
+        membership: 'The $11 Passport, Guides, points, levels and payments.',
+        community: 'How to keep the Board kind, honest and useful.',
+        business: 'How listings are made, vetted and claimed.',
+        cookies: 'What we keep in your browser, and why.',
+        accessibility: 'Our standard, and how to tell us when something doesn’t work.',
+        contact: 'How to reach a person.'
+      };
+      secs.forEach(function (s) {
+        var a = document.createElement('a'); a.href = '#' + s.id; a.textContent = s.dataset.title; menu.appendChild(a);
+        var o = document.createElement('option'); o.value = s.id; o.textContent = s.dataset.title; pick.appendChild(o);
+        if (blurbs[s.id]) {
+          var c = document.createElement('a'); c.className = 'pol-card'; c.href = '#' + s.id;
+          c.innerHTML = '<b></b><span></span>'; c.firstChild.textContent = s.dataset.title; c.lastChild.textContent = blurbs[s.id];
+          cards.appendChild(c);
+        }
+      });
+      // Old links: /privacy-policy and /terms-of-use land here as ?p=privacy and ?p=terms.
+      var q = new URLSearchParams(location.search).get('p');
+      if (q && !location.hash) history.replaceState(null, '', location.pathname + '#' + q);
+      function show(scroll) {
+        var id = (location.hash || '').slice(1), i = secs.findIndex(function (s) { return s.id === id; });
+        if (i < 0) i = 0;
+        secs.forEach(function (s, j) { s.classList.toggle('on', j === i); });
+        [].forEach.call(menu.children, function (a, j) { if (j === i) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+        pick.value = secs[i].id;
+        var prev = secs[i - 1], next = secs[i + 1];
+        nav.innerHTML = (prev ? '<a href="#' + prev.id + '">&larr; ' + prev.dataset.title + '</a>' : '<span></span>') +
+                        (next ? '<a href="#' + next.id + '">' + next.dataset.title + ' &rarr;</a>' : '<span></span>');
+        document.title = (i ? secs[i].dataset.title + ' — ' : '') + 'Policies — Vegans Explore';
+        if (scroll) { var top = document.querySelector('.pol').getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > top) window.scrollTo(0, top); }
+      }
+      pick.addEventListener('change', function () { location.hash = pick.value; });
+      window.addEventListener('hashchange', function () { show(true); });
+      show(false);
+    })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
