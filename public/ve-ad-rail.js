@@ -1,7 +1,14 @@
 /* ve-ad-rail.js: the right-hand advertising rail (Sean, 2026-10-04: "three-fourths being the
    content, one-fourth being the advertisement to the right ... that's a revenue stream for us").
-   Used on the Daily Pulse (/board list and post pages, the dashboard's Daily Pulse tab) and the
-   dashboard's Events tab. Not on Communities, Tools, Shows or the Directory (which has its own).
+   Used on the Daily Pulse (/board list and post pages, the dashboard's Daily Pulse tab), the
+   dashboard's Events tab and the Directory (/directory and the dashboard's Directory tab).
+
+   The Directory's rail is the chapter's (Sean, 2026-10-26: "those banners will appear throughout the
+   entire chapter... South Florida... Central Florida will have its own"): two 300 x 250 banners, the
+   same two landscape slots as that city hub's billboard (VE_HUBS[].page.adPrefix, page
+   /communities/<slug>), so one buy shows on every page of the chapter. All cities uses the Directory's
+   own pair (page /directory). <aside class="vear-rail" data-ad-page="chapter" data-ad-chapter="<hub slug>">,
+   and VEAdRail.chapter(rail, slug) when the city changes.
 
    Same ad system as the old Pulse page and the Directory listing billboard: placements live in
    ad_placements (page_slug + slot_id), ad-resolve picks the active campaign per slot and logs the
@@ -20,6 +27,14 @@
     pulse: [{ id: 'skyscraper', shape: 'tower', size: '300 x 600' }, { id: 'landscape-1', shape: 'landscape', size: '300 x 250' }],
     '/events': [{ id: 've-events-skyscraper', shape: 'tower', size: '300 x 600' }, { id: 've-events-landscape-1', shape: 'landscape', size: '300 x 250' }]
   };
+
+  // A chapter's rail: its hub's two landscape slots, or the Directory's pair for All cities.
+  function chapterPage(slug) {
+    var hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === slug; })[0];
+    var prefix = hub && hub.page && hub.page.adPrefix;
+    if (!prefix) return { slug: '/directory', slots: [{ id: 've-directory-landscape-1', shape: 'landscape', size: '300 x 250' }, { id: 've-directory-landscape-2', shape: 'landscape', size: '300 x 250' }] };
+    return { slug: '/communities/' + hub.slug, slots: [{ id: prefix + '-landscape-1', shape: 'landscape', size: '300 x 250' }, { id: prefix + '-landscape-2', shape: 'landscape', size: '300 x 250' }] };
+  }
 
   var css = [
     '.vear-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:28px;align-items:start;}',
@@ -53,6 +68,7 @@
     if (!rail || rail.getAttribute('data-ad-ready')) return;
     var page = rail.getAttribute('data-ad-page');
     var slots = PAGES[page];
+    if (page === 'chapter') { var ch = chapterPage(rail.getAttribute('data-ad-chapter') || ''); page = ch.slug; slots = ch.slots; }
     if (!slots) return;
     rail.setAttribute('data-ad-ready', '1');
     rail.setAttribute('aria-label', 'Advertisement');
@@ -83,6 +99,12 @@
       if (io) { r.setAttribute('data-ad-watch', '1'); io.observe(r); } else mount(r);
     });
   }
-  window.VEAdRail = { mount: mount, mountAll: mountAll };
+  // A chapter rail follows the city picker: new slots, filled again (and counted) for the new chapter.
+  function chapter(rail, slug) {
+    if (!rail || (rail.getAttribute('data-ad-chapter') || '') === (slug || '')) return;
+    rail.setAttribute('data-ad-chapter', slug || '');
+    if (rail.getAttribute('data-ad-ready')) { rail.removeAttribute('data-ad-ready'); mount(rail); }
+  }
+  window.VEAdRail = { mount: mount, mountAll: mountAll, chapter: chapter };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountAll); else mountAll();
 })();

@@ -50,12 +50,14 @@
   <script src="/public/ve-votes.js"></script>
   <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-region-directory.js"></script>
+  <script src="/public/ve-ad-rail.js"></script>
 
   <script src="/public/ve-city-banner.js"></script>
   <section id="dir-hero"></section>
 
   <main id="main-content">
-    <div id="ve-region-directory"></div>
+    <!-- Three-fourths the Directory, one-fourth the chapter's two banners (Sean, 2026-10-26). public/ve-ad-rail.js -->
+    <div class="vear-layout"><div class="vear-main"><div id="ve-region-directory"></div></div><aside class="vear-rail" id="dir-ad-rail" data-ad-page="chapter"></aside></div>
 
     <section class="vote-box" id="dir-vote-box" aria-label="Founding Membership">
       <div class="vote-box-copy">
@@ -78,6 +80,7 @@
       };
     }
     function show(slug, hub) {
+      if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dir-ad-rail'), hub ? hub.slug : '');
       if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub) });
       // ?tab=<section> opens that section (a listing's breadcrumb links back this way).
       var tab = new URLSearchParams(location.search).get('tab');
