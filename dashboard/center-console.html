@@ -911,7 +911,8 @@
     <div id="dash-directory-section" style="display:none;margin-bottom:28px;" data-tab-key="directory" data-tab-order="1" data-tab-label="Directory">
       <section id="dash-dir-hero" class="dash-hero-banner"></section>
       <div id="dash-directory-crumb"></div>
-      <div id="dash-directory-mount"></div>
+      <!-- Three-fourths the Directory, one-fourth the chapter's two banners (Sean, 2026-10-26). public/ve-ad-rail.js -->
+      <div class="vear-layout" id="dash-dir-layout"><div class="vear-main"><div id="dash-directory-mount"></div></div><aside class="vear-rail" id="dash-dir-ad-rail" data-ad-page="chapter"></aside></div>
       <div id="dash-directory-detail"></div>
     </div>
 
@@ -2715,6 +2716,7 @@
     var crumb = document.getElementById('dash-directory-crumb');
     if (!mount || !detail || !crumb) return;
     mount.style.display = 'none';
+    document.getElementById('dash-dir-layout').style.display = 'none';
     crumb.innerHTML = '';
     var back = document.createElement('button');
     back.type = 'button';
@@ -2747,6 +2749,7 @@
     if (detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
     if (crumb) { crumb.style.display = 'none'; crumb.innerHTML = ''; }
     if (mount) mount.style.display = '';
+    var layout = document.getElementById('dash-dir-layout'); if (layout) layout.style.display = '';
   }
 
   // "My List" in-frame embed (2026-09-08, Sean, Fieldy field note): the My
@@ -3416,6 +3419,7 @@
     if (!mount) return;
     closeDashboardListing();
     var active = DASH_ALL.directory ? '' : getActiveCity(member);
+    if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dash-dir-ad-rail'), active || '');
     if (window.VECityBanner) {
       if (!dashDirBanner) {
         dashDirBanner = VECityBanner.mount('dash-dir-hero', {

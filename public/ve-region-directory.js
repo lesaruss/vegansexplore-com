@@ -120,7 +120,8 @@
     + '.vrd-root .rank-num.top3{color:#5EC47A}'
     + '.vrd-root .rank-pts{font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;text-align:center}'
     + '.vrd-root .rank-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}'
-    + '.vrd-root .rank-name{font-size:14px;font-weight:800;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}'
+    // The whole name shows, on up to three rows when it needs them (Sean, 2026-10-26: "right now they all have ellipses").
+    + '.vrd-root .rank-name{font-size:14px;font-weight:800;color:#1a1a1a;line-height:1.25;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}'
     + '.vrd-root .rank-meta{font-size:12px;font-weight:600;color:#555;line-height:1}'
     + '.vrd-root .rank-subcat{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#666;margin-top:2px}'
     + '.vrd-root .rank-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:6px;flex-shrink:0;height:60px}'
@@ -148,7 +149,10 @@
     + '.vrd-root .vrd-page-btn:hover:not(:disabled){border-color:#5EC47A;color:#2d7a4f}'
     + '.vrd-root .vrd-page-btn:disabled{opacity:.35;cursor:default}'
     + '.vrd-root .vrd-page-indicator{font-size:11px;font-weight:700;color:#666;letter-spacing:.04em}'
-    + '@media(max-width:768px){.vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}.vrd-root .cat-tab{font-size:10px;padding:10px 12px}.vrd-root .perpage-select{margin-left:0}}';
+    // Beside the ad rail (/directory, the dashboard): three across in the three-fourths, two on a laptop (Sean, 2026-10-26).
+    + '.vear-main .vrd-root .rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))}'
+    + '@media(max-width:1280px){.vear-main .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}'
+    + '@media(max-width:768px){.vrd-root .rank-grid,.vear-main .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}.vrd-root .cat-tab{font-size:10px;padding:10px 12px}.vrd-root .perpage-select{margin-left:0}}';
 
   function injectStyleOnce() {
     if (document.getElementById('vrd-style')) return;

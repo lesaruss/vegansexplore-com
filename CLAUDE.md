@@ -136,8 +136,15 @@ The cap applies to the card only. Full article and detail views
 ## Ad rail (Sean, 2026-10-04)
 
 Three-fourths content, one-fourth ads on the right, on: the Daily Pulse (`/board` Pulse list and
-Pulse posts, the dashboard Daily Pulse tab), the dashboard Events tab and `/events`. Not on Communities,
-Tools, Shows or the Directory (the Directory listing has its own billboard).
+Pulse posts, the dashboard Daily Pulse tab), the dashboard Events tab, `/events`, and the Directory (`/directory` and the
+dashboard Directory tab). Not on Communities, Tools or Shows (a Directory listing page has its own billboard).
+
+The Directory's rail is the **chapter's** (Sean, 2026-10-26: "those banners will appear throughout the entire chapter...
+Central Florida will have its own... all that's real estate that people can purchase ads on"): two 300 x 250 banners stacked,
+the same two landscape slots as that city hub's billboard (`<adPrefix>-landscape-1/-2`, page `/communities/<slug>`), so one
+buy runs on every page of the chapter; All cities uses `/directory`'s pair (`ve-directory-landscape-1/-2`). The rail is
+`data-ad-page="chapter"` and follows the city picker (`VEAdRail.chapter(rail, slug)`). Beside it the Directory is three cards
+across (two under 1280 px, one on phones), and a card's name shows whole, up to three rows, never cut with an ellipsis.
 
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
 and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come from `ad_placements`
