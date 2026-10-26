@@ -63,10 +63,12 @@
     '.vcb.is-collapsed .vcb-eyebrow,.vcb.is-collapsed .vcb-sub{display:none;}',
     '.vcb.is-collapsed h1{font-size:22px;line-height:1.15;margin:0;letter-spacing:-.01em;}',
     '.vcb.is-collapsed h1 em{display:block;font-size:17px;margin-top:4px;}',
+    // Folded, the title stays on one line and shrinks to fit instead (Sean, 2026-10-26: two rows made the buttons taller on phones).
+    '.vcb.is-collapsed .vcb-t{display:block;white-space:nowrap;}',
     '.vcb.is-collapsed .vcb-pick{margin-top:0;flex-wrap:nowrap;}',
     '.vcb.is-collapsed .vcb-pick select{padding:9px 44px 9px 14px;}',
     '.vcb.is-collapsed .vcb-actions{display:grid;grid-auto-rows:1fr;gap:8px;margin:0;}',
-    '.vcb.is-collapsed .vcb-btn{width:100%;padding:8px 10px;}',
+    '.vcb.is-collapsed .vcb-btn{width:100%;padding:8px 10px;display:flex;align-items:center;justify-content:center;}',
     // Option B on phones: flat scrim and a frosted card.
     '@media (max-width:900px){.vcb{align-items:flex-end;min-height:520px;background-position:center center;}.vcb::before{background:rgba(0,0,0,.32);}.vcb::after{display:none;}.vcb-inner{background:rgba(0,0,0,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,.09);}}',
     '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,.10);}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px 22px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
@@ -104,7 +106,7 @@
     el.innerHTML =
       '<div class="vcb-inner"><div class="vcb-main">' +
         '<div class="vcb-eyebrow">' + esc(opts.eyebrow || 'Vegans Explore') + '</div>' +
-        '<h1 id="' + id + '-h">' + esc(opts.title || '') + ' <em data-vcb-city>' + esc(opts.allTitle || 'Every City') + '</em></h1>' +
+        '<h1 id="' + id + '-h"><span class="vcb-t">' + esc(opts.title || '') + '</span> <em data-vcb-city>' + esc(opts.allTitle || 'Every City') + '</em></h1>' +
         (opts.sub ? '<p class="vcb-sub">' + esc(opts.sub) + '</p>' : '') +
         '<div class="vcb-pick">' +
           '<label for="' + id + '-city">City</label>' +
@@ -154,7 +156,18 @@
     if (mobile.addEventListener) mobile.addEventListener('change', paint);
 
     // Expanded on landing; autoFold() folds it on the first click into the page, unless the visitor chose with the button.
-    function fold(on) { el.classList.toggle('is-collapsed', on); toggle.textContent = on ? 'Expand' : 'Collapse'; toggle.setAttribute('aria-expanded', on ? 'false' : 'true'); }
+    // Folded, shrink the title until it fits its column on one line (fitTitle), never below 12px.
+    var title = el.querySelector('.vcb-t');
+    function fitTitle() {
+      if (!title) return;
+      title.style.fontSize = '';
+      if (!el.classList.contains('is-collapsed')) return;
+      var size = parseFloat(getComputedStyle(title).fontSize) || 18;
+      while (title.scrollWidth > title.clientWidth + 1 && size > 12) { size -= 0.5; title.style.fontSize = size + 'px'; }
+    }
+    if (window.ResizeObserver) new ResizeObserver(function () { fitTitle(); }).observe(el); else window.addEventListener('resize', fitTitle);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
+    function fold(on) { el.classList.toggle('is-collapsed', on); fitTitle(); toggle.textContent = on ? 'Expand' : 'Collapse'; toggle.setAttribute('aria-expanded', on ? 'false' : 'true'); }
     try { chosen = sessionStorage.getItem(storeKey); } catch (e) {}
     toggle.addEventListener('click', function () {
       var on = !el.classList.contains('is-collapsed'); fold(on);

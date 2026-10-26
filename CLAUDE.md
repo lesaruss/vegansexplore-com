@@ -680,7 +680,8 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   Folded, it is three rows and two columns, the right one about a quarter, at every width: the title, the chapter under it,
   then the picker on the left; the buttons stacked to the same height on the right. No City label shows beside the picker (it
   pushed it out on phones; screen readers still hear it), so the picker sits flush left under the title, and on phones a 22px
-  gap keeps it clear of the buttons (Sean, 2026-10-26). The
+  gap keeps it clear of the buttons (Sean, 2026-10-26). Folded, the title (Vegan Directory, Vegan Events) is always one line: it
+  shrinks to fit its column (down to 12px) rather than wrap, since a second line made the buttons taller (Sean, 2026-10-26). The
   Directory, Events and Communities wear it; on `/communities` the pick narrows the city cards under it. A new browse page
   with a banner uses it, never its own copy. The dashboard's Directory and Events tabs wear it too (Sean: "I want a similar
   look and feel for both"; `param: false`, `initial`): a city picked there is the dashboard's active city, All
