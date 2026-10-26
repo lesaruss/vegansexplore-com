@@ -1243,6 +1243,20 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
 - Depot > Preview journeys > Your Guide walks every screen (`/guide?preview=<step>`, `PREVIEWS` in
   `guide.html`); a new screen gets a preview there and a line in `JOURNEYS.guide`.
 
+## Sign In As: switch into another account (Sean, 2026-10-26)
+
+"The same way I do view as, I want to have that option to choose from the super admin... so I can log in and see that
+experience." View As only paints the page over the super admin's own session; **Sign In As** (the nav drawer, under View As,
+`public/nav.js`) is a real sign-in, so every call the page makes runs as that member. Only accounts in `ve_switch_accounts` can
+be switched into (Logan Russell, Sean's founding-member walkthrough account, and the six Guides), only by a super admin signed in
+as themselves, through `ve-switch-account` (`list`, `switch`; an 8-hour token carrying `switched_by`, refused for another switch;
+each switch logged to `stream_events`). The super admin's own session waits in `localStorage` `ve_switch_from`; the
+**Back to my account** pill (bottom left) or the drawer puts it back, and Sign out clears it. Add an account with a
+`ve_switch_accounts` row. The Guide accounts (`<guide>.guide@vegansexplore.com`, `member_class` agent, no password, playbook
+`ve-guide-accounts`) cannot vote, check in or give points (`ve_refuse_agent_actions` triggers on `listing_daily_votes`,
+`ve_checkins`, `ve_listing_point_contributions`). Anything posted while signed in as a Guide is live and, until the Guide
+badge is built, reads like any member's post. Migration `20261026_ve_switch_accounts.sql`.
+
 ## Guide answers: a free knowledge base in front of the Guides (Sean, 2026-10-06)
 
 "Make it more like a chat bot where it's essentially a knowledge base... once it has it, it should
