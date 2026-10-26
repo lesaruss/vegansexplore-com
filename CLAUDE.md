@@ -135,8 +135,8 @@ The cap applies to the card only. Full article and detail views
 
 ## Ad rail (Sean, 2026-10-04)
 
-Three-fourths content, one-fourth ads on the right, on: the Daily Pulse (`/board` Pulse list and
-Pulse posts, the dashboard Daily Pulse tab), the dashboard Events tab, `/events`, and the Directory (`/directory` and the
+Three-fourths content, one-fourth ads on the right, on: the Daily Pulse (`/pulse`, every tab and post, and so the
+dashboard Daily Pulse tab), the dashboard Events tab, `/events`, and the Directory (`/directory` and the
 dashboard Directory tab). Not on Communities, Tools or Shows (a Directory listing page has its own billboard).
 
 The Directory's rail is the **chapter's** (Sean, 2026-10-26: "those banners will appear throughout the entire chapter...
@@ -670,8 +670,7 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   name, same day); the writer keeps only Vegan events confirmed on their official page; the team approves each one in Depot >
   Events. Nothing goes live on its own.
 - The menu (`public/nav.js`): Guides, Pulse, Podcasts, Communities, Directory, Events. The Community Board left it ("the
-  community board is in the pulse"): `/pulse` opens the Board's sections (Daily Pulse topics, Requests & Offers, Jobs,
-  Classifieds, Fosters, Rescues, Suggest a Topic, `/board?lane=`). Lead Your City left it too (`/lead` still exists).
+  community board is in the pulse"): `/pulse` is the Board (see The Daily Pulse is the Community Board). Lead Your City left it too (`/lead` still exists).
 - **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
   and collapse as well. That should be a feature for all the banners"): `/public/ve-city-banner.js`
   (`VECityBanner.mount(el, {key, title, sub, onChange, action})`, after `ve-hubs.js`): the city's art, the city picker, and
@@ -732,12 +731,31 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
   (`topic_post_id`) counts as done (migration `20261005_ve_news_leads_sponsor_only.sql`). HQ's Depot calls
   the same function, so its write-up needs a sponsor too.
 
+## The Daily Pulse is the Community Board (Sean, 2026-10-26)
+
+"I would like to see the pulse to really be the community board... the same kind of header that the other pages have... navigate
+between the different chapters... like traveling to these different locations." `/pulse` (`pulse.html`, which was `board.html`;
+`/board` forwards here, query kept; the old article feed is gone, its pages still open at `/pulse/<slug>` and the shows at
+`/podcast`) wears the city banner (`VECityBanner`, key `pulse`): `?city=<hub>` (an old `?community=` still works), else the
+member's home city, else the last pick, else All cities, which lists every chapter (`ve-board` `list` with community `all`; topics
+from every city and the national one, posts from every city with their city tag, no How it works posts). Six tabs, the Daily
+Pulse first: Daily Pulse, Jobs, Classifieds, Fosters, Rescues, Suggest a Topic. **Requests & Offers left** (Sean: "doing similar
+stuff to jobs classified"; it had no member posts); an old request still opens. Each tab has its line and its button (Post a job,
+Post a listing...; on the Daily Pulse, Suggest a topic). Two cards across beside the ad rail on every tab and post. A post's
+conversation is its **Comments** (Add a comment, Post comment); topic cards say Join the conversation. Anyone reads; posting,
+commenting, contact details and reports are for members, and anyone else gets the Passport window (`VEVotes.memberPrompt(kind)`:
+post, comment, contact, report, job; `/passport?from=board`), never a sign-in box. **Hiring is a perk of a business in the
+Directory** (the viewer owns a listing, `listings.owner_member_id`; `ve-board` returns `viewer.business` and refuses a Hiring post
+otherwise with `business_only`); any member posts Looking for work. The composer picks the chapter. The dashboard's Daily Pulse
+tab frames this page on the member's active city (`#dash-pulse-host`, loaded the first time the tab shows, sized by
+`ve-frame-height`); a city hub frames it with `?community=<slug>&hub=1` and hides the banner.
+
 ## Community Board sections (Sean, 2026-10-10)
 
 "In each city, let's set the sections... a jobs board... a classified... a Fosters Board, and then a
 Rescues Board... so as people start going into these cities, they actually see stuff." Every city's
-`/board` has six toggles: Daily Pulse, Requests & Offers, Jobs, Classifieds, Fosters, Rescues
-(`?lane=pulse|jobs|classifieds|fosters|rescues`, Requests & Offers is the default). A row of tabs on
+board (now `/pulse`, above) has the toggles Daily Pulse, Jobs, Classifieds, Fosters, Rescues and Suggest a Topic
+(`?lane=jobs|classifieds|fosters|rescues|suggest`, the Daily Pulse is the default; Requests & Offers left on 2026-10-26). A row of tabs on
 desktop, three by two on a phone.
 
 - Each section is a `ve_board_posts.kind` (`job`, `classified`, `foster`, `rescue`; Requests & Offers is
