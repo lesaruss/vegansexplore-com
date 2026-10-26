@@ -3258,7 +3258,12 @@ function renderListing(l){
       var input = document.getElementById('donate-amount');
       var confirm = document.getElementById('donate-confirm');
       function say(t, bad){ if(!confirm) return; confirm.textContent = t; confirm.style.color = bad ? '#c62828' : ''; confirm.style.display = 'block'; }
-      if(!window.VEAuth || !VEAuth.isLoggedIn()){ location.href = '/passport'; return; }
+      // Signed out: the window that says giving points is for Passport holders (Sean, 2026-10-26).
+      if(!window.VEAuth || !VEAuth.isLoggedIn()){
+        if(window.VEVotes && VEVotes.givePrompt) VEVotes.givePrompt();
+        else location.href = '/passport?from=give&back=' + encodeURIComponent(location.pathname + location.search + location.hash);
+        return;
+      }
       var amt = parseInt(input ? input.value : 0, 10) || 0;
       if(amt < 1 || amt > 10000){ if(input) input.style.borderColor = '#c62828'; say('Give from 1 to 10,000 points.', true); return; }
       input.style.borderColor = '';
