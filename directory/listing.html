@@ -3220,10 +3220,10 @@ function renderListing(l){
       }).catch(function(){});
     }
     saveBtn.addEventListener('click', function(){
+      // Signed out: the window that says saving is for Passport holders, then Explore the Passport (Sean, 2026-10-26).
       if(!VEAuth.isLoggedIn()){
-        VEAuth.showAuthModal('Sign in to save this listing to your list.', function(){
-          window.location.reload();
-        });
+        if(window.VEVotes && VEVotes.savePrompt) VEVotes.savePrompt();
+        else window.location.href = '/passport?from=save&back=' + encodeURIComponent(location.pathname + location.search + location.hash);
         return;
       }
       var isSaved = saveBtn.classList.contains('saved');
