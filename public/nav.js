@@ -140,7 +140,18 @@
     '.ve-va-opt{display:block;width:100%;text-align:left;padding:10px 12px;border:none;border-bottom:1px solid rgba(0,0,0,0.07);background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;transition:background 0.1s;}',
     '.ve-va-opt:last-child{border-bottom:none;}',
     '.ve-va-opt:hover{background:#f5f5f5;}',
-    '.ve-va-opt.ve-va-active{background:#F0FDF4;color:#15803D;}'
+    '.ve-va-opt.ve-va-active{background:#F0FDF4;color:#15803D;}',
+    '.ve-sw-label{margin-top:18px;}',
+    '.ve-sw-list{border:1px solid rgba(0,0,0,0.1);border-radius:6px;overflow:hidden;}',
+    '.ve-sw-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 12px;border:none;border-bottom:1px solid rgba(0,0,0,0.07);background:#fff;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;cursor:pointer;}',
+    '.ve-sw-opt:last-child{border-bottom:none;}',
+    '.ve-sw-opt:hover{background:#f5f5f5;}',
+    '.ve-sw-opt img,.ve-sw-opt .ve-sw-ini{width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#DCFCE7;color:#15803D;display:flex;align-items:center;justify-content:center;font-size:11px;}',
+    '.ve-sw-opt small{display:block;font-weight:600;color:rgba(0,0,0,0.5);font-size:11px;}',
+    '.ve-sw-note{padding:10px 12px;font-size:12px;color:rgba(0,0,0,0.55);}',
+    '.ve-sw-pill{position:fixed;left:16px;bottom:16px;z-index:10050;display:flex;align-items:center;gap:10px;max-width:calc(100% - 32px);padding:8px 8px 8px 14px;background:#1a1a1a;color:#fff;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.25);font-family:"Montserrat",sans-serif;font-size:12px;font-weight:600;}',
+    '.ve-sw-pill strong{font-weight:800;}',
+    '.ve-sw-pill button{border:none;border-radius:6px;background:#22C55E;color:#0b2e14;font-family:"Montserrat",sans-serif;font-size:12px;font-weight:800;padding:8px 12px;cursor:pointer;white-space:nowrap;}'
   ].join('');
 
   var styleEl = document.createElement('style');
@@ -151,6 +162,15 @@
   var realMember = null;
   try { realMember = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch(e) {}
   var realLoggedIn = !!(realMember && localStorage.getItem('ve_token'));
+
+  /* ---- Switch account (Sean, 2026-10-26; ve-switch-account, playbook ve-guide-accounts) ----
+     Unlike View As, a switch is a real sign-in as another account (Logan Russell, the Guides), so
+     every call the page makes runs as that member. The super admin's own session waits in
+     ve_switch_from until Back to my account puts it back. */
+  var switchFrom = null;
+  try { switchFrom = JSON.parse(localStorage.getItem('ve_switch_from') || 'null'); } catch(e) {}
+  if (switchFrom && !(switchFrom.token && switchFrom.member)) switchFrom = null;
+  function swEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   /* ---- Super Admin "View As" simulator (2026-07-12) ----
      Mirrors the override formula in public/ve-auth.js (VEAuth.getViewAs / getMember /
@@ -272,6 +292,15 @@
           '<button class="ve-va-opt' + vaCls('member-0') + '" data-va="member-0" role="option">Free Member - 0 Points</button>' +
           '<button class="ve-va-opt' + vaCls('member-1500') + '" data-va="member-1500" role="option">Free Member - 1,500 Points</button>' +
         '</div>' +
+        '<div class="ve-va-label ve-sw-label">Super Admin - Sign In As</div>' +
+        '<div class="ve-sw-list" id="ve-sw-list"><div class="ve-sw-note">Loading accounts...</div></div>' +
+      '</div>';
+  } else if (switchFrom) {
+    adminPanel =
+      '<hr class="ve-mob-divider">' +
+      '<div class="ve-mob-section ve-va-panel">' +
+        '<div class="ve-va-label">Signed In As ' + swEsc(realMember && realMember.name) + '</div>' +
+        '<div class="ve-sw-list"><button class="ve-sw-opt" data-sw-back="1">Back to my account</button></div>' +
       '</div>';
   }
 
@@ -380,12 +409,14 @@
     if (signoutD) signoutD.addEventListener('click', function() {
       localStorage.removeItem('ve_token');
       localStorage.removeItem('ve_member');
+      localStorage.removeItem('ve_switch_from');
       window.location.href = '/';
     });
     var signoutM = document.getElementById('ve-signout-mobile');
     if (signoutM) signoutM.addEventListener('click', function() {
       localStorage.removeItem('ve_token');
       localStorage.removeItem('ve_member');
+      localStorage.removeItem('ve_switch_from');
       window.location.href = '/';
     });
   }
@@ -423,6 +454,58 @@
         window.location.reload();
       });
     }
+  }
+
+  /* ---- Switch account: Sign In As list (super admin) and the way back ---- */
+  var SW_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-switch-account';
+  function swCall(body, token) {
+    return fetch(SW_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(body) })
+      .then(function(r) { return r.json(); });
+  }
+  function swBack() {
+    try {
+      localStorage.setItem('ve_token', switchFrom.token);
+      localStorage.setItem('ve_member', JSON.stringify(switchFrom.member));
+      localStorage.removeItem('ve_switch_from');
+    } catch(e) {}
+    window.location.reload();
+  }
+  var swList = document.getElementById('ve-sw-list');
+  if (isRealSuperAdmin && !switchFrom && swList) {
+    var ownToken = null;
+    try { ownToken = localStorage.getItem('ve_token'); } catch(e) {}
+    swCall({ action: 'list' }, ownToken).then(function(d) {
+      var rows = (d && d.accounts) || [];
+      if (!rows.length) { swList.innerHTML = '<div class="ve-sw-note">No accounts to switch into.</div>'; return; }
+      swList.innerHTML = rows.map(function(a) {
+        var pic = a.avatar_url ? '<img src="' + swEsc(a.avatar_url) + '" alt="">' : '<span class="ve-sw-ini">' + swEsc((a.label || '?').charAt(0)) + '</span>';
+        var sub = a.kind === 'guide' ? 'Guide' : (a.note || 'Member');
+        return '<button class="ve-sw-opt" data-sw="' + swEsc(a.member_id) + '">' + pic + '<span>' + swEsc(a.label) + '<small>' + swEsc(sub) + '</small></span></button>';
+      }).join('');
+    }).catch(function() { swList.innerHTML = '<div class="ve-sw-note">Could not load the accounts.</div>'; });
+    swList.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var btn = e.target.closest ? e.target.closest('[data-sw]') : null;
+      if (!btn) return;
+      btn.disabled = true;
+      swCall({ action: 'switch', member_id: btn.getAttribute('data-sw') }, ownToken).then(function(d) {
+        if (!d || !d.token || !d.member) { btn.disabled = false; alert((d && d.message) || 'That switch did not go through.'); return; }
+        try {
+          localStorage.setItem('ve_switch_from', JSON.stringify({ token: ownToken, member: realMember }));
+          localStorage.removeItem('ve_view_as');
+          localStorage.setItem('ve_token', d.token);
+          localStorage.setItem('ve_member', JSON.stringify(d.member));
+        } catch(e) {}
+        window.location.href = '/dashboard';
+      }).catch(function() { btn.disabled = false; });
+    });
+  }
+  if (switchFrom) {
+    document.body.insertAdjacentHTML('beforeend',
+      '<div class="ve-sw-pill" role="status"><span>Signed in as <strong>' + swEsc(realMember && realMember.name) + '</strong></span>' +
+      '<button type="button" data-sw-back="1">Back to my account</button></div>');
+    var swBacks = document.querySelectorAll('[data-sw-back]');
+    for (var _b = 0; _b < swBacks.length; _b++) swBacks[_b].addEventListener('click', function(e) { e.stopPropagation(); swBack(); });
   }
 
   /* ---- Hamburger + drawer toggle ---- */

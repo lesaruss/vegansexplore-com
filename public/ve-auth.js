@@ -65,7 +65,7 @@ function saveListing(listingId){return call('save_listing',{token:getToken(),lis
 function voteListing(listingId){return call('vote_listing',{token:getToken(),listing_id:listingId});}
 function unsaveListing(listingId){return call('unsave_listing',{token:getToken(),listing_id:listingId});}
 function listSavedListings(){return call('list_saved_listings',{token:getToken()});}
-function signOut(){try{localStorage.removeItem('ve_view_as');}catch(e){}clearSession();window.location.href='/';}
+function signOut(){try{localStorage.removeItem('ve_view_as');localStorage.removeItem('ve_switch_from');}catch(e){}clearSession();window.location.href='/';}
 function initGoogleSignIn(buttonEl,callback,community){if(!window.google||!window.google.accounts)return;window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){loginWithGoogle(r.credential,community).then(callback);}});if(buttonEl)window.google.accounts.id.renderButton(buttonEl,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:buttonEl.offsetWidth||360});}
 function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a free Passport to do that.');}
 // --- Pay-or-pledge gate (2026-09-17, Sean) ---------------------------------
