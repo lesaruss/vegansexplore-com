@@ -836,12 +836,15 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   `vegan-media/media/guides/banners/<guide-slug>.jpg`. The other Guides follow this look, each with its own Guide.
 - **The Guide list is one file** (Sean, 2026-10-26: the dashboard should mimic "what we currently have on the main guides
   page"): `/public/ve-guide-catalog.js` (`VEGuideCatalog.render(el, {member, source, open})`) draws the cards on `/guides` and
-  the dashboard's Guides tab. In order: the **Welcome Guide** (free, opens the Passport Guide at `/passport`; its banner is Liz's
-  waving mid shot on white, `/public/guides/welcome-guide.jpg`, made from her square art with no new Higgsfield credits), the
+  the dashboard's Guides tab. In order: the **Welcome Guide** (free, opens the Passport Guide at `/passport`; its banner is Dani's
+  waving mid shot on white, seated in her chair, `/public/guides/welcome-guide.jpg`, made from her square art with no new
+  Higgsfield credits; Sean, 2026-10-26: not Liz, who is already on the Restaurant Guide), the
   Vegan Dairy Guide, the Vegan Restaurant Survival Guide, then the Guides still being made: the **Vegan Meat Alternatives
   Guide** (added 2026-10-26), Entrepreneur, Creator, Nonprofit, Pre-Vegan and Seasoned Vegan. Live Guides wear their banner;
   the ones being made wear a flat line icon, say Coming soon with Notify me (`member_interest`, `guide-waitlist-<slug>`), and
-  show to signed-in members only. Choose Your Topics (mini-guides) was taken off. Add or change a Guide card there.
+  show to signed-in members only. Choose Your Topics (mini-guides) was taken off. Add or change a Guide card there. Under the
+  cards, `/guides` ends with the Directory's Passport box ("Your first Guide is on us", hidden for active members); its old
+  Passport, Vision and Ready sections are gone (Sean, 2026-10-26).
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.
