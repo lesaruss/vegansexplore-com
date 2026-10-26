@@ -1261,14 +1261,25 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
 
 "The dashboard could actually be the main dashboard, and then we have different versions of it. So if they're a coach...
 if they're a pre-vegan, the dashboard set up a certain way." One `/dashboard` with four versions: **Business**, **Just
-starting** (`pre_vegan`), **Coach or pro** (`coach`) and **Member**. A version decides only the block after Action items
-(`#dash-version`, `renderVersion` in `dashboard/center-console.html`), which What's new cards show, and the order of Your
-tools (`DASH_TOOLS_FIRST`); everything else is shared.
+starting** (`pre_vegan`), **Coach or pro** (`coach`) and **Member**. A version decides only which cards join For you
+(`renderVersion` in `dashboard/center-console.html`) and the order of Your tools (`DASH_TOOLS_FIRST`); everything else is
+shared.
+
+The Dashboard tab (Sean, 2026-10-26): **For you** (it was Action items) is one list of tiles, the checklist tiles (Set up
+your Guide, New here?, the Community Manager ones) and then the version's cards (`ve_dashboard_cards`) as the same tile, each
+with a flat line icon (`FICON`; Sean: "make sure the icons are flat. I don't like the colorful ones"). Five show, the rest
+scroll inside; the version switch sits beside the title. The **Leaderboard** beside it is one board for everyone (no This City
+/ Global: "people aren't really locked to any particular community anymore") and on desktop is exactly as tall as For you,
+scrolling inside (`syncHome`). **Your tools** holds every tool, with flat icons (`memberTools`; the Community Manager ones for
+staff, Contribute for active members, the admin cards first for super admins). The Tools tab left the menu: its section stays
+only as the place a tool opens (Bounties, Campaigns, My List...), with "Dashboard" as the way back, and `/dashboard/tools`
+lands on the Dashboard tab. **Guides** is a tab in the top menu, after Dashboard (`/dashboard/guides`; "one of the big things
+that we're selling"), and a tile in Your tools.
 
 - Which one: the member's choice (`members.dashboard_version`, the switch on the block; picking the suggested one clears it),
   else `ve_dashboard_version()`: owns a listing or Business owner in the Mission Survey (q3), business; q6 Curious / pre-Vegan,
   Flexitarian or Vegetarian, pre_vegan; Service provider, coach; else member (migration `20261025_dashboard_versions.sql`).
-- The block: Business shows each listing they own, opening its business dashboard (`/directory/<slug>?tab=brand`), or Join the
+- Its cards: Business shows each listing they own, opening its business dashboard (`/directory/<slug>?tab=brand`), or Join the
   Directory; Just starting shows its `wizard` cards as numbered first steps; every version shows its What's new. Cards are
   `ve_dashboard_cards` rows by `audience` (business, pre_vegan, coach, member, all): change what a version shows with a row,
   no code. A business card's link that starts with `?` opens on their first listing's dashboard.
