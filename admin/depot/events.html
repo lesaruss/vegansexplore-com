@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Events | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Events (Sean, 2026-10-26: "we could just on the back end approve the events once we've taken a look at it...
+       the ability to upload images or documents for you to pull information for events"). Every event the members send,
+       the crawl finds (dispatcher source events_crawl) or the team reads from a flyer waits here until approved. One thing
+       per view: the queue (#queue/pending|approved|rejected), one event (#event/<id>), Add from a flyer (#add), and the
+       places the crawl reads (#sources, #source/<id>|new). Server: ve-events. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:12px;}
+    .crumb{font-size:13px;font-weight:700;color:var(--ve-text-75);margin:4px 0 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .crumb a{color:var(--ve-green-deep);font-weight:800;text-decoration:none;}
+    .crumb a:hover{text-decoration:underline;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.14);background:#fff;color:var(--ve-text-75);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    input,select,textarea{font:inherit;font-size:14px;font-weight:600;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background-color:#fff;color:#1a1a1a;width:100%;}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px;appearance:none;-webkit-appearance:none;}
+    textarea{min-height:100px;resize:vertical;line-height:1.5;}
+    .bar input[type=search]{width:auto;min-width:min(300px,100%);flex:1 1 260px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:#f1f5f1;}
+    .btn-red{background:#fff;color:#8a1c12;border:1px solid #d9a39c;}
+    .btn-red:hover{background:#fbeeec;}
+    .btn-orange{background:var(--ve-orange);color:#1a1a1a;}
+    .btn-orange:hover{background:#d4800f;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .msg.bad{color:#8a1c12;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px;margin:0 0 16px;}
+    .rows{display:flex;flex-direction:column;gap:8px;}
+    .row{display:grid;grid-template-columns:84px minmax(0,1.6fr) minmax(0,1fr) 130px 120px;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;}
+    .row .d{font-size:13px;font-weight:800;color:var(--ve-green-deep);line-height:1.25;}
+    .row .t{font-size:14.5px;font-weight:800;line-height:1.3;}
+    .row .m{font-size:12.5px;color:var(--ve-text-75);}
+    .tag{justify-self:start;font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;}
+    .tag.pending{background:#fff4e2;color:#6b3f00;}
+    .tag.approved{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .tag.rejected{background:#fbeeec;color:#8a1c12;}
+    .tag.src{background:#eef0ee;color:#3a3f3a;}
+    @media (max-width:860px){.row{grid-template-columns:70px minmax(0,1fr);}.row .m,.row .tag,.row .btn{grid-column:2;}}
+    .two{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:18px;align-items:start;}
+    @media (max-width:900px){.two{grid-template-columns:1fr;}}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px 14px;}
+    .f{display:flex;flex-direction:column;gap:5px;}
+    .f.wide{grid-column:1/-1;}
+    .f label{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .f small{font-size:12px;color:var(--ve-text-75);}
+    .f.bad input,.f.bad select{border-color:#b42318;}
+    .chk{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:600;}
+    .chk input{width:18px;height:18px;}
+    .side img{width:100%;max-height:560px;object-fit:contain;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
+    .side p{font-size:13.5px;line-height:1.55;margin-bottom:8px;word-break:break-word;}
+    .side a{color:var(--ve-green-deep);font-weight:800;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;}
+    .drop{border:2px dashed #9cc79e;border-radius:12px;background:#fff;padding:26px 16px;text-align:center;cursor:pointer;}
+    .drop.over{background:var(--ve-green-light);border-color:var(--ve-green);}
+    .drop b{display:block;font-size:16px;font-weight:800;}
+    .drop span{font-size:13px;color:var(--ve-text-75);}
+    .empty{background:#fff;border:1px dashed rgba(0,0,0,0.2);border-radius:10px;padding:24px;text-align:center;color:var(--ve-text-75);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .gate h2{font-size:18px;margin-bottom:8px;}
+    .gate p{margin-bottom:16px;color:var(--ve-text-75);}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  /* Inside the dashboard frame the console supplies the header, so hide the sitewide nav and footer here, same as the
+     other Depot tabs. A normal visit is unaffected. */
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Events</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every event members send, the crawl finds on the web, or you read from a flyer waits here. Nothing is on the calendar (<a href="/events">/events</a>, the dashboard and the city hubs) until you approve it.</p>
+    <div id="ev-gate" class="gate" hidden></div>
+    <div id="ev-app" hidden></div>
+  </div>
+  <input type="file" id="ev-file" accept="image/*,application/pdf" hidden>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-events.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var app = $('ev-app'), esc = VEEvents.esc, api = VEEvents.api;
+    var CATS = VEEvents.CATS, COUNTRIES = VEEvents.COUNTRIES;
+    var cache = { pending: null, approved: null, rejected: null }, counts = {}, sources = null, adding = null, q = '';
+    var SRC = { member: 'Member', crawl: 'Found online', flyer: 'Flyer', admin: 'Team', import: 'Earlier' };
+    var STATUS = { pending: 'Waiting for approval', approved: 'Live', rejected: 'Turned down' };
+
+    function go(h) { if (location.hash !== h) location.hash = h; else route(); }
+    function day(e) {
+      var d = new Date(e.starts_at), tz = e.timezone || undefined;
+      try { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: tz }); } catch (x) { return d.toLocaleDateString(); }
+    }
+    function where(e) { return e.event_type === 'virtual' && !e.city ? 'Online' : [e.city, e.state, VEEvents.countryName(e.country)].filter(Boolean).join(', '); }
+    function load(status) {
+      return api({ action: 'queue', status: status }).then(function (d) {
+        if (!d.events) throw new Error(d.error || 'load');
+        cache[status] = d.events; counts = d.counts || counts; return d.events;
+      });
+    }
+    function find(id) {
+      for (var s in cache) if (cache[s]) for (var i = 0; i < cache[s].length; i++) if (cache[s][i].id === id) return cache[s][i];
+      return null;
+    }
+
+    /* ---------- the queue ---------- */
+    function drawQueue(status) {
+      var tabs = ['pending', 'approved', 'rejected'].map(function (s) {
+        return '<a href="#queue/' + s + '" class="' + (s === status ? 'on' : '') + '">' + STATUS[s] + (counts[s] != null ? ' (' + counts[s] + ')' : '') + '</a>';
+      }).join('');
+      app.innerHTML = '<div class="tabs">' + tabs + '</div>' +
+        '<div class="bar"><input type="search" id="ev-q" placeholder="Search by name, city or link" aria-label="Search events" value="' + esc(q) + '">' +
+        '<a class="btn btn-orange" href="#add">Add from a flyer</a><a class="btn btn-ghost" href="#sources">Crawl sources</a><a class="btn btn-ghost" href="/events" target="_blank" rel="noopener">See the calendar</a></div>' +
+        '<div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
+      $('ev-q').addEventListener('input', function () { q = this.value.trim().toLowerCase(); drawRows(status); });
+      (cache[status] ? Promise.resolve() : load(status)).then(function () { drawQueue2(status); }, function () { $('ev-rows').innerHTML = '<p class="msg bad">The events did not load. Refresh to try again.</p>'; });
+    }
+    function drawQueue2(status) {
+      // Counts arrive with the first load; redraw the tabs once.
+      app.querySelector('.tabs').innerHTML = ['pending', 'approved', 'rejected'].map(function (s) {
+        return '<a href="#queue/' + s + '" class="' + (s === status ? 'on' : '') + '">' + STATUS[s] + ' (' + (counts[s] || 0) + ')</a>';
+      }).join('');
+      drawRows(status);
+    }
+    function drawRows(status) {
+      var list = (cache[status] || []).filter(function (e) {
+        return !q || [e.title, e.city, e.state, e.country, e.ticket_url, e.location_name].join(' ').toLowerCase().indexOf(q) > -1;
+      });
+      var box = $('ev-rows'); if (!box) return;
+      box.innerHTML = list.length ? list.map(function (e) {
+        return '<div class="row"><span class="d">' + esc(day(e)) + '</span>' +
+          '<span><span class="t">' + esc(e.title) + '</span><br><span class="m">' + esc(where(e)) + (e.by ? ' · sent by ' + esc(e.by.name) : '') + (e.source_name ? ' · ' + esc(e.source_name) : '') + '</span></span>' +
+          '<span class="m">' + esc(CATS[e.category] || 'Event') + (e.ticket_url ? ' · ' + esc(e.ticket_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '') + '</span>' +
+          '<span class="tag src">' + esc(SRC[e.source] || e.source) + '</span>' +
+          '<a class="btn' + (status === 'pending' ? '' : ' btn-ghost') + '" href="#event/' + e.id + '">' + (status === 'pending' ? 'Review' : 'Open') + '</a></div>';
+      }).join('') : '<p class="empty">' + (status === 'pending' ? 'Nothing waiting. New ones arrive as members send them and the crawl finds them.' : 'Nothing here.') + '</p>';
+    }
+
+    /* ---------- one event: its fields, its flyer, approve or turn down ---------- */
+    function fieldsHtml(e) {
+      var tz = e.timezone || 'America/New_York', online = e.event_type === 'virtual';
+      var f = function (id, label, input, wide, hint) { return '<div class="f' + (wide ? ' wide' : '') + '" data-f="' + id + '"><label for="f-' + id + '">' + label + '</label>' + input + (hint ? '<small>' + hint + '</small>' : '') + '</div>'; };
+      var i = function (id, v, type) { return '<input id="f-' + id + '" type="' + (type || 'text') + '" value="' + esc(v || '') + '">'; };
+      var tzs = VEEvents.TZS.slice(); if (tzs.indexOf(tz) < 0) tzs.unshift(tz);
+      var cc = String(e.country || '').toUpperCase(), ckeys = Object.keys(COUNTRIES).sort(function (a, b) { return COUNTRIES[a][0].localeCompare(COUNTRIES[b][0]); });
+      if (cc && !COUNTRIES[cc]) ckeys.unshift(cc);
+      return '<div class="grid">' +
+        f('title', 'Event name', i('title', e.title), true) +
+        f('category', 'Kind', '<select id="f-category">' + Object.keys(CATS).map(function (k) { return '<option value="' + k + '"' + (k === (e.category || 'other') ? ' selected' : '') + '>' + CATS[k] + '</option>'; }).join('') + '</select>') +
+        f('description', 'About it', '<textarea id="f-description">' + esc(e.description || '') + '</textarea>', true) +
+        f('start', 'Starts', i('start', VEEvents.isoToLocal(e.starts_at, tz), 'datetime-local')) +
+        f('end', 'Ends', i('end', VEEvents.isoToLocal(e.ends_at, tz), 'datetime-local')) +
+        f('timezone', 'Time zone', '<select id="f-timezone">' + tzs.map(function (z) { return '<option' + (z === tz ? ' selected' : '') + '>' + esc(z) + '</option>'; }).join('') + '</select>') +
+        '<div class="f wide"><label class="chk"><input type="checkbox" id="f-online"' + (online ? ' checked' : '') + '> Online only</label></div>' +
+        f('location_name', 'Venue', i('location_name', e.location_name)) +
+        f('address', 'Street address', i('address', e.address)) +
+        f('city', 'City', i('city', e.city)) +
+        f('state', 'State or region', i('state', e.state)) +
+        f('country', 'Country', '<select id="f-country"><option value="">Choose</option>' + ckeys.map(function (k) { return '<option value="' + k + '"' + (k === cc ? ' selected' : '') + '>' + esc(VEEvents.countryName(k)) + '</option>'; }).join('') + '</select>') +
+        f('ticket_url', 'Official link', i('ticket_url', e.ticket_url, 'url'), true, 'Tickets or the organizer\'s own page. Required to go live.') +
+        '</div>';
+    }
+    function readFields() {
+      var v = function (id) { var x = $('f-' + id); return x ? x.value.trim() : ''; };
+      var tz = v('timezone'), online = $('f-online').checked, cc = v('country');
+      var e = { title: v('title'), category: v('category'), description: v('description'), timezone: tz, event_type: online ? 'virtual' : 'in_person',
+        starts_at: VEEvents.zonedToISO(v('start'), tz), ends_at: v('end') ? VEEvents.zonedToISO(v('end'), tz) : '', ticket_url: v('ticket_url') };
+      if (!online) Object.assign(e, { location_name: v('location_name'), address: v('address'), city: v('city'), state: v('state'), country: cc, continent: (COUNTRIES[cc] || [])[1] || '' });
+      return e;
+    }
+    function wireOnline() {
+      var o = $('f-online'); if (!o) return;
+      var t = function () { ['location_name', 'address', 'city', 'state', 'country'].forEach(function (k) { var x = app.querySelector('[data-f="' + k + '"]'); if (x) x.hidden = o.checked; }); };
+      o.addEventListener('change', t); t();
+    }
+    function sideHtml(e) {
+      return '<div class="panel side"><h2>Where it came from</h2>' +
+        '<p><b>' + esc(SRC[e.source] || e.source) + '</b>' + (e.by ? ': ' + esc(e.by.name) + (e.by.email ? ' (' + esc(e.by.email) + ')' : '') : '') + (e.source_name ? ': ' + esc(e.source_name) : '') + '</p>' +
+        (e.ticket_url ? '<p>Official link: <a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener">' + esc(e.ticket_url) + '</a></p>' : '<p class="msg bad">No official link yet.</p>') +
+        (e.source_url && e.source_url !== e.ticket_url ? '<p>Found at: <a href="' + esc(e.source_url) + '" target="_blank" rel="noopener">' + esc(e.source_url) + '</a></p>' : '') +
+        (e.flyer_url ? (/\.pdf(\?|$)/i.test(e.flyer_path || '') ? '<p><a href="' + esc(e.flyer_url) + '" target="_blank" rel="noopener">Open the flyer (PDF)</a></p>' : '<img src="' + esc(e.flyer_url) + '" alt="The flyer">') : '') +
+        (e.status === 'rejected' && e.rejection_reason ? '<p class="msg bad">Turned down: ' + esc(e.rejection_reason) + '</p>' : '') +
+        '</div>';
+    }
+    function drawEvent(id) {
+      var e = find(id);
+      if (!e) { app.innerHTML = '<p class="msg">Loading…</p>'; Promise.all([load('pending'), load('approved'), load('rejected')]).then(function () { if (find(id)) drawEvent(id); else app.innerHTML = '<p class="empty">That event is not here. <a href="#queue/pending">Back to the queue</a></p>'; }); return; }
+      var pend = e.status === 'pending';
+      app.innerHTML = '<nav class="crumb"><a href="#queue/' + e.status + '">Events: ' + STATUS[e.status] + '</a><span>/</span><span>' + esc(e.title) + '</span></nav>' +
+        '<div class="two"><div class="panel"><h2>The event</h2>' + fieldsHtml(e) +
+        '<div class="acts">' + (pend ? '<button class="btn" id="ev-ok">Approve: put it live</button><button class="btn btn-ghost" id="ev-save">Save changes</button><button class="btn btn-red" id="ev-no">Turn down</button>'
+          : e.status === 'approved' ? '<button class="btn" id="ev-save">Save changes</button><button class="btn btn-red" id="ev-no">Take it off the calendar</button>'
+          : '<button class="btn" id="ev-ok">Approve after all</button><button class="btn btn-ghost" id="ev-save">Save changes</button>') +
+        '<span class="msg" id="ev-msg" role="status"></span></div></div>' + sideHtml(e) + '</div>';
+      wireOnline();
+      var msg = function (t, bad) { $('ev-msg').textContent = t; $('ev-msg').className = 'msg' + (bad ? ' bad' : ''); };
+      function act(body, done) {
+        app.querySelectorAll('.acts .btn').forEach(function (b) { b.disabled = true; });
+        msg('Saving…');
+        api(body).then(function (d) {
+          app.querySelectorAll('.acts .btn').forEach(function (b) { b.disabled = false; });
+          if (!d.ok) { msg(d.message || 'That did not save.', true); return; }
+          cache = { pending: null, approved: null, rejected: null };
+          done();
+        });
+      }
+      if ($('ev-save')) $('ev-save').onclick = function () { act({ action: 'update', id: e.id, event: readFields() }, function () { load(e.status).then(function () { drawEvent(e.id); msg('Saved.'); }); }); };
+      if ($('ev-ok')) $('ev-ok').onclick = function () {
+        var f = readFields();
+        if (!/^https?:\/\//i.test(f.ticket_url)) { msg('Add the official link first.', true); return; }
+        act({ action: 'review', id: e.id, decision: 'approved', event: f }, function () { go('#queue/pending'); });
+      };
+      if ($('ev-no')) $('ev-no').onclick = function () {
+        var why = prompt(e.status === 'approved' ? 'Why is it coming off the calendar? (for the team)' : 'Why not? (the member sees this on My events)', e.status === 'approved' ? 'Cancelled' : 'Not a Vegan event');
+        if (why === null) return;
+        act({ action: 'review', id: e.id, decision: 'rejected', reason: why }, function () { go('#queue/' + e.status); });
+      };
+    }
+
+    /* ---------- Add from a flyer ---------- */
+    function drawAdd() {
+      var e = adding && adding.event || { timezone: 'America/New_York', country: 'US', category: 'other' };
+      app.innerHTML = '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Add from a flyer</span></nav>' +
+        '<div class="two"><div class="panel"><h2>The event</h2>' +
+        (adding && adding.note ? '<p class="msg' + (adding.bad ? ' bad' : '') + '">' + esc(adding.note) + '</p>' : '<p class="sub">Drop the flyer on the right and its details fill in here. Check them, add the official link if it was not printed, and put it live.</p>') +
+        fieldsHtml(e) +
+        '<div class="acts"><button class="btn" id="ev-live">Put it live</button><button class="btn btn-ghost" id="ev-later">Save to Waiting</button><button class="btn btn-ghost" id="ev-clear">Start over</button><span class="msg" id="ev-msg" role="status"></span></div></div>' +
+        '<div class="panel side"><h2>The flyer</h2><div class="drop" id="ev-drop" tabindex="0" role="button"><b>Drop a flyer here</b><span>An Instagram banner, a poster or a PDF. Or click to choose.</span></div>' +
+        (adding && adding.preview ? '<p style="margin-top:12px"><img src="' + esc(adding.preview) + '" alt="The flyer"></p>' : '') +
+        (adding && adding.links ? '<p>Links on it: ' + esc(adding.links) + '</p>' : '') + '</div></div>';
+      wireOnline();
+      var drop = $('ev-drop'), file = $('ev-file');
+      drop.onclick = function () { file.click(); };
+      drop.onkeydown = function (k) { if (k.key === 'Enter' || k.key === ' ') { k.preventDefault(); file.click(); } };
+      drop.ondragover = function (k) { k.preventDefault(); drop.classList.add('over'); };
+      drop.ondragleave = function () { drop.classList.remove('over'); };
+      drop.ondrop = function (k) { k.preventDefault(); drop.classList.remove('over'); take(k.dataTransfer.files[0]); };
+      file.onchange = function () { take(file.files[0]); file.value = ''; };
+      function take(f) {
+        if (!f) return;
+        adding = { preview: f.type === 'application/pdf' ? '' : URL.createObjectURL(f), note: 'Reading the flyer…', event: readFields() };
+        drawAdd();
+        VEEvents.uploadFlyer(f).then(function (path) {
+          adding.path = path;
+          return VEEvents.readFlyer(path);
+        }).then(function (d) {
+          if (d.error || !d.event) { adding.note = d.message || d.note || 'We could not read that one. Type it in.'; adding.bad = true; }
+          else { adding.event = d.event; adding.links = d.links; adding.bad = false; adding.note = 'Read it. Check every field.' + (d.note ? ' ' + d.note : '') + (d.event.ticket_url ? '' : ' No link was printed: add the official one.'); }
+          drawAdd();
+        }).catch(function (x) { adding.note = (x && x.message) || 'That did not upload.'; adding.bad = true; drawAdd(); });
+      }
+      $('ev-clear').onclick = function () { adding = null; drawAdd(); };
+      var save = function (approve) {
+        var ev = readFields(), m = $('ev-msg');
+        if (!ev.title || !ev.starts_at || !/^https?:\/\//i.test(ev.ticket_url)) { m.textContent = 'Fill in the name, when it starts and the official link.'; m.className = 'msg bad'; return; }
+        m.textContent = 'Saving…'; m.className = 'msg';
+        api({ action: 'save', event: ev, approve: approve, flyer_path: adding && adding.path }).then(function (d) {
+          if (!d.ok) { m.textContent = d.message || 'That did not save.'; m.className = 'msg bad'; return; }
+          adding = null; cache = { pending: null, approved: null, rejected: null };
+          go(approve ? '#queue/approved' : '#queue/pending');
+        });
+      };
+      $('ev-live').onclick = function () { save(true); };
+      $('ev-later').onclick = function () { save(false); };
+    }
+
+    /* ---------- crawl sources ---------- */
+    var KINDS = { website: 'Website', instagram: 'Instagram', calendar: 'Calendar', search: 'Web search' };
+    function loadSources() { return api({ action: 'sources' }).then(function (d) { sources = d.sources || []; }); }
+    function drawSources() {
+      app.innerHTML = '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Crawl sources</span></nav>' +
+        '<p class="sub">The places the Background writer reads for upcoming Vegan events, each about once a week. What it finds lands in Waiting for approval. Add the calendars, Instagram accounts and sites you know.</p>' +
+        '<div class="bar"><a class="btn" href="#source/new">New source</a></div><div class="rows" id="src-rows"><p class="msg">Loading…</p></div>';
+      (sources ? Promise.resolve() : loadSources()).then(function () {
+        var hubs = {}; (window.VE_HUBS || []).forEach(function (h) { hubs[h.slug] = h.name; });
+        $('src-rows').innerHTML = sources.length ? sources.map(function (s) {
+          var state = !s.active ? 'Off' : s.check_status === 'checking' ? 'Reading now' : s.check_status === 'queued' ? 'Next run' : 'Read';
+          return '<div class="row"><span class="d">' + esc(KINDS[s.kind] || s.kind) + '</span>' +
+            '<span><span class="t">' + esc(s.name) + '</span><br><span class="m">' + esc(s.url || s.query || '') + '</span></span>' +
+            '<span class="m">' + esc(s.city_slug ? hubs[s.city_slug] || s.city_slug : 'Anywhere') + (s.last_checked_at ? ' · read ' + esc(new Date(s.last_checked_at).toLocaleDateString()) + ', ' + (s.last_found || 0) + ' new' : '') + '</span>' +
+            '<span class="tag ' + (state === 'Off' ? 'rejected' : state === 'Read' ? 'approved' : 'pending') + '">' + state + '</span>' +
+            '<a class="btn btn-ghost" href="#source/' + s.id + '">Open</a></div>';
+        }).join('') : '<p class="empty">No sources yet.</p>';
+      });
+    }
+    function drawSource(id) {
+      if (!sources) { loadSources().then(function () { drawSource(id); }); return; }
+      var s = id === 'new' ? { kind: 'website', active: true } : sources.filter(function (x) { return x.id === id; })[0];
+      if (!s) { app.innerHTML = '<p class="empty">That source is not here. <a href="#sources">Back</a></p>'; return; }
+      var hubs = (window.VE_HUBS || []);
+      app.innerHTML = '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><a href="#sources">Crawl sources</a><span>/</span><span>' + esc(s.name || 'New source') + '</span></nav>' +
+        '<div class="panel" style="max-width:none"><div class="grid">' +
+        '<div class="f"><label for="s-name">Name</label><input id="s-name" value="' + esc(s.name || '') + '" placeholder="Atlanta VegFest"></div>' +
+        '<div class="f"><label for="s-kind">Kind</label><select id="s-kind">' + Object.keys(KINDS).map(function (k) { return '<option value="' + k + '"' + (k === s.kind ? ' selected' : '') + '>' + KINDS[k] + '</option>'; }).join('') + '</select></div>' +
+        '<div class="f wide" id="s-url-f"><label for="s-url">Link</label><input id="s-url" type="url" value="' + esc(s.url || '') + '" placeholder="https://"></div>' +
+        '<div class="f wide" id="s-query-f"><label for="s-query">Search for</label><input id="s-query" value="' + esc(s.query || '') + '" placeholder="Vegan events festivals meetups Atlanta upcoming"></div>' +
+        '<div class="f"><label for="s-city">City</label><select id="s-city"><option value="">Anywhere</option>' + hubs.map(function (h) { return '<option value="' + h.slug + '"' + (h.slug === s.city_slug ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('') + '</select></div>' +
+        '<div class="f"><label class="chk" style="margin-top:24px"><input type="checkbox" id="s-active"' + (s.active !== false ? ' checked' : '') + '> Read it every week</label></div>' +
+        '<div class="f wide"><label for="s-notes">Notes for the reader</label><textarea id="s-notes" placeholder="Their events are under the Calendar tab. Skip the cooking classes.">' + esc(s.notes || '') + '</textarea></div>' +
+        '</div>' + (s.last_note ? '<p class="sub" style="margin-top:12px">Last read: ' + esc(s.last_note) + '</p>' : '') +
+        '<div class="acts"><button class="btn" id="s-save">Save</button>' + (id !== 'new' ? '<button class="btn btn-ghost" id="s-now">Read it on the next run</button>' : '') + '<span class="msg" id="s-msg" role="status"></span></div></div>';
+      var kind = $('s-kind'), t = function () { $('s-url-f').hidden = kind.value === 'search'; $('s-query-f').hidden = kind.value !== 'search'; };
+      kind.onchange = t; t();
+      var m = function (x, bad) { $('s-msg').textContent = x; $('s-msg').className = 'msg' + (bad ? ' bad' : ''); };
+      $('s-save').onclick = function () {
+        api({ action: 'source_save', source: { id: id === 'new' ? null : id, name: $('s-name').value, kind: kind.value, url: $('s-url').value, query: $('s-query').value, city_slug: $('s-city').value, notes: $('s-notes').value, active: $('s-active').checked } }).then(function (d) {
+          if (!d.ok) { m(d.message || 'That did not save.', true); return; }
+          sources = null; go('#sources');
+        });
+      };
+      if ($('s-now')) $('s-now').onclick = function () { api({ action: 'source_check', id: id }).then(function (d) { if (d.ok) { sources = null; m('Queued for the next run.'); } else m('That did not save.', true); }); };
+    }
+
+    function route() {
+      var h = location.hash || '#queue/pending', m;
+      if ((m = /^#event\/([0-9a-f-]{36})$/.exec(h))) drawEvent(m[1]);
+      else if (h === '#add') drawAdd();
+      else if (h === '#sources') drawSources();
+      else if ((m = /^#source\/(new|[0-9a-f-]{36})$/.exec(h))) drawSource(m[1]);
+      else drawQueue((/^#queue\/(pending|approved|rejected)$/.exec(h) || [0, 'pending'])[1]);
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }
+
+    function start() {
+      var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+      if (!VEAuth.isLoggedIn()) { $('ev-gate').hidden = false; $('ev-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="ev-signin">Sign in</button>'; $('ev-signin').onclick = function () { VEAuth.showAuthModal('Sign in to review events.', function () { location.reload(); }); }; return; }
+      if (!m || !m.is_superadmin) { $('ev-gate').hidden = false; $('ev-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+      app.hidden = false;
+      window.addEventListener('hashchange', route);
+      route();
+    }
+    start();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

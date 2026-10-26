@@ -5,109 +5,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vegan Events — Vegans Explore</title>
-<meta name="description" content="Vegan festivals, meetups, game nights and gatherings, in every city we serve and around the world. Pick a city, search, and find your next event.">
+<meta name="description" content="Vegan festivals, meetups, markets and gatherings, in every city we serve and around the world. Pick a city, search, sort by city, and send us an event.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* Events (rebuilt 2026-10-26, Sean: "the events page needs to be there... select by city... search...
-     It operates almost like our directory, but for events... the goal is to have every event in the world
-     that's happening in this tool. And then that could feed into the cities"). Open to everyone. The banner
-     is the shared city banner (/public/ve-city-banner.js); a city picks the events its hub counts
-     (VE_HUBS[].page.eventCities or its Directory rule), the same events the city hub's Events tab shows. */
+  /* Events (Sean, 2026-10-26): open to everyone, works like the Directory, and looks like the dashboard's event tile
+     ("I want the events to look more like how it looks on the dashboard with just that tile"). The calendar, its
+     filters and Submit an event are /public/ve-events.js, the same component as the dashboard's Events tab; the banner is
+     the shared city banner (/public/ve-city-banner.js). */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
-    --ve-orange: #F69820; --ve-orange-dark: #d4800f;
-    --ve-border: rgba(0,0,0,0.1);
-    --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.68);
-  }
-  body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-  a { color: inherit; }
-  :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+  body { background: #fff; color: #1a1a1a; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 3px solid #F69820; outline-offset: 3px; }
   .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
-
   main { flex: 1; max-width: none; margin: 0; padding: 36px 40px 80px; }
-
-  .ev-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .ev-search { position: relative; flex: 1 1 280px; }
-  .ev-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; pointer-events: none; }
-  .ev-search input { width: 100%; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ve-text); padding: 12px 14px 12px 40px; border: 1.5px solid var(--ve-border); border-radius: 6px; background: #fff; }
-  .ev-search input:focus { border-color: var(--ve-green); outline: none; }
-  .ev-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--ve-text); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231a1a1a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center; border: 1.5px solid var(--ve-border); border-radius: 6px; padding: 12px 44px 12px 14px; cursor: pointer; min-width: 180px; }
-  .ev-select::-ms-expand { display: none; }
-  .ev-when { display: inline-flex; border: 1.5px solid var(--ve-border); border-radius: 6px; overflow: hidden; }
-  .ev-when button { font-family: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; padding: 12px 16px; border: 0; background: #fff; color: var(--ve-text-75); cursor: pointer; }
-  .ev-when button + button { border-left: 1.5px solid var(--ve-border); }
-  .ev-when button[aria-pressed="true"] { background: var(--ve-green-dark); color: #fff; }
-
-  .ev-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-  .ev-pill { font-family: inherit; font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 6px; border: 1.5px solid var(--ve-border); background: #fff; color: var(--ve-text-75); cursor: pointer; }
-  .ev-pill:hover { border-color: var(--ve-green); color: var(--ve-text); }
-  .ev-pill[aria-pressed="true"] { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
-
-  .ev-count { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-text-50); margin-bottom: 14px; }
-  .ev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 18px; }
-  .ev-card { display: flex; flex-direction: column; border: 1px solid var(--ve-border); border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-  .ev-img { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #1e2e1f, #1a1a1a); }
-  .ev-img.none { aspect-ratio: auto; height: 76px; background: linear-gradient(120deg, var(--ve-green-dark), #1e2e1f); }
-  .ev-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .ev-date { position: absolute; left: 12px; top: 12px; background: #fff; border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 52px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-  .ev-date .d { display: block; font-size: 20px; font-weight: 900; line-height: 1; }
-  .ev-date .m { display: block; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ve-green-dark); margin-top: 3px; }
-  .ev-feat { position: absolute; right: 12px; top: 12px; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; background: var(--ve-orange); color: #1a1a1a; padding: 5px 10px; border-radius: 6px; }
-  .ev-body { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 16px 18px 18px; }
-  .ev-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .ev-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-green-dark); background: var(--ve-green-light); padding: 4px 9px; border-radius: 6px; }
-  .ev-tag.city { color: var(--ve-text-75); background: #f2f2f2; }
-  .ev-title { font-size: 17px; font-weight: 800; line-height: 1.3; }
-  .ev-meta { font-size: 13px; font-weight: 600; color: var(--ve-text-50); line-height: 1.5; }
-  /* Summary two-row cap (LOCKED 2026-09-14). */
-  .ev-desc { font-size: 13px; line-height: 1.55; color: var(--ve-text-75); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .ev-cta { margin-top: auto; padding-top: 10px; }
-  .ev-btn { display: inline-flex; align-items: center; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; background: var(--ve-orange); color: #1a1a1a; padding: 11px 18px; border-radius: 6px; }
-  .ev-btn:hover { background: var(--ve-orange-dark); }
-  .ev-btn.off { background: #eee; color: var(--ve-text-50); pointer-events: none; }
-
-  .ev-empty { border: 1.5px dashed var(--ve-border); border-radius: 12px; padding: 32px 24px; text-align: center; font-size: 14px; line-height: 1.6; color: var(--ve-text-75); }
-  .ev-empty a { color: var(--ve-green-dark); font-weight: 800; }
-  .ev-note { margin-top: 28px; font-size: 13px; line-height: 1.6; color: var(--ve-text-75); }
-  .ev-note a { color: var(--ve-green-dark); font-weight: 800; }
-
-  @media (max-width: 700px) {
-    main { padding: 24px 16px 64px; }
-    .ev-select { flex: 1 1 auto; min-width: 0; }
-    .ev-when { flex: 1 1 100%; }
-    .ev-when button { flex: 1; }
-  }
+  @media (max-width: 700px) { main { padding: 24px 16px 64px; } }
 </style>
 </head>
 <body>
 <div class="page-frame">
 
 <script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-city-banner.js"></script>
+<script src="/public/ve-events.js"></script>
 
 <section id="ev-hero"></section>
 
 <main id="main-content">
-  <div class="vear-layout"><div class="vear-main" id="ev-main">
-    <div class="ev-tools">
-      <label class="ev-search">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>
-        <input type="search" id="ev-q" placeholder="Search events, places, cities" aria-label="Search events" autocomplete="off">
-      </label>
-      <select class="ev-select" id="ev-where" aria-label="Where"><option value="">Anywhere</option></select>
-      <div class="ev-when" role="group" aria-label="When">
-        <button type="button" data-when="upcoming" aria-pressed="true">Upcoming</button>
-        <button type="button" data-when="past" aria-pressed="false">Past</button>
-      </div>
-    </div>
-    <div class="ev-pills" id="ev-pills" role="group" aria-label="Kind of event"></div>
-    <p class="ev-count" id="ev-count" aria-live="polite">Loading events&hellip;</p>
-    <div class="ev-grid" id="ev-grid"></div>
-    <p class="ev-note">Know of a Vegan event we should list, or hosting one? <a href="/contact">Tell us about it</a>. We are adding events from every corner of the world.</p>
-  </div><aside class="vear-rail" data-ad-page="/events"></aside></div>
+  <div class="vear-layout"><div class="vear-main" id="ev-cal"></div><aside class="vear-rail" data-ad-page="/events"></aside></div>
 </main>
 
 <script src="/public/footer.js"></script>
@@ -116,156 +42,16 @@
 <script src="/public/ve-ad-rail.js"></script>
 <script>
 (function () {
-  var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
-  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var COUNTRY = { US: 'United States', GB: 'United Kingdom', UK: 'United Kingdom', CA: 'Canada', MX: 'Mexico', AU: 'Australia', NZ: 'New Zealand', DE: 'Germany', FR: 'France', ES: 'Spain', IT: 'Italy', NL: 'Netherlands', IE: 'Ireland', PT: 'Portugal', BR: 'Brazil', JM: 'Jamaica', BS: 'Bahamas', IN: 'India', JP: 'Japan', ZA: 'South Africa' };
-  var CAT = { festival: 'Festivals', social: 'Socials', health: 'Health', meetup: 'Meetups', 'restaurant-meetup': 'Restaurant meetups', online: 'Online', workshop: 'Workshops', market: 'Markets', fitness: 'Fitness', dinner: 'Dinners', other: 'Other' };
-
-  var all = [], state = { city: '', q: '', where: '', when: 'upcoming', cat: '' };
-  var qs = new URLSearchParams(location.search);
-  state.q = qs.get('q') || ''; state.where = qs.get('where') || ''; state.cat = qs.get('cat') || '';
-  state.when = qs.get('when') === 'past' ? 'past' : 'upcoming';
-
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function norm(code) { var c = (code || '').toUpperCase(); return c === 'UK' ? 'GB' : c; }
-  function country(code) { var c = (code || '').toUpperCase(); return COUNTRY[c] || c || ''; }
-  function catLabel(c) { c = c || 'other'; return CAT[c] || (c.charAt(0).toUpperCase() + c.slice(1).replace(/-/g, ' ')); }
-  function safeUrl(u) { return /^https?:\/\//i.test(u || '') || /^\//.test(u || '') ? u : ''; }
-
+  var cal = null;
   var banner = VECityBanner.mount('ev-hero', {
     key: 'events', title: 'Vegan Events', allTitle: 'Every City', allLabel: 'All cities',
-    sub: 'Festivals, meetups, game nights and gatherings, in our cities and around the world. Pick a city, search, and find your next one.',
-    onChange: function (slug) { state.city = slug; render(); }
+    sub: 'Festivals, meetups, markets and gatherings, in our cities and around the world. Pick a city, search, and find your next one.',
+    onChange: function (slug) { if (cal) cal.setCity(slug); }
   });
-
-  // The address bar carries everything but the city, which the banner keeps.
-  function syncUrl() {
-    var q = new URLSearchParams(location.search);
-    ['q', 'where', 'cat'].forEach(function (k) { if (state[k]) q.set(k, state[k]); else q.delete(k); });
-    if (state.when === 'past') q.set('when', 'past'); else q.delete('when');
-    var s = q.toString();
-    history.replaceState(history.state, '', location.pathname + (s ? '?' + s : ''));
-  }
-
-  function inCity(e) {
-    if (!state.city) return true;
-    return VECityBanner.matches(VECityBanner.hubBySlug(state.city), { city: e.city, state: e.state });
-  }
-  function filtered(skipCat) {
-    var now = Date.now(), words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
-    var list = all.filter(function (e) {
-      var t = new Date(e.ends_at || e.starts_at).getTime();
-      if (state.when === 'past' ? t >= now : t < now) return false;
-      if (!inCity(e)) return false;
-      if (state.where && norm(e.country) !== state.where) return false;
-      if (!skipCat && state.cat && (e.category || 'other') !== state.cat) return false;
-      if (words.length) {
-        var hay = [e.title, e.description, e.location_name, e.city, e.state, country(e.country), catLabel(e.category)].join(' ').toLowerCase();
-        for (var i = 0; i < words.length; i++) if (hay.indexOf(words[i]) < 0) return false;
-      }
-      return true;
-    });
-    list.sort(function (a, b) {
-      var d = new Date(a.starts_at) - new Date(b.starts_at);
-      return state.when === 'past' ? -d : d;
-    });
-    return list;
-  }
-
-  function card(e) {
-    var dt = new Date(e.starts_at), tz = e.timezone || undefined, when;
-    try { when = dt.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: tz, timeZoneName: 'short' }); }
-    catch (x) { when = dt.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
-    var day, mon;
-    try { day = dt.toLocaleString('en-US', { day: 'numeric', timeZone: tz }); mon = dt.toLocaleString('en-US', { month: 'short', timeZone: tz }); }
-    catch (x) { day = dt.getDate(); mon = dt.toLocaleString('en-US', { month: 'short' }); }
-    var place = [e.location_name, [e.city, e.state].filter(Boolean).join(', '), (e.country && e.country.toUpperCase() !== 'US') ? country(e.country) : ''].filter(Boolean).join(' · ');
-    var link = safeUrl(e.ticket_url) || safeUrl(e.virtual_url);
-    // is_free defaults to true in the table, so it is not a fact about the event; only a price someone set shows.
-    var price = e.price_cents ? '$' + (e.price_cents / 100).toFixed(e.price_cents % 100 ? 2 : 0) : '';
-    var img = safeUrl(e.image_url);
-    var past = state.when === 'past';
-    return '<article class="ev-card">' +
-      '<div class="ev-img' + (img ? '' : ' none') + '">' + (img ? '<img src="' + esc(img) + '" alt="' + esc(e.image_alt_text || e.title) + '" loading="lazy">' : '') +
-        '<div class="ev-date" aria-hidden="true"><span class="d">' + esc(day) + '</span><span class="m">' + esc(mon) + '</span></div>' +
-        (e.is_featured && !past ? '<span class="ev-feat">Featured</span>' : '') +
-      '</div>' +
-      '<div class="ev-body">' +
-        '<div class="ev-tags"><span class="ev-tag">' + esc(catLabel(e.category)) + '</span>' + (e.city ? '<span class="ev-tag city">' + esc(e.city) + '</span>' : '') + (price ? '<span class="ev-tag city">' + esc(price) + '</span>' : '') + '</div>' +
-        '<h2 class="ev-title">' + esc(e.title) + '</h2>' +
-        '<p class="ev-meta">' + esc(when) + (place ? '<br>' + esc(place) : '') + (e.rsvp_count && !past ? '<br>' + e.rsvp_count + ' going' : '') + '</p>' +
-        (e.description ? '<p class="ev-desc">' + esc(e.description) + '</p>' : '') +
-        '<div class="ev-cta">' + (past
-          ? (safeUrl(e.recording_url) ? '<a class="ev-btn" href="' + esc(e.recording_url) + '" target="_blank" rel="noopener noreferrer">Watch the recording</a>' : '')
-          : (link ? '<a class="ev-btn" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="Get tickets for ' + esc(e.title) + '">' + (e.virtual_url && !e.ticket_url ? 'Join online' : 'Tickets and details') + '</a>' : '<span class="ev-btn off">Details soon</span>')) +
-        '</div>' +
-      '</div>' +
-    '</article>';
-  }
-
-  function renderPills() {
-    var cats = {};
-    filtered(true).forEach(function (e) { cats[e.category || 'other'] = 1; });
-    var keys = Object.keys(cats).sort(function (a, b) { return catLabel(a).localeCompare(catLabel(b)); });
-    if (state.cat && keys.indexOf(state.cat) < 0) keys.push(state.cat);
-    var wrap = document.getElementById('ev-pills');
-    if (keys.length < 2 && !state.cat) { wrap.innerHTML = ''; return; }
-    wrap.innerHTML = ['<button type="button" class="ev-pill" data-cat="" aria-pressed="' + (!state.cat) + '">All kinds</button>'].concat(keys.map(function (k) {
-      return '<button type="button" class="ev-pill" data-cat="' + esc(k) + '" aria-pressed="' + (state.cat === k) + '">' + esc(catLabel(k)) + '</button>';
-    })).join('');
-  }
-
-  function render() {
-    if (!loaded) return;
-    renderPills();
-    var list = filtered(false);
-    var hub = VECityBanner.hubBySlug(state.city);
-    var where = hub ? ' in ' + hub.name : (state.where ? ' in ' + country(state.where) : '');
-    document.getElementById('ev-count').textContent = list.length + (state.when === 'past' ? ' past' : ' upcoming') + (list.length === 1 ? ' event' : ' events') + where;
-    var grid = document.getElementById('ev-grid');
-    if (!list.length) {
-      grid.innerHTML = '<div class="ev-empty" style="grid-column:1/-1">' + (state.when === 'past' ? 'No past events here yet.' : 'No upcoming events' + esc(where) + ' yet.') +
-        (state.q || state.cat || state.where || state.city ? ' <a href="/events">See every event</a>.' : '') +
-        (hub ? ' Or <a href="/communities/' + esc(hub.slug) + '">visit the ' + esc(hub.name) + ' community</a>.' : '') + '</div>';
-      return;
-    }
-    grid.innerHTML = list.map(card).join('');
-  }
-
-  var loaded = false;
-  fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,category,ticket_url,virtual_url,image_url,image_alt_text,price_cents,is_featured,rsvp_count,recording_url&status=eq.approved&order=starts_at.asc&limit=1000', {
-    headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
-  }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
-    all = (rows || []).filter(function (e) { return e.starts_at; });
-    // Where: every country an event is in, so the world shows beyond our cities.
-    var seen = {}, sel = document.getElementById('ev-where');
-    all.forEach(function (e) { var c = norm(e.country); if (c) seen[c] = 1; });
-    Object.keys(seen).sort(function (a, b) { return country(a).localeCompare(country(b)); }).forEach(function (c) {
-      var o = document.createElement('option'); o.value = c; o.textContent = country(c); sel.appendChild(o);
-    });
-    sel.value = state.where;
-    loaded = true; render();
-  }).catch(function () { document.getElementById('ev-count').textContent = "Couldn't load events right now."; });
-
-  var qIn = document.getElementById('ev-q'), timer;
-  qIn.value = state.q;
-  qIn.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { state.q = qIn.value.trim(); syncUrl(); render(); }, 150); });
-  document.getElementById('ev-where').addEventListener('change', function (ev) { state.where = ev.target.value; syncUrl(); render(); });
-  document.querySelectorAll('[data-when]').forEach(function (b) {
-    b.setAttribute('aria-pressed', b.getAttribute('data-when') === state.when ? 'true' : 'false');
-    b.addEventListener('click', function () {
-      state.when = b.getAttribute('data-when');
-      document.querySelectorAll('[data-when]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      syncUrl(); render();
-    });
-  });
-  document.getElementById('ev-pills').addEventListener('click', function (ev) {
-    var b = ev.target.closest('[data-cat]'); if (!b) return;
-    state.cat = b.getAttribute('data-cat'); syncUrl(); render();
-  });
-  // The first click into the page folds the banner, as on the Directory.
-  document.getElementById('ev-main').addEventListener('click', function (ev) { if (ev.target.closest('button, select, input')) banner.autoFold(); });
-  if (state.q || state.cat || state.where || state.when === 'past') banner.autoFold();
+  cal = VEEvents.mount('ev-cal', { key: 'events', city: banner.current(), onInteract: function () { banner.autoFold(); } });
+  // Arriving on a search, a filter or Submit an event is not the landing: start folded.
+  var q = new URLSearchParams(location.search);
+  if (q.get('q') || q.get('cat') || q.get('where') || q.get('when') || q.get('sort') || /^#(submit|mine)/.test(location.hash)) banner.autoFold();
 })();
 </script>
 </body>

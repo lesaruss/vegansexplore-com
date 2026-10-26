@@ -571,6 +571,8 @@
      exactly (public/hub-news.js, already live on every community hub page)
      -- porting its CSS here so the shared renderer looks right wherever
      it's mounted, tokens trimmed to the ones this file already defines. */
+  /* The city banner on the Directory and Events tabs (public/ve-city-banner.js), inset like the dashboard's cards. */
+  .dash-hero-banner{border-radius:14px;overflow:hidden;margin-bottom:22px;}
   .event-row{display:flex;align-items:stretch;gap:0;border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-bottom:10px;}
   .event-row:hover{border-color:var(--ve-green-dark);box-shadow:0 3px 14px rgba(58,155,62,0.07);}
   .event-date-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;background:var(--ve-green-light);min-width:72px;text-align:center;flex-shrink:0;}
@@ -599,6 +601,9 @@
 <script src="https://hq.lesaruss.ai/shell/universal-bar.js" data-lr-redeem="ve_token"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/hub-news.js"></script>
+<script src="/public/ve-hubs.js"></script>
+<script src="/public/ve-city-banner.js"></script>
+<script src="/public/ve-events.js"></script>
 
 <div class="console-backdrop"></div>
 
@@ -906,15 +911,15 @@
     </div>
 
     <div id="dash-directory-section" style="display:none;margin-bottom:28px;" data-tab-key="directory" data-tab-order="1" data-tab-label="Directory">
-      <p class="dash-section-title">Local Directory</p>
+      <section id="dash-dir-hero" class="dash-hero-banner"></section>
       <div id="dash-directory-crumb"></div>
       <div id="dash-directory-mount"></div>
       <div id="dash-directory-detail"></div>
     </div>
 
     <div id="dash-events-section" style="display:none;margin-bottom:28px;" data-tab-key="events" data-tab-order="2" data-tab-label="Events">
-      <p class="dash-section-title">Upcoming Events</p>
-      <div class="vear-layout"><div class="vear-main"><div id="dash-events-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div></div><aside class="vear-rail" data-ad-page="/events"></aside></div>
+      <section id="dash-ev-hero" class="dash-hero-banner"></section>
+      <div class="vear-layout"><div class="vear-main" id="dash-events-cal"></div><aside class="vear-rail" data-ad-page="/events"></aside></div>
     </div>
 
     <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="8" data-tab-label="Communities">
@@ -1583,7 +1588,7 @@
       // dashboard window; the public /board page is the same page outside it.
       { key: 'community-board', href: '/board', embed: true, embedLabel: 'Community Board', img: '/public/dashboard/tools/tools-community-board.jpg', iconHtml: '&#128204;', bg: 'linear-gradient(135deg,#2d7d31,#1f5f22)', title: 'Community Board', desc: 'Ask your city and find who can help: rescue, fostering, rides, food and more.', visibility: 'all', defaultSection: 'tools' },
       { key: 'sa-members', href: '/dashboard/members', embed: true, embedLabel: 'Members', img: '/public/dashboard/tools/tools-members.jpg', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every VEGANS EXPLORE registration, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
-      { key: 'sa-events', href: '/admin/events.html', embed: true, embedLabel: 'Event Submissions', img: '/public/dashboard/tools/tools-event-submissions.jpg', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Review events submitted from any city hub and approve or reject before they go live.', visibility: 'superadmin', defaultSection: 'superadmin' },
+      { key: 'sa-events', href: '/admin/depot/events', embed: true, embedLabel: 'Events', img: '/public/dashboard/tools/tools-event-submissions.jpg', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Approve the events members send and the crawl finds, add one from a flyer, and manage the crawl sources.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', img: '/public/dashboard/tools/tools-leads.jpg', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-guest-reviews', href: '/dashboard/guest-reviews', embed: true, embedLabel: 'Guest Reviews', img: '/public/dashboard/tools/tools-guest-reviews.jpg', iconHtml: SA_GUEST_SVG, bg: 'linear-gradient(135deg,#7c3aed,#4c1d95)', title: 'Guest Reviews', tagLabel: 'Superadmin', badgeId: 'dash-guest-reviews-pending-badge', desc: 'Review flagged and pending Guest Passport applications -- approve, follow up, or remove.', visibility: 'superadmin', defaultSection: 'superadmin' },
       // Media Library (2026-09-27, Sean: "make sure that it's located in my tool
@@ -2735,20 +2740,37 @@
   // Events tab (2026-09-07, Sean direction): reuses the shared
   // VEHubNews.renderEvents() component already live on every community hub
   // page, scoped by the same city-name terms as the leaderboard.
+  // 2026-10-26 (Sean: "make sure that whatever we do here applies to the dashboard as well... I like the heroes, the hero
+  // banners that we have with the collapsible features and the drag downs. I want to see that on the dashboard side as
+  // well"): the Events and Directory tabs wear the shared city banner (/public/ve-city-banner.js) and Events is the same
+  // calendar as /events (/public/ve-events.js). A city picked in either banner is the dashboard's active city, the same
+  // as the city pill; All cities widens only that tab (DASH_ALL).
+  var DASH_ALL = { events: false, directory: false }, dashEvBanner = null, dashEvCal = null, dashDirBanner = null;
+  // A banner reports its first city while it mounts; only a pick after that (dashEvBanner / dashDirBanner set) counts.
+  function dashBannerPick(which, slug, member) {
+    if (!slug) {
+      DASH_ALL[which] = true;
+      if (which === 'events') renderEventsTab(member); else renderDirectory(member);
+      return;
+    }
+    DASH_ALL.events = false; DASH_ALL.directory = false;
+    switchActiveCity(slug, member);
+  }
   function renderEventsTab(member) {
-    var list = document.getElementById('dash-events-list');
-    if (!list) return;
-    var active = getActiveCity(member);
-    var cities = (active && LEADERBOARD_CITY_TERMS[active]) || [];
-    if (!cities.length) {
-      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its upcoming events.</p>';
+    var mount = document.getElementById('dash-events-cal');
+    if (!mount || !window.VEEvents || !window.VECityBanner) return;
+    var slug = DASH_ALL.events ? '' : (getActiveCity(member) || '');
+    if (!dashEvBanner) {
+      dashEvBanner = VECityBanner.mount('dash-ev-hero', {
+        key: 'dash-events', param: false, initial: slug, title: 'Vegan Events', allTitle: 'Every City', allLabel: 'All cities',
+        sub: 'Festivals, meetups, markets and gatherings near you and around the world. Know of one? Submit it.',
+        onChange: function (s) { if (dashEvBanner) dashBannerPick('events', s, member); }
+      });
+      dashEvCal = VEEvents.mount(mount, { key: 'dash-events', urlState: false, city: slug, onInteract: function () { dashEvBanner.autoFold(); } });
       return;
     }
-    if (!window.VEHubNews) {
-      list.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Events are loading&hellip;</p>';
-      return;
-    }
-    window.VEHubNews.renderEvents('dash-events-list', cities);
+    dashEvBanner.setQuiet(slug);
+    dashEvCal.setCity(slug);
   }
 
   // In-frame listing detail (2026-09-07, Logan, Sean direction): clicking a
@@ -3351,7 +3373,7 @@
           dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
-      grid.appendChild(dpDataCard('Event Submissions', '/admin/events.html', function (token, body, t) {
+      grid.appendChild(dpDataCard('Events waiting', '/admin/depot/events', function (token, body, t) {
         dpFetch('/functions/v1/ve-rewards?action=list_pending_events', { token: token, status: 'pending' }).then(function (d) {
           var rows = ((d && d.items) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
           dpCount(t, rows.length);
@@ -3405,7 +3427,22 @@
     var mount = document.getElementById('dash-directory-mount');
     if (!mount) return;
     closeDashboardListing();
-    var active = getActiveCity(member);
+    var active = DASH_ALL.directory ? '' : getActiveCity(member);
+    if (window.VECityBanner) {
+      if (!dashDirBanner) {
+        dashDirBanner = VECityBanner.mount('dash-dir-hero', {
+          key: 'dash-dir', param: false, initial: active || '', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities',
+          sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
+          onChange: function (s) { if (dashDirBanner) dashBannerPick('directory', s, member); }
+        });
+        mount.addEventListener('click', function (e) { if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) dashDirBanner.autoFold(); });
+      } else dashDirBanner.setQuiet(active || '');
+    }
+    // All cities: every listing, by region, the same as /directory.
+    if (!active && window.VERegionDirectory) {
+      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing });
+      return;
+    }
     var cfg = active ? VE_DASH_REGION_CONFIG[active] : null;
     if (!cfg) {
       mount.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its local business directory.</p>';

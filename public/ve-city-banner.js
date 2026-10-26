@@ -14,7 +14,8 @@
        onChange: function (slug, hub) {}   // runs at mount and on every pick ('' is all cities)
      });
      banner.autoFold();   // call on the first click into the page's content: folds unless the visitor chose
-     banner.set('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
+     banner.set('atlanta'); banner.setQuiet('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
+   Options for the dashboard: initial (the city when the address bar has none) and param: false (leave the address bar alone).
 */
 (function () {
   if (window.VECityBanner) return;
@@ -106,7 +107,7 @@
     var select = el.querySelector('select'), cityEl = el.querySelector('[data-vcb-city]');
     var link = el.querySelector('[data-vcb-link]'), toggle = el.querySelector('.vcb-toggle');
     var mobile = window.matchMedia('(max-width: 900px)');
-    var param = opts.param || 'city', storeKey = 've_' + (opts.key || 'banner') + '_hero';
+    var param = opts.param === false ? null : (opts.param || 'city'), storeKey = 've_' + (opts.key || 'banner') + '_hero';
     var current = '', chosen = null;
 
     function art(slug) {
@@ -114,25 +115,26 @@
       return '/communities/' + slug + '/' + (ART[slug] || 'banner.jpg');
     }
     function paint() { el.style.backgroundImage = "url('" + art(current || 'new-york') + "')"; }
-    function show(slug) {
+    function show(slug, quiet) {
       var hub = hubBySlug(slug);
       current = hub ? hub.slug : '';
       select.value = current;
       cityEl.textContent = hub ? hub.name : (opts.allTitle || 'Every City');
       paint();
       if (link) { link.hidden = !hub; if (hub) link.href = '/communities/' + hub.slug; }
-      if (opts.onChange) opts.onChange(current, hub);
+      if (opts.onChange && !quiet) opts.onChange(current, hub);
     }
-    function fromUrl() { return new URLSearchParams(location.search).get(param) || ''; }
+    function fromUrl() { return param ? new URLSearchParams(location.search).get(param) || '' : current; }
 
     select.addEventListener('change', function () {
+      if (!param) { show(select.value); return; }
       var q = new URLSearchParams(location.search);
       if (select.value) q.set(param, select.value); else q.delete(param);
       var s = q.toString();
       history.pushState({ city: select.value }, '', location.pathname + (s ? '?' + s : '') + location.hash);
       show(select.value);
     });
-    window.addEventListener('popstate', function () { if (fromUrl() !== current) show(fromUrl()); });
+    window.addEventListener('popstate', function () { if (param && fromUrl() !== current) show(fromUrl()); });
     if (mobile.addEventListener) mobile.addEventListener('change', paint);
 
     // Expanded on landing; autoFold() folds it on the first click into the page, unless the visitor chose with the button.
@@ -147,13 +149,14 @@
     var api = {
       el: el,
       set: function (slug) { show(slug); },
+      setQuiet: function (slug) { show(slug, true); },
       current: function () { return current; },
       hub: function () { return hubBySlug(current); },
       fold: fold,
       autoFold: function () { if (!chosen) fold(true); },
       matches: matches
     };
-    show(fromUrl());
+    show((param && new URLSearchParams(location.search).get(param)) || opts.initial || '');
     return api;
   }
 

@@ -595,12 +595,38 @@ when a slug has no approved listing, keeping the address's tab and hash.
 
 "When you're not logged in... the events page needs to be there... select by city... search... It operates almost like our
 directory, but for events... the goal is to have every event in the world that's happening in this tool. And then that could
-feed into the cities." `/events` (`events/index.html`) is open to everyone: approved `events` rows, a city from the banner
-(an event counts in a city by `VE_HUBS[].page.eventCities` or the hub's Directory rule, `VECityBanner.matches`), search over
-title, description, place and city, Where (every country an event is in), Upcoming / Past, and kinds of event as pills; the
-address bar carries `?city=`, `?q=`, `?where=`, `?cat=`, `?when=past`. Cards in a grid with the ad rail (`/events` slots);
-`is_free` defaults to true in the table, so the card shows a price only when `price_cents` is set.
+feed into the cities." `/events` (`events/index.html`) is open to everyone and wears the dashboard's event tile (Sean, same
+day: "I want the events to look more like how it looks on the dashboard with just that tile, that horizontal tile... I don't
+like the logos and the treatment"; no pictures on the tiles). The calendar is one component, `/public/ve-events.js`
+(`VEEvents.mount`), on `/events` and the dashboard's Events tab: approved `events` rows, a city from the banner (an event counts
+in a city by `VE_HUBS[].page.eventCities` or the hub's Directory rule, `VECityBanner.matches`), search, Where (each country
+an event is in, grouped by continent, `events.continent`), Sort by (Soonest, or City A to Z with a heading per city),
+Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort=city ?when=past` in the address bar.
+`is_free` defaults to true in the table, so it is never shown.
 
+- **Submit an event** (Sean: "members to be able to submit events for consideration... We just require there to be a link to
+  where you can purchase tickets or find more information, the official pages"): four steps, one per view (`#submit/1` to
+  `#submit/4`): A flyer (optional: drop it and Claude reads it), The event, When and where (in the event's own time zone),
+  The official link (required), then sign-in at the button. It waits for approval; `#mine` lists what they sent (Waiting for
+  approval, Live, Not approved) and they are emailed when it goes live. The city hubs' Submit an event opens the same steps
+  (`/events?city=<slug>#submit/1`); the hub's old popup is gone.
+- **Reading flyers** (Sean: "sometimes all they have is a banner on Instagram... you could automatically tell from the banner
+  of where city to put in, what state, what continent"): `ve-events` `flyer_start` (a signed upload into the private bucket
+  `event-flyers`; pictures shrunk to 1600 px first) and `flyer_read` (Claude Opus 5.5, structured output: name, times with
+  offset, venue, city, state, country, continent, time zone, kind, a printed full link only, other links, a note on what it
+  worked out). Members read five a day (`ve_event_flyer_reads`); the team any. Proven 2026-10-26 on a test flyer in 10 s.
+- **Depot > Events** (`/admin/depot/events`, replacing `/admin/events.html`, which redirects): Waiting for approval, Live,
+  Turned down (`#queue/<status>`), one event per view with its flyer and where it came from (`#event/<id>`: edit, Approve,
+  Turn down with a reason the member sees), **Add from a flyer** (`#add`: Put it live or Save to Waiting), and **Crawl
+  sources** (`#sources`, `#source/<id>|new`). Server: edge function `ve-events` (`submit`, `mine`, `flyer_start`,
+  `flyer_read`, `queue`, `review`, `update`, `save`, `sources`, `source_save`, `source_check`).
+- **The crawl** (Sean: "crawl the web, look for different sources... keep this constantly populated"): the Background writer
+  (dispatcher source `events_crawl`, batch 3) reads each `ve_event_sources` row (a website, an Instagram, a calendar, or a
+  search; ten searches seeded, one per city and two for the world) and saves each upcoming Vegan event with an official page
+  through `ve_event_intake(event, 'crawl', source)`, which refuses no link, no date, an event that is over, or one already on
+  the calendar that day, and saves it pending. Sources come back every 7 days (cron `ve-event-sources-requeue`). Nothing the
+  crawl finds goes live until approved. Migration `20261026_ve_events_intake.sql` (`events.source` member | crawl | flyer |
+  admin | import, `source_url`, `source_id`, `flyer_path`, `continent`).
 - The menu (`public/nav.js`): Guides, Pulse, Podcasts, Communities, Directory, Events. The Community Board left it ("the
   community board is in the pulse"): `/pulse` opens the Board's sections (Daily Pulse topics, Requests & Offers, Jobs,
   Classifieds, Fosters, Rescues, Suggest a Topic, `/board?lane=`). Lead Your City left it too (`/lead` still exists).
@@ -609,7 +635,9 @@ address bar carries `?city=`, `?q=`, `?where=`, `?cat=`, `?when=past`. Cards in 
   (`VECityBanner.mount(el, {key, title, sub, onChange})`, after `ve-hubs.js`): the city's art, the city picker, Visit the
   community, Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit). The
   Directory, Events and Communities wear it; on `/communities` the pick narrows the city cards under it. A new browse page
-  with a banner uses it, never its own copy.
+  with a banner uses it, never its own copy. The dashboard's Directory and Events tabs wear it too (Sean: "I want a similar
+  look and feel for both"; `param: false`, `initial`): a city picked there is the dashboard's active city (the city pill
+  follows), All cities widens only that tab (`DASH_ALL` in center-console).
 
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
