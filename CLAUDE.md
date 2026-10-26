@@ -428,8 +428,9 @@ Invites sends them from Sean (or copies the link). From then they work once, for
   2026-10-04: points come from contributing, which is how a free member is encouraged to give).
 - Dinners: a dinner seat needs a free account (Hold my seat opens the account window). Depot > Dinner
   guests sets each guest's membership (on us by default) and holds the dinner's budget ($500 cap).
-- Contribute any time: active members have a Contribute button on the dashboard (ve-entry-checkout,
-  $11 or more). "Member since" (`entry_paid_at`) never moves for an active member. Always a
+- Contribute any time: active members have a Contribute tile in the dashboard's Your tools and a Contribute link in the
+  nav's account menu, both opening the same window (`/dashboard?contribute=1`; ve-entry-checkout, $11 or more). It left
+  the dashboard header on 2026-10-26 (Sean: "we don't need it to be in that top part"). "Member since" (`entry_paid_at`) never moves for an active member. Always a
   contribution, never a tax-deductible donation.
 
 ## Explore and the Directory (Sean, 2026-10-04)
@@ -665,8 +666,10 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   community, Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit). The
   Directory, Events and Communities wear it; on `/communities` the pick narrows the city cards under it. A new browse page
   with a banner uses it, never its own copy. The dashboard's Directory and Events tabs wear it too (Sean: "I want a similar
-  look and feel for both"; `param: false`, `initial`): a city picked there is the dashboard's active city (the city pill
-  follows), All cities widens only that tab (`DASH_ALL` in center-console).
+  look and feel for both"; `param: false`, `initial`): a city picked there is the dashboard's active city, All
+  cities widens only that tab (`DASH_ALL` in center-console). The banner is the dashboard's city picker: the city pill and
+  Contribute left the welcome row (Sean, 2026-10-26), the welcome row (with View As) shows only on the Dashboard tab, and every
+  banner, on the dashboard or a public page, sits 24px under the menu (`.vcb` margin in `ve-city-banner.js`).
 
 ## City hubs: one page for every city (Sean, 2026-10-05)
 

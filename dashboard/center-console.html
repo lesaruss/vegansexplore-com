@@ -160,8 +160,6 @@
   .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
   .dash-welcome h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
   .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
-  .dash-contribute{margin-top:8px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;border-radius:999px;border:1.5px solid #2d7d31;background:#fff;color:#1f5f22;cursor:pointer;}
-  .dash-contribute:hover{background:#EAF7EA;}
   .dash-contribute-note{font-size:13px;font-weight:700;color:#1f5f22;margin-top:6px;}
   .dash-cm-back{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;}
   .dash-cm-back[hidden]{display:none;}
@@ -188,6 +186,12 @@
   body:not([data-dash-tab="profile"]) #dash-welcome-name,
   body:not([data-dash-tab="profile"]) #dash-welcome-sub,
   body:not([data-dash-tab="profile"]) #dash-welcome-stats{display:none !important;}
+  /* Off the Dashboard tab the welcome row is gone altogether (Sean, 2026-10-26: Contribute and the city pill left it, the
+     banner's picker chooses the city, View As stays on the Dashboard tab), so the city banner sits 24px under the
+     menu, the same gap as on /directory, /events and /communities (public/ve-city-banner.js). */
+  body[data-dash-tab]:not([data-dash-tab="profile"]) .dash-welcome{display:none !important;}
+  body[data-dash-tab]:not([data-dash-tab="profile"]) main{padding-top:24px;}
+  .dash-hero-banner.vcb{margin-top:0;}
 
   .dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
   .dash-stat{border:1.5px solid var(--ve-border);border-radius:10px;padding:16px;}
@@ -328,13 +332,11 @@
      they picked during guide registration/onboarding), not a generic "All
      Cities" placeholder. Reuses the existing dash-community-modal rather
      than opening a new one. --- */
-  .dash-city-pill{appearance:none;border:1.5px solid var(--ve-green);background:var(--ve-green-light);color:var(--ve-green-dark);border-radius:100px;padding:7px 14px;font:inherit;font-size:12px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:10px;}
-  .dash-city-pill:hover{background:#fff;}
   .dash-city-pill-caret{font-size:9px;opacity:0.7;}
   /* Superadmin View As (2026-09-08, Sean, Fieldy field note) -- see the
      markup comment above #dash-viewas-wrap for full context. Amber rather
      than green so it never reads as a normal member-facing control. */
-  .dash-viewas-wrap{position:relative;margin-top:10px;margin-left:8px;}
+  .dash-viewas-wrap{position:relative;margin-top:10px;}
   .dash-viewas-pill{appearance:none;border:1.5px solid #B45309;background:#FEF3C7;color:#92400E;border-radius:100px;padding:7px 14px;font:inherit;font-size:12px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
   .dash-viewas-pill:hover{background:#fff;}
   .dash-viewas-pill.previewing{background:#92400E;border-color:#92400E;color:#fff;}
@@ -675,18 +677,8 @@
         <p class="dash-eyebrow" id="dash-eyebrow">Member</p>
         <h1 id="dash-welcome-name">Your Dashboard</h1>
         <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
-        <!-- Contribute any time (Sean, 2026-10-04, playbook record 499aaebc): every active member,
-             paid or on us, can give again whenever they want. Same open contribution as /welcome
-             (ve-entry-checkout, $11 suggested). A contribution, never a donation, and since 2026-10-25 it
-             adds no points beyond the 25-point thank-you every purchase earns (Sean locked 2026-10-25). Points are
-             never bought, and Guide credits are retired. -->
-        <button type="button" class="dash-contribute" id="dash-contribute" hidden>Contribute</button>
-        <!-- Your City pill (2026-09-07, Logan, Sean direction): opens a
-             plain city switcher, not a join/leave picker -- Sean,
-             2026-09-07: "you shouldn't be checking the cities, you should
-             just be going to them." Text/click wiring in renderCityPill() /
-             openCityModal(). -->
-        <button type="button" class="dash-city-pill" id="dash-city-pill">Choose a City <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span></button>
+        <!-- Contribute and the city pill left the header (Sean, 2026-10-26): the city banner on the Directory and Events
+             tabs picks the city, and Contribute opens from the nav's account menu (/dashboard?contribute=1). -->
         <!-- Superadmin View As (2026-09-08, Sean, Fieldy field note): preview
              the dashboard as a Free Member, Passport Member, or Community
              Manager without creating a separate test account -- "I need to
@@ -1554,7 +1546,9 @@
     // the member's chosen guide, cropped so the head is cut off"). The image
     // is resolved at render time from public/footer.js's VEGuideImage, which
     // defaults to Liz, so the tile and the dock icon can never disagree.
-    { key: 'choose-guide', href: '#', icon: '&#129497;', img: 'guide', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' }
+    { key: 'choose-guide', href: '#', icon: '&#129497;', img: 'guide', bg: 'linear-gradient(135deg,#22C55E,#16A34A)', title: 'Choose Your Guide <span class="dash-tag">Passport</span>', desc: 'Pick the guide that matches your journey -- Pre-Vegan, Seasoned Vegan, Entrepreneur, Nonprofit, or Creator. A Passport benefit.' },
+    // Contribute moved here from the header (Sean, 2026-10-26: "we can find another place for that"); active members only.
+    { key: 'contribute', href: '#', members: true, icon: '&#127793;', bg: 'linear-gradient(135deg,#2d7d31,#1f5f22)', title: 'Contribute', desc: 'Give again any time, from $11. A contribution to the community, never a donation.' }
   ];
   // choose-topics tile removed 2026-09-08 (Sean, Fieldy field note): folded
   // into GUIDE_CATALOG above instead -- see the "mini-guides" entry there.
@@ -1579,7 +1573,7 @@
       return {
         key: m.key, href: m.href, iconHtml: m.icon, img: m.img,
         bg: m.bg, title: m.title, desc: m.desc,
-        visibility: 'all', defaultSection: 'tools',
+        visibility: m.members ? 'members' : 'all', defaultSection: 'tools',
         locked: (m.key === 'tour')
       };
     });
@@ -1670,6 +1664,7 @@
       if (dashTileHidden(t.key)) return;
       if (t.visibility === 'staff' && !isStaff) return;
       if (t.visibility === 'superadmin' && !member.is_superadmin) return;
+      if (t.visibility === 'members' && !(member.membership_status === 'active' && !window.VE_PREVIEW)) return;
       var tile = t;
       if (t.key === 'opportunities' && isStaff) tile = Object.assign({}, t, { desc: 'Review applications, manage campaigns, and more.' });
       // Locked tiles ignore any saved section move -- they always render in
@@ -1720,6 +1715,7 @@
         if (t.key === 'choose-guide') { e.preventDefault(); openChooseGuide(); }
         if (t.key === 'communities') { e.preventDefault(); openCommunityModal(); }
         if (t.key === 'my-list') { e.preventDefault(); openMyList(); }
+        else if (t.key === 'contribute') { e.preventDefault(); openContribute(); }
         else if (t.embed) { e.preventDefault(); openToolInFrame(t.embedLabel || 'Tool', t.href, true); }
       });
       wrap.appendChild(tile);
@@ -1876,6 +1872,7 @@
     // one back were taken off (Sean, 2026-10-04: not needed with two tools; nobody had removed one).
     MODULES.forEach(function(m) {
       if (dashTileHidden(m.key)) return;
+      if (m.members && !(member && member.membership_status === 'active' && !window.VE_PREVIEW)) return;
       var wrap = document.createElement('div');
       wrap.className = 'dash-tile-wrap';
       var tile = document.createElement('a');
@@ -1898,6 +1895,9 @@
       }
       if (m.key === 'my-list') {
         tile.addEventListener('click', function(e) { e.preventDefault(); openMyList(); });
+      }
+      if (m.key === 'contribute') {
+        tile.addEventListener('click', function(e) { e.preventDefault(); openContribute(); });
       }
       grid.appendChild(wrap);
     });
@@ -2508,6 +2508,7 @@
 
   function renderCityPill(member) {
     var pill = document.getElementById('dash-city-pill');
+    if (!pill) return;
     if (!pill) return;
     var active = getActiveCity(member);
     var label = active ? (VE_CITY_NAMES[active] || active) : 'Choose a City';
@@ -3787,14 +3788,16 @@
 
   // Contribute any time (Sean, 2026-10-04): for active members, an amount and a checkout.
   function renderContribute(member) {
-    var btn = document.getElementById('dash-contribute');
-    if (!btn) return;
+    // The button left the header (Sean, 2026-10-26); the nav's account menu links here with ?contribute=1.
+    if (renderContribute._done) return;
+    renderContribute._done = true;
     var real = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : member;
-    btn.hidden = !(member && member.membership_status === 'active' && real && !window.VE_PREVIEW);
-    if (btn._wired) return;
-    btn._wired = true;
-    btn.addEventListener('click', openContribute);
     var q = new URLSearchParams(location.search);
+    if (q.get('contribute') === '1') {
+      q.delete('contribute');
+      history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash);
+      if (member && member.membership_status === 'active' && real && !window.VE_PREVIEW) openContribute();
+    }
     if (q.get('credits') === 'bought' || q.get('credits') === 'cancelled' || q.get('credits') === 'unpaid') {
       // Guide credits are retired (2026-10-25); a checkout opened before then still comes back here.
       showContributeNote(q.get('credits') === 'bought' ? 'Thank you. Your Guide credits are in: open any Guide to use one.' : 'No charge was made.');

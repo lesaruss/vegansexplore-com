@@ -239,6 +239,7 @@
         '<div class="ve-nav-member-menu" id="ve-member-menu" role="menu">' +
           '<a href="/account"' + cur('/account') + ' role="menuitem">My Account</a>' +
           '<a href="/account/my-list"' + cur('/account/my-list') + ' role="menuitem">My List</a>' +
+          (member.membership_status === 'active' ? '<a href="/dashboard?contribute=1" role="menuitem">Contribute</a>' : '') +
           '<hr>' +
           '<button id="ve-signout-desktop" role="menuitem">Sign Out</button>' +
         '</div>' +
@@ -252,6 +253,7 @@
           '<span class="ve-mob-lesars">' + tierBadge + '</span>' +
         '</a>' +
         '<a href="/account/my-list"' + cur('/account/my-list') + '>My List</a>' +
+        (member.membership_status === 'active' ? '<a href="/dashboard?contribute=1">Contribute</a>' : '') +
       '</div>' +
       '<button class="ve-mob-signout" id="ve-signout-mobile">Sign Out</button>';
   } else {
