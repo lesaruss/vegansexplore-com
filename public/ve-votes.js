@@ -13,13 +13,16 @@
  *                            listings.vote_count), and the button reads "Voted".
  *   Voting again too soon -> the same window: "You've voted for this one today", when the next vote opens (tomorrow
  *                            at 9:14 PM EDT, in the visitor's own time zone), and Got it.
+ *   Checking in again     -> the same window: "You've checked in here today" (VEVotes.checkedInPrompt(), Sean 2026-10-26).
+ *                            A check-in day runs on Eastern time (ve_checkin_save), so the next one opens at midnight
+ *                            Eastern, shown in the visitor's own time zone.
  *
  *   VEVotes.wire(root)  binds every .vote-btn[data-listing-id] under root (safe to call
  *                       again after re-rendering) and marks the ones voted in the last 24 hours.
  *   The count shown is the .vote-count in the same .rank-card (or .rank-right).
  *   VEVotes.cast(id), VEVotes.today(), VEVotes.tooSoon(nextIso), VEVotes.nextText(nextIso),
- *   VEVotes.passportPrompt(), VEVotes.savePrompt(), VEVotes.checkinPrompt() and VEVotes.votedPrompt(nextIso) are what the
- *   listing page uses.
+ *   VEVotes.passportPrompt(), VEVotes.savePrompt(), VEVotes.checkinPrompt(), VEVotes.votedPrompt(nextIso) and
+ *   VEVotes.checkedInPrompt() are what the listing page uses.
  */
 (function () {
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
@@ -159,6 +162,25 @@
   function passportPrompt() { gatePrompt('vote'); }
   function savePrompt() { gatePrompt('save'); }
   function checkinPrompt() { gatePrompt('checkin'); }
+  // The next midnight in New York, as an instant: tomorrow's Eastern date at 00:00, under whichever of EDT or EST it is.
+  function nextEasternMidnight() {
+    var ny = function (d) { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(d); };
+    var hourNy = function (d) { return Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(d)); };
+    var p = ny(new Date()).split('-').map(Number), tomorrow = ny(new Date(Date.UTC(p[0], p[1] - 1, p[2] + 1, 12)));
+    var q = tomorrow.split('-').map(Number);
+    for (var off = 4; off <= 5; off++) {
+      var t = new Date(Date.UTC(q[0], q[1] - 1, q[2], off));
+      if (ny(t) === tomorrow && hourNy(t) === 0) return t.toISOString();
+    }
+    return new Date(Date.UTC(q[0], q[1] - 1, q[2], 5)).toISOString();
+  }
+  function checkedInPrompt() {
+    openModal({
+      icon: 'pin', eyebrow: 'Thanks for checking in', title: "You've checked in here today",
+      body: 'Each place takes one check-in a day from you, and you earn points at up to 5 places a day. Your next check-in here opens <b>' + nextText(nextEasternMidnight()).replace('at 12:00 AM', 'at midnight') + '</b>.',
+      actions: '<button type="button" class="ve-vm-btn ve-vm-go" data-vm-close>Got it</button>'
+    });
+  }
   function votedPrompt(iso) {
     openModal({
       icon: 'clock', eyebrow: 'Thanks for voting', title: "You've voted for this one today",
@@ -213,5 +235,6 @@
     });
   }
   window.VEVotes = { wire: wire, cast: cast, today: listToday, tooSoon: tooSoon, nextText: nextText, onceMessage: onceMessage, notice: notice,
-    passportPrompt: passportPrompt, savePrompt: savePrompt, checkinPrompt: checkinPrompt, votedPrompt: votedPrompt };
+    passportPrompt: passportPrompt, savePrompt: savePrompt, checkinPrompt: checkinPrompt, votedPrompt: votedPrompt,
+    checkedInPrompt: checkedInPrompt };
 })();
