@@ -102,7 +102,7 @@ async function adminId(req: Request): Promise<string | null> {
 const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/\u0000/g, '').trim().slice(0, max) : '');
 // Every Directory sub-section (CATEGORIES in ve-claims, CAT_CONFIG in /public/ve-region-directory.js).
 const LISTING_CATEGORIES = [
-  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Catering', 'Meal Prep',
+  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
   'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
   'Web & Development', 'AI & Automation', 'Business Operations',
@@ -825,10 +825,10 @@ Deno.serve(async (req) => {
       let q = db.from('listings').select('id,name,website,category,address_city,address_state').eq('status', 'approved')
         .is('owner_member_id', null).is('claimed_by_member_id', null).not('website', 'is', null)
         .or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').limit(1000);
-      if (city === 'brands') q = q.in('category', ['Food Brands', 'Brands']);
+      if (city === 'brands') q = q.in('category', ['Food Brands', 'Nutrition & Supplements', 'Brands']);
       else { if (oc.cities) q = q.in('address_city', oc.cities); if (oc.states) q = q.in('address_state', oc.states); }
       const { data: ls } = await q;
-      const todo = (ls || []).filter((l) => !skip.has(l.id) && l.website && (city === 'brands' || !['Food Brands', 'Brands'].includes(l.category))).slice(0, limit);
+      const todo = (ls || []).filter((l) => !skip.has(l.id) && l.website && (city === 'brands' || !['Food Brands', 'Nutrition & Supplements', 'Brands'].includes(l.category))).slice(0, limit);
       const out: { name: string; email: string | null; note: string }[] = [];
       for (let i = 0; i < todo.length; i += 6) {
         await Promise.all(todo.slice(i, i + 6).map(async (l) => {

@@ -297,7 +297,7 @@ async function backlogRun(igN: number, gN: number) {
   return { checked, left: count || 0 };
 }
 
-const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Markets', 'Meal Prep', 'Catering', 'Food Brands', 'Brands', 'Fitness and Athletics', 'Health and Wellness',
+const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Markets', 'Meal Prep', 'Catering', 'Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Health and Wellness',
   'Beauty and Personal Care', 'Clothing and Fashion', 'Coaches and Consultants', 'Nonprofits', 'Events', 'E-Commerce & Marketplaces', 'Media', 'Podcasts'];
 const VEGAN_STATUS = ['fully_vegan', 'vegan_options', 'vegan_friendly'];
 

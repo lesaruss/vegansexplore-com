@@ -28,9 +28,11 @@
   var CAT_MAP = {
     'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food',
     'Catering': 'food', 'Meal Prep': 'food',
-    // Food Brands sit with the other brands under Products (Sean, 2026-10-25: "we're showing all brands versus mixing them,
-    // the national with the local"), so Food, opening on All, is the local places.
-    'Food Brands': 'products', 'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
+    // Food Brands are back under Food (Sean, 2026-10-26): sections open on their first sub-section, not All, so Food opens
+    // on Restaurants and the national brands no longer mix with the local places. Nutrition & Supplements follows them.
+    'Food Brands': 'food', 'Nutrition & Supplements': 'food',
+    // Brands left the menu (Sean, 2026-10-26); an old 'Brands' row still shows under Products > All.
+    'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
     'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
     'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services',
     'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services',
@@ -43,10 +45,10 @@
   var CAT_CONFIG = [
     { key: 'food', label: 'Food', hasVF: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Catering', 'Meal Prep'] },
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep'] },
     { key: 'products', label: 'Products', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
-      subcats: ['Brands', 'Food Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces'] },
+      subcats: ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'] },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
       subcats: ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations'] },
@@ -132,6 +134,7 @@
     + '.vrd-root .vrd-vegan-fully{background:#e3f6e7;color:#1f6b33}'
     + '.vrd-root .vrd-vegan-friendly{background:#f0f0f0;color:#555}'
     + '.vrd-root .vrd-vegan-options{background:#f5f1e8;color:#6b5a2e}'
+    + '.vrd-root .vrd-vends{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;background:#e8eefb;color:#23408e;white-space:nowrap}'
     + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#1f5f22;color:#fff;vertical-align:2px;white-space:nowrap}'
     + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
     + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
@@ -203,7 +206,9 @@
       '<select aria-label="Filter by kind of food" class="sort-select" data-vrd-cuisine="' + cat.key + '"><option value="">All</option>' +
       CUISINES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
       '<span class="vrd-sub" data-sub-for="chain" hidden><span class="geo-label">Stores</span>' +
-      '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>';
+      '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>' +
+      '<span class="vrd-sub" data-sub-for="sells" hidden><span class="geo-label">Where they sell</span>' +
+      '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Everywhere</option><option value="1">At markets and events</option><option value="0">Online and in stores only</option></select></span>';
     return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + perpageHtml + '</div>';
   }
 
@@ -215,8 +220,9 @@
   function skeletonForCat(cat, config) {
     // A framed tool (Review): the page loads the first time the tab opens.
     if (cat.frame) return '<div class="board-panel" id="board-' + cat.key + '"><div class="vrd-frame-wrap" data-vrd-frame="' + esc(cat.frame) + '"></div></div>';
-    var subcatBtns = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>' +
-      cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('');
+    // A section opens on its first sub-section; All comes last (Sean, 2026-10-26).
+    var subcatBtns = cat.subcats.map(function (s, i) { return '<button class="subcat-pill' + (i ? '' : ' sc-active') + '" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
+      '<button class="subcat-pill' + (cat.subcats.length ? '' : ' sc-active') + '" data-vrd-subcat="All">All</button>';
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
       '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(cat.label) + '&hellip;" aria-label="Search ' + esc(cat.label) + ' listings">' +
@@ -264,6 +270,12 @@
     (l.extra_categories || []).forEach(function (c) { if (c && out.indexOf(c) < 0) out.push(c); });
     return out;
   }
+  // A brand that also sells in person (Sean, 2026-10-26: "they still show up at vendor... farmers markets and special events,
+  // festivals... a tool for promoters who are looking to find vendors"): a Food Brand or Nutrition & Supplements listing that
+  // is also under Food Trucks & Vendors (extra_categories). It stays in its brand section and shows with the vendors too.
+  var BRAND_SUBS = ['Food Brands', 'Nutrition & Supplements'];
+  function vendsAt(l) { return BRAND_SUBS.indexOf(l.category) >= 0 && sectionsOf(l).indexOf('Food Trucks & Vendors') >= 0; }
+  function vendsTag(l) { return vendsAt(l) ? ' <span class="vrd-vends" title="Also sells at markets, festivals and events">Markets &amp; events</span>' : ''; }
   // How Vegan, as a filter key and a label on the card (fully Vegan also covers the older 'vegan').
   var VEGAN_KEY = { fully_vegan: 'fully', vegan: 'fully', vegan_friendly: 'friendly', vegan_options: 'options' };
   var VEGAN_LABEL = { fully: '100% Vegan', friendly: 'Vegan-friendly', options: 'Vegan options' };
@@ -330,7 +342,7 @@
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
-      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + '</div>' + vettingNote(l) + '</div>' +
+      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + vendsTag(l) + '</div>' + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
@@ -365,7 +377,7 @@
     ['ethiopian', 'Ethiopian'], ['african', 'African'], ['indian', 'Indian'], ['thai', 'Thai'], ['chinese', 'Chinese'], ['japanese', 'Japanese & sushi'],
     ['korean', 'Korean'], ['vietnamese', 'Vietnamese'], ['asian', 'Pan-Asian'], ['burgers', 'Burgers & fast food'], ['bowls', 'Bowls & salads'],
     ['raw', 'Raw & juice bar'], ['brunch', 'Breakfast & brunch'], ['desserts', 'Desserts & sweets'], ['global', 'Global mix']];
-  var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
+  var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
     'Food Trucks & Vendors': { cuisine: true }, 'Catering': { cuisine: true } };
   // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
   function hubsOf(l) {
@@ -381,7 +393,7 @@
     return out.join('|');
   }
   function extraAttrs(l) {
-    return ' data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '"';
+    return ' data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '" data-vends="' + (vendsAt(l) ? 1 : 0) + '"';
   }
 
   // Optional in-frame open (2026-09-07, Logan, Sean direction): a caller
@@ -509,7 +521,7 @@
     bindCardClicks(root, config);
     bindAdmin(root);
 
-    root.querySelectorAll('.board-panel').forEach(function (panel) { applyPanelFilters(panel, config, true); });
+    root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); applyPanelFilters(panel, config, true); });
   }
 
   function currentSubcat(panel) {
@@ -527,7 +539,9 @@
       var on = !!sf[w.dataset.subFor]; w.hidden = !on;
       if (!on) { var s = w.querySelector('select'); if (s) s.value = ''; }
     });
-    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = sf.geo === false;
+    // Brands sell everywhere, so no location filter, until a promoter looks for the ones at markets and events.
+    var sells = bar.querySelector('[data-vrd-sells]');
+    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = sf.geo === false && !(sf.sells && sells && sells.value === '1');
   }
 
   function applyPanelFilters(panel, state, resetPage) {
@@ -554,7 +568,8 @@
     var kindSel = bar ? bar.querySelector('[data-vrd-kind]') : null, kind = sf.kind && kindSel ? kindSel.value : '';
     var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
     var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
-    if (sf.geo === false) { city = ''; county = ''; region = ''; }
+    var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells && sellsSel ? sellsSel.value : '';
+    if (sf.geo === false && sells !== '1') { city = ''; county = ''; region = ''; }
     // Search is scoped to this panel/category only (2026-09-07, Logan, Sean
     // correction) -- each panel has its own [data-vrd-search] input now.
     var searchInput = panel.querySelector('[data-vrd-search]');
@@ -571,6 +586,7 @@
       if (kind && (card.dataset.kinds || '').split('|').indexOf(kind) < 0) geoOk = false;
       if (chain && card.dataset.chain !== chain) geoOk = false;
       if (cuisine && (card.dataset.cuisines || '').split('|').indexOf(cuisine) < 0) geoOk = false;
+      if (sells && card.dataset.vends !== sells) geoOk = false;
       var typeOk = type ? (card.dataset.listingType === type) : (card.dataset.listingType !== 'closed');
       var searchOk = !searchTerm ||
         (card.dataset.name || '').toLowerCase().indexOf(searchTerm) > -1 ||
@@ -688,8 +704,8 @@
         applyPanelFilters(sel.closest('.board-panel'), state, true);
       });
     });
-    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine]').forEach(function (sel) {
-      sel.addEventListener('change', function () { applyPanelFilters(sel.closest('.board-panel'), state, true); });
+    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells]').forEach(function (sel) {
+      sel.addEventListener('change', function () { var panel = sel.closest('.board-panel'); if (sel.hasAttribute('data-vrd-sells')) syncSubFilters(panel); applyPanelFilters(panel, state, true); });
     });
 
     root.querySelectorAll('[data-vrd-city]').forEach(function (sel) {
