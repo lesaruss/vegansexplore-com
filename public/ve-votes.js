@@ -5,6 +5,7 @@
  *   Signed out            -> a small window first (Sean, 2026-10-26: "a prompt that explains why they're going to the
  *                            passport page"): voting is for Passport holders, Explore the Passport (/passport, the
  *                            Passport Guide, back= returns here), Sign in for members, Not now.
+ *   Save, signed out      -> the same window for saving (VEVotes.savePrompt(), Sean 2026-10-26), from=save.
  *   Signed in, not paid   -> ve-votes answers payment_required and the "Founding Member,
  *                            $11 one time" box opens (VEAuth.showActivateModal).
  *   Member                -> ve-votes saves it (listing_daily_votes; the trigger keeps
@@ -16,7 +17,7 @@
  *                       again after re-rendering) and marks the ones voted in the last 24 hours.
  *   The count shown is the .vote-count in the same .rank-card (or .rank-right).
  *   VEVotes.cast(id), VEVotes.today(), VEVotes.tooSoon(nextIso), VEVotes.nextText(nextIso),
- *   VEVotes.passportPrompt() and VEVotes.votedPrompt(nextIso) are what the listing page uses.
+ *   VEVotes.passportPrompt(), VEVotes.savePrompt() and VEVotes.votedPrompt(nextIso) are what the listing page uses.
  */
 (function () {
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
@@ -73,7 +74,8 @@
   var modalEl = null, lastFocus = null;
   var ICON = {
     heart: '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>',
-    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    bookmark: '<path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>'
   };
   function buildModal() {
     var st = document.createElement('style');
@@ -133,16 +135,24 @@
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
   function here() { return location.pathname + location.search + location.hash; }
-  function passportPrompt() {
-    var back = encodeURIComponent(here());
+  // A members-only action, signed out: why, then Explore the Passport (from= tells the Passport Guide which note to show).
+  var GATES = {
+    vote: { icon: 'heart', title: 'Voting is for Passport holders',
+      body: 'Member votes decide which places lead every list. With your Passport, <b>$11 one time</b>, you can vote for the places you love every day, check in, earn points and unlock the Guides.' },
+    save: { icon: 'bookmark', title: 'Saving is for Passport holders',
+      body: 'Save the places you love to My list and find them again from your dashboard. With your Passport, <b>$11 one time</b>, you can also vote every day, check in, earn points and unlock the Guides.' }
+  };
+  function gatePrompt(kind) {
+    var g = GATES[kind] || GATES.vote, back = encodeURIComponent(here());
     openModal({
-      icon: 'heart', eyebrow: 'Members only', title: 'Voting is for Passport holders',
-      body: 'Member votes decide which places lead every list. With your Passport, <b>$11 one time</b>, you can vote for the places you love every day, check in, earn points and unlock the Guides.',
-      actions: '<a class="ve-vm-btn ve-vm-go" href="/passport?from=vote&back=' + back + '">Explore the Passport</a>' +
+      icon: g.icon, eyebrow: 'Members only', title: g.title, body: g.body,
+      actions: '<a class="ve-vm-btn ve-vm-go" href="/passport?from=' + (GATES[kind] ? kind : 'vote') + '&back=' + back + '">Explore the Passport</a>' +
                '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>',
       foot: 'Already a member? <a href="/login?next=' + back + '">Sign in</a>'
     });
   }
+  function passportPrompt() { gatePrompt('vote'); }
+  function savePrompt() { gatePrompt('save'); }
   function votedPrompt(iso) {
     openModal({
       icon: 'clock', eyebrow: 'Thanks for voting', title: "You've voted for this one today",
@@ -197,5 +207,5 @@
     });
   }
   window.VEVotes = { wire: wire, cast: cast, today: listToday, tooSoon: tooSoon, nextText: nextText, onceMessage: onceMessage, notice: notice,
-    passportPrompt: passportPrompt, votedPrompt: votedPrompt };
+    passportPrompt: passportPrompt, savePrompt: savePrompt, votedPrompt: votedPrompt };
 })();
