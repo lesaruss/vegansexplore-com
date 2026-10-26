@@ -3176,7 +3176,12 @@ function renderListing(l){
     function say(t){ msg.textContent = t; }
     btn.addEventListener('click', function(){
       if(btn.classList.contains('done')){ say('You already checked in here today. Come back tomorrow.'); return; }
-      if(!window.VEAuth || !VEAuth.isLoggedIn()){ if(window.VEAuth) VEAuth.showAuthModal('Sign in to check in here. Members earn 10 points a visit.', function(){ window.location.reload(); }); return; }
+      // Signed out: the window that says check-ins are for Passport holders, then Explore the Passport (Sean, 2026-10-26).
+      if(!window.VEAuth || !VEAuth.isLoggedIn()){
+        if(window.VEVotes && VEVotes.checkinPrompt) VEVotes.checkinPrompt();
+        else window.location.href = '/passport?from=checkin&back=' + encodeURIComponent(location.pathname + location.search + location.hash);
+        return;
+      }
       var m = VEAuth.getMember ? VEAuth.getMember() : null;
       if(!(m && m.membership_status === 'active')){ if(VEAuth.showActivateModal) VEAuth.showActivateModal('Check-ins are for members: 10 points every time you visit a place. Join for $11, one time.'); return; }
       if(!navigator.geolocation){ say('Your browser cannot share your location, so we cannot check you in.'); return; }

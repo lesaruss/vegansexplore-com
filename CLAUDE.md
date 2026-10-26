@@ -445,8 +445,9 @@ that explains why they're going to the passport page"): Members only, Voting is 
 the Passport** (`/passport?from=vote&back=...`), Not now, and Sign in for members (`/login?next=...`). Voting again too soon opens
 the same window: You've voted for this one today, with when the next vote opens in the visitor's time zone, and Got it. A
 signed-out Save gets the same window for saving (Sean, 2026-10-26: "do the same for the save button"; Saving is for Passport
-holders, `/passport?from=save`, where the Passport Guide shows a Saving is for members note). They are
-`VEVotes.passportPrompt()`, `VEVotes.savePrompt()` and `VEVotes.votedPrompt(next)` in `/public/ve-votes.js`, styled like the $11 window in `ve-auth.js`;
+holders, `/passport?from=save`, where the Passport Guide shows a Saving is for members note), and so does a signed-out Check in
+(Check-ins are for Passport holders, 10 points a visit, `/passport?from=checkin`). They are
+`VEVotes.passportPrompt()`, `VEVotes.savePrompt()`, `VEVotes.checkinPrompt()` and `VEVotes.votedPrompt(next)` in `/public/ve-votes.js`, styled like the $11 window in `ve-auth.js`;
 the Directory cards, the listing page and `nav.js`'s members-only gate (for `.vote-hero-btn` and the phone's sticky vote) all
 use them (Save: the listing's Save and the phone's sticky save). The Guides' Save buttons show only to the Guide's owners. Since 2026-10-25 `/passport` is the Passport Guide, no longer a redirect to `/welcome`.
 

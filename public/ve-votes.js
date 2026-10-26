@@ -6,6 +6,7 @@
  *                            passport page"): voting is for Passport holders, Explore the Passport (/passport, the
  *                            Passport Guide, back= returns here), Sign in for members, Not now.
  *   Save, signed out      -> the same window for saving (VEVotes.savePrompt(), Sean 2026-10-26), from=save.
+ *   Check in, signed out  -> the same window for check-ins (VEVotes.checkinPrompt(), Sean 2026-10-26), from=checkin.
  *   Signed in, not paid   -> ve-votes answers payment_required and the "Founding Member,
  *                            $11 one time" box opens (VEAuth.showActivateModal).
  *   Member                -> ve-votes saves it (listing_daily_votes; the trigger keeps
@@ -17,7 +18,8 @@
  *                       again after re-rendering) and marks the ones voted in the last 24 hours.
  *   The count shown is the .vote-count in the same .rank-card (or .rank-right).
  *   VEVotes.cast(id), VEVotes.today(), VEVotes.tooSoon(nextIso), VEVotes.nextText(nextIso),
- *   VEVotes.passportPrompt(), VEVotes.savePrompt() and VEVotes.votedPrompt(nextIso) are what the listing page uses.
+ *   VEVotes.passportPrompt(), VEVotes.savePrompt(), VEVotes.checkinPrompt() and VEVotes.votedPrompt(nextIso) are what the
+ *   listing page uses.
  */
 (function () {
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
@@ -75,7 +77,8 @@
   var ICON = {
     heart: '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>',
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-    bookmark: '<path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>'
+    bookmark: '<path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>',
+    pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/>'
   };
   function buildModal() {
     var st = document.createElement('style');
@@ -140,7 +143,9 @@
     vote: { icon: 'heart', title: 'Voting is for Passport holders',
       body: 'Member votes decide which places lead every list. With your Passport, <b>$11 one time</b>, you can vote for the places you love every day, check in, earn points and unlock the Guides.' },
     save: { icon: 'bookmark', title: 'Saving is for Passport holders',
-      body: 'Save the places you love to My list and find them again from your dashboard. With your Passport, <b>$11 one time</b>, you can also vote every day, check in, earn points and unlock the Guides.' }
+      body: 'Save the places you love to My list and find them again from your dashboard. With your Passport, <b>$11 one time</b>, you can also vote every day, check in, earn points and unlock the Guides.' },
+    checkin: { icon: 'pin', title: 'Check-ins are for Passport holders',
+      body: 'Check in when you visit a place and earn <b>10 points</b> a visit, and your check-ins show the community the place is open. With your Passport, <b>$11 one time</b>, you can also vote every day, save places and unlock the Guides.' }
   };
   function gatePrompt(kind) {
     var g = GATES[kind] || GATES.vote, back = encodeURIComponent(here());
@@ -153,6 +158,7 @@
   }
   function passportPrompt() { gatePrompt('vote'); }
   function savePrompt() { gatePrompt('save'); }
+  function checkinPrompt() { gatePrompt('checkin'); }
   function votedPrompt(iso) {
     openModal({
       icon: 'clock', eyebrow: 'Thanks for voting', title: "You've voted for this one today",
@@ -207,5 +213,5 @@
     });
   }
   window.VEVotes = { wire: wire, cast: cast, today: listToday, tooSoon: tooSoon, nextText: nextText, onceMessage: onceMessage, notice: notice,
-    passportPrompt: passportPrompt, savePrompt: savePrompt, votedPrompt: votedPrompt };
+    passportPrompt: passportPrompt, savePrompt: savePrompt, checkinPrompt: checkinPrompt, votedPrompt: votedPrompt };
 })();
